@@ -271,6 +271,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         projectRegion.setValue(region);
     }
 
+    @Override
+    public void setApprovalFieldsMandatory (boolean isMandatory){
+        approvalDate.setMandatory(isMandatory);
+        approvedBy.setMandatory(isMandatory);
+    }
+
     @UiHandler("equipment")
     public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
         if (activity != null)

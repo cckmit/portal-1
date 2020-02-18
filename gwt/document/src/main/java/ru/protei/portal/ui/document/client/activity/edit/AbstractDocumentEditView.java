@@ -98,4 +98,6 @@ public interface AbstractDocumentEditView extends IsWidget {
     void setDocumentCategoryValue(List<En_DocumentCategory> documentCategories);
 
     void setProjectInfo(String customerType, String productDirection, String region);
+
+    void setApprovalFieldsMandatory (boolean isMandatory);
 }

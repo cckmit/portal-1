@@ -219,6 +219,7 @@ public abstract class DocumentEditActivity
         setApprovalDateEnable(view.isApproved().getValue());
         setUploaderApprovalSheetEnable(view.isApproved().getValue());
         renderViewState(project);
+        view.setApprovalFieldsMandatory(view.isApproved().getValue());
     }
 
     @Override
@@ -521,6 +522,8 @@ public abstract class DocumentEditActivity
         view.documentDocUploader().resetForm();
         view.documentPdfUploader().resetForm();
         view.documentApprovalSheetUploader().resetForm();
+        view.setApprovalFieldsMandatory(view.isApproved().getValue());
+        setUploaderApprovalSheetEnable(view.isApproved().getValue());
 
         boolean isApproved = view.isApproved().getValue();
         view.approvedBy().setValue(!isApproved || document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
