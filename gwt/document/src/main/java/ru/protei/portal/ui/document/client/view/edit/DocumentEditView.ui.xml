@@ -175,7 +175,7 @@
                                         <project:ProjectFormSelector ui:field="project"
                                                                      validation="false"
                                                                      header="{lang.documentProject}"
-                                                                     mandatory="false"/>
+                                                                     mandatory="true"/>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group form-group-default">
@@ -234,14 +234,14 @@
                                                                                   defaultValue="{lang.selectValue}"
                                                                                   validation="false"
                                                                                   header="{lang.documentCategory}"
-                                                                                  mandatory="false"/>
+                                                                                  mandatory="true"/>
                                     </div>
                                     <div class="col-md-6">
                                         <doctype:DocumentTypeFormSelector ui:field="documentType"
                                                                           defaultValue="{lang.selectValue}"
                                                                           validation="false"
                                                                           header="{lang.documentType}"
-                                                                          mandatory="false"/>
+                                                                          mandatory="true"/>
                                     </div>
                                 </div>
                             </div>

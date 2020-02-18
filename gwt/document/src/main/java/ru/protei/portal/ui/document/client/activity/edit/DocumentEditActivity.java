@@ -517,7 +517,7 @@ public abstract class DocumentEditActivity
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.isApproved().setValue(isNew ? false : document.getApproved());
-        view.nameValidator().setValid(true);
+        view.nameValidator().setValid(!view.name().getValue().isEmpty());
         view.documentDocUploader().resetForm();
         view.documentPdfUploader().resetForm();
         view.documentApprovalSheetUploader().resetForm();
