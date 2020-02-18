@@ -568,7 +568,9 @@ public class DocumentServiceImpl implements DocumentService {
         if (project == null) {
             return false;
         }
-        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
+                && document.getType() != null
+                && document.getType().getDocumentCategory() != En_DocumentCategory.ABROAD) {
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;

@@ -252,14 +252,20 @@ public abstract class DocumentEditActivity
         setDocumentTypeEnabled(documentCategory != null);
         setDecimalNumberEnabled(isDesignationEnabled);
         setInventoryNumberEnabled(isDesignationEnabled);
-        setInventoryNumberMandatory(isDesignationEnabled && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
+        setInventoryNumberMandatory(needToCheckInventoryNumber(project));
         setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
     private void setDecimalNumberEnabled(boolean isEnabled) {
         view.decimalNumberEnabled(isEnabled);
+        if (!isEnabled) {
+            view.decimalNumber().setValue(null);
+        }
     }
     private void setInventoryNumberEnabled(boolean isEnabled) {
         view.inventoryNumberEnabled(isEnabled);
+        if (!isEnabled) {
+            view.inventoryNumber().setValue(null);
+        }
     }
     private void setInventoryNumberMandatory(boolean isMandatory) {
         view.inventoryNumberMandatory(isMandatory);
@@ -326,12 +332,6 @@ public abstract class DocumentEditActivity
         boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
         boolean isDocFileSet = view.documentDocUploader().isFileSet();
 
-        if (project != null && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
-            if (document.getInventoryNumber() == null || document.getInventoryNumber() <= 0) {
-                return false;
-            }
-        }
-
         if (isNew && isDocFileSet && !isPdfFileSet) {
             return StringUtils.isNotEmpty(document.getName()) &&
                     document.getProjectId() != null;
@@ -346,10 +346,18 @@ public abstract class DocumentEditActivity
         if (!document.getApproved()) {
             return true;
         }
-        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+        if (needToCheckInventoryNumber(project)) {
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
+    }
+
+    private boolean needToCheckInventoryNumber(ProjectInfo project) {
+        return  view.isApproved().getValue()
+                && project != null
+                && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
+                && view.documentCategory().getValue() != null
+                && view.documentCategory().getValue() != En_DocumentCategory.ABROAD;
     }
 
     private boolean isValidApproveFields(Document document) {
@@ -460,7 +468,7 @@ public abstract class DocumentEditActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+        if (needToCheckInventoryNumber(project)) {
             if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
                 return lang.inventoryNumberIsEmpty();
             } else if (doc.getInventoryNumber() < 0) {
