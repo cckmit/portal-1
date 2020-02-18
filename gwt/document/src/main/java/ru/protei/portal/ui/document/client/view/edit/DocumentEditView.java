@@ -277,6 +277,13 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         approvedBy.setMandatory(isMandatory);
     }
 
+    @Override
+    public void setDownloadCloudsVisible (boolean isVisible){
+        downloadDoc.setVisible(isVisible);
+        downloadPdf.setVisible(isVisible);
+        downloadApproved.setVisible(isVisible);
+    }
+
     @UiHandler("equipment")
     public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
         if (activity != null)

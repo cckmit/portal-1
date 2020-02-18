@@ -100,4 +100,6 @@ public interface AbstractDocumentEditView extends IsWidget {
     void setProjectInfo(String customerType, String productDirection, String region);
 
     void setApprovalFieldsMandatory (boolean isMandatory);
+
+    void setDownloadCloudsVisible (boolean isVisible);
 }

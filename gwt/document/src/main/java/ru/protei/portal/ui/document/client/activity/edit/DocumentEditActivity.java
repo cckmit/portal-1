@@ -507,6 +507,7 @@ public abstract class DocumentEditActivity
 
         boolean isNew = document.getId() == null;
 
+        view.setDownloadCloudsVisible(!isNew);
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.executionType().setValue(document.getExecutionType());
