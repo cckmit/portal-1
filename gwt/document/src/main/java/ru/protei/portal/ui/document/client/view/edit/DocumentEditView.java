@@ -282,7 +282,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public void setApprovalFieldsMandatory (boolean isMandatory){
-        approvalDate.setMandatory(isMandatory);
+        if (isMandatory) {
+            approvalDateContainer.addClassName("required");
+        } else {
+            approvalDateContainer.removeClassName("required");
+        }
         approvedBy.setMandatory(isMandatory);
     }
 
