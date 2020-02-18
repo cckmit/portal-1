@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -32,10 +33,6 @@ public class CaseUpdaterFactory {
         return funcs.get(type);
     }
 
-    public FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> getCommentsUpdater() {
-        return funcs.get(COMMENT);
-    }
-
     private class CaseStatusUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
         public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
@@ -51,7 +48,7 @@ public class CaseUpdaterFactory {
 
                 object.setStateId(redmineStatusEntry.getLocalStatusId());
                 caseObjectDAO.merge(object);
-                logger.debug("Updated case state, old={}, new={}", En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
+                logger.debug("Updated case state for case with id {}, old={}, new={}", En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
 
                 Long stateCommentId = commonService.createAndStoreStateComment(journal.getCreatedOn(), author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId());
                 if (stateCommentId == null) {
@@ -86,7 +83,7 @@ public class CaseUpdaterFactory {
 
                 object.setImpLevel(priorityMapEntry.getLocalPriorityId());
                 caseObjectDAO.merge(object);
-                logger.debug("Updated case priority, old={}, new={}", En_ImportanceLevel.find(oldMeta.getImpLevel()), En_ImportanceLevel.find(object.getImpLevel()));
+                logger.debug("Updated case priority for case with id {}, old={}, new={}", object.getId(), En_ImportanceLevel.find(oldMeta.getImpLevel()), En_ImportanceLevel.find(object.getImpLevel()));
 
                 Long ImportanceCommentId = commonService.createAndStoreImportanceComment(journal.getCreatedOn(), author.getId(), priorityMapEntry.getLocalPriorityId(), object.getId());
                 if (ImportanceCommentId == null) {
@@ -115,7 +112,7 @@ public class CaseUpdaterFactory {
 
             object.setInfo(value);
             caseObjectDAO.merge(object);
-            logger.debug("Updated case info, old={}, new={}", infoDiff.getInitialState(), infoDiff.getNewState());
+            logger.debug("Updated case info for case with id {}, old={}, new={}", object.getId(), infoDiff.getInitialState(), infoDiff.getNewState());
 
             publisherService.publishEvent(new CaseNameAndDescriptionEvent(
                     this,
@@ -137,7 +134,7 @@ public class CaseUpdaterFactory {
 
             object.setName(value);
             caseObjectDAO.merge(object);
-            logger.debug("Updated case name, old={}, new={}", nameDiff.getInitialState(), nameDiff.getNewState());
+            logger.debug("Updated case name for case with id {}, old={}, new={}", object.getId(), nameDiff.getInitialState(), nameDiff.getNewState());
 
             publisherService.publishEvent(new CaseNameAndDescriptionEvent(
                     this,
@@ -153,10 +150,21 @@ public class CaseUpdaterFactory {
     private class CaseCommentUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
         public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
-            CaseComment caseComment = commonService.parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser()));
-            commonService.processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment);
 
-            logger.debug("Added {} new case comment to case with id {}", caseComment.getId(), object.getId());
+            final Person author = personMapper.toProteiPerson(journal.getUser());
+
+            CaseComment caseComment = commonService.createAndStoreComment(journal, author, object.getId());
+            logger.debug("Added new case comment to case with id {}, comment has following text: {}", object.getId(), caseComment.getText());
+
+            publisherService.publishEvent(new CaseCommentEvent(
+                    this,
+                    ServiceModule.REDMINE,
+                    author.getId(),
+                    object.getId(),
+                    false,
+                    null,
+                    caseComment,
+                    null));
         }
     }
 

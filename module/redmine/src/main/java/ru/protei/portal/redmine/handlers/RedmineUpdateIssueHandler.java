@@ -1,22 +1,19 @@
 package ru.protei.portal.redmine.handlers;
 
-import com.taskadapter.redmineapi.bean.Attachment;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
@@ -24,6 +21,8 @@ import ru.protei.portal.redmine.utils.CachedPersonMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.redmine.enums.RedmineChangeType.COMMENT;
 
 public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
@@ -53,7 +52,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         List<Journal> latestJournals = issue.getJournals().stream()
                 .filter(Objects::nonNull)
-                .filter(journal -> !commonService.isTechUser(endpoint, journal.getUser()))
+                .filter(journal -> !personMapper.isTechUser(endpoint, journal.getUser()))
                 .filter(journal -> journal.getCreatedOn() != null && journal.getCreatedOn().compareTo(latestCreated) > 0)
                 .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .collect(Collectors.toList());
@@ -61,8 +60,8 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         //Synchronize comments, status, priority, name, info
         latestJournals.forEach(journal -> {
-            if (journal.getNotes() != null) {
-                caseUpdaterFactory.getCommentsUpdater().apply(object, endpoint, journal, null, personMapper);
+            if (StringUtils.isNotBlank(journal.getNotes())) {
+                caseUpdaterFactory.getUpdater(COMMENT).apply(object, endpoint, journal, null, personMapper);
             }
             journal.getDetails().forEach(detail ->
                     RedmineChangeType.findByName(detail.getName())
@@ -79,9 +78,6 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Autowired
     private CaseCommentDAO caseCommentDAO;
-
-    @Autowired
-    private AttachmentDAO attachmentDAO;
 
     @Autowired
     private PersonDAO personDAO;

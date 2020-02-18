@@ -242,9 +242,6 @@ public final class RedmineServiceImpl implements RedmineService {
     private RedmineEndpointDAO redmineEndpointDAO;
 
     @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
-
-    @Autowired
     private RedmineNewIssueHandler handler;
 
     @Autowired

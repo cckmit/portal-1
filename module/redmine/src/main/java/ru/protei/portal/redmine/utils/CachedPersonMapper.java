@@ -28,15 +28,6 @@ public class CachedPersonMapper {
         this.index = new HashMap<>();
     }
 
-
-    private String emailKey (User user) {
-        return HelperFunc.isNotEmpty(user.getMail()) ? "email:" + user.getMail() : "N";
-    }
-
-    private String nameKey (User user) {
-        return HelperFunc.isNotEmpty(user.getFullName()) ? "name:" + user.getFullName() : "N";
-    }
-
     public Person toProteiPerson(User user) {
         if (user == null) {
             if (defaultEntryPointUser == null) {
@@ -59,6 +50,17 @@ public class CachedPersonMapper {
         return person;
     }
 
+    public boolean isTechUser(RedmineEndpoint endpoint, User user) {
+        return user != null && user.getId().equals(endpoint.getDefaultUserId());
+    }
+
+    private String emailKey (User user) {
+        return HelperFunc.isNotEmpty(user.getMail()) ? "email:" + user.getMail() : "N";
+    }
+
+    private String nameKey (User user) {
+        return HelperFunc.isNotEmpty(user.getFullName()) ? "name:" + user.getFullName() : "N";
+    }
 
     private Person mapPerson (RedmineEndpoint endpoint, User user) {
         Person person = null;
