@@ -363,7 +363,6 @@ public abstract class DocumentEditActivity
                         saveDocument(document, doc -> {
                             fillView(doc);
                             isDocumentCreationInProgress = false;
-                            //fireEvent(new DocumentEvents.Form.Saved(tag));
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new DocumentEvents.ChangeModel());
                             fireEvent(new Back());
@@ -521,6 +520,7 @@ public abstract class DocumentEditActivity
         view.nameValidator().setValid(true);
         view.documentDocUploader().resetForm();
         view.documentPdfUploader().resetForm();
+        view.documentApprovalSheetUploader().resetForm();
 
         boolean isApproved = view.isApproved().getValue();
         view.approvedBy().setValue(!isApproved || document.getApprovedBy() == null ? null : document.getApprovedBy().toShortNameShortView());
