@@ -10,6 +10,8 @@ public interface AbstractDocumentEditActivity {
 
     void onDownloadPdf();
 
+    void onDownloadApproved();
+
     void onDownloadDoc();
 
     void onApprovedChanged();

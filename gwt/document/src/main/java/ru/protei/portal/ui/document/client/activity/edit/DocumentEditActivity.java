@@ -208,6 +208,12 @@ public abstract class DocumentEditActivity
     }
 
     @Override
+    public void onDownloadApproved() {
+        if (document == null) return;
+        Window.open(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId() + "/as", document.getName(), "");
+    }
+
+    @Override
     public void onApprovedChanged() {
         setApprovedByEnable(view.isApproved().getValue());
         setApprovalDateEnable(view.isApproved().getValue());

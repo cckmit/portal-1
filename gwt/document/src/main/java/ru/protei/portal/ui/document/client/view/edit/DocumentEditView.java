@@ -306,6 +306,14 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         }
     }
 
+    @UiHandler("downloadApproved")
+    public void downloadApprovedClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onDownloadApproved();
+        }
+    }
+
     @UiHandler("approved")
     public void onApprovedChanged(ValueChangeEvent<Boolean> event) {
         if (activity != null)
