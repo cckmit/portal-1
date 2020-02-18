@@ -298,7 +298,9 @@ public abstract class DocumentEditActivity
         if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD) {
             return false;
         }
-       return true;
+        En_CustomerType customerType = project.getCustomerType();
+        return customerType == En_CustomerType.MINISTRY_OF_DEFENCE ||
+                customerType == En_CustomerType.STATE_BUDGET;
     }
     private boolean isEquipmentVisible(ProjectInfo project, En_DocumentCategory documentCategory) {
         if (project == null || documentCategory == null) {
