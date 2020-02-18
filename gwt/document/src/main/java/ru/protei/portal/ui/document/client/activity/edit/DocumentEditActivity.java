@@ -603,7 +603,9 @@ public abstract class DocumentEditActivity
 
     private void setButtonsEnabled (boolean isEnabled){
         view.setButtonsEnabled(isEnabled);
-        fireEvent(new DocumentEvents.ChangeButtonsEnabled(isEnabled));
+        if (isPartOfWizardWidget) {
+            fireEvent(new DocumentEvents.ChangeButtonsEnabled(isEnabled));
+        }
     }
 
     @Inject
