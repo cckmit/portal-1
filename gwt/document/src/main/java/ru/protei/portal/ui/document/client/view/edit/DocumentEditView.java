@@ -238,6 +238,15 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public void inventoryNumberMandatory(boolean isMandatory) {
+        if (isMandatory) {
+            inventoryNumberContainer.addClassName("required");
+        } else {
+            inventoryNumberContainer.removeClassName("required");
+        }
+    }
+
+    @Override
     public void uploaderApprovalSheetEnabled(boolean isEnabled) {
         documentApprovedUploader.setEnabled(isEnabled);
     }

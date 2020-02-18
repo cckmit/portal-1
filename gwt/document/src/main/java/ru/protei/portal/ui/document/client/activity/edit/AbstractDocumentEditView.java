@@ -81,6 +81,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void approvalDateEnabled(boolean isEnabled);
 
+    void inventoryNumberMandatory(boolean isMandatory);
+
     void uploaderApprovalSheetEnabled(boolean isEnabled);
 
     AbstractDocumentUploader documentDocUploader();

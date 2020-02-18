@@ -252,6 +252,7 @@ public abstract class DocumentEditActivity
         setDocumentTypeEnabled(documentCategory != null);
         setDecimalNumberEnabled(isDesignationEnabled);
         setInventoryNumberEnabled(isDesignationEnabled);
+        setInventoryNumberMandatory(isDesignationEnabled && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
     private void setDecimalNumberEnabled(boolean isEnabled) {
@@ -259,6 +260,9 @@ public abstract class DocumentEditActivity
     }
     private void setInventoryNumberEnabled(boolean isEnabled) {
         view.inventoryNumberEnabled(isEnabled);
+    }
+    private void setInventoryNumberMandatory(boolean isMandatory) {
+        view.inventoryNumberMandatory(isMandatory);
     }
     private void setEquipmentEnabled(boolean isEnabled) {
         view.equipmentEnabled(isEnabled && isEquipmentEnabled);
@@ -321,6 +325,13 @@ public abstract class DocumentEditActivity
         boolean isNew = document.getId() == null;
         boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
         boolean isDocFileSet = view.documentDocUploader().isFileSet();
+
+        if (project != null && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+            if (document.getInventoryNumber() == null || document.getInventoryNumber() <= 0) {
+                return false;
+            }
+        }
+
         if (isNew && isDocFileSet && !isPdfFileSet) {
             return StringUtils.isNotEmpty(document.getName()) &&
                     document.getProjectId() != null;
@@ -434,9 +445,18 @@ public abstract class DocumentEditActivity
     }
 
     private String getValidationErrorMessage(Document doc) {
+        if (HelperFunc.isEmpty(doc.getName())) {
+            return lang.documentNameIsNotSet();
+        }
+
+        if (doc.getType() == null && (view.documentCategory() == null || view.documentCategory().getValue() == null)) {
+            return lang.documentCategoryIsEmpty();
+        }
+
         if (doc.getType() == null) {
             return lang.documentTypeIsEmpty();
         }
+
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
@@ -446,9 +466,6 @@ public abstract class DocumentEditActivity
             } else if (doc.getInventoryNumber() < 0) {
                 return lang.negativeInventoryNumber();
             }
-        }
-        if (HelperFunc.isEmpty(doc.getName())) {
-            return lang.documentNameIsNotSet();
         }
         if (doc.getApproved()) {
             if (doc.getApprovedBy() == null || doc.getApprovalDate() == null) {
