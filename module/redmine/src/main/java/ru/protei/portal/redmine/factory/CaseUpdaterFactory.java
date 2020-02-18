@@ -156,7 +156,7 @@ public class CaseUpdaterFactory {
             CaseComment caseComment = commonService.parseJournalToCaseComment(journal, personMapper.toProteiPerson(journal.getUser()));
             commonService.processStoreComment(caseComment.getAuthor().getId(), object.getId(), caseComment);
 
-            logger.debug("Added {} new case comments to case with id {}", caseComment.getId(), object.getId());
+            logger.debug("Added {} new case comment to case with id {}", caseComment.getId(), object.getId());
         }
     }
 

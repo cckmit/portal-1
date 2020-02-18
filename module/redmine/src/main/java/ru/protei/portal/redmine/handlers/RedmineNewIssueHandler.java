@@ -69,7 +69,7 @@ public class RedmineNewIssueHandler implements RedmineEventHandler {
         publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
         commonService.processComments(issue.getJournals(), personMapper, obj);
-        commonService.processAttachments(issue.getAttachments(), personMapper, obj, endpoint);
+        commonService.processAttachments(issue, personMapper, obj, endpoint);
 
         return obj;
     }

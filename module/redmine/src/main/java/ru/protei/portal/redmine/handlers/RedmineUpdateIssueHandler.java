@@ -40,37 +40,6 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         }
     }
 
-    public void handleUpdateCreationDateAttachments(Issue issue, Long caseObjId) {
-        commonService.processUpdateCreationDateAttachments(issue, caseObjId);
-    }
-
-    public void handleUpdateAttachmentsByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
-        final CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
-        final CaseObject object = caseObjectDAO.get(caseId);
-        commonService.processAttachments(issue.getAttachments(), personMapper, object, endpoint);
-    }
-
-    public void handleUpdateCaseObjectByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
-        final CaseObject object = caseObjectDAO.get(caseId);
-        compareAndUpdate(issue, object, endpoint);
-    }
-
-    public void handleUpdatePriorityByIssue(Issue issue, Long caseId, RedmineEndpoint endpoint) {
-        final CaseObject object = caseObjectDAO.get(caseId);
-        issue.getJournals()
-                .stream()
-                .filter(Objects::nonNull)
-                .sorted(Comparator.comparing(Journal::getCreatedOn))
-                .forEach(journal -> journal.getDetails()
-                        .stream()
-                        .filter(detail -> detail.getName().equals(RedmineChangeType.PRIORITY_CHANGE.getName()))
-                        .forEach(detail -> {
-                            caseUpdaterFactory
-                                    .getUpdater(RedmineChangeType.findByName(detail.getName()).get())
-                                    .apply(object, endpoint, journal, detail.getNewValue(), null);
-                        }));
-    }
-
     private void compareAndUpdate(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
         CachedPersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, null);
 
@@ -84,13 +53,13 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         List<Journal> latestJournals = issue.getJournals().stream()
                 .filter(Objects::nonNull)
-                .filter(journal -> !journal.getUser().getId().equals(endpoint.getDefaultUserId()))
+                .filter(journal -> !commonService.isTechUser(endpoint, journal.getUser()))
                 .filter(journal -> journal.getCreatedOn() != null && journal.getCreatedOn().compareTo(latestCreated) > 0)
                 .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .collect(Collectors.toList());
         logger.debug("Got {} journals after {}", latestJournals.size(), endpoint.getLastUpdatedOnDate());
 
-        //Synchronize comments
+        //Synchronize comments, status, priority, name, info
         latestJournals.forEach(journal -> {
             if (journal.getNotes() != null) {
                 caseUpdaterFactory.getCommentsUpdater().apply(object, endpoint, journal, null, personMapper);
@@ -102,25 +71,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         });
 
         //Synchronize attachment
-        logger.debug("Trying to get latest synchronized attachment");
-        PersonQuery personQuery = new PersonQuery();
-        personQuery.setCompanyIds(new HashSet<>(Collections.singletonList(endpoint.getCompanyId())));
-        List<Long> redminePersons = personDAO.getPersons(personQuery).stream().map(Person::getId).collect(Collectors.toList());
-
-        Date latestCreatedAttach = attachmentDAO.getListByCaseId(object.getId()).stream()
-                .filter(attachment -> redminePersons.contains(attachment.getCreatorId()))
-                .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
-                .map(ru.protei.portal.core.model.ent.Attachment::getCreated)
-                .orElse(issue.getCreatedOn());
-        logger.debug("Last attachment was synced on {}", latestCreated);
-
-        List<Attachment> latestAttachments = issue.getAttachments().stream()
-                .filter(Objects::nonNull)
-                .filter(attachment -> !attachment.getAuthor().getId().equals(endpoint.getDefaultUserId()))
-                .filter(attachment -> attachment.getCreatedOn() != null && attachment.getCreatedOn().compareTo(latestCreatedAttach) > 0)
-                .sorted(Comparator.comparing(Attachment::getCreatedOn))
-                .collect(Collectors.toList());
-        commonService.processAttachments(latestAttachments, personMapper, object, endpoint);
+        commonService.processAttachments(issue, personMapper, object, endpoint);
     }
 
     @Autowired

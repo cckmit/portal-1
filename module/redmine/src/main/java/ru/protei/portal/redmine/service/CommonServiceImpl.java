@@ -2,6 +2,7 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
+import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +36,13 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processAttachments(Collection<com.taskadapter.redmineapi.bean.Attachment> attachments, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint) {
+    public void processAttachments(Issue issue, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
-        if (CollectionUtils.isNotEmpty(attachments)) {
+        if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
             logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
-            attachments.stream()
-                    .filter(attachment -> !attachment.getAuthor().getId().equals(endpoint.getDefaultUserId()))
+            issue.getAttachments().stream()
+                    .filter(attachment -> !isTechUser(endpoint, attachment.getAuthor()))
                     .filter(attachment -> !existingAttachmentsHashCodes.contains(toHashCode(attachment)))
                     .forEach(attachment -> {
                         final Person author = personMapper.toProteiPerson(attachment.getAuthor());
@@ -86,20 +87,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processUpdateCreationDateAttachments(Issue issue, Long caseObjId) {
-        final List<Attachment> existingAttachments = attachmentDAO.getListByCaseId(caseObjId);
-        if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachments)) {
-            logger.debug("Process update creation date of attachments for case object with id {}", caseObjId);
-            existingAttachments.forEach(attachment ->
-                issue.getAttachments().stream()
-                        .filter(y -> y.getFileName().equals(attachment.getFileName()) && y.getFileSize().equals(attachment.getDataSize()))
-                        .findFirst()
-                        .ifPresent(redmineAttachment -> attachment.setCreated(redmineAttachment.getCreatedOn())));
-        }
-        attachmentDAO.mergeBatch(existingAttachments);
-    }
-
-    @Override
     public CaseComment processStoreComment(Long authorId, Long caseObjectId, CaseComment comment) {
         comment.setCaseId(caseObjectId);
         caseCommentDAO.saveOrUpdate(comment);
@@ -128,6 +115,11 @@ public final class CommonServiceImpl implements CommonService {
         stateChangeMessage.setCaseImpLevel(importance);
         stateChangeMessage.setCaseId(caseId);
         return caseCommentDAO.persist(stateChangeMessage);
+    }
+
+    @Override
+    public boolean isTechUser(RedmineEndpoint endpoint, User user) {
+        return user != null && user.getId().equals(endpoint.getDefaultUserId());
     }
 
     private Set<Integer> getExistingAttachmentsHashCodes(long caseObjId) {
