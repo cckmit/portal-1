@@ -65,6 +65,11 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onTopBrassClicked(ActionBarEvents.Clicked event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
         if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
             return;
         }
