@@ -39,7 +39,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
         boolean isCreationMode = caseTag.getId() == null;
         boolean isSameTag = Objects.equals(caseTag.getPersonId(), policyService.getProfile().getId());
-        boolean isAllowedChangeCompany = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
+        boolean isAllowedChangeCompany = isSameTag && policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
 
         // создавать могут все с привилегией ISSUE_EDIT. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
         // редактируем/удаляем только свои кейсы
