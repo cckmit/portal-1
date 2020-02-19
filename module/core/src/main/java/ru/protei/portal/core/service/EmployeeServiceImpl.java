@@ -148,12 +148,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<PersonShortView> getDepartmentHead(AuthToken token, Long workerEntryId) {
-        if (workerEntryId == null) {
+    public Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId) {
+        if (departmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Person head = personDAO.getDepartmentHeadByWorkerEntryId(workerEntryId);
+        Person head = personDAO.getDepartmentHeadByWorkerEntryId(departmentId);
 
         return ok(head == null ? null : head.toFullNameShortView());
     }

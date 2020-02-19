@@ -37,6 +37,9 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn(name="active")
     private int activeFlag;
 
+    @JdbcColumn(name = "dep_id")
+    private Long depId;
+
     public Long getId() {
         return id;
     }
@@ -103,6 +106,14 @@ public class WorkerEntryShortView implements Serializable {
 
     public boolean isMain() {
         return activeFlag > 0;
+    }
+
+    public Long getDepId() {
+        return depId;
+    }
+
+    public void setDepId(Long depId) {
+        this.depId = depId;
     }
 
     @Override

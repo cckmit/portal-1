@@ -40,7 +40,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         view.getPositionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
-        entryFacade.getSortedEntries().forEach( workerEntry -> employeeService.getDepartmentHead(workerEntry.getId(), new FluentCallback<PersonShortView>()
+        entryFacade.getSortedEntries().forEach( workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
                     AbstractPositionItemView itemView = makeView( workerEntry, head == null ? null : head.getName());
                     view.getPositionsContainer().add( itemView.asWidget() );
