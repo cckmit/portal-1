@@ -101,10 +101,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private void showActionBarActions() {
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new ActionBarEvents.Add(lang.dashboardAddTable(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE));
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.issueCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE));
         }
+        fireEvent(new ActionBarEvents.Add(lang.dashboardAddTable(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE));
     }
 
     private void showLoader() {
