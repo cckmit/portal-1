@@ -153,7 +153,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Person head = personDAO.getDepartmentHeadByWorkerEntryId(departmentId);
+        Person head = personDAO.getDepartmentHeadByDepartmentId(departmentId);
 
         return ok(head == null ? null : head.toFullNameShortView());
     }

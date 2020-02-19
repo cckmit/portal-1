@@ -127,6 +127,7 @@ public class WorkerEntryShortView implements Serializable {
                 ", departmentName='" + departmentName + '\'' +
                 ", positionName='" + positionName + '\'' +
                 ", activeFlag=" + activeFlag +
+                ", depId=" + depId +
                 '}';
     }
 }

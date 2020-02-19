@@ -171,8 +171,8 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
-    public Person getDepartmentHeadByWorkerEntryId(Long departmentId) {
-        String sql = "Person.id = (SELECT personId FROM worker_entry where id = (SELECT head_id FROM company_dep WHERE dep_id = ?))";
+    public Person getDepartmentHeadByDepartmentId(Long departmentId) {
+        String sql = "Person.id = (SELECT personId FROM worker_entry where id IN (SELECT head_id FROM company_dep WHERE dep_id = ?))";
 
         return getByCondition(sql, departmentId);
     }
