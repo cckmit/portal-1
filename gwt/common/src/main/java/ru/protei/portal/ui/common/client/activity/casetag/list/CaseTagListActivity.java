@@ -37,7 +37,7 @@ public abstract class   CaseTagListActivity
         event.parent.add(view.asWidget());
 
         view.getTagsContainer().clear();
-        view.setTagsAddButtonEnabled(event.isAddNewTagEnabled);
+        view.setTagsAddButtonEnabled(event.isEditTagEnabled);
         view.setTagsEditButtonEnabled(event.isEditTagEnabled);
         view.setType(show.caseType);
         hideOrShowIfNoTags();
