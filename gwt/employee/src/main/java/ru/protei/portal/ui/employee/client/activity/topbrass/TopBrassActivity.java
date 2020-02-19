@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
+import ru.protei.portal.core.model.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemView;
@@ -77,7 +77,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
     @Inject
     Provider<AbstractTopBrassItemView> provider;
 
-    private final EmployeeQuery employeeQuery = new EmployeeQuery(TopBrassPersonIdsUtil.getPersonIds());
+    private final EmployeeQuery employeeQuery = new EmployeeQuery(true);
 
     private AppEvents.InitDetails init;
 }

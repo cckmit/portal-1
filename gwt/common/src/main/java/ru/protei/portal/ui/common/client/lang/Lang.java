@@ -2040,5 +2040,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeBackToEmployees();
 
-    String employeeTopBrass();
+    String employeeTopBrassBtn();
+
+    String employeeTopBrassLabel();
 }

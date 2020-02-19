@@ -78,6 +78,11 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue<Boolean> showTopBrass() {
+        return showTopBrass;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
@@ -88,6 +93,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         email.setValue( "" );
         department.setValue( "" );
         showFired.setValue(false);
+        showTopBrass.setValue(false);
     }
 
     @UiHandler( "resetBtn" )
@@ -147,6 +153,13 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         fireChangeTimer();
     }
 
+    @UiHandler("showTopBrass")
+    public void onShowTopBrassClicked(ClickEvent event) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
@@ -183,6 +196,9 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     CheckBox showFired;
+
+    @UiField
+    CheckBox showTopBrass;
 
     @Inject
     @UiField

@@ -20,5 +20,7 @@ public interface AbstractEmployeeFilterView extends IsWidget {
     HasValue< Boolean > showFired();
 
 
+    HasValue<Boolean> showTopBrass();
+
     void resetFilter();
 }

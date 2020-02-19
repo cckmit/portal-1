@@ -13,10 +13,8 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
-import ru.protei.winter.web.common.client.events.MenuEvents;
 
 public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivity, AbstractEmployeeFilterActivity, Activity {
     @PostConstruct
@@ -47,7 +45,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
         ));
 
-        fireEvent(new ActionBarEvents.Add(lang.employeeTopBrass(), "", UiConstants.ActionBarIdentity.TOP_BRASS));
+        fireEvent(new ActionBarEvents.Add(lang.employeeTopBrassBtn(), "", UiConstants.ActionBarIdentity.TOP_BRASS));
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
@@ -94,7 +92,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
+                filterView.showTopBrass().getValue());
     }
 
 

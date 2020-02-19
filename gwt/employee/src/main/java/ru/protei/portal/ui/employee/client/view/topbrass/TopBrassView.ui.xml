@@ -5,7 +5,7 @@
 
     <g:HTMLPanel styleName="top-brass">
         <h2 class="text-center">
-            <ui:text from="{lang.employeeTopBrass}"/>
+            <ui:text from="{lang.employeeTopBrassLabel}"/>
         </h2>
         <div class="top-brass-containers">
             <g:HTMLPanel ui:field="topContainer" styleName="top-brass-top-container row"/>

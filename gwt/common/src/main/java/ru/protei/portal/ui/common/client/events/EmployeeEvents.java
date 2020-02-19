@@ -50,7 +50,7 @@ public class EmployeeEvents {
     /**
      * Показать руководство
      */
-    @Url( value = "topbrass", primary = true )
+    @Url(value = "topbrass")
     public static class ShowTopBrass {}
 
     public static class UpdateData {

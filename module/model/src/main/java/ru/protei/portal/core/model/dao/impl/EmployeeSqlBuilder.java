@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.TopBrassPersonIdsUtil;
 
 public class EmployeeSqlBuilder {
 
@@ -12,8 +13,8 @@ public class EmployeeSqlBuilder {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
-            if (CollectionUtils.isNotEmpty(query.getIds())) {
-                condition.append(" and Person.id in " + HelperFunc.makeInArg(query.getIds()));
+            if (query.getTopBrass()) {
+                condition.append(" and Person.id in " + HelperFunc.makeInArg(TopBrassPersonIdsUtil.getPersonIds()));
             }
 
             if (query.getFired() != null) {

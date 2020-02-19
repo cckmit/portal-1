@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.util;
+package ru.protei.portal.core.model.util;
 
 import java.util.Arrays;
 import java.util.List;
