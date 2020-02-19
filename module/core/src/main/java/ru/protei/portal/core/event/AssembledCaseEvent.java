@@ -194,19 +194,17 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
     }
 
-//    @Deprecated
-//    public void includeCaseComments (List<CaseComment> commentList) {
-//        comments.putAddedEntries( commentList );
-//        lastUpdated = currentTimeMillis();
-//    }
+    public void putAddedComments( List<CaseComment> commentList) {
+        comments.putAddedEntries( commentList );
+        lastUpdated = currentTimeMillis();
+    }
 
-//    @Deprecated
-//    public void includeCaseAttachments (List<Attachment> attachments1) {
-//        this.lastUpdated = currentTimeMillis();
-//        DiffCollectionResult<Attachment> diff = new DiffCollectionResult<>();
-//        diff.putAddedEntries( attachments1 );
-//        attachments = synchronizeDiffs( attachments, diff, Attachment::getId );
-//    }
+    public void putAddedAttachments( List<Attachment> attachments1) {
+        this.lastUpdated = currentTimeMillis();
+        DiffCollectionResult<Attachment> diff = new DiffCollectionResult<>();
+        diff.putAddedEntries( attachments1 );
+        attachments = synchronizeDiffs( attachments, diff, Attachment::getId );
+    }
 
     public List<CaseComment> getAddedCaseComments() {
         return comments.getAddedEntries();

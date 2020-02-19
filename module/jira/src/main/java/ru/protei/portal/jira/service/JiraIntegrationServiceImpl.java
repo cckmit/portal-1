@@ -7,14 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
-import ru.protei.portal.core.event.CaseObjectCreateEvent;
-import ru.protei.portal.core.event.CaseObjectMetaEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -148,8 +144,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
             JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
-            caseEvent.includeCaseComments(processComments(endpoint.getServerLogin(), issue.getComments(), caseObj, personMapper, jiraExtAppData));
-            caseEvent.includeCaseAttachments(processAttachments(endpoint, issue.getKey(), issue.getAttachments(), caseObj, jiraExtAppData, personMapper));
+            caseEvent.putAddedComments(processComments(endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData));
+            caseEvent.putAddedAttachments(processAttachments(endpoint, issue.getKey(), issue.getAttachments(), caseObj, jiraExtAppData, personMapper));
 
             jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
@@ -184,7 +180,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
 
-        List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj, personMapper, jiraExtAppData );
+        List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData );
         List<ru.protei.portal.core.model.ent.Attachment> attachments = processAttachments( endpoint, issue.getKey(), issue.getAttachments(), caseObj, jiraExtAppData, personMapper );
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
@@ -201,8 +197,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, authorId, caseObj );
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent( caseObjectCreateEvent );
         caseEvent.attachCaseObjectCreateEvent( caseObjectCreateEvent );
-        caseEvent.includeCaseComments(caseComments);
-        caseEvent.includeCaseAttachments(attachments);
+        caseEvent.putAddedComments(caseComments);
+        caseEvent.putAddedAttachments(attachments);
 
         return caseEvent;
     }
@@ -224,7 +220,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return caseObj;
     }
 
-    private List<CaseComment> processComments(String serverLogin, Iterable<Comment> comments, CaseObject caseObj, PersonMapper personMapper, JiraExtAppData state) {
+    private List<CaseComment> processComments(String serverLogin, Iterable<Comment> comments, Long caseObjectId, PersonMapper personMapper, JiraExtAppData state) {
 //        logger.debug("process comments on {}", issue.getKey());
 
         if (comments == null) {
@@ -245,7 +241,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 continue;
             }
 
-            CaseComment caseComment = convertComment(caseObj, personMapper, comment);
+            CaseComment caseComment = convertComment(caseObjectId, personMapper, comment);
 
             logger.debug("add new comment, id = {}", comment.getId());
             state.appendComment(comment.getId());
@@ -377,9 +373,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
     }
 
-    private CaseComment convertComment(CaseObject caseObj, PersonMapper personMapper, Comment comment) {
+    private CaseComment convertComment(Long caseObjectId, PersonMapper personMapper, Comment comment) {
         CaseComment our = new CaseComment();
-        our.setCaseId(caseObj.getId());
+        our.setCaseId(caseObjectId);
         our.setAuthor(personMapper.toProteiPerson(fromBasicUserInfo(comment.getAuthor())));
         our.setCreated(comment.getCreationDate().toDate());
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
