@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.core.model.util.TopBrassPersonIdsUtil;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemView;
@@ -37,7 +37,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
         view.bottomContainer().clear();
 
         employeeService.getEmployees(employeeQuery, new FluentCallback<SearchResult<EmployeeShortView>>()
-                .withSuccess(result -> result.getResults().forEach(this::fillView))
+                .withSuccess(this::fillView)
         );
     }
 
@@ -46,8 +46,12 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
         fireEvent(new EmployeeEvents.Show());
     }
 
+    private void fillView(SearchResult<EmployeeShortView> heads) {
+        heads.getResults().forEach(this::fillView);
+    }
+
     private void fillView(EmployeeShortView head) {
-        AbstractTopBrassItemView itemView = makeView(head);
+        AbstractTopBrassItemView itemView = makeItem(head);
 
         if (TopBrassPersonIdsUtil.getTopIds().contains(head.getId())) {
             view.topContainer().add(itemView.asWidget());
@@ -58,7 +62,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
         }
     }
 
-    private AbstractTopBrassItemView makeView(EmployeeShortView head) {
+    private AbstractTopBrassItemView makeItem(EmployeeShortView head) {
         AbstractTopBrassItemView itemView = provider.get();
         itemView.setActivity(this);
         itemView.setImage(AvatarUtils.getPhotoUrl(head.getId()));
@@ -77,7 +81,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
     @Inject
     Provider<AbstractTopBrassItemView> provider;
 
-    private final EmployeeQuery employeeQuery = new EmployeeQuery(true);
+    private final EmployeeQuery employeeQuery = new EmployeeQuery(TopBrassPersonIdsUtil.getPersonIds());
 
     private AppEvents.InitDetails init;
 }

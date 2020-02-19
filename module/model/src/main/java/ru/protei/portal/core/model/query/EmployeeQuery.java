@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public class EmployeeQuery extends BaseQuery {
 
-    private Boolean fired;
+    private List<Long> ids;
 
-    private Boolean topBrass;
+    private Boolean fired;
 
     private Boolean deleted;
 
@@ -36,8 +36,8 @@ public class EmployeeQuery extends BaseQuery {
         fired = false;
     }
 
-    public EmployeeQuery(Boolean topBrass) {
-        this.topBrass = topBrass;
+    public EmployeeQuery(List<Long> ids) {
+        this.ids = ids;
     }
 
     public EmployeeQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
@@ -48,7 +48,7 @@ public class EmployeeQuery extends BaseQuery {
         this(fired, deleted, onlyPeople, null, null, null, null, null, null, null, sortField, sortDir, null);
     }
 
-    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir, Boolean topBrass) {
+    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir, List<Long> ids) {
         super(searchString, sortField, sortDir);
         this.fired = fired;
         this.deleted = deleted;
@@ -60,7 +60,7 @@ public class EmployeeQuery extends BaseQuery {
         this.email = email;
         this.departmentParent = departmentParent;
         this.limit = 1000;
-        this.topBrass = topBrass;
+        this.ids = ids;
     }
 
     public Boolean getFired() {
@@ -135,12 +135,12 @@ public class EmployeeQuery extends BaseQuery {
         this.departmentParent = departmentParent;
     }
 
-    public Boolean getTopBrass() {
-        return topBrass;
+    public List<Long> getIds() {
+        return ids;
     }
 
-    public void setTopBrass(Boolean topBrass) {
-        this.topBrass = topBrass;
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
     }
 
     @Override
