@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetActivity;
-
-import java.util.Objects;
 
 public abstract class DocumentCreateActivity implements Activity, AbstractDocumentCreateActivity, WizardWidgetActivity {
 
@@ -45,7 +42,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
     }
 
     @Event
-    public void onChangeButtonsEnabled(DocumentEvents.ChangeButtonsEnabled event) {
+    public void onChangeButtonsEnabled(DocumentEvents.SetButtonsEnabled event) {
         view.setWizardButtonsEnabled(event.isEnabled);
     }
 

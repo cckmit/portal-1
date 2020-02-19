@@ -57,10 +57,7 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        isMembersEnabled = true;
-        isExecutionTypeEnabled = true;
-        isEquipmentEnabled = true;
-        isProjectEnabled = true;
+        view.membersEnabled(true);
 
         drawView(event.parent, true);
         fillView(event.document);
@@ -68,7 +65,7 @@ public abstract class DocumentEditActivity
 
     @Event(Type.FILL_CONTENT)
     public void onEquipmentCreate(DocumentEvents.CreateWithEquipment event){
-        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_CREATE)){
+        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
@@ -78,10 +75,8 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        isMembersEnabled = false;
-        isExecutionTypeEnabled = false;
-        isEquipmentEnabled = false;
-        isProjectEnabled = false;
+        view.membersEnabled(false);
+
 
         drawView(initDetails.parent, false);
         Document document = makeDocumentFromEvent(event);
@@ -90,50 +85,22 @@ public abstract class DocumentEditActivity
 
     @Event(Type.FILL_CONTENT)
     public void onEdit(DocumentEvents.Edit event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+        if (!event.isFromEquipment && !policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
 
-        isMembersEnabled = true;
-        isExecutionTypeEnabled = true;
-        isEquipmentEnabled = true;
-        isProjectEnabled = false;
-
-        drawView(initDetails.parent, false);
-        requestDocumentAndFillView(event.id, this::fillView);
-    }
-
-    @Event(Type.FILL_CONTENT)
-    public void onEquipmentEdit(DocumentEvents.EditFromEquipment event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
+        if (event.isFromEquipment && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
 
-        isMembersEnabled = false;
-        isExecutionTypeEnabled = false;
-        isEquipmentEnabled = false;
-        isProjectEnabled = false;
+        view.membersEnabled(!event.isFromEquipment);
+        view.projectEnabled(false);
 
         drawView(initDetails.parent, false);
         requestDocumentAndFillView(event.id, this::fillView);
     }
-
-    private Document makeDocumentFromEvent(DocumentEvents.CreateWithEquipment event) {
-        Document document = new Document();
-        document.setApproved(false);
-        document.setProjectId(event.projectId);
-        document.setProjectName(event.projectName);
-        return document;
-    }
-
-    private void drawView(HasWidgets container, boolean isFromWizard) {
-        container.clear();
-        container.add(view.asWidget());
-        isPartOfWizardWidget = isFromWizard;
-    }
-
 
     @Event
     public void onSave(DocumentEvents.Save event) {
@@ -175,13 +142,6 @@ public abstract class DocumentEditActivity
                 view.equipment().setValue(null, true);
             }
         });
-    }
-
-    private void onProjectChanged(ProjectInfo project) {
-        this.project = project;
-        fillViewProjectInfo(project);
-        renderViewState(project);
-        view.setEquipmentProjectIds(project == null || project.getId() == null ? Collections.emptySet() : EquipmentModel.makeProjectIds(project.getId()));
     }
 
     @Override
@@ -233,6 +193,27 @@ public abstract class DocumentEditActivity
             saveDocument(fillDto(document));
     }
 
+    private void onProjectChanged(ProjectInfo project) {
+        this.project = project;
+        fillViewProjectInfo(project);
+        renderViewState(project);
+        view.setEquipmentProjectIds(project == null || project.getId() == null ? Collections.emptySet() : EquipmentModel.makeProjectIds(project.getId()));
+    }
+
+    private Document makeDocumentFromEvent(DocumentEvents.CreateWithEquipment event) {
+        Document document = new Document();
+        document.setApproved(false);
+        document.setProjectId(event.projectId);
+        document.setProjectName(event.projectName);
+        return document;
+    }
+
+    private void drawView(HasWidgets container, boolean isFromWizard) {
+        container.clear();
+        container.add(view.asWidget());
+        isPartOfWizardWidget = isFromWizard;
+    }
+
     private void requestProject(long projectId, Consumer<ProjectInfo> consumer) {
         regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>()
                 .withSuccess(consumer));
@@ -266,10 +247,10 @@ public abstract class DocumentEditActivity
         }
     }
     private void setInventoryNumberMandatory(boolean isMandatory) {
-        view.inventoryNumberMandatory(isMandatory);
+        view.setInventoryNumberMandatory(isMandatory);
     }
     private void setEquipmentEnabled(boolean isEnabled) {
-        view.equipmentEnabled(isEnabled && isEquipmentEnabled);
+        view.equipmentEnabled(isEnabled);
     }
     private void setDocumentTypeEnabled(boolean isEnabled) {
         view.documentTypeEnabled(isEnabled);
@@ -580,10 +561,6 @@ public abstract class DocumentEditActivity
         }
 
         view.drawInWizardContainer(isPartOfWizardWidget);
-        view.membersEnabled(isMembersEnabled);
-        view.executionTypeEnabled(isExecutionTypeEnabled);
-        view.projectEnabled(isProjectEnabled);
-
     }
 
     private void fillViewProjectInfo(ProjectInfo project) {
@@ -604,7 +581,7 @@ public abstract class DocumentEditActivity
     private void setButtonsEnabled (boolean isEnabled){
         view.setButtonsEnabled(isEnabled);
         if (isPartOfWizardWidget) {
-            fireEvent(new DocumentEvents.ChangeButtonsEnabled(isEnabled));
+            fireEvent(new DocumentEvents.SetButtonsEnabled(isEnabled));
         }
     }
 
@@ -631,9 +608,4 @@ public abstract class DocumentEditActivity
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
     private AppEvents.InitDetails initDetails;
     private List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>(Arrays.asList(En_DocumentCategory.values()));
-
-    private boolean isMembersEnabled = true;
-    private boolean isExecutionTypeEnabled = true;
-    private boolean isEquipmentEnabled = true;
-    private boolean isProjectEnabled = true;
 }

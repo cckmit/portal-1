@@ -45,6 +45,7 @@ public class DocumentEvents {
     public static class Edit {
 
         public Long id;
+        public Boolean isFromEquipment = false;
 
         public Edit() {}
 
@@ -52,20 +53,9 @@ public class DocumentEvents {
             this.id = id;
         }
 
-        public static Edit byId(Long id) {
-            return new Edit(id);
-        }
-    }
-
-    @Url("doc-edit-from-equipment")
-    public static class EditFromEquipment {
-
-        public Long id;
-
-        public EditFromEquipment() {}
-
-        public EditFromEquipment(Long id) {
+        public Edit(Long id, Boolean isFromEquipment) {
             this.id = id;
+            this.isFromEquipment = isFromEquipment;
         }
 
         public static Edit byId(Long id) {
@@ -73,19 +63,17 @@ public class DocumentEvents {
         }
     }
 
-    @Url("doc-create")
+    @Url("doc_create")
     public static class Create {
         public Create() {
         }
     }
 
-    public static class ChangeButtonsEnabled {
+    public static class SetButtonsEnabled {
 
-        public boolean isEnabled = true;
+        public boolean isEnabled;
 
-        @Deprecated
-        public ChangeButtonsEnabled() { }
-        public ChangeButtonsEnabled(boolean isEnabled) {
+        public SetButtonsEnabled(boolean isEnabled) {
             this.isEnabled = isEnabled;
         }
     }
@@ -112,7 +100,7 @@ public class DocumentEvents {
         }
     }
 
-    @Url(value = "doc-create-with-equipment")
+    @Url(value = "doc_create_with_equipment")
     public static class CreateWithEquipment {
         public CreateWithEquipment() {}
 

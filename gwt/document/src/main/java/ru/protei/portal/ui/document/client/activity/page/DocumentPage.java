@@ -45,7 +45,9 @@ public abstract class DocumentPage implements Activity {
 
     @Event
     public void onEdit(DocumentEvents.Edit event) {
-        fireSelectTab();
+        if (!event.isFromEquipment) {
+            fireSelectTab();
+        }
     }
 
     @Event
