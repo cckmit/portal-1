@@ -90,8 +90,9 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTag.setColor(view.color().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
 
-        caseTagController.saveTag(caseTag, new FluentCallback<Void>()
-                .withSuccess(v -> {
+        caseTagController.saveTag(caseTag, new FluentCallback<Long>()
+                .withSuccess(id -> {
+                    caseTag.setId( id );
                     dialogView.hidePopup();
                     fireEvent(new CaseTagEvents.ChangeModel());
                 })

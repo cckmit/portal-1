@@ -23,4 +23,6 @@ public interface AbstractCaseTagListView extends IsWidget {
     void setTagsAddButtonEnabled(boolean enabled);
 
     void setTagsEditButtonEnabled(boolean enabled);
+
+    boolean isAttached();
 }

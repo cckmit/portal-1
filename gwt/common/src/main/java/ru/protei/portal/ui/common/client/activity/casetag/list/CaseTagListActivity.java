@@ -50,6 +50,11 @@ public abstract class   CaseTagListActivity
     }
 
     @Event
+    public void onTagChanged(CaseTagEvents.ChangeModel event) {
+        refreshTagSelector();
+    }
+
+    @Event
     public void onShowTagSelector(CaseTagEvents.ShowTagSelector event) {
         if (show.isReadOnly) {
             return;
@@ -69,6 +74,7 @@ public abstract class   CaseTagListActivity
         }
 
         refreshTagList();
+        refreshTagSelector();
     }
 
     @Override
@@ -160,6 +166,12 @@ public abstract class   CaseTagListActivity
         boolean isEmpty = !view.getTagsContainer().iterator().hasNext();
         view.getTagsContainerVisibility().setVisible(!isEmpty);
     }
+
+    private void refreshTagSelector() {
+        if(!view.isAttached()) return;
+        view.setType(show.caseType);
+    }
+
 
     @Inject
     private Lang lang;
