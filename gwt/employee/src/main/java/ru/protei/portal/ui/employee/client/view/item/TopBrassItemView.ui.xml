@@ -2,7 +2,9 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel ui:field="root">
         <g:Image ui:field="image"/>
-        <div ui:field="name"/>
-        <div ui:field="position" class="top-brass-position"/>
+        <div>
+            <a ui:field="name" target="_blank"/>
+            <div ui:field="position" class="top-brass-position"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

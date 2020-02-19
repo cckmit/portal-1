@@ -10,13 +10,13 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-public abstract class TopBrassActivity implements Activity, AbstractTopBrassActivity, AbstractTopBrassItemActivity {
+public abstract class TopBrassActivity implements Activity, AbstractTopBrassActivity {
 
     @Inject
     public void init() {
@@ -64,9 +64,8 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
 
     private AbstractTopBrassItemView makeItem(EmployeeShortView head) {
         AbstractTopBrassItemView itemView = provider.get();
-        itemView.setActivity(this);
         itemView.setImage(AvatarUtils.getPhotoUrl(head.getId()));
-        itemView.setName(head.getDisplayName());
+        itemView.setName(head.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, head.getId()));
         itemView.setPosition(head.getWorkerEntries().iterator().next().getPositionName());
 
         return itemView;
