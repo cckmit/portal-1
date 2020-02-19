@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.struct;
 
-import java.io.Serializable;
-
 public class CaseNameAndDescriptionChangeRequest extends AuditableObject {
     private Long id;
     private String name;

@@ -11,16 +11,21 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 
-public class IssueInfoWidget extends Composite{
-   
+import java.util.function.Consumer;
+
+public class IssueInfoWidget extends Composite {
+
     @PostConstruct
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -39,7 +44,6 @@ public class IssueInfoWidget extends Composite{
     public HasAttachments attachmentsContainer() {
         return attachmentContainer;
     }
-    
 
     public void setFileUploadHandler( AttachmentUploader.FileUploadHandler handler ) {
         fileUploader.setUploadHandler( handler );
@@ -49,8 +53,8 @@ public class IssueInfoWidget extends Composite{
         fileUploader.autoBindingToCase( En_CaseType.CRM_SUPPORT, caseNumber );
     }
 
-    public void setDescription( String issueDescription ) {
-        descriptionRO.setInnerHTML( issueDescription );
+    public void setDescription( String issueDescription, En_TextMarkup textMarkup ) {
+        renderMarkupText(issueDescription, textMarkup, descriptionRO::setInnerHTML);
     }
 
     public HasVisibility attachmentUploaderVisibility() {
@@ -62,6 +66,11 @@ public class IssueInfoWidget extends Composite{
         activity.removeAttachment(event.getAttachment());
     }
 
+    private void renderMarkupText( String text, En_TextMarkup markup, Consumer<String> consumer ) {
+        textRenderController.render( text, markup, new FluentCallback<String>()
+                .withError( throwable -> consumer.accept( null ) )
+                .withSuccess( consumer ) );
+    }
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
@@ -97,6 +106,9 @@ public class IssueInfoWidget extends Composite{
     DivElement commentsPanel;
     @UiField
     DivElement descriptionRO;
+
+    @Inject
+    TextRenderControllerAsync textRenderController;
 
     private AbstractIssueEditActivity activity;
 

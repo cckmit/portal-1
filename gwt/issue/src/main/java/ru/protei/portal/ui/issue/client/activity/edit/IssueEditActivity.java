@@ -331,7 +331,7 @@ public abstract class IssueEditActivity implements
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
-        issueInfoWidget.setDescription(issue.getInfo());
+        issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
         issueInfoWidget.attachmentsContainer().clear();
         issueInfoWidget.attachmentsContainer().add(issue.getAttachments());
         issueInfoWidget.attachmentUploaderVisibility().setVisible(!readOnly);
