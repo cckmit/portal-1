@@ -170,6 +170,16 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return listByQuery( query );
     }
 
+    @Override
+    public Person getDepartmentHeadByWorkerEntryId(Long workerEntryId) {
+        String sql =
+                "Person.id = (SELECT we.personId FROM company_dep cd " +
+                "INNER JOIN worker_entry we ON cd.head_id = we.id WHERE dep_id = " +
+                        "(SELECT dep_id FROM worker_entry WHERE worker_entry.id = ?))";
+
+        return getByCondition(sql, workerEntryId);
+    }
+
     /**
      * Query Condition builders
      */

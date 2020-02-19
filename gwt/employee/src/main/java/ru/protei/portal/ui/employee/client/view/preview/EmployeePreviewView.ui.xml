@@ -5,12 +5,14 @@
 
     <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
-            <g:HTMLPanel ui:field="employeeNameBlock" visible="false">
-                <h5><ui:text from="{lang.employeeEmployeeFullNameColumnHeader}"/></h5>
-                <div class="small">
-                    <span ui:field="employeeName"/>
-                </div>
-            </g:HTMLPanel>
+            <div class="photo">
+                <g:Image ui:field="photo" styleName="employee-preview-image"/>
+            </div>
+
+            <g:HTMLPanel ui:field="infoContainer"/>
+
+            <h5><ui:text from="{lang.employeePositionsHeader}"/></h5>
+            <g:HTMLPanel ui:field="positionsContainer"/>
 
             <h5><ui:text from="{lang.employeeAdditionalInfoHeader}"/></h5>
             <div class="small">
@@ -21,9 +23,13 @@
                 <b><ui:text from="{lang.employeeIPAddress}:"/></b>
                 <span ui:field="ip"/>
             </div>
-
-            <h5><ui:text from="{lang.employeePositionsHeader}"/></h5>
-            <g:HTMLPanel ui:field="positionsContainer"/>
         </div>
+        <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.backToEmployees}"/>
+                </div>
+            </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

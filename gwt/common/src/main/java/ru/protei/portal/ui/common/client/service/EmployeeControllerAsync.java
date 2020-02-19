@@ -26,4 +26,8 @@ public interface EmployeeControllerAsync {
     void getEmployeeViewList( EmployeeQuery query, AsyncCallback< List< PersonShortView > > callback );
 
     void getEmployeeById( Long emploeeId, AsyncCallback<PersonShortView> async );
+
+    void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
+
+    void getEmployeeShortViewById(Long employeeId, AsyncCallback<EmployeeShortView> async);
 }

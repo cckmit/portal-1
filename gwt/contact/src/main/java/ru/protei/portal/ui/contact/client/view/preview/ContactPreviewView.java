@@ -87,8 +87,6 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
 
     @UiHandler("backButton")
     public void onBackButtonClicked(ClickEvent event) {
-        event.preventDefault();
-
         if (activity != null) {
             activity.onBackButtonClicked();
         }

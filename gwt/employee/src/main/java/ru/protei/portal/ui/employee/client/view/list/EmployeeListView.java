@@ -30,7 +30,9 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     }
 
     @Override
-    public HasWidgets getFilterContainer () { return filterContainer; }
+    public HasWidgets getFilterContainer () {
+        return filterContainer;
+    }
 
     @Override
     public HasWidgets getPagerContainer() {

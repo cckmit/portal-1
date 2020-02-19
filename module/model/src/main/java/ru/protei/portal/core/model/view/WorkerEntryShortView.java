@@ -104,4 +104,18 @@ public class WorkerEntryShortView implements Serializable {
     public boolean isMain() {
         return activeFlag > 0;
     }
+
+    @Override
+    public String toString() {
+        return "WorkerEntryShortView{" +
+                "id=" + id +
+                ", personId=" + personId +
+                ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
+                ", departmentParentName='" + departmentParentName + '\'' +
+                ", departmentName='" + departmentName + '\'' +
+                ", positionName='" + positionName + '\'' +
+                ", activeFlag=" + activeFlag +
+                '}';
+    }
 }

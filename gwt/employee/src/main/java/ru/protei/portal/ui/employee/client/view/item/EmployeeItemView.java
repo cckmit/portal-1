@@ -25,15 +25,6 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         this.activity = activity;
     }
 
-    @UiHandler( "preview" )
-    public void onPreviewClicked ( ClickEvent event )
-    {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onPreviewClicked( this );
-        }
-    }
-
     @Override
     public void setName( String name ) {
         this.name.setInnerText( name );
@@ -95,11 +86,6 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
-    @Override
-    public HasWidgets getPreviewContainer() {
-        return previewContainer;
-    }
-
 
     @UiField
     HeadingElement name;
@@ -153,13 +139,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     SpanElement ip;
 
     @UiField
-    HTMLPanel previewContainer;
-
-    @UiField
     DivElement employeeContainer;
-
-    @UiField
-    Anchor preview;
 
     @UiField
     SpanElement emails;

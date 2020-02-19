@@ -12,7 +12,7 @@
             <g:HTMLPanel ui:field="bottomContainer" styleName="row"/>
         </div>
         <div class="top-brass-footer text-right">
-            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.employeeBackToEmployees}"/>
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.backToEmployees}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -33,6 +34,18 @@ public class EmployeeEvents {
         public HasWidgets parent;
         public EmployeeShortView employee;
         public boolean isForTableView;
+    }
+
+    @Url(value = "employee_preview", primary = true)
+    public static class ShowFullScreen {
+        public ShowFullScreen() {}
+
+        public ShowFullScreen(Long employeeId) {
+            this.employeeId = employeeId;
+        }
+
+        @Name("id")
+        public Long employeeId;
     }
 
     public static class ShowDefinite {

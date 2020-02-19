@@ -37,7 +37,7 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     @Override
     public SearchResult<EmployeeShortView> getSearchResult(EmployeeQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
-        SearchResult<EmployeeShortView> searchResult = new SearchResult();
+        SearchResult<EmployeeShortView> searchResult = new SearchResult<>();
         if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
             searchResult.setTotalCount(count(query));
         }

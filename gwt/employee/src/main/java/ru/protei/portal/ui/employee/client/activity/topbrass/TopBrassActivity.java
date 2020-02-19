@@ -30,11 +30,11 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
 
     @Event
     public void onTopBrassShow(EmployeeEvents.ShowTopBrass event) {
-        init.parent.clear();
-        init.parent.add(view.asWidget());
-
         view.topContainer().clear();
         view.bottomContainer().clear();
+
+        init.parent.clear();
+        init.parent.add(view.asWidget());
 
         employeeService.getEmployees(employeeQuery, new FluentCallback<SearchResult<EmployeeShortView>>()
                 .withSuccess(this::fillView)

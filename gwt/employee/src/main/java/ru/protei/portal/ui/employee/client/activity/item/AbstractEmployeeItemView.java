@@ -28,6 +28,4 @@ public interface AbstractEmployeeItemView extends IsWidget {
     void setIP( String value );
 
     void setFireDate (String value );
-
-    HasWidgets getPreviewContainer();
 }

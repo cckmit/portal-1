@@ -2,12 +2,11 @@ package ru.protei.portal.ui.employee.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewActivity;
@@ -34,11 +33,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public void setName( String name ) {
-        this.employeeName.setInnerText(name);
-    }
-
-    @Override
     public void setIP( String ip ) {
         this.ip.setInnerText( ip );
     }
@@ -46,6 +40,29 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     @Override
     public HasWidgets getPositionsContainer() {
         return positionsContainer;
+    }
+
+    @Override
+    public HasWidgets getInfoContainer() {
+        return infoContainer;
+    }
+
+    @Override
+    public void setPhotoUrl(String url) {
+        photo.setUrl(url);
+    }
+
+    @Override
+    public void showFullScreen(boolean isFullScreen) {
+        backButtonPanel.setVisible(isFullScreen);
+        rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @UiHandler("backButton")
+    public void onBackButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onBackButtonClicked();
+        }
     }
 
     @UiField
@@ -58,17 +75,19 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     HTMLPanel positionsContainer;
 
     @UiField
-    HTMLPanel employeeNameBlock;
-
-    @UiField
-    SpanElement employeeName;
+    HTMLPanel infoContainer;
 
     @UiField
     SpanElement ip;
 
-    @Inject
     @UiField
-    Lang lang;
+    Image photo;
+
+    @UiField
+    HTMLPanel backButtonPanel;
+
+    @UiField
+    Button backButton;
 
     AbstractEmployeePreviewActivity activity;
 

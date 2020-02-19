@@ -2038,9 +2038,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboardActionRemove();
 
-    String employeeBackToEmployees();
-
     String employeeTopBrassBtn();
 
     String employeeTopBrassLabel();
+
+    String backToEmployees();
 }

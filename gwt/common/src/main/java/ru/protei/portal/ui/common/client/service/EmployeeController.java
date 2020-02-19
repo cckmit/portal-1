@@ -24,6 +24,15 @@ public interface EmployeeController extends RemoteService {
      */
     SearchResult< EmployeeShortView > getEmployees (EmployeeQuery query ) throws RequestFailedException;
 
+    EmployeeShortView getEmployeeShortViewById(Long employeeId) throws RequestFailedException;
+
+    /**
+     * Получение главы департамента
+     * @param departmentId айди департамента
+     * @return имя руководителя департамента
+     */
+    PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
+
     /**
      * Получение списка сокращенного представления сотрудника
      * @param query запрос
