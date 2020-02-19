@@ -80,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Result<List<ProductShortView>> shortViewListByIds(List<Long> ids) {
+    public Result<List<ProductShortView>> shortViewListByIds(AuthToken token, List<Long> ids) {
         return makeListProductShortView( devUnitDAO.getListByKeys(ids) );
     }
 

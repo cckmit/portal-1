@@ -395,7 +395,7 @@ public abstract class IssueTableActivity
 
     private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
         filterView.resetFilter();
-        filterService.getSelectorsParams( SelectorParamsUtils.makeRequest(caseQuery), new RequestCallback<SelectorsParams>() {
+        filterService.getSelectorsParams( caseQuery, new RequestCallback<SelectorsParams>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );

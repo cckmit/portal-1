@@ -10,6 +10,16 @@ public class SelectorsParamsRequest implements Serializable {
 
     private List<Long> productIds;
 
+    private List<Long> tagIds;
+
+    public List<Long> getTagIds() {
+        return tagIds;
+    }
+
+    public void setTagIds( List<Long> tagIds ) {
+        this.tagIds = tagIds;
+    }
+
     public List<Long> getCompanyIds() {
         return companyIds;
     }

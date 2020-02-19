@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.util.SelectorParamsUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -45,6 +47,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     PersonService personService;
     @Autowired
     ProductService productService;
+    @Autowired
+    CaseTagService caseTagService;
 
     @Override
     public Result< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
@@ -62,7 +66,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result<CaseFilter> getIssueFilter(Long id ) {
+    public Result<CaseFilter> getIssueFilter( AuthToken token, Long id ) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -71,7 +75,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             return error( En_ResultStatus.NOT_FOUND );
         }
 
-        Result<SelectorsParams> selectorsParams = getSelectorsParams(SelectorParamsUtils.makeRequest(filter.getParams()));
+        Result<SelectorsParams> selectorsParams = getSelectorsParams(token, filter.getParams());
 
         if (selectorsParams.isError()) {
             return error( selectorsParams.getStatus() );
@@ -83,12 +87,12 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public Result<SelectorsParams> getSelectorsParams(SelectorsParamsRequest request) {
-        log.debug( "getSelectorsParams(): request={} ", request );
+    public Result<SelectorsParams> getSelectorsParams( AuthToken token, CaseQuery caseQuery ) {
+        log.debug( "getSelectorsParams(): caseQuery={} ", caseQuery );
         SelectorsParams selectorsParams = new SelectorsParams();
 
-        if (!isEmpty(request.getCompanyIds())) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds(request.getCompanyIds());
+        if (!isEmpty( caseQuery.getCompanyIds())) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( caseQuery.getCompanyIds());
             if (result.isOk()) {
                 selectorsParams.setCompanyEntityOptions(result.getData());
             } else {
@@ -96,8 +100,9 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             }
         }
 
-        if (!isEmpty(request.getPersonIds())) {
-            Result<List<PersonShortView>> result = personService.shortViewListByIds(request.getPersonIds());
+        List<Long> personIds = collectPersonIds( caseQuery );
+        if (!isEmpty( personIds )) {
+            Result<List<PersonShortView>> result = personService.shortViewListByIds( personIds );
             if (result.isOk()) {
                 selectorsParams.setPersonShortViews(result.getData());
             } else {
@@ -106,12 +111,24 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         }
 
 
-        if (!isEmpty(request.getProductIds())) {
-            Result<List<ProductShortView>> result = productService.shortViewListByIds(new ArrayList<>(request.getProductIds()));
+        if (!isEmpty( caseQuery.getProductIds() )) {
+            Result<List<ProductShortView>> result = productService.shortViewListByIds(token, new ArrayList<>( caseQuery.getProductIds()));
             if (result.isOk()) {
                 selectorsParams.setProductShortViews(result.getData());
             } else {
                 return error(result.getStatus(), "Error at getProductIds" );
+            }
+        }
+
+        if (!isEmpty( caseQuery.getCaseTagsIds())) {
+            CaseTagQuery caseTagQuery = new CaseTagQuery();
+            caseTagQuery.setIds( caseQuery.getCaseTagsIds() );
+
+            Result<List<CaseTag>> result = caseTagService.getTags(token, caseTagQuery );
+            if (result.isOk()) {
+                selectorsParams.setCaseTags(result.getData());
+            } else {
+                return error(result.getStatus(), "Can't get tags by ids." );
             }
         }
 
@@ -184,4 +201,13 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         CaseFilter caseFilter = caseFilterDAO.checkExistsByParams( name, loginId, type );
         return caseFilter == null || caseFilter.getId().equals( excludeId );
     }
+
+    private List<Long> collectPersonIds(CaseQuery caseQuery){
+        ArrayList<Long> personsIds = new ArrayList<>();
+        personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
+        return personsIds;
+    }
+
 }

@@ -18,6 +18,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePic
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -25,11 +26,13 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
@@ -45,6 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -104,6 +108,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
             state.setValue(new HashSet<>(activeStates));
         }
+        tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
     }
 
     @Override
@@ -237,7 +242,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     }
 
     @UiHandler("tags")
-    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
+    public void onTagsSelected(ValueChangeEvent<Set<CaseTag>> event) {
         onIssueFilterChanged();
     }
 
@@ -419,7 +424,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         initiators.setValue(getPersons(caseQuery.getInitiatorIds()));
         products.setValue(getProducts(caseQuery.getProductIds()));
         commentAuthors.setValue(getPersons(caseQuery.getCommentAuthorIds()));
-        tags.setValue(getOptions(caseQuery.getCaseTagsIds()));
+        caseTagModel.fillByIds( caseQuery.getCaseTagsIds(), caseTags -> tags.setValue( setOf( caseTags ) ) );
     }
 
     private CaseFilter fillUserFilter() {
@@ -480,7 +485,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
                 query.setImportanceIds(getImportancesIdList(importance.getValue()));
                 query.setStates(getStateList(state.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCaseTagsIds(getIds(tags.getValue()));
+                query.setCaseTagsIds(toList(tags.getValue(), CaseTag::getId));
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 query = fillModifiedInterval(query, dateModifiedRange.getValue());
                 break;
@@ -496,7 +501,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
-                query.setCaseTagsIds(getIds(tags.getValue()));
+                query.setCaseTagsIds(toList(tags.getValue(), CaseTag::getId));
                 query.setImportanceIds(getImportancesIdList(importance.getValue()));
                 query.setStates(getStateList(state.getValue()));
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
@@ -646,6 +651,11 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     LabelElement labelIssueImportance;
     @UiField
     LabelElement labelIssueState;
+
+    @Inject
+    PolicyService policyService;
+    @Inject
+    CaseTagModel caseTagModel;
 
     private AbstractIssueFilterModel model;
     private Timer timer = null;

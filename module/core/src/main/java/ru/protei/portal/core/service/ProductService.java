@@ -27,7 +27,7 @@ public interface ProductService {
     Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query);
 
     Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
-    Result<List<ProductShortView>> shortViewListByIds( List<Long> ids );
+    Result<List<ProductShortView>> shortViewListByIds( AuthToken token, List<Long> ids );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
     Result<DevUnit> getProduct( AuthToken token, Long id );
