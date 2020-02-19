@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
@@ -21,8 +20,6 @@ import ru.protei.portal.redmine.utils.HttpInputSource;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static ru.protei.portal.redmine.enums.RedmineChangeType.COMMENT;
 
 public final class CommonServiceImpl implements CommonService {
 
@@ -67,7 +64,7 @@ public final class CommonServiceImpl implements CommonService {
         journals.stream()
                 .filter(journal -> StringUtils.isNotBlank(journal.getNotes()))
                 .forEach(journal ->
-                        caseUpdaterFactory.getUpdater(COMMENT).apply(object, null, journal, null, personMapper));
+                        caseUpdaterFactory.getCommentsUpdater().apply(object, null, journal, null, personMapper));
     }
 
     @Override
@@ -116,9 +113,6 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private FileController fileController;
-
-    @Autowired
-    private CaseService caseService;
 
     @Autowired
     private AttachmentDAO attachmentDAO;

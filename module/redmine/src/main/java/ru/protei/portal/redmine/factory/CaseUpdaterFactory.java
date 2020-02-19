@@ -33,6 +33,10 @@ public class CaseUpdaterFactory {
         return funcs.get(type);
     }
 
+    public FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> getCommentsUpdater() {
+        return getUpdater(COMMENT);
+    }
+
     private class CaseStatusUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
         public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
@@ -48,7 +52,7 @@ public class CaseUpdaterFactory {
 
                 object.setStateId(redmineStatusEntry.getLocalStatusId());
                 caseObjectDAO.merge(object);
-                logger.debug("Updated case state for case with id {}, old={}, new={}", En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
+                logger.debug("Updated case state for case with id {}, old={}, new={}", object.getId(), En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
 
                 Long stateCommentId = commonService.createAndStoreStateComment(journal.getCreatedOn(), author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId());
                 if (stateCommentId == null) {

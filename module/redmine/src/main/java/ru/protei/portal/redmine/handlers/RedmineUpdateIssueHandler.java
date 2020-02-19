@@ -19,10 +19,11 @@ import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static ru.protei.portal.redmine.enums.RedmineChangeType.COMMENT;
 
 public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
@@ -61,7 +62,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         //Synchronize comments, status, priority, name, info
         latestJournals.forEach(journal -> {
             if (StringUtils.isNotBlank(journal.getNotes())) {
-                caseUpdaterFactory.getUpdater(COMMENT).apply(object, endpoint, journal, null, personMapper);
+                caseUpdaterFactory.getCommentsUpdater().apply(object, endpoint, journal, null, personMapper);
             }
             journal.getDetails().forEach(detail ->
                     RedmineChangeType.findByName(detail.getName())
