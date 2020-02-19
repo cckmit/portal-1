@@ -66,7 +66,7 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(caseTags -> {
                     valuesMap.put(caseType, caseTags.stream()
-                            .map(tag -> IssueFilterUtils.toEntityOption(tag, policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )))
+                            .map(tag -> IssueFilterUtils.toEntityOption(tag, policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW )))
                             .collect(Collectors.toList()));
                     notifySubscribers(caseType);
                 })

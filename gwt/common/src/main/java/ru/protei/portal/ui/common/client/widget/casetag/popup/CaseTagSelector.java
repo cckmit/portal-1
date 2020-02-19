@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.client.widget.casetag.item.CaseTagSelectorItem;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.popup.PopupLeftAligned;
-import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
@@ -110,7 +109,7 @@ public class CaseTagSelector extends PopupLeftAligned implements HasValueChangeH
     }
 
     private void displayTags() {
-        boolean isGranted = policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
+        boolean isGranted = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         clearTagsListView();
         caseTags.stream()
                 .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter) || (isGranted ? containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) : false))

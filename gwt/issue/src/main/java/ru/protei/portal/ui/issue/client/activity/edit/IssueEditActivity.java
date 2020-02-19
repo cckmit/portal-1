@@ -318,7 +318,7 @@ public abstract class IssueEditActivity implements
 
         view.setCaseNumber(issue.getCaseNumber());
 
-        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW)) {
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             view.setPrivateIssue(issue.isPrivateCase());
         }
 

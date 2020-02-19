@@ -136,14 +136,14 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     }
 
     private void setValueToTypeSelector(En_CaseLink value){
-        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW) || !value.isForcePrivacy()) {
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || !value.isForcePrivacy()) {
             typeSelector.setValue(value);
         }
     }
 
     private void fillOptionsToTypeSelector(){
         for (En_CaseLink value : En_CaseLink.values()) {
-            if (!policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW) && value.isForcePrivacy()) {
+            if (!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) && value.isForcePrivacy()) {
                 continue;
             }
             typeSelector.addOption(value);

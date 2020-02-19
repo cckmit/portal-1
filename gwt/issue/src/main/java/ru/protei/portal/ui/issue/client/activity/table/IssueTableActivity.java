@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.SelectorParamsUtils;
@@ -48,7 +47,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
@@ -104,7 +102,7 @@ public abstract class IssueTableActivity
             event.query = null;
         }
 
-        if(!policyService.hasGrantAccessFor( En_Privilege.COMPANY_VIEW ) ){
+        if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
             filterParamView.companies().setValue( companyIds );
@@ -483,7 +481,7 @@ public abstract class IssueTableActivity
     }
 
     private void updateCaseStatesFilter() {
-        if (!policyService.hasGrantAccessFor(En_Privilege.COMPANY_VIEW)) {
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
             filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
         }
     }

@@ -41,7 +41,7 @@ public class CaseTagSelectorItem extends Composite implements HasValue<CaseTag>,
         String textColor = ColorUtils.makeContrastColor(backgroundColor);
 
         text.setText(caseTag.getName());
-        if (policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )) {
+        if (policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW )) {
             companyName.setText(caseTag.getCompanyName());
             companyName.setVisible(true);
         } else {
