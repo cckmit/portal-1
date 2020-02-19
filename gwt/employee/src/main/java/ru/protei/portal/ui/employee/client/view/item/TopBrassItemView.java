@@ -21,17 +21,33 @@ public class TopBrassItemView extends Composite implements AbstractTopBrassItemV
     }
 
     @Override
+    public void addRootStyle(String style) {
+        root.addStyleName(style);
+    }
+
+    @Override
     public void setImage(String url) {
         image.setUrl(url);
     }
 
     @Override
-    public void setPosition(String position) {
+    public void setName(String name) {
+        this.name.setInnerText(name);
+    }
 
+    @Override
+    public void setPosition(String position) {
+        this.position.setInnerText(position);
     }
 
     @UiField
+    HTMLPanel root;
+
+    @UiField
     Image image;
+
+    @UiField
+    DivElement name;
 
     @UiField
     DivElement position;

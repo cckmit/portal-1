@@ -44,8 +44,8 @@ public class EmployeeClientModule extends AbstractGinModule {
         bind( AbstractEmployeePreviewView.class ).to( EmployeePreviewView.class ).in( Singleton.class );
         bind( AbstractPositionItemView.class ).to( PositionItemView.class );
 
-        bind(AbstractTopBrassActivity.class).to(TopBrassActivity.class).asEagerSingleton();
         bind(AbstractTopBrassView.class).to(TopBrassView.class).in(Singleton.class);
+        bind(AbstractTopBrassActivity.class).to(TopBrassActivity.class).asEagerSingleton();
         bind(AbstractTopBrassItemView.class).to(TopBrassItemView.class);
     }
 }

@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
+import ru.protei.winter.web.common.client.events.MenuEvents;
 
 public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivity, AbstractEmployeeFilterActivity, Activity {
     @PostConstruct
@@ -46,8 +47,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
         ));
 
-        fireEvent(new ActionBarEvents.Add("Руководство", null, UiConstants.ActionBarIdentity.TOP_BRASS));
-
+        fireEvent(new ActionBarEvents.Add(lang.employeeTopBrass(), "", UiConstants.ActionBarIdentity.TOP_BRASS));
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
@@ -69,6 +69,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             return;
         }
 
+        fireEvent(new ActionBarEvents.Clear());
         fireEvent(new EmployeeEvents.ShowTopBrass());
     }
 
@@ -102,6 +103,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     PolicyService policyService;
 
     private ViewType currentViewType;
+    private boolean topBrassPage;
     private EmployeeQuery query;
     private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
 }

@@ -1,8 +1,15 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel>
-        <g:HTMLPanel ui:field="topContainer"/>
-        <g:HTMLPanel ui:field="bottomContainer"/>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="top-brass">
+        <div class="top-brass-containers">
+            <g:HTMLPanel ui:field="topContainer" styleName="top-brass-top-container row"/>
+            <g:HTMLPanel ui:field="bottomContainer" styleName="row"/>
+        </div>
+        <div class="top-brass-footer text-right">
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.employeeBackToEmployees}"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

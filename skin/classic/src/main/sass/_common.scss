@@ -3895,3 +3895,44 @@ table {
     margin-right: 15px;
   }
 }
+
+.top-brass {
+  .top-brass-containers {
+    text-align: center;
+    text-align: -webkit-center;
+    text-align: -moz-center;
+    padding: 40px 100px;
+
+    > div {
+      margin-top: 40px;
+    }
+
+    .top-brass-top-container {
+      width: 75%;
+    }
+
+    .top-brass-position {
+      font-weight: bold;
+    }
+
+    img {
+      display: block;
+      font-size: 6em;
+      height: 250px;
+      margin: 0 0 5px 5px;
+      border: 1px solid rgba(40, 40, 40, 0.35);
+      padding: 1px;
+    }
+  }
+
+  .top-brass-footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 8px 5px;
+    background-color: #ededed;
+    border-top: 1px solid #dadada;
+    z-index: 150;
+  }
+}

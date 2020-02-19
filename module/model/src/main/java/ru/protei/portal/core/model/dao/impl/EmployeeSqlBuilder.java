@@ -13,8 +13,7 @@ public class EmployeeSqlBuilder {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
             if (CollectionUtils.isNotEmpty(query.getIds())) {
-                condition.append(" and Person.id in ?");
-                args.add(HelperFunc.makeInArg(query.getIds()));
+                condition.append(" and Person.id in " + HelperFunc.makeInArg(query.getIds()));
             }
 
             if (query.getFired() != null) {

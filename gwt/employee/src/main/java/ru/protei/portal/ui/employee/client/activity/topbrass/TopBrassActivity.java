@@ -17,7 +17,9 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemVie
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 public abstract class TopBrassActivity implements Activity, AbstractTopBrassActivity, AbstractTopBrassItemActivity {
-    public TopBrassActivity() {
+
+    @Inject
+    public void init() {
         view.setActivity(this);
     }
 
@@ -39,13 +41,20 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
         );
     }
 
+    @Override
+    public void onBackButtonClicked() {
+        fireEvent(new EmployeeEvents.Show());
+    }
+
     private void fillView(EmployeeShortView head) {
         AbstractTopBrassItemView itemView = makeView(head);
 
         if (TopBrassPersonIdsUtil.getTopIds().contains(head.getId())) {
             view.topContainer().add(itemView.asWidget());
+            itemView.addRootStyle("col-md-6");
         } else {
             view.bottomContainer().add(itemView.asWidget());
+            itemView.addRootStyle("col-md-4");
         }
     }
 
@@ -53,6 +62,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
         AbstractTopBrassItemView itemView = provider.get();
         itemView.setActivity(this);
         itemView.setImage(AvatarUtils.getPhotoUrl(head.getId()));
+        itemView.setName(head.getDisplayName());
         itemView.setPosition(head.getWorkerEntries().iterator().next().getPositionName());
 
         return itemView;
