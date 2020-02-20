@@ -485,7 +485,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
                 query.setImportanceIds(getImportancesIdList(importance.getValue()));
                 query.setStates(getStateList(state.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCaseTagsIds(toList(tags.getValue(), CaseTag::getId));
+                query.setCaseTagsIds( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 query = fillModifiedInterval(query, dateModifiedRange.getValue());
                 break;
@@ -501,7 +501,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
-                query.setCaseTagsIds(toList(tags.getValue(), CaseTag::getId));
+                query.setCaseTagsIds( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
                 query.setImportanceIds(getImportancesIdList(importance.getValue()));
                 query.setStates(getStateList(state.getValue()));
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());

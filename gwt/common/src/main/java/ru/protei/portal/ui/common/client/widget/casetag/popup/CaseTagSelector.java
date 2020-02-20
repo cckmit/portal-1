@@ -38,6 +38,8 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
     @Inject
     public void onInit() {
         setWidget(ourUiBinder.createAndBindUi(this));
+        setAutoHideEnabled(true);
+        setAutoHideOnHistoryEventsEnabled(true);
         ensureDebugIds();
     }
 

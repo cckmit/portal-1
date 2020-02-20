@@ -255,7 +255,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         products.addAll(emptyIfNull(filter.getProductShortViews()));
         products().setValue(products);
 
-        tags().setValue( new TreeSet<>( filter.getCaseTags() ) );
+        tags().setValue(setOf( filter.getCaseTags() ) );
     }
 
     @Override

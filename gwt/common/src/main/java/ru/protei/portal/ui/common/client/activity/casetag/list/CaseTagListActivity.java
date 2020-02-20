@@ -52,6 +52,7 @@ public abstract class   CaseTagListActivity
     @Event
     public void onTagChanged(CaseTagEvents.ChangeModel event) {
         refreshTagSelector();
+        refreshTagList();
     }
 
     @Event

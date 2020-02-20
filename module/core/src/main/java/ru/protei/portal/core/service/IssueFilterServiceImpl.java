@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
@@ -24,8 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления фильтрами обращений на DAO слое
@@ -91,7 +91,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         SelectorsParams selectorsParams = new SelectorsParams();
 
         if (!isEmpty( caseQuery.getCompanyIds())) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds( caseQuery.getCompanyIds());
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( filterToList( caseQuery.getCompanyIds(), Objects::nonNull ));
             if (result.isOk()) {
                 selectorsParams.setCompanyEntityOptions(result.getData());
             } else {
@@ -111,7 +111,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
 
         if (!isEmpty( caseQuery.getProductIds() )) {
-            Result<List<ProductShortView>> result = productService.shortViewListByIds(token, new ArrayList<>( caseQuery.getProductIds()));
+            Result<List<ProductShortView>> result = productService.shortViewListByIds( token, filterToList( caseQuery.getProductIds(), Objects::nonNull ) );
             if (result.isOk()) {
                 selectorsParams.setProductShortViews(result.getData());
             } else {
@@ -121,7 +121,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         if (!isEmpty( caseQuery.getCaseTagsIds())) {
             CaseTagQuery caseTagQuery = new CaseTagQuery();
-            caseTagQuery.setIds( caseQuery.getCaseTagsIds() );
+            caseTagQuery.setIds( filterToList( caseQuery.getCaseTagsIds(), Objects::nonNull) );
 
             Result<List<CaseTag>> result = caseTagService.getTags(token, caseTagQuery );
             if (result.isOk()) {
