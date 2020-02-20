@@ -37,7 +37,7 @@ public abstract class   CaseTagListActivity
         event.parent.add(view.asWidget());
 
         view.getTagsContainer().clear();
-        view.setTagsAddButtonEnabled(event.isAddNewTagEnabled);
+        view.setTagsAddButtonEnabled(event.isEditTagEnabled);
         view.setTagsEditButtonEnabled(event.isEditTagEnabled);
         view.setType(show.caseType);
         hideOrShowIfNoTags();
@@ -46,6 +46,12 @@ public abstract class   CaseTagListActivity
             return;
         }
 
+        refreshTagList();
+    }
+
+    @Event
+    public void onTagChanged(CaseTagEvents.ChangeModel event) {
+        refreshTagSelector();
         refreshTagList();
     }
 
@@ -69,6 +75,7 @@ public abstract class   CaseTagListActivity
         }
 
         refreshTagList();
+        refreshTagSelector();
     }
 
     @Override
@@ -160,6 +167,12 @@ public abstract class   CaseTagListActivity
         boolean isEmpty = !view.getTagsContainer().iterator().hasNext();
         view.getTagsContainerVisibility().setVisible(!isEmpty);
     }
+
+    private void refreshTagSelector() {
+        if(!view.isAttached()) return;
+        view.setType(show.caseType);
+    }
+
 
     @Inject
     private Lang lang;

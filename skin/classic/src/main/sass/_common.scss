@@ -1,3 +1,5 @@
+$bg_light_gray: #f5f5f5;
+
 $danger_color: #d52020;
 
 $info_dark_color: #5481c1;
@@ -176,7 +178,7 @@ i.ban {
 .dropdown-menu ul > li > a:hover {
   color: #262626;
   text-decoration: none;
-  background-color: #f5f5f5;
+  background-color: $bg_light_gray;
 }
 
 .dropdown-menu ul > li > a.not-active:focus,
@@ -1196,7 +1198,7 @@ td.info {
 }
 
 .dropdown-addbutton > button:hover, .dropdown-addbutton > button:active {
-  background-color: #f5f5f5;
+  background-color: $bg_light_gray;
 }
 
 /* issue editing */
@@ -1619,10 +1621,14 @@ a {
 
   .case-tag-close {
     color: inherit;
+    opacity: 0.4;
     margin-left: 5px;
     margin-right: -2px;
     cursor: pointer;
     font-size: 12px;
+    &:hover{
+      opacity: 1;
+    }
   }
 
   .case-tag-text {
@@ -1671,19 +1677,33 @@ a {
     position: relative;
     display: block;
     margin: 0;
-    padding: 0;
+    padding: 2px 0 6px 0;
 
     .case-tag {
       text-align: center;
       line-height: 22px;
       display: flex;
-      margin: 6px;
       cursor: pointer;
+
+      &:hover{
+        background-color: $bg_light_gray;
+      }
 
       .case-tag-edit,
       .case-tag-icon {
         min-width: 16px;
-        margin: 2px 2px 2px 3px;
+      }
+
+      .case-tag-icon {
+        margin: 3px 2px 2px 3px;
+      }
+
+      .case-tag-edit {
+        padding: 4px 2px 2px 3px;
+
+        &:hover{
+          color: black;
+        }
       }
 
       .case-tag-text {
@@ -1696,6 +1716,8 @@ a {
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: left;
+        line-height: 21px;
+        padding-left: 3px;
       }
 
       .case-tag-company-name {

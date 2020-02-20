@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 /**
@@ -203,7 +205,7 @@ public class IssueFilterUtils {
         query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
         query.setStates(getStateList(filterWidgetView.states().getValue()));
         query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
-        query.setCaseTagsIds(getIds(filterWidgetView.tags().getValue()));
+        query.setCaseTagsIds( toList( filterWidgetView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
         DateInterval createdInterval = filterWidgetView.dateCreatedRange().getValue();
         if (createdInterval != null) {
             query.setCreatedFrom(createdInterval.from);

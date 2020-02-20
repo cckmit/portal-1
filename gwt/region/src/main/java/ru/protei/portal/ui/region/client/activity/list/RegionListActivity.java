@@ -15,7 +15,6 @@ import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
@@ -48,7 +47,7 @@ public abstract class RegionListActivity
 
     @Event
     public void onShow( RegionEvents.Show event ) {
-        if (!policyService.hasGrantAccessFor(En_Privilege.REGION_VIEW)) {
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.REGION_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }

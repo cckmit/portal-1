@@ -32,7 +32,7 @@ public class CaseTagListView
 
     @Override
     public void showSelector(IsWidget target) {
-        caseTagSelector.showNear(target);
+        caseTagSelector.showUnderLeft( (UIObject) target, null );
     }
 
     @Override

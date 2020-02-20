@@ -84,7 +84,7 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
-        modePreview = false;
+        viewModeIsPreview(false);
         container.clear();
         requestIssue(event.caseNumber, container);
     }
@@ -96,7 +96,7 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
-        modePreview = true;
+        viewModeIsPreview(true);
         container.clear();
         requestIssue(event.issueCaseNumber, container);
     }
@@ -108,7 +108,7 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
-        modePreview = false;
+        viewModeIsPreview(false);
         container.clear();
         requestIssue(event.issueCaseNumber, container);
     }
@@ -265,15 +265,11 @@ public abstract class IssueEditActivity implements
 
     private void showTags(CaseObject issue) {
         boolean readOnly = isReadOnly();
-        boolean addAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
-        boolean editAccess = !readOnly && policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
-        view.addTagButtonVisibility().setVisible(addAccess);
-        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
-                .withCaseId(issue.getId())
-                .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withAddEnabled(addAccess)
-                .withEditEnabled(editAccess)
-                .withReadOnly(isReadOnly()));
+        boolean isEditTagEnabled = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
+        view.addTagButtonVisibility().setVisible(isEditTagEnabled);
+        fireEvent(new CaseTagEvents.Show( view.getTagsContainer(), En_CaseType.CRM_SUPPORT, isEditTagEnabled,
+                issue.getId(), readOnly
+        ));
     }
 
     private void showMeta(CaseObject issue) {
@@ -322,7 +318,7 @@ public abstract class IssueEditActivity implements
 
         view.setCaseNumber(issue.getCaseNumber());
 
-        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW)) {
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             view.setPrivateIssue(issue.isPrivateCase());
         }
 
@@ -338,11 +334,14 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueInfoWidget);
 
-        view.backButtonVisibility().setVisible(!modePreview);
-        view.showEditViewButtonVisibility().setVisible(modePreview);
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
 
-        view.setPreviewStyles(modePreview);
+    }
+
+    private void viewModeIsPreview( boolean isPreviewMode){
+        view.backButtonVisibility().setVisible(!isPreviewMode);
+        view.showEditViewButtonVisibility().setVisible(isPreviewMode);
+        view.setPreviewStyles(isPreviewMode);
     }
 
     private String makeName( String issueName, String jiraUrl, String extAppType ) {
@@ -409,7 +408,7 @@ public abstract class IssueEditActivity implements
 
     @ContextAware
     CaseObject issue;
-    private boolean modePreview;
+
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
 

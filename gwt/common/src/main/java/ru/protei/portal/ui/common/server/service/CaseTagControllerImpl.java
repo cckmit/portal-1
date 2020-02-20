@@ -14,14 +14,16 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+
 @Service("CaseTagController")
 public class CaseTagControllerImpl implements CaseTagController {
 
     @Override
-    public void saveTag(CaseTag caseTag) throws RequestFailedException {
+    public Long saveTag( CaseTag caseTag) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         caseTag.setPersonId( authToken.getPersonId() );
-        ServiceUtils.checkResult(caseTagService.saveTag(authToken, caseTag));
+        return checkResultAndGetData(caseTagService.saveTag(authToken, caseTag));
     }
 
     @Override
@@ -33,7 +35,7 @@ public class CaseTagControllerImpl implements CaseTagController {
     @Override
     public List<CaseTag> getTags(CaseTagQuery query) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(caseTagService.getTags(authToken, query));
+        return checkResultAndGetData(caseTagService.getTags(authToken, query));
     }
 
     @Override

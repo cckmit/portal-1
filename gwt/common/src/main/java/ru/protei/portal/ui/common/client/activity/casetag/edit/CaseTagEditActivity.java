@@ -11,13 +11,11 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.Profile;
 
 import java.util.Objects;
 
@@ -41,7 +39,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
         boolean isCreationMode = caseTag.getId() == null;
         boolean isSameTag = Objects.equals(caseTag.getPersonId(), policyService.getProfile().getId());
-        boolean isAllowedChangeCompany = policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        boolean isAllowedChangeCompany = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
 
         // создавать могут все с привилегией ISSUE_EDIT. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
         // редактируем/удаляем только свои кейсы
@@ -92,8 +90,9 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTag.setColor(view.color().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
 
-        caseTagController.saveTag(caseTag, new FluentCallback<Void>()
-                .withSuccess(v -> {
+        caseTagController.saveTag(caseTag, new FluentCallback<Long>()
+                .withSuccess(id -> {
+                    caseTag.setId( id );
                     dialogView.hidePopup();
                     fireEvent(new CaseTagEvents.ChangeModel());
                 })
