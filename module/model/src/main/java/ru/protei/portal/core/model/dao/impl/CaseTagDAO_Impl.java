@@ -10,8 +10,12 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.List;
+
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseTagDAO {
 
@@ -31,6 +35,21 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CaseTagQuery query) {
+        Condition condition = query()
+                .where( "case_tag.name" ).like( query.getName() )
+                .and( "case_tag.case_type" ).equal( query.getCaseTypeId() )
+                .and( "case_tag.company_id" ).equal( query.getCompanyId() )
+                .and( "case_tag.id" ).in( query.getIds() );
+
+        if (query.getCaseId() != null) {
+            condition.and( "case_tag.id" ).in( query()
+                    .select( "case_object_tag.tag_id" )
+                    .from( "case_object_tag" )
+                    .where( "case_object_tag.case_id" ).equal( query.getCaseId() ).asQuery() );
+        }
+
+        return new SqlCondition( condition.getSqlCondition(), condition.getSqlParameters() );
+/*
         return new SqlCondition().build(((condition, args) -> {
             condition.append("1=1");
 
@@ -61,5 +80,7 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
                 args.add(query.getCaseId());
             }
         }));
+        */
+
     }
 }
