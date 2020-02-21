@@ -59,8 +59,8 @@ public class CaseTagQuery extends BaseQuery {
         this.ids = ids;
     }
 
-    public En_CaseType getCaseType() {
-        return caseType;
+    public Integer getCaseTypeId() {
+        return caseType==null?null:caseType.getId();
     }
 
     public void setCaseType(En_CaseType caseType) {
