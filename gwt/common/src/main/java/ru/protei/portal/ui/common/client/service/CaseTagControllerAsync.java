@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface CaseTagControllerAsync {
 
-    void saveTag( CaseTag caseTag, AsyncCallback<Long> async);
+    void update( CaseTag caseTag, AsyncCallback<Long> async);
+
+    void create( CaseTag caseTag, AsyncCallback<Long> async);
 
     void removeTag(CaseTag caseTag, AsyncCallback<Void> async);
 

@@ -36,27 +36,41 @@ public class CaseTagServiceImpl implements CaseTagService {
     @Autowired
     private LockService lockService;
 
+
     @Override
     @Transactional
-    public Result<Long> saveTag( AuthToken authToken, CaseTag caseTag) {
+    public Result<Long> create( AuthToken authToken, CaseTag caseTag) {
+        caseTag.setPersonId( authToken.getPersonId() );
+
         if (!isCaseTagValid(caseTag)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
-        boolean result;
-        try {
-            if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
-                return error(En_ResultStatus.PERMISSION_DENIED);
-            }
-            if (caseTag.getId() == null) {
-                return ok( caseTagDAO.persist( caseTag ) );
-            }
-            result = caseTagDAO.merge(caseTag);
-        } catch (DuplicateKeyException exception) {
-            return error(En_ResultStatus.ALREADY_EXIST);
+
+        if (caseTagDAO.isNameExist( caseTag.getName() )) {
+            return error( En_ResultStatus.ALREADY_EXIST );
         }
-        return !result ?
-                Result.error( En_ResultStatus.NOT_CREATED) :
-                ok( caseTag.getId() );
+
+        return ok( caseTagDAO.persist( caseTag ) );
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> update( AuthToken authToken, CaseTag caseTag) {
+        if (!isCaseTagValid(caseTag)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if (caseTagDAO.isNameExist( caseTag.getName() )) {
+            return error( En_ResultStatus.ALREADY_EXIST );
+        }
+
+        if (!Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        caseTagDAO.merge(caseTag);
+
+        return ok( caseTag.getId() );
     }
 
     @Override
