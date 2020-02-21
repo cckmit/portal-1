@@ -5,12 +5,10 @@ import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.List;
@@ -29,8 +27,13 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
     }
 
     @Override
-    public boolean isNameExist( String name ) {
-        return checkExistsByCondition("case_tag.name=?", name);
+    public boolean isNameUniqueForTag( Long id, String name ) {
+        Query query = query()
+                .where( "case_tag.name" ).equal( name )
+                .and( "case_tag.id" ).not().equal( id )
+                .asQuery();
+
+        return checkExistsByCondition( query.buildSql(), query.args() );
     }
 
     @SqlConditionBuilder
