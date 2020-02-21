@@ -160,6 +160,17 @@ public class DocumentSvnApiImpl implements DocumentSvnApi {
         return result;
     }
 
+    @Override
+    public boolean isProjectPathExist(Long projectId) throws SVNException {
+        String path = getDirPath(projectId);
+
+        SVNNodeKind nodeKind = repository.checkPath( path ,  HEAD_REVISION );
+        if ( nodeKind == SVNNodeKind.DIR ) {
+            return true;
+        }
+        return false;
+    }
+
     private InputStream getDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat) throws SVNException, IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             getDocument(projectId, documentId, documentFormat, out);

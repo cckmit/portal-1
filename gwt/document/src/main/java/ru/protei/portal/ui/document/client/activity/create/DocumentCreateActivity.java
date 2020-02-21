@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetActivity;
-
-import java.util.Objects;
 
 public abstract class DocumentCreateActivity implements Activity, AbstractDocumentCreateActivity, WizardWidgetActivity {
 
@@ -38,15 +35,15 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
         initDetails.parent.add(view.asWidget());
         fireEvent(new ProjectEvents.Search(view.projectSearchContainer()));
         fireEvent(new ProjectEvents.QuickCreate(view.projectCreateContainer()));
-        fireEvent(new DocumentEvents.Form.Show(view.documentContainer(), new Document(), TAG));
+        fireEvent(new DocumentEvents.CreateFromWizard(view.documentContainer()));
         view.resetWizard();
         onProjectSearchClicked();
         view.createEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE));
     }
 
     @Event
-    public void onSetProject(ProjectEvents.Set event) {
-        fireEvent(new DocumentEvents.Form.SetProject(event.project, TAG));
+    public void onChangeButtonsEnabled(DocumentEvents.SetButtonsEnabled event) {
+        view.setWizardButtonsEnabled(event.isEnabled);
     }
 
     @Override
@@ -56,17 +53,7 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
 
     @Override
     public void onDone() {
-        fireEvent(new DocumentEvents.Form.Save(TAG));
-    }
-
-    @Event
-    public void onSaved(DocumentEvents.Form.Saved event) {
-        if (!Objects.equals(TAG, event.tag)) {
-            return;
-        }
-        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-        fireEvent(new DocumentEvents.ChangeModel());
-        fireEvent(new DocumentEvents.Show(true));
+        fireEvent(new DocumentEvents.Save());
     }
 
     @Override
@@ -84,12 +71,9 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
     }
 
     @Inject
-    Lang lang;
-    @Inject
     AbstractDocumentCreateView view;
     @Inject
     PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
-    private final String TAG = "DocumentCreateActivity";
 }

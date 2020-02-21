@@ -847,6 +847,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentTypeIsEmpty();
 
+    String documentCategoryIsEmpty();
+
     String documentProjectIsEmpty();
 
     String inventoryNumberIsEmpty();

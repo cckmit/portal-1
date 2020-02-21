@@ -2,7 +2,22 @@ package ru.protei.portal.ui.document.client.activity.edit;
 
 public interface AbstractDocumentEditActivity {
 
+    void onEquipmentChanged();
+
+    void onDocumentCategoryChanged();
+
+    void onProjectChanged();
+
+    void onDownloadPdf();
+
+    void onDownloadApproved();
+
+    void onDownloadDoc();
+
+    void onApprovedChanged();
+
+    void onCancelClicked();
+
     void onSaveClicked();
 
-    void onCloseClicked();
 }

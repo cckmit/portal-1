@@ -173,7 +173,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private boolean hasAccessToDocModification(Document document) {
-        return hasAccessToDoc(document) && !document.getApproved();
+        return hasAccessToDoc(document) && !document.getApproved() && !document.isDeprecatedUnit();
     }
 
     private boolean hasAccessToPdf() {
