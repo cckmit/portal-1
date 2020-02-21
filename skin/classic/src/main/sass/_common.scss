@@ -801,11 +801,9 @@ label.bordered:after {
     i {
       padding-right: 5px;
     }
-
     b {
       padding-right: 5px;
     }
-
     .employee-info {
       width: 25%
     }
@@ -3941,4 +3939,44 @@ table {
   height: 260px;
   float: right;
   margin: 0 0 5px 5px;
+}
+
+.top-brass {
+  .top-brass-containers {
+    text-align: center;
+    text-align: -webkit-center;
+    text-align: -moz-center;
+    padding: 0 100px;
+
+    > div {
+      margin-top: 40px;
+      margin-bottom: 70px;
+    }
+
+    .top-brass-top-container {
+      width: 75%;
+    }
+
+    .top-brass-position {
+      font-weight: bold;
+    }
+
+    img {
+      height: 250px;
+      margin: 0 0 5px 5px;
+      border: 1px solid rgba(40, 40, 40, 0.35);
+      padding: 1px;
+    }
+  }
+
+  .top-brass-footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 8px 5px;
+    background-color: #ededed;
+    border-top: 1px solid #dadada;
+    z-index: 150;
+  }
 }

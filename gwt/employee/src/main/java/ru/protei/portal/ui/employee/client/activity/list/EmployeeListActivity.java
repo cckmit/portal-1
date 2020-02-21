@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
@@ -129,7 +130,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
+                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null);
     }
 
     private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {

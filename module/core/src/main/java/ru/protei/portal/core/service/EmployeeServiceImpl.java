@@ -161,7 +161,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         CompanyDepartment department = companyDepartmentDAO.get(departmentId);
 
         return ok(department == null ? null : (department.getHead() == null || department.getHead().getId().equals(employeeId) ?
-                (department.getParentHead() == null ? null : department.getParentHead().toFullNameShortView()) :
+                        (department.getParentHead() == null ? null : department.getParentHead().toFullNameShortView()) :
                 department.getHead().toFullNameShortView()));
     }
 

@@ -4,12 +4,15 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.List;
 import java.util.Set;
 
 /**
  * Фильтр по сотрудникам
  */
 public class EmployeeQuery extends BaseQuery {
+
+    private List<Long> ids;
 
     private Boolean fired;
 
@@ -33,15 +36,19 @@ public class EmployeeQuery extends BaseQuery {
         fired = false;
     }
 
+    public EmployeeQuery(List<Long> ids) {
+        this.ids = ids;
+    }
+
     public EmployeeQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
-        this(null, null, null, null, searchString, null, null, null, null, null, sortField, sortDir);
+        this(null, null, null, null, searchString, null, null, null, null, null, sortField, sortDir, null);
     }
 
     public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, En_SortField sortField, En_SortDir sortDir) {
-        this(fired, deleted, onlyPeople, null, null, null, null, null, null, null, sortField, sortDir);
+        this(fired, deleted, onlyPeople, null, null, null, null, null, null, null, sortField, sortDir, null);
     }
 
-    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir) {
+    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir, List<Long> ids) {
         super(searchString, sortField, sortDir);
         this.fired = fired;
         this.deleted = deleted;
@@ -53,6 +60,7 @@ public class EmployeeQuery extends BaseQuery {
         this.email = email;
         this.departmentParent = departmentParent;
         this.limit = 1000;
+        this.ids = ids;
     }
 
     public Boolean getFired() {
@@ -125,6 +133,14 @@ public class EmployeeQuery extends BaseQuery {
 
     public void setDepartmentParent(String departmentParent) {
         this.departmentParent = departmentParent;
+    }
+
+    public List<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
     }
 
     @Override

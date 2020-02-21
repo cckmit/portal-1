@@ -23,6 +23,9 @@
                     </div>
                 </div>
                 <div class="form-group col-md-12">
+                    <g:CheckBox ui:field="showTopBrass" styleName="checkbox" text="{lang.employeeTopBrassLabel}"/>
+                </div>
+                <div class="form-group col-md-12">
                     <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.employeeShowFired}"/>
                 </div>
             </div>
