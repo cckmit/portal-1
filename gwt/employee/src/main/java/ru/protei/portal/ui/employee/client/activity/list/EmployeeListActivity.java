@@ -1,12 +1,10 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -91,17 +89,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     public void onPageSelected( int page ) {
         pagerView.setCurrentPage( page );
         requestEmployees( page );
-    }
-
-    @Override
-    public void onPreviewClicked( AbstractEmployeeItemView itemView ) {
-        EmployeeShortView value = itemViewToModel.get( itemView );
-        if ( value == null ) {
-            return;
-        }
-
-        fireEvent( new EmployeeEvents.ShowPreview( itemView.getPreviewContainer(), value, false ) );
-        animation.showPreview( itemView, ( IsWidget ) itemView.getPreviewContainer() );
     }
 
     private void requestEmployees( int page ) {

@@ -96,6 +96,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result<PersonShortView> getEmployee(AuthToken token, Long employeeId) {
+
+        if (employeeId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Person person = personDAO.get(employeeId);
         if(person==null) return error(En_ResultStatus.NOT_FOUND);
         return ok(person.toShortNameShortView());
@@ -118,6 +123,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employeeId) {
+
+        if (employeeId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+        jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+
+        return ok(employeeShortView);
+    }
+
+    @Override
     public Result<List<WorkerView>> list(String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
@@ -135,18 +153,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId) {
-        if (departmentId == null) {
+    public Result<PersonShortView> getDepartmentHead(AuthToken token, Long employeeId, Long departmentId) {
+        if (employeeId == null || departmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         CompanyDepartment department = companyDepartmentDAO.get(departmentId);
 
-        return ok(department == null ? null : (department.getHead() == null ?
+        return ok(department == null ? null : (department.getHead() == null || department.getHead().getId().equals(employeeId) ?
                 (department.getParentHead() == null ? null : department.getParentHead().toFullNameShortView()) :
                 department.getHead().toFullNameShortView()));
     }
-
 
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
         if(personAbsences.size()==0)

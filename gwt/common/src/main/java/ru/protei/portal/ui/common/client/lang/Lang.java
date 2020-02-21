@@ -1291,13 +1291,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryEmployee();
 
-    String employeeAdditionalInfoHeader();
+    String employeeAdditionalInfo();
 
     String employeeID();
 
     String employeeIPAddress();
-
-    String employeePositionsHeader();
 
     String employeeCompany();
 
@@ -1770,17 +1768,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagInfo();
 
-    String employeeEmployeeFullNameColumnHeader();
+    String employeeEmployeeFullName();
 
-    String employeeWorkPhoneColumnHeader();
+    String employeeWorkPhone();
 
-    String employeeMobilePhoneColumnHeader();
+    String employeeMobilePhone();
 
-    String employeeIPAddressColumnHeader();
+    String employeeEmail();
 
-    String employeeEmailColumnHeader();
-
-    String employeeDepartmentColumnHeader();
+    String employeeDepartment();
 
     String privateComment();
 
@@ -2039,4 +2035,12 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardActionEdit();
 
     String dashboardActionRemove();
+
+    String backToEmployees();
+
+    String employeeDepartmentHead();
+
+    String employeePosition();
+
+    String employeeContactInfo();
 }

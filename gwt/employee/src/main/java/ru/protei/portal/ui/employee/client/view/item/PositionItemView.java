@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -50,7 +51,8 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     }
 
     @Override
-    public void setDepartmentHead(String departmentHead) {
+    public void setDepartmentHead(String departmentHead, String link) {
+        this.departmentHead.setHref(link);
         this.departmentHead.setInnerText(departmentHead);
     }
 
@@ -64,7 +66,7 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     SpanElement position;
 
     @UiField
-    SpanElement departmentHead;
+    AnchorElement departmentHead;
 
     @UiField
     HTMLPanel departmentContainer;
