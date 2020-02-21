@@ -1693,6 +1693,8 @@ a {
     display: block;
     margin: 0;
     padding: 2px 0 6px 0;
+    max-height: 60vh;
+    overflow: auto;
 
     .case-tag {
       text-align: center;
