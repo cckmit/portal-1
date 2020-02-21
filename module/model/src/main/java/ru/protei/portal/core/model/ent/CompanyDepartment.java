@@ -38,11 +38,24 @@ public class CompanyDepartment extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_extId")
     private String parentExternalId;
 
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id"),
+            @JdbcJoinPath(localColumn = "head_id", table = "worker_entry", remoteColumn = "id"),
+            @JdbcJoinPath(localColumn = "personId", table = "person", remoteColumn = "id")
+    })
+    private Person parentHead;
+
     @JdbcColumn(name = "head_id")
     private Long headId;
 
     @JdbcJoinedColumn(localColumn = "head_id", table = "worker_entry", remoteColumn = "id", mappedColumn = "worker_extId")
     private String headExternalId;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = "head_id", table = "worker_entry", remoteColumn = "id"),
+            @JdbcJoinPath(localColumn = "personId", table = "person", remoteColumn = "id")
+    })
+    private Person head;
 
     @JdbcColumn(name = "dep_extId")
     private String externalId;
@@ -144,6 +157,22 @@ public class CompanyDepartment extends AuditableObject {
 
     public void setHeadExternalId(String headExternalId) {
         this.headExternalId = headExternalId;
+    }
+
+    public Person getParentHead() {
+        return parentHead;
+    }
+
+    public void setParentHead( Person parentHead ) {
+        this.parentHead = parentHead;
+    }
+
+    public Person getHead() {
+        return head;
+    }
+
+    public void setHead( Person head ) {
+        this.head = head;
     }
 
     @Override

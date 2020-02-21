@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
@@ -25,19 +25,33 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     }
 
     @Override
-    public void setDepartment( String value ) {
-        departmentContainer.setVisible(true);
-        this.department.setInnerText( value );
+    public HasVisibility departmentContainerVisibility() {
+        return departmentContainer;
     }
 
     @Override
-    public void setDepartmentParent(String value) {
-        this.departmentParent.setInnerText(value);
+    public HasVisibility departmentHeadContainerVisibility() {
+        return departmentHeadContainer;
     }
 
     @Override
-    public void setPosition( String value ) {
-        this.position.setInnerText( value );
+    public void setDepartment( String department ) {
+        this.department.setInnerText( department );
+    }
+
+    @Override
+    public void setDepartmentParent(String departmentParent) {
+        this.departmentParent.setInnerText(departmentParent);
+    }
+
+    @Override
+    public void setPosition( String position ) {
+        this.position.setInnerText( position );
+    }
+
+    @Override
+    public void setDepartmentHead(String departmentHead) {
+        this.departmentHead.setInnerText(departmentHead);
     }
 
     @UiField
@@ -50,7 +64,13 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     SpanElement position;
 
     @UiField
+    SpanElement departmentHead;
+
+    @UiField
     HTMLPanel departmentContainer;
+
+    @UiField
+    HTMLPanel departmentHeadContainer;
 
     AbstractPositionItemActivity activity;
 

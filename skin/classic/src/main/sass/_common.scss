@@ -762,7 +762,10 @@ label.bordered:after {
     tbody {
       tr {
         td {
+          height: 56px;
           > div {
+            height: 56px;
+            max-height: 56px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -787,18 +790,18 @@ label.bordered:after {
       padding-right: 5px;
     }
     .employee-info {
-      width: 21%
+      width: 20%
     }
 
     .employee-contacts {
-      width: 31%
+      width: 20%
     }
 
     .employee-department {
-      width: 32%
+      width: 50%
     }
     .employee-additional {
-      width: 15%
+      width: 10%
     }
   }
 }

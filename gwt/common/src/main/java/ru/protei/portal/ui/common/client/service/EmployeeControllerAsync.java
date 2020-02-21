@@ -12,18 +12,26 @@ import java.util.List;
  * Сервис управления сотрудниками
  */
 public interface EmployeeControllerAsync {
+
+    void getEmployee(Long emploeeId, AsyncCallback<PersonShortView> async);
+
     /**
      * Получение списка сотрудников
      * @return список контактов
      */
-    void getEmployees( EmployeeQuery query, AsyncCallback<SearchResult< EmployeeShortView >> async );
+    void getEmployees(EmployeeQuery query, AsyncCallback<SearchResult< EmployeeShortView >> async);
 
     /**
      * Получение списка сокращенного представления сотрудника
      * @param query запрос
      * @param callback
      */
-    void getEmployeeViewList( EmployeeQuery query, AsyncCallback< List< PersonShortView > > callback );
+    void getEmployeeViewList(EmployeeQuery query, AsyncCallback<List<PersonShortView>> callback);
 
-    void getEmployeeById( Long emploeeId, AsyncCallback<PersonShortView> async );
+    /**
+     * Получение руководителя подразделения
+     * @param departmentId айди подразделения
+     * @return сокращенное представление руководителя подразделения
+     */
+    void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
 }

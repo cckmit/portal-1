@@ -10,16 +10,16 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.EmployeeController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
-import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 /**
  * Реализация сервиса по работе с сотрудниками
@@ -28,14 +28,14 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
-    public PersonShortView getEmployeeById(Long emploeeId ) throws RequestFailedException {
-        log.info( "getEmployee(): emploeeId={}", emploeeId );
+    public PersonShortView getEmployee(Long employeeId) throws RequestFailedException {
+        log.info("getEmployee(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeById(token, emploeeId));
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
     }
     @Override
-    public SearchResult< EmployeeShortView > getEmployees(EmployeeQuery query ) throws RequestFailedException {
-        log.info( "getEmployees(): query={}", query );
+    public SearchResult<EmployeeShortView> getEmployees(EmployeeQuery query) throws RequestFailedException {
+        log.info("getEmployees(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
     }
@@ -55,6 +55,12 @@ public class EmployeeControllerImpl implements EmployeeController {
         return result.getData();
     }
 
+    @Override
+    public PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException {
+        log.info("getDepartmentHead(): departmentId={}", departmentId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(token, departmentId));
+    }
 
     @Autowired
     SessionService sessionService;
