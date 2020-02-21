@@ -98,6 +98,11 @@ public abstract class DocumentEditActivity
     }
 
     @Event
+    public void onSaveAndContinue(DocumentEvents.SaveAndContinue event) {
+        onSaveClicked();
+    }
+
+    @Event
     public void onSetProject(ProjectEvents.Set event) {
         if (event.project != null) {
             view.project().setValue(event.project);

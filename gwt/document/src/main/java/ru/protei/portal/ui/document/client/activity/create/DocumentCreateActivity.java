@@ -1,12 +1,12 @@
 package ru.protei.portal.ui.document.client.activity.create;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetActivity;
@@ -54,6 +54,11 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
     @Override
     public void onDone() {
         fireEvent(new DocumentEvents.Save());
+    }
+
+    @Override
+    public void onSaveAndContinue() {
+        fireEvent(new DocumentEvents.SaveAndContinue());
     }
 
     @Override

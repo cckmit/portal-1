@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonSaveAndContinue();
+
     String buttonApply();
 
     String buttonCancel();

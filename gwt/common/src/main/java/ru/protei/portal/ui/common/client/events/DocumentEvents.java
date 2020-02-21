@@ -89,6 +89,11 @@ public class DocumentEvents {
         }
     }
 
+    public static class SaveAndContinue {
+        public SaveAndContinue() {
+        }
+    }
+
     @Url(value = "doc_create_with_equipment")
     public static class CreateWithEquipment {
         public CreateWithEquipment() {}

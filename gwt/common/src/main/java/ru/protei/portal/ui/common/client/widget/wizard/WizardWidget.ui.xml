@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
     <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body no-padding">
             <g:HTMLPanel ui:field="navTabs" tag="ul"
@@ -19,6 +20,9 @@
             <div class="card card-transparent no-margin">
                 <g:HTMLPanel ui:field="buttons" styleName="sm-padding-5 sm-m-b-20 sm-m-t-20 bg-master-lighter clearfix">
                     <ul class="pager wizard no-style pull-right">
+                        <g:HTMLPanel tag="li" styleName="next" ui:field="btnSaveAndContinueContainer">
+                            <g:Button styleName="btn btn-complete btn-cons pull-right" ui:field="btnSaveAndContinue" text="{lang.buttonSaveAndContinue}"/>
+                        </g:HTMLPanel>
                         <g:HTMLPanel tag="li" styleName="previous" ui:field="btnPreviousContainer">
                             <g:Button styleName="btn btn-default btn-cons pull-right" ui:field="btnPrevious">
                                 <span ui:field="btnPreviousText"/>

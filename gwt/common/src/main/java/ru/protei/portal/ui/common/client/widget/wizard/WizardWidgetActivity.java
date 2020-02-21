@@ -6,6 +6,8 @@ public interface WizardWidgetActivity {
 
     void onDone();
 
+    void onSaveAndContinue();
+
     default boolean canLeaveTab(String from, String to) { return true; }
 
     default boolean canGoBack(String from) { return true; }
