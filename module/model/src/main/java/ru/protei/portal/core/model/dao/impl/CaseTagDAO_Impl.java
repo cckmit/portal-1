@@ -24,6 +24,11 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
         return listByQuery(query);
     }
 
+    @Override
+    public boolean isNameExist( String name ) {
+        return checkExistsByCondition("case_tag.name=?", name);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CaseTagQuery query) {
         return new SqlCondition().build(((condition, args) -> {

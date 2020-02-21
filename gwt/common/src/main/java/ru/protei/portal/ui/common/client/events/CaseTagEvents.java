@@ -37,10 +37,24 @@ public class CaseTagEvents {
         public CaseTag caseTag;
     }
 
-    public static class ChangeModel {}
+    public static class Created {
+        public Created( CaseTag caseTag) {
+            this.caseTag = caseTag;
+        }
 
-    public static class Remove {
-        public Remove(CaseTag caseTag) {
+        public CaseTag caseTag;
+    }
+
+    public static class Changed {
+        public Changed( CaseTag caseTag) {
+            this.caseTag = caseTag;
+        }
+
+        public CaseTag caseTag;
+    }
+
+    public static class Removed {
+        public Removed( CaseTag caseTag) {
             this.caseTag = caseTag;
         }
 

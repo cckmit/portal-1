@@ -4,32 +4,34 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public abstract class CaseTagModel extends BaseSelectorModel<CaseTag> implements Activity
 {
 
     @Event
-    public void onChangeModel(CaseTagEvents.ChangeModel event) {
+    public void onTagChanged( CaseTagEvents.Changed event ) {
+        changeElement( event.caseTag );
+    }
+
+    @Event
+    public void onTagRemoved( CaseTagEvents.Removed event ) {
+        removeElement( event.caseTag );
+    }
+
+    @Event
+    public void onTagCreated( CaseTagEvents.Created event) {
         clean();
     }
 

@@ -50,7 +50,13 @@ public abstract class   CaseTagListActivity
     }
 
     @Event
-    public void onTagChanged(CaseTagEvents.ChangeModel event) {
+    public void onTagCreated( CaseTagEvents.Created event) {
+        refreshTagSelector();
+        refreshTagList();
+    }
+
+    @Event
+    public void onTagChanged( CaseTagEvents.Changed event) {
         refreshTagSelector();
         refreshTagList();
     }
@@ -64,7 +70,7 @@ public abstract class   CaseTagListActivity
     }
 
     @Event
-    public void onRemoveTag(CaseTagEvents.Remove event) {
+    public void onRemoveTag( CaseTagEvents.Removed event) {
         if ( event.caseTag == null ) {
             return;
         }
