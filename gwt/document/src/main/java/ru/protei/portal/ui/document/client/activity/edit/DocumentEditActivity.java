@@ -57,8 +57,9 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        drawView(event.parent, true);
-        fillView(event.document);
+        placeView(event.parent);
+        view.drawInWizardContainer(true);
+        fillView(new Document());
     }
 
     @Event(Type.FILL_CONTENT)
@@ -73,26 +74,21 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        drawView(initDetails.parent, false);
+        placeView(initDetails.parent);
+        view.drawInWizardContainer(false);
         Document document = makeDocumentFromEvent(event);
         requestEquipmentAndFillView(event.equipmentId, document);
     }
 
     @Event(Type.FILL_CONTENT)
     public void onEdit(DocumentEvents.Edit event) {
-        if (!event.isFromEquipment && !policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
 
-        if (event.isFromEquipment && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
-            return;
-        }
-
-        view.projectEnabled(false);
-
-        drawView(initDetails.parent, false);
+        placeView(initDetails.parent);
+        view.drawInWizardContainer(false);
         requestDocumentAndFillView(event.id, this::fillView);
     }
 
@@ -202,10 +198,9 @@ public abstract class DocumentEditActivity
         return document;
     }
 
-    private void drawView(HasWidgets container, boolean isFromWizard) {
+    private void placeView(HasWidgets container) {
         container.clear();
         container.add(view.asWidget());
-        isPartOfWizardWidget = isFromWizard;
     }
 
     private void requestProject(long projectId, Consumer<ProjectInfo> consumer) {
@@ -550,13 +545,14 @@ public abstract class DocumentEditActivity
             requestProject(document.getProjectId(), this::onProjectChanged);
         }
 
+        view.projectEnabled(isNew);
+
         if (document.getEquipment() != null && document.getEquipment().getDecimalNumbers() != null) {
             view.setDecimalNumberHints(document.getEquipment().getDecimalNumbers());
         }
 
-        view.drawInWizardContainer(isPartOfWizardWidget);
-
         view.membersEnabled(policyService.hasAnyPrivilegeOf(En_Privilege.DOCUMENT_CREATE, En_Privilege.DOCUMENT_EDIT));
+
     }
 
     private void fillViewProjectInfo(ProjectInfo project) {
@@ -576,9 +572,7 @@ public abstract class DocumentEditActivity
 
     private void setButtonsEnabled (boolean isEnabled){
         view.setButtonsEnabled(isEnabled);
-        if (isPartOfWizardWidget) {
-            fireEvent(new DocumentEvents.SetButtonsEnabled(isEnabled));
-        }
+        fireEvent(new DocumentEvents.SetButtonsEnabled(isEnabled));
     }
 
     @Inject
@@ -600,7 +594,6 @@ public abstract class DocumentEditActivity
 
     private Document document;
     private ProjectInfo project;
-    private boolean isPartOfWizardWidget = false;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
     private AppEvents.InitDetails initDetails;
     private List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>(Arrays.asList(En_DocumentCategory.values()));

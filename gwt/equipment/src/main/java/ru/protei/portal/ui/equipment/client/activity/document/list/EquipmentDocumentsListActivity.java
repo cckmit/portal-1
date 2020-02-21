@@ -73,7 +73,7 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
             return;
         }
 
-        fireEvent(new DocumentEvents.Edit(value.getId(), true));
+        fireEvent(new DocumentEvents.Edit(value.getId()));
 
     }
 

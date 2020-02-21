@@ -45,17 +45,11 @@ public class DocumentEvents {
     public static class Edit {
 
         public Long id;
-        public Boolean isFromEquipment = false;
 
         public Edit() {}
 
         public Edit(Long id) {
             this.id = id;
-        }
-
-        public Edit(Long id, Boolean isFromEquipment) {
-            this.id = id;
-            this.isFromEquipment = isFromEquipment;
         }
 
         public static Edit byId(Long id) {
@@ -82,16 +76,11 @@ public class DocumentEvents {
     }
 
     public static class CreateFromWizard {
-        @Omit
+
         public HasWidgets parent;
-        @Omit
-        public Document document;
 
-        public CreateFromWizard(){}
-
-        public CreateFromWizard(HasWidgets parent, Document document) {
+        public CreateFromWizard(HasWidgets parent) {
             this.parent = parent;
-            this.document = document;
         }
     }
 
