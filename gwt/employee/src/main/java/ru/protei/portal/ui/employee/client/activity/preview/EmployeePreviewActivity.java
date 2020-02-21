@@ -33,24 +33,24 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         fillView( event.employee );
     }
 
-    private void fillView( EmployeeShortView employee ) {
-        view.setID( employee.getId().toString() );
-        view.setName( employee.getDisplayName() );
-        view.setIP( employee.getIpAddress() );
+    private void fillView(EmployeeShortView employee) {
+        view.setID(employee.getId().toString());
+        view.setName(employee.getDisplayName());
+        view.setIP(employee.getIpAddress());
 
         view.getPositionsContainer().clear();
-        WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
-        entryFacade.getSortedEntries().forEach( workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
+        WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
+        entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
-                    AbstractPositionItemView itemView = makeView( workerEntry, head == null ? null : head.getName());
-                    view.getPositionsContainer().add( itemView.asWidget() );
+                    AbstractPositionItemView itemView = makeView(workerEntry, head == null || head.getId().equals(workerEntry.getPersonId()) ? null : head.getName());
+                    view.getPositionsContainer().add(itemView.asWidget());
                 })
         ));
     }
 
-    private AbstractPositionItemView makeView( WorkerEntryShortView workerEntry, String headName ) {
+    private AbstractPositionItemView makeView(WorkerEntryShortView workerEntry, String headName) {
         AbstractPositionItemView itemView = factory.get();
-        itemView.setActivity( this );
+        itemView.setActivity(this);
 
         if (workerEntry.getDepartmentParentName() == null) {
             itemView.setDepartmentParent(workerEntry.getDepartmentName());
@@ -65,7 +65,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
 
-        itemView.setPosition( workerEntry.getPositionName() );
+        itemView.setPosition(workerEntry.getPositionName());
 
         return itemView;
     }

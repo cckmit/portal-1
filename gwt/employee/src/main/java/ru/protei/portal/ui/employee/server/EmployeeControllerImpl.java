@@ -28,23 +28,16 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
-    public PersonShortView getEmployeeById(Long emploeeId ) throws RequestFailedException {
-        log.info( "getEmployee(): emploeeId={}", emploeeId );
+    public PersonShortView getEmployee(Long employeeId) throws RequestFailedException {
+        log.info("getEmployee(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeById(token, emploeeId));
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
     }
     @Override
-    public SearchResult< EmployeeShortView > getEmployees(EmployeeQuery query ) throws RequestFailedException {
-        log.info( "getEmployees(): query={}", query );
+    public SearchResult<EmployeeShortView> getEmployees(EmployeeQuery query) throws RequestFailedException {
+        log.info("getEmployees(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
-    }
-
-    @Override
-    public PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException {
-        log.info( "getDepartmentHead(): departmentId={}", departmentId );
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(token, departmentId));
     }
 
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
@@ -62,6 +55,12 @@ public class EmployeeControllerImpl implements EmployeeController {
         return result.getData();
     }
 
+    @Override
+    public PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException {
+        log.info("getDepartmentHead(): departmentId={}", departmentId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(token, departmentId));
+    }
 
     @Autowired
     SessionService sessionService;

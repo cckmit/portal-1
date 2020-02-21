@@ -17,7 +17,7 @@
             <span ui:field="position"/>
         </div>
         <g:HTMLPanel ui:field="departmentHeadContainer" styleName="small" visible="false">
-            <i class="fas fa-heading"/>
+            <i class="fas fa-user-tie"/>
             <span ui:field="departmentHead"/>
         </g:HTMLPanel>
     </g:HTMLPanel>

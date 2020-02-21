@@ -79,7 +79,7 @@ public abstract class EmployeeModel implements Activity,
             return;
         }
         currentPerson = null;
-        employeeService.getEmployeeById(myId, new FluentCallback<PersonShortView>().withSuccess( r->currentPerson=r ) );
+        employeeService.getEmployee(myId, new FluentCallback<PersonShortView>().withSuccess( r->currentPerson=r ) );
     }
     private List<PersonShortView> transliteration(List<PersonShortView> options) {
         return options;

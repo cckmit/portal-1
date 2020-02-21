@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -49,6 +46,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     WorkerEntryShortViewDAO workerEntryShortViewDAO;
 
     @Autowired
+    CompanyDepartmentDAO companyDepartmentDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
@@ -65,19 +65,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return new EmployeeDetailView().fill(personAbsences, isFull);
-    }
-
-    @Override
-    public Result< Person > getEmployee( Long id ) {
-        Person person = personDAO.getEmployee(id);
-        if ( person == null ) {
-            return ok(person);
-        }
-
-        // RESET PRIVACY INFO
-        person.setPassportInfo(null);
-
-        return ok(person);
     }
 
     public EmployeeDetailView getEmployeeProfile(Long id){
@@ -108,14 +95,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<PersonShortView> getEmployeeById( AuthToken token, Long emploeeId ) {
-        Person person = personDAO.get( emploeeId );
-        if(person==null) return error( En_ResultStatus.NOT_FOUND );
+    public Result<PersonShortView> getEmployee(AuthToken token, Long employeeId) {
+        Person person = personDAO.get(employeeId);
+        if(person==null) return error(En_ResultStatus.NOT_FOUND);
         return ok(person.toShortNameShortView());
     }
 
     @Override
-    public Result<SearchResult<EmployeeShortView>> employeeList( AuthToken token, EmployeeQuery query) {
+    public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
         List<EmployeeShortView> results = sr.getResults();
@@ -131,7 +118,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<List<WorkerView>> list( String param) {
+    public Result<List<WorkerView>> list(String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
         Company our_comp = companyDAO.get(1L);
@@ -153,10 +140,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Person head = personDAO.getDepartmentHeadByDepartmentId(departmentId);
+        CompanyDepartment department = companyDepartmentDAO.get(departmentId);
 
-        return ok(head == null ? null : head.toFullNameShortView());
+        return ok(department == null ? null : (department.getHead() == null ?
+                (department.getParentHead() == null ? null : department.getParentHead().toFullNameShortView()) :
+                department.getHead().toFullNameShortView()));
     }
+
 
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
         if(personAbsences.size()==0)
@@ -175,6 +165,5 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         for(PersonAbsence p:personAbsences)
             p.setCreator(creators.get(p.getCreatorId()));
-
     }
 }

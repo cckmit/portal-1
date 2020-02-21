@@ -16,25 +16,25 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/EmployeeController" )
 public interface EmployeeController extends RemoteService {
 
-    PersonShortView getEmployeeById( Long emploeeId ) throws RequestFailedException;
+    PersonShortView getEmployee(Long emploeeId) throws RequestFailedException;
 
     /**
      * Получение списка сотрудников
      * @return список сотрудников
      */
-    SearchResult< EmployeeShortView > getEmployees (EmployeeQuery query ) throws RequestFailedException;
-
-    /**
-     * Получение главы департамента
-     * @param departmentId айди департамента
-     * @return имя руководителя департамента
-     */
-    PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
+    SearchResult<EmployeeShortView> getEmployees(EmployeeQuery query) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления сотрудника
      * @param query запрос
      * @return
      */
-    List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException;
+    List<PersonShortView> getEmployeeViewList(EmployeeQuery query) throws RequestFailedException;
+
+    /**
+     * Получение руководителя подразделения
+     * @param departmentId айди подразделения
+     * @return сокращенное представление руководителя подразделения
+     */
+    PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
 }
