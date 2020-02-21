@@ -132,18 +132,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<EmployeeShortView> getEmployeeShortViewById(AuthToken token, Long employeeId) {
-        EmployeeQuery employeeQuery = new EmployeeQuery();
-        employeeQuery.setId(employeeId);
+    public Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employeeId) {
 
-        SearchResult<EmployeeShortView> searchResult = employeeShortViewDAO.getSearchResult(employeeQuery);
-
-        if (searchResult.getTotalCount() == 0) {
-            return error(En_ResultStatus.NOT_FOUND);
+        if (employeeId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        EmployeeShortView employeeShortView = searchResult.iterator().next();
-        employeeShortView.setWorkerEntries(workerEntryShortViewDAO.listByPersonIds(Collections.singletonList(employeeId)));
+        EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+        jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
 
         return ok(employeeShortView);
     }

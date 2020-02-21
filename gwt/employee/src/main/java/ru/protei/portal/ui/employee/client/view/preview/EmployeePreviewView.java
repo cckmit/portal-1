@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -43,11 +44,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public HasWidgets getInfoContainer() {
-        return infoContainer;
-    }
-
-    @Override
     public void setPhotoUrl(String url) {
         photo.setUrl(url);
     }
@@ -56,6 +52,42 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
         rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @Override
+    public void setName(String name, String link) {
+        this.employeeName.setInnerText(name);
+        this.employeeName.setHref(link);
+    }
+
+    @Override
+    public void setBirthday(String birthday) {
+        this.birthday.setInnerText(birthday);
+    }
+
+    @Override
+    public void setPhones(String phones) {
+        this.phones.setInnerText(phones);
+    }
+
+    @Override
+    public void setEmail(String email) {
+        this.email.setInnerHTML(email);
+    }
+
+    @Override
+    public HasVisibility birthdayContainerVisibility() {
+        return birthdayContainer;
+    }
+
+    @Override
+    public HasVisibility phonesContainerVisibility() {
+        return phonesContainer;
+    }
+
+    @Override
+    public HasVisibility emailContainerVisibility() {
+        return emailContainer;
     }
 
     @UiHandler("backButton")
@@ -75,13 +107,31 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     HTMLPanel positionsContainer;
 
     @UiField
-    HTMLPanel infoContainer;
-
-    @UiField
     SpanElement ip;
 
     @UiField
     Image photo;
+
+    @UiField
+    AnchorElement employeeName;
+
+    @UiField
+    SpanElement birthday;
+
+    @UiField
+    SpanElement phones;
+
+    @UiField
+    SpanElement email;
+
+    @UiField
+    HTMLPanel birthdayContainer;
+
+    @UiField
+    HTMLPanel phonesContainer;
+
+    @UiField
+    HTMLPanel emailContainer;
 
     @UiField
     HTMLPanel backButtonPanel;

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -7,12 +8,30 @@ import com.google.gwt.user.client.ui.IsWidget;
  * Представление превью сотрудника
  */
 public interface AbstractEmployeePreviewView extends IsWidget {
-    void setActivity(AbstractEmployeePreviewActivity activity );
-    void setID( String value );
-    void setIP( String ip );
+
+    void setActivity(AbstractEmployeePreviewActivity activity);
+
     void setPhotoUrl(String url);
+
+    void setName(String name, String link);
+
+    void setBirthday(String birthday);
+
+    void setPhones(String phones);
+
+    void setEmail(String email);
+
+    void setID(String value);
+
+    void setIP(String ip);
+
+    HasVisibility birthdayContainerVisibility();
+
+    HasVisibility phonesContainerVisibility();
+
+    HasVisibility emailContainerVisibility();
+
     HasWidgets getPositionsContainer();
-    HasWidgets getInfoContainer();
 
     void showFullScreen(boolean isFullScreen);
 }

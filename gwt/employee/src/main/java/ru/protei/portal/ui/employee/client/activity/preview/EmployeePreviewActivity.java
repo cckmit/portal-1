@@ -8,7 +8,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -24,15 +23,13 @@ import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.employee.client.activity.item.AbstractInfoItemActivity;
-import ru.protei.portal.ui.employee.client.activity.item.AbstractInfoItemView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 /**
  * Активность превью сотрудника
  */
-public abstract class EmployeePreviewActivity implements AbstractEmployeePreviewActivity, AbstractPositionItemActivity, AbstractInfoItemActivity, Activity {
+public abstract class EmployeePreviewActivity implements AbstractEmployeePreviewActivity, AbstractPositionItemActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -61,13 +58,13 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     @Event
-    public void onShow( EmployeeEvents.ShowPreview event ) {
+    public void onShow(EmployeeEvents.ShowPreview event) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
         this.employeeId = event.employee.getId();
 
-        fillView( event.employee );
+        fillView(event.employee);
         view.showFullScreen(false);
     }
 
@@ -77,23 +74,40 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView(Long employeeId) {
-        EmployeeQuery employeeQuery = new EmployeeQuery();
-        employeeQuery.setId(employeeId);
-
-        employeeService.getEmployeeShortViewById(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeShortView(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
-    private void fillView( EmployeeShortView employee ) {
-        view.setID( employee.getId().toString() );
-        view.setIP( employee.getIpAddress() );
+    private void fillView(EmployeeShortView employee) {
+
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
+        view.setName(employee.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, employeeId));
+
+        if (employee.getBirthday() == null) {
+            view.setBirthday("");
+            view.birthdayContainerVisibility().setVisible(false);
+        } else {
+            view.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday()));
+            view.birthdayContainerVisibility().setVisible(true);
+        }
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
+
+        if (CollectionUtils.isEmpty(infoFacade.publicEmails())) {
+            view.setEmail("");
+            view.emailContainerVisibility().setVisible(false);
+        } else {
+            view.setEmail(EmailRender.renderToHtml(infoFacade.publicEmailsStream(), false));
+            view.emailContainerVisibility().setVisible(true);
+        }
+        if (StringUtils.isEmpty(infoFacade.publicPhonesAsString())) {
+            view.setPhones("");
+            view.phonesContainerVisibility().setVisible(false);
+        } else {
+            view.setPhones(infoFacade.publicPhonesAsFormattedString(true));
+            view.phonesContainerVisibility().setVisible(true);
+        }
 
         view.getPositionsContainer().clear();
-        view.getInfoContainer().clear();
-
-        AbstractInfoItemView infoItemView = makeInfoView(employee);
-        view.getInfoContainer().add(infoItemView.asWidget());
-
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         entryFacade.getSortedEntries().forEach( workerEntry -> employeeService.getDepartmentHead(workerEntry.getId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
@@ -101,9 +115,13 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
                     view.getPositionsContainer().add( positionItemView.asWidget() );
                 })
         ));
+
+        view.setID(employee.getId().toString());
+        view.setIP(employee.getIpAddress());
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head ) {
+
         AbstractPositionItemView itemView = positionFactory.get();
         itemView.setActivity( this );
 
@@ -121,32 +139,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         itemView.setPosition( workerEntry.getPositionName() );
-
-        return itemView;
-    }
-
-    private AbstractInfoItemView makeInfoView(EmployeeShortView employee) {
-        AbstractInfoItemView itemView = infoFactory.get();
-        itemView.setActivity(this);
-
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-
-        itemView.setName(employee.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, employeeId));
-
-        if (employee.getBirthday() != null) {
-            itemView.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday()));
-            itemView.birthdayContainerVisibility().setVisible(true);
-        }
-
-        if (CollectionUtils.isNotEmpty(infoFacade.publicEmails())) {
-            itemView.setEmail(EmailRender.renderToHtml(infoFacade.publicEmailsStream(), false));
-            itemView.emailContainerVisibility().setVisible(true);
-        }
-
-        if (StringUtils.isNotEmpty(infoFacade.publicPhonesAsString())) {
-            itemView.setPhones(infoFacade.publicPhonesAsFormattedString(true));
-            itemView.phonesContainerVisibility().setVisible(true);
-        }
 
         return itemView;
     }
@@ -172,9 +164,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     Provider< AbstractPositionItemView > positionFactory;
-
-    @Inject
-    Provider<AbstractInfoItemView> infoFactory;
 
     @Inject
     EmployeeControllerAsync employeeService;

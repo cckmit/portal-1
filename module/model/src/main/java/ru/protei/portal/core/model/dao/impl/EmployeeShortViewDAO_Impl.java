@@ -24,6 +24,11 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     }
 
     @Override
+    public EmployeeShortView get(Long employeeId) {
+        return getByCondition("id = ? limit 1", employeeId);
+    }
+
+    @Override
     @SqlConditionBuilder
     public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
         return employeeSqlBuilder.createSqlCondition(query);
@@ -37,6 +42,7 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     @Override
     public SearchResult<EmployeeShortView> getSearchResult(EmployeeQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+
         SearchResult<EmployeeShortView> searchResult = new SearchResult<>();
         if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
             searchResult.setTotalCount(count(query));

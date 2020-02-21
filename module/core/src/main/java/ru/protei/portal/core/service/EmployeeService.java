@@ -19,7 +19,7 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    Result<List<PersonShortView>> shortViewList( EmployeeQuery query);
+    Result<List<PersonShortView>> shortViewList(EmployeeQuery query);
 
     Result<List<WorkerView>> list(String param);
 
@@ -27,7 +27,7 @@ public interface EmployeeService {
     Result<SearchResult<EmployeeShortView>> employeeList( AuthToken token, EmployeeQuery query);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    Result<EmployeeShortView> getEmployeeShortViewById(AuthToken token, Long employee);
+    Result<EmployeeShortView> getEmployeeShortView( AuthToken token, Long employee);
 
     Result<Person> getEmployee( Long id );
     EmployeeDetailView getEmployeeProfile (Long id);

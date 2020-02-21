@@ -11,11 +11,6 @@ public class EmployeeSqlBuilder {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
-            if (query.getId() != null) {
-                condition.append(" and Person.id = ?");
-                args.add(query.getId());
-            }
-
             if (query.getFired() != null) {
                 condition.append(" and Person.isfired=?");
                 args.add(query.getFired() ? 1 : 0);

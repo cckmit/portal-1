@@ -5,19 +5,17 @@
 
     <g:HTMLPanel styleName="p-t-10 p-b-10">
         <div class="small">
-            <i class="fa fa-sitemap"/>
             <span ui:field="departmentParent"/>
         </div>
         <g:HTMLPanel ui:field="departmentContainer" styleName="small" visible="false">
-            <i class="fa fa-th-large"/>
             <span ui:field="department"/>
         </g:HTMLPanel>
         <div class="small">
-            <i class="fa fa-street-view"/>
+            <b><ui:text from="{lang.employeePosition}: "/></b>
             <span ui:field="position"/>
         </div>
         <g:HTMLPanel ui:field="departmentHeadContainer" styleName="small" visible="false">
-            <i class="fas fa-user-tie"/>
+            <b><ui:text from="{lang.employeeDepartmentHead}: "/></b>
             <a ui:field="departmentHead" target="_blank" href="#"/>
         </g:HTMLPanel>
     </g:HTMLPanel>

@@ -11,8 +11,6 @@ import java.util.Set;
  */
 public class EmployeeQuery extends BaseQuery {
 
-    private Long id;
-
     private Boolean fired;
 
     private Boolean deleted;
@@ -129,19 +127,10 @@ public class EmployeeQuery extends BaseQuery {
         this.departmentParent = departmentParent;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return "EmployeeQuery{" +
-                "id=" + id +
-                ", fired=" + fired +
+                "fired=" + fired +
                 ", deleted=" + deleted +
                 ", onlyPeople=" + onlyPeople +
                 ", homeCompanies=" + homeCompanies +
