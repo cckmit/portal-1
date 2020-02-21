@@ -57,8 +57,6 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        view.membersEnabled(true);
-
         drawView(event.parent, true);
         fillView(event.document);
     }
@@ -74,9 +72,6 @@ public abstract class DocumentEditActivity
             fireEvent(new Back());
             return;
         }
-
-        view.membersEnabled(false);
-
 
         drawView(initDetails.parent, false);
         Document document = makeDocumentFromEvent(event);
@@ -95,7 +90,6 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        view.membersEnabled(!event.isFromEquipment);
         view.projectEnabled(false);
 
         drawView(initDetails.parent, false);
@@ -561,6 +555,8 @@ public abstract class DocumentEditActivity
         }
 
         view.drawInWizardContainer(isPartOfWizardWidget);
+
+        view.membersEnabled(policyService.hasAnyPrivilegeOf(En_Privilege.DOCUMENT_CREATE, En_Privilege.DOCUMENT_EDIT));
     }
 
     private void fillViewProjectInfo(ProjectInfo project) {
