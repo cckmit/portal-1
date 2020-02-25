@@ -10,10 +10,12 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
+import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -39,7 +41,9 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 @EnableAspectJAutoProxy
@@ -57,6 +61,16 @@ public class JiraTestConfiguration {
     public Executor threadPoolTaskExecutor() {
         int queueLimit = config.data().jiraConfig().getQueueLimit();
         return new JiraQueueSingleThreadPoolTaskExecutor( queueLimit );
+    }
+
+    @Bean(name = BACKGROUND_TASKS)
+    public Executor backgroundTaskExecutor() {
+        return Executors.newCachedThreadPool();
+    }
+
+    @Bean
+    public MailSendChannel getMailChannel() {
+        return new VirtualMailSendChannel();
     }
 
     @Bean

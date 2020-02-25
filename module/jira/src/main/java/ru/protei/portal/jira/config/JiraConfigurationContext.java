@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.controller.JiraEventController;
 import ru.protei.portal.jira.factory.JiraClientFactory;

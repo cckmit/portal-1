@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
@@ -87,6 +88,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         final Issue issue = event.getIssue();
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());
         final PersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, defaultPerson);
+
+//        if(issue.getKey().equals( "PRT-825" )){ //TODO test
+//            logger.warn( "updateOrCreate(): ABORT" );
+//            throw new RuntimeException( "Do ABORT" );}
 
         User user = event.getUser();
         Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();

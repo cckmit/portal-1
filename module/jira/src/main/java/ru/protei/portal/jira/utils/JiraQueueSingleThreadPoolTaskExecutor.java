@@ -16,7 +16,7 @@ public class JiraQueueSingleThreadPoolTaskExecutor extends ThreadPoolTaskExecuto
     /**
      * Величина определяющая максимальное количество соединений с бд
      * используется для расчета количества потоков фоновых задач.
-     * @param queueLimit - максимальное количество обрабатываемых событий от Jira
+     * @param queueLimit - максимальное количество обрабатываемых событий от Jira. Не ограничено если = 0.
      */
     public JiraQueueSingleThreadPoolTaskExecutor( int queueLimit) {
 

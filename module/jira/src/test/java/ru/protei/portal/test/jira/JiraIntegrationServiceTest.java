@@ -12,12 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.AssemblerService;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.dict.JiraHookEventType;
@@ -28,6 +32,7 @@ import ru.protei.portal.test.jira.config.JiraTestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
+import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -41,6 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
@@ -63,6 +69,13 @@ public class JiraIntegrationServiceTest {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    AssemblerService assemblerService;
+    @Autowired
+    MailSendChannel sendChannel;
+    @Autowired
+    PortalConfig portalConfig;
 
     private final String FILE_PATH_JSON = "issue.json";
     private final String FILE_PATH_UPDATED_JSON = "issue.updated.json";
@@ -131,33 +144,69 @@ public class JiraIntegrationServiceTest {
 
     @Test
     public void updateIssueSimultaneously() throws Exception{
-        List<Issue> issues = listOf( makeIssue(jsonString), makeIssue(jsonString), makeIssue(jsonString));
-
         Company company = makeCompany();
-        Person person = makePerson(company);
+        Person person = makePerson( company );
 
-        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), getFirst( issues ).getProject().getId());
-        endpoint.setPersonId(person.getId());
+        List<Issue> issues = listOf( makeIssue( jsonString ), makeIssue( jsonString ), makeIssue( jsonString ) );
 
-        List<CompletableFuture<AssembledCaseEvent> > caseEvents = new ArrayList<>(  );
+        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId( company.getId(), getFirst( issues ).getProject().getId() );
+        endpoint.setPersonId( person.getId() );
+
+        List<CompletableFuture<AssembledCaseEvent>> caseEvents = new ArrayList<>();
         for (Issue issue : issues) {
-            caseEvents.add(   jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, issue)) );
+            caseEvents.add( jiraIntegrationService.create( endpoint, new JiraHookEventData( JiraHookEventType.ISSUE_CREATED, issue ) ) );
         }
 
         for (CompletableFuture<AssembledCaseEvent> caseEvent : caseEvents) {
-            Assert.assertNotNull("Issue not created", caseEvent.get().getCaseObject().getId());
+            Assert.assertNotNull( "Issue not created", caseEvent.get().getCaseObject().getId() );
         }
 
-        issues = listOf( makeIssue(updatedJsonString), makeIssue(updatedJsonString), makeIssue(updatedJsonString));
+        issues = listOf( makeIssue( updatedJsonString ), makeIssue( updatedJsonString ), makeIssue( updatedJsonString ) );
         caseEvents.clear();
         for (Issue issue : issues) {
-            caseEvents.add(  jiraIntegrationService.updateOrCreate( endpoint, new JiraHookEventData( JiraHookEventType.ISSUE_UPDATED, issue ) ) );
+            caseEvents.add( jiraIntegrationService.updateOrCreate( endpoint, new JiraHookEventData( JiraHookEventType.ISSUE_UPDATED, issue ) ) );
         }
 
         for (CompletableFuture<AssembledCaseEvent> caseEvent : caseEvents) {
-            CaseObject object = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
-            Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
+            CaseObject object = caseObjectDAO.get( caseEvent.get().getCaseObjectId() );
+            Assert.assertEquals( "Issue not updated", object.getState(), En_CaseState.OPENED );
         }
+    }
+
+
+    @Test
+    public void sentAssembledEvent() throws Exception{
+        Company company = makeCompany();
+        Person person = makePerson( company );
+        Issue issue = makeIssue( jsonString );
+
+        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), issue.getProject().getId());
+        endpoint.setPersonId(person.getId());
+
+
+//        Void aVoid =
+                jiraIntegrationService.create( endpoint, new JiraHookEventData( JiraHookEventType.ISSUE_CREATED, issue ) )
+                .thenAccept( assembledCaseEvent -> {
+                    log.info( "assembledCaseEvent(): {} ", assembledCaseEvent );
+                    assemblerService.proceed( assembledCaseEvent );
+                } )
+                .get();
+
+        long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
+        long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;
+        Thread.sleep( waitScheduleAndEventAssembler );
+//                .thenRun( () -> {
+
+
+                    log.info( "sentAssembledEvent(): " );
+                    VirtualMailSendChannel mockChannel = (VirtualMailSendChannel) sendChannel;
+
+                    MimeMessage msg = mockChannel.get();
+                    Assert.assertNotNull( msg );
+                    log.info( "sentAssembledEvent(): msg {}", msg );
+//                } );
+
+
     }
 
     @Test
