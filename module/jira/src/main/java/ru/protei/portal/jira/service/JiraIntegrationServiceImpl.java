@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
@@ -32,6 +34,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
@@ -65,17 +71,19 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Autowired
     AttachmentService attachmentService;
 
+    @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
     @Override
-    public AssembledCaseEvent create(JiraEndpoint endpoint, JiraHookEventData event) {
+    public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         CachedPersonMapper personMapper = new CachedPersonMapper( personDAO, endpoint, personDAO.get( endpoint.getPersonId() ));
         Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();
         Person initiator = personMapper.toProteiPerson( issue.getReporter() );
-        return createCaseObject( initiator, authorId, issue, endpoint, personMapper );
+        return completedFuture( createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
     }
 
+    @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
     @Override
-    public AssembledCaseEvent updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
+    public CompletableFuture<AssembledCaseEvent> updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());
         final PersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, defaultPerson);
@@ -86,7 +94,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint.getId(), issue));
         if (caseObj == null) {
             Person initiator = personMapper.toProteiPerson( issue.getReporter() );
-            return createCaseObject( initiator, authorId, issue, endpoint, personMapper );
+            return completedFuture(createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
         }
 
         if (isTechUser( endpoint.getServerLogin(), user )) {
@@ -94,10 +102,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             return null;
         }
 
-        return updateCaseObject( authorId, caseObj, issue, endpoint, personMapper );
+        return completedFuture(updateCaseObject( authorId, caseObj, issue, endpoint, personMapper ));
     }
 
-    public AssembledCaseEvent updateCaseObject( Long authorId, CaseObject caseObj, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
+    private AssembledCaseEvent updateCaseObject( Long authorId, CaseObject caseObj, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
 
             if (caseObj.isDeleted()) {
                 logger.debug("our case {} is marked as deleted, skip event", caseObj.defGUID());

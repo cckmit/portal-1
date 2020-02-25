@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -31,7 +32,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, JiraTestConfiguration.class})
@@ -99,7 +108,7 @@ public class JiraIntegrationServiceTest {
     }
 
     @Test
-    public void createAndUpdateIssue() {
+    public void createAndUpdateIssue() throws Exception{
         Issue issue = makeIssue(jsonString);
         Assert.assertNotNull("Error parsing json for create", issue);
 
@@ -109,15 +118,46 @@ public class JiraIntegrationServiceTest {
         JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), issue.getProject().getId());
         endpoint.setPersonId(person.getId());
 
-        AssembledCaseEvent caseEvent = jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, issue));
-        Assert.assertNotNull("Issue not created", caseEvent.getCaseObject().getId());
+        CompletableFuture<AssembledCaseEvent> caseEvent = jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, issue));
+        Assert.assertNotNull("Issue not created", caseEvent.get().getCaseObject().getId());
 
         issue = makeIssue(updatedJsonString);
         Assert.assertNotNull("Error parsing json for update", issue);
 
         caseEvent = jiraIntegrationService.updateOrCreate(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_UPDATED, issue));
-        CaseObject object = caseObjectDAO.get(caseEvent.getCaseObjectId());
+        CaseObject object = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
         Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
+    }
+
+    @Test
+    public void updateIssueSimultaneously() throws Exception{
+        List<Issue> issues = listOf( makeIssue(jsonString), makeIssue(jsonString), makeIssue(jsonString));
+
+        Company company = makeCompany();
+        Person person = makePerson(company);
+
+        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), getFirst( issues ).getProject().getId());
+        endpoint.setPersonId(person.getId());
+
+        List<CompletableFuture<AssembledCaseEvent> > caseEvents = new ArrayList<>(  );
+        for (Issue issue : issues) {
+            caseEvents.add(   jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, issue)) );
+        }
+
+        for (CompletableFuture<AssembledCaseEvent> caseEvent : caseEvents) {
+            Assert.assertNotNull("Issue not created", caseEvent.get().getCaseObject().getId());
+        }
+
+        issues = listOf( makeIssue(updatedJsonString), makeIssue(updatedJsonString), makeIssue(updatedJsonString));
+        caseEvents.clear();
+        for (Issue issue : issues) {
+            caseEvents.add(  jiraIntegrationService.updateOrCreate( endpoint, new JiraHookEventData( JiraHookEventType.ISSUE_UPDATED, issue ) ) );
+        }
+
+        for (CompletableFuture<AssembledCaseEvent> caseEvent : caseEvents) {
+            CaseObject object = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
+            Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
+        }
     }
 
     @Test
@@ -129,6 +169,7 @@ public class JiraIntegrationServiceTest {
     }
 
     private Issue makeIssue(String jsonString) {
+        jsonString = jsonString.replaceAll( "PRT-82", "PRT-82" + uniquieIndex.getAndIncrement() );
         try {
             JiraHookEventData data = JiraHookEventParser.parse(jsonString);
             return data == null ? null : data.getIssue();
@@ -155,4 +196,6 @@ public class JiraIntegrationServiceTest {
         person.setId(personDAO.persist(person));
         return person;
     }
+
+    private static AtomicInteger uniquieIndex = new AtomicInteger( 0 );
 }

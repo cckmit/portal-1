@@ -3,6 +3,8 @@ package ru.protei.portal.test.jira.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableAsync;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
@@ -28,6 +30,7 @@ import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
 import ru.protei.portal.jira.service.*;
+import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
@@ -35,8 +38,26 @@ import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
+import java.util.concurrent.Executor;
+
+import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
+
+@EnableAspectJAutoProxy
+@EnableAsync
 @Configuration
 public class JiraTestConfiguration {
+
+    @Autowired
+    PortalConfig config;
+
+    /**
+     * Запуск фоновых задач
+     */
+    @Bean(name = JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
+    public Executor threadPoolTaskExecutor() {
+        int queueLimit = config.data().jiraConfig().getQueueLimit();
+        return new JiraQueueSingleThreadPoolTaskExecutor( queueLimit );
+    }
 
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {

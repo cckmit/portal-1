@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.JiraCompanyGroupDAO;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
@@ -15,22 +16,29 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.JiraCompanyGroup;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
+import ru.protei.portal.core.service.AssemblerService;
 import ru.protei.portal.core.utils.EntityCache;
+import ru.protei.portal.jira.dict.JiraHookEventType;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.service.JiraIntegrationQueueService;
+import ru.protei.portal.jira.service.JiraIntegrationQueueServiceImpl;
+import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-public class JiraEventHandlerImpl {
+public class JiraEventController {
 
-    private static final Logger logger = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger( JiraEventController.class);
 
     @Autowired
     PortalConfig portalConfig;
@@ -42,6 +50,10 @@ public class JiraEventHandlerImpl {
     JiraEndpointDAO jiraEndpointDAO;
     @Autowired
     private CaseObjectDAO caseObjectDAO;
+    @Autowired
+    JiraIntegrationService integrationService;
+    @Autowired
+    AssemblerService assemblerService;
 
     private EntityCache<JiraEndpoint> jiraEndpointCache;
     private EntityCache<JiraEndpoint> jiraEndpointCache() {
@@ -51,8 +63,8 @@ public class JiraEventHandlerImpl {
         return jiraEndpointCache;
     }
 
-    public JiraEventHandlerImpl() {
-        logger.info("Jira webhook handler installed");
+    public JiraEventController() {
+        logger.info("Jira webhook controller (handler) installed");
     }
 
     @PostMapping("/jira/{companyId}/wh")
@@ -92,10 +104,13 @@ public class JiraEventHandlerImpl {
                 return;
             }
 
-            if (!jiraIntegrationQueueService.enqueue(endpoint, eventData)) {
-                logger.error("jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
-                        endpoint, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
-            }
+            proceed( endpoint, eventData )
+                    .thenAccept( caseEvent -> assemblerService.proceed( caseEvent ) ).
+                    exceptionally( throwable -> {
+                        logger.error( "jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
+                                endpoint, realIP, fromHost, request.getQueryString(), eventData.toDebugString(), throwable );
+                        return null;
+                    } );
 
             /**
              * Важное замечание: в каждом событии приходит довольно много информации, но зато она очень подробная и полная
@@ -151,5 +166,22 @@ public class JiraEventHandlerImpl {
                 .map(JiraCompanyGroup::getCompany)
                 .map(Company::getId)
                 .orElse(originalCompanyId);
+    }
+
+    private CompletableFuture<AssembledCaseEvent> proceed( JiraEndpoint endpoint, JiraHookEventData eventData ) {
+        switch (eventData.getEventType()) {
+            case ISSUE_CREATED:
+                return integrationService.create( endpoint, eventData );
+            case ISSUE_UPDATED:
+                return integrationService.updateOrCreate( endpoint, eventData );
+            case COMMENT_UPDATED:
+            case COMMENT_CREATED:
+            case ISSUE_LINK_CREATED:
+            case ISSUE_LINK_DELETED:
+            default:
+                logger.info( "No handler for event {}, skip", eventData.getEventType() );
+                return null;
+        }
+
     }
 }

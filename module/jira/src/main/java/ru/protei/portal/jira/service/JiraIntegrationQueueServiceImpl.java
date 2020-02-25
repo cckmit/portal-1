@@ -146,7 +146,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
 
                     try {
                         JiraEventHandler handler = handlersMap.getOrDefault(eventData.getEventType(), defaultHandler);
-                        AssembledCaseEvent caseEvent = handler.handle(endpoint, eventData);
+                        AssembledCaseEvent caseEvent = handler.handle(endpoint, eventData).get();
                         if (caseEvent == null) {
                             continue;
                         }
@@ -194,7 +194,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     JiraIntegrationService integrationService;
 
     private interface JiraEventHandler {
-        AssembledCaseEvent handle(JiraEndpoint endpoint, JiraHookEventData event);
+        CompletableFuture<AssembledCaseEvent> handle(JiraEndpoint endpoint, JiraHookEventData event);
     }
 
     private boolean isBeanDestroyed = false;
