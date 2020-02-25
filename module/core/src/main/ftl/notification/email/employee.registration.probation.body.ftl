@@ -20,7 +20,7 @@
 
         <div style="padding: 8px 0 4px;">
             <div style="font-family: sans-serif;font-size: 14px;">${_probation_period_is_end} <a href="${linkToEmployeeRegistration}">${employee_registration_name}</a>.</div>
-            <div style="font-family: sans-serif;font-size: 14px;">${_response_head_of_department} <a href="https://goo.gl/forms/ZLJn1gfLIGSbk6Zy2">${_anchor}</a></div>
+            <div style="font-family: sans-serif;font-size: 14px;">${_response_head_of_department} <a href="https://forms.yandex.ru/u/5e450660fe156801a92ce758/">${_anchor}</a></div>
         </div>
 
     </div>

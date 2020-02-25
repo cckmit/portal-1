@@ -50,6 +50,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         company.setAsyncModel( companyModel );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
+        workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
+        personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
 
         passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
         passwordGenPopup.addRejectHandler(event -> password.setFocus(true));

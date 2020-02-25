@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -23,22 +24,22 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.client.widget.casetag.item.CaseTagSelectorItem;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.popup.PopupLeftAligned;
-import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CaseTagSelector extends PopupLeftAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
+public class CaseTagSelector extends BasePopupView implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
 
     @Inject
     public void onInit() {
         setWidget(ourUiBinder.createAndBindUi(this));
-        super.init();
+        setAutoHideEnabled(true);
+        setAutoHideOnHistoryEventsEnabled(true);
         ensureDebugIds();
     }
 
@@ -58,7 +59,7 @@ public class CaseTagSelector extends PopupLeftAligned implements HasValueChangeH
     }
 
     @Override
-    protected Panel getRoot() {
+    protected UIObject getPositionRoot() {
         return root;
     }
 
@@ -110,7 +111,7 @@ public class CaseTagSelector extends PopupLeftAligned implements HasValueChangeH
     }
 
     private void displayTags() {
-        boolean isGranted = policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
+        boolean isGranted = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         clearTagsListView();
         caseTags.stream()
                 .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter) || (isGranted ? containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) : false))

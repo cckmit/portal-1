@@ -153,9 +153,9 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
 
     @UiField
     DivElement addon;
-
     @UiField
     Element addonIcon;
+
     @UiField
     SpanElement addonText;
 

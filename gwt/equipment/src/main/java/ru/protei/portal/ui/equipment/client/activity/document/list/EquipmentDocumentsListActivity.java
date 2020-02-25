@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -72,7 +73,8 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
             return;
         }
 
-        fireEvent(new EquipmentEvents.DocumentEdit(value.getId()));
+        fireEvent(new DocumentEvents.Edit(value.getId()));
+
     }
 
     @Override

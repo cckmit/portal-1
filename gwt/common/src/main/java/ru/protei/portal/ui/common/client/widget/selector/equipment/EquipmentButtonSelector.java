@@ -43,9 +43,9 @@ public class EquipmentButtonSelector extends ButtonPopupSingleSelector<Equipment
         }
     }
 
-    public void setProjectId(Long projectId) {
+    public void setProjectIds(Set<Long> projectIds) {
         if (model != null) {
-            model.setProjectId(projectId);
+            model.setProjectIds(projectIds);
         }
     }
 

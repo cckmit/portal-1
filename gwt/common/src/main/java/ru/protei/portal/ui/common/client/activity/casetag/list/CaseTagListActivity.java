@@ -15,7 +15,10 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
+
+import static java.util.Collections.replaceAll;
 
 /**
  * Активность списка тегов
@@ -37,16 +40,30 @@ public abstract class   CaseTagListActivity
         event.parent.add(view.asWidget());
 
         view.getTagsContainer().clear();
-        view.setTagsAddButtonEnabled(event.isAddNewTagEnabled);
+        view.setTagsAddButtonEnabled(event.isEditTagEnabled);
         view.setTagsEditButtonEnabled(event.isEditTagEnabled);
         view.setType(show.caseType);
         hideOrShowIfNoTags();
 
+        tags = new ArrayList<>();
         if (isCaseCreationMode()) {
             return;
         }
 
-        refreshTagList();
+        requestsTags(show.caseId);
+    }
+
+    @Event
+    public void onTagCreated( CaseTagEvents.Created event) {
+        refreshTagSelector();
+    }
+
+    @Event
+    public void onTagChanged( CaseTagEvents.Changed event) {
+        refreshTagSelector();
+        if ( replaceAll( tags, event.caseTag, event.caseTag ) ) {
+            fillView( tags );
+        }
     }
 
     @Event
@@ -58,17 +75,19 @@ public abstract class   CaseTagListActivity
     }
 
     @Event
-    public void onRemoveTag(CaseTagEvents.Remove event) {
+    public void onRemoveTag( CaseTagEvents.Removed event) {
         if ( event.caseTag == null ) {
             return;
         }
 
         if (isCaseCreationMode()) {
             fireEvent(new CaseTagEvents.Detach(show.caseId, event.caseTag.getId()));
-            return;
         }
 
-        refreshTagList();
+        if(tags.remove(event.caseTag )) {
+            fillView( tags );
+        }
+        refreshTagSelector();
     }
 
     @Override
@@ -112,15 +131,16 @@ public abstract class   CaseTagListActivity
 
         if ( isCaseCreationMode() ) {
             fireEvent(new CaseTagEvents.Attach(show.caseId, value));
-            makeCaseTagViewAndAddToParent(value);
-            hideOrShowIfNoTags();
+            if(tags.contains( value )) return;
+            tags.add(value);
+            fillView( tags );
             return;
         }
 
         controller.attachTag(show.caseId, value.getId(), new FluentCallback<Void>()
                 .withSuccess(id -> {
-                    makeCaseTagViewAndAddToParent(value);
-                    hideOrShowIfNoTags();
+                    tags.add(value);
+                    fillView( tags );
                 }));
     }
 
@@ -143,12 +163,15 @@ public abstract class   CaseTagListActivity
         view.getTagsContainer().add(itemWidget.asWidget());
     }
 
-    private void refreshTagList() {
+    private void requestsTags(Long caseId) {
         CaseTagQuery query = new CaseTagQuery();
         query.setCaseType(En_CaseType.CRM_SUPPORT);
-        query.setCaseId(show.caseId);
+        query.setCaseId(caseId);
         controller.getTags(query, new FluentCallback<List<CaseTag>>()
-                .withSuccess(this::fillView)
+                .withSuccess( links -> {
+                    tags = links;
+                    fillView( tags );
+                } )
         );
     }
 
@@ -161,6 +184,12 @@ public abstract class   CaseTagListActivity
         view.getTagsContainerVisibility().setVisible(!isEmpty);
     }
 
+    private void refreshTagSelector() {
+        if(!view.isAttached()) return;
+        view.setType(show.caseType);
+    }
+
+
     @Inject
     private Lang lang;
     @Inject
@@ -171,4 +200,5 @@ public abstract class   CaseTagListActivity
     private Provider<AbstractCaseTagItemView> itemViewProvider;
 
     private CaseTagEvents.Show show;
+    private List<CaseTag> tags = new ArrayList<>(  );
 }

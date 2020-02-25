@@ -18,7 +18,6 @@ public interface AbstractEmployeeFilterView extends IsWidget {
     HasValue< String > email();
     HasValue< String > departmentParent();
     HasValue< Boolean > showFired();
-
-
+    HasValue<Boolean> showTopBrass();
     void resetFilter();
 }

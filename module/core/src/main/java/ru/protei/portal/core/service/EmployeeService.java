@@ -19,16 +19,19 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    Result<List<PersonShortView>> shortViewList( EmployeeQuery query);
-    Result<List<WorkerView>> list( String param);
+    Result<List<PersonShortView>> shortViewList(EmployeeQuery query);
+    Result<List<WorkerView>> list(String param);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    Result<SearchResult<EmployeeShortView>> employeeList( AuthToken token, EmployeeQuery query);
+    Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
 
-    Result<Person> getEmployee( Long id );
-    EmployeeDetailView getEmployeeProfile (Long id);
+    Result<PersonShortView> getEmployee(AuthToken token, Long employeeId);
+
+    EmployeeDetailView getEmployeeProfile(Long id);
     EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
 
-    Result<PersonShortView> getEmployeeById( AuthToken token, Long emploeeId );
+    Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId);
 
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employee);
 }

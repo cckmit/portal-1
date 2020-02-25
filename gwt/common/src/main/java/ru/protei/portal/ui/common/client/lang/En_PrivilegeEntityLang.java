@@ -12,6 +12,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryCommon();
             case ISSUE:
                 return lang.privilegeCategoryIssue();
+            case ISSUE_ASSIGNMENT:
+                return lang.privilegeCategoryIssueAssignment();
             case REGION:
                 return lang.privilegeCategoryRegion();
             case PROJECT:

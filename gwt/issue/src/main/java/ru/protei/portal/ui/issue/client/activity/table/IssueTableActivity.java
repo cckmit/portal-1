@@ -16,10 +16,8 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.SelectorParamsUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -48,7 +46,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
@@ -104,7 +101,7 @@ public abstract class IssueTableActivity
             event.query = null;
         }
 
-        if(!policyService.hasGrantAccessFor( En_Privilege.COMPANY_VIEW ) ){
+        if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
             filterParamView.companies().setValue( companyIds );
@@ -397,7 +394,7 @@ public abstract class IssueTableActivity
 
     private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
         filterView.resetFilter();
-        filterService.getSelectorsParams( SelectorParamsUtils.makeRequest(caseQuery), new RequestCallback<SelectorsParams>() {
+        filterService.getSelectorsParams( caseQuery, new RequestCallback<SelectorsParams>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
@@ -483,7 +480,7 @@ public abstract class IssueTableActivity
     }
 
     private void updateCaseStatesFilter() {
-        if (!policyService.hasGrantAccessFor(En_Privilege.COMPANY_VIEW)) {
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
             filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
         }
     }

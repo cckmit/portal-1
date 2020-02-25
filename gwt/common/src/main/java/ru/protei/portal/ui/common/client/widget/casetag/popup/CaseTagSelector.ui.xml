@@ -11,6 +11,6 @@
                 <i class="fas fa-sm fa-plus"/>
             </g:Button>
         </div>
-        <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="case-tag-list dropdown-menu full-width show"/>
+        <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="case-tag-list full-width show"/>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,12 +1,10 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -24,6 +22,7 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
@@ -93,17 +92,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         requestEmployees( page );
     }
 
-    @Override
-    public void onPreviewClicked( AbstractEmployeeItemView itemView ) {
-        EmployeeShortView value = itemViewToModel.get( itemView );
-        if ( value == null ) {
-            return;
-        }
-
-        fireEvent( new EmployeeEvents.ShowPreview( itemView.getPreviewContainer(), value, false ) );
-        animation.showPreview( itemView, ( IsWidget ) itemView.getPreviewContainer() );
-    }
-
     private void requestEmployees( int page ) {
 
         view.getChildContainer().clear();
@@ -142,7 +130,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
+                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null);
     }
 
     private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {

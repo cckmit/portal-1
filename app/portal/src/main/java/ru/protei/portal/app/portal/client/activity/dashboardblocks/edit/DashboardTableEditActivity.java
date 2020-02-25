@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.UserDashboard;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -23,6 +24,8 @@ import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public abstract class DashboardTableEditActivity implements Activity, AbstractDashboardTableEditActivity, AbstractDialogDetailsActivity {
 
@@ -49,6 +52,8 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         dialogView.saveButtonVisibility().setVisible(true);
         dialogView.setHeader(isNew ? lang.dashboardTableCreate() : lang.dashboardTableEdit());
         dialogView.showPopup();
+
+        loadFilters(this::autoHideExistingFiltersFromCreation);
     }
 
     @Override
@@ -88,20 +93,32 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
     @Override
     public void onCreateFilterNewIssuesClicked() {
-        CaseFilter filter = new CaseFilter();
-        filter.setName(lang.dashboardTableFilterCreationNewIssues());
-        filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        filter.setParams(generateQueryNewIssues());
+        CaseFilter filter = makeFilterNewIssues();
         createNewFilter(filter);
     }
 
     @Override
     public void onCreateFilterActiveIssues() {
-        CaseFilter filter = new CaseFilter();
-        filter.setName(lang.dashboardTableFilterCreationActiveIssues());
-        filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        filter.setParams(generateQueryActiveIssues());
+        CaseFilter filter = makeFilterActiveIssues();
         createNewFilter(filter);
+    }
+
+    private void autoHideExistingFiltersFromCreation(List<CaseFilterShortView> filters) {
+        List<String> filterNames = CollectionUtils.stream(filters)
+                .map(CaseFilterShortView::getName)
+                .collect(Collectors.toList());
+        boolean shouldHideNewIssues = filterNames.contains(makeFilterNewIssues().getName());
+        boolean shouldHideActiveIssues = filterNames.contains(makeFilterActiveIssues().getName());
+        boolean shouldHideCreation = shouldHideNewIssues && shouldHideActiveIssues;
+        view.filterCreateNewIssues().setVisible(!shouldHideNewIssues);
+        view.filterCreateActiveIssues().setVisible(!shouldHideActiveIssues);
+        view.filterCreateContainer().setVisible(!shouldHideCreation);
+    }
+
+    private void loadFilters(Consumer<List<CaseFilterShortView>> onLoaded) {
+        filterController.getIssueFilterShortViewList(En_CaseFilterType.CASE_OBJECTS, new FluentCallback<List<CaseFilterShortView>>()
+                .withError(throwable -> {})
+                .withSuccess(onLoaded));
     }
 
     private void createNewFilter(CaseFilter filter) {
@@ -109,6 +126,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
                 .withSuccess(f -> {
                     view.updateFilterSelector();
                     view.filter().setValue(f.toShortView(), true);
+                    loadFilters(this::autoHideExistingFiltersFromCreation);
                 }));
     }
 
@@ -120,6 +138,22 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
             return false;
         }
         return true;
+    }
+
+    private CaseFilter makeFilterNewIssues() {
+        CaseFilter filter = new CaseFilter();
+        filter.setName(lang.dashboardTableFilterCreationNewIssues());
+        filter.setType(En_CaseFilterType.CASE_OBJECTS);
+        filter.setParams(generateQueryNewIssues());
+        return filter;
+    }
+
+    private CaseFilter makeFilterActiveIssues() {
+        CaseFilter filter = new CaseFilter();
+        filter.setName(lang.dashboardTableFilterCreationActiveIssues());
+        filter.setType(En_CaseFilterType.CASE_OBJECTS);
+        filter.setParams(generateQueryActiveIssues());
+        return filter;
     }
 
     private CaseQuery generateQueryNewIssues() {

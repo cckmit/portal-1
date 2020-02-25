@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -262,10 +261,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withPageId(lang.issues())
                 .withCaseType(En_CaseType.CRM_SUPPORT));
 
-        fireEvent(new CaseTagEvents.Show(view.getTagsContainer())
-                .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withAddEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT ))
-                .withEditEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_EDIT )));
+        fireEvent( new CaseTagEvents.Show( view.getTagsContainer(), En_CaseType.CRM_SUPPORT,
+                policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT )));
 
         view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         unlockSave();

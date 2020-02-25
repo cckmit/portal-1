@@ -18,7 +18,7 @@
                     <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.issueFilterNotDefined}"/>
                 </div>
             </div>
-            <div class="row">
+            <g:HTMLPanel styleName="row" ui:field="filterCreateContainer">
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.dashboardTableFilterCreation}"/></label>
                     <div>
@@ -30,7 +30,7 @@
                         </g:Button>
                     </div>
                 </div>
-            </div>
+            </g:HTMLPanel>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

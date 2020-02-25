@@ -27,11 +27,11 @@ public abstract class PolicyService implements Activity {
         return profile.hasPrivilegeFor( privilege );
     }
 
-    public boolean hasGrantAccessFor( En_Privilege privilege ) {
+    public boolean hasSystemScopeForPrivilege( En_Privilege privilege ) {
         if ( profile == null ) {
             return false;
         }
-        return profile.hasGrantAccessFor( privilege );
+        return profile.hasSystemScopeForPrivilege( privilege );
     }
 
     public boolean hasAnyPrivilegeOf( En_Privilege... privileges ) {

@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.TextBoxBase;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 
 /**
  * Created by bondarenko on 08.11.16.
@@ -12,14 +13,7 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
 
     ValidableTextBoxBase(Element elem){
         super(elem);
-        addBlurHandler(blurEvent -> {
-            validationTimer.cancel();
-            validationTimer.run();
-        });
-        addKeyPressHandler(keyPressEvent -> {
-            validationTimer.cancel();
-            validationTimer.schedule(200);
-        });
+        addDomHandler(event -> validationTimer.schedule(50), InputEvent.getType());
     }
 
     @Override

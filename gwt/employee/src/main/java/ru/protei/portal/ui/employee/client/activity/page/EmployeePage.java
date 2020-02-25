@@ -43,6 +43,11 @@ public abstract class EmployeePage implements Activity {
     }
 
     @Event
+    public void onShowTopBrass(EmployeeEvents.ShowTopBrass event) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onClickSection( SectionEvents.Clicked event ) {
         if ( !ТAB.equals( event.identity ) ) {
             return;

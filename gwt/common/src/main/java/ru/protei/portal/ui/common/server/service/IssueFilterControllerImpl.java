@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.service.IssueFilterService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -46,7 +46,9 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     public CaseFilter getIssueFilter(Long id ) throws RequestFailedException {
         log.info("getIssueFilter, id: {}", id);
 
-        Result<CaseFilter> response = issueFilterService.getIssueFilter( id );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<CaseFilter> response = issueFilterService.getIssueFilter( token, id );
 
         log.info("getIssueFilter, id: {}, response: {} ", id, response.isError() ? "error" : response.getData());
 
@@ -57,12 +59,14 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public SelectorsParams getSelectorsParams(SelectorsParamsRequest selectorsParamsRequest) throws RequestFailedException {
-        log.info("getSelectorsParams, selectorsParamsRequest: {}", selectorsParamsRequest);
+    public SelectorsParams getSelectorsParams( CaseQuery caseQuery ) throws RequestFailedException {
+        log.info("getSelectorsParams, selectorsParamsRequest: {}", caseQuery );
 
-        Result<SelectorsParams> response = issueFilterService.getSelectorsParams( selectorsParamsRequest );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        log.info("getSelectorsParams, id: {}, response: {} ", selectorsParamsRequest, response.isError() ? "error" : response.getData());
+        Result<SelectorsParams> response = issueFilterService.getSelectorsParams( token, caseQuery );
+
+        log.info("getSelectorsParams, id: {}, response: {} ", caseQuery, response.isError() ? "error" : response.getData());
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

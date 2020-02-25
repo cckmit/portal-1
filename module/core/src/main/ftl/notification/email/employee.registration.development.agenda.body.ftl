@@ -19,7 +19,7 @@
 
         <div style="padding: 8px 0 4px;">
             <div style="font-family: sans-serif;font-size: 14px;">${_probation_period_is_end}.</div>
-            <div style="font-family: sans-serif;font-size: 14px;">${_development_agenda} <a href="https://goo.gl/forms/LMtqVDh1JcHGNwzm1">${_anchor}</a></div>
+            <div style="font-family: sans-serif;font-size: 14px;">${_development_agenda} <a href="https://forms.yandex.ru/u/5e4519c580cece01d5c94d5d/">${_anchor}</a></div>
         </div>
 
     </div>

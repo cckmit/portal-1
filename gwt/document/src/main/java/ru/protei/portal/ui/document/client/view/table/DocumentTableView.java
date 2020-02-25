@@ -171,7 +171,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 html
                         .append("<div class =\"document-name text-overflow-dynamic-container\">")
                         .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.TABLE.LOCK_ICON + "\"></i> ")
-                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getName() + "</span>")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis m-l-20\">" + value.getName() + "</span>")
                         .append("</div>");
             } else {
                 html

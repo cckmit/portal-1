@@ -9,6 +9,7 @@ public class ForbiddenEvents {
     public static class Show {
         public String msg;
         public HasWidgets container;
+        @Deprecated
         public Show() {}
         public Show(HasWidgets container) { this.container = container; }
         public Show(HasWidgets container, String msg) {

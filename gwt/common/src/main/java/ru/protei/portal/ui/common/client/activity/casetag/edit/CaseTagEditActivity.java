@@ -11,13 +11,11 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.Profile;
 
 import java.util.Objects;
 
@@ -40,12 +38,13 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         this.caseTag = event.caseTag;
 
         boolean isCreationMode = caseTag.getId() == null;
-        boolean isSameTag = Objects.equals(caseTag.getPersonId(), policyService.getProfile().getId());
-        boolean isAllowedChangeCompany = policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT);
+        boolean isTagOwner = Objects.equals(caseTag.getPersonId(), policyService.getProfile().getId());
+        boolean isSystemScope = policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_EDIT );
+        boolean isAllowedChangeCompany = isSystemScope && (isCreationMode || isTagOwner) ;
 
         // создавать могут все с привилегией ISSUE_EDIT. Заказчики только для своих компаний, сотрудники НТЦ протей для всех.
         // редактируем/удаляем только свои кейсы
-        boolean isAllowedEdit = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) && (isCreationMode || isSameTag);
+        boolean isAllowedEdit = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) && (isCreationMode || isTagOwner);
 
         view.name().setValue(caseTag.getName());
         view.color().setValue(caseTag.getColor());
@@ -65,7 +64,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
         view.companyEnabled().setEnabled(isAllowedChangeCompany);
 
-        dialogView.removeButtonVisibility().setVisible(!isCreationMode && isSameTag);
+        dialogView.removeButtonVisibility().setVisible(!isCreationMode && isTagOwner);
         dialogView.saveButtonVisibility().setVisible(isAllowedEdit);
         dialogView.setHeader(caseTag.getId() == null ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();
@@ -76,8 +75,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTagController.removeTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {
                     dialogView.hidePopup();
-                    fireEvent(new CaseTagEvents.Remove(caseTag));
-                    fireEvent(new CaseTagEvents.ChangeModel());
+                    fireEvent(new CaseTagEvents.Removed(caseTag));
                 })
         );
     }
@@ -92,10 +90,21 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTag.setColor(view.color().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
 
-        caseTagController.saveTag(caseTag, new FluentCallback<Void>()
-                .withSuccess(v -> {
+        if (isNew( caseTag )) {
+            caseTagController.create( caseTag, new FluentCallback<Long>()
+                    .withSuccess( id -> {
+                        caseTag.setId( id );
+                        dialogView.hidePopup();
+                        fireEvent( new CaseTagEvents.Created( caseTag ) );
+                    } )
+            );
+            return;
+        }
+
+        caseTagController.update(caseTag, new FluentCallback<Long>()
+                .withSuccess(id -> {
                     dialogView.hidePopup();
-                    fireEvent(new CaseTagEvents.ChangeModel());
+                    fireEvent(new CaseTagEvents.Changed(caseTag));
                 })
         );
     }
@@ -116,6 +125,10 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
             return false;
         }
         return true;
+    }
+
+    private boolean isNew( CaseTag caseTag ) {
+        return caseTag!=null && caseTag.getId() == null;
     }
 
     @Inject

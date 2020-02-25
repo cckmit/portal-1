@@ -152,33 +152,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
 //        table.setSeparatorProvider( separator );
     }
 
-//    private static final Logger log = Logger.getLogger( IssueTableView.class.getName() );
-//    @Override
-//    protected void onDetach() {
-//        sp.start("onDetach begin");
-//        try {
-//            onUnload();
-//            sp.check( " onUnload");
-//            doDetachChildren();
-//            sp.check( " doDetachChildren");
-//            AttachEvent.fire(this, false);
-//            sp.check( " AttachEvent.fire");
-//        } finally {
-//            // We don't want an exception in user code to keep us from calling the
-//            // super implementation (or event listeners won't get cleaned up and
-//            // the attached flag will be wrong).
-//            widget.onDetach();
-//            sp.check( "  super.onDetach()");
-//        }
-//        sp.stop("onDetach end");
-//    }
-//    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, new SimpleProfiler.Appender() {
-//        @Override
-//        public void append( String message, double currentTime ) {
-//            log.warning(message+" "+currentTime);
-//
-//        }
-//    } );
     @UiField
     InfiniteTableWidget<CaseShortView> table;
 

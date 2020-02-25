@@ -119,7 +119,7 @@ public class Profile implements Serializable {
         return privileges.contains( privilege );
     }
 
-    public boolean hasGrantAccessFor( En_Privilege privilege ) {
+    public boolean hasSystemScopeForPrivilege( En_Privilege privilege ) {
         if ( privilege == null ) {
             return false;
         }

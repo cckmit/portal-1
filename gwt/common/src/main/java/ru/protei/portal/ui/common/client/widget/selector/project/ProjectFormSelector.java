@@ -15,7 +15,7 @@ public class ProjectFormSelector extends FormSelector<EntityOption> implements S
         this.model = model;
         setSelectorModel(model);
         setSearchEnabled(true);
-        setHasNullValue(false);
+        setHasNullValue(true);
         setDisplayOptionCreator(val ->
                 new DisplayOption(val == null ? defaultValue : val.getDisplayText())
         );

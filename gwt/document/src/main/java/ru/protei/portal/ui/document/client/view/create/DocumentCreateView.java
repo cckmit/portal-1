@@ -33,8 +33,14 @@ public class DocumentCreateView extends Composite implements AbstractDocumentCre
     }
 
     @Override
+    public void setWizardButtonsEnabled(boolean isEnabled) {
+        wizard.setButtonsEnabled(isEnabled);
+    }
+
+    @Override
     public void resetWizard() {
         wizard.selectFirstTab();
+        wizard.setButtonsEnabled(true);
     }
 
     @Override

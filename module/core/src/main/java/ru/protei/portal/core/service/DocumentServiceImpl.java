@@ -228,10 +228,6 @@ public class DocumentServiceImpl implements DocumentService {
         Long projectId = document.getProjectId();
         Long documentId = document.getId();
 
-        if (document.getApproved() && (withDoc || withPdf)) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
-
         return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
 
             Document oldDocument = documentDAO.get(documentId);
@@ -245,10 +241,23 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(validationStatus);
             }
 
-            List<En_DocumentFormat> formatsAtSvn = (withDoc || withPdf || withApprovalSheet) ? listDocumentFormatsAtSVN(documentId, projectId) : Collections.emptyList();
-            boolean withDocAtSvn = withDoc && formatsAtSvn.contains(docFormat);
-            boolean withPdfAtSvn = withPdf && formatsAtSvn.contains(pdfFormat);
-            boolean withApprovalSheetAtSvn = withApprovalSheet && formatsAtSvn.contains(ApprovalSheetFormat);
+            if (oldDocument.getApproved() && document.getApproved() && (withDoc || withPdf)) {
+                return error(En_ResultStatus.NOT_AVAILABLE);
+            }
+
+            List<En_DocumentFormat> listFormatsAtSvn = documentSvnApi.isProjectPathExist(projectId)
+                    ? listDocumentFormatsAtSVN(documentId, projectId)
+                    : Collections.emptyList();
+
+            boolean withDocAtSvn = withDoc && listFormatsAtSvn.contains(docFormat);
+            boolean withPdfAtSvn = withPdf && listFormatsAtSvn.contains(pdfFormat);
+            boolean withApprovalSheetAtSvn = withApprovalSheet && listFormatsAtSvn.contains(ApprovalSheetFormat);
+
+            boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
+            if (!oldDocument.getApproved() && document.getApproved() && !(isPdfInSvn || withPdf)) {
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+            }
+
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
             byte[] oldBytesPdf = withPdf && withPdfAtSvn ? getFromSVN(documentId, projectId, pdfFormat) : null;
             byte[] oldBytesApprovalSheet = withApprovalSheet && withApprovalSheetAtSvn ? getFromSVN(documentId, projectId, ApprovalSheetFormat) : null;
@@ -306,7 +315,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withDoc) {
-                removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
+                removeDuplicatedDocFilesFromSvn(listFormatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             }
 
             List<Long> newMembers = fetchNewMemberIds(oldDocument, document);
@@ -344,7 +353,14 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
 
-            List<En_DocumentFormat> formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            List<En_DocumentFormat> formatsAtSvn;
+
+            if(documentSvnApi.isProjectPathExist(projectId)){
+                formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            } else {
+                log.error("updateDocumentDocFile(" + documentId + "): failed to update doc file at the svn. The path of this project doesn't exists");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
             boolean withDocAtSvn = formatsAtSvn.contains(docFormat);
 
             String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, comment);
@@ -552,7 +568,9 @@ public class DocumentServiceImpl implements DocumentService {
         if (project == null) {
             return false;
         }
-        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
+                && document.getType() != null
+                && document.getType().getDocumentCategory() != En_DocumentCategory.ABROAD) {
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;

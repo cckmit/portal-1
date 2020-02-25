@@ -8,4 +8,6 @@ import java.util.List;
 public interface CaseTagDAO extends PortalBaseDAO<CaseTag> {
 
     List<CaseTag> getListByQuery(CaseTagQuery query);
+
+    boolean isNameUniqueForTag( Long id, String name );
 }

@@ -15,12 +15,11 @@ import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.*;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
  * Created by michael on 19.05.16.
@@ -127,17 +126,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + COLUMN_EMAIL_LAST_ID + "+1 WHERE " + getIdColumnName() + " = " + caseId;
         jdbcTemplate.update(sql);
         return lastId;
-    }
-
-    @Override
-    public boolean updateNullCreatorByExtAppType(String extAppType) {
-        String sql = "UPDATE " + getTableName() + " SET creator = initiator WHERE creator IS NULL AND EXT_APP = ?";
-        return jdbcTemplate.update(sql, extAppType) > 0;
-    }
-
-    @Override
-    public int removeByNameLike(String name) {
-        return removeByCondition("CASE_NAME like ?", "%" + name + "%");
     }
 
     @Override

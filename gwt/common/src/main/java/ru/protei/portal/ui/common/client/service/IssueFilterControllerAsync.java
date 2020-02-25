@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.ent.SelectorsParamsRequest;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface IssueFilterControllerAsync {
 
     void getIssueFilter( Long id, AsyncCallback<CaseFilter> async );
 
-    void getSelectorsParams(SelectorsParamsRequest selectorsParamsRequest, AsyncCallback<SelectorsParams> async );
+    void getSelectorsParams( CaseQuery caseQuery, AsyncCallback<SelectorsParams> async );
 
     void saveIssueFilter( CaseFilter filter, AsyncCallback< CaseFilter > async );
 

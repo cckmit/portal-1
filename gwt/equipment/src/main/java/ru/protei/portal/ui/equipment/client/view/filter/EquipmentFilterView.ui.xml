@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:organization="urn:import:ru.protei.portal.ui.common.client.widget.organization"
              xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
+             xmlns:vtb="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:selector="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
@@ -43,14 +44,13 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.equipmentClassifierCode}"/></label>
-                    <g:TextBox ui:field="classifierCode" styleName="form-control dn-classifier-code" maxLength="6"/>
+                    <vtb:ValidableTextBox ui:field="classifierCode" styleName="form-control dn-classifier-code"/>
                 </div>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.equipmentRegisterNumber}"/></label>
-                    <g:TextBox ui:field="regNum" styleName="form-control dn-register-number" maxLength="3"/>
+                    <vtb:ValidableTextBox ui:field="regNum" styleName="form-control dn-register-number"/>
                 </div>
-
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.equipmentType}"/></label>

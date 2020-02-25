@@ -34,10 +34,6 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     List<Long> getCaseNumbersByPlatformId(Long id);
 
-    boolean updateNullCreatorByExtAppType(String extAppType);
-
-    int removeByNameLike(String name);
-
     CaseObject getByCaseNameLike(String name);
 
     @SqlConditionBuilder

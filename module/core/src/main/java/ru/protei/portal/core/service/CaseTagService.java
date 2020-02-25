@@ -9,9 +9,11 @@ import java.util.List;
 
 public interface CaseTagService {
 
-    Result saveTag( AuthToken authToken, CaseTag caseTag);
+    Result<Long> create( AuthToken authToken, CaseTag caseTag );
 
-    Result removeTag( AuthToken authToken, CaseTag caseTag);
+    Result<Long> update( AuthToken authToken, CaseTag caseTag);
+
+    Result<Long> removeTag( AuthToken authToken, CaseTag caseTag);
 
     Result<List<CaseTag>> getTags(AuthToken token, CaseTagQuery query);
 
