@@ -653,6 +653,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryIssue();
 
+    String privilegeCategoryIssueAssignment();
+
     String privilegeCategoryRegion();
 
     String privilegeCategoryProject();
@@ -2047,4 +2049,20 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeTopBrassBtn();
 
     String employeeTopBrassLabel();
+
+    String issueAssignment();
+
+    String issueAssignmentEntryEdit();
+
+    String issueAssignmentEntryRemove();
+
+    String issueAssignmentTableFilter();
+
+    String issueAssignmentTableFilterDefault();
+
+    String issueAssignmentTableOverflow(int records);
+
+    String issueAssignmentIssueAssignTo();
+
+    String issueAssignmentIssueReassignTo();
 }

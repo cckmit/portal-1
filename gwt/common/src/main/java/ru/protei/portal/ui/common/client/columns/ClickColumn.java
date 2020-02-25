@@ -16,6 +16,7 @@ public abstract class ClickColumn<T> {
 
     public interface Handler<T> extends AbstractColumnHandler<T> {
         void onItemClicked ( T value );
+        default void onItemClicked ( T value, com.google.gwt.dom.client.Element target ) { }
     }
 
     public interface DisplayPredicate<T> {
@@ -78,6 +79,7 @@ public abstract class ClickColumn<T> {
                         columnProvider.setSelectedValue(value);//всегда выделять выбранный. PORTAL-209
                     }
                     actionClickHandler.onItemClicked(value);
+                    actionClickHandler.onItemClicked(value, target);
                 }
                 return;
             }
@@ -89,7 +91,9 @@ public abstract class ClickColumn<T> {
 
            columnProvider.changeSelection( value );
             if ( columnClickHandler != null ) {
-                columnClickHandler.onItemClicked( columnProvider.getSelected() );
+                T selected = columnProvider.getSelected();
+                columnClickHandler.onItemClicked(selected);
+                columnClickHandler.onItemClicked(selected, target);
             }
         }
 

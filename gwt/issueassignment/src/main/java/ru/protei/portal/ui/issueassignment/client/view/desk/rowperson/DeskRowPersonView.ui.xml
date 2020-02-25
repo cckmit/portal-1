@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel>
+        <g:HTMLPanel styleName="btn-group dropdown dropdown-default">
+            <g:Button ui:field="optionsButton" styleName="btn btn-default p-t-0 p-b-0 p-l-5 p-r-5 no-border bg-transparent">
+                <i class="fas fa-cog"/>
+            </g:Button>
+            <g:Button ui:field="expandButton" styleName="btn btn-default p-t-0 p-b-0 p-l-5 p-r-5 no-border bg-transparent">
+                <i class="fas fa-angle-down" ui:field="expandButtonIcon"/>
+            </g:Button>
+        </g:HTMLPanel>
+        <span ui:field="label"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

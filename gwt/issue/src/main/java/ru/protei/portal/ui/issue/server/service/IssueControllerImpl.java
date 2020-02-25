@@ -131,6 +131,15 @@ public class IssueControllerImpl implements IssueController {
         return response.getData();
     }
 
+    @Override
+    public void updateManagerOfIssue(long issueId, long personId) throws RequestFailedException {
+        log.info("updateManagerOfIssue(): issueId={} | personId={}", issueId, personId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        CaseObjectMeta meta = ServiceUtils.checkResultAndGetData(caseService.getIssueMeta(token, issueId));
+        meta.setManagerId(personId);
+        ServiceUtils.checkResult(caseService.updateCaseObjectMeta(token, meta));
+    }
+
     @Autowired
     CaseService caseService;
     @Autowired
