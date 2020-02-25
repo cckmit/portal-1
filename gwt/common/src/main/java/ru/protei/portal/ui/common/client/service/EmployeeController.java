@@ -33,11 +33,10 @@ public interface EmployeeController extends RemoteService {
 
     /**
      * Получение руководителя подразделения
-     * @param employeeId айди сотрудника
      * @param departmentId айди подразделения
      * @return сокращенное представление руководителя
      */
-    PersonShortView getDepartmentHead(Long employeeId, Long departmentId) throws RequestFailedException;
+    PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
 
     EmployeeShortView getEmployeeShortView( Long employeeId) throws RequestFailedException;
 }
