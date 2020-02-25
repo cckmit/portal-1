@@ -153,14 +153,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<PersonShortView> getDepartmentHead(AuthToken token, Long employeeId, Long departmentId) {
-        if (employeeId == null || departmentId == null) {
+    public Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId) {
+        if (departmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         CompanyDepartment department = companyDepartmentDAO.get(departmentId);
 
-        return ok(department == null ? null : (department.getHead() == null || department.getHead().getId().equals(employeeId) ?
+        return ok(department == null ? null : (department.getHead() == null ?
                         (department.getParentHead() == null ? null : department.getParentHead().toFullNameShortView()) :
                 department.getHead().toFullNameShortView()));
     }

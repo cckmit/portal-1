@@ -69,7 +69,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     @Override
-    public void onFullScreenClicked () {
+    public void onFullScreenClicked() {
         fireEvent(new EmployeeEvents.ShowFullScreen(employeeId));
     }
 
@@ -114,7 +114,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         view.getPositionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
-        entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getPersonId(), workerEntry.getDepId(), new FluentCallback<PersonShortView>()
+        entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
                     AbstractPositionItemView positionItemView = makePositionView(workerEntry, head);
                     view.getPositionsContainer().add(positionItemView.asWidget());
@@ -138,7 +138,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             itemView.departmentContainerVisibility().setVisible(true);
         }
 
-        if (head != null) {
+        if (head != null && !head.getId().equals(employeeId)) {
             itemView.setDepartmentHead(head.getName(), LinkUtils.makeLink(EmployeeShortView.class, head.getId()));
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }

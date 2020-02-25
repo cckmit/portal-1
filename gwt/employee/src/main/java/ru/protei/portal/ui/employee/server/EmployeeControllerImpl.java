@@ -56,10 +56,10 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public PersonShortView getDepartmentHead(Long employeeId, Long departmentId) throws RequestFailedException {
-        log.info("getDepartmentHead(): employeeId={}, departmentId={}", employeeId, departmentId);
+    public PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException {
+        log.info("getDepartmentHead(): departmentId={}", departmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(token, employeeId, departmentId));
+        return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(token, departmentId));
     }
 
     @Override

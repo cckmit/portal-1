@@ -30,7 +30,7 @@ public interface EmployeeService {
     EmployeeDetailView getEmployeeProfile(Long id);
     EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
 
-    Result<PersonShortView> getDepartmentHead(AuthToken token, Long employeeId, Long departmentId);
+    Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employee);

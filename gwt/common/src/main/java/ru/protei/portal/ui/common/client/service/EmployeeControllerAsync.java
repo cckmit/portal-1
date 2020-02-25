@@ -30,11 +30,10 @@ public interface EmployeeControllerAsync {
 
     /**
      * Получение руководителя подразделения
-     * @param employeeId айди сотрудника
      * @param departmentId айди подразделения
      * @return сокращенное представление руководителя
      */
-    void getDepartmentHead(Long employeeId, Long departmentId, AsyncCallback<PersonShortView> async);
+    void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
 
     void getEmployeeShortView(Long employeeId, AsyncCallback<EmployeeShortView> async);
 }
