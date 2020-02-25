@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
@@ -20,7 +19,10 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
+import static ru.protei.portal.core.model.dict.En_CaseStateWorkflow.NO_WORKFLOW;
+import static ru.protei.portal.core.model.dict.En_CaseStateWorkflow.NX_JIRA;
 
 /**
  * Модель статусов
@@ -71,22 +73,71 @@ public abstract class StateModel implements Activity {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(caseStateAndWorkflowList -> {
-                    caseStateWorkflowList.clear();
-                    caseStateWorkflowList.addAll(caseStateAndWorkflowList.getCaseStateWorkflowList());
-                    caseStatesList.clear();
-                    caseStatesList.addAll(caseStateAndWorkflowList.getCaseStatesList());
                     isRefreshing = false;
+                    workflowCaseStateMap = createWorkflowCaseStateMap(caseStateAndWorkflowList.getCaseStatesList(), caseStateAndWorkflowList.getCaseStateWorkflowList());
                     notifySubscribers();
                 }));
     }
 
+    private Map<En_CaseStateWorkflow, Map<En_CaseState, List<En_CaseState>>> createWorkflowCaseStateMap(List<CaseState> caseStatesList, List<CaseStateWorkflow> caseStateWorkflowList) {
+        Map<En_CaseStateWorkflow, Map<En_CaseState, List<En_CaseState>>> workflowCaseStateMap = new HashMap<>();
+
+        workflowCaseStateMap.put(NO_WORKFLOW, createNoWorkflowMap(caseStatesList));
+
+        Map<Long, Integer> idToOrder =
+                caseStatesList.stream().collect(toMap(CaseState::getId, CaseState::getViewOrder));
+        Comparator<En_CaseState> enCaseStateComparator =
+                Comparator.comparing((En_CaseState en_CaseState) -> idToOrder.get((long) en_CaseState.getId()))
+                        .thenComparing(En_CaseState::getId);
+        Map<Long, List<CaseStateWorkflowLink>> caseStateWorkflowListMap =
+                caseStateWorkflowList.stream().collect(toMap(CaseStateWorkflow::getId, CaseStateWorkflow::getCaseStateWorkflowLinks));
+
+        for (En_CaseStateWorkflow en_caseStateWorkflow : En_CaseStateWorkflow.values()) {
+            if (en_caseStateWorkflow == NO_WORKFLOW) {
+                continue;
+            }
+            workflowCaseStateMap.put(
+                    en_caseStateWorkflow,
+                    createOtherWorkflowMap(enCaseStateComparator, caseStateWorkflowListMap.get((long) en_caseStateWorkflow.getId())));
+        }
+
+        return workflowCaseStateMap;
+    }
+
+    private Map<En_CaseState, List<En_CaseState>> createNoWorkflowMap(List<CaseState> caseStatesList) {
+        Map<En_CaseState, List<En_CaseState>> noWorkflowMap = new HashMap<>();
+        List<En_CaseState> noWorkflowList = caseStatesList.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( toList());
+        for (En_CaseState currentCaseState : En_CaseState.values()) {
+            if (currentCaseState.isTerminalState()) {
+                noWorkflowMap.put(currentCaseState, Collections.singletonList(currentCaseState));
+            } else {
+                noWorkflowMap.put(currentCaseState, noWorkflowList);
+            }
+        }
+        return noWorkflowMap;
+    }
+
+    private  Map<En_CaseState, List<En_CaseState>> createOtherWorkflowMap(Comparator<En_CaseState> comparator, List<CaseStateWorkflowLink> caseStateWorkflowList) {
+        Map<En_CaseState, Set<En_CaseState>> flow = caseStateWorkflowList.stream()
+                .collect(groupingBy(
+                        CaseStateWorkflowLink::getCaseStateFrom,
+                        mapping(CaseStateWorkflowLink::getCaseStateTo, toCollection(() -> new TreeSet<>(comparator)))
+                ));
+
+        Map<En_CaseState, List<En_CaseState>> workflowMap = new HashMap<>();
+        for (En_CaseState en_caseState : flow.keySet()) {
+            workflowMap.put(en_caseState, new ArrayList<>(flow.get(en_caseState)));
+        }
+
+        return workflowMap;
+    }
+
     private boolean isDataLoaded() {
-        return CollectionUtils.isNotEmpty(caseStatesList) && CollectionUtils.isNotEmpty(caseStateWorkflowList);
+        return workflowCaseStateMap != null;
     }
 
     private void clearData() {
-        caseStatesList.clear();
-        caseStateWorkflowList.clear();
+        workflowCaseStateMap = null;
     }
 
     private void notifySubscribers() {
@@ -106,29 +157,7 @@ public abstract class StateModel implements Activity {
     }
 
     private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
-
-        if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            if (currentCaseState.isTerminalState()) {
-                return Collections.singletonList(currentCaseState);
-            } else{
-                return caseStatesList.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList());
-            }
-        }
-
-        Map<Long, Integer> idToOrder = caseStatesList.stream().collect(Collectors.toMap(CaseState::getId, CaseState::getViewOrder));
-        Map<En_CaseState, Set<En_CaseState>> flow = caseStateWorkflowList.stream()
-                .filter(caseStateWorkflow -> caseStateWorkflow.isMatched(workflow))
-                .flatMap(caseStateWorkflow -> caseStateWorkflow.getCaseStateWorkflowLinks().stream())
-                .collect(Collectors.groupingBy(
-                        CaseStateWorkflowLink::getCaseStateFrom,
-                        Collectors.mapping(CaseStateWorkflowLink::getCaseStateTo,
-                                Collectors.toCollection(() ->
-                                        new TreeSet<>(Comparator.comparing((En_CaseState en_CaseState) -> idToOrder.get((long) en_CaseState.getId()))
-                                                .thenComparing(En_CaseState::getId)
-                                        )))
-                ));
-
-        return new ArrayList<>(flow.get(currentCaseState));
+        return workflowCaseStateMap.get(workflow).get(currentCaseState);
     }
 
     @Inject
@@ -137,9 +166,8 @@ public abstract class StateModel implements Activity {
     CaseStateWorkflowControllerAsync caseStateWorkflowController;
 
     private boolean isRefreshing = false;
-    private List<CaseState> caseStatesList = new ArrayList<>();
-    private List<CaseStateWorkflow> caseStateWorkflowList = new ArrayList<>();
     private Map<SelectorWithModel<En_CaseState>, WorkflowWithState> subscriberMap = new HashMap<>();
+    private Map<En_CaseStateWorkflow, Map<En_CaseState, List<En_CaseState>>> workflowCaseStateMap;
 
     private class WorkflowWithState {
         En_CaseStateWorkflow workflow;
