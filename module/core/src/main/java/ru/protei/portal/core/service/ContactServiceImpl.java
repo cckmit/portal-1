@@ -171,11 +171,11 @@ public class ContactServiceImpl implements ContactService {
 
         removePersonEmailsFromCompany(person);
 
-        if (userLoginDAO.removeByPersonId(id) == 0) {
-            return error(En_ResultStatus.NOT_REMOVED);
+        if (userLoginDAO.removeByPersonId(id) > 0) {
+            return ok(true);
         }
 
-        return ok(true);
+        return error(En_ResultStatus.NOT_REMOVED);
     }
 
     private void removePersonEmailsFromCompany(Person person) {
