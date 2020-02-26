@@ -127,6 +127,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                         @Override
                         public void onSuccess(Boolean result) {
+                            fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new PersonEvents.PersonCreated(person, origin));
                             fireEvent(isNew(contact) ? new ContactEvents.Show(true) : new Back());
                         }

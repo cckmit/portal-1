@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -176,11 +177,11 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        if (HelperFunc.isEmpty(person.getFirstName())) {
+        if (StringUtils.isBlank(person.getFirstName())) {
             return false;
         }
 
-        if (HelperFunc.isEmpty(person.getLastName())) {
+        if (StringUtils.isBlank(person.getLastName())) {
             return false;
         }
 
