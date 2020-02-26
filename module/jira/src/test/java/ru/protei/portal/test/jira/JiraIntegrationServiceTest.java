@@ -173,42 +173,6 @@ public class JiraIntegrationServiceTest {
         }
     }
 
-
-    @Test
-    public void sentAssembledEvent() throws Exception{
-        Company company = makeCompany();
-        Person person = makePerson( company );
-        Issue issue = makeIssue( jsonString );
-
-        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), issue.getProject().getId());
-        endpoint.setPersonId(person.getId());
-
-
-//        Void aVoid =
-                jiraIntegrationService.create( endpoint, new JiraHookEventData( JiraHookEventType.ISSUE_CREATED, issue ) )
-                .thenAccept( assembledCaseEvent -> {
-                    log.info( "assembledCaseEvent(): {} ", assembledCaseEvent );
-                    assemblerService.proceed( assembledCaseEvent );
-                } )
-                .get();
-
-        long waitSchedule = portalConfig.data().eventAssemblyConfig().getWaitingPeriodMillis();
-        long waitScheduleAndEventAssembler = 2 * waitSchedule + 1 * SEC;
-        Thread.sleep( waitScheduleAndEventAssembler );
-//                .thenRun( () -> {
-
-
-                    log.info( "sentAssembledEvent(): " );
-                    VirtualMailSendChannel mockChannel = (VirtualMailSendChannel) sendChannel;
-
-                    MimeMessage msg = mockChannel.get();
-                    Assert.assertNotNull( msg );
-                    log.info( "sentAssembledEvent(): msg {}", msg );
-//                } );
-
-
-    }
-
     @Test
     public void parseIssueWithCompanyGroup() {
 

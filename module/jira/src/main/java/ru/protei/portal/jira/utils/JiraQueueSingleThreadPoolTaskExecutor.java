@@ -10,13 +10,14 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Выполнение интеграционных событий полученых от jira в одной очереди в одном потоке .
+ * Последовательная обработка поступающих сообщений от jira.
  */
 public class JiraQueueSingleThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
     /**
-     * Величина определяющая максимальное количество соединений с бд
-     * используется для расчета количества потоков фоновых задач.
+     * Последовательная обработка поступающих сообщений от jira.
+     * С целью сохранения порядка сообщений обработка ведется в один поток.
      * @param queueLimit - максимальное количество обрабатываемых событий от Jira. Не ограничено если = 0.
+     *                   При queueLimit > 0 и превышение очереди, события отбрасываются.
      */
     public JiraQueueSingleThreadPoolTaskExecutor( int queueLimit) {
 

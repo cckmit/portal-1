@@ -89,10 +89,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());
         final PersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, defaultPerson);
 
-//        if(issue.getKey().equals( "PRT-825" )){ //TODO test
-//            logger.warn( "updateOrCreate(): ABORT" );
-//            throw new RuntimeException( "Do ABORT" );}
-
         User user = event.getUser();
         Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();
 

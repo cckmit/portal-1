@@ -7,11 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.JiraCompanyGroupDAO;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.JiraCompanyGroup;
@@ -34,6 +36,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 @RestController
 public class JiraEventController {
@@ -84,35 +89,39 @@ public class JiraEventController {
             return;
         }
 
-        long timeStart = System.currentTimeMillis();
+        Result<JiraHookEventData> parseResult = parseJson( jsonString );
 
-        try {
+        if(parseResult.isError()){
+            logger.error("Can't process jira event {}", parseResult);
+            logger.trace("jiraWebhook(): companyId={}, data={}", companyId, jsonString);
+            return;
+        }
 
-            JiraHookEventData eventData = JiraHookEventParser.parse(jsonString);
-            if (eventData == null || eventData.getIssue() == null) {
-                logger.warn("jiraWebhook(): companyId={} | failed to parse json-data, return", companyId);
-                if (!logger.isDebugEnabled()) logger.warn("jiraWebhook(): companyId={}, data={}", companyId, jsonString);
-                return;
-            }
+        JiraHookEventData eventData = parseResult.getData();
+        if (eventData == null || eventData.getIssue() == null) {
+            logger.warn( "jiraWebhook(): companyId={} | failed to parse json-data, return", companyId );
+            if (!logger.isDebugEnabled()) logger.warn( "jiraWebhook(): companyId={}, data={}", companyId, jsonString );
+            return;
+        }
 
-            Issue issue = eventData.getIssue();
-            JiraEndpoint endpoint = selectEndpoint(issue, companyId);
+        Issue issue = eventData.getIssue();
+        JiraEndpoint endpoint = selectEndpoint( issue, companyId );
 
-            if (endpoint == null) {
-                logger.warn("Unable to find end-point record for jira-issue company={}, project={}", companyId, issue.getProject());
-                logger.error("Event for jira-issue has been dropped! company={}, project={}", companyId, issue.getProject());
-                return;
-            }
+        if (endpoint == null) {
+            logger.warn( "Unable to find end-point record for jira-issue company={}, project={}", companyId, issue.getProject() );
+            logger.error( "Event for jira-issue has been dropped! company={}, project={}", companyId, issue.getProject() );
+            return;
+        }
 
-            proceed( endpoint, eventData )
-                    .thenAccept( caseEvent -> assemblerService.proceed( caseEvent ) ).
-                    exceptionally( throwable -> {
-                        logger.error( "jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
-                                endpoint, realIP, fromHost, request.getQueryString(), eventData.toDebugString(), throwable );
-                        return null;
-                    } );
+        proceed( endpoint, eventData )
+                .thenAccept( assembledCaseEvent -> assemblerService.proceed( assembledCaseEvent ) )
+                .exceptionally( throwable -> {
+                    logger.error( "jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
+                            endpoint, realIP, fromHost, request.getQueryString(), eventData.toDebugString(), throwable );
+                    return null;
+                } );
 
-            /**
+        /**
              * Важное замечание: в каждом событии приходит довольно много информации, но зато она очень подробная и полная
              * Событие update или create всегда содержат в объекте Issue все комментарии и описание всех вложений,
              * что на самом деле довольно круто.
@@ -130,13 +139,19 @@ public class JiraEventController {
              * чтобы не получать петли, когда наш комментарий опять свалится к нам и мы его еще раз добавим.
              */
 
+
+    }
+
+    private Result<JiraHookEventData> parseJson( String jsonString )  {
+        long timeStart = System.currentTimeMillis();
+
+        try {
+           return ok(JiraHookEventParser.parse(jsonString));
         } catch (JSONException e) {
-            logger.error(String.format("jiraWebhook(): companyId=%s | failed to parse json-data", companyId), e);
-            if (!logger.isDebugEnabled()) logger.warn("jiraWebhook(): companyId={}, data={}", companyId, jsonString);
+            return error( En_ResultStatus.INTERNAL_ERROR, "failed to parse json-data" );
         } finally {
             long total = System.currentTimeMillis() - timeStart;
-            logger.info("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}, time={}ms | request completed",
-                    companyId, realIP, fromHost, request.getQueryString(), total);
+            logger.info("parseJson(): parse time={}", total);
         }
     }
 
