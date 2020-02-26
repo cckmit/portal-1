@@ -2067,4 +2067,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentIssueReassignTo();
 
     String contactSaved();
+
+    String contactDelete();
 }

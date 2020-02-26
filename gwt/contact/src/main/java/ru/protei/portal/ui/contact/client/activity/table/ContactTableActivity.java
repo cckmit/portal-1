@@ -148,7 +148,7 @@ public abstract class ContactTableActivity
     public void onRemoveClicked(Person value) {
         if (value != null) {
             contactId = value.getId();
-            fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactRemoveConfirmMessage()));
+            fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactRemoveConfirmMessage(), lang.contactDelete()));
         }
     }
 

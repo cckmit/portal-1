@@ -75,6 +75,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    @Transactional
     public Result<Person> saveContact( AuthToken token, Person person ) {
         if (person == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
