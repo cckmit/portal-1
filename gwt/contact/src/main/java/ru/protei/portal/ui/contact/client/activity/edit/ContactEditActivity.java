@@ -111,34 +111,28 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         Boolean sendWelcomeEmailVisibility = view.sendWelcomeEmailVisibility().isVisible();
         Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
 
-        contactService.saveContact(applyChangesContact(), new AsyncCallback<Person>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireErrorMessage(throwable.getMessage());
-            }
+        contactService.saveContact(applyChangesContact(), new FluentCallback<Person>().withSuccess(person -> {
+                    if (userLogin.getId() == null) {
+                        userLogin.setPersonId(person.getId());
+                        userLogin.setPerson(person);
+                        userLogin.setInfo(person.getDisplayName());
+                    }
 
-            @Override
-            public void onSuccess(Person person) {
-                if (userLogin.getId() == null) {
-                    userLogin.setPersonId(person.getId());
-                    userLogin.setPerson(person);
-                    userLogin.setInfo(person.getDisplayName());
+                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
+                        @Override
+                        public void onError(Throwable throwable) {
+                            fireErrorMessage(lang.errEditContactLogin());
+                            fireEvent(new Back());
+                        }
+
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            fireEvent(new PersonEvents.PersonCreated(person, origin));
+                            fireEvent(isNew(contact) ? new ContactEvents.Show(true) : new Back());
+                        }
+                    });
                 }
-                contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        fireErrorMessage(lang.errEditContactLogin());
-                        fireEvent(new Back());
-                    }
-
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        fireEvent(new PersonEvents.PersonCreated(person, origin));
-                        fireEvent(isNew(contact) ? new ContactEvents.Show(true): new Back());
-                    }
-                } );
-            }
-        });
+        ));
     }
 
     @Override

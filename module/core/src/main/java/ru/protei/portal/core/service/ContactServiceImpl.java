@@ -75,27 +75,12 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Result<Person> saveContact( AuthToken token, Person person ) {
-        if (personDAO.isEmployee(person)) {
-            log.warn("person with id = {} is employee",person.getId());
-            return error(En_ResultStatus.VALIDATION_ERROR);
+        if (person == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (HelperFunc.isEmpty(person.getFirstName()) || HelperFunc.isEmpty(person.getLastName())
-                || person.getCompanyId() == null)
+        if (!validatePerson(person)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
-
-        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
-        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
-        if (person.getId() != null) {
-            Person personOld = personDAO.getContact(person.getId());
-            if (personOld.isFired() != person.isFired()) {
-                log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
-                return error(En_ResultStatus.VALIDATION_ERROR);
-            }
-            if (personOld.isDeleted() != person.isDeleted()) {
-                log.warn("prevented change of person.isDeleted attr, person with id = {}", person.getId());
-                return error(En_ResultStatus.VALIDATION_ERROR);
-            }
         }
 
         if (HelperFunc.isEmpty(person.getDisplayName())) {
@@ -132,6 +117,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> fireContact( AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
@@ -146,6 +132,7 @@ public class ContactServiceImpl implements ContactService {
 
         if (result) {
             removePersonEmailsFromCompany(person);
+            userLoginDAO.removeByPersonId(id);
         }
 
         return ok(result);
@@ -165,17 +152,58 @@ public class ContactServiceImpl implements ContactService {
 
         boolean result = personDAO.merge(person);
 
-        if (!result) {
-            return error(En_ResultStatus.NOT_REMOVED);
+        if (result) {
+            removePersonEmailsFromCompany(person);
+            userLoginDAO.removeByPersonId(id);
         }
 
-        removePersonEmailsFromCompany(person);
+        return ok(result);
+    }
 
-        if (userLoginDAO.removeByPersonId(id) > 0) {
-            return ok(true);
+    private boolean validatePerson(Person person) {
+        if (person.isFired()) {
+            log.warn("avoid to update fired person with id = {}", person.getId());
+            return false;
         }
 
-        return error(En_ResultStatus.NOT_REMOVED);
+        if (person.isDeleted()) {
+            log.warn("avoid to update deleted person with id = {}", person.getId());
+            return false;
+        }
+
+        if (personDAO.isEmployee(person)) {
+            log.warn("person with id = {} is employee",person.getId());
+            return false;
+        }
+
+        if (HelperFunc.isEmpty(person.getFirstName())) {
+            return false;
+        }
+
+        if (HelperFunc.isEmpty(person.getLastName())) {
+            return false;
+        }
+
+        if (person.getCompanyId() == null) {
+            return false;
+        }
+
+        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
+        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
+        if (person.getId() != null) {
+            Person personOld = personDAO.getContact(person.getId());
+            if (personOld.isFired() != person.isFired()) {
+                log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
+                return false;
+            }
+
+            if (personOld.isDeleted() != person.isDeleted()) {
+                log.warn("prevented change of person.isDeleted attr, person with id = {}", person.getId());
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void removePersonEmailsFromCompany(Person person) {

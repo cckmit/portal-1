@@ -96,8 +96,8 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     private void initTable () {
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT) );
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_REMOVE) && !v.isDeleted() );
+        editClickColumn.setEnabledPredicate(person -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT) && !person.isFired() );
+        removeClickColumn.setEnabledPredicate(person -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_REMOVE) && !person.isDeleted() );
 
         ClickColumn gender = new DynamicColumn<Person>(null, "column-img", value -> "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>");
         columns.add(gender);
