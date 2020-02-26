@@ -77,6 +77,9 @@ public enum En_AuditType {
 
     CONTRACT_MODIFY(49),
     CONTRACT_CREATE(50),
+
+    CONTACT_FIRE(51),
+    CONTACT_DELETE(52)
     ;
 
     En_AuditType(int id ) {
