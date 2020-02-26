@@ -163,11 +163,14 @@ public class ContactServiceImpl implements ContactService {
 
         boolean result = personDAO.merge(person);
 
-        if (result) {
-            removePersonEmailsFromCompany(person);
+        if (!result) {
+            return error(En_ResultStatus.NOT_REMOVED);
         }
 
-        return ok(result);
+        removePersonEmailsFromCompany(person);
+        userLoginDAO.removeByPersonId(id);
+
+        return ok(true);
     }
 
     private void removePersonEmailsFromCompany(Person person) {
