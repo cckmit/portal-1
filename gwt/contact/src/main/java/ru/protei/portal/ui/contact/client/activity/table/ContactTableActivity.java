@@ -73,7 +73,6 @@ public abstract class ContactTableActivity
         );
 
         isShowTable = false;
-        contactId = null;
         query = makeQuery( null );
 
         clearScroll( event );
@@ -97,40 +96,6 @@ public abstract class ContactTableActivity
         this.init = initDetails;
     }
 
-    @Event
-    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (contactId == null) {
-            return;
-        }
-
-        contactService.removeContact(contactId, new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                contactId = null;
-                if (result) {
-                    fireEvent(new ContactEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
-        contactId = null;
-    }
-
     @Override
     public void onItemClicked ( Person value ) {
         if ( !isShowTable ) {
@@ -147,8 +112,7 @@ public abstract class ContactTableActivity
     @Override
     public void onRemoveClicked(Person value) {
         if (value != null) {
-            contactId = value.getId();
-            fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactRemoveConfirmMessage(), lang.contactDelete()));
+            fireEvent(new ConfirmDialogEvents.Show(lang.contactRemoveConfirmMessage(), lang.contactDelete(), removeAction(value.getId())));
         }
     }
 
@@ -235,6 +199,25 @@ public abstract class ContactTableActivity
         }
     }
 
+    private Runnable removeAction(Long contactId) {
+        return () -> contactService.removeContact(contactId, new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new ContactEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Inject
     Lang lang;
 
@@ -256,7 +239,6 @@ public abstract class ContactTableActivity
     PolicyService policyService;
 
     private boolean isShowTable = false;
-    private Long contactId = null;
 
     private AppEvents.InitDetails init;
     private ContactQuery query;

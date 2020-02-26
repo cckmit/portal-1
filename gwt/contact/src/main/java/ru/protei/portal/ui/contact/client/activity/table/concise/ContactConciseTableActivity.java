@@ -32,8 +32,6 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
         view.clearRecords();
         event.parent.add(view.asWidget());
 
-        contactId = null;
-
         if (event.companyId != null) {
 
             query = makeQuery(event.companyId, false);
@@ -41,40 +39,6 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
 
             requestContacts();
         }
-    }
-
-    @Event
-    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (contactId == null) {
-            return;
-        }
-
-        contactService.removeContact(contactId, new AsyncCallback<Boolean>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                contactId = null;
-                if (result) {
-                    fireEvent(new ContactEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onCancelRemove(ConfirmDialogEvents.Cancel event) {
-        contactId = null;
     }
 
     @Override
@@ -88,8 +52,7 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
     @Override
     public void onRemoveClicked(Person value) {
         if (value != null) {
-            contactId = value.getId();
-            fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactRemoveConfirmMessage()));
+            fireEvent(new ConfirmDialogEvents.Show(lang.contactRemoveConfirmMessage(), removeAction(value.getId())));
         }
     }
 
@@ -116,14 +79,31 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
         });
     }
 
+    private Runnable removeAction(Long contactId) {
+        return () -> contactService.removeContact(contactId, new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new ContactEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Inject
     Lang lang;
     @Inject
     AbstractContactConciseTableView view;
     @Inject
     ContactControllerAsync contactService;
-
-    private Long contactId = null;
 
     private ContactQuery query;
 }

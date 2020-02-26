@@ -64,8 +64,6 @@ public abstract class ProjectTableActivity
             new ActionBarEvents.Clear()
         );
 
-        projectIdForRemove = null;
-
         clearScroll(event);
 
         requestProjects( null );
@@ -85,38 +83,6 @@ public abstract class ProjectTableActivity
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
-    }
-
-    @Event
-    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
-
-        if (!getClass().getName().equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
-            return;
-        }
-
-        regionService.removeProject(projectIdForRemove, new FluentCallback<Boolean>()
-                .withError(t -> {
-                    projectIdForRemove = null;
-                })
-                .withSuccess(result -> {
-                    projectIdForRemove = null;
-                    fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Show());
-                })
-        );
-    }
-
-    @Event
-    public void onProjectCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!getClass().getName().equals(event.identity)) {
-            return;
-        }
-        projectIdForRemove = null;
     }
 
     @Event
@@ -148,8 +114,7 @@ public abstract class ProjectTableActivity
             return;
         }
 
-        projectIdForRemove = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.projectRemoveConfirmMessage(value.getName())));
+        fireEvent(new ConfirmDialogEvents.Show(lang.projectRemoveConfirmMessage(value.getName()), removeAction(value.getId())));
     }
 
     @Override
@@ -192,7 +157,6 @@ public abstract class ProjectTableActivity
     }
 
     private void showPreview ( Project value ) {
-        currentValue = value;
         if ( value == null ) {
             animation.closeDetails();
         } else {
@@ -244,6 +208,16 @@ public abstract class ProjectTableActivity
         }
     }
 
+    private Runnable removeAction(Long projectId) {
+        return () -> regionService.removeProject(projectId, new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(new ProjectEvents.Show());
+                })
+        );
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -256,9 +230,6 @@ public abstract class ProjectTableActivity
     TableAnimation animation;
     @Inject
     PolicyService policyService;
-
-    Project currentValue = null;
-    private Long projectIdForRemove = null;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

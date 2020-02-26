@@ -71,29 +71,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         fireEvent(new DashboardEvents.EditTable());
     }
 
-    @Event
-    public void onConfirmTableRemove(ConfirmDialogEvents.Confirm event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-        if (dashboardIdToRemove == null) {
-            return;
-        }
-        userLoginController.removeUserDashboard(dashboardIdToRemove, new FluentCallback<Void>()
-                .withSuccess(v -> {
-                    fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    loadDashboard();
-                }));
-    }
-
-    @Event
-    public void onCancelTableRemove(ConfirmDialogEvents.Cancel event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-        dashboardIdToRemove = null;
-    }
-
     private void showView() {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -241,8 +218,16 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if (dashboard == null || dashboard.getId() == null) {
             return;
         }
-        dashboardIdToRemove = dashboard.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.dashboardTableConfirmRemove()));
+
+        fireEvent(new ConfirmDialogEvents.Show(lang.dashboardTableConfirmRemove(), removeAction(dashboard.getId())));
+    }
+
+    private Runnable removeAction(Long dashboardId) {
+        return () -> userLoginController.removeUserDashboard(dashboardId, new FluentCallback<Void>()
+                .withSuccess(v -> {
+                    fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    loadDashboard();
+                }));
     }
 
     @Inject

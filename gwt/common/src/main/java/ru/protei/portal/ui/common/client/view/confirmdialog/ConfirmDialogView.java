@@ -11,9 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 
@@ -28,12 +26,7 @@ public class ConfirmDialogView extends PopupPanel implements AbstractConfirmDial
         setGlassStyleName( "confirm-overlay" );
         setAutoHideEnabled( false );
 
-        resizeHandler = new ResizeHandler() {
-            @Override
-            public void onResize( ResizeEvent resizeEvent ) {
-                getElement().getStyle().setLeft( ( Window.getClientWidth() / 3 ), Style.Unit.PX );
-            }
-        };
+        resizeHandler = resizeEvent -> getElement().getStyle().setLeft((Window.getClientWidth() / 3f), Style.Unit.PX);
     }
 
     @Override
@@ -47,22 +40,23 @@ public class ConfirmDialogView extends PopupPanel implements AbstractConfirmDial
     }
 
     @Override
-    public void setConfirmButtonText( String text ) {
-        confirmButton.setText( text );
+    public HasText confirmButtonText() {
+        return confirmButton;
+    }
+
+    @Override
+    public HasText cancelButtonText() {
+        return cancelButton;
     }
 
     @UiHandler("confirmButton")
     public void onConfirmClick( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onConfirmClicked();
-        }
+        activity.onConfirmClicked();
     }
 
     @UiHandler("cancelButton")
     public void onCancelClick( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onCancelClicked();
-        }
+        activity.onCancelClicked();
     }
 
     @Override
@@ -75,10 +69,6 @@ public class ConfirmDialogView extends PopupPanel implements AbstractConfirmDial
         resizeHandlerReg.removeHandler();
     }
 
-    ResizeHandler resizeHandler;
-
-    HandlerRegistration resizeHandlerReg;
-
     @UiField
     Button confirmButton;
 
@@ -88,7 +78,9 @@ public class ConfirmDialogView extends PopupPanel implements AbstractConfirmDial
     @UiField
     Button cancelButton;
 
-    AbstractConfirmDialogActivity activity;
+    private ResizeHandler resizeHandler;
+    private HandlerRegistration resizeHandlerReg;
+    private AbstractConfirmDialogActivity activity;
 
     interface ConfirmDialogViewUiBinder extends UiBinder<HTMLPanel, ConfirmDialogView> {}
 
