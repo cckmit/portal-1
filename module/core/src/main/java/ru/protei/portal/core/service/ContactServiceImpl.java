@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -151,6 +152,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeContact( AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
@@ -168,7 +170,10 @@ public class ContactServiceImpl implements ContactService {
         }
 
         removePersonEmailsFromCompany(person);
-        userLoginDAO.removeByPersonId(id);
+
+        if (userLoginDAO.removeByPersonId(id) == 0) {
+            return error(En_ResultStatus.NOT_REMOVED);
+        }
 
         return ok(true);
     }
