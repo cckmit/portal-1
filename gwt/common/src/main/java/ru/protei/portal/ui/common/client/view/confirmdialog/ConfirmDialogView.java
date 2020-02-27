@@ -26,7 +26,7 @@ public class ConfirmDialogView extends PopupPanel implements AbstractConfirmDial
         setGlassStyleName( "confirm-overlay" );
         setAutoHideEnabled( false );
 
-        resizeHandler = resizeEvent -> getElement().getStyle().setLeft((Window.getClientWidth() / 3f), Style.Unit.PX);
+        resizeHandler = resizeEvent -> getElement().getStyle().setLeft((Window.getClientWidth() / 3.0), Style.Unit.PX);
     }
 
     @Override

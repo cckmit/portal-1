@@ -245,7 +245,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Inject
     PolicyService policyService;
 
-    private Long dashboardIdToRemove = null;
     private AppEvents.InitDetails initDetails;
     private final static int TABLE_LIMIT = 50;
 }
