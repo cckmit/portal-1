@@ -45,7 +45,7 @@ public class CaseTagServiceImpl implements CaseTagService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (caseTagDAO.isNameUniqueForTag( null, caseTag.getName() )) {
+        if (caseTagDAO.isNameUniqueForTag( null, caseTag.getCaseType(), caseTag.getCompanyId(), caseTag.getName() )) {
             return error( En_ResultStatus.ALREADY_EXIST );
         }
 
@@ -59,7 +59,7 @@ public class CaseTagServiceImpl implements CaseTagService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (caseTagDAO.isNameUniqueForTag( caseTag.getId(), caseTag.getName() )) {
+        if (caseTagDAO.isNameUniqueForTag( caseTag.getId(), caseTag.getCaseType(), caseTag.getCompanyId(), caseTag.getName() )) {
             return error( En_ResultStatus.ALREADY_EXIST );
         }
 

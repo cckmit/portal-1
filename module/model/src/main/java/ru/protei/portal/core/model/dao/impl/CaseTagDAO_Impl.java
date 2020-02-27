@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseTag;
@@ -27,9 +28,11 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
     }
 
     @Override
-    public boolean isNameUniqueForTag( Long id, String name ) {
+    public boolean isNameUniqueForTag( Long id, En_CaseType caseType, Long companyId, String name ) {
         Query query = query()
                 .where( "case_tag.name" ).equal( name )
+                .and( "case_tag.case_type" ).equal( caseType.getId() )
+                .and( "case_tag.company_id" ).equal( companyId )
                 .and( "case_tag.id" ).not().equal( id )
                 .asQuery();
 
