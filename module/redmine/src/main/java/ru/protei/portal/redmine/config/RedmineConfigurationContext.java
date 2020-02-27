@@ -5,8 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
-import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
-import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
+import ru.protei.portal.redmine.handlers.RedmineForwardIssueChannel;
 import ru.protei.portal.redmine.service.*;
 
 @Configuration
@@ -24,14 +23,14 @@ public class RedmineConfigurationContext {
     }
 
     @Bean
-    public RedmineNewIssueHandler getRedmineNewIssueHandler() {
-        return new RedmineNewIssueHandler();
+    public RedmineForwardIssueChannel getRedmineNewIssueHandler() {
+        return new RedmineForwardIssueChannel();
     }
 
-    @Bean
-    public RedmineUpdateIssueHandler getRedmineUpdateIssueHandler() {
-        return new RedmineUpdateIssueHandler();
-    }
+//    @Bean
+//    public RedmineUpdateIssueHandler getRedmineUpdateIssueHandler() {
+//        return new RedmineUpdateIssueHandler();
+//    }
 
     @Bean
     public RedmineService getRedmineService() {

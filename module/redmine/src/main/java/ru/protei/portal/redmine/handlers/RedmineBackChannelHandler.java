@@ -1,6 +1,7 @@
 package ru.protei.portal.redmine.handlers;
 
 import com.taskadapter.redmineapi.RedmineException;
+import com.taskadapter.redmineapi.RedmineProcessingException;
 import com.taskadapter.redmineapi.bean.Attachment;
 import com.taskadapter.redmineapi.bean.Issue;
 import org.slf4j.Logger;
@@ -18,7 +19,6 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.redmine.service.RedmineService;
-import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils.EndpointAndIssueId;
 
@@ -119,7 +119,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         try {
             service.updateIssue(issue, endpoint);
         } catch (RedmineException e) {
-            LoggerUtils.logRedmineException(logger, e);
+            logRedmineException(logger, e);
             return error(En_ResultStatus.INTERNAL_ERROR, String.format("Failed to update issue with id {}", issue.getId()));
         }
         return ok();
@@ -164,6 +164,14 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         CaseComment comment = CollectionUtils.last(addedCaseComments);
         if (!comment.getText().isEmpty() && !comment.isPrivateComment()) {
             issue.setNotes(RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText());
+        }
+    }
+
+    public static void logRedmineException(Logger logger, RedmineException e) {
+        if (e instanceof RedmineProcessingException) {
+            logger.error(String.join(", ", ((RedmineProcessingException) e).getErrors()), e);
+        } else {
+            logger.error(e.getMessage(), e);
         }
     }
 

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
     @Override
@@ -36,7 +37,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
             logger.debug("Object with id {} saved", object.getId());
         } else {
             logger.debug("Object with external app id {} is not found; starting it's creation", issue.getId());
-            newIssueHandler.handle(user, issue, endpoint);
+//            newIssueHandler.handle(user, issue, endpoint);TODO
         }
     }
 
@@ -53,7 +54,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         List<Journal> latestJournals = issue.getJournals().stream()
                 .filter(Objects::nonNull)
-                .filter(journal -> !personMapper.isTechUser(endpoint, journal.getUser()))
+                .filter(journal -> !personMapper.isTechUser(endpoint.getDefaultUserId(), journal.getUser()))
                 .filter(journal -> journal.getCreatedOn() != null && journal.getCreatedOn().compareTo(latestCreated) > 0)
                 .sorted(Comparator.comparing(Journal::getCreatedOn))
                 .collect(Collectors.toList());
@@ -62,7 +63,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
         //Synchronize comments, status, priority, name, info
         latestJournals.forEach(journal -> {
             if (StringUtils.isNotBlank(journal.getNotes())) {
-                caseUpdaterFactory.getCommentsUpdater().apply(object, endpoint, journal, null, personMapper);
+                commonService.updateComment(object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson(journal.getUser()));
             }
             journal.getDetails().forEach(detail ->
                     RedmineChangeType.findByName(detail.getName())
@@ -90,7 +91,7 @@ public class RedmineUpdateIssueHandler implements RedmineEventHandler {
     private CaseUpdaterFactory caseUpdaterFactory;
 
     @Autowired
-    private RedmineNewIssueHandler newIssueHandler;
+    private RedmineForwardIssueChannel newIssueHandler;
 
     private final Logger logger = LoggerFactory.getLogger(RedmineUpdateIssueHandler.class);
 }

@@ -8,12 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.model.dao.AttachmentDAO;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
+import ru.protei.portal.core.event.CaseObjectMetaEvent;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ExtAppType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
@@ -30,7 +37,7 @@ public final class CommonServiceImpl implements CommonService {
         if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
             logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
             issue.getAttachments().stream()
-                    .filter(attachment -> !personMapper.isTechUser(endpoint, attachment.getAuthor()))
+                    .filter(attachment -> !personMapper.isTechUser(endpoint.getDefaultUserId(), attachment.getAuthor()))
                     .filter(attachment -> !existingAttachmentsHashCodes.contains(toHashCode(attachment)))
                     .forEach(attachment -> {
                         final Person author = personMapper.toProteiPerson(attachment.getAuthor());
@@ -64,15 +71,17 @@ public final class CommonServiceImpl implements CommonService {
         journals.stream()
                 .filter(journal -> StringUtils.isNotBlank(journal.getNotes()))
                 .forEach(journal ->
-                        caseUpdaterFactory.getCommentsUpdater().apply(object, null, journal, null, personMapper));
+//                      getUpdater( RedmineChangeType.COMMENT).apply(object, null, journal, null, personMapper)
+                        updateComment(object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson(journal.getUser()) )
+                        );
     }
 
     @Override
-    public CaseComment createAndStoreComment(Journal journal, Person author, Long caseId) {
+    public CaseComment createAndStoreComment(Date creationDate, String text, Person author, Long caseId) {
         final CaseComment comment = new CaseComment();
-        comment.setCreated(journal.getCreatedOn());
+        comment.setCreated(creationDate);
         comment.setAuthor(author);
-        comment.setText(journal.getNotes());
+        comment.setText(text);
         comment.setCaseId(caseId);
         caseCommentDAO.persist(comment);
         return comment;
@@ -96,6 +105,131 @@ public final class CommonServiceImpl implements CommonService {
         stateChangeMessage.setCaseImpLevel(importance);
         stateChangeMessage.setCaseId(caseId);
         return caseCommentDAO.persist(stateChangeMessage);
+    }
+
+    @Override
+    public void updateCaseStatus( CaseObject object, Long statusMapId, Date creationOn, String value, Person author ){
+        Integer newStatus = parseToInteger(value);
+        logger.debug("Trying to get portal status id matching with redmine {}", newStatus);
+        final RedmineToCrmEntry redmineStatusEntry = statusMapEntryDAO.getLocalStatus(statusMapId, newStatus);
+
+        if (redmineStatusEntry != null) {
+
+            final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
+
+            object.setStateId(redmineStatusEntry.getLocalStatusId());
+            caseObjectDAO.merge(object);
+            logger.debug("Updated case state for case with id {}, old={}, new={}", object.getId(), En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
+
+            Long stateCommentId = createAndStoreStateComment(creationOn, author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId());
+            if (stateCommentId == null) {
+                logger.error("State comment for the issue {} not saved!", object.getId());
+            }
+
+            publisherService.publishEvent(new CaseObjectMetaEvent(
+                    caseUpdaterFactory,
+                    ServiceModule.REDMINE,
+                    author.getId(),
+                    En_ExtAppType.forCode(object.getExtAppType()),
+                    oldMeta,
+                    new CaseObjectMeta(object)));
+        } else {
+            logger.warn("Status was not found");
+        }
+
+    }
+
+    @Override
+    public void updateCasePriority( CaseObject object, Long priorityMapId, Journal journal, String value, Person author ) {
+        Integer newPriority = parseToInteger(value);
+        logger.debug("Trying to get portal priority level id matching with redmine {}", value);
+        final RedminePriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByRedminePriorityId(newPriority, priorityMapId);
+
+        if (priorityMapEntry != null) {
+
+            final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
+
+            object.setImpLevel(priorityMapEntry.getLocalPriorityId());
+            caseObjectDAO.merge(object);
+            logger.debug("Updated case priority for case with id {}, old={}, new={}", object.getId(), En_ImportanceLevel.find(oldMeta.getImpLevel()), En_ImportanceLevel.find(object.getImpLevel()));
+
+            Long ImportanceCommentId = createAndStoreImportanceComment(journal.getCreatedOn(), author.getId(), priorityMapEntry.getLocalPriorityId(), object.getId());
+            if (ImportanceCommentId == null) {
+                logger.error("Importance comment for the issue {} not saved!", object.getId());
+            }
+
+            publisherService.publishEvent(new CaseObjectMetaEvent(
+                    caseUpdaterFactory,
+                    ServiceModule.REDMINE,
+                    author.getId(),
+                    En_ExtAppType.forCode(object.getExtAppType()),
+                    oldMeta,
+                    new CaseObjectMeta(object)));
+        } else {
+            logger.warn("Priority was not found");
+        }
+    }
+
+    @Override
+    public void updateCaseDescription( CaseObject object, String value, Person author ) {
+
+        final DiffResult<String> infoDiff = new DiffResult<>(object.getInfo(), value);
+
+        object.setInfo(value);
+        caseObjectDAO.merge(object);
+        logger.debug("Updated case info for case with id {}, old={}, new={}", object.getId(), infoDiff.getInitialState(), infoDiff.getNewState());
+
+        publisherService.publishEvent(new CaseNameAndDescriptionEvent(
+                caseUpdaterFactory,
+                object.getId(),
+                new DiffResult<>(null, object.getName()),
+                infoDiff,
+                author.getId(),
+                ServiceModule.REDMINE,
+                En_ExtAppType.forCode(object.getExtAppType())));
+    }
+
+    @Override
+    public void updateCaseSubject( CaseObject object, String value, Person author ) {
+        final DiffResult<String> nameDiff = new DiffResult<>(object.getName(), value);
+
+        object.setName(value);
+        caseObjectDAO.merge(object);
+        logger.debug("Updated case name for case with id {}, old={}, new={}", object.getId(), nameDiff.getInitialState(), nameDiff.getNewState());
+
+        publisherService.publishEvent(new CaseNameAndDescriptionEvent(
+                caseUpdaterFactory,
+                object.getId(),
+                nameDiff,
+                new DiffResult<>(null, object.getInfo()),
+                author.getId(),
+                ServiceModule.REDMINE,
+                En_ExtAppType.forCode(object.getExtAppType())));
+    }
+
+    @Override
+    public void updateComment( Long objectId, Date creationDate, String text, Person author ){
+        CaseComment caseComment = createAndStoreComment( creationDate,  text, author, objectId);
+        logger.debug("Added new case comment to case with id {}, comment has following text: {}", objectId, caseComment.getText());
+
+        publisherService.publishEvent(new CaseCommentEvent(
+                caseUpdaterFactory,
+                ServiceModule.REDMINE,
+                author.getId(),
+                objectId,
+                false,
+                null,
+                caseComment,
+                null));
+    }
+
+    private Integer parseToInteger(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            logger.warn("Can't parse value {} to Integer", value);
+            return null;
+        }
     }
 
     private Set<Integer> getExistingAttachmentsHashCodes(long caseObjId) {
@@ -122,6 +256,18 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private EventPublisherService publisherService;
+
+    @Autowired
+    private RedminePriorityMapEntryDAO priorityMapEntryDAO;
+
+    @Autowired
+    private RedmineToCrmStatusMapEntryDAO statusMapEntryDAO;
+
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    public CommonService commonService;
 
     private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 }
