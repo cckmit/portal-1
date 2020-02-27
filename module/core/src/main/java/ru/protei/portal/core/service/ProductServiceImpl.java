@@ -164,6 +164,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Result<DevUnitInfo> createProductByInfo(AuthToken token, DevUnitInfo product) {
+        if (product.getId() != null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return createProduct(token, DevUnitInfo.fromInfo(product)).map(DevUnitInfo::toInfo);
     }
 

@@ -49,7 +49,7 @@ public class BaseServiceTest {
         product.setHistoryVersion( "historyVersion" );
         product.setCdrDescription( "cdrDescription" );
         product.setConfiguration( "configuration" );
-        product.setWikiLink( "google.com" );
+        product.setWikiLink( "https://newportal.protei.ru/" );
         return product;
     }
 
