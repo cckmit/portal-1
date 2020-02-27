@@ -49,6 +49,7 @@ public class BaseServiceTest {
         product.setHistoryVersion( "historyVersion" );
         product.setCdrDescription( "cdrDescription" );
         product.setConfiguration( "configuration" );
+        product.setWikiLink( "google.com" );
         return product;
     }
 

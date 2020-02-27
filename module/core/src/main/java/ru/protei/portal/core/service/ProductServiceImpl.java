@@ -101,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
     public Result<DevUnitInfo> getProductInfo( AuthToken authToken, Long productId ) {
         DevUnit devUnit = devUnitDAO.get( productId );
         if (devUnit == null) return error( En_ResultStatus.NOT_FOUND );
-        return ok( toInfo(devUnit) );
+        return ok( DevUnitInfo.toInfo(devUnit) );
     }
 
     @Override
@@ -163,7 +163,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Result<DevUnitInfo> createProductByInfo(AuthToken token, DevUnitInfo product) {
-        return createProduct(token, fromInfo(product)).map(this::toInfo);
+        return createProduct(token, DevUnitInfo.fromInfo(product)).map(DevUnitInfo::toInfo);
     }
 
     @Override
@@ -346,36 +346,6 @@ public class ProductServiceImpl implements ProductService {
         if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
         if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
         if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
-        return devUnit;
-    }
-
-    private DevUnitInfo toInfo( DevUnit devUnit) {
-        DevUnitInfo info = new DevUnitInfo();
-        info.setId( devUnit.getId() );
-        info.setConfiguration( devUnit.getConfiguration() );
-        info.setCdrDescription( devUnit.getCdrDescription() );
-        info.setHistoryVersion( devUnit.getHistoryVersion() );
-        info.setDescription( devUnit.getInfo() );
-        info.setName( devUnit.getName() );
-        info.setTypeId( devUnit.getTypeId() );
-        info.setWikiLink( devUnit.getWikiLink() );
-        return info;
-    }
-
-    private DevUnit fromInfo(DevUnitInfo info) {
-        if (info == null) {
-            return null;
-        }
-
-        DevUnit devUnit = new DevUnit();
-        devUnit.setName(info.getName());
-        devUnit.setInfo(info.getDescription());
-        devUnit.setTypeId(info.getTypeId());
-        devUnit.setCdrDescription(info.getCdrDescription());
-        devUnit.setConfiguration(info.getConfiguration());
-        devUnit.setHistoryVersion(info.getHistoryVersion());
-        devUnit.setWikiLink(info.getWikiLink());
-
         return devUnit;
     }
 

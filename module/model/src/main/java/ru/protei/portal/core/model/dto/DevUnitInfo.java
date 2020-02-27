@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dto;
 
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.struct.AuditableObject;
 
 import java.util.Objects;
@@ -90,6 +91,36 @@ public class DevUnitInfo extends AuditableObject {
 
     public void setWikiLink(String wikiLink) {
         this.wikiLink = wikiLink;
+    }
+
+    public static DevUnitInfo toInfo( DevUnit devUnit ) {
+        DevUnitInfo info = new DevUnitInfo();
+        info.setId( devUnit.getId() );
+        info.setConfiguration( devUnit.getConfiguration() );
+        info.setCdrDescription( devUnit.getCdrDescription() );
+        info.setHistoryVersion( devUnit.getHistoryVersion() );
+        info.setDescription( devUnit.getInfo() );
+        info.setName( devUnit.getName() );
+        info.setTypeId( devUnit.getTypeId() );
+        info.setWikiLink( devUnit.getWikiLink() );
+        return info;
+    }
+
+    public static DevUnit fromInfo(DevUnitInfo info) {
+        if (info == null) {
+            return null;
+        }
+
+        DevUnit devUnit = new DevUnit();
+        devUnit.setName(info.getName());
+        devUnit.setInfo(info.getDescription());
+        devUnit.setTypeId(info.getTypeId());
+        devUnit.setCdrDescription(info.getCdrDescription());
+        devUnit.setConfiguration(info.getConfiguration());
+        devUnit.setHistoryVersion(info.getHistoryVersion());
+        devUnit.setWikiLink(info.getWikiLink());
+
+        return devUnit;
     }
 
     public static final String DEV_UNIT_INFO = "DevUnitInfo";
