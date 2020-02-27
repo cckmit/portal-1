@@ -260,11 +260,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public JiraIntegrationQueueService getJiraIntegrationQueueService() {
-        return new JiraIntegrationQueueServiceImpl();
-    }
-
-    @Bean
     public JiraIntegrationService getJiraService () {
         return new JiraIntegrationServiceImpl();
     }

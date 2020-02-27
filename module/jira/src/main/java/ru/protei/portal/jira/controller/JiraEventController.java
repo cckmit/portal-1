@@ -20,18 +20,13 @@ import ru.protei.portal.core.model.ent.JiraCompanyGroup;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.service.AssemblerService;
 import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.jira.dict.JiraHookEventType;
 import ru.protei.portal.jira.dto.JiraHookEventData;
-import ru.protei.portal.jira.service.JiraIntegrationQueueService;
-import ru.protei.portal.jira.service.JiraIntegrationQueueServiceImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -47,8 +42,6 @@ public class JiraEventController {
 
     @Autowired
     PortalConfig portalConfig;
-    @Autowired
-    JiraIntegrationQueueService jiraIntegrationQueueService;
     @Autowired
     JiraCompanyGroupDAO jiraCompanyGroupDAO;
     @Autowired
@@ -82,7 +75,7 @@ public class JiraEventController {
     ) {
 
         logger.info("jiraWebhook(): companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
-        logger.trace("jiraWebhook(): data={}", jsonString);
+        logger.trace("jiraWebhook(): companyId={}, data={}", companyId, jsonString);
 
         if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
             logger.info("jiraWebhook(): companyId={} | jira integration is disabled, no actions taken", companyId);
@@ -92,15 +85,13 @@ public class JiraEventController {
         Result<JiraHookEventData> parseResult = parseJson( jsonString );
 
         if(parseResult.isError()){
-            logger.error("Can't process jira event {}", parseResult);
-            logger.trace("jiraWebhook(): companyId={}, data={}", companyId, jsonString);
+            logger.error("jiraWebhook(): Can't process jira event: {}", parseResult);
             return;
         }
 
         JiraHookEventData eventData = parseResult.getData();
         if (eventData == null || eventData.getIssue() == null) {
             logger.warn( "jiraWebhook(): companyId={} | failed to parse json-data, return", companyId );
-            if (!logger.isDebugEnabled()) logger.warn( "jiraWebhook(): companyId={}, data={}", companyId, jsonString );
             return;
         }
 
@@ -113,7 +104,7 @@ public class JiraEventController {
             return;
         }
 
-        proceed( endpoint, eventData )
+        proceesEvent( endpoint, eventData )
                 .thenAccept( assembledCaseEvent -> assemblerService.proceed( assembledCaseEvent ) )
                 .exceptionally( throwable -> {
                     logger.error( "jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
@@ -148,7 +139,8 @@ public class JiraEventController {
         try {
            return ok(JiraHookEventParser.parse(jsonString));
         } catch (JSONException e) {
-            return error( En_ResultStatus.INTERNAL_ERROR, "failed to parse json-data" );
+            logger.warn( "parseJson(): ", e );
+            return error( En_ResultStatus.INTERNAL_ERROR, "JSONException: " + e.getMessage() );
         } finally {
             long total = System.currentTimeMillis() - timeStart;
             logger.info("parseJson(): parse time={}", total);
@@ -183,7 +175,7 @@ public class JiraEventController {
                 .orElse(originalCompanyId);
     }
 
-    private CompletableFuture<AssembledCaseEvent> proceed( JiraEndpoint endpoint, JiraHookEventData eventData ) {
+    private CompletableFuture<AssembledCaseEvent> proceesEvent( JiraEndpoint endpoint, JiraHookEventData eventData ) {
         switch (eventData.getEventType()) {
             case ISSUE_CREATED:
                 return integrationService.create( endpoint, eventData );

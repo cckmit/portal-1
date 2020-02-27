@@ -217,10 +217,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setCaseType(En_CaseType.CRM_SUPPORT);
         caseObj.setCreated(issue.getCreationDate().toDate());
         caseObj.setModified(issue.getUpdateDate().toDate());
-
-        // TODO for what? initiator is null at the moment
-        caseObj.setCreatorId(caseObj.getInitiatorId());
-
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
         caseObj.setLocal(0);
         caseObj.setInitiator( initiator );
