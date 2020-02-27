@@ -102,43 +102,6 @@ public abstract class PlatformTableActivity implements
         view.updateRow(event.platform);
     }
 
-    @Event
-    public void onPlatformConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (platformIdForRemove == null) {
-            return;
-        }
-
-        siteFolderController.removePlatform(platformIdForRemove, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                platformIdForRemove = null;
-                if (result) {
-                    fireEvent(new SiteFolderPlatformEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onPlatformCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        platformIdForRemove = null;
-    }
-
     @Override
     public void onItemClicked(Platform value) {
         if (value == null) {
@@ -173,8 +136,7 @@ public abstract class PlatformTableActivity implements
             return;
         }
 
-        platformIdForRemove = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderPlatformConfirmRemove()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderPlatformConfirmRemove(), removeAction(value.getId())));
     }
 
     @Override
@@ -272,6 +234,25 @@ public abstract class PlatformTableActivity implements
         }
     }
 
+    private Runnable removeAction(Long platformId) {
+        return () -> siteFolderController.removePlatform(platformId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new SiteFolderPlatformEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Inject
     PolicyService policyService;
     @Inject
@@ -287,7 +268,6 @@ public abstract class PlatformTableActivity implements
     @Inject
     AbstractPagerView pagerView;
 
-    private Long platformIdForRemove = null;
     private Integer scrollTop;
     private AppEvents.InitDetails initDetails;
 }

@@ -65,28 +65,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
     }
 
-    @Event
-    public void onConfirmFire( ConfirmDialogEvents.Confirm event ) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (contact.getId() == null || contact.isFired()) {
-            return;
-        }
-
-        contactService.fireContact(contact.getId(), new FluentCallback<Boolean>()
-                .withError(throwable -> fireErrorMessage(throwable.getMessage()))
-                .withSuccess(result -> {
-                    if (result) {
-                        fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
-                        fireEvent(new Back());
-                    } else {
-                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                    }
-                }));
-    }
-
     @Override
     public void onSaveClicked() {
         String errorMsg = validate();
@@ -111,34 +89,29 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         Boolean sendWelcomeEmailVisibility = view.sendWelcomeEmailVisibility().isVisible();
         Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
 
-        contactService.saveContact(applyChangesContact(), new AsyncCallback<Person>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                fireErrorMessage(throwable.getMessage());
-            }
+        contactService.saveContact(applyChangesContact(), new FluentCallback<Person>().withSuccess(person -> {
+                    if (userLogin.getId() == null) {
+                        userLogin.setPersonId(person.getId());
+                        userLogin.setPerson(person);
+                        userLogin.setInfo(person.getDisplayName());
+                    }
 
-            @Override
-            public void onSuccess(Person person) {
-                if (userLogin.getId() == null) {
-                    userLogin.setPersonId(person.getId());
-                    userLogin.setPerson(person);
-                    userLogin.setInfo(person.getDisplayName());
+                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
+                        @Override
+                        public void onError(Throwable throwable) {
+                            fireErrorMessage(lang.errEditContactLogin());
+                            fireEvent(new Back());
+                        }
+
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new PersonEvents.PersonCreated(person, origin));
+                            fireEvent(isNew(contact) ? new ContactEvents.Show(true) : new Back());
+                        }
+                    });
                 }
-                contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        fireErrorMessage(lang.errEditContactLogin());
-                        fireEvent(new Back());
-                    }
-
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        fireEvent(new PersonEvents.PersonCreated(person, origin));
-                        fireEvent(isNew(contact) ? new ContactEvents.Show(true): new Back());
-                    }
-                } );
-            }
-        });
+        ));
     }
 
     @Override
@@ -176,12 +149,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onFireClicked() {
-
         if (contact.isFired()) {
             return;
         }
 
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.contactFireConfirmMessage(), lang.contactFire(), removeAction(contact.getId())));
     }
 
     @Override
@@ -452,6 +424,19 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         return false;
+    }
+
+    private Runnable removeAction(Long contactId) {
+        return () -> contactService.fireContact(contactId, new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    if (result) {
+                        fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new Back());
+                    } else {
+                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    }
+                })
+        );
     }
 
     @Inject
