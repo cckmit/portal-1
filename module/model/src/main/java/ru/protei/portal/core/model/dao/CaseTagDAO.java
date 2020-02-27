@@ -9,5 +9,5 @@ public interface CaseTagDAO extends PortalBaseDAO<CaseTag> {
 
     List<CaseTag> getListByQuery(CaseTagQuery query);
 
-    boolean isNameUniqueForTag( Long id, String name );
+    boolean isNameUniqueForTag( Long id, Long companyId, String name );
 }

@@ -27,9 +27,10 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
     }
 
     @Override
-    public boolean isNameUniqueForTag( Long id, String name ) {
+    public boolean isNameUniqueForTag( Long id, Long companyId, String name ) {
         Query query = query()
                 .where( "case_tag.name" ).equal( name )
+                .and( "case_tag.company_id" ).equal( companyId )
                 .and( "case_tag.id" ).not().equal( id )
                 .asQuery();
 

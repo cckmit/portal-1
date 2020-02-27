@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.EmployeeEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
@@ -43,7 +40,12 @@ public abstract class EmployeePage implements Activity {
     }
 
     @Event
-    public void onShowTopBrass(EmployeeEvents.ShowTopBrass event) {
+    public void onShowTopBrass( EmployeeEvents.ShowTopBrass event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onShowPreview( EmployeeEvents.ShowFullScreen event ) {
         fireSelectTab();
     }
 
