@@ -1,7 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -21,19 +23,25 @@ public interface CaseLinkService {
 
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 
+    @Auditable(En_AuditType.LINK_ADD)
     Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
+    @Auditable(En_AuditType.LINK_REMOVE)
     Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
+    @Auditable(En_AuditType.LINK_CREATE)
     Result<Long> createLink(AuthToken authToken, CaseLink value, boolean createCrossLinks);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
+    @Auditable(En_AuditType.LINK_CREATE)
     Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink value, boolean createCrossLinks);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
+    @Auditable(En_AuditType.LINK_REMOVE)
     Result deleteLink(AuthToken authToken, Long id);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
+    @Auditable(En_AuditType.LINK_REMOVE)
     Result deleteLinkWithPublish(AuthToken authToken, Long id);
 }

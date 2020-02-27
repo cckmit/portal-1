@@ -133,5 +133,5 @@
   <include file="2020-01-29-add-user-dashboard-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-02-10-add-user-case-assignment-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-02-13-add-default-user-field-redmine-table.xml" relativeToChangelogFile="true"/>
-  <include file="2020-02-26-add-contact-fire-delete-audit-types.xml" relativeToChangelogFile="true"/>
+  <include file="2020-02-26-add-audit-types.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
