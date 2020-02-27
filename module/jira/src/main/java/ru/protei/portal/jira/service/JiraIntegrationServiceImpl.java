@@ -154,7 +154,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
             caseEvent.putAddedComments(processComments(endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData));
-            caseEvent.putAddedAttachments(processAttachments(endpoint, issue.getKey(), issue.getAttachments(), caseObj, jiraExtAppData, personMapper));
+            caseEvent.putAddedAttachments(processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper));
 
             jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
@@ -167,8 +167,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private AssembledCaseEvent createCaseObject( Person initiator, Long authorId, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
-        CaseObject caseObj = makeCaseObject( issue );
-        caseObj.setInitiator(initiator);
+        CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
         En_CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName() );
@@ -190,7 +189,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
 
         List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData );
-        List<ru.protei.portal.core.model.ent.Attachment> attachments = processAttachments( endpoint, issue.getKey(), issue.getAttachments(), caseObj, jiraExtAppData, personMapper );
+        List<ru.protei.portal.core.model.ent.Attachment> attachments = processAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
@@ -212,7 +211,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return caseEvent;
     }
 
-    private CaseObject makeCaseObject(Issue issue) {
+    private CaseObject makeCaseObject( Issue issue, Person initiator ) {
         final CaseObject caseObj = new CaseObject();
 
         caseObj.setCaseType(En_CaseType.CRM_SUPPORT);
@@ -224,29 +223,30 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
         caseObj.setLocal(0);
-        caseObj.setCreator (caseObj.getInitiator());
+        caseObj.setInitiator( initiator );
+        caseObj.setCreator( initiator );
         caseObj.setCreatorInfo("jira");
         return caseObj;
     }
 
     private List<CaseComment> processComments(String serverLogin, Iterable<Comment> comments, Long caseObjectId, PersonMapper personMapper, JiraExtAppData state) {
-//        logger.debug("process comments on {}", issue.getKey());
+        logger.debug("process comments on caseObjectId={}", caseObjectId);
 
         if (comments == null) {
-//            logger.debug("no comments in issue {}", issue.getKey());
+            logger.debug("no comments in caseObjectId={}", caseObjectId);
             return Collections.emptyList();
         }
 
         List<CaseComment> ourCaseComments = new ArrayList<>();
         for(Comment comment : comments){
             if (state.hasComment(comment.getId())) {
-                logger.debug("skip already merged comment id = {}", comment.getId());
+                logger.info("skip already merged comment id = {}", comment.getId());
                 continue;
             }
 
             if (isTechUser(serverLogin, comment.getUpdateAuthor()) ||
                     isTechUser(serverLogin, comment.getAuthor())) {
-                logger.debug("skip our comment {}, it's by tech-login", comment.getId());
+                logger.info("skip our comment {}, it's by tech-login", comment.getId());
                 continue;
             }
 
@@ -268,13 +268,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
 
     private List<ru.protei.portal.core.model.ent.Attachment> processAttachments (JiraEndpoint endpoint,
-                                                                                 String issueKey,
                                                                                  Iterable<Attachment> attachments,
-                                                                                 CaseObject caseObject,
+                                                                                 Long caseObjectId,
                                                                                  JiraExtAppData state,
                                                                                  PersonMapper personMapper) {
         if (attachments == null) {
-            logger.debug("issue {} has no attachments", issueKey);
+            logger.debug("issue caseObjectId={} has no attachments", caseObjectId);
             return Collections.emptyList();
         }
 
@@ -301,15 +300,15 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = new ArrayList<>();
 
-        logger.debug("load attachments for issue {}, size={}", issueKey, jiraAttachments.size());
+        logger.debug("load attachments for caseObjectId {}, size={}", caseObjectId, jiraAttachments.size());
 
         clientFactory.forEach(endpoint, jiraAttachments, (client, jiraAttachment) -> {
             try {
-                logger.debug("load attachment issue={}, uri={}", issueKey, jiraAttachment.getContentUri());
+                logger.debug("load attachment caseObjectId={}, uri={}", caseObjectId, jiraAttachment.getContentUri());
 
                 ru.protei.portal.core.model.ent.Attachment a = convertAttachment(personMapper, jiraAttachment);
 
-                storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject.getId());
+                storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObjectId);
 
                 addedAttachments.add(a);
             }
