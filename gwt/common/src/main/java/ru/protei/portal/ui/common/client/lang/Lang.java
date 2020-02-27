@@ -1994,6 +1994,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUpdateOrDeleteLinkedObjectError();
 
+    String errSVN();
+
     String contactGeneratePassword();
 
     String passwordIsDisplay();

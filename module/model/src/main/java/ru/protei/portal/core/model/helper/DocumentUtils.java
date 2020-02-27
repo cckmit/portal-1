@@ -7,18 +7,17 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 
 public class DocumentUtils {
 
-    static public boolean isValidNewDocument(Document document, boolean isPdfFileSet, boolean isDocFileSet) {
-        boolean isValid = true;
-        if (isDocFileSet && !isPdfFileSet) {
-            isValid &= StringUtils.isNotEmpty(document.getName()) &&
-                    document.getProjectId() != null;
-        }
-
+    static public boolean isValidNewDocument(Document document,  ProjectInfo project, boolean isPdfFileSet, boolean isDocFileSet) {
         if (document.getApproved() && !isPdfFileSet) {
-            isValid = false;
+            return false;
         }
 
-        return isValid;
+        if (isDocFileSet && !isPdfFileSet) {
+            return StringUtils.isNotEmpty(document.getName()) &&
+                    document.getProjectId() != null;
+        } else {
+            return isValidDocument(document, project);
+        }
     }
 
     static public boolean isValidDocument(Document document, ProjectInfo project){
@@ -41,7 +40,8 @@ public class DocumentUtils {
     }
 
     static private boolean needToCheckInventoryNumber(Document document, ProjectInfo project) {
-        return project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
+        return document.getApproved() &&
+                project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
                 && document.getType() != null
                 && document.getType().getDocumentCategory() != En_DocumentCategory.ABROAD;
     }

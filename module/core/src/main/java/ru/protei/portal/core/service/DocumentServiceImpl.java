@@ -149,7 +149,11 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if (!DocumentUtils.isValidNewDocument(document, withDoc, withPdf)) {
+        if (document.getProjectId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        if (!DocumentUtils.isValidNewDocument(document, projectInfo, withDoc, withPdf)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -260,7 +264,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
             if (!oldDocument.getApproved() && document.getApproved() && !(isPdfInSvn || withPdf)) {
-                return error(En_ResultStatus.INCORRECT_PARAMS);
+                return error(En_ResultStatus.SVN_ERROR);
             }
 
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;

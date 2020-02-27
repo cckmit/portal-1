@@ -292,6 +292,7 @@ public abstract class DocumentEditActivity
         boolean isValid = (document.getId() == null) ?
                 DocumentUtils.isValidNewDocument(
                         newDocument,
+                        project,
                         view.documentPdfUploader().isFileSet(),
                         view.documentDocUploader().isFileSet())
                 : DocumentUtils.isValidDocument(
