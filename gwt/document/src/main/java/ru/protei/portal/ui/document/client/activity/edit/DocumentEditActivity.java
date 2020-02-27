@@ -32,6 +32,7 @@ import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentMode
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.core.model.helper.DocumentUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -288,36 +289,20 @@ public abstract class DocumentEditActivity
     }
 
     private boolean checkDocumentValid(Document newDocument) {
-        if (!isValidDocument(newDocument)) {
+        boolean isValid = (document.getId() == null) ?
+                DocumentUtils.isValidNewDocument(
+                        newDocument,
+                        view.documentPdfUploader().isFileSet(),
+                        view.documentDocUploader().isFileSet())
+                : DocumentUtils.isValidDocument(
+                        newDocument,
+                        project);
+
+        if (!isValid) {
             fireErrorMessage(getValidationErrorMessage(newDocument));
-            return false;
         }
-        return true;
-    }
 
-    private boolean isValidDocument(Document document) {
-        boolean isNew = document.getId() == null;
-        boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
-        boolean isDocFileSet = view.documentDocUploader().isFileSet();
-
-        if (isNew && isDocFileSet && !isPdfFileSet) {
-            return StringUtils.isNotEmpty(document.getName()) &&
-                    document.getProjectId() != null;
-        } else {
-            return document.isValid()
-                    && isValidInventoryNumberForMinistryOfDefence(document)
-                    && isValidApproveFields(document);
-        }
-    }
-
-    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        if (needToCheckInventoryNumber(project)) {
-            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-        }
-        return true;
+        return isValid;
     }
 
     private boolean needToCheckInventoryNumber(ProjectInfo project) {
@@ -326,13 +311,6 @@ public abstract class DocumentEditActivity
                 && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
                 && view.documentCategory().getValue() != null
                 && view.documentCategory().getValue() != En_DocumentCategory.ABROAD;
-    }
-
-    private boolean isValidApproveFields(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        return document.getApprovedBy() != null && document.getApprovalDate() != null;
     }
 
     private void saveDocument(Document document) {
