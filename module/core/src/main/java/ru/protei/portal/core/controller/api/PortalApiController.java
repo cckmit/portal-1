@@ -191,11 +191,11 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/products/create")
-    public Result<DevUnit> createProduct(HttpServletRequest request, HttpServletResponse response, @RequestBody DevUnit product) {
+    public Result<DevUnitInfo> createProductByInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody DevUnitInfo product) {
         log.info("createProduct() product={} ", product);
 
         return authenticate(request, response, authService, sidGen, log)
-                .flatMap(authToken -> productService.createProduct(authToken, product))
+                .flatMap(authToken -> productService.createProductByInfo(authToken, product))
                 .ifOk(devUnit -> log.info("createProduct(): OK"))
                 .ifError(devUnitResult -> log.warn("createProduct(): Can't create product={}. {}", product, devUnitResult));
     }

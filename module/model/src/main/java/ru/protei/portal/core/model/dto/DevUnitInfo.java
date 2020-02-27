@@ -8,13 +8,19 @@ public class DevUnitInfo extends AuditableObject {
 
     private Long id;
 
+    private int typeId;
+
+    private String name;
+
+    private String description;
+
+    private String wikiLink;
+
     private String configuration;
 
     private String cdrDescription;
 
     private String historyVersion;
-
-    private String description;
 
     @Override
     public String getAuditType() {
@@ -60,6 +66,30 @@ public class DevUnitInfo extends AuditableObject {
 
     public void setDescription( String description ) {
         this.description = description;
+    }
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getWikiLink() {
+        return wikiLink;
+    }
+
+    public void setWikiLink(String wikiLink) {
+        this.wikiLink = wikiLink;
     }
 
     public static final String DEV_UNIT_INFO = "DevUnitInfo";

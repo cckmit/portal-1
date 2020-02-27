@@ -159,7 +159,11 @@ public class ProductServiceImpl implements ProductService {
         saveChildren(product);
 
         return ok(product);
+    }
 
+    @Override
+    public Result<DevUnitInfo> createProductByInfo(AuthToken token, DevUnitInfo product) {
+        return createProduct(token, fromInfo(product)).map(this::toInfo);
     }
 
     @Override
@@ -352,7 +356,27 @@ public class ProductServiceImpl implements ProductService {
         info.setCdrDescription( devUnit.getCdrDescription() );
         info.setHistoryVersion( devUnit.getHistoryVersion() );
         info.setDescription( devUnit.getInfo() );
+        info.setName( devUnit.getName() );
+        info.setTypeId( devUnit.getTypeId() );
+        info.setWikiLink( devUnit.getWikiLink() );
         return info;
+    }
+
+    private DevUnit fromInfo(DevUnitInfo info) {
+        if (info == null) {
+            return null;
+        }
+
+        DevUnit devUnit = new DevUnit();
+        devUnit.setName(info.getName());
+        devUnit.setInfo(info.getDescription());
+        devUnit.setTypeId(info.getTypeId());
+        devUnit.setCdrDescription(info.getCdrDescription());
+        devUnit.setConfiguration(info.getConfiguration());
+        devUnit.setHistoryVersion(info.getHistoryVersion());
+        devUnit.setWikiLink(info.getWikiLink());
+
+        return devUnit;
     }
 
     private Result<List<ProductShortView>> makeListProductShortView(List<DevUnit> devUnits) {
