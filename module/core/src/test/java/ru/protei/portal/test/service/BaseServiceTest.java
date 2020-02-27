@@ -49,6 +49,7 @@ public class BaseServiceTest {
         product.setHistoryVersion( "historyVersion" );
         product.setCdrDescription( "cdrDescription" );
         product.setConfiguration( "configuration" );
+        product.setWikiLink( "https://newportal.protei.ru/" );
         return product;
     }
 

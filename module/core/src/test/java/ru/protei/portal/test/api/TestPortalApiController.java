@@ -185,21 +185,35 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
                 .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
                 .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
+                .andExpect( jsonPath( "$.data.wikiLink", is( product.getWikiLink() ) ) )
+                .andExpect( jsonPath( "$.data.typeId", is( product.getTypeId() ) ) )
         ;
     }
 
+    @Test
+    @Transactional
+    public void createProduct() throws Exception {
+        DevUnit product = createProduct("TestPortalApiController#createProduct");
+
+        createPostResultAction("/api/products/create", DevUnitInfo.toInfo(product))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", notNullValue()))
+                .andExpect(jsonPath("$.data.name", is(product.getName())))
+                .andExpect(jsonPath("$.data.historyVersion", is(product.getHistoryVersion())))
+                .andExpect(jsonPath("$.data.cdrDescription", is(product.getCdrDescription())))
+                .andExpect(jsonPath("$.data.configuration", is(product.getConfiguration())))
+                .andExpect(jsonPath("$.data.description", is(product.getInfo())))
+                .andExpect(jsonPath("$.data.wikiLink", is(product.getWikiLink())))
+                .andExpect(jsonPath("$.data.typeId", is(product.getTypeId())));
+    }
 
     @Test
     @Transactional
     public void updateProduct() throws Exception {
         DevUnit devUnit = makeProduct( );
 
-        DevUnitInfo product = new DevUnitInfo();
-        product.setId( devUnit.getId() );
-        product.setHistoryVersion( "Updated historyVersion" );
-        product.setCdrDescription( "Updated cdrDescription" );
-        product.setConfiguration( "Updated configuration" );
-        product.setDescription( "Updated description" );
+        DevUnitInfo product = DevUnitInfo.toInfo(devUnit);
 
         createPostResultAction( "/api/products/update", product )
                 .andExpect( status().isOk() )
