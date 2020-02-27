@@ -162,6 +162,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public Result<DevUnitInfo> createProductByInfo(AuthToken token, DevUnitInfo product) {
         return createProduct(token, DevUnitInfo.fromInfo(product)).map(DevUnitInfo::toInfo);
     }

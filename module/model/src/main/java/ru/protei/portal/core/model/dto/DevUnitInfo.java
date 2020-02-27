@@ -94,6 +94,10 @@ public class DevUnitInfo extends AuditableObject {
     }
 
     public static DevUnitInfo toInfo( DevUnit devUnit ) {
+        if (devUnit == null) {
+            return null;
+        }
+
         DevUnitInfo info = new DevUnitInfo();
         info.setId( devUnit.getId() );
         info.setConfiguration( devUnit.getConfiguration() );
@@ -112,6 +116,7 @@ public class DevUnitInfo extends AuditableObject {
         }
 
         DevUnit devUnit = new DevUnit();
+        devUnit.setId(info.getId());
         devUnit.setName(info.getName());
         devUnit.setInfo(info.getDescription());
         devUnit.setTypeId(info.getTypeId());
