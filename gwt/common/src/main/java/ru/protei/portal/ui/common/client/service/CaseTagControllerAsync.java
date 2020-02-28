@@ -18,5 +18,5 @@ public interface CaseTagControllerAsync {
 
     void attachTag(Long caseId, Long tagId, AsyncCallback<Void> async);
 
-    void detachTag(Long caseId, Long tagId, AsyncCallback<Void> async);
+    void detachTag( Long caseId, Long tagId, AsyncCallback<Long> async);
 }
