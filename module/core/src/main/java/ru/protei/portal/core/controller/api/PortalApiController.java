@@ -318,6 +318,8 @@ public class PortalApiController {
         query.setEmail(apiQuery.getEmail());
         query.setWorkPhone(apiQuery.getWorkPhone());
         query.setMobilePhone(apiQuery.getMobilePhone());
+        query.setLimit(apiQuery.getLimit());
+        query.setOffset(apiQuery.getOffset());
 
         return query;
     }
