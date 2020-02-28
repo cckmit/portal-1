@@ -4,6 +4,9 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidators;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 public class DocumentUtils {
 
@@ -23,6 +26,7 @@ public class DocumentUtils {
     static public boolean isValidDocument(Document document, ProjectInfo project){
         return document.isValid()
                 && isValidInventoryNumberForMinistryOfDefence(document, project)
+                && validDecimalNumber(document.getDecimalNumber(), document.getType().getDocumentCategory())
                 && isValidApproveFields(document);
     }
 
@@ -51,5 +55,12 @@ public class DocumentUtils {
             return true;
         }
         return document.getApprovedBy() != null && document.getApprovalDate() != null;
+    }
+
+    static public boolean validDecimalNumber(String value, En_DocumentCategory enDocumentCategory ) {
+        if (isEmpty(value)) {
+            return true;
+        }
+        return DocumentDecimalNumberValidators.isValid(value, enDocumentCategory);
     }
 }

@@ -1,0 +1,137 @@
+package ru.protei.portal.core.model.util.documentvalidators;
+
+import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.helper.StringUtils;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+
+public class DocumentDecimalNumberValidators {
+    static private Set<String> organizationCode = new HashSet<>(Arrays.asList(
+            "ПАМР",
+            "ПДРА"
+    ));
+    static private Set<Integer> typeDocCode = new HashSet<>(Arrays.asList(
+            1,
+            2,
+            4,
+            5,
+            6,
+            7,
+            9,
+            10,
+            20,
+            25,
+            30,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            50,
+            55,
+            57,
+            59,
+            60,
+            62,
+            66,
+            67,
+            70,
+            71,
+            72,
+            75,
+            77,
+            78,
+            79,
+            80
+    ));
+    static private Set<Integer> typeProcessCode = new HashSet<>(Arrays.asList(
+            0,
+            1,
+            2,
+            3
+    ));
+    static private Set<Integer> typeProcessWorkCode = new HashSet<>(Arrays.asList(
+            0,
+            1,
+            2, 3,
+            4,
+            6, 7,
+            8,
+            10,
+            21,
+            41, 42,
+            50, 51,
+            55,
+            60,
+            65,
+            71,
+            73, 74,
+            75,
+            80, 81,
+            85,
+            88,
+            90, 91
+    ));
+
+    static private Function<String, Optional<String>> dotValidator = new Validator(1, "."::equals);
+    static private Function<String, Optional<String>> endValidator = new Validator(0, StringUtils::isEmpty);
+    static private Function<String, Optional<String>> organizationCodeValidator = new Validator(4, s -> organizationCode.contains(s));
+    static private Function<String, Optional<String>> KDtypeDocCodeValidator = new IntegerValidator(2, i -> typeDocCode.contains(i));
+    static private Function<String, Optional<String>> KDtypeProcessCodeValidator = new IntegerValidator(1, i -> typeProcessCode.contains(i));
+    static private Function<String, Optional<String>> KDtypeProcessWorkCodeValidator = new IntegerValidator(2, i -> typeProcessWorkCode.contains(i));
+    static private Function<String, Optional<String>> KDfixCodeValidator = new Validator(true, 1, "Р"::equals);
+    static private Function<String, Optional<String>> lengthFiveIntegerValidator = new IntegerValidator(5, s -> true) ;
+
+    static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {
+        switch (enDocumentCategory) {
+            /**
+             * Технический проект
+             */
+            case TP:
+                break;
+
+            /**
+             * Конструкторская документация
+             */
+            case KD:
+                break;
+
+            /**
+             * Программная документация
+             */
+            case PD:
+                break;
+
+            /**
+             * Эксплуатационная документация
+             */
+            case ED:
+                break;
+
+            case TD:
+                return Optional.of(value)
+                        .flatMap(organizationCodeValidator)
+                        .flatMap(dotValidator)
+                        .flatMap(KDtypeDocCodeValidator)
+                        .flatMap(KDtypeProcessCodeValidator)
+                        .flatMap(KDtypeProcessWorkCodeValidator)
+                        .flatMap(dotValidator)
+                        .flatMap(lengthFiveIntegerValidator)
+                        .flatMap(KDfixCodeValidator)
+                        .flatMap(endValidator)
+                        .isPresent();
+            default:
+                return true;
+        }
+
+        return false;
+    }
+}
