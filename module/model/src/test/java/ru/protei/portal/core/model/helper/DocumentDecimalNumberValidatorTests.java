@@ -4,7 +4,7 @@ import org.junit.Test;
 import ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidator;
 
 import static org.junit.Assert.*;
-import static ru.protei.portal.core.model.dict.En_DocumentCategory.TD;
+import static ru.protei.portal.core.model.dict.En_DocumentCategory.*;
 
 public class DocumentDecimalNumberValidatorTests {
 
@@ -96,5 +96,95 @@ public class DocumentDecimalNumberValidatorTests {
         assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.60 11 0.01234", TD) );
     }
 
-//    "ПАМР.60110.01234"
+    @Test
+    public void successfulKDTest() {
+        assertTrue( DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01СБ", KD) );
+        assertTrue( DocumentDecimalNumberValidator.isValid("ПДРА.000001.001-01СБ", KD) );
+        assertTrue( DocumentDecimalNumberValidator.isValid("ПДРА.999999.999-99СБ", KD) );
+    }
+
+    @Test
+    public void KDOrganizationTest() {
+        assertFalse( DocumentDecimalNumberValidator.isValid("ГУГЛ.123456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("42.123456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("PAMR.123456.123-01СБ", KD) );;
+        assertFalse( DocumentDecimalNumberValidator.isValid("*.123456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("#$%^.123456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("----.123456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("    .123456.123-01СБ", KD) );
+    }
+
+    @Test
+    public void KDNumberTest() {
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР..123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР. .123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.*.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.777.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.-23456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.&23456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.I23456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.*12345.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.123-56.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.12+456.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.десять.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.одиндватричетырепять.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.one.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.0x1234.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.0x123h.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.0xCAFE.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.0b1010.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.12.345.123-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.12345f.123-01СБ", KD) );
+
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001. -01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.1-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.*-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.-23-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.&23-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.I23-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.*12-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.1-5-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.1+4-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.десять-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.одиндватричетырепять-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.one-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.0x1-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.0xCAFE-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.0b1-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.1.3-01СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.12f-01СБ", KD) );
+
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123- СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-1СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-*СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123--23СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-&3СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-I2СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-4-1СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-1+4СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-десятьСБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-одиндватричетырепятьСБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-oneСБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-0x1СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-0xCAFEСБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-0b1СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-1.3СБ", KD) );
+        assertFalse( DocumentDecimalNumberValidator.isValid("ПАМР.000001.123-1fСБ", KD) );
+    }
+
+    @Test
+    public void KDPosTest() {
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01", KD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01 СБ", KD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01С", KD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01WJ", KD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01*", KD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01--", KD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01  ", KD));
+    }
 }
+

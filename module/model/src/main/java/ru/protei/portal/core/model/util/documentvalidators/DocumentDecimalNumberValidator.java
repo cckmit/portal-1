@@ -82,6 +82,7 @@ public class DocumentDecimalNumberValidator {
     ));
 
     static private Function<String, Optional<String>> dotValidator = new Validator(1, "."::equals);
+    static private Function<String, Optional<String>> dashValidator = new Validator(1, "-"::equals);
     static private Function<String, Optional<String>> endValidator = new Validator(0, StringUtils::isEmpty);
     static private Function<String, Optional<String>> organizationCodeValidator = new Validator(4, s -> organizationCode.contains(s));
     static private Function<String, Optional<String>> TDtypeDocCodeValidator = new IntegerValidator(2, i -> typeDocCode.contains(i));
@@ -89,6 +90,10 @@ public class DocumentDecimalNumberValidator {
     static private Function<String, Optional<String>> TDtypeProcessWorkCodeValidator = new IntegerValidator(2, i -> typeProcessWorkCode.contains(i));
     static private Function<String, Optional<String>> TDfixCodeValidator = new Validator(true, 1, "Р"::equals);
     static private Function<String, Optional<String>> lengthFiveMoreThanZeroIntegerValidator = new IntegerValidator(5, s -> 0 < s) ;
+    static private Function<String, Optional<String>> lengthSixMoreThanZeroIntegerValidator = new IntegerValidator(6, s -> 0 < s) ;
+    static private Function<String, Optional<String>> lengthThreeMoreThanZeroIntegerValidator = new IntegerValidator(3, s -> 0 < s) ;
+    static private Function<String, Optional<String>> lengthTwoMoreThanZeroIntegerValidator = new IntegerValidator(2, s -> 0 < s) ;
+    static private Function<String, Optional<String>> lengthTwoRussianLetterValidator = new Validator(2, s -> s.matches("[А-Я][А-Я]")) ;
 
     static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {
         switch (enDocumentCategory) {
@@ -102,7 +107,17 @@ public class DocumentDecimalNumberValidator {
              * Конструкторская документация
              */
             case KD:
-                break;
+                return Optional.of(value)
+                        .flatMap(organizationCodeValidator)
+                        .flatMap(dotValidator)
+                        .flatMap(lengthSixMoreThanZeroIntegerValidator)
+                        .flatMap(dotValidator)
+                        .flatMap(lengthThreeMoreThanZeroIntegerValidator)
+                        .flatMap(dashValidator)
+                        .flatMap(lengthTwoMoreThanZeroIntegerValidator)
+                        .flatMap(lengthTwoRussianLetterValidator)
+                        .flatMap(endValidator)
+                        .isPresent();
 
             /**
              * Программная документация
