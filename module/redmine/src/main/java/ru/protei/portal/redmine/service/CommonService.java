@@ -2,16 +2,7 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
-import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
-import ru.protei.portal.core.event.CaseObjectMetaEvent;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.util.DiffResult;
-import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 
 import java.util.Collection;

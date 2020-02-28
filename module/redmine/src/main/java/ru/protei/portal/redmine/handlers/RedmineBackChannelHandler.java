@@ -32,11 +32,6 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
     @Override
     public void handle(AssembledCaseEvent event) {
-        logger.debug("Handling action on redmine-related issue in Portal-CRM");
-        if (!(portalConfig.data().integrationConfig().isRedmineEnabled() || portalConfig.data().integrationConfig().isRedmineBackchannelEnabled())) {
-            logger.debug("Redmine integration disabled in config, nothing happens");
-            return;
-        }
 
         final long caseId = event.getCaseObject().getId();
 
@@ -56,7 +51,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         resultOfNullable(() -> externalCaseAppDAO.get(caseId), () -> "case {} has no ext-app-id" + caseId)
                 .flatMap(this::findEndpointAndIssueId)
                 .flatMap(endpointAndIssueId -> proceedUpdate(endpointAndIssueId.IssueId, event, endpointAndIssueId.endpoint))
-                .ifError(result -> logger.debug(result.getMessage()));
+                .ifError(result -> logger.warn(result.getMessage()));
     }
 
     private Result<EndpointAndIssueId> findEndpointAndIssueId(ExternalCaseAppData externalCaseAppData) {
@@ -191,8 +186,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
 
-    @Autowired
-    private PortalConfig portalConfig;
+
 
     private static final Logger logger = LoggerFactory.getLogger(RedmineBackChannelHandler.class);
 }

@@ -20,8 +20,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.portal.redmine.enums.RedmineChangeType;
-import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
@@ -71,7 +69,6 @@ public final class CommonServiceImpl implements CommonService {
         journals.stream()
                 .filter(journal -> StringUtils.isNotBlank(journal.getNotes()))
                 .forEach(journal ->
-//                      getUpdater( RedmineChangeType.COMMENT).apply(object, null, journal, null, personMapper)
                         updateComment(object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson(journal.getUser()) )
                         );
     }
@@ -127,7 +124,7 @@ public final class CommonServiceImpl implements CommonService {
             }
 
             publisherService.publishEvent(new CaseObjectMetaEvent(
-                    caseUpdaterFactory,
+                    this,
                     ServiceModule.REDMINE,
                     author.getId(),
                     En_ExtAppType.forCode(object.getExtAppType()),
@@ -159,7 +156,7 @@ public final class CommonServiceImpl implements CommonService {
             }
 
             publisherService.publishEvent(new CaseObjectMetaEvent(
-                    caseUpdaterFactory,
+                    this,
                     ServiceModule.REDMINE,
                     author.getId(),
                     En_ExtAppType.forCode(object.getExtAppType()),
@@ -180,7 +177,7 @@ public final class CommonServiceImpl implements CommonService {
         logger.debug("Updated case info for case with id {}, old={}, new={}", object.getId(), infoDiff.getInitialState(), infoDiff.getNewState());
 
         publisherService.publishEvent(new CaseNameAndDescriptionEvent(
-                caseUpdaterFactory,
+                this,
                 object.getId(),
                 new DiffResult<>(null, object.getName()),
                 infoDiff,
@@ -198,7 +195,7 @@ public final class CommonServiceImpl implements CommonService {
         logger.debug("Updated case name for case with id {}, old={}, new={}", object.getId(), nameDiff.getInitialState(), nameDiff.getNewState());
 
         publisherService.publishEvent(new CaseNameAndDescriptionEvent(
-                caseUpdaterFactory,
+                this,
                 object.getId(),
                 nameDiff,
                 new DiffResult<>(null, object.getInfo()),
@@ -213,7 +210,7 @@ public final class CommonServiceImpl implements CommonService {
         logger.debug("Added new case comment to case with id {}, comment has following text: {}", objectId, caseComment.getText());
 
         publisherService.publishEvent(new CaseCommentEvent(
-                caseUpdaterFactory,
+                this,
                 ServiceModule.REDMINE,
                 author.getId(),
                 objectId,
@@ -250,9 +247,6 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private AttachmentDAO attachmentDAO;
-
-    @Autowired
-    CaseUpdaterFactory caseUpdaterFactory;
 
     @Autowired
     private EventPublisherService publisherService;

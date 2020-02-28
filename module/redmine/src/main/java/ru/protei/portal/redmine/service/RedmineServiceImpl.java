@@ -8,12 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
-import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
-import ru.protei.portal.redmine.handlers.RedmineForwardIssueChannel;
+import ru.protei.portal.redmine.handlers.BackchannelEventHandler;
+import ru.protei.portal.redmine.handlers.ForwardChannelEventHandler;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.io.IOException;
@@ -32,8 +33,13 @@ public final class RedmineServiceImpl implements RedmineService {
             logger.debug("skip handle plugin-published event for {}", event.getCaseObject().getExtId());
             return;
         }
+        logger.debug("Handling action on redmine-related issue in Portal-CRM");
+        if (!(portalConfig.data().integrationConfig().isRedmineEnabled() || portalConfig.data().integrationConfig().isRedmineBackchannelEnabled())) {
+            logger.debug("Redmine integration disabled in config, nothing happens");
+            return;
+        }
         try {
-            redmineBackChannelHandler.handle(event);
+            backChannel.handle(event);
             logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
             logger.error("error while handling event for case " + event.getCaseObject().getExtId(), e);
@@ -85,7 +91,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
             logger.debug("try handle new issue from {}, issue-id: {}", userInfo(user), issue.getId());
 
-            handler.createCaseObject(user, issue, endpoint);
+            forwardChannel.createCaseObject(user, issue, endpoint);
             lastCreatedOn = RedmineUtils.maxDate(issue.getCreatedOn(), lastCreatedOn);
         }
 
@@ -142,7 +148,7 @@ public final class RedmineServiceImpl implements RedmineService {
             }
 
             logger.debug("try update issue from {}, issue-id: {}", userInfo(user), issue.getId());
-            handler.compareAndUpdate(user, issue, endpoint);
+            forwardChannel.compareAndUpdate(user, issue, endpoint);
             lastUpdatedOn = RedmineUtils.maxDate(issue.getUpdatedOn(), lastUpdatedOn);
         }
         logger.debug("max update-date, taken from issues: {}", lastUpdatedOn);
@@ -253,13 +259,16 @@ public final class RedmineServiceImpl implements RedmineService {
     private RedmineEndpointDAO redmineEndpointDAO;
 
     @Autowired
-    private RedmineForwardIssueChannel handler;
+    private ForwardChannelEventHandler forwardChannel;
 
     @Autowired
-    private RedmineBackChannelHandler redmineBackChannelHandler;
+    private BackchannelEventHandler backChannel;
 
     @Autowired
     FileStorage fileStorage;
+
+    @Autowired
+    private PortalConfig portalConfig;
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RedmineServiceImpl.class);
 

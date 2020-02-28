@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
-import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 
@@ -31,9 +30,10 @@ import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 import static ru.protei.portal.redmine.enums.RedmineChangeType.*;
 import static ru.protei.portal.redmine.utils.CachedPersonMapper.*;
 
-public class RedmineForwardIssueChannel {
+public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
-    public void compareAndUpdate(User user, Issue issue, RedmineEndpoint endpoint) {
+    @Override
+    public void compareAndUpdate( User user, Issue issue, RedmineEndpoint endpoint ) {
         final CaseObject object = caseObjectDAO.getByExternalAppCaseId(issue.getId() + "_" + endpoint.getCompanyId());
         if (object != null) {
             logger.debug("Found case object with id {}", object.getId());
@@ -45,6 +45,7 @@ public class RedmineForwardIssueChannel {
         }
     }
 
+    @Override
     public CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
         logger.debug("Starting creating case object for issue id {}, user id {}, company id {}", issue.getId(), user.getId(), companyId);
@@ -107,12 +108,13 @@ public class RedmineForwardIssueChannel {
 
         //Synchronize comments, status, priority, name, info
         for (Journal journal : latestJournals) {
-            if (isNotBlank( journal.getNotes() )) {
-//                getUpdater(RedmineChangeType.COMMENT).apply( object, endpoint, journal, null, personMapper );//TODO dublicate Comments see below
-                commonService.updateComment( object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson( journal.getUser() ) );
-            }
 
             List<JournalDetail> details = journal.getDetails();
+
+            if (isNotBlank( journal.getNotes() )) {
+                find( details, COMMENT ).ifPresent( detail ->
+                        commonService.updateComment( object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson( journal.getUser() ) ) );
+            }
 
             find( details, STATUS_CHANGE ).ifPresent( detail ->
                     commonService.updateCaseStatus( object, endpoint.getStatusMapId(), journal.getCreatedOn(), detail.getNewValue(), personMapper.toProteiPerson( journal.getUser() ) ) );
@@ -126,36 +128,6 @@ public class RedmineForwardIssueChannel {
             find( details, SUBJECT_CHANGE ).ifPresent( detail ->
                     commonService.updateCaseSubject( object, detail.getNewValue(), personMapper.toProteiPerson( journal.getUser() ) ) );
 
-            find( details, COMMENT ).ifPresent( detail ->
-                    commonService.updateComment( object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson( journal.getUser() ) ) );
-
-//            for (JournalDetail detail : journal.getDetails()) {
-////                RedmineChangeType.findByName( detail.getName() )
-////                        .ifPresent( type -> getUpdater( type ).apply( object, endpoint, journal, detail.getNewValue(), personMapper )
-////                        );
-//                RedmineChangeType.findByName( detail.getName() ).ifPresent( type -> {
-//                            switch (type) {
-//                                case STATUS_CHANGE:
-//                                    commonService.updateCaseStatus(object, endpoint.getStatusMapId(), journal.getCreatedOn(), detail.getNewValue(), personMapper.toProteiPerson(journal.getUser()) );
-//                                    break;
-//                                case PRIORITY_CHANGE:
-//                                    commonService.updateCasePriority(object, endpoint.getPriorityMapId(), journal, detail.getNewValue(), personMapper.toProteiPerson(journal.getUser()) );
-//                                    break;
-//                                case DESCRIPTION_CHANGE:
-//                                    commonService.updateCaseDescription(object, detail.getNewValue(), personMapper.toProteiPerson(journal.getUser()) );
-//                                    break;
-//                                case SUBJECT_CHANGE:
-//                                    commonService.updateCaseSubject(object, detail.getNewValue(), personMapper.toProteiPerson(journal.getUser()) );
-//                                    break;
-//                                case COMMENT:
-//                                    commonService.updateComment(object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson(journal.getUser()) );
-//                                    break;
-//                                default:
-//
-//                            }
-//                        }
-//                );
-//            }
         }
 
         //Synchronize attachment
@@ -243,5 +215,5 @@ public class RedmineForwardIssueChannel {
     @Autowired
     private EventPublisherService publisherService;
 
-    private final static Logger logger = LoggerFactory.getLogger( RedmineForwardIssueChannel.class);
+    private final static Logger logger = LoggerFactory.getLogger( RedmineForwardChannel.class);
 }
