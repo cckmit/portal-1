@@ -324,10 +324,10 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data[0].id").value(person.getId().intValue()))
-                .andExpect(jsonPath("$.data[0].emails[0]", is(infoFacade.getEmail())))
+                .andExpect(jsonPath("$.data[0].email", is(infoFacade.getEmail())))
                 .andExpect(jsonPath("$.data[0].workPhone", is(infoFacade.getWorkPhone())))
                 .andExpect(jsonPath("$.data[0].ip", is(person.getIpAddress())))
-                .andExpect(jsonPath("$.data[0].phones", hasItem(infoFacade.getMobilePhone())));
+                .andExpect(jsonPath("$.data[0].mobilePhone", is(infoFacade.getMobilePhone())));
 
         personDAO.removeByKey(person.getId());
     }

@@ -8,9 +8,9 @@ import java.util.List;
 public class PersonInfo {
     private Long id;
 
-    private List<String> emails;
+    private String email;
 
-    private List<String> phones;
+    private String mobilePhone;
 
     private String workPhone;
 
@@ -24,20 +24,20 @@ public class PersonInfo {
         this.id = id;
     }
 
-    public List<String> getEmails() {
-        return emails;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmails(List<String> emails) {
-        this.emails = emails;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public List<String> getPhones() {
-        return phones;
+    public String getMobilePhone() {
+        return mobilePhone;
     }
 
-    public void setPhones(List<String> phones) {
-        this.phones = phones;
+    public void setMobilePhone(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
     }
 
     public String getWorkPhone() {
@@ -68,8 +68,8 @@ public class PersonInfo {
 
         PlainContactInfoFacade plainContactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
 
-        personInfo.setEmails(plainContactInfoFacade.publicEmails());
-        personInfo.setPhones(plainContactInfoFacade.publicPhones());
+        personInfo.setEmail(plainContactInfoFacade.getEmail());
+        personInfo.setMobilePhone(plainContactInfoFacade.getMobilePhone());
         personInfo.setWorkPhone(plainContactInfoFacade.getWorkPhone());
 
         return personInfo;
@@ -79,10 +79,10 @@ public class PersonInfo {
     public String toString() {
         return "PersonInfo{" +
                 "id=" + id +
-                ", emails=" + emails +
-                ", phones=" + phones +
+                ", email='" + email + '\'' +
+                ", mobilePhone='" + mobilePhone + '\'' +
                 ", workPhone='" + workPhone + '\'' +
-                ", ip=" + ip +
+                ", ip='" + ip + '\'' +
                 '}';
     }
 }
