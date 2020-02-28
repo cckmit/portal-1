@@ -6,10 +6,14 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EmployeeSqlBuilder {
+    private String a = "";
 
     public SqlCondition createSqlCondition(EmployeeQuery query) {
-        return new SqlCondition().build((condition, args) -> {
+        SqlCondition sqlCondition = new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
             if (CollectionUtils.isNotEmpty(query.getIds())) {
@@ -32,11 +36,10 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                if (query.getSearchString().trim().contains(" ")){
+                if (query.getSearchString().trim().contains(" ")) {
                     condition.append(" and Person.displayname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
-                }
-                else {
+                } else {
                     condition.append(" and (Person.lastname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
                     condition.append(" or Person.firstname like ?)");
@@ -44,24 +47,33 @@ public class EmployeeSqlBuilder {
                 }
             }
 
-            if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'GENERAL_PHONE' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
-            }
-
-            if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'MOBILE_PHONE' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
-            }
-
             if (HelperFunc.isLikeRequired(query.getIpAddress())) {
                 condition.append(" and Person.ipaddress like ?");
                 args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
             }
 
-            if (HelperFunc.isLikeRequired(query.getEmail())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+            if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmail())) {
+                condition.append(" and id in (SELECT id WHERE info.a = 'PUBLIC' and (");
+
+                List<String> orCondition = new ArrayList<>();
+
+                if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+                    orCondition.add("(info.t = 'GENERAL_PHONE' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
+                }
+
+                if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+                    orCondition.add("(info.t = 'MOBILE_PHONE' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
+                }
+
+                if (HelperFunc.isLikeRequired(query.getEmail())) {
+                    orCondition.add("(info.t = 'EMAIL' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+                }
+
+                condition.append(String.join(" or ", orCondition));
+                condition.append("))");
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {
@@ -77,5 +89,35 @@ public class EmployeeSqlBuilder {
                 args.add(helper);
             }
         });
+
+        return afterBuild(sqlCondition, query);
+    }
+
+    private SqlCondition afterBuild(SqlCondition sqlCondition, EmployeeQuery query) {
+        String condition = sqlCondition.condition;
+        List<Object> args = new ArrayList<>(sqlCondition.args);
+        int countId = 0;
+
+        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getEmail())) {
+            countId++;
+        }
+
+        if (countId > 0) {
+            condition += " group by id having count(id) = ?";
+            args.add(countId);
+        }
+
+        SqlCondition result = new SqlCondition(condition);
+        result.args = args;
+
+        return result;
     }
 }

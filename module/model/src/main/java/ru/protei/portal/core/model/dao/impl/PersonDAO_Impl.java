@@ -207,7 +207,8 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     @SqlConditionBuilder
     public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
-        return employeeSqlBuilder.createSqlCondition(query);
+        SqlCondition sqlCondition = employeeSqlBuilder.createSqlCondition(query);
+        return sqlCondition;
     }
 
     @Override
