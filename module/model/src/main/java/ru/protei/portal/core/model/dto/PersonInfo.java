@@ -8,6 +8,8 @@ import java.util.List;
 public class PersonInfo {
     private Long id;
 
+    private String displayName;
+
     private String email;
 
     private String mobilePhone;
@@ -22,6 +24,14 @@ public class PersonInfo {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getEmail() {
@@ -64,6 +74,7 @@ public class PersonInfo {
         PersonInfo personInfo = new PersonInfo();
 
         personInfo.setId(person.getId());
+        personInfo.setDisplayName(person.getDisplayName());
         personInfo.setIp(person.getIpAddress());
 
         PlainContactInfoFacade plainContactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
