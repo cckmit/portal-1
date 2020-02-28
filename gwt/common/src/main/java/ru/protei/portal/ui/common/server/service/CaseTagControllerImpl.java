@@ -50,9 +50,9 @@ public class CaseTagControllerImpl implements CaseTagController {
     }
 
     @Override
-    public void detachTag(Long caseId, Long tagId) throws RequestFailedException {
+    public Long detachTag( Long caseId, Long tagId) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        ServiceUtils.checkResult(caseTagService.detachTag(authToken, caseId, tagId));
+        return checkResultAndGetData(caseTagService.detachTag(authToken, caseId, tagId));
     }
 
     @Autowired

@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casetag.item.AbstractCaseTagItemActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.item.AbstractCaseTagItemView;
@@ -43,13 +44,13 @@ public class CaseTagItemView extends Composite implements AbstractCaseTagItemVie
     }
 
     @Override
-    public void setModelId(Long id) {
-        this.modelId = id;
+    public void setCaseTag( CaseTag caseTag) {
+        this.caseTag = caseTag;
     }
 
     @Override
-    public Long getModelId() {
-        return modelId;
+    public CaseTag getCaseTag() {
+        return caseTag;
     }
 
     @UiHandler("remove")
@@ -74,7 +75,7 @@ public class CaseTagItemView extends Composite implements AbstractCaseTagItemVie
     @UiField
     InlineLabel text;
 
-    private Long modelId;
+    private CaseTag caseTag;
     private AbstractCaseTagItemActivity activity;
 
     interface CaseLinkViewUiBinder extends UiBinder<HTMLPanel, CaseTagItemView> {}
