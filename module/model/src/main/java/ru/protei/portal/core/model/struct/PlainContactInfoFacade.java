@@ -104,6 +104,13 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         ).collect( Collectors.toList() );
     }
 
+    public List<String> publicPhones() {
+        return allPhonesStream()
+                .filter(contactItem -> contactItem.accessType().equals(En_ContactDataAccess.PUBLIC))
+                .map(ContactItem::value)
+                .collect(Collectors.toList());
+    }
+
     public String getWorkPhone() {
         return findItemValue(En_ContactItemType.GENERAL_PHONE,En_ContactDataAccess.PUBLIC);
     }
