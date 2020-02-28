@@ -17,6 +17,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.query.EmployeeApiQuery;
+import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
@@ -288,6 +292,45 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
+    @Test
+    @Transactional
+    public void getEmployees() throws Exception {
+        Company homeCompany = companyDAO.get(1L);
+        Person person = createNewPerson(homeCompany);
+        person.setDisplayName("getEmployees");
+        person.setFirstName("getEmployees");
+        person.setIpAddress("111");
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade();
+        infoFacade.setEmail("getEmployees@portal.ru");
+        infoFacade.setWorkPhone("222");
+        infoFacade.setMobilePhone("333");
+
+        person.setContactInfo(infoFacade.editInfo());
+
+        Long personId = personDAO.persist(person);
+
+        Assert.assertNotNull("Expected person id not null", personId);
+
+        person.setId(personId);
+
+        EmployeeApiQuery employeeApiQuery = new EmployeeApiQuery();
+        employeeApiQuery.setDisplayName(person.getDisplayName());
+        employeeApiQuery.setWorkPhone(infoFacade.getWorkPhone());
+        employeeApiQuery.setMobilePhone(infoFacade.getMobilePhone());
+        employeeApiQuery.setEmail(infoFacade.getEmail());
+
+        createPostResultAction("/api/employees", employeeApiQuery)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data[0].id").value(person.getId().intValue()))
+                .andExpect(jsonPath("$.data[0].emails[0]", is(infoFacade.getEmail())))
+                .andExpect(jsonPath("$.data[0].workPhone", is(infoFacade.getWorkPhone())))
+                .andExpect(jsonPath("$.data[0].ip", is(person.getIpAddress())))
+                .andExpect(jsonPath("$.data[0].phones", hasItem(infoFacade.getMobilePhone())));
+
+        personDAO.removeByKey(person.getId());
+    }
 
     private void setThreadUserLogin(UserLogin userLogin) {
         authService.makeThreadAuthToken(userLogin);
