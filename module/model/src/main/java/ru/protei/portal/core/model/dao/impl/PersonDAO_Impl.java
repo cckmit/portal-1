@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
@@ -19,10 +20,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
@@ -125,17 +123,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return getList(parameters);
     }
 
-    private JdbcQueryParameters buildEmployeeJdbcQueryParameters(EmployeeQuery query) {
-        SqlCondition where = createSqlCondition(query);
-        return new JdbcQueryParameters().
-                withJoins(WORKER_ENTRY_JOIN).
-                withCondition(where.condition, where.args).
-                withDistinct(true).
-                withOffset(query.getOffset()).
-                withLimit(query.getLimit()).
-                withSort(TypeConverters.createSort(query));
-    }
-
     @Override
     public SearchResult<Person> getContactsSearchResult(ContactQuery query) {
         if (query.getCompanyId() != null && homeGroupCache().exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
@@ -207,8 +194,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     @SqlConditionBuilder
     public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
-        SqlCondition sqlCondition = employeeSqlBuilder.createSqlCondition(query);
-        return sqlCondition;
+        return employeeSqlBuilder.createSqlCondition(query);
     }
 
     @Override
@@ -244,6 +230,52 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add(En_Gender.UNDEFINED.getCode());
             }
         });
+    }
+
+    private JdbcQueryParameters buildEmployeeJdbcQueryParameters(EmployeeQuery query) {
+        SqlCondition where = createSqlCondition(query);
+
+        JdbcQueryParameters jdbcQueryParameters = new JdbcQueryParameters().
+                withJoins(WORKER_ENTRY_JOIN).
+                withCondition(where.condition, where.args).
+                withDistinct(true).
+                withOffset(query.getOffset()).
+                withLimit(query.getLimit()).
+                withSort(TypeConverters.createSort(query));
+
+        String havingCondition = makeHavingCondition(query);
+
+        if (StringUtils.isNotEmpty(havingCondition)) {
+            jdbcQueryParameters
+                    .withGroupBy("id")
+                    .withHaving(havingCondition);
+        }
+
+        return jdbcQueryParameters;
+    }
+
+    private String makeHavingCondition(EmployeeQuery query) {
+        String result = "";
+
+        int countId = 0;
+
+        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getEmail())) {
+            countId++;
+        }
+
+        if (countId > 0) {
+            result = "count(id) = " + countId;
+        }
+
+        return result;
     }
 
     private boolean ifPersonIsEmployee(final Person employee) {

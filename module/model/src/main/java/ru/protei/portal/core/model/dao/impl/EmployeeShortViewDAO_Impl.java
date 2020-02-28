@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.EmployeeShortViewDAO;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -72,6 +74,38 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
                 .withOffset(query.getOffset())
                 .withLimit(query.getLimit());
 
+        String havingCondition = makeHavingCondition(query);
+
+        if (StringUtils.isNotEmpty(havingCondition)) {
+            parameters
+                    .withGroupBy("id")
+                    .withHaving(havingCondition);
+        }
+
         return parameters;
+    }
+
+    private String makeHavingCondition(EmployeeQuery query) {
+        String result = "";
+
+        int countId = 0;
+
+        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getEmail())) {
+            countId++;
+        }
+
+        if (countId > 0) {
+            result = "count(id) = " + countId;
+        }
+
+        return result;
     }
 }

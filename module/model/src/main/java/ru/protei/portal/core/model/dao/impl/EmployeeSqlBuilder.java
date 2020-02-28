@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeSqlBuilder {
-    private String a = "";
-
     public SqlCondition createSqlCondition(EmployeeQuery query) {
-        SqlCondition sqlCondition = new SqlCondition().build((condition, args) -> {
+        return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
             if (CollectionUtils.isNotEmpty(query.getIds())) {
@@ -53,7 +51,7 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmail())) {
-                condition.append(" and id in (SELECT id WHERE info.a = 'PUBLIC' and (");
+                condition.append(" and info.a = 'PUBLIC' and (");
 
                 List<String> orCondition = new ArrayList<>();
 
@@ -73,7 +71,7 @@ public class EmployeeSqlBuilder {
                 }
 
                 condition.append(String.join(" or ", orCondition));
-                condition.append("))");
+                condition.append(")");
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {
@@ -89,35 +87,5 @@ public class EmployeeSqlBuilder {
                 args.add(helper);
             }
         });
-
-        return afterBuild(sqlCondition, query);
-    }
-
-    private SqlCondition afterBuild(SqlCondition sqlCondition, EmployeeQuery query) {
-        String condition = sqlCondition.condition;
-        List<Object> args = new ArrayList<>(sqlCondition.args);
-        int countId = 0;
-
-        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-            countId++;
-        }
-
-        if (HelperFunc.isLikeRequired(query.getEmail())) {
-            countId++;
-        }
-
-        if (countId > 0) {
-            condition += " group by id having count(id) = ?";
-            args.add(countId);
-        }
-
-        SqlCondition result = new SqlCondition(condition);
-        result.args = args;
-
-        return result;
     }
 }
