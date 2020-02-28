@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidators;
+import ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidator;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
@@ -61,6 +61,6 @@ public class DocumentUtils {
         if (isEmpty(value)) {
             return true;
         }
-        return DocumentDecimalNumberValidators.isValid(value, enDocumentCategory);
+        return DocumentDecimalNumberValidator.isValid(value, enDocumentCategory);
     }
 }

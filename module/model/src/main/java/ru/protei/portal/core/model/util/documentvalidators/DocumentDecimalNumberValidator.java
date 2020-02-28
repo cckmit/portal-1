@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-public class DocumentDecimalNumberValidators {
+public class DocumentDecimalNumberValidator {
     static private Set<String> organizationCode = new HashSet<>(Arrays.asList(
             "ПАМР",
             "ПДРА"
@@ -84,11 +84,11 @@ public class DocumentDecimalNumberValidators {
     static private Function<String, Optional<String>> dotValidator = new Validator(1, "."::equals);
     static private Function<String, Optional<String>> endValidator = new Validator(0, StringUtils::isEmpty);
     static private Function<String, Optional<String>> organizationCodeValidator = new Validator(4, s -> organizationCode.contains(s));
-    static private Function<String, Optional<String>> KDtypeDocCodeValidator = new IntegerValidator(2, i -> typeDocCode.contains(i));
-    static private Function<String, Optional<String>> KDtypeProcessCodeValidator = new IntegerValidator(1, i -> typeProcessCode.contains(i));
-    static private Function<String, Optional<String>> KDtypeProcessWorkCodeValidator = new IntegerValidator(2, i -> typeProcessWorkCode.contains(i));
-    static private Function<String, Optional<String>> KDfixCodeValidator = new Validator(true, 1, "Р"::equals);
-    static private Function<String, Optional<String>> lengthFiveIntegerValidator = new IntegerValidator(5, s -> true) ;
+    static private Function<String, Optional<String>> TDtypeDocCodeValidator = new IntegerValidator(2, i -> typeDocCode.contains(i));
+    static private Function<String, Optional<String>> TDtypeProcessCodeValidator = new IntegerValidator(1, i -> typeProcessCode.contains(i));
+    static private Function<String, Optional<String>> TDtypeProcessWorkCodeValidator = new IntegerValidator(2, i -> typeProcessWorkCode.contains(i));
+    static private Function<String, Optional<String>> TDfixCodeValidator = new Validator(true, 1, "Р"::equals);
+    static private Function<String, Optional<String>> lengthFiveMoreThanZeroIntegerValidator = new IntegerValidator(5, s -> 0 < s) ;
 
     static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {
         switch (enDocumentCategory) {
@@ -120,12 +120,12 @@ public class DocumentDecimalNumberValidators {
                 return Optional.of(value)
                         .flatMap(organizationCodeValidator)
                         .flatMap(dotValidator)
-                        .flatMap(KDtypeDocCodeValidator)
-                        .flatMap(KDtypeProcessCodeValidator)
-                        .flatMap(KDtypeProcessWorkCodeValidator)
+                        .flatMap(TDtypeDocCodeValidator)
+                        .flatMap(TDtypeProcessCodeValidator)
+                        .flatMap(TDtypeProcessWorkCodeValidator)
                         .flatMap(dotValidator)
-                        .flatMap(lengthFiveIntegerValidator)
-                        .flatMap(KDfixCodeValidator)
+                        .flatMap(lengthFiveMoreThanZeroIntegerValidator)
+                        .flatMap(TDfixCodeValidator)
                         .flatMap(endValidator)
                         .isPresent();
             default:
