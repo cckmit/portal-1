@@ -132,7 +132,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("timeElapsedChanged", event.isTimeElapsedChanged());
         templateModel.put("elapsed", newMetaState.getTimeElapsed());
-        templateModel.put("oldElapsed", oldMetaState == null ? null : oldMetaState.getTimeElapsed());
+        templateModel.put("oldElapsed", !event.isTimeElapsedChanged() ? null : (newMetaState.getTimeElapsed() - event.getTimeElapsedChanging()));
 
         templateModel.put("customerChanged", event.isInitiatorChanged() || event.isInitiatorCompanyChanged());
         templateModel.put("initiator", newMetaState.getInitiator() == null ? null : newMetaState.getInitiator().getDisplayName());

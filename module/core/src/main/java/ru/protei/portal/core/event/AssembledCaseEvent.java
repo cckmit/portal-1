@@ -26,6 +26,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseObjectMeta initMetaState;
     private DiffResult<String> name = new DiffResult<>();
     private DiffResult<String> info = new DiffResult<>();
+    private Long timeElapsedChanging = 0L;
     private DiffCollectionResult <CaseLink> links = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
@@ -100,11 +101,14 @@ public class AssembledCaseEvent extends ApplicationEvent {
         isEagerEvent = isEagerEvent || commentEvent.isEagerEvent();
         if (commentEvent.getOldCaseComment() != null) {
             comments.putChangedEntry( commentEvent.getOldCaseComment(), commentEvent.getNewCaseComment() );
+            timeElapsedChanging += getTimeElapsedFromComment(commentEvent.getNewCaseComment()) - getTimeElapsedFromComment(commentEvent.getOldCaseComment());
         } else if (commentEvent.getNewCaseComment() != null) {
             comments.putAddedEntry( commentEvent.getNewCaseComment() );
+            timeElapsedChanging += getTimeElapsedFromComment(commentEvent.getNewCaseComment());
         }
         if (commentEvent.getRemovedCaseComment() != null) {
             comments.putRemovedEntry( commentEvent.getRemovedCaseComment() );
+            timeElapsedChanging -= getTimeElapsedFromComment(commentEvent.getRemovedCaseComment());
         }
     }
 
@@ -116,10 +120,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isCreateEvent() {
         return isCreateEvent;
-    }
-
-    private boolean isUpdateEvent() {
-        return !isCreateEvent();
     }
 
     private boolean isUpdateEventMeta() {
@@ -135,7 +135,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isTimeElapsedChanged() {
-        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getTimeElapsed(), initMetaState.getTimeElapsed());
+        return timeElapsedChanging != 0L;
     }
 
     public boolean isCaseImportanceChanged() {
@@ -164,18 +164,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isPublicLinksChanged() {
         return isUpdateEvent() && publicLinksChanged();
-    }
-
-    private boolean publicLinksChanged() {
-        if (!CollectionUtils.isEmpty(links.getAddedEntries()) && links.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
-            return true;
-        }
-
-        if (!CollectionUtils.isEmpty(links.getRemovedEntries()) && links.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
-            return true;
-        }
-
-        return false;
     }
 
     public boolean isEagerEvent() {
@@ -264,6 +252,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public Person getInitiator() {
         return initiator;
+    }
+
+    public Long getTimeElapsedChanging() {
+        return timeElapsedChanging;
     }
 
     public DiffCollectionResult<CaseLink> getLinks() {
@@ -424,6 +416,26 @@ public class AssembledCaseEvent extends ApplicationEvent {
             result.setNewState(other.getNewState());
             return result;
         }
+    }
+
+    private boolean publicLinksChanged() {
+        if (!CollectionUtils.isEmpty(links.getAddedEntries()) && links.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        if (!CollectionUtils.isEmpty(links.getRemovedEntries()) && links.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isUpdateEvent() {
+        return !isCreateEvent();
+    }
+
+    private Long getTimeElapsedFromComment(CaseComment caseComment) {
+        return caseComment.getTimeElapsed() == null ? 0L : caseComment.getTimeElapsed();
     }
 
     private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );
