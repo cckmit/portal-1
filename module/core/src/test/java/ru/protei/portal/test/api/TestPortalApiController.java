@@ -348,7 +348,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     @Transactional
-    public void getEmptyResult() throws Exception {
+    public void getEmployeesEmptyResult() throws Exception {
         Company homeCompany = companyDAO.get(1L);
 
         String email = "getEmployees@portal.ru";
