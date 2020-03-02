@@ -65,6 +65,10 @@
                                       header="{lang.issueCommentAuthor}"
                                       addStyleNames="form-group col-md-12 resize-md-6"/>
 
+        <person:CreatorMultiSelector ui:field="creators"
+                                     header="{lang.issueCreator}"
+                                     addStyleNames="form-group col-md-12 resize-md-6"/>
+
         <casetag:CaseTagMultiSelector ui:field="tags"
                                       caseType="CRM_SUPPORT"
                                       header="{lang.tags}"

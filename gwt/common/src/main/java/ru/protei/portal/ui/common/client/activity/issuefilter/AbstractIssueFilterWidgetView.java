@@ -52,6 +52,8 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasValue<Set<PersonShortView>> commentAuthors();
 
+    HasValue<Set<PersonShortView>> creators();
+
     HasValue<Set<CaseTag>> tags();
 
     HasValue<Boolean> searchPrivate();

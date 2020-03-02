@@ -2069,4 +2069,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contactSaved();
 
     String contactDelete();
+
+    String issueCreator();
 }

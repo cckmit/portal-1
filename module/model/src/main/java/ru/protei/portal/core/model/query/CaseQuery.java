@@ -79,6 +79,8 @@ public class CaseQuery extends BaseQuery {
 
     private Long productDirectionId;
 
+    private List<Long> creatorIds;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -329,6 +331,14 @@ public class CaseQuery extends BaseQuery {
         this.productDirectionId = productDirectionId;
     }
 
+    public List<Long> getCreatorIds() {
+        return creatorIds;
+    }
+
+    public void setCreatorIds(List<Long> creatorIds) {
+        this.creatorIds = creatorIds;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -342,6 +352,7 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(managerIds) ||
                 CollectionUtils.isNotEmpty(stateIds) ||
                 CollectionUtils.isNotEmpty(importanceIds) ||
+                CollectionUtils.isNotEmpty(creatorIds) ||
                 createdFrom != null ||
                 createdTo != null ||
                 modifiedFrom != null ||

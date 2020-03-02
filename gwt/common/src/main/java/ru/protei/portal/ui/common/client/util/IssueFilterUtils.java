@@ -206,6 +206,8 @@ public class IssueFilterUtils {
         query.setStates(getStateList(filterWidgetView.states().getValue()));
         query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
         query.setCaseTagsIds( toList( filterWidgetView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
+        query.setCreatorIds(toList(filterWidgetView.creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId()));
+
         DateInterval createdInterval = filterWidgetView.dateCreatedRange().getValue();
         if (createdInterval != null) {
             query.setCreatedFrom(createdInterval.from);
