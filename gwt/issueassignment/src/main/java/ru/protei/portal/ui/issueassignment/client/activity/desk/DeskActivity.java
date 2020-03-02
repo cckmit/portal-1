@@ -129,32 +129,38 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                 });
     }
 
-    private void showPersonMultiSelector(UIObject relative, List<PersonShortView> people, UserCaseAssignment assignment) {
+    private void showPersonMultiSelector(UIObject relative, List<UserCaseAssignment> rows, UserCaseAssignment row) {
+        List<PersonShortView> people = row.getPersonShortViews();
+        List<PersonShortView> existingPeople = fetchAllPeople(rows);
+        existingPeople.removeAll(people);
         DeskPersonMultiPopup personPopup = personPopupProvider.get();
         personPopup.setValue(new HashSet<>(people));
-        personPopup.show(relative, value -> {
+        personPopup.show(relative, existingPeople, value -> {
             if (CollectionUtils.isEmpty(value)) {
                 return;
             }
             List<PersonShortView> newPeople = new ArrayList<>(value);
             if (CollectionUtils.diffCollection(people, newPeople).hasDifferences()) {
-                assignment.setPersonShortViews(newPeople);
-                saveTableEntity(assignment);
+                row.setPersonShortViews(newPeople);
+                saveTableEntity(row);
             }
         });
     }
 
-    private void showStateMultiSelector(UIObject relative, List<En_CaseState> states, UserCaseAssignment assignment) {
+    private void showStateMultiSelector(UIObject relative, List<UserCaseAssignment> columns, UserCaseAssignment column) {
+        List<En_CaseState> states = column.getStates();
+        List<En_CaseState> existingStates = fetchAllStates(columns);
+        existingStates.removeAll(states);
         DeskStateMultiPopup statePopup = statePopupProvider.get();
         statePopup.setValue(new HashSet<>(states));
-        statePopup.show(relative, value -> {
+        statePopup.show(relative, existingStates, value -> {
             if (CollectionUtils.isEmpty(value)) {
                 return;
             }
             List<En_CaseState> newStates = new ArrayList<>(value);
             if (CollectionUtils.diffCollection(states, newStates).hasDifferences()) {
-                assignment.setStates(newStates);
-                saveTableEntity(assignment);
+                column.setStates(newStates);
+                saveTableEntity(column);
             }
         });
     }
@@ -200,12 +206,12 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         HTMLPanel thead = new HTMLPanel("thead", "");
         HTMLPanel tbody = new HTMLPanel("tbody", "");
 
-        boolean isNoColumns = columns.isEmpty();
-        int columnsSize = columns.size() + 1;
-        if (isNoColumns) columnsSize++;
+        int columnsSize = columns.isEmpty()
+                ? 1
+                : columns.size() + 1;
         Map<UserCaseAssignment, Boolean> expandedState = new HashMap<>();
 
-        thead.add(buildHeaderRow(columns, issues, isNoColumns));
+        thead.add(buildHeaderRow(columns, issues));
         for (UserCaseAssignment row : rows) {
             expandedState.put(row, true);
             List<Long> people = row.getPersons();
@@ -213,7 +219,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                     .filter(issue -> people.contains(issue.getManagerId()))
                     .collect(Collectors.toList());
             Widget issuesRow = buildIssuesRow(columns, rowIssues);
-            Widget personsRow = buildPersonRow(row, columnsSize, rowIssues.size(), () -> {
+            Widget personsRow = buildPersonRow(rows, row, columnsSize, rowIssues.size(), () -> {
                 boolean isExpanded = !expandedState.getOrDefault(row, true);
                 issuesRow.setVisible(isExpanded);
                 expandedState.put(row, isExpanded);
@@ -223,10 +229,10 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             tbody.add(issuesRow);
         }
 
-        HTMLPanel row = new HTMLPanel("tr", "");
-        row.addStyleName("table-desk-row-new-row");
-        row.add(buildPersonAddCell(columnsSize));
-        tbody.add(row);
+        HTMLPanel tr = new HTMLPanel("tr", "");
+        tr.addStyleName("table-desk-row-new-row");
+        tr.add(buildPersonAddCell(rows, columnsSize));
+        tbody.add(tr);
 
         table.add(thead);
         table.add(tbody);
@@ -235,72 +241,73 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         return table;
     }
 
-    private Widget buildHeaderRow(List<UserCaseAssignment> assignments, List<CaseShortView> issues, boolean isNoColumns) {
-        HTMLPanel row = new HTMLPanel("tr", "");
-        row.addStyleName("table-desk-row-header");
-        for (UserCaseAssignment assignment : assignments) {
-            List<En_CaseState> states = assignment.getStates();
+    private Widget buildHeaderRow(List<UserCaseAssignment> columns, List<CaseShortView> issues) {
+        HTMLPanel tr = new HTMLPanel("tr", "");
+        tr.addStyleName("table-desk-row-header");
+        for (UserCaseAssignment column : columns) {
+            List<En_CaseState> states = column.getStates();
             List<CaseShortView> columnIssues =  CollectionUtils.stream(issues)
                     .filter(issue -> states.contains(En_CaseState.getById(issue.getStateId())))
                     .collect(Collectors.toList());
-            row.add(buildHeaderStateCell(assignment, columnIssues.size()));
+            tr.add(buildHeaderStateCell(columns, column, columnIssues.size()));
         }
-        if (isNoColumns) {
-            row.add(new HTMLPanel("th", ""));
+        if (columns.isEmpty()) {
+            tr.add(new HTMLPanel("th", ""));
         }
-        row.add(buildHeaderAddCell(row));
-        return row;
+        tr.add(buildHeaderAddCell(columns, tr));
+        return tr;
     }
 
-    private Widget buildHeaderStateCell(UserCaseAssignment assignment, int issuesCount) {
+    private Widget buildHeaderStateCell(List<UserCaseAssignment> columns, UserCaseAssignment column, int issuesCount) {
         AbstractDeskRowStateView rowStateView = rowStateViewProvider.get();
-        rowStateView.setStates(assignment.getStates(), issuesCount);
+        rowStateView.setStates(column.getStates(), issuesCount);
         rowStateView.setHandler(new AbstractDeskRowStateView.Handler() {
             @Override
             public void onEdit() {
-                showStateMultiSelector(rowStateView.asWidget(), assignment.getStates(), assignment);
+                showStateMultiSelector(rowStateView.asWidget(), columns, column);
             }
             @Override
             public void onRemove() {
-                removeTableEntity(assignment);
+                removeTableEntity(column);
             }
         });
-        HTMLPanel cell = new HTMLPanel("th", "");
-        cell.add(rowStateView.asWidget());
-        return cell;
+        HTMLPanel th = new HTMLPanel("th", "");
+        th.add(rowStateView.asWidget());
+        return th;
     }
 
-    private Widget buildHeaderAddCell(UIObject row) {
+    private Widget buildHeaderAddCell(List<UserCaseAssignment> columns, UIObject relative) {
         AbstractDeskRowAddView rowAddView = rowAddViewProvider.get();
         rowAddView.setHandler(() -> {
-            UserCaseAssignment assignment = new UserCaseAssignment();
-            assignment.setTableEntity(En_TableEntity.COLUMN);
-            showStateMultiSelector(row, Collections.emptyList(), assignment);
+            UserCaseAssignment column = new UserCaseAssignment();
+            column.setTableEntity(En_TableEntity.COLUMN);
+            column.setStates(new ArrayList<>());
+            showStateMultiSelector(relative, columns, column);
         });
-        HTMLPanel cell = new HTMLPanel("th", "");
-        cell.addStyleName("icon-cell");
-        cell.add(rowAddView.asWidget());
-        return cell;
+        HTMLPanel th = new HTMLPanel("th", "");
+        th.addStyleName("icon-cell");
+        th.add(rowAddView.asWidget());
+        return th;
     }
 
-    private Widget buildPersonRow(UserCaseAssignment assignment, int columnsCount, int issuesCount, Supplier<Boolean> onToggle) {
-        HTMLPanel row = new HTMLPanel("tr", "");
-        row.addStyleName("table-desk-row-person");
-        row.add(buildPersonCell(assignment, columnsCount, issuesCount, onToggle));
-        return row;
+    private Widget buildPersonRow(List<UserCaseAssignment> rows, UserCaseAssignment row, int columnsCount, int issuesCount, Supplier<Boolean> onToggle) {
+        HTMLPanel tr = new HTMLPanel("tr", "");
+        tr.addStyleName("table-desk-row-person");
+        tr.add(buildPersonCell(rows, row, columnsCount, issuesCount, onToggle));
+        return tr;
     }
 
-    private Widget buildPersonCell(UserCaseAssignment assignment, int columnsCount, int issuesCount, Supplier<Boolean> onToggle) {
+    private Widget buildPersonCell(List<UserCaseAssignment> rows, UserCaseAssignment row, int columnsCount, int issuesCount, Supplier<Boolean> onToggle) {
         AbstractDeskRowPersonView rowPersonView = rowPersonViewProvider.get();
-        rowPersonView.setPeople(assignment.getPersonShortViews(), issuesCount);
+        rowPersonView.setPeople(row.getPersonShortViews(), issuesCount);
         rowPersonView.setHandler(new AbstractDeskRowPersonView.Handler() {
             @Override
             public void onEdit() {
-                showPersonMultiSelector(rowPersonView.asWidget(), assignment.getPersonShortViews(), assignment);
+                showPersonMultiSelector(rowPersonView.asWidget(), rows, row);
             }
             @Override
             public void onRemove() {
-                removeTableEntity(assignment);
+                removeTableEntity(row);
             }
             @Override
             public void onToggleIssuesVisibility() {
@@ -308,37 +315,38 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                 rowPersonView.setIconExpanded(isExpanded);
             }
         });
-        HTMLPanel cell = new HTMLPanel("td", "");
-        cell.getElement().setAttribute("colspan", String.valueOf(columnsCount));
-        cell.add(rowPersonView.asWidget());
-        return cell;
+        HTMLPanel td = new HTMLPanel("td", "");
+        td.getElement().setAttribute("colspan", String.valueOf(columnsCount));
+        td.add(rowPersonView.asWidget());
+        return td;
     }
 
-    private Widget buildPersonAddCell(int columnsCount) {
+    private Widget buildPersonAddCell(List<UserCaseAssignment> rows, int columnsCount) {
         AbstractDeskRowAddView rowAddView = rowAddViewProvider.get();
         rowAddView.setHandler(() -> {
-            UserCaseAssignment assignment = new UserCaseAssignment();
-            assignment.setTableEntity(En_TableEntity.ROW);
-            showPersonMultiSelector(rowAddView.asWidget(), Collections.emptyList(), assignment);
+            UserCaseAssignment row = new UserCaseAssignment();
+            row.setTableEntity(En_TableEntity.ROW);
+            row.setPersonShortViews(new ArrayList<>());
+            showPersonMultiSelector(rowAddView.asWidget(), rows, row);
         });
-        HTMLPanel cell = new HTMLPanel("td", "");
-        cell.getElement().setAttribute("colspan", String.valueOf(columnsCount));
-        cell.add(rowAddView.asWidget());
-        return cell;
+        HTMLPanel td = new HTMLPanel("td", "");
+        td.getElement().setAttribute("colspan", String.valueOf(columnsCount));
+        td.add(rowAddView.asWidget());
+        return td;
     }
 
     private Widget buildIssuesRow(List<UserCaseAssignment> columns, List<CaseShortView> rowIssues) {
-        HTMLPanel row = new HTMLPanel("tr", "");
-        row.addStyleName("table-desk-row-issues");
+        HTMLPanel tr = new HTMLPanel("tr", "");
+        tr.addStyleName("table-desk-row-issues");
         for (UserCaseAssignment column : columns) {
             List<En_CaseState> states = column.getStates();
             List<CaseShortView> cellIssues =  CollectionUtils.stream(rowIssues)
                     .filter(issue -> states.contains(En_CaseState.getById(issue.getStateId())))
                     .collect(Collectors.toList());
-            row.add(buildIssuesCell(cellIssues));
+            tr.add(buildIssuesCell(cellIssues));
         }
-        row.add(new HTMLPanel("td", ""));
-        return row;
+        tr.add(new HTMLPanel("td", ""));
+        return tr;
     }
 
     private Widget buildIssuesCell(List<CaseShortView> cellIssues) {
@@ -369,9 +377,9 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                 });
             }
         });
-        HTMLPanel cell = new HTMLPanel("td", "");
-        cell.add(rowIssueView.asWidget());
-        return cell;
+        HTMLPanel td = new HTMLPanel("td", "");
+        td.add(rowIssueView.asWidget());
+        return td;
     }
 
     private List<PersonShortView> fetchAllPeople(List<UserCaseAssignment> assignments) {
@@ -380,6 +388,14 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             .flatMap(Collection::stream) // flatten
             .distinct()
             .collect(Collectors.toList());
+    }
+
+    private List<En_CaseState> fetchAllStates(List<UserCaseAssignment> assignments) {
+        return assignments.stream()
+                .map(UserCaseAssignment::getStates)
+                .flatMap(Collection::stream) // flatten
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Inject
