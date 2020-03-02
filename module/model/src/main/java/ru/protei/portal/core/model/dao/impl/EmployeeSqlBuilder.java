@@ -51,17 +51,17 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getEmail())) {
-                condition.append(" and id IN (SELECT id FROM person_contact WHERE access = 'PUBLIC' AND type = 'EMAIL' AND value LIKE ?)");
+                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'EMAIL' AND value LIKE ?)");
                 args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-                condition.append(" and id IN (SELECT id FROM person_contact WHERE access = 'PUBLIC' AND type = 'GENERAL_PHONE' AND value LIKE ?)");
+                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'GENERAL_PHONE' AND value LIKE ?)");
                 args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-                condition.append(" and id IN (SELECT id FROM person_contact WHERE access = 'PUBLIC' AND type = 'MOBILE_PHONE' AND value LIKE ?)");
+                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'MOBILE_PHONE' AND value LIKE ?)");
                 args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
             }
 
