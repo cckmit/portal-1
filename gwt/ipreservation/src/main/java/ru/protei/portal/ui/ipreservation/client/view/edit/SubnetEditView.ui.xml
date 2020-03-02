@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body">
+        </div>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

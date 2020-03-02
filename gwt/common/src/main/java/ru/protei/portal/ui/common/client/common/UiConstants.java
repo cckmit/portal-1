@@ -66,6 +66,8 @@ public class UiConstants {
         String EMPLOYEE_REGISTRATION = "employee_registration";
         String CONTRACT = "contract";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
+        String SUBNET = "subnet";
+        String RESERVED_IP = "reserved_ip";
     }
 
     public interface Styles {

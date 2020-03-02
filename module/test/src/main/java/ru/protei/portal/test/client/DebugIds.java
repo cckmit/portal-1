@@ -772,4 +772,23 @@ public class DebugIds {
             String PLATFORM = "sitefolder-link-platform";
         }
     }
+
+    public interface SUBNET {
+        String ADDRESS_INPUT = "subnet-address-input";
+        String MASK_INPUT = "subnet-mask-input";
+        String COMMENT_INPUT = "subnet-comment-input";
+        String LOCAL_SWITCHER = "subnet-local-switcher";
+        String SAVE_BUTTON = "subnet-save-button";
+        String CANCEL_BUTTON = "subnet-cancel-button";
+    }
+
+    public interface RESERVED_IP {
+        String IP_ADDRESS_INPUT = "reservedip-address-input";
+        String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
+        String COMMENT_INPUT = "reservedip-comment-input";
+
+        /* @todo остальные поля  */
+        String SAVE_BUTTON = "reservedip-save-button";
+        String CANCEL_BUTTON = "reservedip-cancel-button";
+    }
 }

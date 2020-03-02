@@ -9,6 +9,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Сервис управления резервированием IP-адресов
@@ -25,6 +26,8 @@ public interface IpReservationController extends RemoteService {
 /*    List<SubnetShortView> getSubnetViewList(ReservedIpQuery query) throws RequestFailedException;*/
 
     boolean isSubnetUnique(String address, Long exceptId) throws RequestFailedException;
+
+    Map<Subnet, List<ReservedIp>> getReservedIpsBySubnets(ReservedIpQuery query) throws RequestFailedException;
 
     SearchResult<ReservedIp> getReservedIpList(ReservedIpQuery query) throws RequestFailedException;
 
