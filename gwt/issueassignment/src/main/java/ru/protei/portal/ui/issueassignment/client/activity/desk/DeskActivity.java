@@ -207,7 +207,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         HTMLPanel tbody = new HTMLPanel("tbody", "");
 
         int columnsSize = columns.isEmpty()
-                ? 1
+                ? 2
                 : columns.size() + 1;
         Map<UserCaseAssignment, Boolean> expandedState = new HashMap<>();
 
