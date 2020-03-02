@@ -190,6 +190,9 @@ public class DocumentDecimalNumberValidatorTests {
     @Test
     public void PDSuccessfulTest() {
         assertTrue(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90", PD));
+        assertTrue(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12", PD));
+        assertTrue(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12-3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90aaa", PD));
     }
 }
 
