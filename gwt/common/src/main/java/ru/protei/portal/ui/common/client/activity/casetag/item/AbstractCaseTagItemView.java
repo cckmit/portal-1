@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casetag.item;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 
 /**
@@ -15,7 +14,7 @@ public interface AbstractCaseTagItemView extends IsWidget {
 
     void setNameAndColor(String name, String color);
 
-    void setModelId(Long id);
+    void setCaseTag( CaseTag caseTag);
 
-    Long getModelId();
+    CaseTag getCaseTag();
 }

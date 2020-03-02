@@ -117,7 +117,7 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
-    public Result detachTag(AuthToken authToken, Long caseId, Long tagId) {
+    public Result<Long> detachTag( AuthToken authToken, Long caseId, Long tagId) {
         if ( caseId == null || tagId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -128,7 +128,7 @@ public class CaseTagServiceImpl implements CaseTagService {
         }
 
         caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
-        return ok();
+        return ok(tagId);
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {

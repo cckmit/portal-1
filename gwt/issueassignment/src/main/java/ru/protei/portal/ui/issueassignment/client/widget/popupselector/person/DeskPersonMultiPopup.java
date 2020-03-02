@@ -8,6 +8,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupMultiSelector;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -24,8 +25,9 @@ public class DeskPersonMultiPopup extends PopupMultiSelector<PersonShortView> {
         setEmptySearchText(lang.searchNoMatchesFound());
     }
 
-    public void show(UIObject relative, Consumer<Set<PersonShortView>> onDone) {
+    public void show(UIObject relative, Collection<PersonShortView> exclude, Consumer<Set<PersonShortView>> onDone) {
         this.relative = relative;
+        setFilter(personView -> !personView.isFired() && !exclude.contains(personView));
         setPopupUnloadHandler(() -> onDone.accept(getValue()));
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);
