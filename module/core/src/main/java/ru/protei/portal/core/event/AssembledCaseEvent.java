@@ -26,7 +26,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseObjectMeta initMetaState;
     private DiffResult<String> name = new DiffResult<>();
     private DiffResult<String> info = new DiffResult<>();
-    private Long timeElapsedChanging = 0L;
     private DiffCollectionResult <CaseLink> links = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
     private DiffCollectionResult <CaseComment> comments = new DiffCollectionResult<>();
@@ -101,14 +100,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
         isEagerEvent = isEagerEvent || commentEvent.isEagerEvent();
         if (commentEvent.getOldCaseComment() != null) {
             comments.putChangedEntry( commentEvent.getOldCaseComment(), commentEvent.getNewCaseComment() );
-            timeElapsedChanging += getTimeElapsedFromComment(commentEvent.getNewCaseComment()) - getTimeElapsedFromComment(commentEvent.getOldCaseComment());
         } else if (commentEvent.getNewCaseComment() != null) {
             comments.putAddedEntry( commentEvent.getNewCaseComment() );
-            timeElapsedChanging += getTimeElapsedFromComment(commentEvent.getNewCaseComment());
         }
         if (commentEvent.getRemovedCaseComment() != null) {
             comments.putRemovedEntry( commentEvent.getRemovedCaseComment() );
-            timeElapsedChanging -= getTimeElapsedFromComment(commentEvent.getRemovedCaseComment());
         }
     }
 
@@ -135,7 +131,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isTimeElapsedChanged() {
-        return timeElapsedChanging != 0L;
+        return isUpdateEvent() && getTimeElapsedChanging() != 0L;
     }
 
     public boolean isCaseImportanceChanged() {
@@ -254,10 +250,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return initiator;
     }
 
-    public Long getTimeElapsedChanging() {
-        return timeElapsedChanging;
-    }
-
     public DiffCollectionResult<CaseLink> getLinks() {
         links = synchronizeExists(links, CaseLink::getId);
         return links;
@@ -360,6 +352,23 @@ public class AssembledCaseEvent extends ApplicationEvent {
         CaseObject caseObject = getCaseObject();
         if(caseObject==null) return caseObjectId;
         return caseObject.getId();
+    }
+
+    public Long getTimeElapsedChanging() {
+        long timeElapsedChanging = 0L;
+
+        timeElapsedChanging += existingComments
+                .stream()
+                .filter(caseComment -> emptyIfNull(getAddedCaseComments()).contains(caseComment) || getChangedComments().contains(caseComment))
+                .mapToLong(this::getTimeElapsedFromComment)
+                .sum();
+
+        timeElapsedChanging -= CollectionUtils.emptyIfNull(getRemovedComments())
+                .stream()
+                .mapToLong(this::getTimeElapsedFromComment)
+                .sum();
+
+        return timeElapsedChanging;
     }
 
     //Только добавленные и удаленные
