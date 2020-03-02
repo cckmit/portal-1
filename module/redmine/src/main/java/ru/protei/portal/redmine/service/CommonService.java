@@ -1,32 +1,57 @@
 package ru.protei.portal.redmine.service;
 
-import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
+import ru.protei.portal.redmine.utils.HttpInputSource;
 
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 public interface CommonService {
 
-    void processAttachments(Issue issue, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint);
+    CachedPersonMapper getPersonMapper( RedmineEndpoint endpoint );
 
-    void processComments(Collection<Journal> journals, CachedPersonMapper personMapper, CaseObject obj);
+    Result<Long> createAndStoreStateComment( Date created, Long authorId, Long stateId, Long caseObjectId);
 
-    CaseComment createAndStoreComment(Date creationDate, String text, Person author, Long caseId);
+    Result<Long> createAndStoreImportanceComment( Date created, Long authorId, Integer importance, Long caseId);
 
-    Long createAndStoreStateComment(Date created, Long authorId, Long stateId, Long caseObjectId);
+    Result<Long> updateCaseStatus( CaseObject object, Long statusMapId, Date creationOn, String value, Person author );
 
-    Long createAndStoreImportanceComment(Date created, Long authorId, Integer importance, Long caseId);
+    Result<Long> updateCasePriority( CaseObject object, Long priorityMapId, Journal journal, String value, Person author );
 
-    void updateCaseStatus( CaseObject object, Long statusMapId, Date creationOn, String value, Person author );
+    Result<Long> updateCaseDescription( CaseObject object, String value, Person author );
 
-    void updateCasePriority( CaseObject object, Long priorityMapId, Journal journal, String value, Person author );
+    Result<Long> updateCaseSubject( CaseObject object, String value, Person author );
 
-    void updateCaseDescription( CaseObject object, String value, Person author );
+    Result<Long> updateComment( Long objectId, Date creationDate, String text, Person author );
 
-    void updateCaseSubject( CaseObject object, String value, Person author );
+    Result<ExternalCaseAppData> getExternalCaseAppData( long caseId );
 
-    void updateComment( Long objectId, Date creationDate, String text, Person author );
+    Result<RedmineEndpoint> getEndpoint( long companyId, String projectId );
+
+    Result<Set<Integer>> getExistingAttachmentsHashCodes( long caseObjId );
+
+    Result<Long> saveAttachment( Attachment a, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, Long caseObjId );
+
+    Result<CaseObject> getByExternalAppCaseId( String externalAppCaseId );
+
+    Result<Long> saveCase( CaseObject obj );
+
+    Result<Long>  mergeExtAppData( ExternalCaseAppData appData );
+
+    Result<List<CaseComment>> getCaseComments( CaseCommentQuery caseCommentQuery );
+
+    Result<RedminePriorityMapEntry> getByRedminePriorityId( Integer priorityId, long priorityMapId );
+    Result<RedminePriorityMapEntry> getByPortalPriorityId( Integer impLevel, long priorityMapId );
+
+    Result<RedmineToCrmEntry> getLocalStatus( long statusMapId, Integer statusId );
+    Result<RedmineStatusMapEntry> getRedmineStatus( En_CaseState initState, En_CaseState lastState, long statusMapId );
+
+
+
 }

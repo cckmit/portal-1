@@ -53,15 +53,6 @@ public final class RedmineUtils {
         return a == null ? b : b == null ? a : a.after(b) ? a : b;
     }
 
-    public static  <T> Result<T> resultOfNullable(Supplier<T> supplier, Supplier<String> errorString) {
-        T t = supplier.get();
-        if (t != null) {
-            return ok(t);
-        } else {
-            return error(En_ResultStatus.NOT_FOUND, errorString.get());
-        }
-    }
-
     public static class EndpointAndIssueId {
         public RedmineEndpoint endpoint;
         public Integer IssueId;

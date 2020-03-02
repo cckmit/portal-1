@@ -6,14 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
-import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
-import ru.protei.portal.core.model.dao.RedminePriorityMapEntryDAO;
-import ru.protei.portal.core.model.dao.RedmineStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils.EndpointAndIssueId;
@@ -22,7 +19,6 @@ import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.redmine.utils.RedmineUtils.resultOfNullable;
 
 public final class RedmineBackChannelHandler implements BackchannelEventHandler {
 
@@ -44,7 +40,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
          * сообщения удаленной стороне
          **/
 
-        resultOfNullable(() -> externalCaseAppDAO.get(caseId), () -> "case {} has no ext-app-id" + caseId)
+        commonService.getExternalCaseAppData(caseId)
                 .flatMap(this::findEndpointAndIssueId)
                 .flatMap(endpointAndIssueId -> proceedUpdate(endpointAndIssueId.IssueId, event, endpointAndIssueId.endpoint))
                 .ifError(result -> logger.warn(result.getMessage()));
@@ -56,8 +52,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
                 .flatMap(issueAndCompanyIds -> {
                     int issueId = Integer.parseInt(issueAndCompanyIds[0]);
                     long companyId = Long.parseLong(issueAndCompanyIds[1]);
-                    return resultOfNullable(() -> endpointDAO.getByCompanyIdAndProjectId(companyId, projectId),
-                                    () -> String.format("Endpoint was not found for companyId {} and projectId {}", companyId, projectId))
+                    return commonService.getEndpoint( companyId, projectId )
                             .map(redmineEndpoint -> new EndpointAndIssueId(redmineEndpoint, issueId));
                 });
     }
@@ -108,7 +103,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         if (event.isCaseImportanceChanged()) {
             final long priorityMapId = endpoint.getPriorityMapId();
             logger.debug("Trying to get redmine priority level id matching with portal: {}", event.getLastCaseMeta().getImpLevel());
-            final RedminePriorityMapEntry redminePriorityMapEntry = priorityMapEntryDAO.getByPortalPriorityId(event.getLastCaseMeta().getImpLevel(), priorityMapId);
+            final RedminePriorityMapEntry redminePriorityMapEntry = commonService.getByPortalPriorityId(event.getLastCaseMeta().getImpLevel(), priorityMapId).getData();
             if (redminePriorityMapEntry != null) {
                 logger.debug("Found redmine priority level name: {}", redminePriorityMapEntry.getRedminePriorityId());
                 issue.setPriorityId(redminePriorityMapEntry.getRedminePriorityId());
@@ -120,7 +115,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         if (event.isCaseStateChanged()) {
             final long statusMapId = endpoint.getStatusMapId();
             logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
-            RedmineStatusMapEntry redmineStatusMapEntry = statusMapEntryDAO.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId);
+            RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId).getData();
             if (redmineStatusMapEntry != null && event.getLastCaseMeta().getState() != En_CaseState.VERIFIED) {
                 logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
                 issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
@@ -146,22 +141,10 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
     }
 
-
-    @Autowired
-    private RedmineEndpointDAO endpointDAO;
-
     @Autowired
     private RedmineService service;
-
-
     @Autowired
-    private RedminePriorityMapEntryDAO priorityMapEntryDAO;
-
-    @Autowired
-    private RedmineStatusMapEntryDAO statusMapEntryDAO;
-
-    @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
+    private CommonService commonService;
 
 
 
