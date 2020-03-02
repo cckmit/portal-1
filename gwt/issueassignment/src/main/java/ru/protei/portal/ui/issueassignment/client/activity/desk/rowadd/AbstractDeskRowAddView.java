@@ -6,6 +6,8 @@ public interface AbstractDeskRowAddView extends IsWidget {
 
     void setHandler(Handler handler);
 
+    void setButtonTitle(String title);
+
     interface Handler {
         void onAdd();
     }

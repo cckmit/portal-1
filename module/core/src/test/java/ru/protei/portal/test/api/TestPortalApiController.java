@@ -17,6 +17,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.query.EmployeeApiQuery;
+import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
@@ -33,6 +37,7 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 
@@ -288,6 +293,95 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
+    @Test
+    @Transactional
+    public void getTwoEmployees() throws Exception {
+        Company homeCompany = companyDAO.get(1L);
+
+        String email = "getEmployees@portal.ru";
+        String workPhone = "222";
+
+        Person person = createNewPerson(homeCompany);
+        person.setDisplayName("getEmployees1");
+        person.setFirstName("getEmployees1");
+        person.setIpAddress("111");
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade();
+        infoFacade.setEmail(email);
+        infoFacade.setWorkPhone(workPhone);
+        infoFacade.setMobilePhone("333");
+
+        person.setContactInfo(infoFacade.editInfo());
+
+        Person person2 = createNewPerson(homeCompany);
+        person2.setDisplayName("getEmployees2");
+        person2.setFirstName("getEmployees2");
+        person2.setIpAddress("888");
+
+        PlainContactInfoFacade infoFacade2 = new PlainContactInfoFacade();
+        infoFacade2.setEmail(email);
+        infoFacade2.setWorkPhone(workPhone);
+        infoFacade2.setMobilePhone("444");
+
+        person2.setContactInfo(infoFacade2.editInfo());
+
+        personDAO.persistBatch(Arrays.asList(person, person2));
+
+        Assert.assertNotNull("Expected person id not null", person.getId());
+        Assert.assertNotNull("Expected person2 id not null", person2.getId());
+
+        EmployeeApiQuery employeeApiQuery = new EmployeeApiQuery();
+        employeeApiQuery.setWorkPhone(infoFacade.getWorkPhone());
+        employeeApiQuery.setEmail(infoFacade.getEmail());
+
+        createPostResultAction("/api/employees", employeeApiQuery)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(2)))
+                .andExpect(jsonPath("$.data[*].id", hasItems(person.getId().intValue(), person2.getId().intValue())))
+                .andExpect(jsonPath("$.data[*].displayName", hasItems(person.getDisplayName(), person2.getDisplayName())))
+        ;
+
+        personDAO.removeByKey(person.getId());
+        personDAO.removeByKey(person2.getId());
+    }
+
+    @Test
+    @Transactional
+    public void getEmployeesEmptyResult() throws Exception {
+        Company homeCompany = companyDAO.get(1L);
+
+        String email = "getEmployees@portal.ru";
+        String workPhone = "222";
+
+        Person person = createNewPerson(homeCompany);
+        person.setDisplayName("getEmployees1");
+        person.setFirstName("getEmployees1");
+        person.setIpAddress("111");
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade();
+        infoFacade.setEmail(email);
+        infoFacade.setWorkPhone(workPhone);
+        infoFacade.setMobilePhone("333");
+
+        person.setContactInfo(infoFacade.editInfo());
+
+        personDAO.persist(person);
+
+        Assert.assertNotNull("Expected person id not null", person.getId());
+
+        EmployeeApiQuery employeeApiQuery = new EmployeeApiQuery();
+        employeeApiQuery.setDisplayName(person.getDisplayName());
+        employeeApiQuery.setWorkPhone(infoFacade.getWorkPhone() + "!");
+        employeeApiQuery.setEmail(infoFacade.getEmail());
+
+        createPostResultAction("/api/employees", employeeApiQuery)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(0)));
+
+        personDAO.removeByKey(person.getId());
+    }
 
     private void setThreadUserLogin(UserLogin userLogin) {
         authService.makeThreadAuthToken(userLogin);

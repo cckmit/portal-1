@@ -6,8 +6,10 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
-public class EmployeeSqlBuilder {
+import java.util.ArrayList;
+import java.util.List;
 
+public class EmployeeSqlBuilder {
     public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
@@ -32,26 +34,15 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                if (query.getSearchString().trim().contains(" ")){
+                if (query.getSearchString().trim().contains(" ")) {
                     condition.append(" and Person.displayname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
-                }
-                else {
+                } else {
                     condition.append(" and (Person.lastname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
                     condition.append(" or Person.firstname like ?)");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
                 }
-            }
-
-            if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'GENERAL_PHONE' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
-            }
-
-            if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'MOBILE_PHONE' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getIpAddress())) {
@@ -60,8 +51,18 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getEmail())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
+                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'EMAIL' AND value LIKE ?)");
                 args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'GENERAL_PHONE' AND value LIKE ?)");
+                args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'MOBILE_PHONE' AND value LIKE ?)");
+                args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {

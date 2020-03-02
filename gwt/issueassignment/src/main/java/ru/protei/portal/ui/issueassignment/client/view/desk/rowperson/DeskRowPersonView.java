@@ -88,6 +88,7 @@ public class DeskRowPersonView extends Composite implements AbstractDeskRowPerso
     }
 
     @Inject
+    @UiField
     Lang lang;
 
     @UiField

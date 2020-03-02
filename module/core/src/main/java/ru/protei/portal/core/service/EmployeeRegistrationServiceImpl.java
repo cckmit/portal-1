@@ -137,7 +137,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 needPC ? "\n Требуется установить новый ПК." : "",
                 "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
                 (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
-                makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
+                makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() ),
+                "\n", "Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
         youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
