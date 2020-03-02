@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
@@ -16,10 +17,7 @@ import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseLinkService;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.ProductService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -54,6 +52,8 @@ public class PortalApiController {
     CaseCommentService caseCommentService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private EmployeeService employeeService;
 
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
@@ -276,6 +276,18 @@ public class PortalApiController {
         return caseCommentService.getCaseCommentShortViewList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query)).map( SearchResult::getResults );
     }
 
+    @PostMapping(value = "/employees")
+    public Result<List<PersonInfo>> getEmployees(HttpServletRequest request, HttpServletResponse response, @RequestBody EmployeeApiQuery query) {
+        log.info("API | getEmployees(): query={}", query);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> employeeService.employeeList(authToken, makeEmployeeQuery(query)))
+                .map(SearchResult::getResults)
+                .map(employeeShortViews -> employeeShortViews.stream().map(PersonInfo::fromEmployeeShortView).collect(Collectors.toList()))
+                .ifOk(personInfos -> log.info("createProduct(): OK"))
+                .ifError(result -> log.warn("createProduct(): Can't find personInfos by query={}. {}", query, result));
+    }
+
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
         query.setLimit(apiQuery.getLimit());
@@ -297,6 +309,18 @@ public class PortalApiController {
         query.setSortField(En_SortField.creation_date);
         query.setSortDir(En_SortDir.DESC);
         query.setCaseNumber(apiQuery.getCaseNumber());
+        return query;
+    }
+
+    private EmployeeQuery makeEmployeeQuery(EmployeeApiQuery apiQuery) {
+        EmployeeQuery query = new EmployeeQuery();
+        query.setSearchString(apiQuery.getDisplayName());
+        query.setEmail(apiQuery.getEmail());
+        query.setWorkPhone(apiQuery.getWorkPhone());
+        query.setMobilePhone(apiQuery.getMobilePhone());
+        query.setLimit(apiQuery.getLimit());
+        query.setOffset(apiQuery.getOffset());
+
         return query;
     }
 
