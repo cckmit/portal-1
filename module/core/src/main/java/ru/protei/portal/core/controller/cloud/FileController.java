@@ -251,9 +251,7 @@ public class FileController {
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
-    public Long saveAttachment(Attachment attachment, InputStreamSource content, long caseId) throws Exception {
-        return saveAttachment(attachment, content, attachment.getDataSize(), attachment.getMimeType(), caseId);
-    }
+
 
     public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
         if (caseId == null)

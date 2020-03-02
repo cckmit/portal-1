@@ -1,14 +1,10 @@
 package ru.protei.portal.redmine.handlers;
 
-import com.taskadapter.redmineapi.RedmineException;
-import com.taskadapter.redmineapi.RedmineProcessingException;
-import com.taskadapter.redmineapi.bean.Attachment;
 import com.taskadapter.redmineapi.bean.Issue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
@@ -67,11 +63,11 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     }
 
     private Result<Issue> proceedUpdate(Integer issueId, AssembledCaseEvent event, RedmineEndpoint endpoint) {
-        return resultOfNullable(() -> service.getIssueById(issueId, endpoint), () -> "Issue with id {} was not found" + issueId)
+        return  service.getIssueById(issueId, endpoint)
                 .map(issue -> updateComments(issue, event))
                 .flatMap(issue -> uploadAttachment(issue, event, endpoint))
                 .map(issue -> updateIssueProps(issue, event, endpoint))
-                .flatMap(issue -> processUpdate(issue, endpoint));
+                .flatMap(issue -> service.updateIssue(issue, endpoint));
     }
 
     private Result<String[]> parseExtAppId(String extAppId) {
@@ -96,28 +92,16 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     }
 
     private Result<Issue> uploadAttachment(Issue issue, AssembledCaseEvent event, RedmineEndpoint endpoint) {
-        logger.debug("Updating attachment");
-        if (event.getAddedAttachments() != null) {
-            Result<List<Attachment>> result = resultOfNullable(() ->
-                    service.uploadAttachment(event.getAddedAttachments(), endpoint), () -> "Error at process attachments");
-            if (result.isOk()) {
-                result.getData().forEach(issue::addAttachment);
-            } else {
-                return error(En_ResultStatus.INTERNAL_ERROR, "Error at process attachments");
-            }
+        if (event.getAddedAttachments() == null) {
+            logger.debug("No attachments for Updating.");
+            return ok(issue);
         }
-        logger.debug("Finished updating of attachment");
-        return ok(issue);
-    }
-
-    private Result<Issue> processUpdate(Issue issue, RedmineEndpoint endpoint) {
-        try {
-            service.updateIssue(issue, endpoint);
-        } catch (RedmineException e) {
-            logRedmineException(logger, e);
-            return error(En_ResultStatus.INTERNAL_ERROR, String.format("Failed to update issue with id {}", issue.getId()));
-        }
-        return ok();
+        logger.debug( "Updating attachment" );
+        return service.uploadAttachment( event.getAddedAttachments(), endpoint ).map( attachments -> {
+            attachments.forEach( issue::addAttachment );
+            logger.debug( "Finished updating of attachment" );
+            return issue;
+        } );
     }
 
     private Issue updateIssueProps(Issue issue, AssembledCaseEvent event, RedmineEndpoint endpoint) {
@@ -162,13 +146,6 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
     }
 
-    public static void logRedmineException(Logger logger, RedmineException e) {
-        if (e instanceof RedmineProcessingException) {
-            logger.error(String.join(", ", ((RedmineProcessingException) e).getErrors()), e);
-        } else {
-            logger.error(e.getMessage(), e);
-        }
-    }
 
     @Autowired
     private RedmineEndpointDAO endpointDAO;

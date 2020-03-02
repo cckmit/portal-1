@@ -8,9 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.redmine.handlers.BackchannelEventHandler;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 import static ru.protei.portal.redmine.utils.RedmineUtils.userInfo;
 
@@ -33,30 +37,34 @@ public final class RedmineServiceImpl implements RedmineService {
             logger.debug("skip handle plugin-published event for {}", event.getCaseObject().getExtId());
             return;
         }
-        logger.debug("Handling action on redmine-related issue in Portal-CRM");
         if (!(portalConfig.data().integrationConfig().isRedmineEnabled() || portalConfig.data().integrationConfig().isRedmineBackchannelEnabled())) {
-            logger.debug("Redmine integration disabled in config, nothing happens");
+            logger.info("Redmine integration disabled in config, nothing happens");
             return;
         }
+        logger.info("Handling action on redmine-related issue in Portal-CRM");
         try {
             backChannel.handle(event);
-            logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
+            logger.info("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
             logger.error("error while handling event for case " + event.getCaseObject().getExtId(), e);
         }
     }
 
     @Override
-    public Issue getIssueById(int id, RedmineEndpoint endpoint) {
+    public Result<Issue> getIssueById( int id, RedmineEndpoint endpoint) {
+        final RedmineManager manager =
+                RedmineManagerFactory.createWithApiKey( endpoint.getServerAddress(), endpoint.getApiKey() );
+        Issue issue = null;
         try {
-            final RedmineManager manager =
-                    RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
-            return manager.getIssueManager().getIssueById(id, Include.journals, Include.attachments, Include.watchers);
+            issue = manager.getIssueManager().getIssueById( id, Include.journals, Include.attachments, Include.watchers );
         } catch (RedmineException e) {
-            logger.error("Get exception while trying to get issue with id {}", id);
-            logRedmineException(logger, e);
-            return null;
+            logger.error( "Get exception while trying to get issue with id {}", id );
+            logRedmineException( logger, e );
+            return error( En_ResultStatus.INTERNAL_ERROR, "Can't get issue by id " + id + ". RedmineException occurred "+ e.getMessage() );
         }
+
+        if (issue == null) return error( En_ResultStatus.NOT_FOUND, "Issue with id " + id + " was not found" );
+        return ok( issue );
     }
 
     @Override
@@ -163,13 +171,19 @@ public final class RedmineServiceImpl implements RedmineService {
     }
 
     @Override
-    public void updateIssue(Issue issue, RedmineEndpoint endpoint) throws RedmineException {
-        final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
-        manager.getIssueManager().update(issue);
+    public Result<Issue> updateIssue( Issue issue, RedmineEndpoint endpoint ) {
+        final RedmineManager manager = RedmineManagerFactory.createWithApiKey( endpoint.getServerAddress(), endpoint.getApiKey() );
+        try {
+            manager.getIssueManager().update( issue );
+            return ok( issue );
+        } catch (RedmineException e) {
+            logRedmineException( logger, e );
+            return error( En_ResultStatus.INTERNAL_ERROR, String.format( "Failed to update issue with id {}", issue.getId() ) );
+        }
     }
 
     @Override
-    public List<com.taskadapter.redmineapi.bean.Attachment> uploadAttachment(Collection<Attachment> attachments, RedmineEndpoint endpoint) {
+    public Result<List<com.taskadapter.redmineapi.bean.Attachment>> uploadAttachment( Collection<Attachment> attachments, RedmineEndpoint endpoint) {
         final AttachmentManager attachmentManager = initManager(endpoint).getAttachmentManager();
         List<com.taskadapter.redmineapi.bean.Attachment> list = new ArrayList<>();
         for(Attachment attachment : attachments) {
@@ -179,10 +193,10 @@ public final class RedmineServiceImpl implements RedmineService {
             } catch (IOException | RedmineException ex) {
                 logger.debug("Get exception while trying to process attach with ExtLink {}", attachment.getExtLink());
                 ex.printStackTrace();
-                return null;
+                return error( En_ResultStatus.INTERNAL_ERROR, "Failed to upload attachment link=" + attachment.getExtLink() );
             }
         }
-        return list;
+        return ok(list);
     }
 
     private List<Issue> getClosedIssuesAfterDate(String date, String projectName, RedmineEndpoint endpoint) throws RedmineException {
@@ -231,7 +245,8 @@ public final class RedmineServiceImpl implements RedmineService {
     private List<Issue> requestIssues(List<Integer> ids, RedmineEndpoint endpoint) {
         return ids.stream()
                 .map(x -> getIssueById(x, endpoint))
-                .filter(Objects::nonNull)
+                .filter(Result::isOk)
+                .map( Result::getData )
                 .collect(Collectors.toList());
     }
 

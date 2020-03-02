@@ -84,7 +84,6 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         logger.debug("create redmine-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
         externalCaseAppDAO.merge(appData);
 
-        // TODO Почему до processComments and processAttachments ?
         publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
         commonService.processComments(issue.getJournals(), personMapper, obj);
@@ -112,8 +111,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             List<JournalDetail> details = journal.getDetails();
 
             if (isNotBlank( journal.getNotes() )) {
-                find( details, COMMENT ).ifPresent( detail ->
-                        commonService.updateComment( object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson( journal.getUser() ) ) );
+                commonService.updateComment( object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson( journal.getUser() ) );
             }
 
             find( details, STATUS_CHANGE ).ifPresent( detail ->

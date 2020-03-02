@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -26,39 +25,44 @@ import ru.protei.portal.redmine.utils.HttpInputSource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+
 public final class CommonServiceImpl implements CommonService {
 
     @Override
     public void processAttachments(Issue issue, CachedPersonMapper personMapper, CaseObject obj, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
         final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
-        if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
-            logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
-            issue.getAttachments().stream()
-                    .filter(attachment -> !personMapper.isTechUser(endpoint.getDefaultUserId(), attachment.getAuthor()))
-                    .filter(attachment -> !existingAttachmentsHashCodes.contains(toHashCode(attachment)))
-                    .forEach(attachment -> {
-                        final Person author = personMapper.toProteiPerson(attachment.getAuthor());
-                        Attachment a = new Attachment();
-                        a.setCreated(attachment.getCreatedOn());
-                        a.setCreatorId(author.getId());
-                        a.setDataSize(attachment.getFileSize());
-                        a.setFileName(attachment.getFileName());
-                        a.setMimeType(attachment.getContentType());
-                        a.setLabelText(attachment.getDescription());
-                        try {
-                            logger.debug("Invoke file controller to store attachment {} (size={})", attachment.getFileName(), attachment.getFileSize());
-                            fileController.saveAttachment(a,
-                                    new HttpInputSource(attachment.getContentURL(), endpoint.getApiKey()), attachment.getFileSize(), attachment.getContentType(), caseObjId);
+        if (isEmpty( issue.getAttachments() )) {
+            logger.debug("No attachments to process for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
+            return;
+        }
+        logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
+        List<Attachment> savedAttachments = new ArrayList<>(  );
+        for (com.taskadapter.redmineapi.bean.Attachment attachment : emptyIfNull( issue.getAttachments() )) {
+            if (personMapper.isTechUser( endpoint.getDefaultUserId(), attachment.getAuthor() )) continue;
+            if (existingAttachmentsHashCodes.contains( toHashCode( attachment ) )) continue;
 
-                            publisherService.publishEvent(new CaseAttachmentEvent(this, ServiceModule.REDMINE, author.getId(), obj.getId(),
-                                    Collections.singletonList(a), null));
+            final Person author = personMapper.toProteiPerson( attachment.getAuthor() );
+            Attachment a = new Attachment();
+            a.setCreated( attachment.getCreatedOn() );
+            a.setCreatorId( author.getId() );
+            a.setDataSize( attachment.getFileSize() );
+            a.setFileName( attachment.getFileName() );
+            a.setMimeType( attachment.getContentType() );
+            a.setLabelText( attachment.getDescription() );
+            try {
+                logger.debug( "Invoke file controller to store attachment {} (size={})", attachment.getFileName(), attachment.getFileSize() );
+                fileController.saveAttachment( a,
+                        new HttpInputSource( attachment.getContentURL(), endpoint.getApiKey() ), attachment.getFileSize(), attachment.getContentType(), caseObjId );
 
-                        } catch (Exception e) {
-                            logger.debug("Unable to process attachment {}", attachment.getFileName());
-                            logger.debug("Trace", e);
-                        }
-                    });
+                publisherService.publishEvent( new CaseAttachmentEvent( this, ServiceModule.REDMINE, author.getId(), obj.getId(),
+                        Collections.singletonList( a ), null ) );
+
+            } catch (Exception e) {
+                logger.debug( "Unable to process attachment {}", attachment.getFileName() );
+                logger.debug( "Trace", e );
+            }
         }
     }
 
@@ -66,7 +70,7 @@ public final class CommonServiceImpl implements CommonService {
     public void processComments(Collection<Journal> journals, CachedPersonMapper personMapper, CaseObject object) {
         logger.debug("Process comments for case with id {}", object.getId());
 
-        journals.stream()
+        stream(journals)
                 .filter(journal -> StringUtils.isNotBlank(journal.getNotes()))
                 .forEach(journal ->
                         updateComment(object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson(journal.getUser()) )

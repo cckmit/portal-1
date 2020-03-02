@@ -1,6 +1,5 @@
 package ru.protei.portal.redmine.utils;
 
-import com.sun.org.apache.xml.internal.security.signature.ObjectContainer;
 import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
