@@ -94,6 +94,20 @@ public class En_PrivilegeLang {
             case EMPLOYEE_REGISTRATION_CREATE:
                 return lang.privilegeCreate();
 
+            case SUBNET_VIEW:
+                return lang.privilegeView();
+            case SUBNET_EDIT:
+                return lang.privilegeEdit();
+            case SUBNET_CREATE:
+                return lang.privilegeCreate();
+
+            case RESERVED_IP_VIEW:
+                return lang.privilegeView();
+            case RESERVED_IP_EDIT:
+                return lang.privilegeEdit();
+            case RESERVED_IP_CREATE:
+                return lang.privilegeCreate();
+
             default:
                 return lang.unknownField();
         }

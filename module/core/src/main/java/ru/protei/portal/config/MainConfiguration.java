@@ -565,6 +565,16 @@ public class MainConfiguration {
         return new JiraCompanyGroupDAO_Impl();
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() {
+        return new SubnetDAO_Impl();
+    }
+
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() {
+        return new ReservedIpDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -785,6 +795,11 @@ public class MainConfiguration {
     @Bean
     public CaseTagService getCaseTagService() {
         return new CaseTagServiceImpl();
+    }
+
+    @Bean
+    public IpReservationService getIpReservationService() {
+        return new IpReservationServiceImpl();
     }
 
     @Bean

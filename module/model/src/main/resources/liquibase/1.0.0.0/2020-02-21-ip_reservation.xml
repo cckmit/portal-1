@@ -1,0 +1,84 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-subnet-table" author="frost">
+        <createTable tableName="subnet">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP"/>
+            <column name="creator_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(20)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="mask" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_local" type="INT(1)" defaultValue="1">
+                <constraints nullable="false" />
+            </column>
+            <column name="comment" type="VARCHAR(256)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-on-subnet-table" author="frost">
+        <addForeignKeyConstraint constraintName="fk_creator_id_to_subnet"
+                                 baseTableName="subnet" baseColumnNames="creator_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="fk_owner_id_to_subnet"
+                                 baseTableName="subnet" baseColumnNames="owner_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="create-reserved-ip-address-table" author="frost">
+        <createTable tableName="reserved_ip">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP"/>
+            <column name="creator_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subnet_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ip_address" type="VARCHAR(20)"/>
+            <column name="mac_address" type="VARCHAR(20)"/>
+            <column name="owner_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reserve_date" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="release_date" type="DATETIME"/>
+            <column name="comment" type="VARCHAR(256)"/>
+            <column name="last_check_date" type="DATETIME"/>
+            <column name="last_check_info" type="VARCHAR(2000)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-on-reserved-ip-table" author="frost">
+        <addForeignKeyConstraint constraintName="fk_creator_id_to_ip"
+                                 baseTableName="reserved_ip" baseColumnNames="creator_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="fk_owner_id_to_subnet"
+                                 baseTableName="reserved_ip" baseColumnNames="owner_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="fk_subnet_id_to_ip"
+                                 baseTableName="reserved_ip" baseColumnNames="subnet_id"
+                                 referencedTableName="subnet" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

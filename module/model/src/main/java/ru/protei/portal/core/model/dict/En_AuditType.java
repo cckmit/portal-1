@@ -77,6 +77,13 @@ public enum En_AuditType {
 
     CONTRACT_MODIFY(49),
     CONTRACT_CREATE(50),
+
+    SUBNET_MODIFY(51),
+    SUBNET_CREATE(52),
+    SUBNET_REMOVE(53),
+    RESERVED_IP_MODIFY(54),
+    RESERVED_IP_CREATE(55),
+    RESERVED_IP_REMOVE(56),
     ;
 
     En_AuditType(int id ) {

@@ -132,4 +132,5 @@
   <include file="2020-01-15-add-document-member-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-01-29-add-user-dashboard-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-02-13-add-default-user-field-redmine-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-02-21-ip-reservation.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

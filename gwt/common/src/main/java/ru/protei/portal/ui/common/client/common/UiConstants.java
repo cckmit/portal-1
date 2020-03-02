@@ -29,6 +29,7 @@ public class UiConstants {
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
         String CONTRACT = "fa fa-file-signature";
+        String RESERVED_IP = "fa fa-sitemap";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";

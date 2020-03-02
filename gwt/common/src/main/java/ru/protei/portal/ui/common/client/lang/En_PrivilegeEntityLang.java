@@ -46,6 +46,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryEmployeeRegistration();
             case CONTRACT:
                 return lang.privilegeContract();
+            case RESERVED_IP:
+                return lang.ipReservation();
             default:
                 return lang.unknownField();
         }

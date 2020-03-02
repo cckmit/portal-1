@@ -77,6 +77,8 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String SUBNET = "sidebar-menu-subnet";
+        String RESERVED_IP = "sidebar-menu-reserved-ip";
         String ICON_SUFFIX = "-icon";
     }
 

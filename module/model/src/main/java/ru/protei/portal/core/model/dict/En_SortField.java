@@ -118,7 +118,18 @@ public enum En_SortField {
     /**
      * project name
      */
-    project_name("CASE_NAME");
+    project_name("CASE_NAME"),
+
+    /**
+     * ip address
+     */
+    ip_address("ip_address"),
+
+    /**
+     * subnet address
+     */
+    address("address"),
+    ;
 
     private String fieldName;
     private String bundleKey;

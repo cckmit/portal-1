@@ -9,6 +9,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.service.ContractReminderService;
 import ru.protei.portal.core.service.EmployeeRegistrationReminderService;
+import ru.protei.portal.core.service.IpReservationService;
 import ru.protei.portal.core.service.ReportControlService;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
             log.info("portal task's scheduler is not started because disabled in configuration");
             return;
         }
+        // Ежедневно в 10:00
+        scheduler.schedule(this::remindAboutNeedToReleaseIp, new CronTrigger( "0 00 10 * * ?"));
         // Ежедневно в 11:10
         scheduler.schedule(this::remindAboutEmployeeProbationPeriod, new CronTrigger( "0 10 11 * * ?"));
         // Ежедневно в 11:14
@@ -59,6 +62,11 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         contractReminderService.notifyAboutDates();
     }
 
+    public void remindAboutNeedToReleaseIp() {
+        ipReservationService.notifyOwnerAboutReleaseIp();
+        ipReservationService.notifyAdminsAboutExpiredReleaseDates();
+    }
+
     @Autowired
     PortalConfig config;
 
@@ -71,6 +79,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     ContractReminderService contractReminderService;
     @Autowired
     ReportControlService reportControlService;
+    @Autowired
+    IpReservationService ipReservationService;
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasksImpl.class );
 }

@@ -23,5 +23,7 @@ public enum En_PrivilegeEntity {
     SITE_FOLDER,
     EMPLOYEE,
     EMPLOYEE_REGISTRATION,
-    CONTRACT
+    CONTRACT,
+    SUBNET,
+    RESERVED_IP
 }
