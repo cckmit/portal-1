@@ -2065,4 +2065,20 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentIssueAssignTo();
 
     String issueAssignmentIssueReassignTo();
+
+    String issueAssignmentToggleTable();
+
+    String issueAssignmentReload();
+
+    String issueAssignmentMenuEdit();
+
+    String issueAssignmentMenuActions();
+
+    String issueAssignmentIssueOpen();
+
+    String issueAssignmentToggleDeskRow();
+
+    String issueAssignmentDeskAddColumn();
+
+    String issueAssignmentDeskAddRow();
 }
