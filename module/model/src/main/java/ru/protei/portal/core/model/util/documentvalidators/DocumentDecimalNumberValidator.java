@@ -83,29 +83,22 @@ public class DocumentDecimalNumberValidator {
 
     static private Function<String, Optional<String>> dotValidator = new Validator(1, "."::equals);
     static private Function<String, Optional<String>> dashValidator = new Validator(1, "-"::equals);
+    static private Function<String, Optional<String>> spaceValidator = new Validator(1, " "::equals);
     static private Function<String, Optional<String>> endValidator = new Validator(0, StringUtils::isEmpty);
     static private Function<String, Optional<String>> organizationCodeValidator = new Validator(4, s -> organizationCode.contains(s));
     static private Function<String, Optional<String>> TDtypeDocCodeValidator = new IntegerValidator(2, i -> typeDocCode.contains(i));
     static private Function<String, Optional<String>> TDtypeProcessCodeValidator = new IntegerValidator(1, i -> typeProcessCode.contains(i));
     static private Function<String, Optional<String>> TDtypeProcessWorkCodeValidator = new IntegerValidator(2, i -> typeProcessWorkCode.contains(i));
     static private Function<String, Optional<String>> TDfixCodeValidator = new Validator(true, 1, "Р"::equals);
-    static private Function<String, Optional<String>> lengthFiveMoreThanZeroIntegerValidator = new IntegerValidator(5, s -> 0 < s) ;
     static private Function<String, Optional<String>> lengthSixMoreThanZeroIntegerValidator = new IntegerValidator(6, s -> 0 < s) ;
+    static private Function<String, Optional<String>> lengthFiveMoreThanZeroIntegerValidator = new IntegerValidator(5, s -> 0 < s) ;
     static private Function<String, Optional<String>> lengthThreeMoreThanZeroIntegerValidator = new IntegerValidator(3, s -> 0 < s) ;
     static private Function<String, Optional<String>> lengthTwoMoreThanZeroIntegerValidator = new IntegerValidator(2, s -> 0 < s) ;
+    static private Function<String, Optional<String>> lengthOneMoreThanZeroIntegerValidator = new IntegerValidator(1, s -> 0 < s) ;
     static private Function<String, Optional<String>> lengthTwoRussianLetterValidator = new Validator(2, s -> s.matches("[А-Я][А-Я]")) ;
 
     static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {
         switch (enDocumentCategory) {
-            /**
-             * Технический проект
-             */
-            case TP:
-                break;
-
-            /**
-             * Конструкторская документация
-             */
             case KD:
                 return Optional.of(value)
                         .flatMap(organizationCodeValidator)
@@ -119,17 +112,19 @@ public class DocumentDecimalNumberValidator {
                         .flatMap(endValidator)
                         .isPresent();
 
-            /**
-             * Программная документация
-             */
             case PD:
-                break;
-
-            /**
-             * Эксплуатационная документация
-             */
-            case ED:
-                break;
+                return Optional.of(value)
+                        .flatMap(organizationCodeValidator)
+                        .flatMap(dotValidator)
+                        .flatMap(lengthFiveMoreThanZeroIntegerValidator)
+                        .flatMap(dashValidator)
+                        .flatMap(lengthTwoMoreThanZeroIntegerValidator)
+                        .flatMap(spaceValidator)
+                        .flatMap(lengthTwoMoreThanZeroIntegerValidator)
+                        .flatMap(spaceValidator)
+                        .flatMap(lengthOneMoreThanZeroIntegerValidator)
+                        .flatMap(endValidator)
+                        .isPresent();
 
             case TD:
                 return Optional.of(value)
@@ -146,7 +141,5 @@ public class DocumentDecimalNumberValidator {
             default:
                 return true;
         }
-
-        return false;
     }
 }

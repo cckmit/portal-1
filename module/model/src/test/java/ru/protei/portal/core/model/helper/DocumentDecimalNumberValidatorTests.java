@@ -186,5 +186,10 @@ public class DocumentDecimalNumberValidatorTests {
         assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01--", KD));
         assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.123456.123-01  ", KD));
     }
+
+    @Test
+    public void PDSuccessfulTest() {
+        assertTrue(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90", PD));
+    }
 }
 
