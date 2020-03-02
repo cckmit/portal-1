@@ -133,6 +133,7 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     }
 
     @Inject
+    @UiField
     Lang lang;
     @Inject
     En_CaseStateLang caseStateLang;

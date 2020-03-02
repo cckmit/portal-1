@@ -72,6 +72,7 @@ public class DeskRowStateView extends Composite implements AbstractDeskRowStateV
     }
 
     @Inject
+    @UiField
     Lang lang;
     @Inject
     En_CaseStateLang caseStateLang;
