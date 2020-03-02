@@ -278,6 +278,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private Widget buildHeaderAddCell(List<UserCaseAssignment> columns, UIObject relative) {
         AbstractDeskRowAddView rowAddView = rowAddViewProvider.get();
+        rowAddView.setButtonTitle(lang.issueAssignmentDeskAddColumn());
         rowAddView.setHandler(() -> {
             UserCaseAssignment column = new UserCaseAssignment();
             column.setTableEntity(En_TableEntity.COLUMN);
@@ -323,6 +324,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private Widget buildPersonAddCell(List<UserCaseAssignment> rows, int columnsCount) {
         AbstractDeskRowAddView rowAddView = rowAddViewProvider.get();
+        rowAddView.setButtonTitle(lang.issueAssignmentDeskAddRow());
         rowAddView.setHandler(() -> {
             UserCaseAssignment row = new UserCaseAssignment();
             row.setTableEntity(En_TableEntity.ROW);
