@@ -31,6 +31,7 @@ public interface DocumentService {
     Result<Document> getDocument( AuthToken token, Long id);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_CREATE, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
+    @Auditable(En_AuditType.DOCUMENT_CREATE)
     Result<Document> createDocument( AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
