@@ -3,20 +3,18 @@ package ru.protei.portal.core.model.util.documentvalidators;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidator.ValidationResult;
-
 class Validator implements Function<ValidationResult, ValidationResult> {
-    private boolean optional;
-    private int valueLength;
+    private Boolean optional;
+    private Integer valueLength;
     private Function<String, ValidationResult> validationFunction;
 
-    public Validator(boolean optional, Function<String, ValidationResult> validationFunction) {
+    public Validator(Boolean optional, Function<String, ValidationResult> validationFunction) {
         this.optional = optional;
         this.validationFunction = validationFunction;
         this.valueLength = 0;
     }
 
-    public Validator(boolean optional, int valueLength, Predicate<String> validationFunction) {
+    public Validator(Boolean optional, Integer valueLength, Predicate<String> validationFunction) {
         this(optional, (String value) -> new ValidationResult(validationFunction.test(value), valueLength, 0));
         this.valueLength = valueLength;
     }
@@ -25,34 +23,31 @@ class Validator implements Function<ValidationResult, ValidationResult> {
         this(false, validationFunction);
     }
 
-    public Validator(int valueLength, Predicate<String> validationFunction) {
+    public Validator(Integer valueLength, Predicate<String> validationFunction) {
         this(false, valueLength, validationFunction);
     }
 
     @Override
     public ValidationResult apply(ValidationResult s) {
-        String temp;
-        String value = s.value;
+        String validatableStringPart;
+        String fullString = s.validatableString;
         if (valueLength == 0) {
-            temp = value;
+            validatableStringPart = fullString;
         } else {
-            if (valueLength <= value.length()) {
-                temp = value.substring(0, valueLength);
+            if (valueLength <= fullString.length()) {
+                validatableStringPart = fullString.substring(0, valueLength);
             }  else {
-                return optional ? s : new ValidationResult();
+                return optional ? s : new ValidationResult(false);
             }
         }
-        ValidationResult result = validationFunction.apply(temp);
+        ValidationResult result = validationFunction.apply(validatableStringPart);
         if (result.isValid) {
-            result.value = value.substring(result.processedLength);
+            result.validatableString = fullString.substring(result.processedLength);
             return result;
         }
         if (optional) {
-            result.value = value;
-            result.isValid = true;
-            result.processedLength = 0;
-            return result;
+            return new ValidationResult(fullString, 0);
         }
-        return new ValidationResult();
+        return new ValidationResult(false);
     }
 }
