@@ -99,7 +99,8 @@ public abstract class DocumentEditActivity
 
     @Event
     public void onSaveAndContinue(DocumentEvents.SaveAndContinue event) {
-        onSaveClicked();
+        setButtonsEnabled(false);
+        saveDocument(fillDto(document), true);
     }
 
     @Event
@@ -200,6 +201,16 @@ public abstract class DocumentEditActivity
         document.setApproved(false);
         document.setProjectId(event.projectId);
         document.setProjectName(event.projectName);
+        return document;
+    }
+
+    private Document makeDocumentToContinue() {
+        Document document = new Document();
+        document.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
+        document.setProjectName(view.project().getValue() == null? null : view.project().getValue().getDisplayText());
+        document.setName(view.name().getValue());
+        document.setAnnotation(view.annotation().getValue());
+        document.setKeywords(view.keywords().getValue());
         return document;
     }
 
@@ -341,6 +352,10 @@ public abstract class DocumentEditActivity
     }
 
     private void saveDocument(Document document) {
+        saveDocument(document, false);
+    }
+
+    private void saveDocument(Document document, boolean isContinue) {
         if (!checkDocumentValid(document)) {
             setButtonsEnabled(true);
             return;
@@ -356,11 +371,14 @@ public abstract class DocumentEditActivity
             uploadDoc(() ->
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
-                            fillView(doc);
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                            fireEvent(new DocumentEvents.ChangeModel());
-                            fireEvent(new Back());
+                            if (isContinue){
+                                fillView(makeDocumentToContinue());
+                            }
+                            else {
+                                fireEvent(new Back());
+                            }
                         }
         ))));
     }

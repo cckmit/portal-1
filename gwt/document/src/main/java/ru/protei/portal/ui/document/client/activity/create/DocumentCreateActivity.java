@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.document.client.activity.create;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;

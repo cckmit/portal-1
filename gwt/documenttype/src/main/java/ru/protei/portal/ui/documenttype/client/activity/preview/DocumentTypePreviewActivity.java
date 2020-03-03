@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.DocumentTypeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
@@ -61,6 +62,7 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
             public void onSuccess(DocumentType type) {
                 fireEvent( new DocumentTypeEvents.Changed(type, isNew));
                 fireEvent(new DocumentTypeEvents.ClosePreview());
+                fireEvent(new DocumentEvents.ChangeModel());
             }
         });
     }

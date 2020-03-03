@@ -95,7 +95,6 @@ public abstract class DocumentTableActivity
                         .withSuccess(result -> {
                             loadTable();
                             fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
-                            fireEvent(new DocumentEvents.ChangeModel());
                         }));
     }
 
