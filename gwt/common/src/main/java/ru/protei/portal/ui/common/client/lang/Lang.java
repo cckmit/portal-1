@@ -2085,4 +2085,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskAddColumn();
 
     String issueAssignmentDeskAddRow();
+
+    String issueCreator();
 }

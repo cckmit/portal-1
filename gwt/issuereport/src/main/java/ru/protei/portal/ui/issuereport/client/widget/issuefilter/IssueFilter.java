@@ -36,7 +36,7 @@ import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
@@ -45,7 +45,6 @@ import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractI
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -594,7 +593,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     CompanyMultiSelector companies;
     @Inject
     @UiField(provided = true)
-    InitiatorMultiSelector initiators;
+    PersonMultiSelector initiators;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector managers;
