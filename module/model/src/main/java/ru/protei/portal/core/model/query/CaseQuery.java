@@ -369,9 +369,11 @@ public class CaseQuery extends BaseQuery {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CaseQuery{" +
-                "companyIds=" + companyIds +
+                "id=" + id +
+                ", caseNumbers=" + caseNumbers +
+                ", companyIds=" + companyIds +
                 ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
                 ", locationIds=" + locationIds +
@@ -380,22 +382,24 @@ public class CaseQuery extends BaseQuery {
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
+                ", allowViewPrivate=" + allowViewPrivate +
+                ", viewPrivate=" + viewPrivate +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
                 ", modifiedFrom=" + modifiedFrom +
                 ", modifiedTo=" + modifiedTo +
-                ", showPrivate=" + allowViewPrivate +
                 ", searchStringAtComments=" + searchStringAtComments +
-                ", searchCasenoString=" + searchCasenoString +
-                ", viewPrivate=" + viewPrivate +
-                ", memberIds=" + memberId +
+                ", searchCasenoString='" + searchCasenoString + '\'' +
+                ", memberId=" + memberId +
                 ", commentAuthorIds=" + commentAuthorIds +
                 ", caseTagsIds=" + caseTagsIds +
-                ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", customerSearch=" + customerSearch +
+                ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", local=" + local +
                 ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
+                ", productDirectionId=" + productDirectionId +
+                ", creatorIds=" + creatorIds +
                 '}';
     }
 
