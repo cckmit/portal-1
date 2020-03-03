@@ -40,6 +40,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
+import javax.inject.Provider;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -67,8 +68,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setCompaniesModel( AsyncSelectorModel<EntityOption> model ) {
-        companies.setAsyncModel( model );
+    public void setInitiatorModel(InitiatorModel initiatorModel) {
+        initiators.setInitiatorModel(initiatorModel);
+    }
+
+    @Override
+    public void setCreatorModel(PersonModel personModel) {
+        creators.setPersonModel(personModel);
     }
 
     @Override
@@ -172,11 +178,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasVisibility companiesVisibility() {
-        return companies;
-    }
-
-    @Override
     public HasVisibility managersVisibility() {
         return managers;
     }
@@ -187,18 +188,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasVisibility tagsVisibility() {
-        return tags;
-    }
-
-    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
-    }
-
-    @Override
-    public HasVisibility searchByCommentsVisibility() {
-        return searchByCommentsContainer;
     }
 
     @Override
@@ -532,7 +523,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     CompanyMultiSelector companies;
     @Inject
     @UiField(provided = true)
-    InitiatorMultiSelector initiators;
+    PersonMultiSelector initiators;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector managers;
@@ -541,7 +532,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     EmployeeMultiSelector commentAuthors;
     @Inject
     @UiField(provided = true)
-    CreatorMultiSelector creators;
+    PersonMultiSelector creators;
     @Inject
     @UiField(provided = true)
     CaseTagMultiSelector tags;

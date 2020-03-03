@@ -16,6 +16,8 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -24,7 +26,9 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     void setActivity(AbstractIssueFilterParamActivity activity);
 
-    void setCompaniesModel( AsyncSelectorModel<EntityOption> model );
+    void setInitiatorModel(InitiatorModel initiatorModel);
+
+    void setCreatorModel(PersonModel personModel);
 
     AbstractIssueFilterParamActivity getActivity();
 
@@ -67,17 +71,11 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasVisibility productsVisibility();
 
-    HasVisibility companiesVisibility();
-
     HasVisibility managersVisibility();
 
     HasVisibility commentAuthorsVisibility();
 
-    HasVisibility tagsVisibility();
-
     HasVisibility searchPrivateVisibility();
-
-    HasVisibility searchByCommentsVisibility();
 
     void resetFilter();
 

@@ -1,13 +1,13 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -19,17 +19,15 @@ import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Модель контактов домашней компании
+ * Модель контактных лиц
  */
 public abstract class PersonModel implements Activity, AsyncSelectorModel<PersonShortView> {
-
     @Event
-    public void onInit( AuthEvents.Success event ) {
+    public void onInit(AuthEvents.Success event) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
         cache.setLoadHandler(makeLoadHandler(makeQuery()));
@@ -64,18 +62,11 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
 
                         @Override
                         public void onSuccess(List<PersonShortView> options) {
-                            handler.onSuccess(transliteration(options));
+                            handler.onSuccess(options);
                         }
                     }
             );
         };
-    }
-
-    private List<PersonShortView> transliteration(List<PersonShortView> options) {
-        List<PersonShortView> result = new ArrayList<>(options);
-        result.forEach(personShortView -> personShortView.setName(TransliterationUtils.transliterate(personShortView.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
-
-        return result;
     }
 
     private void requestCurrentPerson(Long myId) {
