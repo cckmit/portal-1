@@ -314,7 +314,7 @@ public class Document implements Serializable {
     }
 
     public boolean isValid() {
-        // Основная проверка, дополнительные проверки обрабатываются в клиенте и сервере отдельно
+        // Основная проверка, дополнительные проверки обрабатываются в DocumentUtils.isValid
         return  this.getType() != null &&
                 (this.getInventoryNumber() == null || (this.getInventoryNumber() > 0)) &&
                 this.getProjectId() != null &&

@@ -60,6 +60,8 @@ public abstract class DocumentEditActivity
 
         placeView(event.parent);
         view.drawInWizardContainer(true);
+        documentCreatedAndApprovedAndInventoryNumberSet = false;
+        documentCreatedAndApprovedAndDecimalNumberSet = false;
         fillView(new Document());
     }
 
@@ -77,6 +79,8 @@ public abstract class DocumentEditActivity
 
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
+        documentCreatedAndApprovedAndInventoryNumberSet = false;
+        documentCreatedAndApprovedAndDecimalNumberSet = false;
         Document document = makeDocumentFromEvent(event);
         requestEquipmentAndFillView(event.equipmentId, document);
     }
@@ -90,7 +94,12 @@ public abstract class DocumentEditActivity
 
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
-        requestDocumentAndFillView(event.id, this::fillView);
+        requestDocumentAndFillView(event.id,
+                doc -> {
+                    documentCreatedAndApprovedAndInventoryNumberSet = doc.getApproved() && doc.getInventoryNumber() != null;
+                    documentCreatedAndApprovedAndDecimalNumberSet =  doc.getApproved() && doc.getDecimalNumber() != null;
+                    fillView(doc);
+                });
     }
 
     @Event
@@ -219,9 +228,14 @@ public abstract class DocumentEditActivity
 
         setEquipmentEnabled(isEquipmentEnabled);
         setDocumentTypeEnabled(documentCategory != null);
-        setDecimalNumberEnabled(isDesignationEnabled);
-        setInventoryNumberEnabled(isDesignationEnabled);
-        setInventoryNumberMandatory(needToCheckInventoryNumber(project));
+        if (!documentCreatedAndApprovedAndInventoryNumberSet) {
+            setDecimalNumberEnabled(isDesignationEnabled);
+        }
+        if (!documentCreatedAndApprovedAndDecimalNumberSet) {
+            setInventoryNumberEnabled(isDesignationEnabled);
+        }
+        setInventoryNumberMandatory(DocumentUtils.needToCheckInventoryNumber(project,
+                view.isApproved().getValue(), view.documentType().getValue()));
         setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
     private void setDecimalNumberEnabled(boolean isEnabled) {
@@ -293,8 +307,8 @@ public abstract class DocumentEditActivity
                 DocumentUtils.isValidNewDocument(
                         newDocument,
                         project,
-                        view.documentPdfUploader().isFileSet(),
-                        view.documentDocUploader().isFileSet())
+                        view.documentDocUploader().isFileSet(),
+                        view.documentPdfUploader().isFileSet())
                 : DocumentUtils.isValidDocument(
                         newDocument,
                         project);
@@ -304,14 +318,6 @@ public abstract class DocumentEditActivity
         }
 
         return isValid;
-    }
-
-    private boolean needToCheckInventoryNumber(ProjectInfo project) {
-        return  view.isApproved().getValue()
-                && project != null
-                && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
-                && view.documentCategory().getValue() != null
-                && view.documentCategory().getValue() != En_DocumentCategory.ABROAD;
     }
 
     private void saveDocument(Document document) {
@@ -330,6 +336,8 @@ public abstract class DocumentEditActivity
             uploadDoc(() ->
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
+                            documentCreatedAndApprovedAndInventoryNumberSet = doc.getApproved() && doc.getInventoryNumber() != null;
+                            documentCreatedAndApprovedAndDecimalNumberSet =  doc.getApproved() && doc.getDecimalNumber() != null;
                             fillView(doc);
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -415,16 +423,26 @@ public abstract class DocumentEditActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (needToCheckInventoryNumber(project)) {
+        if (DocumentUtils.needToCheckInventoryNumber(project,
+                view.isApproved().getValue(), view.documentType().getValue())) {
             if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
                 return lang.inventoryNumberIsEmpty();
             } else if (doc.getInventoryNumber() < 0) {
                 return lang.negativeInventoryNumber();
             }
         }
+
+        if (!DocumentUtils.isValidDecimalNumber(doc.getDecimalNumber(), doc.getType().getDocumentCategory())) {
+            return lang.decimalNumberIsInvalid();
+        }
+
         if (doc.getApproved()) {
             if (doc.getApprovedBy() == null || doc.getApprovalDate() == null) {
                 return lang.documentApproveFieldsIsEmpty();
+            }
+
+            if (!view.documentPdfUploader().isFileSet()) {
+                return lang.documentPDFFileIsNotSet();
             }
         }
         return null;
@@ -490,8 +508,10 @@ public abstract class DocumentEditActivity
         view.keywords().setValue(document.getKeywords());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
+        view.inventoryNumberEnabled(!documentCreatedAndApprovedAndInventoryNumberSet);
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
+        view.decimalNumberEnabled(!documentCreatedAndApprovedAndDecimalNumberSet);
         view.isApproved().setValue(isNew ? false : document.getApproved());
         view.nameValidator().setValid(!view.name().getValue().isEmpty());
         view.documentDocUploader().resetForm();
@@ -571,6 +591,8 @@ public abstract class DocumentEditActivity
     @Inject
     EquipmentControllerAsync equipmentController;
 
+    private Boolean documentCreatedAndApprovedAndInventoryNumberSet;
+    private Boolean documentCreatedAndApprovedAndDecimalNumberSet;
     private Document document;
     private ProjectInfo project;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";

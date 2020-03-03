@@ -855,7 +855,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inventoryNumberIsEmpty();
 
+    String decimalNumberIsInvalid();
+
     String documentApproveFieldsIsEmpty();
+
+    String documentPDFFileIsNotSet();
 
     String negativeInventoryNumber();
 

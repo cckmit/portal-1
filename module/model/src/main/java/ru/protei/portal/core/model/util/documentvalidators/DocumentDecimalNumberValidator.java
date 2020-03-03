@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.util.documentvalidators;
 
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.ent.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +59,7 @@ public class DocumentDecimalNumberValidator {
         return processValidation(value, validateProcessList).isValid;
     }
 
-    static public boolean isValid(String value, En_DocumentCategory enDocumentCategory, DocumentType documentType) {
+    static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {
         switch (enDocumentCategory) {
             case KD:
                 return processValidationIsValid(value, KDvalidateProcessList);
@@ -69,7 +68,6 @@ public class DocumentDecimalNumberValidator {
                 return processValidationIsValid(value, TDvalidateProcessList);
 
             case PD:
-
                 return processValidationIsValid(value, PDvalidateProcessList);
 
             default:

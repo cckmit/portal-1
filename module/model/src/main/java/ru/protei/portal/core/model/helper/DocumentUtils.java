@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.helper;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidator;
 
@@ -10,7 +11,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 public class DocumentUtils {
 
-    static public boolean isValidNewDocument(Document document,  ProjectInfo project, boolean isPdfFileSet, boolean isDocFileSet) {
+    static public boolean isValidNewDocument(Document document,  ProjectInfo project, boolean isDocFileSet, boolean isPdfFileSet) {
         if (document.getApproved() && !isPdfFileSet) {
             return false;
         }
@@ -26,7 +27,7 @@ public class DocumentUtils {
     static public boolean isValidDocument(Document document, ProjectInfo project){
         return document.isValid()
                 && isValidInventoryNumberForMinistryOfDefence(document, project)
-                && validDecimalNumber(document.getDecimalNumber(), document.getType().getDocumentCategory())
+                && isValidDecimalNumber(document.getDecimalNumber(), document.getType().getDocumentCategory())
                 && isValidApproveFields(document);
     }
 
@@ -37,17 +38,18 @@ public class DocumentUtils {
         if (project == null) {
             return false;
         }
-        if (needToCheckInventoryNumber(document, project)) {
+        if (needToCheckInventoryNumber(project, document.getApproved(), document.getType())) {
             return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
     }
 
-    static private boolean needToCheckInventoryNumber(Document document, ProjectInfo project) {
-        return document.getApproved() &&
+    static public boolean needToCheckInventoryNumber(ProjectInfo project,
+                                                      boolean isApproved, DocumentType documentType) {
+        return isApproved &&
                 project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
-                && document.getType() != null
-                && document.getType().getDocumentCategory() != En_DocumentCategory.ABROAD;
+                && documentType != null
+                && documentType.getDocumentCategory() != En_DocumentCategory.ABROAD;
     }
 
     static public boolean isValidApproveFields(Document document) {
@@ -57,7 +59,7 @@ public class DocumentUtils {
         return document.getApprovedBy() != null && document.getApprovalDate() != null;
     }
 
-    static public boolean validDecimalNumber(String value, En_DocumentCategory enDocumentCategory ) {
+    static public boolean isValidDecimalNumber(String value, En_DocumentCategory enDocumentCategory ) {
         if (isEmpty(value)) {
             return true;
         }
