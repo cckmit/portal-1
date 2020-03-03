@@ -78,54 +78,62 @@ public class DocumentDecimalNumberValidator {
             90, 91
     ));
 
-    static Map<String, Function<String, Optional<String>>> mapOfValidators = new HashMap<>();
+    static Map<String, Function<ValidationResult, ValidationResult>> mapOfValidators = new HashMap<>();
 
-    static private Function<String, Optional<String>> organizationCodeValidator = new Validator(4, s -> organizationCode.contains(s));
-    static private Function<String, Optional<String>> TDtypeDocCodeValidator = new IntegerValidator(2, i -> typeDocCode.contains(i));
-    static private Function<String, Optional<String>> TDtypeProcessCodeValidator = new IntegerValidator(1, i -> typeProcessCode.contains(i));
-    static private Function<String, Optional<String>> TDtypeProcessWorkCodeValidator = new IntegerValidator(2, i -> typeProcessWorkCode.contains(i));
-    static private Function<String, Optional<String>> TDfixCodeValidator = new Validator(true, 1, "Р"::equals);
-    static private Function<String, Optional<String>> lengthTwoRussianLetterValidator = new Validator(2, s -> s.matches("[А-Я][А-Я]")) ;
-    static private Function<String, Optional<String>> endValidator = new Validator(0, StringUtils::isEmpty);
+    static private Function<ValidationResult, ValidationResult> organizationCodeValidator
+            = new Validator(4, (String s) -> organizationCode.contains(s));
+    static private Function<ValidationResult, ValidationResult> TDtypeDocCodeValidator =
+            new IntegerValidator(2, (Integer i) -> typeDocCode.contains(i));
+    static private Function<ValidationResult, ValidationResult> TDtypeProcessCodeValidator =
+            new IntegerValidator(1, (Integer i) -> typeProcessCode.contains(i));
+    static private Function<ValidationResult, ValidationResult> TDtypeProcessWorkCodeValidator =
+            new IntegerValidator(2, i -> (typeProcessWorkCode.contains(i)));
+    static private Function<ValidationResult, ValidationResult> TDfixCodeValidator =
+            new Validator(true, 1, "Р"::equals);
+    static private Function<ValidationResult, ValidationResult> lengthTwoRussianLetterValidator =
+            new Validator(2, s ->  s.matches("[А-Я][А-Я]"));
+    static private Function<ValidationResult, ValidationResult> endValidator =
+            new Validator(0, StringUtils::isEmpty);
 
-    static Function<String, Optional<String>> getPDdocNumberValidator(boolean length) {
-        return new Validator(true, length ? 5 : 3,
-                value -> {
-                    List<Function<String, Optional<String>>> validateProcessList = new ArrayList<>();
-                    validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required# ", getOneSymbolValidator(" ")));
-                    validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
-                    validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#optional#-", getOneSymbolValidator(true, "-")));
-                    validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#optional#1", getLengthMoreThanZeroIntegerValidator(true, 1)));
-                    return processValidation(value, validateProcessList);
-                });
+    static Function<ValidationResult, ValidationResult> PDdocNumberPartValidator = getPDdocNumberPartValidator();
+    static Function<ValidationResult, ValidationResult> getPDdocNumberPartValidator() {
+        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
+        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#-", getOneSymbolValidator("-")));
+        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#1", getLengthMoreThanZeroIntegerValidator(1)));
+        return getCompositeValidator(validateProcessList);
+    };
+
+    static Function<ValidationResult, ValidationResult> PDdocNumberValidator = getPDdocNumberValidator();
+    static Function<ValidationResult, ValidationResult> getPDdocNumberValidator() {
+        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
+        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required# ", getOneSymbolValidator(" ")));
+        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
+        validateProcessList.add(PDdocNumberPartValidator);
+        return getCompositeValidator(validateProcessList);
+    };
+
+    static Function<ValidationResult, ValidationResult> getCompositeValidator(List<Function<ValidationResult, ValidationResult>> list) {
+        return new Validator(true, value -> new ValidationResult(processValidation(value, list)));
     }
 
-    static Function<String, Optional<String>> getFlatMapEndValidator(Function<String, Function<String, Optional<String>>> func) {
-        return new Validator(0,
-                value -> Optional.of(value)
-                        .flatMap(func.apply(value))
-                        .flatMap(endValidator)
-                        .isPresent());
-    }
-
-    static Function<String, Optional<String>> getOneSymbolValidator(Boolean optional, String symbol) {
+    static Function<ValidationResult, ValidationResult> getOneSymbolValidator(Boolean optional, String symbol) {
         return new Validator(optional, 1, symbol::equals);
     }
 
-    static Function<String, Optional<String>> getOneSymbolValidator(String symbol) {
+    static Function<ValidationResult, ValidationResult> getOneSymbolValidator(String symbol) {
         return getOneSymbolValidator(false, symbol);
     }
 
-    static Function<String, Optional<String>> getLengthMoreThanZeroIntegerValidator(Integer length) {
+    static Function<ValidationResult, ValidationResult> getLengthMoreThanZeroIntegerValidator(Integer length) {
         return getLengthMoreThanZeroIntegerValidator(false, length);
     }
 
-    static Function<String, Optional<String>> getLengthMoreThanZeroIntegerValidator(Boolean optional, Integer length) {
-        return new IntegerValidator(optional, length, s -> 0 < s);
+    static Function<ValidationResult, ValidationResult> getLengthMoreThanZeroIntegerValidator(Boolean optional, Integer length) {
+        return new IntegerValidator(optional, length,  s -> 0 < s);
     }
 
-    static List<Function<String, Optional<String>>> createKDvalidateProcessList() {
-        List<Function<String, Optional<String>>> validateProcessList = new ArrayList<>();
+    static List<Function<ValidationResult, ValidationResult>> createKDvalidateProcessList() {
+        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
         validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
         validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#6", getLengthMoreThanZeroIntegerValidator(6)));
@@ -138,8 +146,8 @@ public class DocumentDecimalNumberValidator {
         return validateProcessList;
     }
 
-    static List<Function<String, Optional<String>>> createTDvalidateProcessList() {
-        List<Function<String, Optional<String>>> validateProcessList = new ArrayList<>();
+    static List<Function<ValidationResult, ValidationResult>> createTDvalidateProcessList() {
+        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
         validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
         validateProcessList.add(TDtypeDocCodeValidator);
@@ -152,8 +160,8 @@ public class DocumentDecimalNumberValidator {
         return validateProcessList;
     }
 
-    static List<Function<String, Optional<String>>> createPDvalidateProcessList() {
-        List<Function<String, Optional<String>>> validateProcessList = new ArrayList<>();
+    static List<Function<ValidationResult, ValidationResult>> createPDvalidateProcessList() {
+        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
         validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
         validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#5", getLengthMoreThanZeroIntegerValidator(5)));
@@ -161,31 +169,82 @@ public class DocumentDecimalNumberValidator {
         validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
         validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required# ", getOneSymbolValidator(" ")));
         validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
-        validateProcessList.add(getFlatMapEndValidator(value -> getPDdocNumberValidator(value.length() > 3)));
+        validateProcessList.add(PDdocNumberValidator);
+        validateProcessList.add(endValidator);
         return validateProcessList;
     }
 
-    static boolean processValidation(String value, List<Function<String, Optional<String>>> validateProcessList) {
-        Optional<String> validateString = Optional.of(value);
-        for (Function<String, Optional<String>> stringOptionalFunction : validateProcessList) {
-            validateString = validateString.flatMap(stringOptionalFunction);
+    static boolean processValidationIsValid(String value, List<Function<ValidationResult, ValidationResult>> validateProcessList) {
+        return processValidation(value, validateProcessList).isValid;
+    }
+
+    static ValidationResult processValidation(String value, List<Function<ValidationResult, ValidationResult>> validateProcessList) {
+        ValidationResult validateString = new ValidationResult(value);
+        for (Function<ValidationResult, ValidationResult> stringOptionalFunction : validateProcessList) {
+            validateString = validateString.map(stringOptionalFunction);
         }
-        return validateString.isPresent();
+        return validateString;
     }
 
     static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {
         switch (enDocumentCategory) {
             case KD:
-                return processValidation(value, createKDvalidateProcessList());
+                return processValidationIsValid(value, createKDvalidateProcessList());
 
             case TD:
-                return processValidation(value, createTDvalidateProcessList());
+                return processValidationIsValid(value, createTDvalidateProcessList());
 
             case PD:
-                return processValidation(value, createPDvalidateProcessList());
+                return processValidationIsValid(value, createPDvalidateProcessList());
 
             default:
                 return true;
+        }
+    }
+
+    static class ValidationResult {
+        Boolean isValid;
+        String value;
+        Integer processedLength;
+        Integer count = 0;
+
+        public ValidationResult(String value, Integer processedLength) {
+            this.isValid = true;
+            this.value = value;
+            this.processedLength = processedLength;
+        }
+
+        public ValidationResult(Boolean isValid, Integer processedLength, int count) {
+            this.isValid = isValid;
+            this.processedLength = processedLength;
+            this.count = count;
+        }
+
+        public ValidationResult(String value) {
+            this.isValid = true;
+            this.value = value;
+        }
+
+        public ValidationResult() {
+            this.isValid = false;
+        }
+
+        public ValidationResult(ValidationResult other) {
+            isValid = other.isValid;
+            processedLength = (other.isValid) ?  other.count : 0;
+            count = 0;
+        }
+
+        public ValidationResult map(Function<ValidationResult, ValidationResult> mapper) {
+            Objects.requireNonNull(mapper);
+            if (!this.isValid) {
+                return this;
+            }
+            ValidationResult apply = mapper.apply(this);
+            if (apply.isValid) {
+                apply.count = count + apply.processedLength;
+            }
+            return apply;
         }
     }
 }

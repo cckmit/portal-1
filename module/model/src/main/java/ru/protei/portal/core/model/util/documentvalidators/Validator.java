@@ -1,39 +1,58 @@
 package ru.protei.portal.core.model.util.documentvalidators;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-class Validator implements Function<String, Optional<String>> {
+import static ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidator.ValidationResult;
+
+class Validator implements Function<ValidationResult, ValidationResult> {
     private boolean optional;
     private int valueLength;
-    private Predicate<String> isValid;
+    private Function<String, ValidationResult> validationFunction;
 
-    public Validator(boolean optional, int valueLength, Predicate<String> isValid) {
+    public Validator(boolean optional, Function<String, ValidationResult> validationFunction) {
         this.optional = optional;
-        this.valueLength = valueLength;
-        this.isValid = isValid;
+        this.validationFunction = validationFunction;
+        this.valueLength = 0;
     }
 
-    public Validator(int valueLength, Predicate<String> isValid) {
-        this(false, valueLength, isValid);
+    public Validator(boolean optional, int valueLength, Predicate<String> validationFunction) {
+        this(optional, (String value) -> new ValidationResult(validationFunction.test(value), valueLength, 0));
+        this.valueLength = valueLength;
+    }
+
+    public Validator(Function<String, ValidationResult> validationFunction) {
+        this(false, validationFunction);
+    }
+
+    public Validator(int valueLength, Predicate<String> validationFunction) {
+        this(false, valueLength, validationFunction);
     }
 
     @Override
-    public Optional<String> apply(String s) {
+    public ValidationResult apply(ValidationResult s) {
         String temp;
+        String value = s.value;
         if (valueLength == 0) {
-            temp = s;
+            temp = value;
         } else {
-            if (valueLength <= s.length()) {
-                temp = s.substring(0, valueLength);
+            if (valueLength <= value.length()) {
+                temp = value.substring(0, valueLength);
             }  else {
-                return optional ? Optional.of(s) : Optional.empty();
+                return optional ? s : new ValidationResult();
             }
         }
-        if (isValid.test(temp)) {
-            return Optional.of(s.substring(valueLength));
+        ValidationResult result = validationFunction.apply(temp);
+        if (result.isValid) {
+            result.value = value.substring(result.processedLength);
+            return result;
         }
-        return optional ? Optional.of(s) : Optional.empty();
+        if (optional) {
+            result.value = value;
+            result.isValid = true;
+            result.processedLength = 0;
+            return result;
+        }
+        return new ValidationResult();
     }
 }

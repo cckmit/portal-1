@@ -192,7 +192,32 @@ public class DocumentDecimalNumberValidatorTests {
         assertTrue(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90", PD));
         assertTrue(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12", PD));
         assertTrue(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12-3", PD));
-        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90aaa", PD));
+    }
+
+    @Test
+    public void PDWrongDocNumTest() {
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90Б", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90Б 12-3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90w", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90&", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 &90", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 -90", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90-", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90-12-3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 *", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 --", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 ", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid(" ПАМР.12345-01 90 12-3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12*3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12+3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12:3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12-3 ", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90  12-3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 **-3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12-*", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12 3", PD));
+        assertFalse(DocumentDecimalNumberValidator.isValid("ПАМР.12345-01 90 12-Я", PD));
     }
 }
 
