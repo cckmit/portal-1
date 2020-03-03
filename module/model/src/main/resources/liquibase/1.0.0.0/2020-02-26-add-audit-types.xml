@@ -42,71 +42,66 @@
         </insert>
         <insert tableName="audit_type">
             <column name="id" value="55"/>
-            <column name="code" value="LINK_ADD"/>
-            <column name="info" value="Добавление ссылки"/>
-        </insert>
-        <insert tableName="audit_type">
-            <column name="id" value="56"/>
             <column name="code" value="LINK_REMOVE"/>
             <column name="info" value="Удаление ссылки"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="57"/>
+            <column name="id" value="56"/>
             <column name="code" value="DOCUMENT_CREATE"/>
             <column name="info" value="Создание документа"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="58"/>
+            <column name="id" value="57"/>
             <column name="code" value="DOCUMENT_TYPE_CREATE"/>
             <column name="info" value="Создание типа документа"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="59"/>
+            <column name="id" value="58"/>
             <column name="code" value="DOCUMENT_TYPE_REMOVE"/>
             <column name="info" value="Удаление типа документа"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="60"/>
+            <column name="id" value="59"/>
             <column name="code" value="PLATFORM_CREATE"/>
             <column name="info" value="Создание площадки"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="61"/>
+            <column name="id" value="60"/>
             <column name="code" value="PLATFORM_MODIFY"/>
             <column name="info" value="Изменение площадки"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="62"/>
+            <column name="id" value="61"/>
             <column name="code" value="PLATFORM_REMOVE"/>
             <column name="info" value="Удаление площадки"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="63"/>
+            <column name="id" value="62"/>
             <column name="code" value="SERVER_CREATE"/>
             <column name="info" value="Создание сервера"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="64"/>
+            <column name="id" value="63"/>
             <column name="code" value="SERVER_MODIFY"/>
             <column name="info" value="Изменение сервера"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="65"/>
+            <column name="id" value="64"/>
             <column name="code" value="SERVER_REMOVE"/>
             <column name="info" value="Удаление сервера"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="66"/>
+            <column name="id" value="65"/>
             <column name="code" value="APPLICATION_CREATE"/>
             <column name="info" value="Создание приложения"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="67"/>
+            <column name="id" value="66"/>
             <column name="code" value="APPLICATION_MODIFY"/>
             <column name="info" value="Изменение приложения"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="68"/>
+            <column name="id" value="67"/>
             <column name="code" value="APPLICATION_REMOVE"/>
             <column name="info" value="Удаление приложения"/>
         </insert>

@@ -23,7 +23,7 @@ public interface CaseLinkService {
 
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 
-    @Auditable(En_AuditType.LINK_ADD)
+    @Auditable(En_AuditType.LINK_CREATE)
     Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 
     @Auditable(En_AuditType.LINK_REMOVE)
