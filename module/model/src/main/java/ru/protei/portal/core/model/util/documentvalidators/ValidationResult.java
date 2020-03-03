@@ -7,12 +7,13 @@ class ValidationResult {
     Boolean isValid;
     String validatableString;
     Integer processedLength;
-    Integer countOfProcessed = 0;
+    Integer countOfProcessed;
 
     public ValidationResult(String validatableString, Integer processedLength) {
         this.isValid = true;
         this.validatableString = validatableString;
         this.processedLength = processedLength;
+        this.countOfProcessed = 0;
     }
 
     public ValidationResult(Boolean isValid, Integer processedLength, int countOfProcessed) {
@@ -24,14 +25,20 @@ class ValidationResult {
     public ValidationResult(String validatableString) {
         this.isValid = true;
         this.validatableString = validatableString;
+        this.processedLength = 0;
+        this.countOfProcessed = 0;
     }
 
     public ValidationResult(Boolean isValid) {
         this.isValid = isValid;
+        this.validatableString = "";
+        this.processedLength = 0;
+        this.countOfProcessed = 0;
     }
 
     public ValidationResult(ValidationResult other) {
         isValid = other.isValid;
+        validatableString = other.validatableString;
         processedLength = (other.isValid) ?  other.countOfProcessed : 0;
         countOfProcessed = 0;
     }
