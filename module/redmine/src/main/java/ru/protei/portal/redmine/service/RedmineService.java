@@ -1,6 +1,7 @@
 package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.User;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledCaseEvent;
@@ -13,14 +14,19 @@ import java.util.List;
 public interface RedmineService {
     Result<Issue> getIssueById( int id, RedmineEndpoint endpoint);
 
-    void checkForNewIssues(RedmineEndpoint endpoint);
+//    void checkForNewIssues(RedmineEndpoint endpoint);
 
-    void checkForUpdatedIssues(RedmineEndpoint endpoint);
+//    void checkForUpdatedIssues(RedmineEndpoint endpoint);
 
     Result<Issue> updateIssue( Issue issue, RedmineEndpoint endpoint);
 
-    @EventListener
-    void onAssembledCaseEvent(AssembledCaseEvent event);
-
     Result<List<com.taskadapter.redmineapi.bean.Attachment>> uploadAttachment( Collection<Attachment> attachment, RedmineEndpoint endpoint);
+
+    Result<List<Issue>> getNewIssues( RedmineEndpoint endpoint );
+
+    Result<List<Issue>> getUpdatedIssues( RedmineEndpoint endpoint );
+
+    Result<User> getUser( int id, RedmineEndpoint endpoint );
+
+
 }

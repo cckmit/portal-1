@@ -4,7 +4,9 @@ import com.taskadapter.redmineapi.bean.Issue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -22,28 +24,44 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public final class RedmineBackChannelHandler implements BackchannelEventHandler {
 
-    @Override
-    public void handle(AssembledCaseEvent event) {
+    @EventListener
+    public void onAssembledCaseEvent(AssembledCaseEvent event) {
+        if (!event.isCoreModuleEvent()) {
+            logger.info("Skip handle core module event for id={} extId={}", event.getCaseObjectId(), event.getExtId());
+            return;
+        }
+        if (!(portalConfig.data().integrationConfig().isRedmineEnabled() || portalConfig.data().integrationConfig().isRedmineBackchannelEnabled())) {
+            logger.info("Redmine integration disabled in config, nothing happens");
+            return;
+        }
+        logger.info("Handling action on redmine-related issue in Portal-CRM");
+        try {
 
-        final long caseId = event.getCaseObject().getId();
+            final long caseId = event.getCaseObject().getId();
 
-        logger.debug("Modified object has id: {}", caseId);
+            logger.debug("Modified object has id: {}", caseId);
 
-        /** PORTAL-162
-         * Я не понял, зачем нужно в back-channel делать сохранение case?
-         * Задача back-channel - отправлять сигнал об изменениях удаленной стороне,
-         * а не вносить изменения локально. Если для работы redmine-plugin'a требуется
-         * обновление какого-либо отдельного поля, то нужно сделать соответствующий
-         * метод в DAO типа updateLastAccessTime (), в котором будет вызов partial-update,
-         * для внесения изменений только в те поля, которые требуется.
-         * А вообще такого быть не должно, здесь должна быть ТОЛЬКО отправка
-         * сообщения удаленной стороне
-         **/
+            /** PORTAL-162
+             * Я не понял, зачем нужно в back-channel делать сохранение case?
+             * Задача back-channel - отправлять сигнал об изменениях удаленной стороне,
+             * а не вносить изменения локально. Если для работы redmine-plugin'a требуется
+             * обновление какого-либо отдельного поля, то нужно сделать соответствующий
+             * метод в DAO типа updateLastAccessTime (), в котором будет вызов partial-update,
+             * для внесения изменений только в те поля, которые требуется.
+             * А вообще такого быть не должно, здесь должна быть ТОЛЬКО отправка
+             * сообщения удаленной стороне
+             **/
 
-        commonService.getExternalCaseAppData(caseId)
-                .flatMap(this::findEndpointAndIssueId)
-                .flatMap(endpointAndIssueId -> proceedUpdate(endpointAndIssueId.IssueId, event, endpointAndIssueId.endpoint))
-                .ifError(result -> logger.warn(result.getMessage()));
+            commonService.getExternalCaseAppData(caseId)
+                    .flatMap(this::findEndpointAndIssueId)
+                    .flatMap(endpointAndIssueId -> proceedUpdate(endpointAndIssueId.IssueId, event, endpointAndIssueId.endpoint))
+                    .ifError(result -> logger.warn(result.getMessage()));
+
+
+            logger.info("case-object event handled for case {}", event.getCaseObject().getExtId());
+        } catch (Exception e) {
+            logger.error("error while handling event for case " + event.getCaseObject().getExtId(), e);
+        }
     }
 
     private Result<EndpointAndIssueId> findEndpointAndIssueId(ExternalCaseAppData externalCaseAppData) {
@@ -145,6 +163,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     private RedmineService service;
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private PortalConfig portalConfig;
 
 
 

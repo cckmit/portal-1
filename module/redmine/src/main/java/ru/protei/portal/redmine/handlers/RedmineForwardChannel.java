@@ -20,8 +20,10 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.service.CommonService;
+import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
+import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,13 +31,104 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 import static ru.protei.portal.redmine.enums.RedmineChangeType.*;
 import static ru.protei.portal.redmine.utils.CachedPersonMapper.isTechUser;
+import static ru.protei.portal.redmine.utils.RedmineUtils.userInfo;
 
 public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
     @Override
-    public void compareAndUpdate( User user, Issue issue, RedmineEndpoint endpoint ) {
+    public void checkIssues() {
+        logger.debug("Check for new issues stared");
+        commonService.getEndpoints().ifOk( endpoints -> endpoints.forEach( this::checkForNewIssues ) );
+        logger.debug("Check for new issues ended");
+
+        logger.debug("Check for issues updates started");
+        commonService.getEndpoints().ifOk( endpoints -> endpoints.forEach( this::checkForUpdatedIssues ) );
+        logger.debug("Check for issues updates ended");
+    }
+
+    private void checkForNewIssues(RedmineEndpoint endpoint) {
+        Result<List<Issue>> issuesResult = redmineService.getNewIssues( endpoint );
+        if (issuesResult.isError()) return;
+        List<Issue> issues = issuesResult.getData();
+        if (isEmpty(issues)) {
+            logger.debug( "no new issues from {}", endpoint.getServerAddress() );
+            return;
+        }
+
+        Date lastCreatedOn = endpoint.getLastCreatedOnDate();
+        logger.debug( "Last new issue date from DB: {}", lastCreatedOn );
+        logger.debug( "got {} issues from {}", issues.size(), endpoint.getServerAddress() );
+
+        for (Issue issue : issues) {
+            Result<User> userResult = redmineService.getUser( issue.getAuthorId(), endpoint );
+            if (userResult.isError()) continue;
+            User user = userResult.getData();
+
+            logger.debug( "try handle new issue from {}, issue-id: {}", userInfo( user ), issue.getId() );
+
+            createCaseObject( user, issue, endpoint );
+            lastCreatedOn = RedmineUtils.maxDate( issue.getCreatedOn(), lastCreatedOn );
+        }
+
+        logger.debug( "max created on, taken from issues: {}", lastCreatedOn );
+
+        // добавляем 2 секунды, иначе redmine будет возвращать опять нам последнюю запись
+        // не очень это хорошо, нужно наверное все таки переделать получение новых issue
+        // не только по дате, но еще и по ID
+        lastCreatedOn = new Date( lastCreatedOn.getTime() + 2000 );
+
+        logger.debug( "max created on, store in our db: {}", lastCreatedOn );
+
+        endpoint.setLastCreatedOnDate( lastCreatedOn );
+        commonService.updateCreatedOn( endpoint );
+    }
+
+    private void checkForUpdatedIssues(RedmineEndpoint endpoint) {
+        Result<List<Issue>> issuesResult = redmineService.getUpdatedIssues( endpoint );
+        if (issuesResult.isError()) return;
+        List<Issue> issues = issuesResult.getData();
+
+        if (isEmpty(issues)) {
+            logger.debug("no changed issues from {}", endpoint.getServerAddress());
+            return;
+        }
+
+        Date lastUpdatedOn = endpoint.getLastUpdatedOnDate();
+        logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
+
+        for (Issue issue : issues) {
+            if (Math.abs(issue.getUpdatedOn().getTime() - issue.getCreatedOn().getTime()) < 5 * MINUTE) {
+                logger.debug("Skipping recently created issue with id {}", issue.getId());
+                continue;
+            }
+            Result<User> userResult = redmineService.getUser( issue.getAuthorId(), endpoint );
+            if (userResult.isError()) continue;
+            User user = userResult.getData();
+
+            if (user == null) {
+                logger.debug("User with id {} not found, skipping it", issue.getAuthorId());
+                continue;
+            }
+
+            logger.debug("try update issue from {}, issue-id: {}", userInfo(user), issue.getId());
+            compareAndUpdate(user, issue, endpoint);
+            lastUpdatedOn = RedmineUtils.maxDate(issue.getUpdatedOn(), lastUpdatedOn);
+        }
+        logger.debug("max update-date, taken from issues: {}", lastUpdatedOn);
+
+        // use same trick as above (see check-new-issues)
+        lastUpdatedOn = new Date(lastUpdatedOn.getTime() + 2000);
+
+        logger.debug("max update-date, store in our db: {}", lastUpdatedOn);
+
+        endpoint.setLastUpdatedOnDate(lastUpdatedOn);
+        commonService.updateUpdatedOn(endpoint);
+    }
+
+    private void compareAndUpdate( User user, Issue issue, RedmineEndpoint endpoint ) {
         final Result<CaseObject> object = commonService.getByExternalAppCaseId(issue.getId() + "_" + endpoint.getCompanyId());
         if (object.isOk()) {
             logger.debug("Found case object with id {}", object.getData().getId());
@@ -47,8 +140,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         }
     }
 
-    @Override
-    public CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
+    private CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
         logger.info("Starting creating case object for issue id {}, user id {}, company id {}", issue.getId(), user.getId(), companyId);
 
@@ -251,6 +343,9 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private RedmineService redmineService;
 
     @Autowired
     private EventPublisherService publisherService;

@@ -3,18 +3,17 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 
-import java.util.Date;
 import java.util.List;
 
 public class RedmineEndpointDAO_Impl extends PortalBaseJdbcDAO<RedmineEndpoint> implements RedmineEndpointDAO {
     @Override
-    public void updateCreatedOn(RedmineEndpoint endpoint) {
-        partialMerge(endpoint, "last_created");
+    public boolean updateCreatedOn( RedmineEndpoint endpoint) {
+        return partialMerge(endpoint, "last_created");
     }
 
     @Override
-    public void updateUpdatedOn(RedmineEndpoint endpoint) {
-        partialMerge(endpoint, "last_updated");
+    public boolean updateUpdatedOn(RedmineEndpoint endpoint) {
+        return partialMerge(endpoint, "last_updated");
     }
 
 //    @Override

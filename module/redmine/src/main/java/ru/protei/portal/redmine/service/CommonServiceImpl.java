@@ -1,6 +1,5 @@
 package ru.protei.portal.redmine.service;
 
-import com.sun.javafx.binding.StringFormatter;
 import com.taskadapter.redmineapi.bean.Journal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +41,8 @@ public final class CommonServiceImpl implements CommonService {
             return error( En_ResultStatus.INTERNAL_ERROR, "Unable to process attachment " + attachment.getFileName() );
         }
 
-        return ok( id )
-                .publishEvent( new CaseAttachmentEvent( this, ServiceModule.REDMINE, author.getId(), caseObjId,
+        return ok( id ).publishEvent(
+                new CaseAttachmentEvent( this, ServiceModule.REDMINE, author.getId(), caseObjId,
                         Collections.singletonList( attachment ), null )
                 );
     }
@@ -91,6 +90,18 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public Result<RedmineStatusMapEntry> getRedmineStatus( En_CaseState initState, En_CaseState lastState, long statusMapId ) {
         return ok( statusMapEntryDAO.getRedmineStatus( initState, lastState, statusMapId) );
+    }
+
+    @Override
+    public Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint ) {
+         if(!endpointDAO.updateCreatedOn( endpoint )) error( En_ResultStatus.NOT_UPDATED );
+         return ok(true);
+    }
+
+    @Override
+    public Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint ) {
+        if(!endpointDAO.updateUpdatedOn( endpoint )) error( En_ResultStatus.NOT_UPDATED );
+        return ok(true);
     }
 
     private CaseComment createAndStoreComment(Date creationDate, String text, Person author, Long caseId) {
@@ -266,6 +277,11 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    public Result<List<RedmineEndpoint>> getEndpoints() {
+       return ok( endpointDAO.getAll());
+    }
+
+    @Override
     public CachedPersonMapper getPersonMapper( RedmineEndpoint endpoint ) {
         return new CachedPersonMapper(personDAO, endpoint.getCompanyId(), endpoint.getDefaultUserLocalId(), null);
     }
@@ -307,10 +323,7 @@ public final class CommonServiceImpl implements CommonService {
     @Autowired
     private CaseObjectDAO caseObjectDAO;
 
-    @Autowired
-    public CommonService commonService;
-
-    @Autowired
+   @Autowired
     private ExternalCaseAppDAO externalCaseAppDAO;
 
     @Autowired

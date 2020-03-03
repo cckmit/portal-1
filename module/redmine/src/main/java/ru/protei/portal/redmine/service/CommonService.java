@@ -33,6 +33,7 @@ public interface CommonService {
     Result<ExternalCaseAppData> getExternalCaseAppData( long caseId );
 
     Result<RedmineEndpoint> getEndpoint( long companyId, String projectId );
+    Result<List<RedmineEndpoint>> getEndpoints();
 
     Result<Set<Integer>> getExistingAttachmentsHashCodes( long caseObjId );
 
@@ -53,5 +54,6 @@ public interface CommonService {
     Result<RedmineStatusMapEntry> getRedmineStatus( En_CaseState initState, En_CaseState lastState, long statusMapId );
 
 
-
+    Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint );
+    Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint );
 }
