@@ -50,19 +50,28 @@ public class EmployeeSqlBuilder {
                 args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
             }
 
-            if (HelperFunc.isLikeRequired(query.getEmail())) {
-                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'EMAIL' AND value LIKE ?)");
-                args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
-            }
+            if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmail())) {
+                condition.append(" and info.a = 'PUBLIC' and (");
 
-            if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'GENERAL_PHONE' AND value LIKE ?)");
-                args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
-            }
+                List<String> orCondition = new ArrayList<>();
 
-            if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-                condition.append(" and id IN (SELECT id FROM person_contact_view WHERE access = 'PUBLIC' AND type = 'MOBILE_PHONE' AND value LIKE ?)");
-                args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
+                if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+                    orCondition.add("(info.t = 'GENERAL_PHONE' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
+                }
+
+                if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+                    orCondition.add("(info.t = 'MOBILE_PHONE' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
+                }
+
+                if (HelperFunc.isLikeRequired(query.getEmail())) {
+                    orCondition.add("(info.t = 'EMAIL' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+                }
+
+                condition.append(String.join(" or ", orCondition));
+                condition.append(")");
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {

@@ -235,13 +235,47 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     private JdbcQueryParameters buildEmployeeJdbcQueryParameters(EmployeeQuery query) {
         SqlCondition where = createSqlCondition(query);
 
-        return new JdbcQueryParameters().
+        JdbcQueryParameters jdbcQueryParameters = new JdbcQueryParameters().
                 withJoins(WORKER_ENTRY_JOIN).
                 withCondition(where.condition, where.args).
                 withDistinct(true).
                 withOffset(query.getOffset()).
                 withLimit(query.getLimit()).
                 withSort(TypeConverters.createSort(query));
+
+        String havingCondition = makeHavingCondition(query);
+
+        if (StringUtils.isNotEmpty(havingCondition)) {
+            jdbcQueryParameters
+                    .withGroupBy("id")
+                    .withHaving(havingCondition);
+        }
+
+        return jdbcQueryParameters;
+    }
+
+    private String makeHavingCondition(EmployeeQuery query) {
+        String result = "";
+
+        int countId = 0;
+
+        if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+            countId++;
+        }
+
+        if (HelperFunc.isLikeRequired(query.getEmail())) {
+            countId++;
+        }
+
+        if (countId > 0) {
+            result = "count(id) = " + countId;
+        }
+
+        return result;
     }
 
     private boolean ifPersonIsEmployee(final Person employee) {
