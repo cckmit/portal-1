@@ -240,6 +240,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return lastState;
     }
 
+    public String getExtId() {
+        return getCaseObject() == null ? null : getCaseObject().getExtId();
+    }
+
     public CaseObjectMeta getCaseMeta() {
         return lastMetaState != null ? lastMetaState : initMetaState;
     }

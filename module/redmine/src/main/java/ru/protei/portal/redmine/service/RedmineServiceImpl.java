@@ -34,7 +34,7 @@ public final class RedmineServiceImpl implements RedmineService {
     @EventListener
     public void onAssembledCaseEvent(AssembledCaseEvent event) {
         if (!event.isCoreModuleEvent()) {
-            logger.debug("skip handle plugin-published event for {}", event.getCaseObject().getExtId());
+            logger.info("Skip handle core module event for id={} extId={}", event.getCaseObjectId(), event.getExtId());
             return;
         }
         if (!(portalConfig.data().integrationConfig().isRedmineEnabled() || portalConfig.data().integrationConfig().isRedmineBackchannelEnabled())) {

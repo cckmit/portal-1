@@ -143,9 +143,9 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         CachedPersonMapper personMapper = commonService.getPersonMapper( endpoint );
         stream(journals)
                 .filter(journal -> StringUtils.isNotBlank(journal.getNotes()))
-                .forEach(journal ->
+                .forEach(journal -> publishEvents(
                         commonService.updateComment(object.getId(), journal.getCreatedOn(), journal.getNotes(), personMapper.toProteiPerson(journal.getUser()) )
-                );
+                ) );
     }
 
     private void processAttachments( Collection<Attachment> attachments, Long caseObjId, RedmineEndpoint endpoint ) {
@@ -183,6 +183,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
     private void publishEvents( Result<Long> saveResult ) {
         if (saveResult.isError()) return;
         for (ApplicationEvent event : emptyIfNull( saveResult.getEvents() )) {
+            logger.info( "publishEvents(): {}", event );
             publisherService.publishEvent( event );
         }
     }

@@ -1,5 +1,6 @@
 package ru.protei.portal.redmine.service;
 
+import com.sun.javafx.binding.StringFormatter;
 import com.taskadapter.redmineapi.bean.Journal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +34,11 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public Result<Long> saveAttachment( Attachment attachment, Person author, HttpInputSource httpInputSource, Long fileSize, String contentType, Long caseObjId ) {
         Long id;
-        logger.debug( "Invoke file controller to store attachment {} (size={})", attachment.getFileName(), fileSize );
+        logger.info( "Invoke file controller to store attachment {} (size={})", attachment.getFileName(), fileSize );
         try {
             id = fileController.saveAttachment( attachment, httpInputSource, fileSize, contentType, caseObjId );
         } catch (Exception e) {
-            logger.debug( "Unable to process attachment {}", attachment.getFileName() );
-            logger.debug( "Trace", e );
+            logger.warn( "Unable to process attachment " + attachment.getFileName(), e );
             return error( En_ResultStatus.INTERNAL_ERROR, "Unable to process attachment " + attachment.getFileName() );
         }
 
@@ -167,7 +167,7 @@ public final class CommonServiceImpl implements CommonService {
         final RedminePriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByRedminePriorityId( newPriority, priorityMapId );
 
         if (priorityMapEntry == null) {
-            logger.warn( "Priority was not found" );
+            logger.warn( "Priority was not found: newPriority={} priorityMapId={}", newPriority, priorityMapId );
             return error( En_ResultStatus.NOT_FOUND );
         }
 
@@ -236,7 +236,8 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public Result<Long> updateComment( Long objectId, Date creationDate, String text, Person author ){
         CaseComment caseComment = createAndStoreComment( creationDate,  text, author, objectId);
-        logger.debug("Added new case comment to case with id {}, comment has following text: {}", objectId, caseComment.getText());
+        logger.info("Added new case comment id={} to case with id {}",caseComment.getId(),  objectId);
+        logger.trace("Added new case comment to case with id {}, comment has following text: {}", objectId, caseComment.getText());
 
         return ok(caseComment.getId()).publishEvent(new CaseCommentEvent(
                 this,
