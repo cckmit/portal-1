@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.redmine.handlers.ForwardChannelEventHandler;
-import ru.protei.portal.redmine.service.RedmineService;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 

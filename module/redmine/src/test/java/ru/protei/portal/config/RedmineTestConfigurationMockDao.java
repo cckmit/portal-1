@@ -2,23 +2,55 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
+import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.impl.CaseCommentDAO_Impl;
+import ru.protei.portal.core.model.dao.impl.CompanyGroupDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 @Configuration
-public class DaoMockTestConfiguration {
+public class RedmineTestConfigurationMockDao {
+
     @Bean
-    public JdbcManyRelationsHelper getJdbcManyRelationsHelper(){
-        return mock( JdbcManyRelationsHelper.class);
+    public JdbcTemplate getJJdbcTemplate() {
+        return mock( JdbcTemplate.class );
+    }
+
+    @Bean
+    public JdbcManyRelationsHelper getJdbcManyRelationsHelper() {
+        return mock( JdbcManyRelationsHelper.class );
     }
 
     @Bean
     public TransactionTemplate getTransactionTemplate() {
-        return mock(TransactionTemplate.class);
+        return mock( TransactionTemplate.class );
     }
+
+    @Bean
+    public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO(  ) {
+        return mock(RedminePriorityMapEntryDAO.class);
+    }
+    @Bean
+    public RedmineToCrmStatusMapEntryDAO geRedmineToCrmStatusMapEntryDAO(  ) {
+        return mock(RedmineToCrmStatusMapEntryDAO.class);
+    }
+    @Bean
+    public RedmineStatusMapEntryDAO geRedmineStatusMapEntryDAO(  ) {
+        return mock(RedmineStatusMapEntryDAO.class);
+    }
+
+    @Bean
+    public RedmineEndpointDAO geRedmineEndpointDAO(  ) {
+        return mock(RedmineEndpointDAO.class);
+    }
+
+    // other DAO
 
     @Bean
     public CaseLinkDAO getCaseLinkDAO() {
@@ -41,316 +73,327 @@ public class DaoMockTestConfiguration {
     }
 
 
-    /* DAO */
-
     @Bean
     public MigrationEntryDAO getMigrationEntryDAO() {
-        return  mock(MigrationEntryDAO.class);
+        return mock( MigrationEntryDAO.class );
     }
 
     @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
-        return  mock(CompanyGroupHomeDAO.class);
+        return mock( CompanyGroupHomeDAO.class );
     }
 
     @Bean
     public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return  mock(AbsenceReasonDAO.class);
+        return mock( AbsenceReasonDAO.class );
     }
 
     @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {
-        return  mock(PersonAbsenceDAO.class);
+        return mock( PersonAbsenceDAO.class );
     }
 
     @Bean
     public CompanyDAO getCompanyDAO() {
-        return  mock(CompanyDAO.class);
+        return mock( CompanyDAO.class );
     }
 
     @Bean
     public PersonDAO getPersonDAO() {
-        return  mock(PersonDAO.class);
+        return mock( PersonDAO.class );
     }
 
     @Bean
     public CaseTaskDAO getCaseTaskDAO() {
-        return  mock(CaseTaskDAO.class);
+        return mock( CaseTaskDAO.class );
     }
 
     @Bean
     public CaseTermDAO getCaseTermDAO() {
-        return  mock(CaseTermDAO.class);
+        return mock( CaseTermDAO.class );
     }
 
     @Bean
     public DevUnitDAO getDevUnitDAO() {
-        return  mock(DevUnitDAO.class);
+        return mock( DevUnitDAO.class );
     }
 
     @Bean
     public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return  mock(DevUnitVersionDAO.class);
+        return mock( DevUnitVersionDAO.class );
     }
 
     @Bean
     public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return  mock(DevUnitBranchDAO.class);
+        return mock( DevUnitBranchDAO.class );
     }
 
     @Bean
     public CaseCommentDAO getCaseCommentDAO() {
-        return  mock(CaseCommentDAO.class);
+        return mock( CaseCommentDAO.class );
     }
 
     @Bean
     public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
-        return mock(CaseCommentShortViewDAO.class);
+        return mock( CaseCommentShortViewDAO.class );
     }
 
     @Bean
     public CaseDocumentDAO getCaseDocumentDAO() {
-        return  mock(CaseDocumentDAO.class);
+        return mock( CaseDocumentDAO.class );
     }
 
     @Bean
     public CaseStateMatrixDAO getStateMatrixDAO() {
-        return  mock(CaseStateMatrixDAO.class);
+        return mock( CaseStateMatrixDAO.class );
     }
 
     @Bean
     public CaseStateDAO getStateDAO() {
-        return  mock(CaseStateDAO.class);
+        return mock( CaseStateDAO.class );
     }
 
     @Bean
     public CaseShortViewDAO getCaseShortDAO() {
-        return  mock(CaseShortViewDAO.class);
+        return mock( CaseShortViewDAO.class );
     }
 
     @Bean
     public AuditObjectDAO getAuditDAO() {
-        return  mock(AuditObjectDAO.class);
+        return mock( AuditObjectDAO.class );
     }
 
     @Bean
     public UserRoleDAO getUserRoleDAO() {
-        return  mock(UserRoleDAO.class);
+        return mock( UserRoleDAO.class );
     }
 
     @Bean
     public UserCaseAssignmentDAO getUserCaseAssignmentDAO() {
-        return  mock(UserCaseAssignmentDAO.class);
+        return mock( UserCaseAssignmentDAO.class );
     }
 
     @Bean
     public UserLoginDAO getUserLoginDAO() {
-        return  mock(UserLoginDAO.class);
+        return mock( UserLoginDAO.class );
     }
 
     @Bean
     public UserDashboardDAO getUserDashboardDAO() {
-        return mock(UserDashboardDAO.class);
+        return mock( UserDashboardDAO.class );
     }
 
     @Bean
     public CompanyDepartmentDAO getCompanyDepartmentDAO() {
-        return  mock(CompanyDepartmentDAO.class);
+        return mock( CompanyDepartmentDAO.class );
     }
 
     @Bean
     public WorkerPositionDAO getWorkerPositionDAO() {
-        return  mock(WorkerPositionDAO.class);
+        return mock( WorkerPositionDAO.class );
     }
 
     @Bean
     public WorkerEntryDAO getWorkerEntryDAO() {
-        return  mock(WorkerEntryDAO.class);
+        return mock( WorkerEntryDAO.class );
     }
 
     @Bean
     public CompanyGroupDAO getCompanyGroupDAO() {
-        return  mock(CompanyGroupDAO.class);
+        return mock( CompanyGroupDAO.class );
     }
 
     @Bean
     public CompanyGroupItemDAO getCompanyGroupItemDAO() {
-        return  mock(CompanyGroupItemDAO.class);
+        return mock( CompanyGroupItemDAO.class );
     }
 
     @Bean
     public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
-        return  mock(PersonCompanyEntryDAO.class);
+        return mock( PersonCompanyEntryDAO.class );
     }
 
     @Bean
     public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return  mock(CompanyCategoryDAO.class);
+        return mock( CompanyCategoryDAO.class );
     }
 
     @Bean
     public CaseAttachmentDAO getCaseAttachmentDAO() {
-        return  mock(CaseAttachmentDAO.class);
+        return mock( CaseAttachmentDAO.class );
     }
 
     @Bean
     public CaseNotifierDAO getCaseNotifierDAO() {
-        return  mock(CaseNotifierDAO.class);
+        return mock( CaseNotifierDAO.class );
     }
 
     @Bean
     public AttachmentDAO getAttachmentDAO() {
-        return  mock(AttachmentDAO.class);
+        return mock( AttachmentDAO.class );
     }
 
     @Bean
-    public EquipmentDAO getEquipmentDAO() { return  mock(EquipmentDAO.class); }
+    public EquipmentDAO getEquipmentDAO() {
+        return mock( EquipmentDAO.class );
+    }
 
     @Bean
     public LocationDAO getLocationDAO() {
-        return  mock(LocationDAO.class);
+        return mock( LocationDAO.class );
     }
 
     @Bean
-    public CaseMemberDAO getCaseMemberDAO() { return  mock(CaseMemberDAO.class); }
-
-    @Bean
-    public CaseLocationDAO getCaseLocationDAO() { return  mock(CaseLocationDAO.class); }
-
-    @Bean
-    public CaseTypeDAO getCaseTypeDAO() { return  mock(CaseTypeDAO.class); }
-
-    @Bean
-    public DecimalNumberDAO getDecimalNumberDAO() { return  mock(DecimalNumberDAO.class); }
-
-    @Bean
-    public CompanySubscriptionDAO getCompanySubscriptionDAO () {
-        return mock(CompanySubscriptionDAO.class);
+    public CaseMemberDAO getCaseMemberDAO() {
+        return mock( CaseMemberDAO.class );
     }
 
     @Bean
-    public ExternalCaseAppDAO getExternalCaseAppDAO () {
-        return  mock(ExternalCaseAppDAO.class);
+    public CaseLocationDAO getCaseLocationDAO() {
+        return mock( CaseLocationDAO.class );
     }
 
     @Bean
-    public ExportSybEntryDAO getExportSybEntryDAO () {
-        return  mock(ExportSybEntryDAO.class);
+    public CaseTypeDAO getCaseTypeDAO() {
+        return mock( CaseTypeDAO.class );
+    }
+
+    @Bean
+    public DecimalNumberDAO getDecimalNumberDAO() {
+        return mock( DecimalNumberDAO.class );
+    }
+
+    @Bean
+    public CompanySubscriptionDAO getCompanySubscriptionDAO() {
+        return mock( CompanySubscriptionDAO.class );
+    }
+
+    @Bean
+    public ExternalCaseAppDAO getExternalCaseAppDAO() {
+        return mock( ExternalCaseAppDAO.class );
+    }
+
+    @Bean
+    public ExportSybEntryDAO getExportSybEntryDAO() {
+        return mock( ExportSybEntryDAO.class );
     }
 
     @Bean
     public DocumentDAO getDocumentDAO() {
-        return  mock(DocumentDAO.class);
+        return mock( DocumentDAO.class );
     }
 
     @Bean
     public DocumentTypeDAO getDocumentTypeDAO() {
-        return  mock(DocumentTypeDAO.class);
+        return mock( DocumentTypeDAO.class );
     }
 
     @Bean
-    public CaseFilterDAO getIssueFilterDAO() { return  mock(CaseFilterDAO.class); }
+    public CaseFilterDAO getIssueFilterDAO() {
+        return mock( CaseFilterDAO.class );
+    }
 
     @Bean
     public ProductSubscriptionDAO getProductSubscriptionDAO() {
-        return  mock(ProductSubscriptionDAO.class);
+        return mock( ProductSubscriptionDAO.class );
     }
 
     @Bean
     public ReportDAO getReportDAO() {
-        return  mock(ReportDAO.class);
+        return mock( ReportDAO.class );
     }
 
 
     @Bean
     public ProjectToProductDAO getProjectToProductDAO() {
-        return  mock(ProjectToProductDAO.class);
+        return mock( ProjectToProductDAO.class );
     }
 
     @Bean
     public PlatformDAO getPlatformDAO() {
-        return  mock(PlatformDAO.class);
+        return mock( PlatformDAO.class );
     }
 
     @Bean
     public ServerDAO getServerDAO() {
-        return  mock(ServerDAO.class);
+        return mock( ServerDAO.class );
     }
 
     @Bean
     public ApplicationDAO getApplicationDAO() {
-        return  mock(ApplicationDAO.class);
+        return mock( ApplicationDAO.class );
     }
 
     @Bean
     public ServerApplicationDAO getServerApplicationDAO() {
-        return  mock(ServerApplicationDAO.class);
+        return mock( ServerApplicationDAO.class );
     }
 
     @Bean
     public DevUnitChildRefDAO getDevUnitChildRefDAO() {
-        return  mock(DevUnitChildRefDAO.class);
+        return mock( DevUnitChildRefDAO.class );
     }
 
     @Bean
     public EmployeeShortViewDAO getEmployeeShortViewDAO() {
-        return  mock(EmployeeShortViewDAO.class);
+        return mock( EmployeeShortViewDAO.class );
     }
 
     @Bean
     public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
-        return  mock(EmployeeRegistrationDAO.class);
+        return mock( EmployeeRegistrationDAO.class );
     }
 
     @Bean
     public CaseCommentTimeElapsedSumDAO getCaseCommentCaseObjectDAO() {
-        return  mock(CaseCommentTimeElapsedSumDAO.class);
+        return mock( CaseCommentTimeElapsedSumDAO.class );
     }
 
     @Bean
     public ContractDAO getContractDAO() {
-        return  mock(ContractDAO.class);
+        return mock( ContractDAO.class );
     }
 
     @Bean
     public ContractDateDAO getContractDateDAO() {
-        return  mock(ContractDateDAO.class);
+        return mock( ContractDateDAO.class );
     }
 
     @Bean
     public CaseTagDAO getCaseTagDAO() {
-        return  mock(CaseTagDAO.class);
+        return mock( CaseTagDAO.class );
     }
 
     @Bean
     public CaseObjectTagDAO getCaseObjectTagDAO() {
-        return  mock(CaseObjectTagDAO.class);
+        return mock( CaseObjectTagDAO.class );
     }
 
     @Bean
     public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
-        return  mock(CaseStateWorkflowDAO.class);
+        return mock( CaseStateWorkflowDAO.class );
     }
 
     @Bean
     public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
-        return  mock( WorkerEntryShortViewDAO.class);
+        return mock( WorkerEntryShortViewDAO.class );
     }
 
     @Bean
     public JiraEndpointDAO getJiraEndpointDAO() {
-        return  mock(JiraEndpointDAO.class);
+        return mock( JiraEndpointDAO.class );
     }
 
     @Bean
     public JiraStatusMapEntryDAO getJiraStatusMapEntryDAO() {
-        return  mock(JiraStatusMapEntryDAO.class);
+        return mock( JiraStatusMapEntryDAO.class );
     }
 
     @Bean
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
-        return  mock(JiraSLAMapEntryDAO.class);
+        return mock( JiraSLAMapEntryDAO.class );
     }
+
 
 
 }

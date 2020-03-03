@@ -2,6 +2,8 @@ package ru.protei.portal.redmine.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.protei.portal.redmine.handlers.BackchannelEventHandler;
 import ru.protei.portal.redmine.handlers.ForwardChannelEventHandler;
@@ -10,6 +12,8 @@ import ru.protei.portal.redmine.handlers.RedmineForwardChannel;
 import ru.protei.portal.redmine.service.*;
 
 @Configuration
+@EnableAspectJAutoProxy
+@EnableAsync
 @EnableScheduling
 public class RedmineConfigurationContext {
 

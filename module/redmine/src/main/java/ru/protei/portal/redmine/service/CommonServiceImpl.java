@@ -22,7 +22,10 @@ import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -58,7 +61,7 @@ public final class CommonServiceImpl implements CommonService {
     public Result<Long> saveCase( CaseObject obj ) {
         Long id = caseObjectDAO.insertCase(obj);
         if (id == null) return error( En_ResultStatus.NOT_FOUND );
-        return null;
+        return ok(id);
     }
 
     @Override
@@ -94,13 +97,13 @@ public final class CommonServiceImpl implements CommonService {
 
     @Override
     public Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint ) {
-         if(!endpointDAO.updateCreatedOn( endpoint )) error( En_ResultStatus.NOT_UPDATED );
+         if(!endpointDAO.updateCreatedOn( endpoint )) return error( En_ResultStatus.NOT_UPDATED );
          return ok(true);
     }
 
     @Override
     public Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint ) {
-        if(!endpointDAO.updateUpdatedOn( endpoint )) error( En_ResultStatus.NOT_UPDATED );
+        if(!endpointDAO.updateUpdatedOn( endpoint )) return error( En_ResultStatus.NOT_UPDATED );
         return ok(true);
     }
 
@@ -302,11 +305,12 @@ public final class CommonServiceImpl implements CommonService {
                 .collect(Collectors.toSet()));
     }
 
-    @Autowired
-    private CaseCommentDAO caseCommentDAO;
 
     @Autowired
     private FileController fileController;
+
+    @Autowired
+    private CaseCommentDAO caseCommentDAO;
 
     @Autowired
     private AttachmentDAO attachmentDAO;

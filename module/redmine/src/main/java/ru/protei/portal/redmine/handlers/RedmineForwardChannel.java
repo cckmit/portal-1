@@ -167,12 +167,14 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         Long caseObjId = saveResult.getData();
         Result<Long> stateCommentId = commonService.createAndStoreStateComment(issue.getCreatedOn(), contactPerson.getId(), obj.getStateId(), caseObjId);
         if (stateCommentId.isError()) {
-            logger.error("State comment for the issue {} not saved!", caseObjId);
+           logger.error("State comment for the issue {} not saved!", caseObjId);
+            return null;
         }
 
         Result<Long> importanceCommentId = commonService.createAndStoreImportanceComment(issue.getCreatedOn(), contactPerson.getId(), obj.getImpLevel(), caseObjId);
         if (importanceCommentId.isError()) {
             logger.error("Importance comment for the issue {} not saved!", caseObjId);
+            return null;
         }
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(obj);
@@ -183,8 +185,8 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
         publisherService.publishEvent(new CaseObjectCreateEvent(this, ServiceModule.REDMINE, contactPerson.getId(), obj));
 
-        processComments(issue.getJournals(), obj, endpoint);
-        processAttachments(issue.getAttachments(), obj.getId(), endpoint);
+        processComments(issue.getJournals(), obj, personMapper);
+        processAttachments(issue.getAttachments(), obj.getId(), endpoint, personMapper);
 
         if (obj != null) {
             logger.debug("Object with id {} was created, guid={}", obj.getId(), obj.defGUID());
@@ -200,7 +202,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         logger.info("Last comment was synced on {}", latestCreated);
 
         List<Journal> latestJournals = selectLatestsJournals( issue.getJournals(), latestCreated, endpoint.getDefaultUserId() );
-        logger.debug("Got {} journals after {}", latestJournals.size(), endpoint.getLastUpdatedOnDate());
+        logger.debug("Got {} journals after {}", latestJournals.size(), latestCreated);
 
         //Synchronize comments, status, priority, name, info
         for (Journal journal : latestJournals) {
@@ -227,12 +229,11 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         }
 
         //Synchronize attachment
-        processAttachments(issue.getAttachments(), object.getId(), endpoint);
+        processAttachments(issue.getAttachments(), object.getId(), endpoint, personMapper);
     }
 
-    private void processComments( Collection<Journal> journals, CaseObject object, RedmineEndpoint endpoint ) {
+    private void processComments( Collection<Journal> journals, CaseObject object, CachedPersonMapper personMapper ) {
         logger.debug("Process comments for case with id {}", object.getId());
-        CachedPersonMapper personMapper = commonService.getPersonMapper( endpoint );
         stream(journals)
                 .filter(journal -> StringUtils.isNotBlank(journal.getNotes()))
                 .forEach(journal -> publishEvents(
@@ -240,14 +241,13 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
                 ) );
     }
 
-    private void processAttachments( Collection<Attachment> attachments, Long caseObjId, RedmineEndpoint endpoint ) {
+    private void processAttachments( Collection<Attachment> attachments, Long caseObjId, RedmineEndpoint endpoint, CachedPersonMapper personMapper ) {
         if (isEmpty( attachments )) {
             logger.debug("No attachments to process for case with id {}, attachment", caseObjId);
             return;
         }
 
         Set<Integer> existingAttachmentsHashCodes = commonService.getExistingAttachmentsHashCodes( caseObjId ).orElseGet( ignore -> ok(new HashSet<Integer>()) ).getData();
-        CachedPersonMapper personMapper = commonService.getPersonMapper( endpoint );
         logger.debug("Process attachments for case with id {}, exists {} attachment", caseObjId, existingAttachmentsHashCodes.size());
 
         for (com.taskadapter.redmineapi.bean.Attachment attachment : emptyIfNull( attachments )) {
