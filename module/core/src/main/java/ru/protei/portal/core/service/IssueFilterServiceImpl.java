@@ -207,6 +207,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
         personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
         personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getCreatorIds()));
         return personsIds;
     }
 

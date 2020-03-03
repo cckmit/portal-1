@@ -43,6 +43,10 @@
             </div>
         </div>
 
+        <person:CreatorMultiSelector ui:field="creators"
+                                     header="{lang.issueCreator}"
+                                     addStyleNames="form-group col-md-12 resize-md-6"/>
+
         <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                       header="{lang.issueProduct}"
                                                       addStyleNames="form-group col-md-12 resize-md-6"
@@ -64,10 +68,6 @@
         <person:EmployeeMultiSelector ui:field="commentAuthors"
                                       header="{lang.issueCommentAuthor}"
                                       addStyleNames="form-group col-md-12 resize-md-6"/>
-
-        <person:CreatorMultiSelector ui:field="creators"
-                                     header="{lang.issueCreator}"
-                                     addStyleNames="form-group col-md-12 resize-md-6"/>
 
         <casetag:CaseTagMultiSelector ui:field="tags"
                                       caseType="CRM_SUPPORT"

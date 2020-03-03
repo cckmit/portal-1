@@ -127,6 +127,7 @@ public class CaseQuery extends BaseQuery {
         setContractIndependentProject(query.getContractIndependentProject());
         setPlatformIndependentProject(query.getPlatformIndependentProject());
         setProductDirectionId(query.getProductDirectionId());
+        setCreatorIds(query.getCreatorIds());
     }
 
     public Long getId() {

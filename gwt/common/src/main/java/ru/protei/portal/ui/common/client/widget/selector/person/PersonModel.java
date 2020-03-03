@@ -4,6 +4,7 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -15,9 +16,12 @@ import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Модель контактов домашней компании
@@ -26,13 +30,22 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
 
     @Event
     public void onInit( AuthEvents.Success event ) {
+        requestCurrentPerson(event.profile.getId());
         cache.clearCache();
         cache.setLoadHandler(makeLoadHandler(makeQuery()));
     }
 
     @Override
     public PersonShortView get(int elementIndex, LoadingHandler handler) {
-        return cache.get(elementIndex, handler);
+        if (currentPerson == null) {
+            return cache.get(elementIndex, handler);
+        }
+        if (elementIndex == 0) return currentPerson;
+        PersonShortView personShortView = cache.get(--elementIndex, handler);
+        if (Objects.equals(personShortView, currentPerson)) {
+            return cache.get(++elementIndex, handler);
+        }
+        return personShortView;
     }
 
     public void clear() {
@@ -51,25 +64,37 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
 
                         @Override
                         public void onSuccess(List<PersonShortView> options) {
-                            transliteration(options);
-                            handler.onSuccess(options);
+                            handler.onSuccess(transliteration(options));
                         }
                     }
             );
         };
     }
 
-    private void transliteration(List<PersonShortView> options) {
-        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+    private List<PersonShortView> transliteration(List<PersonShortView> options) {
+        List<PersonShortView> result = new ArrayList<>(options);
+        result.forEach(personShortView -> personShortView.setName(TransliterationUtils.transliterate(personShortView.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+
+        return result;
+    }
+
+    private void requestCurrentPerson(Long myId) {
+        if (currentPerson != null && Objects.equals(currentPerson.getId(), myId)) {
+            return;
+        }
+
+        currentPerson = null;
+        personService.getPerson(myId, new FluentCallback<Person>()
+                .withSuccess(this::savePerson)
+        );
     }
 
     private PersonQuery makeQuery() {
-        PersonQuery query = new PersonQuery();
-        query.setFired(false);
-        query.setDeleted(false);
-        query.setOnlyPeople(true);
+        return new PersonQuery(false, false, true);
+    }
 
-        return query;
+    private void savePerson(Person person) {
+        currentPerson = person.toFullNameShortView();
     }
 
     @Inject
@@ -78,6 +103,7 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
     @Inject
     Lang lang;
 
+    private PersonShortView currentPerson;
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
 }
 

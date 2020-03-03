@@ -96,11 +96,6 @@ public abstract class IssueTableActivity
                 new ActionBarEvents.Clear()
         );
 
-        if (event.query != null) {
-            fillFilterFieldsByCaseQuery(event.query);
-            event.query = null;
-        }
-
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
@@ -110,9 +105,13 @@ public abstract class IssueTableActivity
 
         clearScroll(event);
 
-        if(isSearchFieldCorrect()) {
+        if (event.query != null) {
+            fillFilterFieldsByCaseQuery(event.query);
+            event.query = null;
+        } else {
             loadTable();
         }
+
         validateSearchField(isSearchFieldCorrect());
     }
 
