@@ -26,7 +26,6 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
@@ -35,13 +34,18 @@ import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.*;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import javax.inject.Provider;
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
