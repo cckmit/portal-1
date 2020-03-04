@@ -1,22 +1,23 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import javax.annotation.PostConstruct;
@@ -25,12 +26,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
@@ -53,6 +55,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportCase reportCase;
     @Autowired
     ReportCaseTimeElapsed reportCaseTimeElapsed;
+    @Autowired
+    EventPublisherService publisherService;
 
     @PostConstruct
     public void init() {
@@ -248,5 +252,15 @@ public class ReportControlServiceImpl implements ReportControlService {
             reportDAO.mergeBatch(reports);
             return ok();
         }
+    }
+
+    @Override
+    public Result<Void> processScheduledMailReports() {
+        reportDAO.getScheduledReports().forEach(report -> {
+            log.info("Process Scheduled Mail Reports = {}", report);
+            CompletableFuture<Void> process = CompletableFuture.runAsync(() -> processReport(report), reportExecutorService);
+            process.thenRun(() -> publisherService.publishEvent(new MailReportEvent(this, report)));
+        });
+        return ok();
     }
 }

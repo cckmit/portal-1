@@ -13,9 +13,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportDAO {
 
@@ -66,6 +64,11 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
         );
+    }
+
+    @Override
+    public List<Report> getScheduledReports() {
+        return new ArrayList<>();
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(ReportQuery query, Long creatorId, Set<Long> excludeIds) {

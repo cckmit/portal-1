@@ -60,6 +60,13 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
      */
     List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore);
 
+    /**
+     * Получить отчеты для запланированной рассылки
+     *
+     * @return список отчетов
+     */
+    List<Report> getScheduledReports();
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition(ReportQuery query);
 }

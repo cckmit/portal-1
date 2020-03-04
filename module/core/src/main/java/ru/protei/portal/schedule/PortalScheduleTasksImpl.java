@@ -55,6 +55,13 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
          );
     }
 
+    @Scheduled(cron = "0 0 6 * * ?") // at 06:00:00 am every day
+    public void processScheduledMailReports() {
+        reportControlService.processScheduledMailReports().ifError(response ->
+                log.warn("fail to process reports : status={}", response.getStatus() )
+        );
+    }
+
     private void notifyAboutContractDates() {
         contractReminderService.notifyAboutDates();
     }

@@ -28,4 +28,11 @@ public interface ReportControlService {
      */
     Result<Void> processHangReports();
 
+    /**
+     * Обработать отчеты по расписанию
+     *
+     * @return результат выполнения операции
+     */
+    Result<Void> processScheduledMailReports();
+
 }

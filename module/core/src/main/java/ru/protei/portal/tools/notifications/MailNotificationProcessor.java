@@ -580,6 +580,13 @@ public class MailNotificationProcessor {
         sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
     }
 
+    @EventListener
+    public void onMailReportEvent(MailReportEvent event) {
+        Report report = event.getReport();
+        Person recipient = report.getCreator();
+        // sendMailToRecipients
+    }
+
     // -----
     // Utils
     // -----
