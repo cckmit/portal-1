@@ -4,9 +4,19 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="p-t-10 p-b-10">
-        <div ui:field="department"/>
-        <div>
-            <span ui:field="position"></span> <g:HTMLPanel ui:field="mainInfoContainer" tag="span" visible="false">(<ui:text from="{lang.employeeMainPosition}"/>)</g:HTMLPanel>
+        <div class="small">
+            <span ui:field="departmentParent"/>
         </div>
+        <g:HTMLPanel ui:field="departmentContainer" styleName="small" visible="false">
+            <span ui:field="department"/>
+        </g:HTMLPanel>
+        <div class="small">
+            <b><ui:text from="{lang.employeePosition}: "/></b>
+            <span ui:field="position"/>
+        </div>
+        <g:HTMLPanel ui:field="departmentHeadContainer" styleName="small" visible="false">
+            <b><ui:text from="{lang.employeeDepartmentHead}: "/></b>
+            <a ui:field="departmentHead" target="_blank" href="#"/>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

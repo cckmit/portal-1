@@ -302,9 +302,9 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         model.person = person;
 
         model.caseTagType = En_CaseType.CRM_SUPPORT;
-        CaseTag includeTag = factory.makeTag( "tag_for_include_1" );
-        CaseTag includeTag2 = factory.makeTag( "tag_for_include_2" );
-        CaseTag excludeTag = factory.makeTag( "tag_for_exclude" );
+        CaseTag includeTag = factory.makeTag( "tag_for_include_1", company.getId() );
+        CaseTag includeTag2 = factory.makeTag( "tag_for_include_2", company.getId() );
+        CaseTag excludeTag = factory.makeTag( "tag_for_exclude", company.getId() );
         model.caseTagIncludedIds = toList( listOf( includeTag, includeTag2 ), CaseTag::getId );
 
         Long includedProduct = factory.makeProduct( "product_included_1" );
@@ -453,8 +453,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         caseObjectDAO.removeByKeys( model.caseIds );
         personDAO.removeByKeys( model.personIds );
-        companyDAO.removeByKeys( model.companyIds );
         caseTagDAO.removeByKeys( model.caseTagIds );
+        companyDAO.removeByKeys( model.companyIds );
 
         return model;
     }
@@ -556,8 +556,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             return person;
         }
 
-        protected CaseTag makeTag( String tag1 ) {
-            CaseTag caseTag = ReportCaseResolutionTimeTest.this.makeCaseTag(model.prefix + tag1, model.caseTagType );
+        protected CaseTag makeTag( String tag1, Long companyId ) {
+            CaseTag caseTag = ReportCaseResolutionTimeTest.this.makeCaseTag(model.prefix + tag1, model.caseTagType, companyId );
             model.rememberTagId( caseTag.getId() );
             return caseTag;
         }

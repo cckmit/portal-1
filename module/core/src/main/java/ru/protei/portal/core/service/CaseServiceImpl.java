@@ -320,9 +320,8 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        if (oldCaseMeta.getManager() != null && caseMeta.getManager() != null &&
-            !Objects.equals(oldCaseMeta.getManager().getId(), caseMeta.getManager().getId())) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManager().getId());
+        if (!Objects.equals(oldCaseMeta.getManagerId(), caseMeta.getManagerId())) {
+            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManagerId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
             }

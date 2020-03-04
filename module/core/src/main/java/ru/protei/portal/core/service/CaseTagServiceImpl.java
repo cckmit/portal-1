@@ -1,7 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
@@ -36,35 +35,52 @@ public class CaseTagServiceImpl implements CaseTagService {
     @Autowired
     private LockService lockService;
 
+
     @Override
     @Transactional
-    public Result saveTag( AuthToken authToken, CaseTag caseTag) {
+    public Result<Long> create( AuthToken authToken, CaseTag caseTag) {
+        caseTag.setPersonId( authToken.getPersonId() );
+
         if (!isCaseTagValid(caseTag)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
-        boolean result;
-        try {
-            if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
-                return error(En_ResultStatus.PERMISSION_DENIED);
-            }
-            result = caseTagDAO.saveOrUpdate(caseTag);
-        } catch (DuplicateKeyException exception) {
-            return error(En_ResultStatus.ALREADY_EXIST);
+
+        if (caseTagDAO.isNameUniqueForTag( null, caseTag.getCaseType(), caseTag.getCompanyId(), caseTag.getName() )) {
+            return error( En_ResultStatus.ALREADY_EXIST );
         }
-        return !result ?
-                Result.error( En_ResultStatus.NOT_CREATED) :
-                ok();
+
+        return ok( caseTagDAO.persist( caseTag ) );
     }
 
     @Override
     @Transactional
-    public Result removeTag( AuthToken authToken, CaseTag caseTag) {
+    public Result<Long> update( AuthToken authToken, CaseTag caseTag) {
+        if (!isCaseTagValid(caseTag)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if (caseTagDAO.isNameUniqueForTag( caseTag.getId(), caseTag.getCaseType(), caseTag.getCompanyId(), caseTag.getName() )) {
+            return error( En_ResultStatus.ALREADY_EXIST );
+        }
+
+        if (!Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        caseTagDAO.merge(caseTag);
+
+        return ok( caseTag.getId() );
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> removeTag( AuthToken authToken, CaseTag caseTag) {
         if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
         return !caseTagDAO.remove(caseTag) ?
                 Result.error( En_ResultStatus.NOT_REMOVED) :
-                ok();
+                ok(caseTag.getId());
     }
 
     @Override
@@ -101,7 +117,7 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
-    public Result detachTag(AuthToken authToken, Long caseId, Long tagId) {
+    public Result<Long> detachTag( AuthToken authToken, Long caseId, Long tagId) {
         if ( caseId == null || tagId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -112,7 +128,7 @@ public class CaseTagServiceImpl implements CaseTagService {
         }
 
         caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
-        return ok();
+        return ok(tagId);
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {

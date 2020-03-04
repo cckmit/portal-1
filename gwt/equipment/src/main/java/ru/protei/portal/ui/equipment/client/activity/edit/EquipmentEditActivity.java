@@ -20,10 +20,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.EquipmentEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -156,7 +153,7 @@ public abstract class EquipmentEditActivity
 
         fillDTO(equipment);
 
-        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), projectId, decimalNumbers));
+        fireEvent(new DocumentEvents.CreateWithEquipment(equipment.getId(), projectId, equipment.getProjectName()));
     }
 
     private void fillView(Equipment equipment) {

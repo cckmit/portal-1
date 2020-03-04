@@ -653,6 +653,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryIssue();
 
+    String privilegeCategoryIssueAssignment();
+
     String privilegeCategoryRegion();
 
     String privilegeCategoryProject();
@@ -846,6 +848,8 @@ public interface Lang extends Messages, ContactItemLang {
     String customer();
 
     String documentTypeIsEmpty();
+
+    String documentCategoryIsEmpty();
 
     String documentProjectIsEmpty();
 
@@ -1289,13 +1293,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryEmployee();
 
-    String employeeAdditionalInfoHeader();
+    String employeeAdditionalInfo();
 
     String employeeID();
 
     String employeeIPAddress();
-
-    String employeePositionsHeader();
 
     String employeeCompany();
 
@@ -1768,17 +1770,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagInfo();
 
-    String employeeEmployeeFullNameColumnHeader();
+    String employeeEmployeeFullName();
 
-    String employeeWorkPhoneColumnHeader();
+    String employeeWorkPhone();
 
-    String employeeMobilePhoneColumnHeader();
+    String employeeMobilePhone();
 
-    String employeeIPAddressColumnHeader();
+    String employeeEmail();
 
-    String employeeEmailColumnHeader();
-
-    String employeeDepartmentColumnHeader();
+    String employeeDepartment();
 
     String privateComment();
 
@@ -2037,4 +2037,48 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardActionEdit();
 
     String dashboardActionRemove();
+
+    String backToEmployees();
+
+    String employeeDepartmentHead();
+
+    String employeePosition();
+
+    String employeeContactInfo();
+
+    String employeeTopBrassBtn();
+
+    String employeeTopBrassLabel();
+
+    String issueAssignment();
+
+    String issueAssignmentEntryEdit();
+
+    String issueAssignmentEntryRemove();
+
+    String issueAssignmentTableFilter();
+
+    String issueAssignmentTableFilterDefault();
+
+    String issueAssignmentTableOverflow(int records);
+
+    String issueAssignmentIssueAssignTo();
+
+    String issueAssignmentIssueReassignTo();
+
+    String issueAssignmentToggleTable();
+
+    String issueAssignmentReload();
+
+    String issueAssignmentMenuEdit();
+
+    String issueAssignmentMenuActions();
+
+    String issueAssignmentIssueOpen();
+
+    String issueAssignmentToggleDeskRow();
+
+    String issueAssignmentDeskAddColumn();
+
+    String issueAssignmentDeskAddRow();
 }

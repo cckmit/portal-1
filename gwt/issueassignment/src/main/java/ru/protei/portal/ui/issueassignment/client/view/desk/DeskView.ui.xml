@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="table" styleName="table-desk-wrapper"/>
+        <loading:IndeterminateCircleLoading ui:field="loadingView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false"/>
+        <g:HTMLPanel ui:field="failedView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div><i class="fas fa-exclamation-circle fa-5x"/></div>
+                    <div><h5 class="hint-text" ui:field="failedViewText"/></div>
+                </div>
+            </div>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

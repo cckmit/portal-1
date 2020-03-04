@@ -67,6 +67,7 @@ public class DebugIds {
         String DOCUMENT_TYPE = "sidebar-menu-document-type";
         String EQUIPMENT = "sidebar-menu-equipment";
         String ISSUE = "sidebar-menu-issue";
+        String ISSUE_ASSIGNMENT = "sidebar-menu-issue-assignment";
         String ISSUE_REPORTS = "sidebar-menu-issue-reports";
         String OFFICIAL = "sidebar-menu-official";
         String PRODUCT = "sidebar-menu-product";
@@ -394,6 +395,7 @@ public class DebugIds {
         interface FILTER {
             String SHOW_DEPRECATED = "product-filter-show-deprecated-button";
             String TYPES = "product-filter-types-selector";
+            String DIRECTION = "product-filter-direction";
         }
     }
 

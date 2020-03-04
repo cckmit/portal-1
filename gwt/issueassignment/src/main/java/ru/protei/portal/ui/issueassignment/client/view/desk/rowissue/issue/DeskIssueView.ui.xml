@@ -1,0 +1,42 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="desk-issue-card" ui:field="root">
+        <div class="desk-issue-header">
+            <div class="desk-issue-content">
+                <span ui:field="importance"/>
+                <span ui:field="state"/>
+                <span class="fa fa-fw fa-lock text-danger" ui:field="privacy"/>
+            </div>
+            <div class="desk-issue-controls">
+                <g:Button ui:field="openButton" styleName="btn btn-default p-t-0 p-b-0 p-l-5 p-r-5 no-border bg-transparent" title="{lang.issueAssignmentIssueOpen}">
+                    <i class="fas fa-external-link-alt"/>
+                </g:Button>
+                <g:Button ui:field="optionsButton" styleName="btn btn-default p-t-0 p-b-0 p-l-5 p-r-5 no-border bg-transparent" title="{lang.issueAssignmentMenuActions}">
+                    <i class="fas fa-ellipsis-v"/>
+                </g:Button>
+            </div>
+        </div>
+        <div class="desk-issue-body">
+            <div class="desk-issue-info">
+                <span class="desk-issue-number" ui:field="number"/>
+                <span class="desk-issue-name" ui:field="name"/>
+            </div>
+            <div class="desk-issue-meta">
+                <span class="desk-issue-product" ui:field="product"/>
+                <span class="desk-issue-company" ui:field="company"/>
+                <span class="desk-issue-person" ui:field="person"/>
+            </div>
+            <div class="desk-issue-separator-h"/>
+            <div class="desk-issue-time">
+                <span class="far fa-sm fa-clock"/>
+                <span class="desk-issue-created" ui:field="created"/>
+                <span class="desk-issue-separator-v"/>
+                <span class="desk-issue-modified" ui:field="modified"/>
+            </div>
+        </div>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

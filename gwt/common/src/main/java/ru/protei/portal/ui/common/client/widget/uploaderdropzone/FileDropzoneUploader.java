@@ -77,9 +77,9 @@ public class FileDropzoneUploader extends Composite implements HasHTML, HasSafeH
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         fileUpload.setEnabled(enabled && !uploading);
-        form.removeStyleName(STYLE_DISABLED);
+        dropzone.removeStyleName(STYLE_DISABLED);
         if (!enabled) {
-            form.addStyleName(STYLE_DISABLED);
+            dropzone.addStyleName(STYLE_DISABLED);
         }
     }
 
@@ -90,9 +90,9 @@ public class FileDropzoneUploader extends Composite implements HasHTML, HasSafeH
     public void setUploading(boolean uploading) {
         this.uploading = uploading;
         fileUpload.setEnabled(enabled && !uploading);
-        form.removeStyleName(STYLE_LOADING);
-        if (!uploading) {
-            form.addStyleName(STYLE_LOADING);
+        dropzone.removeStyleName(STYLE_LOADING);
+        if (uploading) {
+            dropzone.addStyleName(STYLE_LOADING);
         }
     }
 

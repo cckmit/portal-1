@@ -299,6 +299,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public UserCaseAssignmentDAO getUserCaseAssignmentDAO() {
+        return new UserCaseAssignmentDAO_Impl();
+    }
+
+    @Bean
     public UserDashboardDAO getUserDashboardDAO() {
         return new UserDashboardDAO_Impl();
     }
@@ -800,6 +805,11 @@ public class MainConfiguration {
     @Bean
     public UserDashboardService getUserDashboardService() {
         return new UserDashboardServiceImpl();
+    }
+
+    @Bean
+    public UserCaseAssignmentService getUserCaseAssignmentService() {
+        return new UserCaseAssignmentServiceImpl();
     }
 
 

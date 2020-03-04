@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.service.CommonService;
+import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.FourConsumer;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,13 +29,17 @@ import static ru.protei.portal.redmine.enums.RedmineChangeType.*;
 
 public class CaseUpdaterFactory {
 
-    public FourConsumer<CaseObject, RedmineEndpoint, Journal, String> getUpdater(RedmineChangeType type) {
+    public FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> getUpdater(RedmineChangeType type) {
         return funcs.get(type);
     }
 
-    private class CaseStatusUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String> {
+    public FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> getCommentsUpdater() {
+        return getUpdater(COMMENT);
+    }
+
+    private class CaseStatusUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
-        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value) {
+        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
 
             Integer newStatus = parseToInteger(value);
             logger.debug("Trying to get portal status id matching with redmine {}", newStatus);
@@ -42,11 +48,11 @@ public class CaseUpdaterFactory {
             if (redmineStatusEntry != null) {
 
                 final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
-                final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
+                final Person author = personMapper.toProteiPerson(journal.getUser());
 
                 object.setStateId(redmineStatusEntry.getLocalStatusId());
                 caseObjectDAO.merge(object);
-                logger.debug("Updated case state, old={}, new={}", En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
+                logger.debug("Updated case state for case with id {}, old={}, new={}", object.getId(), En_CaseState.getById(oldMeta.getStateId()), En_CaseState.getById(object.getStateId()));
 
                 Long stateCommentId = commonService.createAndStoreStateComment(journal.getCreatedOn(), author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId());
                 if (stateCommentId == null) {
@@ -66,9 +72,9 @@ public class CaseUpdaterFactory {
         }
     }
 
-    private class CasePriorityUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String> {
+    private class CasePriorityUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
-        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value) {
+        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
 
             Integer newPriority = parseToInteger(value);
             logger.debug("Trying to get portal priority level id matching with redmine {}", value);
@@ -77,11 +83,11 @@ public class CaseUpdaterFactory {
             if (priorityMapEntry != null) {
 
                 final CaseObjectMeta oldMeta = new CaseObjectMeta(object);
-                final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
+                final Person author = personMapper.toProteiPerson(journal.getUser());
 
                 object.setImpLevel(priorityMapEntry.getLocalPriorityId());
                 caseObjectDAO.merge(object);
-                logger.debug("Updated case priority, old={}, new={}", En_ImportanceLevel.find(oldMeta.getImpLevel()), En_ImportanceLevel.find(object.getImpLevel()));
+                logger.debug("Updated case priority for case with id {}, old={}, new={}", object.getId(), En_ImportanceLevel.find(oldMeta.getImpLevel()), En_ImportanceLevel.find(object.getImpLevel()));
 
                 Long ImportanceCommentId = commonService.createAndStoreImportanceComment(journal.getCreatedOn(), author.getId(), priorityMapEntry.getLocalPriorityId(), object.getId());
                 if (ImportanceCommentId == null) {
@@ -101,16 +107,16 @@ public class CaseUpdaterFactory {
         }
     }
 
-    private class CaseDescriptionUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String> {
+    private class CaseDescriptionUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
-        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value) {
+        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
 
             final DiffResult<String> infoDiff = new DiffResult<>(object.getInfo(), value);
-            final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
+            final Person author = personMapper.toProteiPerson(journal.getUser());
 
             object.setInfo(value);
             caseObjectDAO.merge(object);
-            logger.debug("Updated case info, old={}, new={}", infoDiff.getInitialState(), infoDiff.getNewState());
+            logger.debug("Updated case info for case with id {}, old={}, new={}", object.getId(), infoDiff.getInitialState(), infoDiff.getNewState());
 
             publisherService.publishEvent(new CaseNameAndDescriptionEvent(
                     this,
@@ -123,16 +129,16 @@ public class CaseUpdaterFactory {
         }
     }
 
-    private class CaseSubjectUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String> {
+    private class CaseSubjectUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
         @Override
-        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value) {
+        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
 
             final DiffResult<String> nameDiff = new DiffResult<>(object.getName(), value);
-            final Person author = commonService.getAssignedPerson(endpoint.getCompanyId(), journal.getUser());
+            final Person author = personMapper.toProteiPerson(journal.getUser());
 
             object.setName(value);
             caseObjectDAO.merge(object);
-            logger.debug("Updated case name, old={}, new={}", nameDiff.getInitialState(), nameDiff.getNewState());
+            logger.debug("Updated case name for case with id {}, old={}, new={}", object.getId(), nameDiff.getInitialState(), nameDiff.getNewState());
 
             publisherService.publishEvent(new CaseNameAndDescriptionEvent(
                     this,
@@ -145,12 +151,34 @@ public class CaseUpdaterFactory {
         }
     }
 
-    private final ConcurrentMap<RedmineChangeType, FourConsumer<CaseObject, RedmineEndpoint, Journal, String> > funcs =
-            new ConcurrentHashMap<RedmineChangeType, FourConsumer<CaseObject, RedmineEndpoint, Journal, String> >() {{
+    private class CaseCommentUpdater implements FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> {
+        @Override
+        public void apply(CaseObject object, RedmineEndpoint endpoint, Journal journal, String value, CachedPersonMapper personMapper) {
+
+            final Person author = personMapper.toProteiPerson(journal.getUser());
+
+            CaseComment caseComment = commonService.createAndStoreComment(journal, author, object.getId());
+            logger.debug("Added new case comment to case with id {}, comment has following text: {}", object.getId(), caseComment.getText());
+
+            publisherService.publishEvent(new CaseCommentEvent(
+                    this,
+                    ServiceModule.REDMINE,
+                    author.getId(),
+                    object.getId(),
+                    false,
+                    null,
+                    caseComment,
+                    null));
+        }
+    }
+
+    private final ConcurrentMap<RedmineChangeType, FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> > funcs =
+            new ConcurrentHashMap<RedmineChangeType, FourConsumer<CaseObject, RedmineEndpoint, Journal, String, CachedPersonMapper> >() {{
                 put(STATUS_CHANGE, new CaseStatusUpdater());
                 put(PRIORITY_CHANGE, new CasePriorityUpdater());
                 put(SUBJECT_CHANGE, new CaseSubjectUpdater());
                 put(DESCRIPTION_CHANGE, new CaseDescriptionUpdater());
+                put(COMMENT, new CaseCommentUpdater());
             }};
 
     private Integer parseToInteger(String value) {

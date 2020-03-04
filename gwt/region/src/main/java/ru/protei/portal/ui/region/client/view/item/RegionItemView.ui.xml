@@ -5,7 +5,7 @@
 
     <g:HTMLPanel tag="li">
         <g:HTMLPanel styleName="header-block no-hover">
-            <h2>
+            <h2 class="border-line">
                 <span ui:field="name" class="pull-left"></span>
                 <span ui:field="number" class="pull-right"></span>
             </h2>

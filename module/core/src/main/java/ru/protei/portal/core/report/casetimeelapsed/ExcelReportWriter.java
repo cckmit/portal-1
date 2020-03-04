@@ -59,7 +59,7 @@ public class ExcelReportWriter implements
                 3650, 3430, 8570,
                 4590, 4200, 4200, 4200,
                 3350, 4600, 4200,
-                5800, 5800, 5800
+                5800, 5800, 5800, 5800
         };
     }
 
@@ -72,7 +72,7 @@ public class ExcelReportWriter implements
                 "ir_work_time_none", "ir_work_time_watch", "ir_work_time_night_work",
                 "ir_work_time_SoftInstall", "ir_work_time_SoftUpdate", "ir_work_time_SoftConfig",
                 "ir_work_time_Testing", "ir_work_time_Consultation", "ir_work_time_Meeting",
-                "ir_work_time_DiscussionOfImprovements", "ir_work_time_LogAnalysis", "ir_work_time_SolveProblems"
+                "ir_work_time_DiscussionOfImprovements", "ir_work_time_LogAnalysis", "ir_work_time_SolveProblems", "ir_work_time_all"
         };
     }
 
@@ -87,7 +87,7 @@ public class ExcelReportWriter implements
                     "", "", "",
                     "", "", "",
                     "", "", "",
-                    "", lang.get("summary") + ":", timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+                    "", "", lang.get("summary") + ":", timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
             };
         }
         return new Object[] {
@@ -112,7 +112,8 @@ public class ExcelReportWriter implements
                 timeFormatter.formatHourMinutes(object.getTimeElapsedTypeMeeting()),
                 timeFormatter.formatHourMinutes(object.getTimeElapsedTypeDiscussionOfImprovements()),
                 timeFormatter.formatHourMinutes(object.getTimeElapsedTypeLogAnalysis()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSolveProblems())
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSolveProblems()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
         };
     }
 }

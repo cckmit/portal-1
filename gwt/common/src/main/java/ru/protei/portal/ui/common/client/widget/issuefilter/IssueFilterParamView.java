@@ -13,7 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -24,6 +24,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
@@ -40,14 +41,12 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterWidgetView {
@@ -144,7 +143,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Set<EntityOption>> tags() {
+    public HasValue<Set<CaseTag>> tags() {
         return tags;
     }
 
@@ -221,6 +220,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchByComments.setValue(false);
         searchPrivate.setValue(null);
         tags.setValue(null);
+        tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
     }
 
     @Override
@@ -255,7 +255,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         products.addAll(emptyIfNull(filter.getProductShortViews()));
         products().setValue(products);
 
-        tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
+        tags().setValue(setOf( filter.getCaseTags() ) );
     }
 
     @Override
@@ -384,7 +384,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @UiHandler("tags")
-    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
+    public void onTagsSelected(ValueChangeEvent<Set<CaseTag>> event) {
         onFilterChanged();
     }
 
@@ -406,13 +406,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     public void watchForScrollOf(Widget widget) {
         userFilter.watchForScrollOf(widget);
         sortField.watchForScrollOf(widget);
-        tags.watchForScrollOf(widget);
     }
 
     public void stopWatchForScrollOf(Widget widget) {
         userFilter.stopWatchForScrollOf(widget);
         sortField.stopWatchForScrollOf(widget);
-        tags.stopWatchForScrollOf(widget);
     }
 
     private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> personIds) {
@@ -551,6 +549,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;
+
+    @Inject
+    PolicyService policyService;
 
     private Timer timer = null;
     private AbstractIssueFilterParamActivity activity = null;

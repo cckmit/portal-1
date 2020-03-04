@@ -14,34 +14,30 @@ public class LabelValuePairBuilder {
 
     public LabelValuePairBuilder addIconValuePair(String icon, String value, String className ) {
         if ( value != null ) {
-            Element div = DOM.createDiv();
-            div.addClassName( className );
+            root.addClassName( className );
             if ( icon != null ) {
                 Element i = DOM.createElement("i");
                 i.setClassName( icon );
-                div.appendChild( i );
+                root.appendChild( i );
             }
             Element data = DOM.createSpan();
             data.setInnerText( value );
-            div.appendChild( data );
-            root.appendChild( div );
+            root.appendChild( data );
         }
         return this;
     }
 
     public LabelValuePairBuilder addLabelValuePair(String label, String value, String className ) {
         if ( value != null ) {
-            Element div = DOM.createDiv();
-            div.addClassName( className );
+            root.addClassName( className );
             if ( label != null ) {
                 Element b = DOM.createElement("b");
                 b.setInnerText( label );
-                div.appendChild( b );
+                root.appendChild( b );
             }
             Element data = DOM.createSpan();
             data.setInnerText( value );
-            div.appendChild( data );
-            root.appendChild( div );
+            root.appendChild( data );
         }
         return this;
     }

@@ -31,4 +31,6 @@ public interface IssueController extends RemoteService {
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 
     Long createIssue(CaseObjectCreateRequest p) throws RequestFailedException;
+
+    void updateManagerOfIssue(long issueId, long personId) throws RequestFailedException;
 }

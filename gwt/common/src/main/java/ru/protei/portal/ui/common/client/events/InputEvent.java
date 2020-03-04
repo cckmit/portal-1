@@ -5,6 +5,10 @@ public class InputEvent extends DomEvent<InputHandler> {
 
     private static final Type<InputHandler> TYPE = new Type<InputHandler>("input", new InputEvent());
 
+    public static <T> void fire( HasInputHandlers source ) {
+        source.fireEvent( new InputEvent() );
+    }
+
     public static Type<InputHandler> getType() {
         return TYPE;
     }

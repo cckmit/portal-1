@@ -9,7 +9,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setActivity( AbstractEmployeeItemActivity activity );
 
-    void setName ( String name );
+    void setName( String name, String link );
 
     void setBirthday( String value );
 
@@ -28,6 +28,4 @@ public interface AbstractEmployeeItemView extends IsWidget {
     void setIP( String value );
 
     void setFireDate (String value );
-
-    HasWidgets getPreviewContainer();
 }

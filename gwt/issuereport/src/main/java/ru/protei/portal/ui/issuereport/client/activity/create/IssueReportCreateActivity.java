@@ -62,7 +62,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         isSaving = false;
         view.reset();
 
-        if(!policyService.hasGrantAccessFor(En_Privilege.COMPANY_VIEW)){
+        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
             view.getIssueFilter().companies().setValue(companyIds);
@@ -209,7 +209,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private List<En_ReportType> makeReportTypeList() {
-        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_REPORT)) {
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_REPORT)) {
             return Arrays.asList(En_ReportType.values());
         }
         return Arrays.asList(En_ReportType.CASE_OBJECTS);

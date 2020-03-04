@@ -10,37 +10,16 @@ public class CaseTagEvents {
     public static class Show {
         public Show() {}
 
-        public Show(HasWidgets parent) {
+        public Show( HasWidgets parent, En_CaseType caseType, boolean isEditTagEnabled ) {
+            this(parent, caseType, isEditTagEnabled, null, false);
+        }
+
+        public Show( HasWidgets parent, En_CaseType caseType, boolean isEditTagEnabled, Long caseId, boolean isReadOnly ) {
             this.parent = parent;
-        }
-
-        public Show withCaseType(En_CaseType caseType) {
             this.caseType = caseType;
-            return this;
-        }
-
-        public Show withCaseId(Long caseId) {
+            this.isEditTagEnabled = isEditTagEnabled;
             this.caseId = caseId;
-            return this;
-        }
-
-        public Show withEditEnabled(boolean isEditEnabled) {
-            this.isEditTagEnabled = isEditEnabled;
-            return this;
-        }
-
-        public Show withAddEnabled(boolean isAddEnabled) {
-            this.isAddNewTagEnabled = isAddEnabled;
-            return this;
-        }
-
-        public Show withReadOnly(boolean isReadOnly) {
             this.isReadOnly = isReadOnly;
-            return this;
-        }
-
-        public Show readOnly() {
-            return withReadOnly(true);
         }
 
         public HasWidgets parent;
@@ -48,7 +27,6 @@ public class CaseTagEvents {
         public En_CaseType caseType;
         public boolean isReadOnly = false;
         public boolean isEditTagEnabled = false;
-        public boolean isAddNewTagEnabled = false;
     }
 
     public static class Edit {
@@ -59,10 +37,24 @@ public class CaseTagEvents {
         public CaseTag caseTag;
     }
 
-    public static class ChangeModel {}
+    public static class Created {
+        public Created( CaseTag caseTag) {
+            this.caseTag = caseTag;
+        }
 
-    public static class Remove {
-        public Remove(CaseTag caseTag) {
+        public CaseTag caseTag;
+    }
+
+    public static class Changed {
+        public Changed( CaseTag caseTag) {
+            this.caseTag = caseTag;
+        }
+
+        public CaseTag caseTag;
+    }
+
+    public static class Removed {
+        public Removed( CaseTag caseTag) {
             this.caseTag = caseTag;
         }
 

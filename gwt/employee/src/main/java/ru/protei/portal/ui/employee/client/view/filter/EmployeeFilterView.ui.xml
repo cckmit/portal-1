@@ -9,18 +9,21 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.employeeEmployeeFullNameColumnHeader}" styleName="form-group col-md-12" addonIcon="fa fa-user"/>
-                <cleanablesearchbox:CleanableSearchBox ui:field="workPhone" placeholder="{lang.employeeWorkPhoneColumnHeader}" styleName="form-group col-md-12" addonIcon="fa fa-phone"/>
-                <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhoneColumnHeader}" styleName="form-group col-md-12" addonIcon="fa fa-mobile-alt"/>
-                <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddressColumnHeader}" styleName="form-group col-md-12" addon="IP"/>
-                <cleanablesearchbox:CleanableSearchBox ui:field="email" placeholder="{lang.employeeEmailColumnHeader}" styleName="form-group col-md-12" addon="@"/>
-                <cleanablesearchbox:CleanableSearchBox ui:field="department" placeholder="{lang.employeeDepartmentColumnHeader}" styleName="form-group col-md-12" addonIcon="fa fa-sitemap"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.employeeEmployeeFullName}" styleName="form-group col-md-12" addonIcon="fa fa-user"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="workPhone" placeholder="{lang.employeeWorkPhone}" styleName="form-group col-md-12" addonIcon="fa fa-phone"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhone}" styleName="form-group col-md-12" addonIcon="fa fa-mobile-alt"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddress}" styleName="form-group col-md-12" addon="IP"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="email" placeholder="{lang.employeeEmail}" styleName="form-group col-md-12" addon="@"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="department" placeholder="{lang.employeeDepartment}" styleName="form-group col-md-12" addonIcon="fa fa-sitemap"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
                         <sortfieldselector:SortFieldSelector ui:field="sortField" type="EMPLOYEE"/>
                         <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                     </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <g:CheckBox ui:field="showTopBrass" styleName="checkbox" text="{lang.employeeTopBrassLabel}"/>
                 </div>
                 <div class="form-group col-md-12">
                     <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.employeeShowFired}"/>

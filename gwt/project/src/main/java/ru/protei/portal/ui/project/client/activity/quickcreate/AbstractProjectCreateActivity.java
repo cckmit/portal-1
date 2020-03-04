@@ -6,4 +6,5 @@ package ru.protei.portal.ui.project.client.activity.quickcreate;
 public interface AbstractProjectCreateActivity {
     void onSaveClicked();
     void onResetClicked();
+    void onDirectionChanged();
 }

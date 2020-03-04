@@ -15,6 +15,7 @@ public class ProductQuery extends BaseQuery {
 
     private En_DevUnitState state;
     private Set<En_DevUnitType> types;
+    private Long directionId;
 
     public ProductQuery() {
         sortField = En_SortField.prod_name;
@@ -44,6 +45,14 @@ public class ProductQuery extends BaseQuery {
 
     public void setTypes(Set<En_DevUnitType> types) {
         this.types = types;
+    }
+
+    public Long getDirectionId() {
+        return directionId;
+    }
+
+    public void setDirectionId(Long productDirectionId) {
+        this.directionId = productDirectionId;
     }
 
     public void addType(En_DevUnitType type) {

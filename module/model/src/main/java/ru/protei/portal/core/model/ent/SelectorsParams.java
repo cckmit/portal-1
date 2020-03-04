@@ -14,6 +14,16 @@ public class SelectorsParams implements Serializable {
 
     private List<ProductShortView> productShortViews;
 
+    private List<CaseTag> caseTags;
+
+    public List<CaseTag> getCaseTags() {
+        return caseTags;
+    }
+
+    public void setCaseTags( List<CaseTag> caseTags ) {
+        this.caseTags = caseTags;
+    }
+
     public List<EntityOption> getCompanyEntityOptions() {
         return companyEntityOptions;
     }

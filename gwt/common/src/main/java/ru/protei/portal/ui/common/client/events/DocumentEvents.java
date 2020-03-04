@@ -5,9 +5,6 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.view.EntityOption;
 
 public class DocumentEvents {
 
@@ -60,49 +57,50 @@ public class DocumentEvents {
         }
     }
 
-    @Url("doc-create")
+    @Url("doc_create")
     public static class Create {
         public Create() {
+        }
+    }
+
+    public static class SetButtonsEnabled {
+
+        public boolean isEnabled;
+
+        public SetButtonsEnabled(boolean isEnabled) {
+            this.isEnabled = isEnabled;
         }
     }
 
     public static class ChangeModel {
     }
 
-    public static class Form {
+    public static class CreateFromWizard {
 
-        public static class Show {
-            public HasWidgets parent;
-            public Document document;
-            public String tag;
-            public Show(HasWidgets parent, Document document, String tag) {
-                this.parent = parent;
-                this.document = document;
-                this.tag = tag;
-            }
+        public HasWidgets parent;
+
+        public CreateFromWizard(HasWidgets parent) {
+            this.parent = parent;
+        }
+    }
+
+    public static class Save {
+        public Save() {
+        }
+    }
+
+    @Url(value = "doc_create_with_equipment")
+    public static class CreateWithEquipment {
+        public CreateWithEquipment() {}
+
+        public CreateWithEquipment(Long equipmentId, Long projectId, String projectName) {
+            this.projectId = projectId;
+            this.projectName = projectName;
+            this.equipmentId = equipmentId;
         }
 
-        public static class SetProject {
-            public String tag;
-            public EntityOption project;
-            public SetProject(EntityOption project, String tag) {
-                this.project = project;
-                this.tag = tag;
-            }
-        }
-
-        public static class Save {
-            public String tag;
-            public Save(String tag) {
-                this.tag = tag;
-            }
-        }
-
-        public static class Saved {
-            public String tag;
-            public Saved(String tag) {
-                this.tag = tag;
-            }
-        }
+        public Long equipmentId;
+        public Long projectId;
+        public String projectName;
     }
 }

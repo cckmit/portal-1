@@ -7,7 +7,8 @@ public enum RedmineChangeType {
     STATUS_CHANGE("status_id"),
     PRIORITY_CHANGE("priority_id"),
     DESCRIPTION_CHANGE("description"),
-    SUBJECT_CHANGE("subject");
+    SUBJECT_CHANGE("subject"),
+    COMMENT("comment");
 
     private final String name;
 
@@ -20,6 +21,6 @@ public enum RedmineChangeType {
     }
 
     public static Optional<RedmineChangeType> findByName(String name) {
-        return Arrays.stream(values()).filter(x -> x.name.equals(name)).findFirst();
+        return Arrays.stream(values()).filter(x -> x.name.equals(name)).findAny();
     }
 }

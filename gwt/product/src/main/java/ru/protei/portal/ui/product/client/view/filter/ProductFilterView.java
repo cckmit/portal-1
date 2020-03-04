@@ -11,9 +11,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
@@ -57,6 +59,11 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     @Override
     public HasValue<Set<En_DevUnitType>> types() {
         return types;
+    }
+
+    @Override
+    public HasValue<ProductDirectionInfo> direction() {
+        return direction;
     }
 
     @Override
@@ -104,6 +111,13 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
         }
     }
 
+    @UiHandler("direction")
+    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
@@ -118,7 +132,7 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
 
         showDeprecated.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.SHOW_DEPRECATED);
         types.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.TYPES);
-
+        direction.ensureDebugId(DebugIds.PRODUCT_TABLE.FILTER.DIRECTION);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
     }
 
@@ -143,6 +157,10 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
 
     @UiField
     CleanableSearchBox search;
+
+    @Inject
+    @UiField(provided = true)
+    ProductDirectionButtonSelector direction;
 
     @UiField
     Button resetBtn;

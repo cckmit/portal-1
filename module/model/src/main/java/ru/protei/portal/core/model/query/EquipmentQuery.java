@@ -21,7 +21,7 @@ public class EquipmentQuery extends BaseQuery {
 
     private Long equipmentId;
 
-    private Long projectId;
+    private Set<Long> projectIds;
 
     public Set<En_EquipmentType> getTypes() {
         return types;
@@ -71,12 +71,12 @@ public class EquipmentQuery extends BaseQuery {
         this.equipmentId = equipmentId;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectIds(Set<Long> projectIds) {
+        this.projectIds = projectIds;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public Set<Long> getProjectIds() {
+        return projectIds;
     }
 
     public EquipmentQuery() {

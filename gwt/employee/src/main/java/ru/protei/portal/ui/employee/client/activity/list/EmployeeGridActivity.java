@@ -7,13 +7,13 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 
@@ -39,6 +39,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
         fireEvent(new ActionBarEvents.Clear());
 
+        fireEvent(new ActionBarEvents.Add(lang.employeeTopBrassBtn(), "", UiConstants.ActionBarIdentity.TOP_BRASS));
+
         boolean isListCurrent = currentViewType == ViewType.LIST;
         fireEvent(new ActionBarEvents.Add(
                 isListCurrent ? lang.table() : lang.list(),
@@ -61,6 +63,21 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
     }
 
+    @Event
+    public void onTopBrassClicked(ActionBarEvents.Clicked event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
+        if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
+            return;
+        }
+
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new EmployeeEvents.ShowTopBrass());
+    }
+
     @Override
     public void onFilterChanged() {
         query = makeQuery();
@@ -77,7 +94,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
+                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null);
     }
 
 
@@ -91,6 +109,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     PolicyService policyService;
 
     private ViewType currentViewType;
+    private boolean topBrassPage;
     private EmployeeQuery query;
     private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
 }

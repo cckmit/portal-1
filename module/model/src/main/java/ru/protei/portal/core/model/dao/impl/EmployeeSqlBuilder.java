@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -10,6 +11,10 @@ public class EmployeeSqlBuilder {
     public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
+
+            if (CollectionUtils.isNotEmpty(query.getIds())) {
+                condition.append(" and Person.id in " + HelperFunc.makeInArg(query.getIds()));
+            }
 
             if (query.getFired() != null) {
                 condition.append(" and Person.isfired=?");

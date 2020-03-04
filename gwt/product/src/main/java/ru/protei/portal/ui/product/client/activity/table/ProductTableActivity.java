@@ -158,6 +158,7 @@ public abstract class ProductTableActivity implements
         pq.setSortField(filterView.sortField().getValue());
         pq.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         pq.setTypes(filterView.types().getValue());
+        pq.setDirectionId(filterView.direction().getValue() == null ? null : filterView.direction().getValue().id);
 
         return pq;
     }
