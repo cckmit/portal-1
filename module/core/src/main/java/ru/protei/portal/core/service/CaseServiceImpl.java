@@ -788,7 +788,8 @@ public class CaseServiceImpl implements CaseService {
         for (CaseLink link : emptyIfNull( caseLinks )) {
             if (!YT.equals( link.getType() ) || link.getRemoteId() == null) continue;
             youtrackService.getIssueInfo( link.getRemoteId() )
-                    .ifOk( info -> link.setYouTrackIssueInfo( info ) );
+                    .ifError(e -> log.warn( "fillYouTrackInfo(): case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
+                    .ifOk(link::setYouTrackIssueInfo);
         }
         return caseLinks;
     }
