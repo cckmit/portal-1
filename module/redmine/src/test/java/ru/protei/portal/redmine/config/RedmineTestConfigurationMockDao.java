@@ -1,14 +1,10 @@
-package ru.protei.portal.config;
+package ru.protei.portal.redmine.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
-import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.CaseCommentDAO_Impl;
-import ru.protei.portal.core.model.dao.impl.CompanyGroupDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;

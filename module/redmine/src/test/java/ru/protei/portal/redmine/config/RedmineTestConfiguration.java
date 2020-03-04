@@ -1,4 +1,4 @@
-package ru.protei.portal.config;
+package ru.protei.portal.redmine.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableAsync;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.config.PortalConfigData;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
@@ -13,8 +15,6 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.controller.cloud.FileController;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;

@@ -5,9 +5,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.PortalConfigTestConfiguration;
-import ru.protei.portal.config.RedmineTestConfiguration;
-import ru.protei.portal.config.RedmineTestConfigurationMockDao;
+import ru.protei.portal.redmine.config.PortalConfigTestConfiguration;
+import ru.protei.portal.redmine.config.RedmineTestConfiguration;
+import ru.protei.portal.redmine.config.RedmineTestConfigurationMockDao;
 import ru.protei.portal.core.model.ent.CaseObject;
 
 import static org.junit.Assert.assertNotNull;
