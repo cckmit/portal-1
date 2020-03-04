@@ -137,7 +137,7 @@ public class FileController {
 
                 logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
 
-                Attachment attachment = saveAttachment(authToken, item, authToken.getPersonId());
+                Attachment attachment = saveAttachment(item, authToken.getPersonId());
 
                 if (caseNumber != null) {
                     En_CaseType caseType = En_CaseType.find(caseTypeId);
@@ -181,7 +181,7 @@ public class FileController {
             if (result == null) {
                 String[] parts = base64Facade.getBase64().split(",");
                 byte[] bytes = Base64.getDecoder().decode(parts[1]);
-                Attachment attachment = saveAttachment(authToken, bytes, base64Facade, authToken.getPersonId());
+                Attachment attachment = saveAttachment(bytes, base64Facade, authToken.getPersonId());
                 result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
             }
         } catch (IOException | SQLException e) {
@@ -214,7 +214,7 @@ public class FileController {
             byte[] bytes = Base64.getDecoder().decode(parts[1]);
 
             try {
-                Attachment attachment = saveAttachment(authToken, bytes, currB64facade, authToken.getPersonId());
+                Attachment attachment = saveAttachment(bytes, currB64facade, authToken.getPersonId());
                 attachmentsJsons.add(mapper.writeValueAsString(attachment));
                 attachments.add(attachment);
             } catch (IOException | SQLException e) {
@@ -301,20 +301,20 @@ public class FileController {
         );
     }
 
-    private Attachment saveAttachment(AuthToken token, byte[] bytes, Base64Facade facade, Long creatorId) throws IOException, SQLException {
+    private Attachment saveAttachment(byte[] bytes, Base64Facade facade, Long creatorId) throws IOException, SQLException {
         String fileName = facade.getName();
         if (StringUtils.isBlank(fileName)) {
             fileName = generateUniqueName();
         }
-        return saveAttachment(token, new ByteArrayInputStream(bytes), creatorId, fileName, facade.getSize(), facade.getType());
+        return saveAttachment(new ByteArrayInputStream(bytes), creatorId, fileName, facade.getSize(), facade.getType());
     }
 
-    private Attachment saveAttachment(AuthToken token, FileItem item, Long creatorId) throws IOException, SQLException {
+    private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException {
         String fileName = getFileNameFromFileItem(item);
-        return saveAttachment(token, item.getInputStream(), creatorId, fileName, item.getSize(), item.getContentType());
+        return saveAttachment(item.getInputStream(), creatorId, fileName, item.getSize(), item.getContentType());
     }
 
-    private Attachment saveAttachment(AuthToken token, InputStream is, Long creatorId, String fileName, Long size, String contentType) throws IOException, SQLException {
+    private Attachment saveAttachment(InputStream is, Long creatorId, String fileName, Long size, String contentType) throws IOException, SQLException {
 
         logger.debug("saveAttachment: creatorId=" + creatorId);
 
@@ -324,7 +324,7 @@ public class FileController {
         attachment.setDataSize(size);
         attachment.setMimeType(contentType);
 
-        if (attachmentService.saveAttachment(token, attachment).isError()) {
+        if (attachmentService.saveAttachment(attachment).isError()) {
             throw new SQLException("attachment not saved");
         }
 
@@ -333,7 +333,7 @@ public class FileController {
 
         logger.debug("saveAttachment: creatorId=" + creatorId + ", filePath=" + filePath);
 
-        if (attachmentService.saveAttachment(token, attachment).isError()) {
+        if (attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(filePath);
             throw new SQLException("unable to save link to file");
         }

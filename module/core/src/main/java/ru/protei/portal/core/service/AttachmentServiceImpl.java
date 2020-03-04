@@ -153,25 +153,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public Result<Long> saveAttachment( Attachment attachment) {
         /* В redmine и jira дата устанавливается из источника */
-        return tryToSaveAttachment(attachment);
-    }
-
-    @Override
-    public Result<Long> saveAttachment(AuthToken token, Attachment attachment) {
-        attachment.setCreated(new Date());
-        return tryToSaveAttachment(attachment);
-    }
-
-    @Override
-    public Result<String> getAttachmentNameByExtLink( String extLink) {
-        Attachment attachment = attachmentDAO.partialGetByCondition("ext_link = ?", Collections.singletonList(extLink), "file_name");
-        if (attachment == null) {
-            return error( En_ResultStatus.NOT_FOUND);
+        if (attachment.getCreated() == null) {
+            attachment.setCreated(new Date());
         }
-        return ok( attachment.getFileName());
-    }
-
-    private Result<Long> tryToSaveAttachment(Attachment attachment) {
         Long id = attachment.getId();
         if (id == null) {
             id = attachmentDAO.persist(attachment);
@@ -183,5 +167,14 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachmentDAO.merge(attachment);
 
         return ok( id);
+    }
+
+    @Override
+    public Result<String> getAttachmentNameByExtLink( String extLink) {
+        Attachment attachment = attachmentDAO.partialGetByCondition("ext_link = ?", Collections.singletonList(extLink), "file_name");
+        if (attachment == null) {
+            return error( En_ResultStatus.NOT_FOUND);
+        }
+        return ok( attachment.getFileName());
     }
 }
