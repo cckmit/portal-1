@@ -73,8 +73,16 @@ public interface AttachmentService {
     })
     Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments);
 
+    /**
+     * Сохранение вложения (портал)
+     */
     @Auditable(En_AuditType.ATTACHMENT_CREATE)
-    Result<Long> saveAttachment( Attachment attachment);
+    Result<Long> saveAttachment(AuthToken token, Attachment attachment);
+
+    /**
+     * Сохранение вложения (интеграции)
+     */
+    Result<Long> saveAttachment(Attachment attachment);
 
     Result<String> getAttachmentNameByExtLink( String extLink);
 }

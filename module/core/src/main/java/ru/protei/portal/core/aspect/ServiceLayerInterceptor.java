@@ -304,6 +304,7 @@ public class ServiceLayerInterceptor {
     private AuditableObject findAuditableObject(ProceedingJoinPoint pjp) {
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Parameter[] params = method.getParameters();
+        notAuditableContainer.clear();
 
         for (int i = 0; i < params.length; i++) {
             Object arg = pjp.getArgs()[i];
@@ -315,8 +316,6 @@ public class ServiceLayerInterceptor {
 
                 continue;
             }
-
-            notAuditableContainer.clear();
 
             return (AuditableObject) arg;
         }
