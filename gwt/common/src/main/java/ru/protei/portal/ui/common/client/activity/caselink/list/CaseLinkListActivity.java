@@ -238,6 +238,9 @@ public abstract class CaseLinkListActivity
             itemWidget.setNumber(linkId);
             itemWidget.setName(value.getYouTrackInfo().getSummary());
             itemWidget.setState(value.getYouTrackInfo().getCaseState());
+        } else {
+            itemWidget.setName(value.getRemoteId());
+            itemWidget.setNumber(lang.errCaseLinkNotFound());
         }
 
         itemWidget.setHref(caseLinkProvider.getLink(value.getType(), linkId));
