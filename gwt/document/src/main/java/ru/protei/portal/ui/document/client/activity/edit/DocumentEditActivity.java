@@ -355,7 +355,7 @@ public abstract class DocumentEditActivity
         saveDocument(document, false);
     }
 
-    private void saveDocument(Document document, boolean isContinue) {
+    private void saveDocument(Document document, boolean stayOnPage) {
         if (!checkDocumentValid(document)) {
             setButtonsEnabled(true);
             return;
@@ -373,7 +373,7 @@ public abstract class DocumentEditActivity
                         saveDocument(document, doc -> {
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                            if (isContinue){
+                            if (stayOnPage){
                                 fillView(makeDocumentToContinue());
                             }
                             else {
