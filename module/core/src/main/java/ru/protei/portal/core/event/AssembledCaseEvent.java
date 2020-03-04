@@ -359,8 +359,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public Long getTimeElapsedChanging() {
         long timeElapsedChanging = 0L;
 
-        timeElapsedChanging += existingComments
-                .stream()
+        timeElapsedChanging +=
+                stream(existingComments)
                 .filter(caseComment -> emptyIfNull(getAddedCaseComments()).contains(caseComment) ||
                         (getChangedComments().contains(caseComment) && !Objects.equals(getChangedComments().get(getChangedComments().indexOf(caseComment)).getTimeElapsed(), caseComment.getTimeElapsed())))
                 .mapToLong(this::getTimeElapsedFromComment)
