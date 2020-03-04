@@ -26,7 +26,6 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
@@ -36,12 +35,17 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -68,8 +72,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setCompaniesModel( AsyncSelectorModel<EntityOption> model ) {
-        companies.setAsyncModel( model );
+    public void setInitiatorModel(InitiatorModel initiatorModel) {
+        initiators.setInitiatorModel(initiatorModel);
+    }
+
+    @Override
+    public void setCreatorModel(PersonModel personModel) {
+        creators.setPersonModel(personModel);
     }
 
     @Override
@@ -143,6 +152,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasValue<Set<PersonShortView>> creators() {
+        return creators;
+    }
+
+    @Override
     public HasValue<Set<CaseTag>> tags() {
         return tags;
     }
@@ -168,11 +182,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasVisibility companiesVisibility() {
-        return companies;
-    }
-
-    @Override
     public HasVisibility managersVisibility() {
         return managers;
     }
@@ -183,18 +192,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasVisibility tagsVisibility() {
-        return tags;
-    }
-
-    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
-    }
-
-    @Override
-    public HasVisibility searchByCommentsVisibility() {
-        return searchByCommentsContainer;
     }
 
     @Override
@@ -209,6 +208,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         managers.setValue(null);
         initiators.setValue(null);
         commentAuthors.setValue(null);
+        creators.setValue(null);
         importance.setValue(null);
         state.setValue(null);
         dateCreatedRange.setValue(null);
@@ -240,6 +240,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         initiators().setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
         commentAuthors().setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
+        creators().setValue(applyPersons(filter, caseQuery.getCreatorIds()));
 
         Set<PersonShortView> personShortViews = new LinkedHashSet<>();
         if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
@@ -403,6 +404,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("creators")
+    public void onCreatorSelected(ValueChangeEvent<Set<PersonShortView>> event) {
+        onFilterChanged();
+    }
+
     public void watchForScrollOf(Widget widget) {
         userFilter.watchForScrollOf(widget);
         sortField.watchForScrollOf(widget);
@@ -461,6 +467,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         labelSearchPrivate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.PRIVACY_LABEL);
         labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
         labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
+        creators.ensureDebugId(DebugIds.FILTER.CREATOR_SELECTOR);
+        creators.setAddEnsureDebugId(DebugIds.FILTER.CREATOR_ADD_BUTTON);
+        creators.setClearEnsureDebugId(DebugIds.FILTER.CREATOR_CLEAR_BUTTON);
+        creators.setItemContainerEnsureDebugId(DebugIds.FILTER.CREATOR_ITEM_CONTAINER);
     }
 
     private void onFilterChanged() {
@@ -517,13 +527,16 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     CompanyMultiSelector companies;
     @Inject
     @UiField(provided = true)
-    InitiatorMultiSelector initiators;
+    PersonMultiSelector initiators;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector managers;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;
+    @Inject
+    @UiField(provided = true)
+    PersonMultiSelector creators;
     @Inject
     @UiField(provided = true)
     CaseTagMultiSelector tags;

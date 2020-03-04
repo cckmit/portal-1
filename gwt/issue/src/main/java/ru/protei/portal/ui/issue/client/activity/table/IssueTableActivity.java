@@ -5,7 +5,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
-
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -22,6 +21,8 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -34,20 +35,18 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
+import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.*;
-import java.util.logging.Logger;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Активность таблицы обращений
@@ -68,6 +67,8 @@ public abstract class IssueTableActivity
         filterView.getIssueFilterWidget().setActivity(this);
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
+        filterParamView.setInitiatorModel(initiatorModel);
+        filterParamView.setCreatorModel(personModel);
         filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
 
         pagerView.setActivity( this );
@@ -96,11 +97,6 @@ public abstract class IssueTableActivity
                 new ActionBarEvents.Clear()
         );
 
-        if (event.query != null) {
-            fillFilterFieldsByCaseQuery(event.query);
-            event.query = null;
-        }
-
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
@@ -110,9 +106,13 @@ public abstract class IssueTableActivity
 
         clearScroll(event);
 
-        if(isSearchFieldCorrect()) {
+        if (event.query != null) {
+            fillFilterFieldsByCaseQuery(event.query);
+            event.query = null;
+        } else {
             loadTable();
         }
+
         validateSearchField(isSearchFieldCorrect());
     }
 
@@ -138,41 +138,6 @@ public abstract class IssueTableActivity
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
-    }
-
-    @Event
-    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
-
-        if (!event.identity.equals(getClass().getName()) || filterIdToRemove == null) {
-            return;
-        }
-
-        filterService.removeIssueFilter(filterIdToRemove, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                filterIdToRemove = null;
-                fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                filterIdToRemove = null;
-                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new IssueEvents.ChangeUserFilterModel());
-                filterView.resetFilter();
-                loadTable();
-            }
-        });
-    }
-
-    @Event
-    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
-
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        filterIdToRemove = null;
     }
 
     @Override
@@ -224,8 +189,7 @@ public abstract class IssueTableActivity
 
     @Override
     public void onFilterRemoveClicked( Long id ) {
-        filterIdToRemove = id;
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id)));
     }
 
     @Override
@@ -508,6 +472,23 @@ public abstract class IssueTableActivity
         }
     }
 
+    private Runnable removeAction(Long filterId) {
+        return () -> filterService.removeIssueFilter(filterId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueEvents.ChangeUserFilterModel());
+                filterView.resetFilter();
+                loadTable();
+            }
+        });
+    }
+
     @Inject
     Lang lang;
 
@@ -543,13 +524,16 @@ public abstract class IssueTableActivity
     @Inject
     IssueFilterService issueFilterService;
 
-    private CaseQuery query = null;
+    @Inject
+    InitiatorModel initiatorModel;
 
-    private static final Logger log = Logger.getLogger( IssueTableActivity.class.getName() );
+    @Inject
+    PersonModel personModel;
+
+    private CaseQuery query = null;
 
     private static String CREATE_ACTION;
     private AbstractIssueFilterWidgetView filterParamView;
-    private Long filterIdToRemove;
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
     private boolean isCreateFilterAction = true;

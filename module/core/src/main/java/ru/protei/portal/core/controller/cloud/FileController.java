@@ -251,7 +251,6 @@ public class FileController {
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
-
     public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
         if (caseId == null)
             throw new RuntimeException("Case-ID is required");

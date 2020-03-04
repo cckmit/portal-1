@@ -96,29 +96,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         this.init = initDetails;
     }
 
-    @Event
-    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
-        if ( !event.identity.equals( getClass().getName() ) ) {
-            return;
-        }
-        accountService.removeAccount( accountId, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-                fireEvent( new AccountEvents.Show() );
-                fireEvent( new NotifyEvents.Show( lang.accountRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
-                accountId = null;
-            }
-        } );
-    }
-
-    @Event
-    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
-        accountId = null;
-    }
-
     @Override
     public void onItemClicked ( UserLogin value ) {
         showPreview( value );
@@ -132,9 +109,8 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onRemoveClicked( UserLogin value ) {
-        if ( value != null ) {
-            accountId = value.getId();
-            fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.accountRemoveConfirmMessage() ) );
+        if (value != null) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.accountRemoveConfirmMessage(), removeAction(value.getId())));
         }
     }
 
@@ -231,6 +207,13 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         }
     }
 
+    private Runnable removeAction(Long accountId) {
+        return () -> accountService.removeAccount(accountId, new FluentCallback<Boolean>().withSuccess(result -> {
+            fireEvent(new AccountEvents.Show());
+            fireEvent(new NotifyEvents.Show(lang.accountRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+        }));
+    }
+
     @Inject
     Lang lang;
 
@@ -251,8 +234,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Inject
     PolicyService policyService;
-
-    private Long accountId;
 
     private AppEvents.InitDetails init;
 

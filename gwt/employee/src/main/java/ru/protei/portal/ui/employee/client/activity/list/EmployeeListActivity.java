@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -138,7 +139,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         AbstractEmployeeItemView itemView = factory.get();
         itemView.setActivity( this );
 
-        itemView.setName( employee.getDisplayName() );
+        itemView.setName( employee.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, employee.getId()) );
         itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );

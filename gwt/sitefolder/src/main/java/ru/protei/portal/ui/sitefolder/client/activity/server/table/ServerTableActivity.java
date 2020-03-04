@@ -103,44 +103,6 @@ public abstract class ServerTableActivity implements
         view.updateRow(event.server);
     }
 
-    @Event
-    public void onServerConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (serverIdForRemove == null) {
-            return;
-        }
-
-        siteFolderController.removeServer(serverIdForRemove, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                serverIdForRemove = null;
-                if (result) {
-                    fireEvent(new SiteFolderServerEvents.ChangeModel());
-                    fireEvent(new SiteFolderServerEvents.Show(platformId));
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onServerCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        serverIdForRemove = null;
-    }
-
     @Override
     public void onItemClicked(Server value) {
         if (value == null) {
@@ -187,8 +149,7 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        serverIdForRemove = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderServerConfirmRemove()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderServerConfirmRemove(), removeAction(value.getId())));
     }
 
     @Override
@@ -261,6 +222,26 @@ public abstract class ServerTableActivity implements
         query.setParams(filterView.parameters().getValue());
         query.setComment(filterView.comment().getValue());
         return query;
+    }
+
+    private Runnable removeAction(Long serverId) {
+        return () -> siteFolderController.removeServer(serverId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new SiteFolderServerEvents.ChangeModel());
+                    fireEvent(new SiteFolderServerEvents.Show(platformId));
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
     }
 
     @Inject

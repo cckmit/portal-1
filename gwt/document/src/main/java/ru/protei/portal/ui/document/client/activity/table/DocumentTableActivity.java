@@ -101,11 +101,9 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onRemoveClicked(Document value) {
-        if (value == null) {
-            return;
+        if (value != null) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.documentConfirmRemove(), removeAction(value)));
         }
-        documentToRemove = value;
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.documentConfirmRemove()));
     }
 
     @Event
@@ -127,34 +125,6 @@ public abstract class DocumentTableActivity
         view.clearSelection();
 
         fireEvent(new DocumentEvents.Create());
-    }
-
-    @Event
-    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-        if (documentToRemove == null) {
-            return;
-        }
-        documentService.removeDocument(documentToRemove, new FluentCallback<Long>()
-                .withError(throwable -> {
-                    documentToRemove = null;
-                    errorHandler.accept(throwable);
-                })
-                .withSuccess(id -> {
-                    documentToRemove = null;
-                    fireEvent(new DocumentEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.documentRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                }));
-    }
-
-    @Event
-    public void onCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-        documentToRemove = null;
     }
 
     @Override
@@ -263,6 +233,14 @@ public abstract class DocumentTableActivity
         }
     }
 
+    private Runnable removeAction(Document document) {
+        return () -> documentService.removeDocument(document, new FluentCallback<Long>()
+                .withSuccess(id -> {
+                    fireEvent(new DocumentEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.documentRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                }));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -277,12 +255,9 @@ public abstract class DocumentTableActivity
     DocumentControllerAsync documentService;
     @Inject
     PolicyService policyService;
-    @Inject
-    DefaultErrorHandler errorHandler;
 
     private Integer scrollTop;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails init;
     private DocumentQuery query;
-    private Document documentToRemove;
 }

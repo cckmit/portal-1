@@ -1,12 +1,14 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
 @JdbcEntity(table = "case_link")
-public class CaseLink implements Serializable {
+public class CaseLink extends AuditableObject {
+    public static final String AUDIT_TYPE = "CaseLink";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -81,6 +83,11 @@ public class CaseLink implements Serializable {
 
     public void setYouTrackIssueInfo( YouTrackIssueInfo youTrackIssueInfo ) {
         this.youTrackIssueInfo = youTrackIssueInfo;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override

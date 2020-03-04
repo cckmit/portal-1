@@ -196,6 +196,12 @@ public class CaseObjectSqlBuilder {
                         .append(" and product_id = ")
                         .append(query.getProductDirectionId());
             }
+
+            if (CollectionUtils.isNotEmpty(query.getCreatorIds())) {
+                condition
+                        .append(" and case_object.CREATOR in ")
+                        .append(makeInArg(query.getCreatorIds(), false));
+            }
         });
     }
 }

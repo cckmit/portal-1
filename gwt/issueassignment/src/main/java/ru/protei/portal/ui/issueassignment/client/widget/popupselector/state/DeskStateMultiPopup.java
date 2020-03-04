@@ -9,6 +9,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.issueassignment.client.widget.popupselector.PopupMultiSelector;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -24,8 +25,9 @@ public class DeskStateMultiPopup extends PopupMultiSelector<En_CaseState> {
         setEmptySearchText(lang.searchNoMatchesFound());
     }
 
-    public void show(UIObject relative, Consumer<Set<En_CaseState>> onDone) {
+    public void show(UIObject relative, Collection<En_CaseState> exclude, Consumer<Set<En_CaseState>> onDone) {
         this.relative = relative;
+        setFilter(state -> !exclude.contains(state));
         setPopupUnloadHandler(() -> onDone.accept(getValue()));
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);

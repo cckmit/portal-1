@@ -146,6 +146,10 @@ public class DebugIds {
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
+        String CREATOR_SELECTOR = "filter-creator-selector";
+        String CREATOR_ADD_BUTTON = "filter-creator-add-button";
+        String CREATOR_CLEAR_BUTTON = "filter-creator-clear-button";
+        String CREATOR_ITEM_CONTAINER = "filter-creator-item-container";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";

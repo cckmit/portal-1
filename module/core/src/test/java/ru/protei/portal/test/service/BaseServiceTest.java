@@ -49,6 +49,7 @@ public class BaseServiceTest {
         product.setHistoryVersion( "historyVersion" );
         product.setCdrDescription( "cdrDescription" );
         product.setConfiguration( "configuration" );
+        product.setWikiLink( "https://newportal.protei.ru/" );
         return product;
     }
 
@@ -114,10 +115,11 @@ public class BaseServiceTest {
         return comment;
     }
 
-    protected CaseTag createCaseTag (String name, En_CaseType type){
+    protected CaseTag createCaseTag (String name, En_CaseType type, Long companyId){
         CaseTag caseTag = new CaseTag();
         caseTag.setCaseType(type);
-        caseTag.setName( name );
+        caseTag.setName(name);
+        caseTag.setCompanyId(companyId);
         return caseTag;
     }
 
@@ -219,8 +221,8 @@ public class BaseServiceTest {
         return company;
     }
 
-    protected CaseTag makeCaseTag( String tag1, En_CaseType type ) {
-        CaseTag caseTag = createCaseTag(tag1, type);
+    protected CaseTag makeCaseTag( String tag1, En_CaseType type, Long companyId ) {
+        CaseTag caseTag = createCaseTag( tag1, type, companyId );
         caseTag.setId( caseTagDAO.persist( caseTag ) );
         return caseTag;
     }

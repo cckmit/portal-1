@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -7,7 +8,8 @@ import java.io.Serializable;
 import java.util.List;
 
 @JdbcEntity(table = "platform")
-public class Platform implements Serializable {
+public class Platform extends AuditableObject {
+    public static final String AUDIT_TYPE = "Platform";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -156,6 +158,11 @@ public class Platform implements Serializable {
         platformOption.setDisplayText(getName());
         platformOption.setCompanyId(getCompanyId());
         return platformOption;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override

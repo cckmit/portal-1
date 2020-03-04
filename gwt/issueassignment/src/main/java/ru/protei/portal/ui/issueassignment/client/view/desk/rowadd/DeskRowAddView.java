@@ -23,6 +23,11 @@ public class DeskRowAddView extends Composite implements AbstractDeskRowAddView 
         this.handler = handler;
     }
 
+    @Override
+    public void setButtonTitle(String title) {
+        button.setTitle(title);
+    }
+
     @UiHandler("button")
     public void buttonClick(ClickEvent event) {
         if (handler != null) {

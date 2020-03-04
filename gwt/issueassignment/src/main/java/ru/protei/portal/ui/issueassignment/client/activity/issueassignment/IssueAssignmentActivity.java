@@ -26,7 +26,7 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
 
     @Event(Type.FILL_CONTENT)
     public void onShow(IssueAssignmentEvents.Show event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_ASSIGNMENT_VIEW)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }

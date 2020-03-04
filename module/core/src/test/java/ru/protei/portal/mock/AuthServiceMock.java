@@ -23,6 +23,7 @@ public class AuthServiceMock implements AuthService {
             En_Privilege.PRODUCT_VIEW, En_Privilege.PRODUCT_EDIT, En_Privilege.PRODUCT_CREATE,
             En_Privilege.COMPANY_VIEW, En_Privilege.COMPANY_EDIT, En_Privilege.COMPANY_CREATE,
             En_Privilege.CONTACT_VIEW, En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE,
+            En_Privilege.EMPLOYEE_VIEW
     };
 
     private UserLogin stubUserLogin;

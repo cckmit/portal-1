@@ -70,32 +70,6 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
     }
 
-    @Event
-    public void onConfirmRemoveUserFilter(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName()) || filterIdToRemove == null) {
-            return;
-        }
-        filterService.removeIssueFilter(filterIdToRemove, new FluentCallback<Boolean>()
-                .withError(throwable -> {
-                    filterIdToRemove = null;
-                    fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(aBoolean -> {
-                    filterIdToRemove = null;
-                    fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeUserFilterModel());
-                    view.getIssueFilter().reset();
-                }));
-    }
-
-    @Event
-    public void onCancelRemoveUserFilter(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        filterIdToRemove = null;
-    }
-
     @Override
     public void onSaveClicked() {
 
@@ -168,8 +142,9 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Override
     public void onRemoveFilterClicked(Long id) {
-        filterIdToRemove = id;
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
+        if (id != null) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id)));
+        }
     }
 
     private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
@@ -215,6 +190,18 @@ public abstract class IssueReportCreateActivity implements Activity,
         return Arrays.asList(En_ReportType.CASE_OBJECTS);
     }
 
+    private Runnable removeAction(Long filterId) {
+        return () -> filterService.removeIssueFilter(filterId, new FluentCallback<Boolean>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(aBoolean -> {
+                    fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IssueEvents.ChangeUserFilterModel());
+                    view.getIssueFilter().reset();
+                }));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -228,7 +215,6 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 
-    private Long filterIdToRemove;
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
 }
