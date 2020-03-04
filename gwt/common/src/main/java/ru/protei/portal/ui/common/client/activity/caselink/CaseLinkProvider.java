@@ -26,7 +26,7 @@ public class CaseLinkProvider {
     }
 
     public String getLink(En_CaseLink caseLink, String id) {
-        if (linkMap == null || !linkMap.containsKey(caseLink)) {
+        if (linkMap == null || !linkMap.containsKey(caseLink) || id == null) {
             return "";
         }
         return linkMap.get(caseLink).replace("%id%", id);

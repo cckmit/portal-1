@@ -1063,6 +1063,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errCaseLinkAlreadyAdded();
 
+    String errCaseLinkNotFound();
+
     String linkedWith();
 
     String id();
