@@ -60,9 +60,6 @@ public class DocumentUtils {
     }
 
     static public boolean isValidDecimalNumber(String value, En_DocumentCategory enDocumentCategory ) {
-        if (isEmpty(value)) {
-            return true;
-        }
         return DocumentDecimalNumberValidator.isValid(value, enDocumentCategory);
     }
 }

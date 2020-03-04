@@ -14,12 +14,12 @@ public class DocumentDecimalNumberValidator {
     static List<Function<ValidationResult, ValidationResult>> createKDvalidateProcessList() {
         List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#6", getLengthMoreThanZeroIntegerValidator(6)));
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#3", getLengthMoreThanZeroIntegerValidator(3)));
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#-", getOneSymbolValidator("-")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
+        validateProcessList.add(getOneSymbolValidator("."));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(6));
+        validateProcessList.add(getOneSymbolValidator("."));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(3));
+        validateProcessList.add(getOneSymbolValidator("-"));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(2));
         validateProcessList.add(lengthTwoRussianLetterValidator);
         validateProcessList.add(endValidator);
         return validateProcessList;
@@ -29,12 +29,12 @@ public class DocumentDecimalNumberValidator {
     static List<Function<ValidationResult, ValidationResult>> createTDvalidateProcessList() {
         List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
+        validateProcessList.add(getOneSymbolValidator("."));
         validateProcessList.add(TDtypeDocCodeValidator);
         validateProcessList.add(TDtypeProcessCodeValidator);
         validateProcessList.add(TDtypeProcessWorkCodeValidator);
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#5", getLengthMoreThanZeroIntegerValidator(5)));
+        validateProcessList.add(getOneSymbolValidator("."));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(5));
         validateProcessList.add(TDfixCodeValidator);
         validateProcessList.add(endValidator);
         return validateProcessList;
@@ -44,12 +44,12 @@ public class DocumentDecimalNumberValidator {
     static List<Function<ValidationResult, ValidationResult>> createPDvalidateProcessList() {
         List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#.", getOneSymbolValidator(".")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#5", getLengthMoreThanZeroIntegerValidator(5)));
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#-", getOneSymbolValidator("-")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required# ", getOneSymbolValidator(" ")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
+        validateProcessList.add(getOneSymbolValidator("."));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(5));
+        validateProcessList.add(getOneSymbolValidator("-"));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(2));
+        validateProcessList.add(getOneSymbolValidator(" "));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(2));
         validateProcessList.add(PDdocNumberValidator);
         validateProcessList.add(endValidator);
         return validateProcessList;
@@ -60,14 +60,26 @@ public class DocumentDecimalNumberValidator {
     }
 
     static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {
+        if (enDocumentCategory == null) {
+            return false;
+        }
         switch (enDocumentCategory) {
             case KD:
+                if (value == null) {
+                    return false;
+                }
                 return processValidationIsValid(value, KDvalidateProcessList);
 
             case TD:
+                if (value == null) {
+                    return false;
+                }
                 return processValidationIsValid(value, TDvalidateProcessList);
 
             case PD:
+                if (value == null) {
+                    return false;
+                }
                 return processValidationIsValid(value, PDvalidateProcessList);
 
             default:

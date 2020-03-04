@@ -20,58 +20,49 @@ public class ValidatorsFactory {
             0, 1, 2, 3, 4, 6, 7, 8, 10, 21, 41, 42, 50, 51, 55, 60, 65, 71, 73, 74, 75, 80, 81, 85, 88, 90, 91
     ));
 
-    static Map<String, Function<ValidationResult, ValidationResult>> mapOfValidators = new HashMap<>();
-
-    static Function<ValidationResult, ValidationResult> organizationCodeValidator =
-            new Validator(4, (String s) -> organizationCode.contains(s));
-    static Function<ValidationResult, ValidationResult> TDtypeDocCodeValidator =
-            new IntegerValidator(2, (Integer i) -> typeDocCode.contains(i));
-    static Function<ValidationResult, ValidationResult> TDtypeProcessCodeValidator =
-            new IntegerValidator(1, (Integer i) -> typeProcessCode.contains(i));
-    static Function<ValidationResult, ValidationResult> TDtypeProcessWorkCodeValidator =
-            new IntegerValidator(2, i -> (typeProcessWorkCode.contains(i)));
-    static Function<ValidationResult, ValidationResult> TDfixCodeValidator =
-            new Validator(true, 1, "Р"::equals);
-    static Function<ValidationResult, ValidationResult> lengthTwoRussianLetterValidator =
-            new Validator(2, s ->  s.matches("[А-Я][А-Я]"));
-    static Function<ValidationResult, ValidationResult> endValidator =
-            new Validator(0, StringUtils::isEmpty);
+    static Function<ValidationResult, ValidationResult> organizationCodeValidator = getSetContainsValidator(4, organizationCode);
+    static Function<ValidationResult, ValidationResult> TDtypeDocCodeValidator = getSetContainsIntegerValidator(2, typeDocCode);
+    static Function<ValidationResult, ValidationResult> TDtypeProcessCodeValidator = getSetContainsIntegerValidator(1, typeProcessCode);
+    static Function<ValidationResult, ValidationResult> TDtypeProcessWorkCodeValidator = getSetContainsIntegerValidator(2, typeProcessWorkCode);
+    static Function<ValidationResult, ValidationResult> TDfixCodeValidator = new Validator(true, 1, "Р"::equals);
+    static Function<ValidationResult, ValidationResult> lengthTwoRussianLetterValidator = new Validator(2, s ->  s.matches("[А-Я][А-Я]"));
+    static Function<ValidationResult, ValidationResult> endValidator = new Validator(0, StringUtils::isEmpty);
 
     static Function<ValidationResult, ValidationResult> PDdocNumberPartValidator = getPDdocNumberPartValidator();
     static Function<ValidationResult, ValidationResult> getPDdocNumberPartValidator() {
         List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required#-", getOneSymbolValidator("-")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#1", getLengthMoreThanZeroIntegerValidator(1)));
+        validateProcessList.add(getOneSymbolValidator("-"));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(1));
         return getCompositeValidator(validateProcessList);
     };
 
     static Function<ValidationResult, ValidationResult> PDdocNumberValidator = getPDdocNumberValidator();
     static Function<ValidationResult, ValidationResult> getPDdocNumberValidator() {
         List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
-        validateProcessList.add(mapOfValidators.getOrDefault("oneSymbolValidator#required# ", getOneSymbolValidator(" ")));
-        validateProcessList.add(mapOfValidators.getOrDefault("getLengthMoreThanZeroIntegerValidator#required#2", getLengthMoreThanZeroIntegerValidator(2)));
+        validateProcessList.add(getOneSymbolValidator(" "));
+        validateProcessList.add(getLengthMoreThanZeroIntegerValidator(2));
         validateProcessList.add(PDdocNumberPartValidator);
         return getCompositeValidator(validateProcessList);
     };
 
-    static Function<ValidationResult, ValidationResult> getCompositeValidator(List<Function<ValidationResult, ValidationResult>> list) {
-        return new Validator(true, value -> new ValidationResult(processValidation(value, list)));
-    }
-
-    static Function<ValidationResult, ValidationResult> getOneSymbolValidator(Boolean optional, String symbol) {
-        return new Validator(optional, 1, symbol::equals);
-    }
-
     static Function<ValidationResult, ValidationResult> getOneSymbolValidator(String symbol) {
-        return getOneSymbolValidator(false, symbol);
+        return new Validator(1, symbol::equals);
     }
 
     static Function<ValidationResult, ValidationResult> getLengthMoreThanZeroIntegerValidator(Integer length) {
-        return getLengthMoreThanZeroIntegerValidator(false, length);
+        return new IntegerValidator(false, length,  s -> 0 < s);
     }
 
-    static Function<ValidationResult, ValidationResult> getLengthMoreThanZeroIntegerValidator(Boolean optional, Integer length) {
-        return new IntegerValidator(optional, length,  s -> 0 < s);
+    static Function<ValidationResult, ValidationResult> getSetContainsValidator(Integer valueLength, Set<String> set) {
+        return new Validator(valueLength, set::contains);
+    }
+
+    static Function<ValidationResult, ValidationResult> getSetContainsIntegerValidator(Integer valueLength, Set<Integer> set) {
+        return new IntegerValidator(valueLength, set::contains);
+    }
+
+    static Function<ValidationResult, ValidationResult> getCompositeValidator(List<Function<ValidationResult, ValidationResult>> list) {
+        return new Validator(true, value -> new ValidationResult(processValidation(value, list)));
     }
 
     static ValidationResult processValidation(String value, List<Function<ValidationResult, ValidationResult>> validateProcessList) {
