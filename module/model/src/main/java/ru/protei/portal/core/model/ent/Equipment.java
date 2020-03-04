@@ -11,7 +11,9 @@ import java.util.List;
 /**
  * Оборудование
  */
-@JdbcEntity(table = "Equipment")
+@JdbcEntity(selectSql = "Equipment.* from Equipment, classifier_code from decimal_number")
+// @JdbcEntity(selectSql = "person.* FROM person, JSON_TABLE(person.contactInfo, '$.items[*]' COLUMNS ( a VARCHAR(32) PATH '$.a', t VARCHAR(64) PATH '$.t', v VARCHAR(128) PATH '$.v')) info")
+//@JdbcEntity(table = "Equipment")
 public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
