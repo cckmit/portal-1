@@ -8,7 +8,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.wizard.navitem.WizardWidgetNavItem;
@@ -148,6 +147,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         setPaneSelected(tabName);
         setBtnPrevious(pane);
         setBtnNext(pane);
+        setBtnExtraAction(pane);
     }
 
     private boolean canLeaveTab(String tabName) {
@@ -239,6 +239,24 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         });
     }
 
+    private void setBtnExtraAction(WizardWidgetPane pane) {
+        if (pane == null || pane.getButtonForward() == null) {
+            return;
+        }
+
+        if (btnExtraActionHandlerRegistration != null) {
+            btnExtraActionHandlerRegistration.removeHandler();
+        }
+
+        btnExtraActionText.setInnerText(activity != null ? activity.getExtraActionButtonName() : "");
+        btnExtraActionContainer.setVisible(activity != null && activity.isExtraActionButtonVisible(pane.getTabName()));
+        btnExtraActionHandlerRegistration = btnExtraAction.addClickHandler(event -> {
+            if (activity != null){
+                activity.onDoExtraAction();
+            }
+        });
+    }
+
     @UiHandler("navDropdownTabsSelected")
     public void navDropdownTabsSelectedClick(ClickEvent event) {
         event.preventDefault();
@@ -261,6 +279,12 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     @UiField
     HTMLPanel btnPreviousContainer;
     @UiField
+    HTMLPanel btnExtraActionContainer;
+    @UiField
+    Button btnExtraAction;
+    @UiField
+    SpanElement btnExtraActionText;
+    @UiField
     Button btnPrevious;
     @UiField
     SpanElement btnPreviousText;
@@ -280,6 +304,7 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
     private boolean isSelectable = true;
     private HandlerRegistration btnPreviousHandlerRegistration;
     private HandlerRegistration btnNextHandlerRegistration;
+    private HandlerRegistration btnExtraActionHandlerRegistration;
 
     interface WizardWidgetUiBinder extends UiBinder<HTMLPanel, WizardWidget> {}
     private static WizardWidgetUiBinder ourUiBinder = GWT.create(WizardWidgetUiBinder.class);

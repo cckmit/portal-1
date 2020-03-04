@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.query.DocumentTypeQuery;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.DocumentEvents;
+import ru.protei.portal.ui.common.client.events.DocumentTypeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
@@ -22,7 +22,7 @@ public abstract class DocumentTypeModel extends LifecycleSelectorModel<DocumentT
     }
 
     @Event
-    public void onDocumentTypeListChanged(DocumentEvents.ChangeModel event) {
+    public void onDocumentTypeListChanged(DocumentTypeEvents.ChangeModel event) {
         refreshOptions();
     }
 
