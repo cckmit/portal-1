@@ -30,7 +30,7 @@ public class RedmineServiceLayerInterceptor {
 
         String threadName = Thread.currentThread().getName();
         String methodName = pjp.getSignature().toShortString();
-        String threadToken = "T-" + Thread.currentThread().getId() + " Redmine " + methodName;
+        String threadToken = "R-" + Thread.currentThread().getId() + " " + methodName;
 
         Thread.currentThread().setName(threadToken);
 
