@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.wizard.WizardWidgetActivity;
 
 public abstract class DocumentCreateActivity implements Activity, AbstractDocumentCreateActivity, WizardWidgetActivity {
@@ -56,8 +57,18 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
     }
 
     @Override
-    public void onSaveAndContinue() {
+    public void onDoExtraAction() {
         fireEvent(new DocumentEvents.SaveAndContinue());
+    }
+
+    @Override
+    public boolean isExtraActionButtonVisible(String tabName) {
+        return lang.documentCreateHeader().equals(tabName);
+    }
+
+    @Override
+    public String getExtraActionButtonName() {
+        return lang.buttonSaveAndContinue();
     }
 
     @Override
@@ -74,6 +85,8 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
         view.setProjectCreateActive();
     }
 
+    @Inject
+    Lang lang;
     @Inject
     AbstractDocumentCreateView view;
     @Inject

@@ -6,7 +6,11 @@ public interface WizardWidgetActivity {
 
     void onDone();
 
-    void onSaveAndContinue();
+    void onDoExtraAction();
+
+    String getExtraActionButtonName();
+
+    default boolean isExtraActionButtonVisible (String tabName) { return true; }
 
     default boolean canLeaveTab(String from, String to) { return true; }
 
