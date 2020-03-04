@@ -14,10 +14,6 @@ import java.util.List;
 public interface RedmineService {
     Result<Issue> getIssueById( int id, RedmineEndpoint endpoint);
 
-//    void checkForNewIssues(RedmineEndpoint endpoint);
-
-//    void checkForUpdatedIssues(RedmineEndpoint endpoint);
-
     Result<Issue> updateIssue( Issue issue, RedmineEndpoint endpoint);
 
     Result<List<com.taskadapter.redmineapi.bean.Attachment>> uploadAttachment( Collection<Attachment> attachment, RedmineEndpoint endpoint);
