@@ -588,10 +588,10 @@ public abstract class DocumentEditActivity
     EquipmentControllerAsync equipmentController;
 
     private Boolean isEnableInventoryNumberByApproved(Document doc) {
-        return (doc == null) || !doc.getApproved() || doc.getInventoryNumber() == null;
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getInventoryNumber() == null;
     }
     private Boolean isEnableDecimalNumberByApproved(Document doc) {
-        return (doc == null) || !doc.getApproved() || doc.getDecimalNumber() == null;
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
     }
     private Document document;
     private ProjectInfo project;
