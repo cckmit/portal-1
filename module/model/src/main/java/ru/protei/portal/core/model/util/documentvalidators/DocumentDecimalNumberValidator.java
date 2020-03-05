@@ -4,15 +4,14 @@ import ru.protei.portal.core.model.dict.En_DocumentCategory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
-import static ru.protei.portal.core.model.util.documentvalidators.ValidatorsFactory.*;
+import static ru.protei.portal.core.model.util.documentvalidators.Validators.*;
 
 public class DocumentDecimalNumberValidator {
 
-    static List<Function<ValidationResult, ValidationResult>> KDvalidateProcessList = createKDvalidateProcessList();
-    static List<Function<ValidationResult, ValidationResult>> createKDvalidateProcessList() {
-        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
+    static List<Validator> KDvalidateProcessList = createKDvalidateProcessList();
+    static List<Validator> createKDvalidateProcessList() {
+        List<Validator> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
         validateProcessList.add(getOneSymbolValidator("."));
         validateProcessList.add(getLengthMoreThanZeroIntegerValidator(6));
@@ -25,9 +24,9 @@ public class DocumentDecimalNumberValidator {
         return validateProcessList;
     }
 
-    static List<Function<ValidationResult, ValidationResult>> TDvalidateProcessList = createTDvalidateProcessList();
-    static List<Function<ValidationResult, ValidationResult>> createTDvalidateProcessList() {
-        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
+    static List<Validator> TDvalidateProcessList = createTDvalidateProcessList();
+    static List<Validator> createTDvalidateProcessList() {
+        List<Validator> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
         validateProcessList.add(getOneSymbolValidator("."));
         validateProcessList.add(TDtypeDocCodeValidator);
@@ -40,9 +39,9 @@ public class DocumentDecimalNumberValidator {
         return validateProcessList;
     }
 
-    static List<Function<ValidationResult, ValidationResult>> PDvalidateProcessList = createPDvalidateProcessList();
-    static List<Function<ValidationResult, ValidationResult>> createPDvalidateProcessList() {
-        List<Function<ValidationResult, ValidationResult>> validateProcessList = new ArrayList<>();
+    static List<Validator> PDvalidateProcessList = createPDvalidateProcessList();
+    static List<Validator> createPDvalidateProcessList() {
+        List<Validator> validateProcessList = new ArrayList<>();
         validateProcessList.add(organizationCodeValidator);
         validateProcessList.add(getOneSymbolValidator("."));
         validateProcessList.add(getLengthMoreThanZeroIntegerValidator(5));
@@ -55,7 +54,7 @@ public class DocumentDecimalNumberValidator {
         return validateProcessList;
     }
 
-    static boolean processValidationIsValid(String value, List<Function<ValidationResult, ValidationResult>> validateProcessList) {
+    static boolean processValidationIsValid(String value, List<Validator> validateProcessList) {
         return processValidation(value, validateProcessList).isValid;
     }
 

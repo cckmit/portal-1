@@ -27,7 +27,7 @@ public class DocumentUtils {
     static public boolean isValidDocument(Document document, ProjectInfo project){
         return document.isValid()
                 && isValidInventoryNumberForMinistryOfDefence(document, project)
-                && isValidDecimalNumber(document.getDecimalNumber(), document.getType().getDocumentCategory())
+                && isValidDecimalNumber(document)
                 && isValidApproveFields(document);
     }
 
@@ -59,7 +59,10 @@ public class DocumentUtils {
         return document.getApprovedBy() != null && document.getApprovalDate() != null;
     }
 
-    static public boolean isValidDecimalNumber(String value, En_DocumentCategory enDocumentCategory ) {
-        return DocumentDecimalNumberValidator.isValid(value, enDocumentCategory);
+    static public boolean isValidDecimalNumber(Document document) {
+        if (!document.getApproved()) {
+            return true;
+        }
+        return DocumentDecimalNumberValidator.isValid(document.getDecimalNumber(), document.getType().getDocumentCategory());
     }
 }

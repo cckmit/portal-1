@@ -232,15 +232,9 @@ public abstract class DocumentEditActivity
     }
     private void setDecimalNumberEnabled(boolean isEnabled) {
         view.decimalNumberEnabled(isEnabled);
-//        if (!isEnabled) {
-//            view.decimalNumber().setValue(null);
-//        }
     }
     private void setInventoryNumberEnabled(boolean isEnabled) {
         view.inventoryNumberEnabled(isEnabled);
-//        if (!isEnabled) {
-//            view.inventoryNumber().setValue(null);
-//        }
     }
     private void setInventoryNumberMandatory(boolean isMandatory) {
         view.setInventoryNumberMandatory(isMandatory);
@@ -424,7 +418,7 @@ public abstract class DocumentEditActivity
             }
         }
 
-        if (!DocumentUtils.isValidDecimalNumber(doc.getDecimalNumber(), doc.getType().getDocumentCategory())) {
+        if (!DocumentUtils.isValidDecimalNumber(doc)) {
             return lang.decimalNumberIsInvalid();
         }
 
@@ -485,8 +479,6 @@ public abstract class DocumentEditActivity
     }
 
     private void fillView(Document document) {
-//        this.document = document;
-
         boolean isNew = document.getId() == null;
 
         view.setDownloadCloudsVisible(!isNew);
@@ -570,6 +562,13 @@ public abstract class DocumentEditActivity
         fireEvent(new DocumentEvents.SetButtonsEnabled(isEnabled));
     }
 
+    private Boolean isEnableInventoryNumberByApproved(Document doc) {
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getInventoryNumber() == null;
+    }
+    private Boolean isEnableDecimalNumberByApproved(Document doc) {
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -587,12 +586,7 @@ public abstract class DocumentEditActivity
     @Inject
     EquipmentControllerAsync equipmentController;
 
-    private Boolean isEnableInventoryNumberByApproved(Document doc) {
-        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getInventoryNumber() == null;
-    }
-    private Boolean isEnableDecimalNumberByApproved(Document doc) {
-        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
-    }
+
     private Document document;
     private ProjectInfo project;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";

@@ -8,14 +8,9 @@ class ValidationResult {
     String validatableString;
     Integer countOfProcessed;
 
-    public ValidationResult(String validatableString, Integer countOfProcessed) {
-        this.isValid = true;
-        this.validatableString = validatableString;
-        this.countOfProcessed = countOfProcessed;
-    }
-
-    public ValidationResult(Boolean isValid, Integer countOfProcessed) {
+    public ValidationResult(Boolean isValid, String validatableString, Integer countOfProcessed) {
         this.isValid = isValid;
+        this.validatableString = validatableString;
         this.countOfProcessed = countOfProcessed;
     }
 
