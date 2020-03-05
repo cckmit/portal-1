@@ -60,9 +60,8 @@ public abstract class DocumentEditActivity
 
         placeView(event.parent);
         view.drawInWizardContainer(true);
-        documentCreatedAndApprovedAndInventoryNumberSet = false;
-        documentCreatedAndApprovedAndDecimalNumberSet = false;
-        fillView(new Document());
+        this.document = new Document();
+        fillView(document);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -79,8 +78,6 @@ public abstract class DocumentEditActivity
 
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
-        documentCreatedAndApprovedAndInventoryNumberSet = false;
-        documentCreatedAndApprovedAndDecimalNumberSet = false;
         Document document = makeDocumentFromEvent(event);
         requestEquipmentAndFillView(event.equipmentId, document);
     }
@@ -96,8 +93,7 @@ public abstract class DocumentEditActivity
         view.drawInWizardContainer(false);
         requestDocumentAndFillView(event.id,
                 doc -> {
-                    documentCreatedAndApprovedAndInventoryNumberSet = doc.getApproved() && doc.getInventoryNumber() != null;
-                    documentCreatedAndApprovedAndDecimalNumberSet =  doc.getApproved() && doc.getDecimalNumber() != null;
+                    this.document = doc;
                     fillView(doc);
                 });
     }
@@ -228,30 +224,27 @@ public abstract class DocumentEditActivity
 
         setEquipmentEnabled(isEquipmentEnabled);
         setDocumentTypeEnabled(documentCategory != null);
-        if (!documentCreatedAndApprovedAndInventoryNumberSet) {
-            setDecimalNumberEnabled(isDesignationEnabled);
-        }
-        if (!documentCreatedAndApprovedAndDecimalNumberSet) {
-            setInventoryNumberEnabled(isDesignationEnabled);
-        }
+        setDecimalNumberEnabled(isEnableInventoryNumberByApproved(document) && isDesignationEnabled);
+        setInventoryNumberEnabled(isEnableDecimalNumberByApproved(document) && isDesignationEnabled);
         setInventoryNumberMandatory(DocumentUtils.needToCheckInventoryNumber(project,
                 view.isApproved().getValue(), view.documentType().getValue()));
         setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
     private void setDecimalNumberEnabled(boolean isEnabled) {
         view.decimalNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.decimalNumber().setValue(null);
-        }
+//        if (!isEnabled) {
+//            view.decimalNumber().setValue(null);
+//        }
     }
     private void setInventoryNumberEnabled(boolean isEnabled) {
         view.inventoryNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.inventoryNumber().setValue(null);
-        }
+//        if (!isEnabled) {
+//            view.inventoryNumber().setValue(null);
+//        }
     }
     private void setInventoryNumberMandatory(boolean isMandatory) {
         view.setInventoryNumberMandatory(isMandatory);
+        view.setDecimalNumberHMandatory(isMandatory);
     }
     private void setEquipmentEnabled(boolean isEnabled) {
         view.equipmentEnabled(isEnabled);
@@ -336,8 +329,7 @@ public abstract class DocumentEditActivity
             uploadDoc(() ->
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
-                            documentCreatedAndApprovedAndInventoryNumberSet = doc.getApproved() && doc.getInventoryNumber() != null;
-                            documentCreatedAndApprovedAndDecimalNumberSet =  doc.getApproved() && doc.getDecimalNumber() != null;
+                            this.document = doc;
                             fillView(doc);
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -493,7 +485,7 @@ public abstract class DocumentEditActivity
     }
 
     private void fillView(Document document) {
-        this.document = document;
+//        this.document = document;
 
         boolean isNew = document.getId() == null;
 
@@ -508,10 +500,10 @@ public abstract class DocumentEditActivity
         view.keywords().setValue(document.getKeywords());
         view.version().setValue(document.getVersion());
         view.inventoryNumber().setValue(document.getInventoryNumber());
-        view.inventoryNumberEnabled(!documentCreatedAndApprovedAndInventoryNumberSet);
+
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
-        view.decimalNumberEnabled(!documentCreatedAndApprovedAndDecimalNumberSet);
+
         view.isApproved().setValue(isNew ? false : document.getApproved());
         view.nameValidator().setValid(!view.name().getValue().isEmpty());
         view.documentDocUploader().resetForm();
@@ -531,9 +523,13 @@ public abstract class DocumentEditActivity
             PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
+            view.inventoryNumberEnabled(true);
+            view.decimalNumberEnabled(true);
         } else {
             view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
+            view.inventoryNumberEnabled(isEnableInventoryNumberByApproved(this.document));
+            view.decimalNumberEnabled(isEnableDecimalNumberByApproved(this.document));
         }
 
         view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
@@ -591,8 +587,12 @@ public abstract class DocumentEditActivity
     @Inject
     EquipmentControllerAsync equipmentController;
 
-    private Boolean documentCreatedAndApprovedAndInventoryNumberSet;
-    private Boolean documentCreatedAndApprovedAndDecimalNumberSet;
+    private Boolean isEnableInventoryNumberByApproved(Document doc) {
+        return (doc == null) || !doc.getApproved() || doc.getInventoryNumber() == null;
+    }
+    private Boolean isEnableDecimalNumberByApproved(Document doc) {
+        return (doc == null) || !doc.getApproved() || doc.getDecimalNumber() == null;
+    }
     private Document document;
     private ProjectInfo project;
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
