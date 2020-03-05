@@ -26,6 +26,8 @@ import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Список децимальных номеров
@@ -102,6 +104,11 @@ public class MultipleDecimalNumberInput
     @UiHandler( "addPdra" )
     public void onAddPdraClicked( ClickEvent event )  {
         createEmptyBox(En_OrganizationCode.PDRA);
+    }
+
+    @UiHandler("clonePamr")
+    public void onClonePamrClicked(ClickEvent event) {
+        clonePamrNumbersIntoPdra();
     }
 
     public boolean checkIfCorrect(){
@@ -273,6 +280,66 @@ public class MultipleDecimalNumberInput
         ValueChangeEvent.fire(this, values);
     }
 
+    private void clonePamrNumbersIntoPdra() {
+        if (!checkIfCorrect()) {
+            return;
+        }
+
+        final List<DecimalNumber> pamrNumbers = getPamrNumbers();
+        final List<DecimalNumber> pdraNumbers = getPdraNumbers();
+
+        pamrNumbers
+                .stream()
+                .distinct()
+                .map(this::createPdraFromPamr)
+                .filter(pdraFromPamrNumber -> pdraNumbers.stream().noneMatch(pdraNumber -> isEqualNumbers(pdraFromPamrNumber, pdraNumber)))
+                .forEach(pdraFromPamrNumber -> {
+                    createBoxAndFillValue(pdraFromPamrNumber, true);
+                    values.add(pdraFromPamrNumber);
+                });
+    }
+
+    private DecimalNumber createPdraFromPamr(DecimalNumber number) {
+        DecimalNumber decimalNumber = new DecimalNumber();
+        decimalNumber.setReserve(false);
+        decimalNumber.setOrganizationCode(En_OrganizationCode.PDRA);
+        decimalNumber.setClassifierCode(number.getClassifierCode());
+        decimalNumber.setRegisterNumber(number.getRegisterNumber());
+        decimalNumber.setModification(number.getModification());
+
+        return decimalNumber;
+    }
+
+    private boolean isEqualNumbers(DecimalNumber number1, DecimalNumber number2) {
+        if (!Objects.equals(number1.getClassifierCode(), number2.getClassifierCode())) {
+            return false;
+        }
+
+        if (!Objects.equals(number1.getRegisterNumber(), number2.getRegisterNumber())) {
+            return false;
+        }
+
+        if (!Objects.equals(number1.getModification(), number2.getModification())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private List<DecimalNumber> getPamrNumbers() {
+        return values
+                .stream()
+                .filter(decimalNumber -> En_OrganizationCode.PAMR.equals(decimalNumber.getOrganizationCode()))
+                .collect(Collectors.toList());
+    }
+
+    private List<DecimalNumber> getPdraNumbers() {
+        return values
+                .stream()
+                .filter(decimalNumber -> En_OrganizationCode.PDRA.equals(decimalNumber.getOrganizationCode()))
+                .collect(Collectors.toList());
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -285,6 +352,8 @@ public class MultipleDecimalNumberInput
     Button addPamr;
     @UiField
     Button addPdra;
+    @UiField
+    Button clonePamr;
 
     @Inject
     DecimalNumberDataProvider dataProvider;

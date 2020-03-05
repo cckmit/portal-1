@@ -19,6 +19,9 @@
                 <g:Button ui:field="addPdra" styleName="btn btn-xs btn-info pull-right">
                     <ui:text from="{lang.buttonAddPdra}"/>
                 </g:Button>
+                <g:Button ui:field="clonePamr" styleName="btn btn-xs btn-info pull-right m-r-5">
+                    <ui:text from="{lang.buttonClonePamr}"/>
+                </g:Button>
             </div>
             <g:HTMLPanel ui:field="pdraList"/>
         </div>
