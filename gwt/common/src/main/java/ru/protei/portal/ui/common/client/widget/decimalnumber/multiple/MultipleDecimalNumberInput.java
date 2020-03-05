@@ -26,7 +26,6 @@ import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -78,7 +77,8 @@ public class MultipleDecimalNumberInput
                 .withSuccess(registerNumber -> {
                     DecimalNumber number = box.getValue();
                     number.setRegisterNumber(registerNumber);
-                    number.setModification(null);
+
+                    correctNumbers(box.getValue());
 
                     box.setValue(number);
                     box.setFocusToRegisterNumberField(true);
@@ -103,11 +103,6 @@ public class MultipleDecimalNumberInput
 
     @UiHandler( "addPdra" )
     public void onAddPdraClicked( ClickEvent event )  {
-        createEmptyBox(En_OrganizationCode.PDRA);
-    }
-
-    @UiHandler("clonePamr")
-    public void onClonePamrClicked(ClickEvent event) {
         clonePamrNumbersIntoPdra();
     }
 
@@ -178,6 +173,8 @@ public class MultipleDecimalNumberInput
                     checkExistNumber(box);
                 }
             }
+
+            correctNumbers(box.getValue());
         } );
         box.setEnabled(isEnabled);
 
@@ -285,14 +282,16 @@ public class MultipleDecimalNumberInput
             return;
         }
 
+        pdraList.clear();
+        numberBoxes.removeIf(box -> En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode()));
+        values.removeIf(number -> En_OrganizationCode.PDRA.equals(number.getOrganizationCode()));
+
         final List<DecimalNumber> pamrNumbers = getPamrNumbers();
-        final List<DecimalNumber> pdraNumbers = getPdraNumbers();
 
         pamrNumbers
                 .stream()
                 .distinct()
                 .map(this::createPdraFromPamr)
-                .filter(pdraFromPamrNumber -> pdraNumbers.stream().noneMatch(pdraNumber -> isEqualNumbers(pdraFromPamrNumber, pdraNumber)))
                 .forEach(pdraFromPamrNumber -> {
                     createBoxAndFillValue(pdraFromPamrNumber, true);
                     values.add(pdraFromPamrNumber);
@@ -310,33 +309,22 @@ public class MultipleDecimalNumberInput
         return decimalNumber;
     }
 
-    private boolean isEqualNumbers(DecimalNumber number1, DecimalNumber number2) {
-        if (!Objects.equals(number1.getClassifierCode(), number2.getClassifierCode())) {
-            return false;
-        }
+    private void correctNumbers(final DecimalNumber decimalNumber) {
+        numberBoxes.forEach(decimalNumberBox -> {
+            decimalNumberBox.setClassifierCode(decimalNumber.getClassifierCode());
+            decimalNumberBox.setRegisterNumber(decimalNumber.getRegisterNumber());
+        });
 
-        if (!Objects.equals(number1.getRegisterNumber(), number2.getRegisterNumber())) {
-            return false;
-        }
-
-        if (!Objects.equals(number1.getModification(), number2.getModification())) {
-            return false;
-        }
-
-        return true;
+        values.forEach(number -> {
+            number.setClassifierCode(decimalNumber.getClassifierCode());
+            number.setRegisterNumber(decimalNumber.getRegisterNumber());
+        });
     }
 
     private List<DecimalNumber> getPamrNumbers() {
         return values
                 .stream()
                 .filter(decimalNumber -> En_OrganizationCode.PAMR.equals(decimalNumber.getOrganizationCode()))
-                .collect(Collectors.toList());
-    }
-
-    private List<DecimalNumber> getPdraNumbers() {
-        return values
-                .stream()
-                .filter(decimalNumber -> En_OrganizationCode.PDRA.equals(decimalNumber.getOrganizationCode()))
                 .collect(Collectors.toList());
     }
 
@@ -352,8 +340,6 @@ public class MultipleDecimalNumberInput
     Button addPamr;
     @UiField
     Button addPdra;
-    @UiField
-    Button clonePamr;
 
     @Inject
     DecimalNumberDataProvider dataProvider;
