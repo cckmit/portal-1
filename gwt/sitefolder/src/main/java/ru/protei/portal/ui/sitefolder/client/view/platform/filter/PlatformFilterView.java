@@ -45,6 +45,7 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
         managers.setValue(null);
         parameters.setValue(null);
         comment.setValue(null);
+        serverIp.setValue(null);
     }
 
     @Override
@@ -75,6 +76,11 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
     @Override
     public HasValue<String> parameters() {
         return parameters;
+    }
+
+    @Override
+    public HasValue<String> serverIp() {
+        return serverIp;
     }
 
     @Override
@@ -120,6 +126,11 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
         fireChangeTimer();
     }
 
+    @UiHandler("serverIp")
+    public void onServerIpChanged(ValueChangeEvent<String> event) {
+        fireChangeTimer();
+    }
+
     @UiHandler("comment")
     public void onCommentKeyUp(KeyUpEvent event) {
         fireChangeTimer();
@@ -159,6 +170,8 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
     EmployeeMultiSelector managers;
     @UiField
     CleanableSearchBox parameters;
+    @UiField
+    CleanableSearchBox serverIp;
     @UiField
     TextArea comment;
 

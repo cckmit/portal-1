@@ -13,6 +13,7 @@ public class PlatformQuery extends BaseQuery {
     private List<Long> managerIds;
     private String params;
     private String comment;
+    private String serverIp;
 
     public PlatformQuery() {
         this("", En_SortField.id, En_SortDir.ASC);
@@ -84,5 +85,13 @@ public class PlatformQuery extends BaseQuery {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getServerIp() {
+        return serverIp;
+    }
+
+    public void setServerIp(String serverIp) {
+        this.serverIp = serverIp;
     }
 }

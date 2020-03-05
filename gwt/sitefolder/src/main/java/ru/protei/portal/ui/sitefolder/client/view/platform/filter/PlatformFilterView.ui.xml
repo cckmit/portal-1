@@ -26,6 +26,13 @@
 
                 <div class="form-group col-md-12">
                     <label>
+                        <ui:text from="{lang.siteFolderIP}"/>
+                    </label>
+                    <cleanablesearchbox:CleanableSearchBox ui:field="serverIp"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label>
                         <ui:text from="{lang.siteFolderParams}"/>
                     </label>
                     <cleanablesearchbox:CleanableSearchBox ui:field="parameters"/>
