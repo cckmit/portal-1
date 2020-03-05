@@ -435,11 +435,16 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(local, caseQuery.local) &&
                 Objects.equals(contractIndependentProject, caseQuery.contractIndependentProject) &&
                 Objects.equals(platformIndependentProject, caseQuery.platformIndependentProject) &&
-                Objects.equals(productDirectionId, caseQuery.productDirectionId);
+                Objects.equals(productDirectionId, caseQuery.productDirectionId) &&
+                Objects.equals(creatorIds, caseQuery.creatorIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds, type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom, modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds, customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject, productDirectionId);
+        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
+                type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
+                modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
+                customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject,
+                productDirectionId, creatorIds);
     }
 }
