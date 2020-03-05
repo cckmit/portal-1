@@ -282,15 +282,26 @@ public class MultipleDecimalNumberInput
             return;
         }
 
-        pdraList.clear();
-        numberBoxes.removeIf(box -> En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode()));
-        values.removeIf(number -> En_OrganizationCode.PDRA.equals(number.getOrganizationCode()));
+        for (DecimalNumberBox box : numberBoxes) {
+            if (!isNew(box.getValue())) {
+                continue;
+            }
+
+            if (!En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode())) {
+                continue;
+            }
+
+            pdraList.remove(box.asWidget());
+        }
+
+        numberBoxes.removeIf(box -> En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode()) && isNew(box.getValue()));
+        values.removeIf(number -> En_OrganizationCode.PDRA.equals(number.getOrganizationCode()) && isNew(number));
 
         final List<DecimalNumber> pamrNumbers = getPamrNumbers();
 
         pamrNumbers
                 .stream()
-                .distinct()
+                .filter(this::isNew)
                 .map(this::createPdraFromPamr)
                 .forEach(pdraFromPamrNumber -> {
                     createBoxAndFillValue(pdraFromPamrNumber, true);
@@ -310,12 +321,12 @@ public class MultipleDecimalNumberInput
     }
 
     private void correctNumbers(final DecimalNumber decimalNumber) {
-        numberBoxes.forEach(decimalNumberBox -> {
+        numberBoxes.stream().filter(decimalNumberBox -> isNew(decimalNumberBox.getValue())).forEach(decimalNumberBox -> {
             decimalNumberBox.setClassifierCode(decimalNumber.getClassifierCode());
             decimalNumberBox.setRegisterNumber(decimalNumber.getRegisterNumber());
         });
 
-        values.forEach(number -> {
+        values.stream().filter(this::isNew).forEach(number -> {
             number.setClassifierCode(decimalNumber.getClassifierCode());
             number.setRegisterNumber(decimalNumber.getRegisterNumber());
         });
@@ -326,6 +337,10 @@ public class MultipleDecimalNumberInput
                 .stream()
                 .filter(decimalNumber -> En_OrganizationCode.PAMR.equals(decimalNumber.getOrganizationCode()))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isNew(DecimalNumber number) {
+        return number.getId() == null;
     }
 
     @Inject
