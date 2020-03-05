@@ -207,6 +207,7 @@ public abstract class PlatformTableActivity implements
                         .collect(Collectors.toList())
         );
         query.setParams(filterView.parameters().getValue());
+        query.setServerIp(filterView.serverIp().getValue());
         query.setComment(filterView.comment().getValue());
         return query;
     }

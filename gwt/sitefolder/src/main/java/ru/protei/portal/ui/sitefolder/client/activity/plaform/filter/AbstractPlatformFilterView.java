@@ -27,5 +27,7 @@ public interface AbstractPlatformFilterView extends IsWidget {
 
     HasValue<String> parameters();
 
+    HasValue<String> serverIp();
+
     HasValue<String> comment();
 }
