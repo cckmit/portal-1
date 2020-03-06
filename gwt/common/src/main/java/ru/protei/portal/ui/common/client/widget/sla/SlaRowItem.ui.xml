@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'>
+
+    <g:HTMLPanel styleName="row">
+        <div class="col-md-2 m-t-5">
+            <label ui:field="importance"/>
+        </div>
+        <div class="form-group col-md-3">
+            <timefield:TimeTextBox ui:field="reactionTime" styleName="form-control time-elapsed"/>
+        </div>
+        <div class="form-group col-md-3">
+            <timefield:TimeTextBox ui:field="temporaryTime" styleName="form-control time-elapsed"/>
+        </div>
+        <div class="form-group col-md-3">
+            <timefield:TimeTextBox ui:field="fullSolutionTime" styleName="form-control time-elapsed"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

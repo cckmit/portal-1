@@ -2091,4 +2091,12 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskAddRow();
 
     String issueCreator();
+
+    String contractSlaTemporaryTime();
+
+    String contractSlaReactionTime();
+
+    String contractSlaFullTime();
+
+    String contractSla();
 }

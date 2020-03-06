@@ -115,6 +115,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     }, mappedColumn = "UNIT_NAME")
     private String caseDirectionName;
 
+    @JdbcOneToMany(table = "contract_sla", localColumn = "id", remoteColumn = "contract_id")
+    private List<ContractSla> contractSlas;
+
     /**
      * Текущее состояние договора
      */
@@ -433,6 +436,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.caseDirectionId = caseDirectionId;
     }
 
+    public List<ContractSla> getContractSlas() {
+        return contractSlas;
+    }
+
+    public void setContractSlas(List<ContractSla> contractSlas) {
+        this.contractSlas = contractSlas;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -455,12 +466,19 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", modified=" + modified +
                 ", managerId=" + managerId +
                 ", managerShortName='" + managerShortName + '\'' +
+                ", caseManagerId=" + caseManagerId +
+                ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", curatorId=" + curatorId +
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", contragentId=" + contragentId +
                 ", contragentName='" + contragentName + '\'' +
+                ", caseContragentId=" + caseContragentId +
+                ", caseContragentName='" + caseContragentName + '\'' +
                 ", directionId=" + directionId +
                 ", directionName='" + directionName + '\'' +
+                ", caseDirectionId=" + caseDirectionId +
+                ", caseDirectionName='" + caseDirectionName + '\'' +
+                ", contractSLAList=" + contractSlas +
                 ", stateId=" + stateId +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +
@@ -476,7 +494,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", parentContractNumber='" + parentContractNumber + '\'' +
                 ", childContracts=" + childContracts +
                 ", projectId=" + projectId +
-                ", projectName=" + projectName +
+                ", projectName='" + projectName + '\'' +
                 '}';
     }
 

@@ -6,11 +6,13 @@
 
     <changeSet id="create-table-contract_sla" author="fomin">
         <createTable tableName="contract_sla">
-            <column name="id" type="BIGINT">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="importance_level_id" type="INT" />
-            <column name="time" type="BIGINT" />
+            <column name="reaction_time" type="BIGINT" />
+            <column name="temporary_solution_time" type="BIGINT" />
+            <column name="full_solution_time" type="BIGINT" />
             <column name="contract_id" type="BIGINT" />
         </createTable>
     </changeSet>
@@ -25,7 +27,7 @@
                 onUpdate="CASCADE" onDelete="NO ACTION"/>
     </changeSet>
 
-    <changeSet id="add-contract_sla-contract-fk" author="">
+    <changeSet id="add-contract_sla-contract-fk" author="fomin">
         <addForeignKeyConstraint
                 baseTableName="contract_sla"
                 baseColumnNames="contract_id"

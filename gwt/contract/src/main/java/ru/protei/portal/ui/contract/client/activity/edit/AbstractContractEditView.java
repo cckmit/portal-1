@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -54,6 +55,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<PersonShortView> manager();
 
     HasValue<ProductDirectionInfo> direction();
+
+    HasValue<List<ContractSla>> slaInput();
 
     HasEnabled managerEnabled();
 

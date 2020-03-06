@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -22,6 +23,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
@@ -151,6 +157,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
             view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
         }
+
+        view.slaInput().setValue(contract.getContractSlas());
     }
 
     private void fillDto() {
@@ -179,6 +187,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             contract.setCaseManagerId(null);
             contract.setCaseDirectionId(null);
         }
+
+        contract.setContractSlas(view.slaInput().getValue());
     }
 
     private void showValidationError() {
