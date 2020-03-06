@@ -11,9 +11,7 @@ import java.util.List;
 /**
  * Оборудование
  */
-@JdbcEntity(selectSql = "Equipment.* from Equipment, classifier_code from decimal_number")
-// @JdbcEntity(selectSql = "person.* FROM person, JSON_TABLE(person.contactInfo, '$.items[*]' COLUMNS ( a VARCHAR(32) PATH '$.a', t VARCHAR(64) PATH '$.t', v VARCHAR(128) PATH '$.v')) info")
-//@JdbcEntity(table = "Equipment")
+@JdbcEntity(table = "Equipment")
 public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -76,6 +74,11 @@ public class Equipment extends AuditableObject {
 
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
     private String projectName;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "entity_id", table = "decimal_number", sqlTableAlias = "DN"),
+    }, mappedColumn = "classifier_code")
+    private Integer classifierCode;
 
     /**
      * Привязанные децимальные номера
@@ -236,6 +239,14 @@ public class Equipment extends AuditableObject {
 
     public String getAuthorShortName() {
         return authorShortName;
+    }
+
+    public Integer getClassifierCode() {
+        return classifierCode;
+    }
+
+    public void setClassifierCode(Integer classifierCode) {
+        this.classifierCode = classifierCode;
     }
 
     @Override

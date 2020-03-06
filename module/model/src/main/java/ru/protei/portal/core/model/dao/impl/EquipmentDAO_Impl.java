@@ -23,8 +23,6 @@ import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
  */
 public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements EquipmentDAO {
 
-    private final static String DECIMAL_NUMBER_JOIN = "LEFT JOIN decimal_number DN ON DN.entity_id = equipment.id";
-
     @Override
     public SearchResult<Equipment> getSearchResult(EquipmentQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
@@ -47,7 +45,6 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
     private JdbcQueryParameters buildJdbcQueryParameters(EquipmentQuery query) {
         SqlCondition where = createSqlCondition(query);
         return new JdbcQueryParameters().
-                withJoins(DECIMAL_NUMBER_JOIN).
                 withCondition(where.condition, where.args).
                 withDistinct(true).
                 withOffset(query.getOffset()).
