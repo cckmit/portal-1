@@ -75,10 +75,6 @@ public class Equipment extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
     private String projectName;
 
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "entity_id", table = "decimal_number", sqlTableAlias = "DN"),
-    }, mappedColumn = "classifier_code")
-    private Integer classifierCode;
 
     /**
      * Привязанные децимальные номера
@@ -86,15 +82,24 @@ public class Equipment extends AuditableObject {
     @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "entity_id")
     private List<DecimalNumber> decimalNumbers;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "entity_id", table = "decimal_number", sqlTableAlias = "decimal_number"),
+    }, mappedColumn = "classifier_code")
+    private Integer classifierCode;
+
     /**
      * Первичное применение
      */
     @JdbcColumn(name = "linked_equipment_id")
     private Long linkedEquipmentId;
 
-
     @JdbcOneToMany(table = "decimal_number", localColumn = "linked_equipment_id", remoteColumn = "entity_id")
     private List<DecimalNumber> linkedEquipmentDecimalNumbers;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "linked_equipment_id", remoteColumn = "entity_id", table = "decimal_number", sqlTableAlias = "linked_equipment_decimal_number"),
+    }, mappedColumn = "classifier_code")
+    private Integer linkedEquipmentClassifierCode;
 
     public Equipment() {
     }
@@ -247,6 +252,14 @@ public class Equipment extends AuditableObject {
 
     public void setClassifierCode(Integer classifierCode) {
         this.classifierCode = classifierCode;
+    }
+
+    public Integer getLinkedEquipmentClassifierCode() {
+        return linkedEquipmentClassifierCode;
+    }
+
+    public void setLinkedEquipmentClassifierCode(Integer linkedEquipmentClassifierCode) {
+        this.linkedEquipmentClassifierCode = linkedEquipmentClassifierCode;
     }
 
     @Override
