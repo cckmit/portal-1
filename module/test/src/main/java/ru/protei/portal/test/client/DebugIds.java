@@ -705,6 +705,7 @@ public class DebugIds {
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
+        String SLA_INPUT = "contract-sla-input";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";

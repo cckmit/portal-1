@@ -95,6 +95,13 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>> {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
+    public void setEnsureDebugId(String debugId) {
+        criticalItem.setEnsureDebugId(debugId + "-critical");
+        importantItem.setEnsureDebugId(debugId + "-important");
+        basicItem.setEnsureDebugId(debugId + "-basic");
+        cosmeticItem.setEnsureDebugId(debugId + "-cosmetic");
+    }
+
     @Inject
     @UiField(provided = true)
     SlaRowItem criticalItem;

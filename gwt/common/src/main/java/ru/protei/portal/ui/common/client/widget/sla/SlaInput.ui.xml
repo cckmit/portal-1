@@ -5,7 +5,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <h5><ui:text from="{lang.contractSla}:"/></h5>
         <div class="row">
             <div class="col-md-2">
             </div>

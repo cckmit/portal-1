@@ -152,7 +152,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     @Override
     public HasVisibility slaInputVisibility() {
-        return slaInput;
+        return slaContainer;
     }
 
     public HasEnabled managerEnabled() {
@@ -250,6 +250,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
         saveButton.ensureDebugId(DebugIds.CONTRACT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
+
+        slaInput.setEnsureDebugId(DebugIds.CONTRACT.SLA_INPUT);
     }
 
     @UiField
@@ -303,6 +305,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     SlaInput slaInput;
+    @UiField
+    HTMLPanel slaContainer;
     @UiField
     LabelElement numberLabel;
     @UiField

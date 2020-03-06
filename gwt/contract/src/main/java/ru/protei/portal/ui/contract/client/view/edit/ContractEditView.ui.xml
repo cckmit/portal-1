@@ -77,10 +77,6 @@
                                 <productdirection:ProductDirectionButtonSelector ui:field="direction" validation="true" hideNullValue="true" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <sla:SlaInput ui:field="slaInput" styleName="form-group col-md-6"/>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -131,6 +127,21 @@
                     </div>
                 </div>
             </div>
+
+            <g:HTMLPanel ui:field="slaContainer" styleName="container-fluid padding-15 bg-white">
+                <div class="card card-transparent no-margin">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <ui:text from="{lang.contractSla}"/>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <sla:SlaInput ui:field="slaInput" styleName="form-group col-md-6"/>
+                        </div>
+                    </div>
+                </div>
+            </g:HTMLPanel>
 
         </div>
         <div class="card-footer">

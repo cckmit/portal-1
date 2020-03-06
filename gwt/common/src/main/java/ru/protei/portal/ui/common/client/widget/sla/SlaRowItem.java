@@ -28,7 +28,7 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
 
         ContractSla contractSla = new ContractSla();
         contractSla.setReactionTime(reactionTime.getTime());
-        contractSla.setTemporarySolutionTime(temporaryTime.getTime());
+        contractSla.setTemporarySolutionTime(temporarySolutionTime.getTime());
         contractSla.setFullSolutionTime(fullSolutionTime.getTime());
 
         return contractSla;
@@ -43,14 +43,14 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
     public void setValue(ContractSla value, boolean fireEvents) {
         if (value == null) {
             reactionTime.setTime(null);
-            temporaryTime.setTime(null);
+            temporarySolutionTime.setTime(null);
             fullSolutionTime.setTime(null);
 
             return;
         }
 
         reactionTime.setTime(value.getReactionTime());
-        temporaryTime.setTime(value.getTemporarySolutionTime());
+        temporarySolutionTime.setTime(value.getTemporarySolutionTime());
         fullSolutionTime.setTime(value.getFullSolutionTime());
     }
 
@@ -63,6 +63,12 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
         this.importance.setInnerText(importance);
     }
 
+    public void setEnsureDebugId(String debugId) {
+        reactionTime.ensureDebugId(debugId + "-reaction-time");
+        temporarySolutionTime.ensureDebugId(debugId + "-temporary-solution-time");
+        fullSolutionTime.ensureDebugId(debugId + "-complete-solution-time");
+    }
+
     @UiField
     LabelElement importance;
 
@@ -72,7 +78,7 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
 
     @Inject
     @UiField(provided = true)
-    TimeTextBox temporaryTime;
+    TimeTextBox temporarySolutionTime;
 
     @Inject
     @UiField(provided = true)
@@ -83,7 +89,7 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
             return false;
         }
 
-        if (temporaryTime.getTime() == null) {
+        if (temporarySolutionTime.getTime() == null) {
             return false;
         }
 
