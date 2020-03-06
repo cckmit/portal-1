@@ -142,7 +142,7 @@ public abstract class PlatformTableActivity implements
     @Override
     public void onOpenServersClicked(Platform value) {
         if (value != null) {
-            fireEvent(new SiteFolderServerEvents.Show(value.getId(), value.getName()));
+            fireEvent(new SiteFolderServerEvents.Show(value.getId()));
         }
     }
 

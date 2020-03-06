@@ -13,18 +13,12 @@ public class SiteFolderServerEvents {
 
     @Url(value = "sfservers", primary = true)
     public static class Show {
-        @Name("platform_id")
+        @Name("platform")
         public Long platformId;
-        @Name("platform_name")
-        public String platformName;
         public Show() {
             this(null);
         }
         public Show (Long platformId) {
-            this.platformId = platformId;
-        }
-        public Show (Long platformId, String platformName) {
-            this.platformName = platformName;
             this.platformId = platformId;
         }
     }

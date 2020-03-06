@@ -75,12 +75,8 @@ public abstract class ServerTableActivity implements
         }
 
         platformId = event.platformId;
-        platformName = event.platformName;
 
-        if (platformId != null && platformName != null) {
-            fillOptionAndLoadTable();
-        }
-        if (platformId != null && platformName == null) {
+        if (platformId != null) {
             requestPlatformAndLoadTable();
         }
     }
@@ -201,9 +197,11 @@ public abstract class ServerTableActivity implements
         PlatformOption option = new PlatformOption();
         siteFolderController.getPlatform(platformId, new FluentCallback<Platform>()
                 .withError(throwable -> {
-                    filterView.resetFilter();
+                    option.setId(platformId);
+                    options.add(option);
+                    filterView.platforms().setValue(options);
                     loadTable();
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotFound(), NotifyEvents.NotifyType.ERROR));
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRequestError(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(platform -> {
                     option.setId(platformId);
@@ -213,17 +211,6 @@ public abstract class ServerTableActivity implements
                     loadTable();
                 }));
     }
-
-    private void fillOptionAndLoadTable() {
-        Set<PlatformOption> options = new HashSet<>();
-        PlatformOption option = new PlatformOption();
-        option.setId(platformId);
-        option.setDisplayText(platformName);
-        options.add(option);
-        filterView.platforms().setValue(options);
-        loadTable();
-    }
-
 
     private void loadTable() {
         animation.closeDetails();
@@ -265,7 +252,7 @@ public abstract class ServerTableActivity implements
             public void onSuccess(Boolean result) {
                 if (result) {
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
-                    fireEvent(new SiteFolderServerEvents.Show(platformId, platformName));
+                    fireEvent(new SiteFolderServerEvents.Show(platformId));
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -290,6 +277,5 @@ public abstract class ServerTableActivity implements
     AbstractPagerView pagerView;
 
     private Long platformId = null;
-    private String platformName = null;
     private AppEvents.InitDetails initDetails;
 }
