@@ -116,7 +116,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Override
     public void onOpenClicked() {
         if (platform != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platform.getId()));
+            fireEvent(new SiteFolderServerEvents.Show(platform.getId(), platform.getName()));
         }
     }
 
