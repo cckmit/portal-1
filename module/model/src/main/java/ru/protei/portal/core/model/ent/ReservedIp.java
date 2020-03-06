@@ -2,10 +2,8 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -28,8 +26,14 @@ public class ReservedIp extends AuditableObject implements Serializable {
     @JdbcColumn(name="subnet_id")
     private Long subnetId;
 
+    @JdbcJoinedObject(localColumn = "subnet_id", remoteColumn = "id", table = "subnet")
+    private Subnet subnet;
+
     @JdbcColumn(name="owner_id")
     private Long ownerId;
+
+    @JdbcJoinedObject( localColumn = "owner_id", remoteColumn = "id", table = "person")
+    private PersonShortView owner;
 
     @JdbcColumn(name="ip_address")
     private String ipAddress;
@@ -69,9 +73,17 @@ public class ReservedIp extends AuditableObject implements Serializable {
 
     public void setSubnetId(Long subnetId) { this.subnetId = subnetId; }
 
+    public Subnet getSubnet() { return subnet; }
+
+    public void setSubnet(Subnet subnet) { this.subnet = subnet; }
+
     public Long getOwnerId() { return ownerId; }
 
     public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
+
+    public PersonShortView getOwner() { return owner; }
+
+    public void setOwner(PersonShortView owner) { this.owner = owner; }
 
     public String getIpAddress() { return ipAddress; }
 
@@ -120,6 +132,7 @@ public class ReservedIp extends AuditableObject implements Serializable {
                 ", created=" + created +
                 ", creatorId=" + creatorId +
                 ", subnetId=" + subnetId +
+                ", subnet=" + subnet +
                 ", ownerId=" + ownerId +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", macAddress='" + macAddress + '\'' +

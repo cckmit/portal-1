@@ -19,6 +19,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Реализация сервиса управления резервированием IP-адресов
@@ -76,6 +77,17 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
+    public Map<Subnet, List<ReservedIp>> getReservedIpsBySubnets(ReservedIpQuery reservedIpQuery ) throws RequestFailedException {
+
+        log.info( "getReservedIpsBySubnets(): search={} | sortField={} | order={}",
+                reservedIpQuery.getSearchString(), reservedIpQuery.getSortField(), reservedIpQuery.getSortDir() );
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(ipReservationService.getReservedIpsBySubnets(token, reservedIpQuery));
+
+    }
+
+    @Override
     public SearchResult<ReservedIp> getReservedIpList( ReservedIpQuery reservedIpQuery ) throws RequestFailedException {
 
         log.info( "getReservedIpList(): search={} | sortField={} | order={}",
@@ -83,7 +95,6 @@ public class IpReservationControllerImpl implements IpReservationController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(ipReservationService.getReservedIps(token, reservedIpQuery));
-
     }
 
     @Override

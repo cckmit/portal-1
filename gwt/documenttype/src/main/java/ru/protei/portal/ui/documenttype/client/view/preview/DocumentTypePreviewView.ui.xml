@@ -11,7 +11,7 @@
                     <label>
                         <ui:text from="{lang.documentTypeName}"/>
                     </label>
-                    <g:TextBox ui:field="name" styleName="form-control" />
+                    <g:TextBox ui:field="address" styleName="form-control" />
                 </div>
 
                 <div class="form-group col-md-6">

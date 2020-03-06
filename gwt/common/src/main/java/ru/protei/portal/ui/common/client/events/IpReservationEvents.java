@@ -4,6 +4,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.ent.Subnet;
 
 /**
  * События по резервированию IP
@@ -28,18 +31,18 @@ public class IpReservationEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, Long reservedIpId, boolean isShouldWrap ) {
+        public ShowPreview( HasWidgets parent, ReservedIp reservedIp, boolean isShouldWrap ) {
             this.parent = parent;
-            this.reservedIpId = reservedIpId;
+            this.reservedIp = reservedIp;
             this.isShouldWrap = isShouldWrap;
         }
 
         public HasWidgets parent;
-        public Long reservedIpId;
+        public ReservedIp reservedIp;
         public boolean isShouldWrap;
     }
 
-    @Url(value = "reserved_ip_preview", primary = true)
+/*    @Url(value = "reserved_ip_preview", primary = true)
     public static class ShowFullScreen {
         public ShowFullScreen() {
         }
@@ -50,7 +53,7 @@ public class IpReservationEvents {
 
         @Name("id")
         public Long reservedIpId;
-    }
+    }*/
 
     /**
      * Показать форму создания подсети
@@ -61,12 +64,12 @@ public class IpReservationEvents {
     @Url( value = "subnet")
     public static class EditSubnet {
         public EditSubnet () {
-            subnetId = null;
+            subnet = null;
         }
-        public EditSubnet (Long id) {
-            this.subnetId = id;
+        public EditSubnet (Subnet subnet) {
+            this.subnet = subnet;
         }
-        public Long subnetId;
+        public Subnet subnet;
     }
 
     /**
@@ -78,14 +81,36 @@ public class IpReservationEvents {
     @Url( value = "reserved_ip")
     public static class EditReservedIp {
         public EditReservedIp () {
-            reservedIpId = null;
+            reservedIp = null;
         }
-        public EditReservedIp (Long id) {
-            this.reservedIpId = id;
+        public EditReservedIp (ReservedIp reservedIp) {
+            this.reservedIp = reservedIp;
         }
-        public Long reservedIpId;
+        public ReservedIp reservedIp;
     }
 
     public static class ChangeModel {}
+
+    public static class ChangedSubnet {
+        public ChangedSubnet(Subnet subnet, boolean needRefreshList) {
+            this.subnet = subnet;
+            this.needRefreshList = needRefreshList;
+        }
+
+        public Subnet subnet;
+        public boolean needRefreshList = false;
+    }
+
+    public static class ChangedReservedIp {
+        public ChangedReservedIp(ReservedIp reservedIp, boolean needRefreshList) {
+            this.reservedIp = reservedIp;
+            this.needRefreshList = needRefreshList;
+        }
+
+        public ReservedIp reservedIp;
+        public boolean needRefreshList = false;
+    }
+
+    public static class CloseEdit {}
 
 }

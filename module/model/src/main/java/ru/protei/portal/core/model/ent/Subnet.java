@@ -28,6 +28,9 @@ public class Subnet extends AuditableObject implements Serializable {
     @JdbcColumn(name="creator_id")
     private Long creatorId;
 
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "owner_id", remoteColumn = "id", table = "person")
+    private String creator;
+
     @JdbcColumn(name="address")
     private String address;
 
@@ -52,6 +55,10 @@ public class Subnet extends AuditableObject implements Serializable {
     public Long getCreatorId() { return creatorId; }
 
     public void setCreatorId(Long creatorId) { this.creatorId = creatorId; }
+
+    public String getCreator() { return creator; }
+
+    public void setCreator(String creator) { this.creator = creator; }
 
     public String getAddress() { return address; }
 

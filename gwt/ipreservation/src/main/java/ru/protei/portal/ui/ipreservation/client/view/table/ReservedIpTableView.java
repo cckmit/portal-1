@@ -10,27 +10,19 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.Column;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIp;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
-import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
-import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.ipreservation.client.activity.table.AbstractReservedIpTableActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.table.AbstractReservedIpTableView;
-import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableActivity;
-import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 /**
@@ -39,9 +31,12 @@ import java.util.Optional;
 public class ReservedIpTableView extends Composite implements AbstractReservedIpTableView {
 
     @Inject
-    public void onInit(EditClickColumn<ReservedIp> editClickColumn, RemoveClickColumn<ReservedIp> removeClickColumn) {
+    public void onInit(EditClickColumn<ReservedIp> editClickColumn,
+                       RemoveClickColumn<ReservedIp> removeClickColumn,
+                       RefreshClickColumn<ReservedIp> refreshClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
+        this.refreshClickColumn = refreshClickColumn;
         this.removeClickColumn = removeClickColumn;
         initTable();
     }
@@ -52,27 +47,12 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
 
         editClickColumn.setEditHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
+        refreshClickColumn.setRefreshHandler( activity );
 
         columns.forEach(clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
-    }
-    
-    @Override
-    public void setAnimation ( TableAnimation animation ) {
-        animation.setContainers( tableContainer, previewContainer, filterContainer );
-    }
-
-    @Override
-    public HasWidgets getPreviewContainer () { return previewContainer; }
-
-    @Override
-    public HasWidgets getFilterContainer () { return filterContainer; }
-
-    @Override
-    public void clearSelection() {
-        columnProvider.setSelectedValue(null);
     }
 
     @Override
@@ -81,72 +61,123 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     }
 
     @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
+    @Override
+    public void addRow(ReservedIp row) {
+        table.addRow(row);
+    }
+
+    @Override
+    public void updateRow(ReservedIp reservedIp) {
+        table.updateRow(reservedIp);
+    }
+
+    @Override
+    public void setAnimation ( TableAnimation animation ) {
+        animation.setContainers( tableContainer, previewContainer, filterContainer );
+    }
+
+    @Override
+    public HTMLPanel getFilterContainer () { return filterContainer; }
+
+    @Override
+    public HTMLPanel getPreviewContainer () { return previewContainer; }
+
+/*    @Override
     public void addSeparator( String text ) {
         Element elem = DOM.createDiv();
         SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
         safeHtmlBuilder.appendHtmlConstant( "<b>" ).appendEscapedLines( text ).appendHtmlConstant( "</b>" );
         elem.setInnerSafeHtml( safeHtmlBuilder.toSafeHtml() );
         table.addCustomRow( elem, "subnet", null );
-    }
+    }*/
 
     private void initTable () {
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT) );
-        columns.add(editClickColumn);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE) );
 
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE) && !v.isDeleted() );
+        columns.add(address);
+        columns.add(owner);
+        columns.add(usePeriod);
+        columns.add(comment);
+        columns.add(lastCheck);
+        columns.add(refreshClickColumn);
+        columns.add(editClickColumn);
         columns.add(removeClickColumn);
 
-/*        DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
-                value -> {
-                    StringBuilder content = new StringBuilder();
-                    content.append("<b>").append(value.getId()).append("</b>");
-
-                    if (value.getProductDirection() != null) {
-                        content.append("<br/>").append(value.getProductDirection().getDisplayText());
-                    }
-                    if (value.getCustomerType() != null) {
-                        content.append("<br/><i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>");
-                    }
-                    return content.toString();
-                });
-        columns.add(numberColumn);*/
-
-        Column<ReservedIp> address = new Column<>(lang.address(), "address",
-                value -> "<b>" + value.getIp() + "</b>" + (value.getDescription() == null ? "" : "<br/><small>" + value.getDescription() + "</small>"));
-        columns.add(address);
-
-        Column<ReservedIp> ownerColumn = new Column<>(lang.owner(), "owner",
-                value -> {
-                    if (value.getTeam() == null) return null;
-
-                    Optional<PersonProjectMemberView> leader = value.getTeam().stream()
-                            .filter(ppm -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(ppm.getRole()))
-                            .findFirst();
-
-                    int teamSize = value.getTeam().size() - (leader.isPresent() ? 1 : 0);
-
-                    StringBuilder content = new StringBuilder();
-                    leader.ifPresent(lead -> content.append(lead.getName()));
-
-                    if (teamSize > 0) {
-                        leader.ifPresent(lead -> content.append(" + "));
-                        content.append(teamSize).append(" ").append(lang.membersCount());
-                    }
-
-                    return content.toString();
-                });
-        columns.add(ownerColumn);
-
-        table.addColumn( statusColumn.header, statusColumn.values );
-        table.addColumn( addressColumn.header, addressColumn.values );
-        table.addColumn( commentColumn.header, commentColumn.values );
-        table.addColumn( ownerColumn.header, ownerColumn.values );
-        table.addColumn( editClickColumn.header, editClickColumn.values );
-        table.addColumn( removeClickColumn.header, removeClickColumn.values );
+        columns.forEach(c -> table.addColumn(c.header, c.values));
     }
 
-    @UiField
-    Lang lang;
+    private ClickColumn<ReservedIp> address = new ClickColumn<ReservedIp>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.address());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, ReservedIp value) {
+            cell.setInnerText(value.getIpAddress() +
+                    (value.getIpAddress() != null ? " [" + value.getMacAddress() + "]" : "")
+            );
+        }
+    };
+
+    private ClickColumn<ReservedIp> usePeriod = new ClickColumn<ReservedIp>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.reservedIpUsePeriod());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, ReservedIp value) {
+            String reserved = value == null ? null : DateFormatter.formatDateTime(value.getReserveDate());
+            String released = value == null ? null :
+                    ( value.getReleaseDate() == null ?
+                            lang.reservedIpForever() :
+                            DateFormatter.formatDateTime(value.getReleaseDate())
+            cell.setInnerText(reserved + " - " + released);
+        }
+    };
+
+    private ClickColumn<ReservedIp> lastCheck = new ClickColumn<ReservedIp>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.reservedIpCheck());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, ReservedIp value) {
+            String lastCheckDate = value == null || value.getLastCheckDate() == null ? null :
+                    DateFormatter.formatDateTime(value.getLastCheckDate());
+            cell.setInnerText(lastCheckDate + "<br>" + value.getLastCheckInfo());
+        }
+    };
+
+    private ClickColumn<ReservedIp> owner = new ClickColumn<ReservedIp>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.reservedIpOwner());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, ReservedIp value) { cell.setInnerText(value.getOwner().getName()); }
+    };
+
+    private ClickColumn<ReservedIp> comment = new ClickColumn<ReservedIp>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.comment());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, ReservedIp value) {
+            cell.setInnerText(value.getComment());
+        }
+    };
+
     @UiField
     TableWidget<ReservedIp> table;
     @UiField
@@ -155,12 +186,16 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    Lang lang;
 
     @Inject
     PolicyService policyService;
 
     @Inject
     EditClickColumn<ReservedIp> editClickColumn;
+    @Inject
+    RefreshClickColumn<ReservedIp> refreshClickColumn;
     @Inject
     RemoveClickColumn<ReservedIp> removeClickColumn;
 

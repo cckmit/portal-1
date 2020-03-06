@@ -34,7 +34,7 @@ public interface IpReservationService {
      * @return
      */
     @Privileged({ En_Privilege.RESERVED_IP_VIEW })
-    Result<SearchResult<Map<Subnet, List<ReservedIp>>>> getReservedIpsBySubnets(AuthToken token, ReservedIpQuery query);
+    Result<Map<Subnet, List<ReservedIp>>> getReservedIpsBySubnets(AuthToken token, ReservedIpQuery query);
 
     @Privileged(En_Privilege.RESERVED_IP_VIEW)
     Result<ReservedIp> getReservedIp(AuthToken token, Long id);

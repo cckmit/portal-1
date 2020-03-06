@@ -2039,4 +2039,29 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardActionRemove();
 
     String ipReservation();
+
+    String subnet();
+
+    String reservedIp();
+
+    String reservedIpOwner();
+
+    String reservedIpAddress();
+
+    String reservedIpMacAddress();
+
+    String reservedIpReserveDate();
+
+    String reservedIpReleaseDate();
+
+    String reservedIpForever();
+
+    String reservedIpCheck();
+
+    String reservedIpCheckDate();
+
+    String reservedIpCheckInfo();
+
+    String reservedIpUsePeriod();
+
 }

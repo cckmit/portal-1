@@ -20,13 +20,11 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class EmployeeRegistrationTableActivity implements AbstractEmployeeRegistrationTableActivity,
         AbstractEmployeeRegistrationFilterActivity, Activity {

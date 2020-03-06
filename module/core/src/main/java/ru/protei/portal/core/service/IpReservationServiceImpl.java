@@ -78,7 +78,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    public Result< Map< Subnet, List<ReservedIp> > > getReservedIpsBySubnets(AuthToken token, ReservedIpQuery query ) {
+    public Result< Map< Subnet, List<ReservedIp>>> getReservedIpsBySubnets(AuthToken token, ReservedIpQuery query ) {
         Map< Subnet, List<ReservedIp> > subnetToReservedIpsMap = new HashMap<>();
         /*
          *  @todo
