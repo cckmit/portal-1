@@ -224,18 +224,13 @@ public abstract class DocumentEditActivity
 
         setEquipmentEnabled(isEquipmentEnabled);
         setDocumentTypeEnabled(documentCategory != null);
-        setDecimalNumberEnabled(isEnableInventoryNumberByApproved(document) && isDesignationEnabled);
-        setInventoryNumberEnabled(isEnableDecimalNumberByApproved(document) && isDesignationEnabled);
+        view.decimalNumberEnabled(isEnableDecimalNumberByApproved(document) && isDesignationEnabled);
+        view.inventoryNumberEnabled(isEnableInventoryNumberByApproved(document) && isDesignationEnabled);
         setInventoryNumberMandatory(DocumentUtils.needToCheckInventoryNumber(project,
                 view.isApproved().getValue(), view.documentType().getValue()));
         setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
-    private void setDecimalNumberEnabled(boolean isEnabled) {
-        view.decimalNumberEnabled(isEnabled);
-    }
-    private void setInventoryNumberEnabled(boolean isEnabled) {
-        view.inventoryNumberEnabled(isEnabled);
-    }
+
     private void setInventoryNumberMandatory(boolean isMandatory) {
         view.setInventoryNumberMandatory(isMandatory);
         view.setDecimalNumberHMandatory(isMandatory);

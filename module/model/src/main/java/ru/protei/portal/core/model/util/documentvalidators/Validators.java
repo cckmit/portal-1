@@ -61,7 +61,7 @@ public class Validators {
     }
 
     static Function<String, ValidationResult> getCompositeCheck(List<Validator> list) {
-        return value -> new ValidationResult(processValidation(value, list));
+        return value -> processValidation(value, list);
     }
 
     static Function<String, ValidationResult> getStringCheckWithLength(Integer valueLength, Predicate<String> validationFunction) {
@@ -70,7 +70,7 @@ public class Validators {
                 return new ValidationResult(false);
             }
             if (validationFunction.test(value.substring(0, valueLength))) {
-                return new ValidationResult(true, value.substring(valueLength), valueLength);
+                return new ValidationResult(true, value.substring(valueLength));
             } else {
                 return new ValidationResult(false);
             }
