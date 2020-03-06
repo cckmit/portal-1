@@ -150,6 +150,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return slaInput;
     }
 
+    @Override
+    public HasVisibility slaInputVisibility() {
+        return slaInput;
+    }
+
     public HasEnabled managerEnabled() {
         return manager;
     }

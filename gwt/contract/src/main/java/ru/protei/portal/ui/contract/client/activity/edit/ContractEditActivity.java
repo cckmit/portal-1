@@ -91,6 +91,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if ( isFrameworkContract ) {
             view.cost().setValue(new CostWithCurrency(0L, En_Currency.RUB));
         }
+
+        view.slaInputVisibility().setVisible(En_ContractType.SUPPLY_CONTRACT.equals(type) || En_ContractType.AFTER_SALES_SERVICE_CONTRACT.equals(type));
     }
 
     @Override
@@ -159,6 +161,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
 
         view.slaInput().setValue(contract.getContractSlas());
+        boolean visible = En_ContractType.SUPPLY_CONTRACT.equals(contract.getContractType()) || En_ContractType.AFTER_SALES_SERVICE_CONTRACT.equals(contract.getContractType());
+        view.slaInputVisibility().setVisible(visible);
     }
 
     private void fillDto() {

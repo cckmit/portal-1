@@ -67,6 +67,8 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>> {
             importantItem.setValue(null);
             basicItem.setValue(null);
             cosmeticItem.setValue(null);
+
+            return;
         }
 
         value.forEach(contractSla -> {

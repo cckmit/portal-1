@@ -45,11 +45,13 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
             reactionTime.setTime(null);
             temporaryTime.setTime(null);
             fullSolutionTime.setTime(null);
-        } else {
-            reactionTime.setTime(value.getReactionTime());
-            temporaryTime.setTime(value.getTemporarySolutionTime());
-            fullSolutionTime.setTime(value.getFullSolutionTime());
+
+            return;
         }
+
+        reactionTime.setTime(value.getReactionTime());
+        temporaryTime.setTime(value.getTemporarySolutionTime());
+        fullSolutionTime.setTime(value.getFullSolutionTime());
     }
 
     @Override
