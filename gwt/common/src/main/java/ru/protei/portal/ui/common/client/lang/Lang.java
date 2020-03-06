@@ -1133,6 +1133,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderPlatform();
 
+    String siteFolderPlatformRequestError();
+
     String siteFolderPlatforms();
 
     String siteFolderPlatformNew();
