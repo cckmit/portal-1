@@ -126,14 +126,14 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<Date> getContractValidDateByProjectId(AuthToken token, Long projectId) {
+    public Result<Date> getPsgoContractValidDate(AuthToken token, Long projectId) {
         if (projectId == null) {
            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Contract contract = contractDAO.getByProjectId(projectId);
 
-        return ok(contract == null ? null : contract.getDateValid());
+        return ok(contract == null || !En_ContractType.AFTER_SALES_SERVICE_CONTRACT.equals(contract.getContractType()) ? null : contract.getDateValid());
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {

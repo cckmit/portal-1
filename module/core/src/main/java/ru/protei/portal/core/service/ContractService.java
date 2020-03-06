@@ -28,5 +28,5 @@ public interface ContractService {
     @Auditable(En_AuditType.CONTRACT_MODIFY)
     Result<Long> updateContract( AuthToken token, Contract contract);
 
-    Result<Date> getContractValidDateByProjectId(AuthToken token, Long id);
+    Result<Date> getPsgoContractValidDate(AuthToken token, Long projectId);
 }

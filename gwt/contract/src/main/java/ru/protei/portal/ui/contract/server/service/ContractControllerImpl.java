@@ -75,12 +75,12 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public Date getContractValidDate(Long projectId) throws RequestFailedException {
+    public Date getPsgoContractValidDate(Long projectId) throws RequestFailedException {
         log.info("getContractValidDate: projectId={}", projectId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Date> result = contractService.getContractValidDateByProjectId(token, projectId);
+        Result<Date> result = contractService.getPsgoContractValidDate(token, projectId);
 
         if (result.isOk()) {
             log.info("result: contractValidDate={}", result.getData());

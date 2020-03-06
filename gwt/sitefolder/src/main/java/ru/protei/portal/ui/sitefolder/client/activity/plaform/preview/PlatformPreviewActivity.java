@@ -7,7 +7,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -96,7 +95,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     }
 
     private void contractRequest(Long projectId, Consumer<Date> consumer) {
-        contractService.getContractValidDate(projectId, new FluentCallback<Date>().withSuccess(consumer));
+        contractService.getPsgoContractValidDate(projectId, new FluentCallback<Date>().withSuccess(consumer));
     }
 
     private void fillView( Platform value ) {

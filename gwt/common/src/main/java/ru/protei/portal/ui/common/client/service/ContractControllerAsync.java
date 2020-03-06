@@ -16,5 +16,5 @@ public interface ContractControllerAsync {
 
     void saveContract(Contract Contract, AsyncCallback<Long> callback);
 
-    void getContractValidDate(Long projectId, AsyncCallback<Date> async);
+    void getPsgoContractValidDate(Long projectId, AsyncCallback<Date> async);
 }

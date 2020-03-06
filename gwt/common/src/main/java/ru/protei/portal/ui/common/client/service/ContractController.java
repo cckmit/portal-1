@@ -19,5 +19,5 @@ public interface ContractController extends RemoteService {
 
     Long saveContract(Contract Contract) throws RequestFailedException;
 
-    Date getContractValidDate(Long projectId) throws RequestFailedException;
+    Date getPsgoContractValidDate(Long projectId) throws RequestFailedException;
 }
