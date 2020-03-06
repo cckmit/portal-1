@@ -44,9 +44,6 @@ public class Platform extends AuditableObject {
     @JdbcColumn(name="case_id")
     private Long caseId;
 
-    @JdbcJoinedColumn(mappedColumn = "date_valid", localColumn = "project_id", remoteColumn = "project_id", table = "contract")
-    private Date dateValid;
-
     @JdbcManyToMany(localColumn = "case_id", linkTable = "case_attachment", localLinkColumn = "case_id", remoteLinkColumn = "att_id")
     private List<Attachment> attachments;
 
@@ -144,14 +141,6 @@ public class Platform extends AuditableObject {
         this.attachments = attachments;
     }
 
-    public Date getDateValid() {
-        return dateValid;
-    }
-
-    public void setDateValid(Date dateValid) {
-        this.dateValid = dateValid;
-    }
-
     public static Platform fromPlatformOption(PlatformOption platformOption) {
         if (platformOption == null) {
             return null;
@@ -202,7 +191,6 @@ public class Platform extends AuditableObject {
                 ", company=" + company +
                 ", projectId=" + projectId +
                 ", caseId=" + caseId +
-                ", dateValid=" + dateValid +
                 ", attachments=" + attachments +
                 ", serversCount=" + serversCount +
                 '}';

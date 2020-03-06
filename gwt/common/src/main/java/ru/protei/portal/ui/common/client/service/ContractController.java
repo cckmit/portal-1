@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
 import java.util.List;
 
 @RemoteServiceRelativePath("springGwtServices/ContractController")
@@ -17,4 +18,6 @@ public interface ContractController extends RemoteService {
     Contract getContract(Long id) throws RequestFailedException;
 
     Long saveContract(Contract Contract) throws RequestFailedException;
+
+    Date getContractValidDate(Long projectId) throws RequestFailedException;
 }

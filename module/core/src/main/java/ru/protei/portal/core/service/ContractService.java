@@ -10,6 +10,8 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.Date;
+
 public interface ContractService {
 
     @Privileged({ En_Privilege.CONTRACT_VIEW })
@@ -25,4 +27,6 @@ public interface ContractService {
     @Privileged(requireAny = En_Privilege.CONTRACT_EDIT)
     @Auditable(En_AuditType.CONTRACT_MODIFY)
     Result<Long> updateContract( AuthToken token, Contract contract);
+
+    Result<Date> getContractValidDateByProjectId(AuthToken token, Long id);
 }

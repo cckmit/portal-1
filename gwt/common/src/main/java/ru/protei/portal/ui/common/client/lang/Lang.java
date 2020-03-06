@@ -2091,4 +2091,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskAddRow();
 
     String issueCreator();
+
+    String contractValidUntil();
 }

@@ -19,6 +19,8 @@ public interface AbstractPlatformPreviewView extends IsWidget {
 
     void setParameters(String value);
 
+    void setContractDateValid(String dateValid);
+
     void setProject(String value, String link);
 
     void setComment(String value);

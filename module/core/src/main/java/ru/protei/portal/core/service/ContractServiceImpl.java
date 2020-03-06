@@ -125,6 +125,17 @@ public class ContractServiceImpl implements ContractService {
         return ok(contract.getId());
     }
 
+    @Override
+    public Result<Date> getContractValidDateByProjectId(AuthToken token, Long projectId) {
+        if (projectId == null) {
+           return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Contract contract = contractDAO.getByProjectId(projectId);
+
+        return ok(contract == null ? null : contract.getDateValid());
+    }
+
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
         if (caseObject == null) {
             caseObject = new CaseObject();

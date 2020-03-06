@@ -1,20 +1,24 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Date;
 import java.util.function.Consumer;
 
 public abstract class PlatformPreviewActivity implements Activity, AbstractPlatformPreviewActivity {
@@ -57,51 +61,6 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         this.initDetails = event;
     }
 
-    private void platformRequest(Long platformId, Consumer<Platform> consumer) {
-        siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess(consumer));
-    }
-
-    private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
-        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
-    }
-
-    private void fillProjectSpecificFields (ProjectInfo project){
-        view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
-        view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-        view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
-        showContacts(project.getContragent() == null ? null : project.getContragent().getId());
-    }
-
-    private void fillView( Platform value ) {
-        if (value == null) {
-            return;
-        }
-        view.setName(value.getName() == null ? "" : value.getName());
-        view.setParameters(value.getParams() == null ? "" : value.getParams());
-
-        view.setComment(value.getComment() == null ? "" : value.getComment());
-
-        view.attachmentsContainer().clear();
-        view.attachmentsContainer().add(value.getAttachments());
-
-        fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
-        if (value.getProjectId() != null){
-            projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
-        }
-        else {
-            view.setProject("", "");
-            view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
-            view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
-            showContacts(value.getCompanyId());
-        }
-    }
-
-    private void showContacts(Long companyId) {
-        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), companyId).readOnly());
-        }
-    }
-
     @Override
     public void onOpenServersClicked() {
         if (platformId != null) {
@@ -121,6 +80,56 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         fireEvent(new SiteFolderPlatformEvents.Show());
     }
 
+    private void platformRequest(Long platformId, Consumer<Platform> consumer) {
+        siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess(consumer));
+    }
+
+    private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
+    }
+
+    private void fillProjectSpecificFields (ProjectInfo project){
+        view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
+        view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
+        view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
+        showContacts(project.getContragent() == null ? null : project.getContragent().getId());
+    }
+
+    private void contractRequest(Long projectId, Consumer<Date> consumer) {
+        contractService.getContractValidDate(projectId, new FluentCallback<Date>().withSuccess(consumer));
+    }
+
+    private void fillView( Platform value ) {
+        if (value == null) {
+            return;
+        }
+        view.setName(value.getName() == null ? "" : value.getName());
+        view.setParameters(value.getParams() == null ? "" : value.getParams());
+
+        view.setComment(value.getComment() == null ? "" : value.getComment());
+
+        view.attachmentsContainer().clear();
+        view.attachmentsContainer().add(value.getAttachments());
+
+        fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
+        if (value.getProjectId() != null){
+            projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
+            contractRequest(value.getProjectId(), date -> view.setContractDateValid(date == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(date)));
+        }
+        else {
+            view.setProject("", "");
+            view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
+            view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
+            view.setContractDateValid("");
+            showContacts(value.getCompanyId());
+        }
+    }
+
+    private void showContacts(Long companyId) {
+        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), companyId).readOnly());
+        }
+    }
 
     @Inject
     AbstractPlatformPreviewView view;
@@ -130,6 +139,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
+    @Inject
+    ContractControllerAsync contractService;
 
 
     private Long platformId;
