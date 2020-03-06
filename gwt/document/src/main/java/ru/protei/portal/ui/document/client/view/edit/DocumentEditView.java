@@ -247,6 +247,15 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public void setDecimalNumberHMandatory(boolean isMandatory) {
+        if (isMandatory) {
+            decimalNumberContainer.addClassName("required");
+        } else {
+            decimalNumberContainer.removeClassName("required");
+        }
+    }
+
+    @Override
     public void uploaderApprovalSheetEnabled(boolean isEnabled) {
         documentApprovedUploader.setEnabled(isEnabled);
     }

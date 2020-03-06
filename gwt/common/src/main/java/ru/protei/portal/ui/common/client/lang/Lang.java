@@ -857,7 +857,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inventoryNumberIsEmpty();
 
+    String decimalNumberIsInvalid();
+
     String documentApproveFieldsIsEmpty();
+
+    String documentPDFFileIsNotSet();
 
     String negativeInventoryNumber();
 
@@ -1999,6 +2003,8 @@ public interface Lang extends Messages, ContactItemLang {
     String documentTypeUnableToRemoveUsedDocumentType();
 
     String errUpdateOrDeleteLinkedObjectError();
+
+    String errSVN();
 
     String contactGeneratePassword();
 
