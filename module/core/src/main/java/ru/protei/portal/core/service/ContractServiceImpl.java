@@ -100,7 +100,10 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INTERNAL_ERROR);
 
         jdbcManyRelationsHelper.persist(contract, "contractDates");
-        jdbcManyRelationsHelper.persist(contract, "contractSlas");
+
+        if (CollectionUtils.isNotEmpty(contract.getContractSlas())) {
+            jdbcManyRelationsHelper.persist(contract, "contractSlas");
+        }
 
         return ok(id);
     }
