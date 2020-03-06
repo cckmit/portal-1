@@ -1,0 +1,38 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-table-contract_sla" author="fomin">
+        <createTable tableName="contract_sla">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="importance_level_id" type="INT" />
+            <column name="time" type="BIGINT" />
+            <column name="contract_id" type="BIGINT" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-contract_sla-importance_level-fk" author="fomin">
+        <addForeignKeyConstraint
+                baseTableName="contract_sla"
+                baseColumnNames="importance_level_id"
+                constraintName="contract_sla-importance_level-id-fk"
+                referencedTableName="importance_level"
+                referencedColumnNames="id"
+                onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-contract_sla-contract-fk" author="">
+        <addForeignKeyConstraint
+                baseTableName="contract_sla"
+                baseColumnNames="contract_id"
+                constraintName="contract_sla-contract-id-fk"
+                referencedTableName="contract"
+                referencedColumnNames="id"
+                onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
