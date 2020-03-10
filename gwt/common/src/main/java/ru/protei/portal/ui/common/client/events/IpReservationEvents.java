@@ -29,7 +29,7 @@ public class IpReservationEvents {
     /**
      * Показать карточку зарезервированного IP
      */
-    public static class ShowPreview {
+/*    public static class ShowPreview {
 
         public ShowPreview( HasWidgets parent, ReservedIp reservedIp, boolean isShouldWrap ) {
             this.parent = parent;
@@ -40,7 +40,7 @@ public class IpReservationEvents {
         public HasWidgets parent;
         public ReservedIp reservedIp;
         public boolean isShouldWrap;
-    }
+    }*/
 
 /*    @Url(value = "reserved_ip_preview", primary = true)
     public static class ShowFullScreen {
@@ -89,7 +89,7 @@ public class IpReservationEvents {
         public ReservedIp reservedIp;
     }
 
-    public static class ChangeModel {}
+    //public static class ChangeModel {}
 
     public static class ChangedSubnet {
         public ChangedSubnet(Subnet subnet, boolean needRefreshList) {

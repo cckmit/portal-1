@@ -32,47 +32,9 @@ public abstract class PlatformConciseTableActivity implements AbstractPlatformCo
         event.parent.clear();
         event.parent.add(view.asWidget());
 
-        platformId = null;
         query = makeQuery(event.companyId);
 
         request();
-    }
-
-    @Event
-    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (platformId == null) {
-            return;
-        }
-
-        platformController.removePlatform(platformId, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                platformId = null;
-                if (result) {
-                    fireEvent(new CompanyEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        platformId = null;
     }
 
     @Override
@@ -101,8 +63,7 @@ public abstract class PlatformConciseTableActivity implements AbstractPlatformCo
             return;
         }
 
-        platformId = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderPlatformConfirmRemove()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderPlatformConfirmRemove(), removeAction(value.getId())));
     }
 
     private PlatformQuery makeQuery(Long companyId) {
@@ -125,6 +86,25 @@ public abstract class PlatformConciseTableActivity implements AbstractPlatformCo
         });
     }
 
+    private Runnable removeAction(Long platformId) {
+        return () -> platformController.removePlatform(platformId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new CompanyEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -134,6 +114,5 @@ public abstract class PlatformConciseTableActivity implements AbstractPlatformCo
     @Inject
     PolicyService policyService;
 
-    private Long platformId = null;
     private PlatformQuery query;
 }

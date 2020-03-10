@@ -7,6 +7,7 @@ package ru.protei.portal.core.model.dict;
 public enum En_PrivilegeEntity {
     PROFILE,
     ISSUE,
+    ISSUE_ASSIGNMENT,
     REGION,
     PRODUCT,
     PROJECT,

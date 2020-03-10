@@ -60,50 +60,11 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
 
     @Override
     public void onRemoveClicked(AbstractApplicationListItemView itemView) {
-
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE)) {
             return;
         }
 
-        itemViewForRemove = itemView;
-
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderAppConfirmRemove()));
-    }
-
-    @Event
-    public void onServerConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (itemViewForRemove == null) {
-            return;
-        }
-
-        Application value = itemViewToModel.get(itemViewForRemove);
-
-        if (value == null) {
-            return;
-        }
-
-        siteFolderController.removeApplication(value.getId(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new SiteFolderAppEvents.ChangeModel());
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    onRemoved(itemViewForRemove);
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-                itemViewForRemove = null;
-            }
-        });
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderAppConfirmRemove(), removeAction(itemView)));
     }
 
     private void requestApps() {
@@ -139,8 +100,35 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         return itemView;
     }
 
-    private void onRemoved(AbstractApplicationListItemView itemViewForRemove) {
+    private Runnable removeAction(AbstractApplicationListItemView itemView) {
+        return () -> {
+            Application value = itemViewToModel.get(itemView);
 
+            if (value == null) {
+                return;
+            }
+
+            siteFolderController.removeApplication(value.getId(), new RequestCallback<Boolean>() {
+                @Override
+                public void onError(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(Boolean result) {
+                    if (result) {
+                        fireEvent(new SiteFolderAppEvents.ChangeModel());
+                        fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                        onRemoved(itemView);
+                    } else {
+                        fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                    }
+                }
+            });
+        };
+    }
+
+    private void onRemoved(AbstractApplicationListItemView itemViewForRemove) {
         if (itemViewForRemove == null) {
             return;
         }
@@ -171,7 +159,6 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         }
     };
     private Long serverId = null;
-    private AbstractApplicationListItemView itemViewForRemove = null;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private Map<AbstractApplicationListItemView, Application> itemViewToModel = new HashMap<>();
 }

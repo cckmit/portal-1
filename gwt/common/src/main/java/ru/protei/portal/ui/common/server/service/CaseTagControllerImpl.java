@@ -20,10 +20,15 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetDa
 public class CaseTagControllerImpl implements CaseTagController {
 
     @Override
-    public Long saveTag( CaseTag caseTag) throws RequestFailedException {
+    public Long create( CaseTag caseTag) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        caseTag.setPersonId( authToken.getPersonId() );
-        return checkResultAndGetData(caseTagService.saveTag(authToken, caseTag));
+        return checkResultAndGetData(caseTagService.create(authToken, caseTag));
+    }
+
+    @Override
+    public Long update( CaseTag caseTag) throws RequestFailedException {
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseTagService.update(authToken, caseTag));
     }
 
     @Override
@@ -45,9 +50,9 @@ public class CaseTagControllerImpl implements CaseTagController {
     }
 
     @Override
-    public void detachTag(Long caseId, Long tagId) throws RequestFailedException {
+    public Long detachTag( Long caseId, Long tagId) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        ServiceUtils.checkResult(caseTagService.detachTag(authToken, caseId, tagId));
+        return checkResultAndGetData(caseTagService.detachTag(authToken, caseId, tagId));
     }
 
     @Autowired

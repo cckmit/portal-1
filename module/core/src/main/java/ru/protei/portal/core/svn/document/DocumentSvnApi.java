@@ -19,4 +19,6 @@ public interface DocumentSvnApi {
     void removeDocument(Long projectId, Long documentId, En_DocumentFormat documentFormat, String commitMessage) throws SVNException;
 
     List<String> listDocuments(Long projectId, Long documentId) throws SVNException;
+
+    boolean isProjectPathExist(Long projectId) throws SVNException;
 }

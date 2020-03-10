@@ -4,7 +4,6 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
@@ -68,12 +67,12 @@ public interface IpReservationService {
     /**
      * Удаление подсети
      * @param token
-     * @param subnetId
+     * @param subnet
      * @return
      */
     @Privileged(En_Privilege.SUBNET_REMOVE)
     @Auditable(En_AuditType.SUBNET_REMOVE)
-    Result<Boolean> removeSubnet(AuthToken token, Long subnetId);
+    Result<Long> removeSubnet(AuthToken token, Subnet subnet);
 
     /**
      * Резервирование IP-адресов
@@ -96,14 +95,14 @@ public interface IpReservationService {
     Result<ReservedIp> updateReservedIp(AuthToken token, ReservedIp reservedIp);
 
     /**
-     * Удаление/освобождение зарезервированного IP-адреса
+      Удаление/освобождение зарезервированного IP-адреса
      * @param token
-     * @param reservedIpId
+     * @param reservedIp
      * @return
      */
     @Privileged(En_Privilege.RESERVED_IP_REMOVE)
     @Auditable(En_AuditType.RESERVED_IP_REMOVE)
-    Result<Boolean> releaseReservedIp(AuthToken token, Long reservedIpId);
+    Result<Long> releaseReservedIp(AuthToken token, ReservedIp reservedIp);
 
     Result<Boolean> notifyOwnerAboutReleaseIp();
 

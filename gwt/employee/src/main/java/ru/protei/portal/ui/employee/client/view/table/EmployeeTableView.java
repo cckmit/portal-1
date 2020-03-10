@@ -44,8 +44,6 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         contacts.setColumnProvider(columnProvider);
         department.setHandler(activity);
         department.setColumnProvider(columnProvider);
-        additional.setHandler(activity);
-        additional.setColumnProvider(columnProvider);
         table.setLoadHandler(activity);
         table.setPagerListener(activity);
     }
@@ -109,30 +107,24 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private void initTable() {
         name = new DynamicColumn<>(
-                lang.employeeEmployeeFullNameColumnHeader(),
+                lang.employeeEmployeeFullName(),
                 "employee-info",
                 this::getEmployeeInfoBlock
         );
         contacts = new DynamicColumn<>(
-                lang.contactInfo(),
+                lang.employeeContactInfo(),
                 "employee-contacts",
                 this::getEmployeeContactsBlock
         );
         department = new DynamicColumn<>(
-                lang.contactPosition(),
+                lang.employeePosition(),
                 "employee-department",
                 this::getEmployeeDepartmentBlock
-        );
-        additional = new DynamicColumn<>(
-                lang.employeeAdditionalInfoHeader(),
-                "employee-additional",
-                this::getEmployeeAdditionalBlock
         );
 
         table.addColumn(name.header, name.values);
         table.addColumn(contacts.header, contacts.values);
         table.addColumn(department.header, department.values);
-        table.addColumn(additional.header, additional.values);
     }
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
@@ -148,14 +140,14 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                     .toElement());
         } else {
             employeeInfo.appendChild(LabelValuePairBuilder.make()
-                    .addIconValuePair("fa fa-user-circle", employee.getDisplayName(), "contacts")
+                    .addIconValuePair(null, employee.getDisplayName(), "contacts bold")
                     .toElement());
         }
         employeeInfo.appendChild(LabelValuePairBuilder.make()
                 .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts")
                 .toElement());
 
-        return employeeInfo.getInnerHTML();
+        return employeeInfo.getString();
     }
 
     private String getEmployeeContactsBlock(EmployeeShortView employee) {
@@ -170,18 +162,17 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
         if (!phones.isEmpty()) {
             employeeContacts.appendChild(LabelValuePairBuilder.make()
-                    .addIconValuePair("fa fa-phone", phones, "contacts")
+                    .addIconValuePair(null, phones, "contacts")
                     .toElement());
         }
 
         if (!infoFacade.publicEmailsAsString().isEmpty()) {
             employeeContacts.appendChild(EmailRender
-                    .renderToElement("fa fa-envelope", infoFacade.publicEmailsStream(), "contacts", false)
+                    .renderToElement(null, infoFacade.publicEmailsStream(), "contacts", false)
             );
         }
 
-
-        return employeeContacts.getInnerHTML();
+        return employeeContacts.getString();
     }
 
     private String getEmployeeDepartmentBlock(EmployeeShortView employee) {
@@ -202,17 +193,17 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         if (mainEntry != null) {
             if (mainEntry.getDepartmentParentName() == null) {
                 department = LabelValuePairBuilder.make()
-                        .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts")
+                        .addIconValuePair(null, mainEntry.getDepartmentName(), "contacts")
                         .toElement();
 
                 employeeDepartment.appendChild(department);
             } else {
                 departmentParent = LabelValuePairBuilder.make()
-                        .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentParentName(), "contacts")
+                        .addIconValuePair(null, mainEntry.getDepartmentParentName(), "contacts")
                         .toElement();
 
                 department = LabelValuePairBuilder.make()
-                        .addIconValuePair("fa fa-th-large", mainEntry.getDepartmentName(), "contacts")
+                        .addIconValuePair(null, mainEntry.getDepartmentName(), "contacts")
                         .toElement();
 
                 employeeDepartment.appendChild(departmentParent);
@@ -221,39 +212,19 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
             if (mainEntry.getPositionName() != null){
                 position = LabelValuePairBuilder.make()
-                        .addIconValuePair("fa fa-street-view", mainEntry.getPositionName(), "contacts")
+                        .addIconValuePair(null, mainEntry.getPositionName(), "contacts")
                         .toElement();
 
                 employeeDepartment.appendChild(position);
             }
         } else if (employee.isFired()) {
             department = LabelValuePairBuilder.make()
-                    .addIconValuePair("fa fa-info-circle", lang.employeeFired() + (employee.getFireDate() == null ? "" : " " + DateFormatter.formatDateOnly(employee.getFireDate())), "contacts")
+                    .addIconValuePair(null, lang.employeeFired() + (employee.getFireDate() == null ? "" : " " + DateFormatter.formatDateOnly(employee.getFireDate())), "contacts")
                     .toElement();
             employeeDepartment.appendChild(department);
         }
 
-        return employeeDepartment.getInnerHTML();
-    }
-
-    private String getEmployeeAdditionalBlock(EmployeeShortView employee) {
-        Element employeeAdditional = DOM.createDiv();
-
-        if (employee.isFired()) {
-            employeeAdditional.addClassName("fired");
-        }
-
-        employeeAdditional.appendChild(
-                LabelValuePairBuilder.make()
-                        .addLabelValuePair("IP", employee.getIpAddress(), "contacts")
-                        .toElement());
-
-        employeeAdditional.appendChild(
-                LabelValuePairBuilder.make()
-                        .addLabelValuePair("ID", String.valueOf(employee.getId()), "contacts")
-                        .toElement());
-
-        return employeeAdditional.getInnerHTML();
+        return employeeDepartment.getString();
     }
 
     @UiField
@@ -277,7 +248,6 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     DynamicColumn<EmployeeShortView> name;
     DynamicColumn<EmployeeShortView> contacts;
     DynamicColumn<EmployeeShortView> department;
-    DynamicColumn<EmployeeShortView> additional;
 
     AbstractEmployeeTableActivity activity;
 

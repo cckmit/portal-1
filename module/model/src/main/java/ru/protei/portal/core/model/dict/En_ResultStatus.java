@@ -173,5 +173,10 @@ public enum En_ResultStatus {
     /**
      * Ошибка обновления или удаления связанного объекта
      */
-    UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR
+    UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR,
+
+    /**
+     * Ошибка при использовании SVN
+     */
+    SVN_ERROR
 }

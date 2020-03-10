@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root" styleName="selector-popup">
+        <g:HTMLPanel ui:field="dropdown" styleName="dropdown-menu full-width show">
+            <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="full-width"/>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

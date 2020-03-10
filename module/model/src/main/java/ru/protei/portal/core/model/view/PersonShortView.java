@@ -14,6 +14,10 @@ public class PersonShortView implements Serializable {
 
     public PersonShortView() {}
 
+    public PersonShortView(Long id) {
+        this.id = id;
+    }
+
     public PersonShortView(String name, Long id, boolean isFired ) {
         this.name = name;
         this.id = id;

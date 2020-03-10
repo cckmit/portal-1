@@ -81,45 +81,11 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
             return;
         }
 
-        itemViewForRemove = itemView;
-
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderServerConfirmRemove()));
-    }
-
-    @Event
-    public void onServerConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
+        if (itemView == null) {
             return;
         }
 
-        if (itemViewForRemove == null) {
-            return;
-        }
-
-        Server value = itemViewToModel.get(itemViewForRemove);
-
-        if (value == null) {
-            return;
-        }
-
-        siteFolderController.removeServer(value.getId(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    fireEvent(new SiteFolderServerEvents.ChangeModel());
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    onRemoved(itemViewForRemove);
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-                itemViewForRemove = null;
-            }
-        });
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderServerConfirmRemove(), removeAction(itemView)));
     }
 
     private void requestServers() {
@@ -158,6 +124,34 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         return itemView;
     }
 
+    private Runnable removeAction(AbstractServerListItemView itemView) {
+        return () -> {
+            Server value = itemViewToModel.get(itemView);
+
+            if (value == null) {
+                return;
+            }
+
+            siteFolderController.removeServer(value.getId(), new RequestCallback<Boolean>() {
+                @Override
+                public void onError(Throwable throwable) {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+
+                @Override
+                public void onSuccess(Boolean result) {
+                    if (result) {
+                        fireEvent(new SiteFolderServerEvents.ChangeModel());
+                        fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                        onRemoved(itemView);
+                    } else {
+                        fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                    }
+                }
+            });
+        };
+    }
+
     private void onRemoved(AbstractServerListItemView itemViewForRemove) {
 
         if (itemViewForRemove == null) {
@@ -190,7 +184,6 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         }
     };
     private Long platformId = null;
-    private AbstractServerListItemView itemViewForRemove = null;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private Map<AbstractServerListItemView, Server> itemViewToModel = new HashMap<>();
 }

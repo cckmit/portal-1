@@ -25,19 +25,11 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         this.activity = activity;
     }
 
-    @UiHandler( "preview" )
-    public void onPreviewClicked ( ClickEvent event )
-    {
-        event.preventDefault();
-        if ( activity != null ) {
-            activity.onPreviewClicked( this );
-        }
-    }
-
     @Override
-    public void setName( String name ) {
-        this.name.setInnerText( name );
+    public void setName( String name, String link ) {
+        this.name.setText( name );
         this.name.setTitle( name );
+        this.name.setHref( link );
     }
 
     @Override
@@ -85,7 +77,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     @Override
     public void setFireDate(String value) {
         employeeContainer.addClassName("fired");
-        name.setInnerHTML("<i class='fa fa-ban text-danger'></i> " + this.name.getInnerText());
+        name.setHTML("<i class='fa fa-ban text-danger'></i> " + this.name.getHTML());
         fireDateContainer.setVisible(true);
         fireDate.setInnerText( value == null ? "" : value );
     }
@@ -95,14 +87,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
-    @Override
-    public HasWidgets getPreviewContainer() {
-        return previewContainer;
-    }
-
 
     @UiField
-    HeadingElement name;
+    Anchor name;
 
     @UiField
     HTMLPanel birthdayContainer;
@@ -153,13 +140,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     SpanElement ip;
 
     @UiField
-    HTMLPanel previewContainer;
-
-    @UiField
     DivElement employeeContainer;
-
-    @UiField
-    Anchor preview;
 
     @UiField
     SpanElement emails;

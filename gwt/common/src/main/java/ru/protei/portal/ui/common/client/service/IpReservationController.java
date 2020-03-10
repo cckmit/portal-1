@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
@@ -36,4 +37,8 @@ public interface IpReservationController extends RemoteService {
     List<ReservedIp> createReservedIp(ReservedIp reservedIp) throws RequestFailedException;
 
     ReservedIp updateReservedIp(ReservedIp reservedIp) throws RequestFailedException;
+
+    Long removeSubnet(Subnet subnet) throws RequestFailedException;
+
+    Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException;
 }

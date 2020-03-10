@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -35,6 +36,18 @@ public class EmployeeEvents {
         public boolean isForTableView;
     }
 
+    @Url(value = "employee_preview", primary = true)
+    public static class ShowFullScreen {
+        public ShowFullScreen() {}
+
+        public ShowFullScreen(Long employeeId) {
+            this.employeeId = employeeId;
+        }
+
+        @Name("id")
+        public Long employeeId;
+    }
+
     public static class ShowDefinite {
         public ShowDefinite (ViewType type, Widget filter, EmployeeQuery query) {
             this.viewType = type;
@@ -46,6 +59,12 @@ public class EmployeeEvents {
         public Widget filter;
         public EmployeeQuery query;
     }
+
+    /**
+     * Показать руководство
+     */
+    @Url(value = "topbrass")
+    public static class ShowTopBrass {}
 
     public static class UpdateData {
         public UpdateData ( ViewType type, EmployeeQuery query ) {

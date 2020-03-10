@@ -36,6 +36,8 @@ import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
@@ -56,8 +58,8 @@ import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
-import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
@@ -92,6 +94,7 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
+        bind( StateSelectorModel.class ).asEagerSingleton();
 
         bind( HomeCompanyService.class ).asEagerSingleton();
 

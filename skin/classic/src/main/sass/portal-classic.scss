@@ -8,6 +8,7 @@
 @import "spinners";
 @import "display-table";
 @import "dropzone";
+@import "desk";
 @import "pages";
 
 /**
@@ -173,12 +174,6 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   font-weight: 900;
 }
 
-/* Попап селектора */
-.selector-popup{
-  position: absolute !important;
-  display: block !important;
-  float: left;
-}
 .form-group-default.form-group-default-selectFx .cs-wrapper .cs-placeholder {
   text-overflow: ellipsis;
 }

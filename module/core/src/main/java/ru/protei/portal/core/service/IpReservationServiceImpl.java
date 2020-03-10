@@ -3,32 +3,20 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
-import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
  * Реализация сервиса управления подсистемой резервирования IP
@@ -40,9 +28,6 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Autowired
     ReservedIpDAO reservedIpDAO;
-
-    @Autowired
-    PolicyService policyService;
 
     @Autowired
     JdbcManyRelationsHelper helper;
@@ -145,15 +130,14 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    public Result<Boolean> removeSubnet( AuthToken token, Long id) {
-        Subnet subnet = subnetDAO.get(id);
-
+    public Result<Long> removeSubnet( AuthToken token, Subnet subnet) {
         if (subnet == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
+        if (!subnetDAO.removeByKey(subnet.getId()))
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
-        boolean result = subnetDAO.remove(subnet);
-        return ok(result);
+        return ok(subnet.getId());
     }
 
     @Override
@@ -213,15 +197,19 @@ public class IpReservationServiceImpl implements IpReservationService {
 
 
     @Override
-    public Result<Boolean> releaseReservedIp( AuthToken token, Long id ) {
-        if ( subnetDAO.removeByKey( id ) ) {
-            return ok(true );
+    public Result<Long> releaseReservedIp( AuthToken token, ReservedIp reservedIp ) {
+        if (reservedIp == null) {
+            return error(En_ResultStatus.NOT_FOUND);
         }
+        if (!reservedIpDAO.removeByKey(reservedIp.getId())) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
         /* @todo
             уведомление об освобождении IP
             надо ли его отправлять, если owner сам освобождает?
          */
-        return error(En_ResultStatus.INTERNAL_ERROR );
+        return ok(reservedIp.getId());
     }
 
     private boolean checkUniqueSubnet (String address, Long excludeId) {

@@ -1,14 +1,11 @@
 package ru.protei.portal.ui.ipreservation.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -31,13 +28,8 @@ import java.util.List;
 public class ReservedIpTableView extends Composite implements AbstractReservedIpTableView {
 
     @Inject
-    public void onInit(EditClickColumn<ReservedIp> editClickColumn,
-                       RemoveClickColumn<ReservedIp> removeClickColumn,
-                       RefreshClickColumn<ReservedIp> refreshClickColumn) {
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        this.editClickColumn = editClickColumn;
-        this.refreshClickColumn = refreshClickColumn;
-        this.removeClickColumn = removeClickColumn;
         initTable();
     }
 
@@ -45,8 +37,13 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     public void setActivity( AbstractReservedIpTableActivity activity ) {
         this.activity = activity;
 
+        editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
+
+        removeClickColumn.setHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
+
+        refreshClickColumn.setHandler( activity );
         refreshClickColumn.setRefreshHandler( activity );
 
         columns.forEach(clickColumn -> {
@@ -97,7 +94,8 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
 
     private void initTable () {
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT) );
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE) );
+        refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW) );
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE) );
 
         columns.add(address);
         columns.add(owner);
@@ -137,7 +135,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
             String released = value == null ? null :
                     ( value.getReleaseDate() == null ?
                             lang.reservedIpForever() :
-                            DateFormatter.formatDateTime(value.getReleaseDate())
+                            DateFormatter.formatDateTime(value.getReleaseDate()));
             cell.setInnerText(reserved + " - " + released);
         }
     };

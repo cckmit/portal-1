@@ -10,6 +10,9 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
+import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements SelectorWithModel< CaseFilterShortView > {
 
@@ -19,6 +22,18 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
 
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getName() ) );
+    }
+
+    @Override
+    public void setValue(CaseFilterShortView value) {
+        fillMissingName(value);
+        super.setValue(value);
+    }
+
+    @Override
+    public void setValue(CaseFilterShortView value, boolean fireEvents) {
+        fillMissingName(value);
+        super.setValue(value, fireEvents);
     }
 
     public void changeValueName( CaseFilterShortView value ){
@@ -60,6 +75,29 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
         filters.sort( ( o1, o2 ) -> HelperFunc.compare( o1.getName(), o2.getName(), false ) );
 
         filters.forEach( this::addOption );
+    }
+
+    private void fillMissingName(CaseFilterShortView value) {
+        if (value == null) {
+            return;
+        }
+        if (value.getName() != null) {
+            return;
+        }
+        if (value.getId() == null) {
+            return;
+        }
+        String name = CollectionUtils.stream(itemToViewModel.keySet())
+                .filter(Objects::nonNull)
+                .filter(filter -> Objects.equals(filter.getId(), value.getId()))
+                .distinct()
+                .map(CaseFilterShortView::getName)
+                .findFirst()
+                .orElse(null);
+        if (isEmpty(name)) {
+            return;
+        }
+        value.setName(name);
     }
 
     private En_CaseFilterType filterType;

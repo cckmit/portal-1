@@ -43,6 +43,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.name );
                 addOption( En_SortField.equipment_name_sldwrks );
                 addOption( En_SortField.equipment_project );
+                addOption( En_SortField.equipment_decimal_number );
+                addOption( En_SortField.linked_equipment_decimal_numbers);
                 break;
             case ACCOUNT:
                 addOption( En_SortField.ulogin );
@@ -84,6 +86,9 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case REGION:
                 addOption( En_SortField.name );
+                break;
+            case RESERVED_IP:
+                addOption( En_SortField.ip_address );
                 break;
         }
     }

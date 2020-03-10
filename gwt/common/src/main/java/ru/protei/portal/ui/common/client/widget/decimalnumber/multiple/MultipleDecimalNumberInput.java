@@ -26,6 +26,7 @@ import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Список децимальных номеров
@@ -76,7 +77,8 @@ public class MultipleDecimalNumberInput
                 .withSuccess(registerNumber -> {
                     DecimalNumber number = box.getValue();
                     number.setRegisterNumber(registerNumber);
-                    number.setModification(null);
+
+                    correctNumbers(box.getValue());
 
                     box.setValue(number);
                     box.setFocusToRegisterNumberField(true);
@@ -101,7 +103,7 @@ public class MultipleDecimalNumberInput
 
     @UiHandler( "addPdra" )
     public void onAddPdraClicked( ClickEvent event )  {
-        createEmptyBox(En_OrganizationCode.PDRA);
+        clonePamrNumbersIntoPdra();
     }
 
     public boolean checkIfCorrect(){
@@ -171,6 +173,8 @@ public class MultipleDecimalNumberInput
                     checkExistNumber(box);
                 }
             }
+
+            correctNumbers(box.getValue());
         } );
         box.setEnabled(isEnabled);
 
@@ -271,6 +275,72 @@ public class MultipleDecimalNumberInput
 
     private void fireValuesChanged() {
         ValueChangeEvent.fire(this, values);
+    }
+
+    private void clonePamrNumbersIntoPdra() {
+        if (!checkIfCorrect()) {
+            return;
+        }
+
+        for (DecimalNumberBox box : numberBoxes) {
+            if (!isNew(box.getValue())) {
+                continue;
+            }
+
+            if (!En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode())) {
+                continue;
+            }
+
+            pdraList.remove(box.asWidget());
+        }
+
+        numberBoxes.removeIf(box -> En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode()) && isNew(box.getValue()));
+        values.removeIf(number -> En_OrganizationCode.PDRA.equals(number.getOrganizationCode()) && isNew(number));
+
+        final List<DecimalNumber> pamrNumbers = getPamrNumbers();
+
+        pamrNumbers
+                .stream()
+                .filter(this::isNew)
+                .map(this::createPdraFromPamr)
+                .forEach(pdraFromPamrNumber -> {
+                    createBoxAndFillValue(pdraFromPamrNumber, true);
+                    values.add(pdraFromPamrNumber);
+                });
+    }
+
+    private DecimalNumber createPdraFromPamr(DecimalNumber number) {
+        DecimalNumber decimalNumber = new DecimalNumber();
+        decimalNumber.setReserve(false);
+        decimalNumber.setOrganizationCode(En_OrganizationCode.PDRA);
+        decimalNumber.setClassifierCode(number.getClassifierCode());
+        decimalNumber.setRegisterNumber(number.getRegisterNumber());
+        decimalNumber.setModification(number.getModification());
+
+        return decimalNumber;
+    }
+
+    private void correctNumbers(final DecimalNumber decimalNumber) {
+        numberBoxes.stream().filter(decimalNumberBox -> isNew(decimalNumberBox.getValue())).forEach(decimalNumberBox -> {
+            decimalNumberBox.setClassifierCode(decimalNumber.getClassifierCode());
+            decimalNumberBox.setRegisterNumber(decimalNumber.getRegisterNumber());
+        });
+
+        values.stream().filter(this::isNew).forEach(number -> {
+            number.setClassifierCode(decimalNumber.getClassifierCode());
+            number.setRegisterNumber(decimalNumber.getRegisterNumber());
+        });
+    }
+
+    private List<DecimalNumber> getPamrNumbers() {
+        return values
+                .stream()
+                .filter(decimalNumber -> En_OrganizationCode.PAMR.equals(decimalNumber.getOrganizationCode()))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isNew(DecimalNumber number) {
+        return number.getId() == null;
     }
 
     @Inject

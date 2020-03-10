@@ -131,6 +131,10 @@
   <include file="2020-01-14-add-approve-fields-document-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-01-15-add-document-member-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-01-29-add-user-dashboard-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-02-10-add-user-case-assignment-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-02-13-add-default-user-field-redmine-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-02-27-modify-case_tag-table.xml" relativeToChangelogFile="true"/>
+<!--  <include file="2020-02-29-add-person-contact-view.xml" relativeToChangelogFile="true"/>-->
+  <include file="2020-02-26-add-audit-types.xml" relativeToChangelogFile="true"/>
   <include file="2020-02-21-ip-reservation.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

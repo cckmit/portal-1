@@ -70,6 +70,11 @@
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
+            <artifactId>portal4.ui.issueassignment</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
             <artifactId>portal4.ui.issuereport</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

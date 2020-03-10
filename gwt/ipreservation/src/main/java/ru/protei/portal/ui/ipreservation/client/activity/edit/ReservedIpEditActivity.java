@@ -1,19 +1,15 @@
 package ru.protei.portal.ui.ipreservation.client.activity.edit;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.ReservedIp;
-import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.function.Consumer;
@@ -113,6 +109,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     private ReservedIp fillReservedIp(ReservedIp reservedIp) {
         reservedIp.setMacAddress(view.macAddress().getValue());
         reservedIp.setComment(view.comment().getText());
+        //reservedIp.setReserveDate(view.reserveDate().getValue());
         //reservedIp.setReleaseDate(view.releaseDate().getValue());
         reservedIp.setOwnerId(view.owner().getValue().getId());
         return reservedIp;

@@ -24,10 +24,12 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.core.model.helper.DocumentUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -136,6 +138,9 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional
     public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author) {
+        if (document == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
@@ -144,17 +149,17 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if (document == null || !isValidNewDocument(document, withDoc, withPdf, withApprovalSheet)) {
+        if (document.getProjectId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        if (!DocumentUtils.isValidNewDocument(document, projectInfo, withDoc, withPdf)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         En_ResultStatus validationStatus = checkDocumentDesignationValid(null, document);
         if (validationStatus != En_ResultStatus.OK) {
             return error(validationStatus);
-        }
-
-        if (document.getApproved() && !withPdf) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         return lockService.doWithLock(Document.class, DOCUMENT_ID_FOR_CREATE, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
@@ -213,6 +218,9 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional
     public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author) {
+        if (document == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
@@ -221,16 +229,13 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if (document == null || document.getId() == null || !isValidDocument(document)) {
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        if (document.getId() == null || !DocumentUtils.isValidDocument(document, projectInfo)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Long projectId = document.getProjectId();
         Long documentId = document.getId();
-
-        if (document.getApproved() && (withDoc || withPdf)) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
 
         return lockService.doWithLock(Document.class, documentId, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
 
@@ -245,10 +250,23 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(validationStatus);
             }
 
-            List<En_DocumentFormat> formatsAtSvn = (withDoc || withPdf || withApprovalSheet) ? listDocumentFormatsAtSVN(documentId, projectId) : Collections.emptyList();
-            boolean withDocAtSvn = withDoc && formatsAtSvn.contains(docFormat);
-            boolean withPdfAtSvn = withPdf && formatsAtSvn.contains(pdfFormat);
-            boolean withApprovalSheetAtSvn = withApprovalSheet && formatsAtSvn.contains(ApprovalSheetFormat);
+            if (oldDocument.getApproved() && document.getApproved() && (withDoc || withPdf)) {
+                return error(En_ResultStatus.NOT_AVAILABLE);
+            }
+
+            List<En_DocumentFormat> listFormatsAtSvn = documentSvnApi.isProjectPathExist(projectId)
+                    ? listDocumentFormatsAtSVN(documentId, projectId)
+                    : Collections.emptyList();
+
+            boolean withDocAtSvn = withDoc && listFormatsAtSvn.contains(docFormat);
+            boolean withPdfAtSvn = withPdf && listFormatsAtSvn.contains(pdfFormat);
+            boolean withApprovalSheetAtSvn = withApprovalSheet && listFormatsAtSvn.contains(ApprovalSheetFormat);
+
+            boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
+            if (!oldDocument.getApproved() && document.getApproved() && !(isPdfInSvn || withPdf)) {
+                return error(En_ResultStatus.SVN_ERROR);
+            }
+
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
             byte[] oldBytesPdf = withPdf && withPdfAtSvn ? getFromSVN(documentId, projectId, pdfFormat) : null;
             byte[] oldBytesApprovalSheet = withApprovalSheet && withApprovalSheetAtSvn ? getFromSVN(documentId, projectId, ApprovalSheetFormat) : null;
@@ -306,7 +324,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withDoc) {
-                removeDuplicatedDocFilesFromSvn(formatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
+                removeDuplicatedDocFilesFromSvn(listFormatsAtSvn, docFormat, documentId, projectId, commitMessageRemove);
             }
 
             List<Long> newMembers = fetchNewMemberIds(oldDocument, document);
@@ -344,7 +362,14 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
 
-            List<En_DocumentFormat> formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            List<En_DocumentFormat> formatsAtSvn;
+
+            if(documentSvnApi.isProjectPathExist(projectId)){
+                formatsAtSvn = listDocumentFormatsAtSVN(documentId, projectId);
+            } else {
+                log.error("updateDocumentDocFile(" + documentId + "): failed to update doc file at the svn. The path of this project doesn't exists");
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
             boolean withDocAtSvn = formatsAtSvn.contains(docFormat);
 
             String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, comment);
@@ -529,33 +554,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     private <T> boolean isValueSetTwice(T oldObj, T newObj) {
         return oldObj != null && !oldObj.equals(newObj);
-    }
-
-    private boolean isValidNewDocument(Document document, boolean withDoc, boolean withPdf, boolean withApprovalSheet) {
-        if (withDoc && !withPdf) {
-            return StringUtils.isNotEmpty(document.getName()) &&
-                    document.getProjectId() != null;
-        } else {
-            return isValidDocument(document);
-        }
-    }
-
-    private boolean isValidDocument(Document document){
-        return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
-    }
-
-    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        Project project = Project.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
-        if (project == null) {
-            return false;
-        }
-        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
-            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-        }
-        return true;
     }
 
     private En_DocumentFormat predictDocFormat(FileItem fileItem) {

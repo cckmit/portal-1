@@ -320,9 +320,8 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        if (oldCaseMeta.getManager() != null && caseMeta.getManager() != null &&
-            !Objects.equals(oldCaseMeta.getManager().getId(), caseMeta.getManager().getId())) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManager().getId());
+        if (!Objects.equals(oldCaseMeta.getManagerId(), caseMeta.getManagerId())) {
+            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManagerId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -789,7 +788,8 @@ public class CaseServiceImpl implements CaseService {
         for (CaseLink link : emptyIfNull( caseLinks )) {
             if (!YT.equals( link.getType() ) || link.getRemoteId() == null) continue;
             youtrackService.getIssueInfo( link.getRemoteId() )
-                    .ifOk( info -> link.setYouTrackIssueInfo( info ) );
+                    .ifError(e -> log.warn( "fillYouTrackInfo(): case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
+                    .ifOk(link::setYouTrackIssueInfo);
         }
         return caseLinks;
     }

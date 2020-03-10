@@ -8,6 +8,7 @@ import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -58,6 +59,16 @@ public abstract class BaseSelectorModel<T> implements SelectorModel<T>, AsyncSel
         if (selector != null){
             selector.onLoadingComplete();
         }
+    }
+
+    protected void changeElement( T element ) {
+        if ( !Collections.replaceAll( elements, element, element ) ) {
+            elements.add( element );
+        }
+    }
+
+    protected void removeElement( T removed ) {
+        elements.remove(removed );
     }
 
     protected List<T> elements;

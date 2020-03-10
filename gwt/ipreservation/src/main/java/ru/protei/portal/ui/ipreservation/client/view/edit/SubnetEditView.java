@@ -2,32 +2,14 @@ package ru.protei.portal.ui.ipreservation.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -57,6 +39,9 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
 
     @Override
     public HasValue<String> mask() { return mask; }
+
+    @Override
+    public HasValue<Boolean> local() { return local; }
 
     @Override
     public HasText comment() { return comment; }

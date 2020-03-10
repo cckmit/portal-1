@@ -1,45 +1,31 @@
 package ru.protei.portal.ui.ipreservation.client.activity.table;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.ent.ReservedIp;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
-import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
-import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.ipreservation.client.activity.filter.AbstractIpReservationFilterActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.filter.AbstractIpReservationFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Date;
-import java.util.List;
-
-import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
-import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
-
 /**
  * Активность таблицы зарезервированных IP
  */
 public abstract class ReservedIpTableActivity
-        implements AbstractReservedIpTableActivity, AbstractIpReservationFilterActivity, AbstractPagerActivity, Activity
+        implements AbstractReservedIpTableActivity, AbstractIpReservationFilterActivity, /*AbstractPagerActivity,*/ Activity
 {
 
     @PostConstruct
@@ -52,7 +38,7 @@ public abstract class ReservedIpTableActivity
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
 
-        pagerView.setActivity( this );
+        //pagerView.setActivity( this );
     }
 
     @Event
@@ -60,7 +46,7 @@ public abstract class ReservedIpTableActivity
         filterView.resetFilter();
     }
 
-    @Event(Type.FILL_CONTENT)
+    //@Event(Type.FILL_CONTENT)
     public void onShow( IpReservationEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -69,16 +55,16 @@ public abstract class ReservedIpTableActivity
 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-        view.getPagerContainer().add( pagerView.asWidget() );
+        //view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_CREATE ) ?
             new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.RESERVED_IP ) :
             new ActionBarEvents.Clear()
         );
 
-        clearScroll( event );
+/*        clearScroll( event );*/
 
-        requestReservedIps( this.page );
+        requestReservedIps( /*this.page*/ );
     }
 
     @Event
@@ -89,6 +75,7 @@ public abstract class ReservedIpTableActivity
 
         view.clearSelection();
 
+        animation.showDetails();
         fireEvent(new IpReservationEvents.CreateReservedIp());
     }
 
@@ -97,65 +84,114 @@ public abstract class ReservedIpTableActivity
         this.initDetails = initDetails;
     }
 
-/*    @Event
-    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
-        if ( !event.identity.equals( getClass().getName() ) ) {
+    @Event
+    public void onChanged(IpReservationEvents.ChangedReservedIp event) {
+        if ( event.needRefreshList ) {
+            updateListAndSelect(event.reservedIp);
             return;
         }
-        ipReservationService.removeReservedIp( reservedIpId, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {}
 
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-                fireEvent( new AccountEvents.Show() );
-                fireEvent( new NotifyEvents.Show( lang.reservedIpRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
-                reservedIpId = null;
-            }
-        } );
-    }*/
-
-    @Event
-    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
-        //reservedIpId = null;
+        view.updateRow(event.reservedIp);
     }
+
+/*    @Override
+    public void onItemClicked(Subnet value) {
+        if ( !policyService.hasPrivilegeFor( En_Privilege.SUBNET_EDIT ) ) {
+            return;
+        }
+
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new IpReservationEvents.EditSubnet( value ) );
+        }
+    }*/
 
     @Override
     public void onItemClicked(ReservedIp value) {
-        showPreview(value);
-    }
-
-    @Override
-    public void onEditClicked( ReservedIp value ) {
-        persistScrollTopPosition();
-        fireEvent(new IpReservationEvents.EditReservedIp(value));
-    }
-
-    @Override
-    public void onRemoveClicked( UserLogin value ) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
+        if ( !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
             return;
         }
 
-        if ( value != null ) {
-            reservedIpId = value.getId();
-            fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.ReservedIpRemoveConfirmMessage() ) );
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new IpReservationEvents.EditReservedIp( value ) );
+        }
+    }
+
+/*    @Override
+    public void onEditClicked( Subnet value ) {
+*//*        persistScrollTopPosition();*//*
+        onItemClicked(value);
+    }*/
+
+    @Override
+    public void onEditClicked( ReservedIp value ) {
+        /*        persistScrollTopPosition();*/
+        onItemClicked(value);
+    }
+
+/*    @Override
+    public void onRemoveClicked(Subnet value) {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE)) {
+            return;
+        }
+        if (value != null) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpSubnetRemoveConfirmMessage(), lang.reservedIpSubnetRemove(), removeAction(value)));
+        }
+    }*/
+
+    @Override
+    public void onRemoveClicked(ReservedIp value) {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)) {
+            return;
+        }
+        if (value != null) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpReleaseConfirmMessage(), lang.reservedIpIpRelease(), removeAction(value)));
         }
     }
 
     @Override
     public void onFilterChanged() {
-        this.page = 0;
-        requestReservedIps( this.page );
+//        this.page = 0;
+        requestReservedIps(/* this.page*/ );
     }
 
-    @Override
+/*    @Override
     public void onPageSelected( int page ) {
         this.page = page;
         requestReservedIps( this.page );
+    }*/
+
+    private void updateListAndSelect(ReservedIp reservedIp ) {
+        requestReservedIps();
+        onItemClicked( reservedIp );
     }
 
-    private void requestReservedIps( int page ) {
+    private void requestReservedIps() {
+        view.clearRecords();
+        animation.closeDetails();
+
+        ipReservationService.getReservedIpList( makeQuery(), new RequestCallback<SearchResult<ReservedIp>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess(SearchResult<ReservedIp> result) {
+                view.clearRecords();
+                result.getResults().forEach(view::addRow);
+            }
+        });
+    }
+
+/*    private void requestReservedIps( *//*int page*//* ) {
         view.clearRecords();
         animation.closeDetails();
 
@@ -179,16 +215,16 @@ public abstract class ReservedIpTableActivity
                     }
                 } )
                 .withErrorMessage( lang.errGetList() ) );
-    }
+    }*/
 
-    private void showPreview(ReservedIp value) {
+/*    private void showPreview(ReservedIp value) {
         if (value == null || value.getId() == null) {
             animation.closeDetails();
         } else {
             animation.showDetails();
             fireEvent(new IpReservationEvents.ShowPreview(view.getPreviewContainer(), value.getId(), true));
         }
-    }
+    }*/
 
     private ReservedIpQuery makeQuery() {
         ReservedIpQuery query = new ReservedIpQuery();
@@ -198,7 +234,7 @@ public abstract class ReservedIpTableActivity
         return query;
     }
 
-    private void persistScrollTopPosition() {
+/*    private void persistScrollTopPosition() {
         scrollTop = Window.getScrollTop();
     }
 
@@ -212,14 +248,30 @@ public abstract class ReservedIpTableActivity
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
         }
-    }
+    }*/
 
-    private void clearScroll(IpReservationEvents.Show event) {
+/*    private void clearScroll(IpReservationEvents.Show event) {
         if (event.clearScroll) {
             event.clearScroll = false;
             this.scrollTop = null;
             this.page = 0;
         }
+    }*/
+
+    private Runnable removeAction(ReservedIp reservedIp) {
+        return () -> ipReservationService.removeReservedIp(reservedIp, new FluentCallback<Long>()
+                .withSuccess(id -> {
+                    fireEvent(new DocumentEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.reservedIpIpReleased(), NotifyEvents.NotifyType.SUCCESS));
+                }));
+    }
+
+    private Runnable removeAction(Subnet subnet) {
+        return () -> ipReservationService.removeSubnet(subnet, new FluentCallback<Long>()
+                .withSuccess(id -> {
+                    fireEvent(new DocumentEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.reservedIpSubnetRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                }));
     }
 
     @Inject
@@ -232,17 +284,17 @@ public abstract class ReservedIpTableActivity
     IpReservationControllerAsync ipReservationService;
     @Inject
     TableAnimation animation;
-    @Inject
-    AbstractPagerView pagerView;
+/*    @Inject
+    AbstractPagerView pagerView;*/
     @Inject
     PolicyService policyService;
-
-    private Long accountId;
+    @Inject
+    DefaultErrorHandler errorHandler;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
 
-    private long marker;
+/*    private long marker;
     private Integer scrollTop;
-    private int page = 0;
+    private int page = 0;*/
 }

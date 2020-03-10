@@ -22,6 +22,13 @@ public class PersonQuery extends BaseQuery {
         super( "", En_SortField.person_full_name, En_SortDir.ASC );
     }
 
+    public PersonQuery(Boolean fired, Boolean deleted, Boolean onlyPeople) {
+        this();
+        this.fired = fired;
+        this.deleted = deleted;
+        this.onlyPeople = onlyPeople;
+    }
+
     public PersonQuery( Long companyId, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         this ( toSet(companyId), onlyPeople, fired, searchString, sortField, sortDir );
     }

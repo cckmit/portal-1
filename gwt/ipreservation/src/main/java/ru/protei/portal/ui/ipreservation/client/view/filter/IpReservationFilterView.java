@@ -10,6 +10,8 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -44,6 +46,12 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
     public HasValue<String> search() {
         return search;
     }
+
+    @Override
+    public HasValue<Subnet> subnet() { return null; }
+
+    @Override
+    public HasValue<EmployeeShortView> owner() { return null; }
 
     @Override
     public void resetFilter() {

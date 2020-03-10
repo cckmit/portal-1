@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonSaveAndContinue();
+
     String buttonApply();
 
     String buttonCancel();
@@ -553,7 +555,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String equipmentCopyNotFilledNewName();
 
-    String equpmentCopySuccess();
+    String equipmentCopySuccess();
 
     String equipmentCopyHeader();
 
@@ -653,6 +655,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryIssue();
 
+    String privilegeCategoryIssueAssignment();
+
     String privilegeCategoryRegion();
 
     String privilegeCategoryProject();
@@ -692,6 +696,8 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonLocale();
 
     String privilegeCategoryOfficial();
+
+    String privilegeIpReservation();
 
     String matrixSolutions();
 
@@ -847,11 +853,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentTypeIsEmpty();
 
+    String documentCategoryIsEmpty();
+
     String documentProjectIsEmpty();
 
     String inventoryNumberIsEmpty();
 
+    String decimalNumberIsInvalid();
+
     String documentApproveFieldsIsEmpty();
+
+    String documentPDFFileIsNotSet();
 
     String negativeInventoryNumber();
 
@@ -1057,6 +1069,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errCaseLinkAlreadyAdded();
 
+    String errCaseLinkNotFound();
+
     String linkedWith();
 
     String id();
@@ -1124,6 +1138,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderIP();
 
     String siteFolderPlatform();
+
+    String siteFolderPlatformRequestError();
 
     String siteFolderPlatforms();
 
@@ -1289,13 +1305,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryEmployee();
 
-    String employeeAdditionalInfoHeader();
+    String employeeAdditionalInfo();
 
     String employeeID();
 
     String employeeIPAddress();
-
-    String employeePositionsHeader();
 
     String employeeCompany();
 
@@ -1768,17 +1782,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagInfo();
 
-    String employeeEmployeeFullNameColumnHeader();
+    String employeeEmployeeFullName();
 
-    String employeeWorkPhoneColumnHeader();
+    String employeeWorkPhone();
 
-    String employeeMobilePhoneColumnHeader();
+    String employeeMobilePhone();
 
-    String employeeIPAddressColumnHeader();
+    String employeeEmail();
 
-    String employeeEmailColumnHeader();
-
-    String employeeDepartmentColumnHeader();
+    String employeeDepartment();
 
     String privateComment();
 
@@ -1994,6 +2006,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUpdateOrDeleteLinkedObjectError();
 
+    String errSVN();
+
     String contactGeneratePassword();
 
     String passwordIsDisplay();
@@ -2038,6 +2052,56 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboardActionRemove();
 
+    String backToEmployees();
+
+    String employeeDepartmentHead();
+
+    String employeePosition();
+
+    String employeeContactInfo();
+
+    String employeeTopBrassBtn();
+
+    String employeeTopBrassLabel();
+
+    String issueAssignment();
+
+    String issueAssignmentEntryEdit();
+
+    String issueAssignmentEntryRemove();
+
+    String issueAssignmentTableFilter();
+
+    String issueAssignmentTableFilterDefault();
+
+    String issueAssignmentTableOverflow(int records);
+
+    String issueAssignmentIssueAssignTo();
+
+    String issueAssignmentIssueReassignTo();
+
+    String contactSaved();
+
+    String contactDelete();
+
+    String issueAssignmentToggleTable();
+
+    String issueAssignmentReload();
+
+    String issueAssignmentMenuEdit();
+
+    String issueAssignmentMenuActions();
+
+    String issueAssignmentIssueOpen();
+
+    String issueAssignmentToggleDeskRow();
+
+    String issueAssignmentDeskAddColumn();
+
+    String issueAssignmentDeskAddRow();
+
+    String issueCreator();
+
     String ipReservation();
 
     String subnet();
@@ -2047,6 +2111,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpOwner();
 
     String reservedIpAddress();
+
+    String reservedIpIpAddress();
 
     String reservedIpMacAddress();
 
@@ -2064,4 +2130,29 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpUsePeriod();
 
+    String reservedIpWrongSubnetAddress();
+
+    String reservedIpWrongSubnetMask();
+
+    String reservedIpWrongIpAddress();
+
+    String reservedIpWrongMacAddress();
+
+    String reservedIpSubnetAddress();
+
+    String reservedIpSubnetMask();
+
+    String selectReservedIpOwnere();
+
+    String reservedIpIpReleased();
+
+    String reservedIpSubnetRemoved();
+
+    String reservedIpSubnetRemoveConfirmMessage();
+
+    String reservedIpReleaseConfirmMessage();
+
+    String reservedIpSubnetRemove();
+
+    String reservedIpIpRelease();
 }

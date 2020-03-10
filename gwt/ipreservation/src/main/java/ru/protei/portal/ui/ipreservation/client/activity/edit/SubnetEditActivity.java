@@ -12,7 +12,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -35,7 +34,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
 
     @Event
     public void onShow (IpReservationEvents.EditSubnet event) {
-        if (!hasPrivileges(event.subnetId)) {
+        if (!hasPrivileges(event.subnet.getId())) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -43,12 +42,12 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        if (event.subnetId == null) {
+        if (event.subnet.getId() == null) {
             subnet = new Subnet();
             resetView();
         } else {
             resetView();
-            requestSubnet(event.subnetId, this::fillView);
+            requestSubnet(event.subnet.getId(), this::fillView);
         }
     }
 
@@ -122,12 +121,12 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
 
     private boolean validateView() {
         if(!view.addressValidator().isValid()){
-            //fireEvent(new NotifyEvents.Show(lang.errSubnetAddress(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.errSubnetAddress(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
         if(!view.maskValidator().isValid()){
-            //fireEvent(new NotifyEvents.Show(lang.errSubnetMask(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.errSubnetMask(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 

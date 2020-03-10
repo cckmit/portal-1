@@ -31,8 +31,10 @@ public interface ContactService {
     Result<Person> saveContact( AuthToken token, Person p );
 
     @Privileged( En_Privilege.CONTACT_EDIT )
+    @Auditable(En_AuditType.CONTACT_FIRE)
     Result<Boolean> fireContact( AuthToken token, long id );
 
     @Privileged( En_Privilege.CONTACT_REMOVE )
+    @Auditable(En_AuditType.CONTACT_DELETE)
     Result<Boolean> removeContact( AuthToken token, long id );
 }

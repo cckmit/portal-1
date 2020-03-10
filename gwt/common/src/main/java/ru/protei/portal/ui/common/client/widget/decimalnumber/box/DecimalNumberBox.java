@@ -105,6 +105,18 @@ public class DecimalNumberBox extends Composite
         regNum.setEnabled(enabled);
     }
 
+    public void setClassifierCode(Integer classifierCode) {
+        this.classifierCode.setText(classifierCode == null ? null : NumberFormat.getFormat("000000").format(classifierCode));
+        value.setClassifierCode(classifierCode);
+        checkNextButtonState();
+    }
+
+    public void setRegisterNumber(Integer registerNumber) {
+        this.regNum.setText(registerNumber == null ? null : NumberFormat.getFormat("000").format(registerNumber));
+        value.setRegisterNumber(registerNumber);
+        checkNextButtonState();
+    }
+
     public void setHandler(DecimalNumberBoxHandler boxHandler) {
         this.handler = boxHandler;
     }

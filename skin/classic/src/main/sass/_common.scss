@@ -762,7 +762,10 @@ label.bordered:after {
     tbody {
       tr {
         td {
+          height: 35px;
           > div {
+            height: 35px;
+            max-height: 35px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -780,6 +783,21 @@ label.bordered:after {
 
 .employees {
   table {
+    tbody {
+      tr {
+        td {
+          height: 56px;
+          > div {
+            height: 56px;
+            max-height: 56px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+
     i {
       padding-right: 5px;
     }
@@ -787,18 +805,15 @@ label.bordered:after {
       padding-right: 5px;
     }
     .employee-info {
-      width: 21%
+      width: 25%
     }
 
     .employee-contacts {
-      width: 31%
+      width: 30%
     }
 
     .employee-department {
-      width: 32%
-    }
-    .employee-additional {
-      width: 15%
+      width: 45%
     }
   }
 }
@@ -1678,6 +1693,8 @@ a {
     display: block;
     margin: 0;
     padding: 2px 0 6px 0;
+    max-height: 60vh;
+    overflow: auto;
 
     .case-tag {
       text-align: center;
@@ -3915,5 +3932,53 @@ table {
   flex-flow: row wrap;
   a {
     margin-right: 15px;
+  }
+}
+
+.employee-preview-image {
+  display: block;
+  font-size: 6em;
+  height: 260px;
+  float: right;
+  margin: 0 0 5px 5px;
+}
+
+.top-brass {
+  .top-brass-containers {
+    text-align: center;
+    text-align: -webkit-center;
+    text-align: -moz-center;
+    padding: 0 100px;
+
+    > div {
+      margin-top: 40px;
+      margin-bottom: 70px;
+    }
+
+    .top-brass-top-container {
+      width: 75%;
+    }
+
+    .top-brass-position {
+      font-weight: bold;
+    }
+
+    img {
+      height: 250px;
+      margin: 0 0 5px 5px;
+      border: 1px solid rgba(40, 40, 40, 0.35);
+      padding: 1px;
+    }
+  }
+
+  .top-brass-footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 8px 5px;
+    background-color: #ededed;
+    border-top: 1px solid #dadada;
+    z-index: 150;
   }
 }

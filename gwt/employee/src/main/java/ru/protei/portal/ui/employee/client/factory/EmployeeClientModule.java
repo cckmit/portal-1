@@ -5,16 +5,22 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemView;
 import ru.protei.portal.ui.employee.client.activity.list.*;
 import ru.protei.portal.ui.employee.client.activity.page.EmployeePage;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewView;
 import ru.protei.portal.ui.employee.client.activity.preview.EmployeePreviewActivity;
+import ru.protei.portal.ui.employee.client.activity.topbrass.AbstractTopBrassActivity;
+import ru.protei.portal.ui.employee.client.activity.topbrass.AbstractTopBrassView;
+import ru.protei.portal.ui.employee.client.activity.topbrass.TopBrassActivity;
 import ru.protei.portal.ui.employee.client.view.filter.EmployeeFilterView;
 import ru.protei.portal.ui.employee.client.view.item.EmployeeItemView;
 import ru.protei.portal.ui.employee.client.view.item.PositionItemView;
+import ru.protei.portal.ui.employee.client.view.item.TopBrassItemView;
 import ru.protei.portal.ui.employee.client.view.list.EmployeeListView;
 import ru.protei.portal.ui.employee.client.view.preview.EmployeePreviewView;
 import ru.protei.portal.ui.employee.client.view.table.EmployeeTableView;
+import ru.protei.portal.ui.employee.client.view.topbrass.TopBrassView;
 
 /**
  * Описание классов фабрики
@@ -37,5 +43,9 @@ public class EmployeeClientModule extends AbstractGinModule {
         bind( EmployeePreviewActivity.class ).asEagerSingleton();
         bind( AbstractEmployeePreviewView.class ).to( EmployeePreviewView.class ).in( Singleton.class );
         bind( AbstractPositionItemView.class ).to( PositionItemView.class );
+
+        bind(AbstractTopBrassView.class).to(TopBrassView.class).in(Singleton.class);
+        bind(AbstractTopBrassActivity.class).to(TopBrassActivity.class).asEagerSingleton();
+        bind(AbstractTopBrassItemView.class).to(TopBrassItemView.class);
     }
 }

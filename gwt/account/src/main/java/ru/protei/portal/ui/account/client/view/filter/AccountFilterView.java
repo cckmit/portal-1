@@ -75,6 +75,9 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
         sortField.setValue( En_SortField.ulogin );
         sortDir.setValue( true );
         search.setValue( "" );
+        types.setValue( new HashSet<>() );
+        roles.setValue( new HashSet<>() );
+        company.setValue(null);
     }
 
     @UiHandler( "resetBtn" )

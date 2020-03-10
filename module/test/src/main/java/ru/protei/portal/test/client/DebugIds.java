@@ -67,6 +67,7 @@ public class DebugIds {
         String DOCUMENT_TYPE = "sidebar-menu-document-type";
         String EQUIPMENT = "sidebar-menu-equipment";
         String ISSUE = "sidebar-menu-issue";
+        String ISSUE_ASSIGNMENT = "sidebar-menu-issue-assignment";
         String ISSUE_REPORTS = "sidebar-menu-issue-reports";
         String OFFICIAL = "sidebar-menu-official";
         String PRODUCT = "sidebar-menu-product";
@@ -147,6 +148,10 @@ public class DebugIds {
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
+        String CREATOR_SELECTOR = "filter-creator-selector";
+        String CREATOR_ADD_BUTTON = "filter-creator-add-button";
+        String CREATOR_CLEAR_BUTTON = "filter-creator-clear-button";
+        String CREATOR_ITEM_CONTAINER = "filter-creator-item-container";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
@@ -785,6 +790,8 @@ public class DebugIds {
     public interface RESERVED_IP {
         String IP_ADDRESS_INPUT = "reservedip-address-input";
         String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
+        String SUBNET_SELECTOR = "reservedip-subnet-selector";
+        String OWNER_SELECTOR = "reservedip-owner-selector";
         String COMMENT_INPUT = "reservedip-comment-input";
 
         /* @todo остальные поля  */

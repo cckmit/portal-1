@@ -278,6 +278,11 @@ public class ServiceTestsConfiguration {
         return new UserDashboardServiceImpl();
     }
 
+    @Bean
+    public UserCaseAssignmentService getUserCaseAssignmentService() {
+        return new UserCaseAssignmentServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {

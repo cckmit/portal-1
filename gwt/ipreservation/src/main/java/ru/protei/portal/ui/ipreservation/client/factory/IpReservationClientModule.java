@@ -33,9 +33,7 @@ public class IpReservationClientModule extends AbstractGinModule {
 /*
         bind( ReservedIpCreateActivity.class ).asEagerSingleton();
         bind( AbstractReseredIpCreateView.class ).to(ReseredIpCreateView.class).in(Singleton.class);
-
-        bind( ReservedIpPreviewActivity.class ).asEagerSingleton();
-        bind( AbstractReservedIpPreviewView.class ).to( ReservedIpPreviewView.class ).in( Singleton.class );*/
+*/
     }
 }
 

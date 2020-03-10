@@ -1,38 +1,31 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
-             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:district="urn:import:ru.protei.portal.ui.common.client.widget.selector.district"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:item="urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item">
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
+<!--                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.subnet}"/></label>
+                    <subnet:SubnetButtonSelector ui:field="subnet" />
+                </div>-->
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.productDirection}"/></label>
-                    <productdirection:ProductDirectionButtonSelector ui:field="direction" />
-                </div>
-                <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.regionDistrict}"/></label>
-                    <district:DistrictBtnGroupMulti ui:field="districts" />
-                </div>
-                <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.regionState}"/></label>
-                    <state:RegionStateBtnGroupMulti ui:field="states" />
+                    <label><ui:text from="{lang.reservedIpOwner}"/></label>
+                    <person:EmployeeButtonSelector hasNullValue="true" ui:field="owner" defaultValue="{lang.selectReservedIpOwnere}"/>
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
-                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="PRODUCT"/>
+                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="RESERVED_IP"/>
                         <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                     </div>
                 </div>
                 <div class="form-group col-md-12">
-                    <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
+                    <g:CheckBox ui:field="onlyLocal" styleName="checkbox" text="{lang.reservedIpOnlyLocal}"/>
                 </div>
             </div>
         </div>

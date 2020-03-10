@@ -6,9 +6,29 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+    <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
-
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.reservedIpSubnetAddress}"/>
+                    </label>
+                    <validablefield:ValidableTextBox ui:field="address" styleName="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.reservedIpSubnetMask}"/>
+                    </label>
+                    <g:Label ui:field="mask" styleName="m-b-15 inline-block"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label><ui:text from="{lang.comment}"/></label>
+                    <autoresizetextarea:AutoResizeTextArea ui:field="comment"
+                                                           styleName="form-control" minRows="2" maxRows="10"/>
+                </div>
+            </div>
         </div>
         <div class="card-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>

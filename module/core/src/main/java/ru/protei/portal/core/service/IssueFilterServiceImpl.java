@@ -119,9 +119,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             }
         }
 
-        if (!isEmpty( caseQuery.getCaseTagsIds())) {
+        List<Long> tagIds = filterToList( caseQuery.getCaseTagsIds(), Objects::nonNull );
+        if (!isEmpty( tagIds )) {
             CaseTagQuery caseTagQuery = new CaseTagQuery();
-            caseTagQuery.setIds( filterToList( caseQuery.getCaseTagsIds(), Objects::nonNull) );
+            caseTagQuery.setIds( tagIds );
 
             Result<List<CaseTag>> result = caseTagService.getTags(token, caseTagQuery );
             if (result.isOk()) {
@@ -206,6 +207,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         personsIds.addAll(emptyIfNull(caseQuery.getManagerIds()));
         personsIds.addAll(emptyIfNull(caseQuery.getInitiatorIds()));
         personsIds.addAll(emptyIfNull(caseQuery.getCommentAuthorIds()));
+        personsIds.addAll(emptyIfNull(caseQuery.getCreatorIds()));
         return personsIds;
     }
 

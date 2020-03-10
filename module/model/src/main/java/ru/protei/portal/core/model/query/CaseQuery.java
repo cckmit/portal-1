@@ -79,6 +79,8 @@ public class CaseQuery extends BaseQuery {
 
     private Long productDirectionId;
 
+    private List<Long> creatorIds;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -125,6 +127,7 @@ public class CaseQuery extends BaseQuery {
         setContractIndependentProject(query.getContractIndependentProject());
         setPlatformIndependentProject(query.getPlatformIndependentProject());
         setProductDirectionId(query.getProductDirectionId());
+        setCreatorIds(query.getCreatorIds());
     }
 
     public Long getId() {
@@ -329,6 +332,14 @@ public class CaseQuery extends BaseQuery {
         this.productDirectionId = productDirectionId;
     }
 
+    public List<Long> getCreatorIds() {
+        return creatorIds;
+    }
+
+    public void setCreatorIds(List<Long> creatorIds) {
+        this.creatorIds = creatorIds;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -342,6 +353,7 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(managerIds) ||
                 CollectionUtils.isNotEmpty(stateIds) ||
                 CollectionUtils.isNotEmpty(importanceIds) ||
+                CollectionUtils.isNotEmpty(creatorIds) ||
                 createdFrom != null ||
                 createdTo != null ||
                 modifiedFrom != null ||
@@ -357,9 +369,11 @@ public class CaseQuery extends BaseQuery {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CaseQuery{" +
-                "companyIds=" + companyIds +
+                "id=" + id +
+                ", caseNumbers=" + caseNumbers +
+                ", companyIds=" + companyIds +
                 ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
                 ", locationIds=" + locationIds +
@@ -368,22 +382,24 @@ public class CaseQuery extends BaseQuery {
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
+                ", allowViewPrivate=" + allowViewPrivate +
+                ", viewPrivate=" + viewPrivate +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
                 ", modifiedFrom=" + modifiedFrom +
                 ", modifiedTo=" + modifiedTo +
-                ", showPrivate=" + allowViewPrivate +
                 ", searchStringAtComments=" + searchStringAtComments +
-                ", searchCasenoString=" + searchCasenoString +
-                ", viewPrivate=" + viewPrivate +
-                ", memberIds=" + memberId +
+                ", searchCasenoString='" + searchCasenoString + '\'' +
+                ", memberId=" + memberId +
                 ", commentAuthorIds=" + commentAuthorIds +
                 ", caseTagsIds=" + caseTagsIds +
-                ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", customerSearch=" + customerSearch +
+                ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", local=" + local +
                 ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
+                ", productDirectionId=" + productDirectionId +
+                ", creatorIds=" + creatorIds +
                 '}';
     }
 
@@ -419,11 +435,16 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(local, caseQuery.local) &&
                 Objects.equals(contractIndependentProject, caseQuery.contractIndependentProject) &&
                 Objects.equals(platformIndependentProject, caseQuery.platformIndependentProject) &&
-                Objects.equals(productDirectionId, caseQuery.productDirectionId);
+                Objects.equals(productDirectionId, caseQuery.productDirectionId) &&
+                Objects.equals(creatorIds, caseQuery.creatorIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds, type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom, modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds, customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject, productDirectionId);
+        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
+                type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
+                modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
+                customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject,
+                productDirectionId, creatorIds);
     }
 }

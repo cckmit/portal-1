@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface CaseTagService {
 
-    Result<Long> saveTag( AuthToken authToken, CaseTag caseTag);
+    Result<Long> create( AuthToken authToken, CaseTag caseTag );
+
+    Result<Long> update( AuthToken authToken, CaseTag caseTag);
 
     Result<Long> removeTag( AuthToken authToken, CaseTag caseTag);
 
@@ -17,5 +19,5 @@ public interface CaseTagService {
 
     Result attachTag(AuthToken authToken, Long caseId, Long tagId);
 
-    Result detachTag(AuthToken authToken, Long caseId, Long tagId);
+    Result<Long> detachTag( AuthToken authToken, Long caseId, Long tagId);
 }

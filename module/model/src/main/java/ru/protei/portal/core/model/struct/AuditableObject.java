@@ -13,6 +13,7 @@ import java.io.Serializable;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "AuditType")
 @JsonSubTypes({
+        @JsonSubTypes.Type(value = SimpleAuditableObject.class, name = "SimpleAuditableObject"),
         @JsonSubTypes.Type(value = UserLogin.class, name = "UserLogin"),
         @JsonSubTypes.Type(value = CaseObject.class, name = "CaseObject"),
         @JsonSubTypes.Type(value = CaseComment.class, name = "CaseComment"),
@@ -28,11 +29,17 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = Photo.class, name = "Photo"),
         @JsonSubTypes.Type(value = EmployeeRegistration.class, name = "EmployeeRegistration"),
         @JsonSubTypes.Type(value = LongAuditableObject.class, name = "LongAuditableObject"),
-        @JsonSubTypes.Type(value = SimpleAuditableObject.class, name = "SimpleAuditableObject"),
         @JsonSubTypes.Type(value = CaseNameAndDescriptionChangeRequest.class, name = "CaseNameAndDescriptionChangeRequest"),
         @JsonSubTypes.Type(value = CaseObjectCreateRequest.class, name = "CaseObjectCreateRequest"),
         @JsonSubTypes.Type(value = CaseObjectMeta.class, name = "CaseObjectMeta"),
         @JsonSubTypes.Type(value = DevUnitInfo.class, name = DevUnitInfo.DEV_UNIT_INFO),
+        @JsonSubTypes.Type(value = Attachment.class, name = Attachment.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = CaseLink.class, name = CaseLink.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = Document.class, name = Document.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = DocumentType.class, name = DocumentType.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = Platform.class, name = Platform.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = Server.class, name = Server.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = Application.class, name = Application.AUDIT_TYPE)
 })
 public abstract class AuditableObject implements Serializable {
 

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -23,4 +24,6 @@ public interface PersonController extends RemoteService {
     List< PersonShortView > getPersonViewList( PersonQuery query ) throws RequestFailedException;
 
     Map<Long, String> getPersonNames(Collection<Long> ids) throws RequestFailedException;
+
+    Person getPerson(Long id) throws RequestFailedException;
 }
