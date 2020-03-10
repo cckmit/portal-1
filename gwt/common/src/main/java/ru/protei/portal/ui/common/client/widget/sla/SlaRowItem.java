@@ -22,10 +22,6 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
 
     @Override
     public ContractSla getValue() {
-        if (isEmpty()) {
-            return null;
-        }
-
         ContractSla contractSla = new ContractSla();
         contractSla.setReactionTime(reactionTime.getTime());
         contractSla.setTemporarySolutionTime(temporarySolutionTime.getTime());
@@ -83,22 +79,6 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
     @Inject
     @UiField(provided = true)
     TimeTextBox fullSolutionTime;
-
-    private boolean isEmpty() {
-        if (reactionTime.getTime() == null) {
-            return false;
-        }
-
-        if (temporarySolutionTime.getTime() == null) {
-            return false;
-        }
-
-        if (fullSolutionTime.getTime() == null) {
-            return false;
-        }
-
-        return true;
-    }
 
     interface SlaRowItemUiBinder extends UiBinder<HTMLPanel, SlaRowItem> {
     }

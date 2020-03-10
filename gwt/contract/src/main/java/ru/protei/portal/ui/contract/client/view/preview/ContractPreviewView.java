@@ -11,9 +11,13 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewActivity;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewView;
+
+import java.util.List;
 
 public class ContractPreviewView extends Composite implements AbstractContractPreviewView {
 
@@ -116,8 +120,22 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @Override
     public void isFullScreen(boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+        if (isFullScreen) {
+            slaInput.getElement().replaceClassName("col-md-12", "col-md-6");
+        } else {
+            slaInput.getElement().replaceClassName("col-md-6", "col-md-12");
+        }
     }
 
+    @Override
+    public HasValue<List<ContractSla>> slaInput() {
+        return slaInput;
+    }
+
+    @Override
+    public HasVisibility slaInputVisibility() {
+        return slaContainer;
+    }
 
     @UiHandler("header")
     public void onFullScreenClicked(ClickEvent event) {
@@ -135,6 +153,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         if (activity != null) {
             activity.onGoToContractsClicked();
         }
+    }
+
+    @UiHandler("slaInput")
+    public void onSaveClicked(ClickEvent event) {
+        activity.onSaveSlaClicked();
     }
 
     @UiField
@@ -171,6 +194,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     SpanElement contractChild;
     @UiField
     Anchor project;
+    @Inject
+    @UiField(provided = true)
+    SlaInput slaInput;
+    @UiField
+    HTMLPanel slaContainer;
     @UiField
     HTMLPanel footerContainer;
     @UiField

@@ -4,4 +4,6 @@ public interface AbstractContractPreviewActivity {
     void onFullScreenClicked();
 
     void onGoToContractsClicked();
+
+    void onSaveSlaClicked();
 }

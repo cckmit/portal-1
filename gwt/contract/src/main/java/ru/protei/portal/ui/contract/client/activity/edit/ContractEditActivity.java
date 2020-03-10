@@ -159,10 +159,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
             view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
         }
-
-        view.slaInput().setValue(contract.getContractSlas());
-        boolean visible = En_ContractType.SUPPLY_CONTRACT.equals(contract.getContractType()) || En_ContractType.AFTER_SALES_SERVICE_CONTRACT.equals(contract.getContractType());
-        view.slaInputVisibility().setVisible(visible);
     }
 
     private void fillDto() {
@@ -191,8 +187,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             contract.setCaseManagerId(null);
             contract.setCaseDirectionId(null);
         }
-
-        contract.setContractSlas(view.slaInput().getValue());
     }
 
     private void showValidationError() {

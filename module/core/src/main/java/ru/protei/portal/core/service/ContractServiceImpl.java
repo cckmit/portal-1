@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.dao.ContractDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -25,6 +22,8 @@ public class ContractServiceImpl implements ContractService {
 
     @Autowired
     ContractDAO contractDAO;
+    @Autowired
+    ContractSlaDAO contractSlaDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
@@ -101,10 +100,6 @@ public class ContractServiceImpl implements ContractService {
 
         jdbcManyRelationsHelper.persist(contract, "contractDates");
 
-        if (CollectionUtils.isNotEmpty(contract.getContractSlas())) {
-            jdbcManyRelationsHelper.persist(contract, "contractSlas");
-        }
-
         return ok(id);
     }
 
@@ -126,9 +121,29 @@ public class ContractServiceImpl implements ContractService {
         caseObjectDAO.merge(caseObject);
         contractDAO.merge(contract);
         jdbcManyRelationsHelper.persist(contract, "contractDates");
-        jdbcManyRelationsHelper.persist(contract, "contractSlas");
+
+        if (CollectionUtils.isEmpty(contract.getContractSlas())) {
+            return ok(contract.getId());
+        }
+
+
 
         return ok(contract.getId());
+    }
+
+    @Override
+    @Transactional
+    public Result<Boolean> updateSlaById(AuthToken token, List<ContractSla> slas, Long contractId) {
+        if (CollectionUtils.isEmpty(slas) || contractId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        slas.forEach(contractSla -> {
+            contractSla.setContractId(contractId);
+            contractSlaDAO.saveOrUpdate(contractSla);
+        });
+
+        return ok(true);
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {

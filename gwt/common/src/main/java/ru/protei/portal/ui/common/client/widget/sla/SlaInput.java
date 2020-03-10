@@ -1,11 +1,16 @@
 package ru.protei.portal.ui.common.client.widget.sla;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -17,7 +22,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlaInput extends Composite implements HasValue<List<ContractSla>> {
+public class SlaInput extends Composite implements HasValue<List<ContractSla>>, HasClickHandlers {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -95,6 +100,11 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>> {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
+    @UiHandler("saveButton")
+    public void onSaveClicked(ClickEvent event) {
+        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
+    }
+
     public void setEnsureDebugId(String debugId) {
         criticalItem.setEnsureDebugId(debugId + "-critical");
         importantItem.setEnsureDebugId(debugId + "-important");
@@ -117,6 +127,14 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>> {
     @Inject
     @UiField(provided = true)
     SlaRowItem cosmeticItem;
+
+    @UiField
+    Button saveButton;
+
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addHandler(handler, ClickEvent.getType());
+    }
 
     interface SlaInputUiBinder extends UiBinder<HTMLPanel, SlaInput> {
     }
