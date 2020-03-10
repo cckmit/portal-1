@@ -584,7 +584,20 @@ public class MailNotificationProcessor {
     public void onMailReportEvent(MailReportEvent event) {
         Report report = event.getReport();
         Person recipient = report.getCreator();
-        // sendMailToRecipients
+
+        PreparedTemplate bodyTemplate = templateService.getMailReportBody(report);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for reporId={}", report.getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(report.getName());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for reporId={}", report.getId());
+            return;
+        }
+
+        sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(recipient)), bodyTemplate, subjectTemplate, true);
     }
 
     // -----

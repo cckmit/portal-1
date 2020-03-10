@@ -87,6 +87,8 @@
                         <argument>notification/email/document.member.added.body.ftl</argument>
                         <argument>notification/email/document.doc.file.updated.by.member.subject.ftl</argument>
                         <argument>notification/email/document.doc.file.updated.by.member.body.ftl</argument>
+                        <argument>notification/email/report.subject.ftl</argument>
+                        <argument>notification/email/report.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>
