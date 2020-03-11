@@ -3,11 +3,9 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -30,7 +28,8 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
     public void onInit(AuthEvents.Success event) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery()));
+        cache.setLoadHandler(makeLoadHandler(new PersonQuery()));
+        cache.setChunkSize(CHUNK_SIZE);
     }
 
     @Override
@@ -80,10 +79,6 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
         );
     }
 
-    private PersonQuery makeQuery() {
-        return new PersonQuery(false, false, true);
-    }
-
     private void savePerson(Person person) {
         currentPerson = person.toFullNameShortView();
     }
@@ -96,5 +91,6 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
 
     private PersonShortView currentPerson;
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
+    private static final Integer CHUNK_SIZE = 1000;
 }
 
