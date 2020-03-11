@@ -80,8 +80,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     @Override
     public void onSaveSlaClicked() {
-        contract.setContractSlas(view.slaInput().getValue());
-        contractService.saveContract(contract, new FluentCallback<Long>()
+        contractService.updateSlaById(view.slaInput().getValue(), contractId, new FluentCallback<Boolean>()
                 .withSuccess(value -> fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS)))
         );
     }
@@ -99,7 +98,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                     return;
                 }
                 contractId = result.getId();
-                ContractPreviewActivity.this.contract = result;
                 fillView(result);
             }
         });
@@ -170,7 +168,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private ContractControllerAsync contractService;
 
     private Long contractId;
-    private Contract contract;
 
     private DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
     private AppEvents.InitDetails initDetails;

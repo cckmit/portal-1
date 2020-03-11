@@ -29,5 +29,7 @@ public interface ContractService {
     @Auditable(En_AuditType.CONTRACT_MODIFY)
     Result<Long> updateContract( AuthToken token, Contract contract);
 
+    @Privileged(En_Privilege.CONTRACT_VIEW)
+    @Auditable(En_AuditType.CONTRACT_MODIFY)
     Result<Boolean> updateSlaById(AuthToken token, List<ContractSla> slas, Long contractId);
 }

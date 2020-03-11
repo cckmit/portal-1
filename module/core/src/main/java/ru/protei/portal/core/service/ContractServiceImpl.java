@@ -15,6 +15,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
@@ -122,12 +124,6 @@ public class ContractServiceImpl implements ContractService {
         contractDAO.merge(contract);
         jdbcManyRelationsHelper.persist(contract, "contractDates");
 
-        if (CollectionUtils.isEmpty(contract.getContractSlas())) {
-            return ok(contract.getId());
-        }
-
-
-
         return ok(contract.getId());
     }
 
@@ -138,10 +134,24 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        slas.forEach(contractSla -> {
-            contractSla.setContractId(contractId);
-            contractSlaDAO.saveOrUpdate(contractSla);
-        });
+        Contract contract = contractDAO.get(contractId);
+
+        if (contract == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.fill(contract, "contractSlas");
+
+        if (CollectionUtils.isNotEmpty(contract.getContractSlas())) {
+            contract.setContractSlas(slas);
+            jdbcManyRelationsHelper.persist(contract, "contractSlas");
+
+            return ok(true);
+        }
+
+        slas.forEach(sla -> sla.setContractId(contractId));
+
+        contractSlaDAO.persistBatch(slas);
 
         return ok(true);
     }

@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.ContractService;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Service("ContractController")
 public class ContractControllerImpl implements ContractController {
@@ -67,6 +69,21 @@ public class ContractControllerImpl implements ContractController {
 
         if (response.isOk()) {
             log.info("create contract, applied id: {}", response.getData());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Boolean updateSlaById(List<ContractSla> slas, Long contractId) throws RequestFailedException {
+        log.info("update sla by id, sla list: {}, id: {}", slas, contractId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+
+        Result<Boolean> response = contractService.updateSlaById(token, slas, contractId);
+
+        if (response.isOk()) {
             return response.getData();
         }
 
