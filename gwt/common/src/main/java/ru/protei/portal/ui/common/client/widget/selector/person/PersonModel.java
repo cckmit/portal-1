@@ -29,6 +29,7 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
         cache.setLoadHandler(makeLoadHandler(makeQuery()));
+        cache.setChunkSize(CHUNK_SIZE);
     }
 
     @Override
@@ -94,5 +95,6 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
 
     private PersonShortView currentPerson;
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
+    private static final Integer CHUNK_SIZE = 1000;
 }
 
