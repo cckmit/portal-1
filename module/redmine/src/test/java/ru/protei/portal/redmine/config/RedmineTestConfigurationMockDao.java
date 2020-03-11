@@ -46,8 +46,6 @@ public class RedmineTestConfigurationMockDao {
         return mock(RedmineEndpointDAO.class);
     }
 
-    // other DAO
-
     @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return mock( CaseLinkDAO.class );

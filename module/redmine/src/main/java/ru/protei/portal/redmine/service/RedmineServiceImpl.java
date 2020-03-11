@@ -11,12 +11,10 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
-import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -43,7 +41,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
     @Override
     public Result<List<Issue>> getNewIssues( RedmineEndpoint endpoint ) {
-        final String created = RedmineUtils.parseDateToAfter(endpoint.getLastCreatedOnDate());
+        final String created = parseDateToAfter(endpoint.getLastCreatedOnDate());
         final String projectId = endpoint.getProjectId();
 
         logger.debug("new issues poll from redmine endpoint {}, company {}, project {}, check created from {}",
@@ -60,7 +58,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
     @Override
     public  Result<List<Issue>> getUpdatedIssues(RedmineEndpoint endpoint) {
-        final String updated = RedmineUtils.parseDateToAfter(endpoint.getLastUpdatedOnDate());
+        final String updated = parseDateToAfter(endpoint.getLastUpdatedOnDate());
 
         final String projectId = endpoint.getProjectId();
 
@@ -107,6 +105,26 @@ public final class RedmineServiceImpl implements RedmineService {
         return ok(list);
     }
 
+    //Somewhy datetime in issues stored in GMT timezone, therefore we need -3 hours from our time
+    private String parseDateToAfter( Date date) {
+        SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        /** это нужно,
+         * чтобы при форматировании даты и времени,
+         * они не получали смещение текущей временной зоны сервера*
+         */
+        dateTimeFormatter.setTimeZone( TimeZone.getTimeZone("UTC"));
+        /**
+         * Вот это беда, Сергей.
+         * Ты сохраняешь дату и время, которую получил от их системы,
+         * она по идее, должна быть в UTC, но видимо библиотека возвращает нам дату в нашей временной зоне.
+         *
+         * просто вычитать 3 часа - это не корректно, нужно будет подумать над правильной реализацией.
+         * Пока что, самое корректное, использовать форматтер с указанием тайм-зоны UTC
+         */
+//        calendar.add(Calendar.HOUR, -3);
+        String AFTER = ">=";
+        return AFTER + dateTimeFormatter.format(date) + "Z";
+    }
 
     private List<Issue> getClosedIssuesAfterDate(String date, String projectName, RedmineEndpoint endpoint) throws RedmineException {
         final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());

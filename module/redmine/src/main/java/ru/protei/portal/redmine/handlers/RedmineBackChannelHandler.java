@@ -14,8 +14,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.service.RedmineService;
-import ru.protei.portal.redmine.utils.RedmineUtils;
-import ru.protei.portal.redmine.utils.RedmineUtils.EndpointAndIssueId;
 
 import java.util.List;
 
@@ -155,9 +153,11 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     private void updateComments(Issue issue, Person initiator, List<CaseComment> addedCaseComments) {
         CaseComment comment = CollectionUtils.last(addedCaseComments);
         if (!comment.getText().isEmpty() && !comment.isPrivateComment()) {
-            issue.setNotes(RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText());
+            issue.setNotes( COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText());
         }
     }
+
+    private static final String COMMENT_PROTEI_USER_PREFIX = "PROTEI";
 
     @Autowired
     private RedmineService service;
@@ -166,7 +166,16 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     @Autowired
     private PortalConfig portalConfig;
 
+    private static class EndpointAndIssueId {
+        public RedmineEndpoint endpoint;
+        public Integer IssueId;
 
+        public EndpointAndIssueId(RedmineEndpoint endpoint, Integer issueId) {
+            this.endpoint = endpoint;
+            this.IssueId = issueId;
+        }
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(RedmineBackChannelHandler.class);
+
 }

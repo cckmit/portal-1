@@ -16,20 +16,6 @@ public class RedmineEndpointDAO_Impl extends PortalBaseJdbcDAO<RedmineEndpoint> 
         return partialMerge(endpoint, "last_updated");
     }
 
-//    @Override
-//    public void updateCreatedOn(Long companyId, String projectId, Date date) {
-//        RedmineEndpoint endpoint = getByCondition("COMPANY_ID = ? AND project_id = ?", companyId, projectId);
-//        endpoint.setLastCreatedOnDate(date);
-//        saveOrUpdate(endpoint);
-//    }
-//
-//    @Override
-//    public void updateUpdatedOn(Long companyId, String projectId, Date date) {
-//        RedmineEndpoint endpoint = getByCondition("COMPANY_ID = ? AND project_id = ?", companyId, projectId);
-//        endpoint.setLastUpdatedOnDate(date);
-//        saveOrUpdate(endpoint);
-//\    }
-
     @Override
     public List<RedmineEndpoint> getByCompanyId(Long companyId) {
         return getListByCondition("COMPANY_ID=?", companyId);

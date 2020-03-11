@@ -8,12 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
+import ru.protei.portal.core.event.CaseObjectCreateEvent;
+import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -23,12 +24,12 @@ import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.utils.EntityCache;
+import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.mapper.CachedPersonMapper;
 import ru.protei.portal.jira.mapper.PersonMapper;
-import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
-import ru.protei.portal.jira.dto.JiraHookEventData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,8 +37,11 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
@@ -72,6 +76,35 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Autowired
     AttachmentService attachmentService;
 
+    private EntityCache<JiraEndpoint> jiraEndpointCache;
+    private EntityCache<JiraEndpoint> jiraEndpointCache() {
+        if (jiraEndpointCache == null) {
+            jiraEndpointCache = new EntityCache<>(jiraEndpointDAO, TimeUnit.MINUTES.toMillis(10));
+        }
+        return jiraEndpointCache;
+    }
+
+    @Override
+    public Result<JiraEndpoint> selectEndpoint( Issue issue, Long originalCompanyId ) {
+        JiraEndpoint endpoint = jiraEndpointCache().findFirst( ep ->
+                Objects.equals(ep.getCompanyId(), originalCompanyId) &&
+                        Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
+        );
+
+        if (endpoint == null) return error( En_ResultStatus.NOT_FOUND );
+
+        CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(makeExternalIssueID(endpoint.getId(), issue));
+        if (caseObj != null) return ok(endpoint);
+
+        Long endpointCompanyId = selectEndpointCompanyId(issue, originalCompanyId);
+        logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
+        endpoint = jiraEndpointCache().findFirst( ep ->
+                Objects.equals( ep.getCompanyId(), endpointCompanyId ) &&
+                        Objects.equals( ep.getProjectId(), String.valueOf( issue.getProject().getId() ) ) );
+
+        return ok(endpoint);
+    }
+
     @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
     @Override
     public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
@@ -92,7 +125,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         User user = event.getUser();
         Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();
 
-        CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint.getId(), issue));
+        CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(makeExternalIssueID(endpoint.getId(), issue));
         if (caseObj == null) {
             Person initiator = personMapper.toProteiPerson( issue.getReporter() );
             return completedFuture(createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
@@ -194,7 +227,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
-        appData.setExtAppCaseId(CommonUtils.makeExternalIssueID(endpoint.getId(), issue));
+        appData.setExtAppCaseId(makeExternalIssueID(endpoint.getId(), issue));
         appData.setId(caseObj.getId());
         appData.setExtAppData(jiraExtAppData.toString());
 
@@ -389,15 +422,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private En_CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
-//        logger.debug("update case state, issue={}, jira-status = {}, current case state = {}", issueStatusName);
 
         En_CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(statusMapId, issueStatusName);
         if (state == null){
             logger.error("unable to map jira-status " + issueStatusName + " to portal case-state");
             return null;
         }
-
-//        logger.debug("issue {}, case-state old={}, new={}", issue.getKey(), oldState, state);
 
         return state;
     }
@@ -409,22 +439,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private En_ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {
-
-        // update severity
-//        String severityName = CommonUtils.getIssueSeverity(issue);
-
-//        logger.debug("update case priority, issue={}, jira-level={}, current case level={}", issue.getKey(), severityName, oldImportance);
-
         JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(priorityMapId, severityName) : null;
 
-
         if (jiraPriorityEntry == null) {
-//            logger.warn("unable to map jira-priority level : {}, set as basic", issue.getPriority().getName());
             logger.warn("unable to map jira-priority level : priorityMapId={}, severityName={}",  priorityMapId,  severityName);
             return null;
         }
 
-//        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), oldImportance, jiraPriorityEntry.importanceLevel());
         return En_ImportanceLevel.getById(jiraPriorityEntry.getLocalPriorityId());
     }
 
@@ -447,11 +468,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private JiraExtAppData addIssueTypeAndSeverity(JiraExtAppData jiraExtAppData, String issueType, String severity) {
-//        String issueType = issue.getIssueType().getName();
         jiraExtAppData.setIssueType(issueType);
         boolean isSeverityShouldBeSaved = En_JiraSLAIssueType.byJira().contains(En_JiraSLAIssueType.forIssueType(issueType));
         if (isSeverityShouldBeSaved) {
-//            String severity = getIssueSeverity(issue);
             jiraExtAppData.setSlaSeverity(severity);
         }
         return jiraExtAppData;
@@ -506,8 +525,22 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
     }
 
-    public static User fromBasicUserInfo (BasicUser basicUser) {
+    private static User fromBasicUserInfo (BasicUser basicUser) {
         return new User(basicUser.getSelf(), basicUser.getDisplayName(), basicUser.getDisplayName(), null, true,
                 null, fakeAvatarURI_map, null);
+    }
+
+    private static String makeExternalIssueID (Long endpointId, Issue issue) {
+        return endpointId+ "_" + issue.getKey();
+    }
+
+    private Long selectEndpointCompanyId(Issue issue, Long originalCompanyId) {
+        return Optional.ofNullable(issue.getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME))
+                .map(IssueField::getValue)
+                .map(Object::toString)
+                .map(jiraCompanyGroupDAO::getByName)
+                .map(JiraCompanyGroup::getCompany)
+                .map(Company::getId)
+                .orElse(originalCompanyId);
     }
 }

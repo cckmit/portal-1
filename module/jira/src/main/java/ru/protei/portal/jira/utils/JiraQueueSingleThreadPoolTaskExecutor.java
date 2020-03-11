@@ -29,7 +29,7 @@ public class JiraQueueSingleThreadPoolTaskExecutor extends ThreadPoolTaskExecuto
         }
         setKeepAliveSeconds(0); //удалять поток если больше CorePoolSize и не переиспользован в течении этого времени (не сразу удалять поток, а погодя )
         setAllowCoreThreadTimeOut(false); //удалять в том числе потоки из CorePoolSize согласно setKeepAliveSeconds  (экономит память снижая производительность, актуально при большом(десятки-сотни) числе потоков)
-        setRejectedExecutionHandler( new ThreadPoolExecutor.DiscardPolicy() ); //при переполнении очереди и превышении MaxPoolSize выполнять задачу на вызывающем потоке
+        setRejectedExecutionHandler( new ThreadPoolExecutor.DiscardPolicy() ); //DiscardPolicy при переполнении очереди и превышении MaxPoolSize отбрасывать задачу!
         setThreadFactory( new ThreadFactory() {
             @Override
             public Thread newThread( Runnable r ) {

@@ -1,7 +1,6 @@
 package ru.protei.portal.jira.controller;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
 import org.codehaus.jettison.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,27 +9,15 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.JiraCompanyGroupDAO;
-import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.JiraCompanyGroup;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.service.AssemblerService;
-import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.service.JiraIntegrationService;
-import ru.protei.portal.jira.utils.CommonUtils;
-import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 import ru.protei.portal.jira.utils.JiraHookEventParser;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -43,23 +30,9 @@ public class JiraEventController {
     @Autowired
     PortalConfig portalConfig;
     @Autowired
-    JiraCompanyGroupDAO jiraCompanyGroupDAO;
-    @Autowired
-    JiraEndpointDAO jiraEndpointDAO;
-    @Autowired
-    private CaseObjectDAO caseObjectDAO;
-    @Autowired
     JiraIntegrationService integrationService;
     @Autowired
     AssemblerService assemblerService;
-
-    private EntityCache<JiraEndpoint> jiraEndpointCache;
-    private EntityCache<JiraEndpoint> jiraEndpointCache() {
-        if (jiraEndpointCache == null) {
-            jiraEndpointCache = new EntityCache<>(jiraEndpointDAO, TimeUnit.MINUTES.toMillis(10));
-        }
-        return jiraEndpointCache;
-    }
 
     public JiraEventController() {
         logger.info("Jira webhook controller (handler) installed");
@@ -96,15 +69,15 @@ public class JiraEventController {
         }
 
         Issue issue = eventData.getIssue();
-        JiraEndpoint endpoint = selectEndpoint( issue, companyId );
+        Result<JiraEndpoint> endpoint = integrationService.selectEndpoint( issue, companyId );
 
-        if (endpoint == null) {
+        if (endpoint.isError()) {
             logger.warn( "Unable to find end-point record for jira-issue company={}, project={}", companyId, issue.getProject() );
             logger.error( "Event for jira-issue has been dropped! company={}, project={}", companyId, issue.getProject() );
             return;
         }
 
-        proceesEvent( endpoint, eventData )
+        proceesEvent( endpoint.getData(), eventData )
                 .thenAccept( assembledCaseEvent -> assemblerService.proceed( assembledCaseEvent ) )
                 .exceptionally( throwable -> {
                     logger.error( "jiraWebhook(): endpoint={}, src-ip={}, host={}, query={}, eventData={} | event dropped",
@@ -130,7 +103,6 @@ public class JiraEventController {
              * чтобы не получать петли, когда наш комментарий опять свалится к нам и мы его еще раз добавим.
              */
 
-
     }
 
     private Result<JiraHookEventData> parseJson( String jsonString )  {
@@ -147,34 +119,6 @@ public class JiraEventController {
         }
     }
 
-    private JiraEndpoint selectEndpoint(Issue issue, Long originalCompanyId) {
-        JiraEndpoint endpoint = jiraEndpointCache().findFirst(ep ->
-                Objects.equals(ep.getCompanyId(), originalCompanyId) &&
-                Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
-        );
-
-        if (endpoint == null) return null;
-
-        CaseObject caseObject = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint.getId(), issue));
-        if (caseObject != null) return endpoint;
-
-        Long endpointCompanyId = selectEndpointCompanyId(issue, originalCompanyId);
-        logger.info("jiraWebhook() map company id and issue field 'companygroup' in endpoint companyId: endpointCompanyId={}", endpointCompanyId);
-        return jiraEndpointCache().findFirst(ep ->
-                Objects.equals(ep.getCompanyId(), endpointCompanyId) &&
-                        Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId())));
-    }
-
-    private Long selectEndpointCompanyId(Issue issue, Long originalCompanyId) {
-        return Optional.ofNullable(issue.getFieldByName(CustomJiraIssueParser.COMPANY_GROUP_CODE_NAME))
-                .map(IssueField::getValue)
-                .map(Object::toString)
-                .map(jiraCompanyGroupDAO::getByName)
-                .map(JiraCompanyGroup::getCompany)
-                .map(Company::getId)
-                .orElse(originalCompanyId);
-    }
-
     private CompletableFuture<AssembledCaseEvent> proceesEvent( JiraEndpoint endpoint, JiraHookEventData eventData ) {
         switch (eventData.getEventType()) {
             case ISSUE_CREATED:
@@ -189,6 +133,5 @@ public class JiraEventController {
                 logger.info( "No handler for event {}, skip", eventData.getEventType() );
                 return null;
         }
-
     }
 }

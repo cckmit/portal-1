@@ -23,7 +23,6 @@ import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.service.RedmineService;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
-import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,7 +33,6 @@ import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 import static ru.protei.portal.redmine.enums.RedmineChangeType.*;
 import static ru.protei.portal.redmine.utils.CachedPersonMapper.isTechUser;
-import static ru.protei.portal.redmine.utils.RedmineUtils.userInfo;
 
 public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
@@ -47,6 +45,31 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         logger.debug("Check for issues updates started");
         commonService.getEndpoints().ifOk( endpoints -> endpoints.forEach( this::checkForUpdatedIssues ) );
         logger.debug("Check for issues updates ended");
+    }
+
+    public static Date maxDate( Date a, Date b) {
+        return a == null ? b : b == null ? a : a.after(b) ? a : b;
+    }
+
+    private String userInfo ( User user) {
+        if (user == null)
+            return "unknown";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("user[id=").append(user.getId()).append(",name=");
+        if (user.getLastName() != null)
+            sb.append(user.getLastName()).append(" ");
+        else
+            sb.append("? ");
+
+        if (user.getFirstName() != null) {
+            sb.append(user.getFirstName());
+        }
+        else
+            sb.append("?");
+
+        sb.append("]");
+        return sb.toString();
     }
 
     private void checkForNewIssues(RedmineEndpoint endpoint) {
@@ -70,7 +93,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             logger.debug( "try handle new issue from {}, issue-id: {}", userInfo( user ), issue.getId() );
 
             createCaseObject( user, issue, endpoint );
-            lastCreatedOn = RedmineUtils.maxDate( issue.getCreatedOn(), lastCreatedOn );
+            lastCreatedOn = maxDate( issue.getCreatedOn(), lastCreatedOn );
         }
 
         logger.debug( "max created on, taken from issues: {}", lastCreatedOn );
@@ -115,7 +138,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
             logger.debug("try update issue from {}, issue-id: {}", userInfo(user), issue.getId());
             compareAndUpdate(user, issue, endpoint);
-            lastUpdatedOn = RedmineUtils.maxDate(issue.getUpdatedOn(), lastUpdatedOn);
+            lastUpdatedOn = maxDate(issue.getUpdatedOn(), lastUpdatedOn);
         }
         logger.debug("max update-date, taken from issues: {}", lastUpdatedOn);
 
