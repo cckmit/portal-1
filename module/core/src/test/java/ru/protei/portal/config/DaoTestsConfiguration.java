@@ -322,6 +322,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ContractSlaDAO getContractSlaDao() {
+        return new ContractSlaDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }

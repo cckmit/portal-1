@@ -12,7 +12,7 @@
              xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
-             xmlns:sla="urn:import:ru.protei.portal.ui.common.client.widget.sla">
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -72,7 +72,7 @@
                                 <project:ProjectButtonSelector ui:field="project" hasNullValue="true" defaultValue="{lang.contractProjectNotDefined}"/>
                             </div>
 
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 <label ui:field="directionLabel"><ui:text from="{lang.contractDirection}"/></label>
                                 <productdirection:ProductDirectionButtonSelector ui:field="direction" validation="true" hideNullValue="true" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
                             </div>
@@ -127,21 +127,6 @@
                     </div>
                 </div>
             </div>
-
-            <g:HTMLPanel ui:field="slaContainer" styleName="container-fluid padding-15 bg-white">
-                <div class="card card-transparent no-margin">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <ui:text from="{lang.contractSla}"/>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <sla:SlaInput ui:field="slaInput" styleName="form-group col-md-6"/>
-                        </div>
-                    </div>
-                </div>
-            </g:HTMLPanel>
 
         </div>
         <div class="card-footer">

@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ContractSla;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewActivity;
@@ -24,6 +25,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
     }
 
     @Override
@@ -158,6 +160,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiHandler("slaInput")
     public void onSaveClicked(ClickEvent event) {
         activity.onSaveSlaClicked();
+    }
+
+    private void ensureDebugIds() {
+        slaInput.setEnsureDebugId(DebugIds.CONTRACT.PREVIEW.SLA_INPUT);
+        slaInput.setSaveButtonDebugId(DebugIds.CONTRACT.PREVIEW.SLA_SAVE_BUTTON);
     }
 
     @UiField

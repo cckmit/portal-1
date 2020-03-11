@@ -736,6 +736,11 @@ public class DebugIds {
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
         }
+
+        interface PREVIEW {
+            String SLA_INPUT = "contract-preview-sla-input";
+            String SLA_SAVE_BUTTON = "contract-preview-save-button";
+        }
     }
 
     public interface CLEANABLE_SEARCH_BOX {

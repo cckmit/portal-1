@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -23,11 +22,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
@@ -91,8 +85,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if ( isFrameworkContract ) {
             view.cost().setValue(new CostWithCurrency(0L, En_Currency.RUB));
         }
-
-        view.slaInputVisibility().setVisible(En_ContractType.SUPPLY_CONTRACT.equals(type) || En_ContractType.AFTER_SALES_SERVICE_CONTRACT.equals(type));
     }
 
     @Override

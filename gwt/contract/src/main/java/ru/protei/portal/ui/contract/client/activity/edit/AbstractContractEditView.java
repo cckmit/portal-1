@@ -2,13 +2,10 @@ package ru.protei.portal.ui.contract.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
-import ru.protei.portal.core.model.ent.ContractSla;
-import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -57,13 +54,9 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<ProductDirectionInfo> direction();
 
-    HasValue<List<ContractSla>> slaInput();
-
     HasEnabled managerEnabled();
 
     HasEnabled contragentEnabled();
 
     HasEnabled directionEnabled();
-
-    HasVisibility slaInputVisibility();
 }

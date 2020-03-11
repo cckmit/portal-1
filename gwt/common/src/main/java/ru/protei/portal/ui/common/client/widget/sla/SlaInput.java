@@ -93,6 +93,10 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>>, 
                 cosmeticItem.setValue(contractSla);
             }
         });
+
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, value);
+        }
     }
 
     @Override
@@ -110,6 +114,10 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>>, 
         importantItem.setEnsureDebugId(debugId + "-important");
         basicItem.setEnsureDebugId(debugId + "-basic");
         cosmeticItem.setEnsureDebugId(debugId + "-cosmetic");
+    }
+
+    public void setSaveButtonDebugId(String debugId) {
+        saveButton.ensureDebugId(debugId);
     }
 
     @Inject

@@ -313,6 +313,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public ContractSlaDAO getContractSlaDAO() {
+        return mock(ContractSlaDAO.class);
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return  mock(ContractDateDAO.class);
     }

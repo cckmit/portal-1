@@ -145,16 +145,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return direction;
     }
 
-    @Override
-    public HasValue<List<ContractSla>> slaInput() {
-        return slaInput;
-    }
-
-    @Override
-    public HasVisibility slaInputVisibility() {
-        return slaContainer;
-    }
-
     public HasEnabled managerEnabled() {
         return manager;
     }
@@ -250,8 +240,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
         saveButton.ensureDebugId(DebugIds.CONTRACT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
-
-        slaInput.setEnsureDebugId(DebugIds.CONTRACT.SLA_INPUT);
     }
 
     @UiField
@@ -302,11 +290,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     CompanySelector contragent;
-    @Inject
-    @UiField(provided = true)
-    SlaInput slaInput;
-    @UiField
-    HTMLPanel slaContainer;
     @UiField
     LabelElement numberLabel;
     @UiField
