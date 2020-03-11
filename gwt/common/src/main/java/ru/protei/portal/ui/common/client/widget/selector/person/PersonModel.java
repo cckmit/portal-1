@@ -28,7 +28,7 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
     public void onInit(AuthEvents.Success event) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery()));
+        cache.setLoadHandler(makeLoadHandler(new PersonQuery()));
         cache.setChunkSize(CHUNK_SIZE);
     }
 
@@ -77,10 +77,6 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
         personService.getPerson(myId, new FluentCallback<Person>()
                 .withSuccess(this::savePerson)
         );
-    }
-
-    private PersonQuery makeQuery() {
-        return new PersonQuery(false, false, null);
     }
 
     private void savePerson(Person person) {
