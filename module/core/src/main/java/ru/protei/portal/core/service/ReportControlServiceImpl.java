@@ -256,11 +256,20 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @Override
     public Result<Void> processScheduledMailReports() {
-        reportDAO.getScheduledReports().forEach(report -> {
-            log.info("Process Scheduled Mail Reports = {}", report);
-            CompletableFuture<Void> process = CompletableFuture.runAsync(() -> processReport(report), reportExecutorService);
-            process.thenRun(() -> publisherService.publishEvent(new MailReportEvent(this, report)));
-        });
+        CompletableFuture[] futures = reportDAO.getScheduledReports().stream().map(report -> {
+            log.info("Scheduled Mail Reports = {}", report);
+            return doScheduledMailReports(report);
+        }).toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
         return ok();
+    }
+
+    private CompletableFuture doScheduledMailReports(Report report) {
+        return CompletableFuture.runAsync(() -> {
+            processReport(report);
+            reportStorageService.getContent(report.getId())
+                    .ifOk(content -> publisherService.publishEvent(new MailReportEvent(this, report, content.getContent())))
+                    .ifError(error -> log.error("Scheduled Mail Reports failed = {}, error = {}", report, error));
+        }, reportExecutorService);
     }
 }
