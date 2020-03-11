@@ -7,13 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
-import ru.protei.portal.core.event.CaseObjectCreateEvent;
-import ru.protei.portal.core.event.CaseObjectMetaEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -34,10 +34,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
+import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
@@ -71,29 +72,41 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Autowired
     AttachmentService attachmentService;
 
+    @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
     @Override
-    public AssembledCaseEvent create(JiraEndpoint endpoint, JiraHookEventData event) {
-        return createCaseObject(event.getUser(),
-                event.getIssue(),
-                endpoint,
-                new CachedPersonMapper(personDAO, endpoint, personDAO.get(endpoint.getPersonId()))
-        );
+    public CompletableFuture<AssembledCaseEvent> create( JiraEndpoint endpoint, JiraHookEventData event) {
+        final Issue issue = event.getIssue();
+        CachedPersonMapper personMapper = new CachedPersonMapper( personDAO, endpoint, personDAO.get( endpoint.getPersonId() ));
+        Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();
+        Person initiator = personMapper.toProteiPerson( issue.getReporter() );
+        return completedFuture( createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
     }
 
+    @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
     @Override
-    public AssembledCaseEvent updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
+    public CompletableFuture<AssembledCaseEvent> updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());
         final PersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, defaultPerson);
 
-        CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
+        User user = event.getUser();
+        Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();
+
+        CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint.getId(), issue));
         if (caseObj == null) {
-            return createCaseObject(event.getUser(), issue, endpoint, personMapper);
-        } else {
-            if (CommonUtils.isTechUser(endpoint, event.getUser())) {
-                logger.info("skip event to prevent recursion, author is tech-login");
-                return null;
-            }
+            Person initiator = personMapper.toProteiPerson( issue.getReporter() );
+            return completedFuture(createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
+        }
+
+        if (isTechUser( endpoint.getServerLogin(), user )) {
+            logger.info( "skip event to prevent recursion, author is tech-login" );
+            return null;
+        }
+
+        return completedFuture(updateCaseObject( authorId, caseObj, issue, endpoint, personMapper ));
+    }
+
+    private AssembledCaseEvent updateCaseObject( Long authorId, CaseObject caseObj, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
 
             if (caseObj.isDeleted()) {
                 logger.debug("our case {} is marked as deleted, skip event", caseObj.defGUID());
@@ -105,23 +118,17 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 return null;
             }
 
-            CaseObject oldCase = caseObjectDAO.get(caseObj.getId());
-            CaseObject newCase = caseObj;
-
-            ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
-            logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
-
             caseObj.setModified(DateUtils.max(issue.getUpdateDate().toDate(), caseObj.getModified()));
             caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
             caseObj.setLocal(0);
 
             En_CaseState oldState = caseObj.getState();
-            En_CaseState newState = getNewCaseState(endpoint, issue, caseObj.getState());
+            En_CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
             newState = newState == null ? caseObj.getState() : newState;
             caseObj.setState(newState);
 
             En_ImportanceLevel oldImportance = En_ImportanceLevel.getById(caseObj.getImpLevel());
-            En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint, issue, caseObj.importanceLevel());
+            En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
             newImportance = newImportance == null ? En_ImportanceLevel.getById(caseObj.getImpLevel()) : newImportance;
             caseObj.setImpLevel(newImportance.getId());
 
@@ -129,56 +136,46 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setInfo(issue.getDescription());
 
 
-            caseObjectDAO.saveOrUpdate(caseObj);
+            CaseObject oldCase = caseObjectDAO.get(caseObj.getId());
+            ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
+            logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
+
+            caseObjectDAO.merge(caseObj);
 
             if (!newState.equals(oldState)) {
-                persistStateComment(personMapper.toProteiPerson(event.getUser()).getId(), caseObj.getId(), newState);
+                persistStateComment(authorId, caseObj.getId(), newState);
             }
 
             if (!newImportance.equals(oldImportance)) {
-                persistImportanceComment(personMapper.toProteiPerson(event.getUser()).getId(), caseObj.getId(), newImportance.getId());
+                persistImportanceComment(authorId, caseObj.getId(), newImportance.getId());
             }
 
-            AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, newCase, personMapper.toProteiPerson(event.getUser()));
+            AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
             JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
-            caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));
-            caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, jiraExtAppData, personMapper));
+            caseEvent.putAddedComments(processComments(endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData));
+            caseEvent.putAddedAttachments(processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper));
 
-            addIssueTypeAndSeverity(jiraExtAppData, issue);
+            jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
             appData.setExtAppData(jiraExtAppData.toString());
             logger.debug("save case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
             externalCaseAppDAO.merge(appData);
 
             return caseEvent;
-        }
+
     }
 
-    private AssembledCaseEvent createCaseObject(User initiator, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper) {
-        final CaseObject caseObj = new CaseObject();
-        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, personMapper.toProteiPerson( initiator ).getId(), caseObj );
-        final AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseObjectCreateEvent);
-        caseEvent.attachCaseObjectCreateEvent(caseObjectCreateEvent);
-
-        caseObj.setCaseType(En_CaseType.CRM_SUPPORT);
-        caseObj.setCreated(issue.getCreationDate().toDate());
-        caseObj.setModified(issue.getUpdateDate().toDate());
-
-        // TODO for what? initiator is null at the moment
-        caseObj.setCreatorId(caseObj.getInitiatorId());
-
-        caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
-        caseObj.setLocal(0);
-        caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
+    private AssembledCaseEvent createCaseObject( Person initiator, Long authorId, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
+        CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
-        caseObj.setCreator (caseObj.getInitiator());
-        caseObj.setCreatorInfo("jira");
 
-        En_CaseState newState = getNewCaseState(endpoint, issue, caseObj.getState());
+        En_CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName() );
+        logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getState(), newState);
         caseObj.setState(newState == null ? En_CaseState.CREATED : newState);
 
-        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint, issue, caseObj.importanceLevel());
+        En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
+        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.importanceLevel(), newImportance);
         caseObj.setImpLevel(newImportance == null ? En_ImportanceLevel.BASIC.getId() : newImportance.getId());
 
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber()));
@@ -186,18 +183,18 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObjectDAO.insertCase(caseObj);
 
-        persistStateComment(personMapper.toProteiPerson(initiator).getId(), caseObj.getId(), caseObj.getState());
-        persistImportanceComment(personMapper.toProteiPerson(initiator).getId(), caseObj.getId(), caseObj.getImpLevel());
+        persistStateComment(authorId, caseObj.getId(), caseObj.getState());
+        persistImportanceComment(authorId, caseObj.getId(), caseObj.getImpLevel());
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
 
-        caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, jiraExtAppData));
-        caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, jiraExtAppData, personMapper));
+        List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData );
+        List<ru.protei.portal.core.model.ent.Attachment> attachments = processAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
 
-        addIssueTypeAndSeverity(jiraExtAppData, issue);
+        jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
-        appData.setExtAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
+        appData.setExtAppCaseId(CommonUtils.makeExternalIssueID(endpoint.getId(), issue));
         appData.setId(caseObj.getId());
         appData.setExtAppData(jiraExtAppData.toString());
 
@@ -205,37 +202,57 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         externalCaseAppDAO.merge(appData);
 
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, authorId, caseObj );
+        final AssembledCaseEvent caseEvent = new AssembledCaseEvent( caseObjectCreateEvent );
+        caseEvent.attachCaseObjectCreateEvent( caseObjectCreateEvent );
+        caseEvent.putAddedComments(caseComments);
+        caseEvent.putAddedAttachments(attachments);
+
         return caseEvent;
     }
 
-    private List<CaseComment> processComments(JiraEndpoint endpoint, Issue issue, CaseObject caseObj, PersonMapper personMapper, JiraExtAppData state) {
-        logger.debug("process comments on {}", issue.getKey());
+    private CaseObject makeCaseObject( Issue issue, Person initiator ) {
+        final CaseObject caseObj = new CaseObject();
 
-        if (issue.getComments() == null) {
-            logger.debug("no comments in issue {}", issue.getKey());
+        caseObj.setCaseType(En_CaseType.CRM_SUPPORT);
+        caseObj.setCreated(issue.getCreationDate().toDate());
+        caseObj.setModified(issue.getUpdateDate().toDate());
+        caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
+        caseObj.setLocal(0);
+        caseObj.setInitiator( initiator );
+        caseObj.setCreator( initiator );
+        caseObj.setCreatorInfo("jira");
+        return caseObj;
+    }
+
+    private List<CaseComment> processComments(String serverLogin, Iterable<Comment> comments, Long caseObjectId, PersonMapper personMapper, JiraExtAppData state) {
+        logger.debug("process comments on caseObjectId={}", caseObjectId);
+
+        if (comments == null) {
+            logger.debug("no comments in caseObjectId={}", caseObjectId);
             return Collections.emptyList();
         }
 
         List<CaseComment> ourCaseComments = new ArrayList<>();
-        issue.getComments().forEach(comment -> {
+        for(Comment comment : comments){
             if (state.hasComment(comment.getId())) {
-                logger.debug("skip already merged comment id = {}", comment.getId());
-                return;
+                logger.info("skip already merged comment id = {}", comment.getId());
+                continue;
             }
 
-            if (CommonUtils.isTechUser(endpoint, comment.getUpdateAuthor()) ||
-                    CommonUtils.isTechUser(endpoint, comment.getAuthor())) {
-                logger.debug("skip our comment {}, it's by tech-login", comment.getId());
-                return;
+            if (isTechUser(serverLogin, comment.getUpdateAuthor()) ||
+                    isTechUser(serverLogin, comment.getAuthor())) {
+                logger.info("skip our comment {}, it's by tech-login", comment.getId());
+                continue;
             }
 
-            CaseComment caseComment = convertComment(caseObj, personMapper, comment);
+            CaseComment caseComment = convertComment(caseObjectId, personMapper, comment);
 
             logger.debug("add new comment, id = {}", comment.getId());
             state.appendComment(comment.getId());
             logger.debug("convert jira-comment {} with text {}", comment.getId(), comment.getBody());
             ourCaseComments.add(caseComment);
-        });
+        };
 
         if (!ourCaseComments.isEmpty()) {
             logger.debug("store case comments, size = {}", ourCaseComments.size());
@@ -247,31 +264,31 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
 
     private List<ru.protei.portal.core.model.ent.Attachment> processAttachments (JiraEndpoint endpoint,
-                                                                                 Issue issue,
-                                                                                 CaseObject caseObject,
+                                                                                 Iterable<Attachment> attachments,
+                                                                                 Long caseObjectId,
                                                                                  JiraExtAppData state,
                                                                                  PersonMapper personMapper) {
-        if (issue.getAttachments() == null) {
-            logger.debug("issue {} has no attachments", issue.getKey());
+        if (attachments == null) {
+            logger.debug("issue caseObjectId={} has no attachments", caseObjectId);
             return Collections.emptyList();
         }
 
         List<Attachment> jiraAttachments = new ArrayList<>();
 
-        issue.getAttachments().forEach(attachment -> {
+        for (Attachment attachment : attachments) {
             if (state.hasAttachment(attachment.getSelf().toString())) {
                 logger.debug("skip attachment {} (exists)", attachment.getSelf());
-                return;
+                continue;
             }
 
-            if (CommonUtils.isTechUser(endpoint, attachment.getAuthor())) {
+            if (isTechUser(endpoint.getServerLogin(), attachment.getAuthor())) {
                 logger.debug("skip our attachment {}, it's by tech-login", attachment.getSelf());
-                return;
+                continue;
             }
 
             jiraAttachments.add(attachment);
             state.appendAttachment(attachment.getSelf().toString());
-        });
+        }
 
         if (jiraAttachments.isEmpty())
             return Collections.emptyList();
@@ -279,15 +296,15 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = new ArrayList<>();
 
-        logger.debug("load attachments for issue {}, size={}", issue.getKey(), jiraAttachments.size());
+        logger.debug("load attachments for caseObjectId {}, size={}", caseObjectId, jiraAttachments.size());
 
         clientFactory.forEach(endpoint, jiraAttachments, (client, jiraAttachment) -> {
             try {
-                logger.debug("load attachment issue={}, uri={}", issue.getKey(), jiraAttachment.getContentUri());
+                logger.debug("load attachment caseObjectId={}, uri={}", caseObjectId, jiraAttachment.getContentUri());
 
                 ru.protei.portal.core.model.ent.Attachment a = convertAttachment(personMapper, jiraAttachment);
 
-                storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject.getId());
+                storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObjectId);
 
                 addedAttachments.add(a);
             }
@@ -336,7 +353,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     private ru.protei.portal.core.model.ent.Attachment convertAttachment(PersonMapper personMapper, Attachment jiraAttachment) {
         ru.protei.portal.core.model.ent.Attachment a = new ru.protei.portal.core.model.ent.Attachment();
         a.setCreated(jiraAttachment.getCreationDate().toDate());
-        a.setCreatorId(personMapper.toProteiPerson(CommonUtils.fromBasicUserInfo(jiraAttachment.getAuthor())).getId());
+        a.setCreatorId(personMapper.toProteiPerson(fromBasicUserInfo(jiraAttachment.getAuthor())).getId());
         a.setDataSize((long)jiraAttachment.getSize());
         a.setFileName(jiraAttachment.getFilename());
         a.setMimeType(jiraAttachment.getMimeType());
@@ -360,10 +377,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
     }
 
-    private CaseComment convertComment(CaseObject caseObj, PersonMapper personMapper, Comment comment) {
+    private CaseComment convertComment(Long caseObjectId, PersonMapper personMapper, Comment comment) {
         CaseComment our = new CaseComment();
-        our.setCaseId(caseObj.getId());
-        our.setAuthor(personMapper.toProteiPerson(CommonUtils.fromBasicUserInfo(comment.getAuthor())));
+        our.setCaseId(caseObjectId);
+        our.setAuthor(personMapper.toProteiPerson(fromBasicUserInfo(comment.getAuthor())));
         our.setCreated(comment.getCreationDate().toDate());
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
@@ -371,16 +388,16 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return our;
     }
 
-    private En_CaseState getNewCaseState(JiraEndpoint endpoint, Issue issue, En_CaseState oldState) {
-        logger.debug("update case state, issue={}, jira-status = {}, current case state = {}", issue.getKey(), issue.getStatus().getName(), oldState);
+    private En_CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
+//        logger.debug("update case state, issue={}, jira-status = {}, current case state = {}", issueStatusName);
 
-        En_CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(endpoint.getStatusMapId(), issue.getStatus().getName());
+        En_CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(statusMapId, issueStatusName);
         if (state == null){
-            logger.error("unable to map jira-status " + issue.getStatus().getName() + " to portal case-state");
+            logger.error("unable to map jira-status " + issueStatusName + " to portal case-state");
             return null;
         }
 
-        logger.debug("issue {}, case-state old={}, new={}", issue.getKey(), oldState, state);
+//        logger.debug("issue {}, case-state old={}, new={}", issue.getKey(), oldState, state);
 
         return state;
     }
@@ -391,22 +408,23 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
          return (issueCLM == null ? "" : issueCLM.getValue() + " | ") + issue.getSummary();
     }
 
-    private En_ImportanceLevel getNewImportanceLevel(JiraEndpoint endpoint, Issue issue, En_ImportanceLevel oldImportance) {
+    private En_ImportanceLevel getNewImportanceLevel(Long priorityMapId, String severityName) {
 
         // update severity
-        String severityName = CommonUtils.getIssueSeverity(issue);
+//        String severityName = CommonUtils.getIssueSeverity(issue);
 
-        logger.debug("update case priority, issue={}, jira-level={}, current case level={}", issue.getKey(), severityName, oldImportance);
+//        logger.debug("update case priority, issue={}, jira-level={}, current case level={}", issue.getKey(), severityName, oldImportance);
 
-        JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(endpoint.getPriorityMapId(), severityName) : null;
+        JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(priorityMapId, severityName) : null;
 
 
         if (jiraPriorityEntry == null) {
-            logger.warn("unable to map jira-priority level : {}, set as basic", issue.getPriority().getName());
+//            logger.warn("unable to map jira-priority level : {}, set as basic", issue.getPriority().getName());
+            logger.warn("unable to map jira-priority level : priorityMapId={}, severityName={}",  priorityMapId,  severityName);
             return null;
         }
 
-        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), oldImportance, jiraPriorityEntry.importanceLevel());
+//        logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), oldImportance, jiraPriorityEntry.importanceLevel());
         return En_ImportanceLevel.getById(jiraPriorityEntry.getLocalPriorityId());
     }
 
@@ -428,28 +446,25 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return commentDAO.persist(stateChangeMessage);
     }
 
-    private JiraExtAppData addIssueTypeAndSeverity(JiraExtAppData jiraExtAppData, Issue issue) {
-        String issueType = issue.getIssueType().getName();
+    private JiraExtAppData addIssueTypeAndSeverity(JiraExtAppData jiraExtAppData, String issueType, String severity) {
+//        String issueType = issue.getIssueType().getName();
         jiraExtAppData.setIssueType(issueType);
         boolean isSeverityShouldBeSaved = En_JiraSLAIssueType.byJira().contains(En_JiraSLAIssueType.forIssueType(issueType));
         if (isSeverityShouldBeSaved) {
-            String severity = CommonUtils.getIssueSeverity(issue);
+//            String severity = getIssueSeverity(issue);
             jiraExtAppData.setSlaSeverity(severity);
         }
         return jiraExtAppData;
     }
 
-    private AssembledCaseEvent generateUpdateEvent(CaseObject oldCase, CaseObject newCase, Person person) {
-
-        CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldCase);
-        CaseObjectMeta newCaseMeta = new CaseObjectMeta(newCase);
+    private AssembledCaseEvent generateUpdateEvent(CaseObject oldCase, CaseObject newCase, Long authorId) {
 
         CaseNameAndDescriptionEvent caseNameAndDescriptionEvent = new CaseNameAndDescriptionEvent(
                 this,
                 newCase.getId(),
                 new DiffResult<>(oldCase.getName(), newCase.getName()),
                 new DiffResult<>(oldCase.getInfo(), newCase.getInfo()),
-                person.getId(),
+                authorId,
                 ServiceModule.JIRA,
                 En_ExtAppType.JIRA
         );
@@ -457,10 +472,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent(
                 this,
                 ServiceModule.JIRA,
-                person.getId(),
+                authorId,
                 En_ExtAppType.JIRA,
-                oldCaseMeta,
-                newCaseMeta
+                new CaseObjectMeta(oldCase),
+                new CaseObjectMeta(newCase)
         );
 
         AssembledCaseEvent caseEvent = new AssembledCaseEvent(caseNameAndDescriptionEvent);
@@ -469,5 +484,30 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseEvent.setLastCaseObject(newCase);
 
         return caseEvent;
+    }
+
+    public static boolean isTechUser (String serverLogin, BasicUser user) {
+        return user != null && user.getName().equals(serverLogin);
+    }
+
+    public static String getIssueSeverity (Issue issue) {
+        IssueField field = issue.getFieldByName(CustomJiraIssueParser.SEVERITY_CODE_NAME);
+        return field == null ? null : field.getValue().toString();
+    }
+
+    private static Map<String,URI> fakeAvatarURI_map = Collections.singletonMap(User.S48_48, safeURI("https://atlassian.com/"));
+
+    private static URI safeURI (String uri) {
+        try {
+            return new URI(uri);
+        }
+        catch (Throwable e) {
+            return null;
+        }
+    }
+
+    public static User fromBasicUserInfo (BasicUser basicUser) {
+        return new User(basicUser.getSelf(), basicUser.getDisplayName(), basicUser.getDisplayName(), null, true,
+                null, fakeAvatarURI_map, null);
     }
 }

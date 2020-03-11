@@ -25,6 +25,7 @@ public class AssemblerServiceImpl implements AssemblerService {
     @Async(BACKGROUND_TASKS)
     @Override
     public void proceed( final AssembledCaseEvent sourceEvent ) {
+        log.info( "proceed(): {}", sourceEvent );
         if (sourceEvent == null) return;
 
         fillInitiator(sourceEvent).flatMap(
