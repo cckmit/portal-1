@@ -28,7 +28,7 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
     public void onInit(AuthEvents.Success event) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(new PersonQuery()));
+        cache.setLoadHandler(makeLoadHandler(makeQuery()));
         cache.setChunkSize(CHUNK_SIZE);
     }
 
@@ -81,6 +81,13 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
 
     private void savePerson(Person person) {
         currentPerson = person.toFullNameShortView();
+    }
+
+    private PersonQuery makeQuery() {
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setDeleted(false);
+
+        return personQuery;
     }
 
     @Inject
