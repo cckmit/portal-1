@@ -104,20 +104,11 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>>, 
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @UiHandler("saveButton")
-    public void onSaveClicked(ClickEvent event) {
-        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
-    }
-
     public void setEnsureDebugId(String debugId) {
         criticalItem.setEnsureDebugId(debugId + "-critical");
         importantItem.setEnsureDebugId(debugId + "-important");
         basicItem.setEnsureDebugId(debugId + "-basic");
         cosmeticItem.setEnsureDebugId(debugId + "-cosmetic");
-    }
-
-    public void setSaveButtonDebugId(String debugId) {
-        saveButton.ensureDebugId(debugId);
     }
 
     @Inject
@@ -135,9 +126,6 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>>, 
     @Inject
     @UiField(provided = true)
     SlaRowItem cosmeticItem;
-
-    @UiField
-    Button saveButton;
 
     @Override
     public HandlerRegistration addClickHandler(ClickHandler handler) {

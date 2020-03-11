@@ -22,11 +22,5 @@
         <sla:SlaRowItem ui:field="importantItem" importance="{lang.importantImportance}"/>
         <sla:SlaRowItem ui:field="basicItem" importance="{lang.basicImportance}"/>
         <sla:SlaRowItem ui:field="cosmeticItem" importance="{lang.cosmeticImportance}"/>
-        <div class="row">
-            <div class="col-md-9"/>
-            <div class="col-md-2 text-right">
-                <g:Button ui:field="saveButton" styleName="btn btn-xs btn-info" text="{lang.buttonSave}"/>
-            </div>
-        </div>
     </g:HTMLPanel>
 </ui:UiBinder>
