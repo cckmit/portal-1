@@ -88,6 +88,8 @@ public class Project extends AuditableObject {
 
     private Long platformId;
 
+    private List<ProjectSla> projectSlas;
+
     public Long getId() {
         return id;
     }
@@ -280,6 +282,14 @@ public class Project extends AuditableObject {
         this.platformId = platformId;
     }
 
+    public List<ProjectSla> getProjectSlas() {
+        return projectSlas;
+    }
+
+    public void setProjectSlas(List<ProjectSla> projectSlas) {
+        this.projectSlas = projectSlas;
+    }
+
     public static Project fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
@@ -338,6 +348,8 @@ public class Project extends AuditableObject {
             projectInfo.setPlatformName(project.getPlatformName());
 
         }
+
+        projectInfo.setProjectSlas(project.getProjectSlas());
 
         return projectInfo;
     }

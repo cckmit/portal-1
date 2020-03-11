@@ -4,18 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseTypeDAO;
+import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.Set;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -24,8 +32,6 @@ public class ContractServiceImpl implements ContractService {
 
     @Autowired
     ContractDAO contractDAO;
-    @Autowired
-    ContractSlaDAO contractSlaDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
@@ -73,7 +79,6 @@ public class ContractServiceImpl implements ContractService {
 
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
-        jdbcManyRelationsHelper.fill(contract, "contractSlas");
 
         return ok(contract);
     }
@@ -125,35 +130,6 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.persist(contract, "contractDates");
 
         return ok(contract.getId());
-    }
-
-    @Override
-    @Transactional
-    public Result<Boolean> updateSlaById(AuthToken token, List<ContractSla> slas, Long contractId) {
-        if (CollectionUtils.isEmpty(slas) || contractId == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        Contract contract = contractDAO.get(contractId);
-
-        if (contract == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        jdbcManyRelationsHelper.fill(contract, "contractSlas");
-
-        if (CollectionUtils.isNotEmpty(contract.getContractSlas())) {
-            contract.setContractSlas(slas);
-            jdbcManyRelationsHelper.persist(contract, "contractSlas");
-
-            return ok(true);
-        }
-
-        slas.forEach(sla -> sla.setContractId(contractId));
-
-        contractSlaDAO.persistBatch(slas);
-
-        return ok(true);
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {

@@ -7,11 +7,8 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
-
-import java.util.List;
 
 public interface ContractService {
 
@@ -28,8 +25,4 @@ public interface ContractService {
     @Privileged(requireAny = En_Privilege.CONTRACT_EDIT)
     @Auditable(En_AuditType.CONTRACT_MODIFY)
     Result<Long> updateContract( AuthToken token, Contract contract);
-
-    @Privileged(En_Privilege.CONTRACT_VIEW)
-    @Auditable(En_AuditType.CONTRACT_MODIFY)
-    Result<Boolean> updateSlaById(AuthToken token, List<ContractSla> slas, Long contractId);
 }

@@ -130,6 +130,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
+        view.slaInputReadOnly().setValue(project.getProjectSlas());
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())

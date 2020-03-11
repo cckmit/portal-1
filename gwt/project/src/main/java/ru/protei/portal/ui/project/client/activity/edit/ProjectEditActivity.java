@@ -167,6 +167,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
         view.saveEnabled().setEnabled(true);
+        view.slaInput().setValue(null);
 
         if (project == null || project.getId() == null) fillCaseLinks(null);
     }
@@ -186,6 +187,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.customerType().setValue(project.getCustomerType());
         view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
 
+        view.slaInput().setValue(project.getProjectSlas());
         view.numberVisibility().setVisible( true );
 
         view.showComments(true);
@@ -211,6 +213,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
+        project.setProjectSlas(view.slaInput().getValue());
         return project;
     }
 

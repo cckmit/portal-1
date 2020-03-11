@@ -1,10 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:sla="urn:import:ru.protei.portal.ui.common.client.widget.sla"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed">
+    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
         <div class="preview card-body no-padding">
             <div class="card no-border">
                 <div class="card-body">
@@ -76,12 +75,6 @@
                     <h5><ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/></h5>
 
                     <label ui:field="dates"/>
-
-                    <h5><ui:text from="{lang.contractSla}"/></h5>
-
-                    <g:HTMLPanel ui:field="slaContainer" styleName="row">
-                        <sla:SlaInput ui:field="slaInput" styleName="form-group col-md-12"/>
-                    </g:HTMLPanel>
 
                     <h5><ui:text from="{lang.comments}"/></h5>
 

@@ -1,12 +1,8 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.ContractSla;
-
-import java.util.List;
 
 public interface AbstractContractPreviewView extends IsWidget {
     void setActivity(AbstractContractPreviewActivity activity);
@@ -46,8 +42,4 @@ public interface AbstractContractPreviewView extends IsWidget {
     HasVisibility footerVisibility();
 
     void isFullScreen(boolean isFullScreen);
-
-    HasValue<List<ContractSla>> slaInput();
-
-    HasVisibility slaInputVisibility();
 }

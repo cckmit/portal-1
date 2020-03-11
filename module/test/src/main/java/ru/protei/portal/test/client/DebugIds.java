@@ -356,6 +356,7 @@ public class DebugIds {
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
+        String SLA_INPUT = "project-sla-input";
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
@@ -378,6 +379,7 @@ public class DebugIds {
         String COMMENTS_CONTAINER = "project-preview-comments-container";
         String CONTRACT_LABEL = "project-preview-contract-label";
         String PLATFORM_LABEL = "project-preview-platform-label";
+        String SLA_INPUT = "project-preview-sla-input";
     }
 
     public interface COMPANY_TABLE {
@@ -705,7 +707,6 @@ public class DebugIds {
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
-        String SLA_INPUT = "contract-sla-input";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";
@@ -735,11 +736,6 @@ public class DebugIds {
             String NOTIFY_LABEL = "contract-date-item-notify-label";
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
-        }
-
-        interface PREVIEW {
-            String SLA_INPUT = "contract-preview-sla-input";
-            String SLA_SAVE_BUTTON = "contract-preview-save-button";
         }
     }
 

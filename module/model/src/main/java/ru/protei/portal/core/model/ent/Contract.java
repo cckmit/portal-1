@@ -115,9 +115,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     }, mappedColumn = "UNIT_NAME")
     private String caseDirectionName;
 
-    @JdbcOneToMany(table = "contract_sla", localColumn = "id", remoteColumn = "contract_id")
-    private List<ContractSla> contractSlas;
-
     /**
      * Текущее состояние договора
      */
@@ -436,14 +433,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.caseDirectionId = caseDirectionId;
     }
 
-    public List<ContractSla> getContractSlas() {
-        return contractSlas;
-    }
-
-    public void setContractSlas(List<ContractSla> contractSlas) {
-        this.contractSlas = contractSlas;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -478,7 +467,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", directionName='" + directionName + '\'' +
                 ", caseDirectionId=" + caseDirectionId +
                 ", caseDirectionName='" + caseDirectionName + '\'' +
-                ", contractSLAList=" + contractSlas +
                 ", stateId=" + stateId +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +

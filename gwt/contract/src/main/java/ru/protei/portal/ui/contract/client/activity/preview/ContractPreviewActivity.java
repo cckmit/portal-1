@@ -1,14 +1,11 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
@@ -17,10 +14,11 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.*;
+import ru.protei.portal.ui.common.client.lang.En_ContractDatesTypeLang;
+import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
@@ -78,13 +76,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         fireEvent(new ContractEvents.Show());
     }
 
-    @Override
-    public void onSaveSlaClicked() {
-        contractService.updateSlaById(view.slaInput().getValue(), contractId, new FluentCallback<Boolean>()
-                .withSuccess(value -> fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS)))
-        );
-    }
-
     private void loadDetails(Long id) {
         contractController.getContract(id, new RequestCallback<Contract>() {
             @Override
@@ -127,12 +118,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makeLink(Project.class, value.getProjectId()));
 
-        view.slaInput().setValue(value.getContractSlas());
-        view.slaInputVisibility().setVisible(
-                En_ContractType.SUPPLY_CONTRACT.equals(value.getContractType()) ||
-                En_ContractType.AFTER_SALES_SERVICE_CONTRACT.equals(value.getContractType())
-        );
-
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
                 .withCaseId(value.getId())
@@ -163,9 +148,6 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private ContractControllerAsync contractController;
     @Inject
     private PolicyService policyService;
-
-    @Inject
-    private ContractControllerAsync contractService;
 
     private Long contractId;
 

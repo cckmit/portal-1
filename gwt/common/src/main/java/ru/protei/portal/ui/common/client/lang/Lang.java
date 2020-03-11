@@ -2092,11 +2092,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCreator();
 
-    String contractSlaTemporaryTime();
+    String projectSlaTemporaryTime();
 
-    String contractSlaReactionTime();
+    String projectSlaReactionTime();
 
-    String contractSlaFullTime();
+    String projectSlaFullTime();
 
-    String contractSla();
+    String projectSla();
 }

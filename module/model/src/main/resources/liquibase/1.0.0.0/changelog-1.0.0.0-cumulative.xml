@@ -139,5 +139,5 @@
   <include file="2020-02-29-add-person-contact-view.xml" relativeToChangelogFile="true"/>
   -->
   <include file="2020-02-26-add-audit-types.xml" relativeToChangelogFile="true"/>
-  <include file="2020-03-06-add-contract_sla-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-06-add-project_sla-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

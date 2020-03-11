@@ -3,12 +3,9 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
-
-import java.util.List;
 
 @RemoteServiceRelativePath("springGwtServices/ContractController")
 public interface ContractController extends RemoteService {
@@ -18,6 +15,4 @@ public interface ContractController extends RemoteService {
     Contract getContract(Long id) throws RequestFailedException;
 
     Long saveContract(Contract Contract) throws RequestFailedException;
-
-    Boolean updateSlaById(List<ContractSla> slas, Long contractId) throws RequestFailedException;
 }

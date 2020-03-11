@@ -1,41 +1,36 @@
 package ru.protei.portal.ui.common.client.widget.sla;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.ContractSla;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SlaInput extends Composite implements HasValue<List<ContractSla>>, HasClickHandlers {
+public class SlaInput extends Composite implements HasValue<List<ProjectSla>> {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
-    public List<ContractSla> getValue() {
-        List<ContractSla> result = new ArrayList<>();
+    public List<ProjectSla> getValue() {
+        List<ProjectSla> result = new ArrayList<>();
 
-        ContractSla criticalSla = criticalItem.getValue();
-        ContractSla importantSla = importantItem.getValue();
-        ContractSla basicSla = basicItem.getValue();
-        ContractSla cosmeticSla = cosmeticItem.getValue();
+        ProjectSla criticalSla = criticalItem.getValue();
+        ProjectSla importantSla = importantItem.getValue();
+        ProjectSla basicSla = basicItem.getValue();
+        ProjectSla cosmeticSla = cosmeticItem.getValue();
 
         if (criticalSla != null) {
             criticalSla.setImportanceLevelId(En_ImportanceLevel.CRITICAL.getId());
@@ -61,38 +56,31 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>>, 
     }
 
     @Override
-    public void setValue(List<ContractSla> value) {
+    public void setValue(List<ProjectSla> value) {
         setValue(value, false);
     }
 
     @Override
-    public void setValue(List<ContractSla> value, boolean fireEvents) {
-        if (CollectionUtils.isEmpty(value)) {
-            criticalItem.setValue(null);
-            importantItem.setValue(null);
-            basicItem.setValue(null);
-            cosmeticItem.setValue(null);
+    public void setValue(List<ProjectSla> value, boolean fireEvents) {
+        if (CollectionUtils.isNotEmpty(value)) {
+            value.forEach(contractSla -> {
+                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.CRITICAL.getId()) {
+                    criticalItem.setValue(contractSla);
+                }
 
-            return;
+                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.IMPORTANT.getId()) {
+                    importantItem.setValue(contractSla);
+                }
+
+                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.BASIC.getId()) {
+                    basicItem.setValue(contractSla);
+                }
+
+                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.COSMETIC.getId()) {
+                    cosmeticItem.setValue(contractSla);
+                }
+            });
         }
-
-        value.forEach(contractSla -> {
-            if (contractSla.getImportanceLevelId() == En_ImportanceLevel.CRITICAL.getId()) {
-                criticalItem.setValue(contractSla);
-            }
-
-            if (contractSla.getImportanceLevelId() == En_ImportanceLevel.IMPORTANT.getId()) {
-                importantItem.setValue(contractSla);
-            }
-
-            if (contractSla.getImportanceLevelId() == En_ImportanceLevel.BASIC.getId()) {
-                basicItem.setValue(contractSla);
-            }
-
-            if (contractSla.getImportanceLevelId() == En_ImportanceLevel.COSMETIC.getId()) {
-                cosmeticItem.setValue(contractSla);
-            }
-        });
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -100,7 +88,7 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>>, 
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ContractSla>> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ProjectSla>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
@@ -126,11 +114,6 @@ public class SlaInput extends Composite implements HasValue<List<ContractSla>>, 
     @Inject
     @UiField(provided = true)
     SlaRowItem cosmeticItem;
-
-    @Override
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return addHandler(handler, ClickEvent.getType());
-    }
 
     interface SlaInputUiBinder extends UiBinder<HTMLPanel, SlaInput> {
     }

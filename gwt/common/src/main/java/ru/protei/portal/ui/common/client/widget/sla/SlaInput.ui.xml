@@ -9,13 +9,13 @@
             <div class="col-md-2">
             </div>
             <div class="form-group col-md-3">
-                <label><ui:text from="{lang.contractSlaReactionTime}"/></label>
+                <label><ui:text from="{lang.projectSlaReactionTime}"/></label>
             </div>
             <div class="form-group col-md-3">
-                <label><ui:text from="{lang.contractSlaTemporaryTime}"/></label>
+                <label><ui:text from="{lang.projectSlaTemporaryTime}"/></label>
             </div>
             <div class="form-group col-md-3">
-                <label><ui:text from="{lang.contractSlaFullTime}"/></label>
+                <label><ui:text from="{lang.projectSlaFullTime}"/></label>
             </div>
         </div>
         <sla:SlaRowItem ui:field="criticalItem" importance="{lang.criticalImportance}"/>

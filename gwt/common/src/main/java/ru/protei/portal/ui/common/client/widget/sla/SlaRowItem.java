@@ -11,43 +11,37 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.ContractSla;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 
-public class SlaRowItem extends Composite implements HasValue<ContractSla> {
+public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
-    public ContractSla getValue() {
-        ContractSla contractSla = new ContractSla();
-        contractSla.setReactionTime(reactionTime.getTime());
-        contractSla.setTemporarySolutionTime(temporarySolutionTime.getTime());
-        contractSla.setFullSolutionTime(fullSolutionTime.getTime());
+    public ProjectSla getValue() {
+        ProjectSla projectSla = new ProjectSla();
+        projectSla.setReactionTime(reactionTime.getTime());
+        projectSla.setTemporarySolutionTime(temporarySolutionTime.getTime());
+        projectSla.setFullSolutionTime(fullSolutionTime.getTime());
 
-        return contractSla;
+        return projectSla;
     }
 
     @Override
-    public void setValue(ContractSla value) {
+    public void setValue(ProjectSla value) {
         setValue(value, false);
     }
 
     @Override
-    public void setValue(ContractSla value, boolean fireEvents) {
-        if (value == null) {
-            reactionTime.setTime(null);
-            temporarySolutionTime.setTime(null);
-            fullSolutionTime.setTime(null);
-
-            return;
+    public void setValue(ProjectSla value, boolean fireEvents) {
+        if (value != null) {
+            reactionTime.setTime(value.getReactionTime());
+            temporarySolutionTime.setTime(value.getTemporarySolutionTime());
+            fullSolutionTime.setTime(value.getFullSolutionTime());
         }
-
-        reactionTime.setTime(value.getReactionTime());
-        temporarySolutionTime.setTime(value.getTemporarySolutionTime());
-        fullSolutionTime.setTime(value.getFullSolutionTime());
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -55,7 +49,7 @@ public class SlaRowItem extends Composite implements HasValue<ContractSla> {
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ContractSla> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ProjectSla> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 

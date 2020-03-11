@@ -131,6 +131,9 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
+    @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
+    private List<ProjectSla> projectSlas;
+
     // not db column
     private Long contractId;
 
@@ -523,6 +526,14 @@ public class CaseObject extends AuditableObject {
         this.jiraUrl = jiraUrl;
     }
 
+    public List<ProjectSla> getProjectSlas() {
+        return projectSlas;
+    }
+
+    public void setProjectSlas(List<ProjectSla> projectSlas) {
+        this.projectSlas = projectSlas;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -574,11 +585,14 @@ public class CaseObject extends AuditableObject {
                 ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
-                ", timeElapsedType=" + timeElapsedType +
-                ", jiraMetaData=" + caseObjectMetaJira +
                 ", platformId=" + platformId +
-                ", platformName=" + platformName +
+                ", platformName='" + platformName + '\'' +
+                ", projectSlas=" + projectSlas +
+                ", contractId=" + contractId +
+                ", contractNumber='" + contractNumber + '\'' +
                 ", timeElapsedType=" + timeElapsedType +
+                ", caseObjectMetaJira=" + caseObjectMetaJira +
+                ", jiraUrl='" + jiraUrl + '\'' +
                 '}';
     }
 }

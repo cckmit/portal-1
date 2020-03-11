@@ -15,7 +15,6 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
-import ru.protei.portal.core.model.ent.ContractSla;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -30,7 +29,6 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButton
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
-import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;

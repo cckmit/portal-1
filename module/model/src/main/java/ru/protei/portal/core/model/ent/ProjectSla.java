@@ -4,8 +4,8 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
-@JdbcEntity(table = "contract_sla")
-public class ContractSla implements Serializable {
+@JdbcEntity(table = "project_sla")
+public class ProjectSla implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -21,17 +21,10 @@ public class ContractSla implements Serializable {
     @JdbcColumn(name = "full_solution_time")
     private Long fullSolutionTime;
 
-    @JdbcColumn(name = "contract_id")
-    private Long contractId;
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
 
-    public ContractSla() {}
-
-    public ContractSla(Integer importanceLevelId, Long reactionTime, Long temporarySolutionTime, Long fullSolutionTime) {
-        this.importanceLevelId = importanceLevelId;
-        this.reactionTime = reactionTime;
-        this.temporarySolutionTime = temporarySolutionTime;
-        this.fullSolutionTime = fullSolutionTime;
-    }
+    public ProjectSla() {}
 
     public Long getId() {
         return id;
@@ -73,12 +66,12 @@ public class ContractSla implements Serializable {
         this.fullSolutionTime = fullSolutionTime;
     }
 
-    public Long getContractId() {
-        return contractId;
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     @Override
@@ -89,7 +82,7 @@ public class ContractSla implements Serializable {
                 ", reactionTime=" + reactionTime +
                 ", temporarySolutionTime=" + temporarySolutionTime +
                 ", fullSolutionTime=" + fullSolutionTime +
-                ", contractId=" + contractId +
+                ", projectId=" + projectId +
                 '}';
     }
 }

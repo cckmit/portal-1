@@ -4,8 +4,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="create-table-contract_sla" author="fomin">
-        <createTable tableName="contract_sla">
+    <changeSet id="create-table-project_sla" author="fomin">
+        <createTable tableName="project_sla">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
@@ -13,26 +13,26 @@
             <column name="reaction_time" type="BIGINT" />
             <column name="temporary_solution_time" type="BIGINT" />
             <column name="full_solution_time" type="BIGINT" />
-            <column name="contract_id" type="BIGINT" />
+            <column name="project_id" type="BIGINT" />
         </createTable>
     </changeSet>
 
-    <changeSet id="add-contract_sla-importance_level-fk" author="fomin">
+    <changeSet id="add-project_sla-importance_level-fk" author="fomin">
         <addForeignKeyConstraint
-                baseTableName="contract_sla"
+                baseTableName="project_sla"
                 baseColumnNames="importance_level_id"
-                constraintName="contract_sla-importance_level-id-fk"
+                constraintName="project_sla-importance_level-id-fk"
                 referencedTableName="importance_level"
                 referencedColumnNames="id"
                 onUpdate="CASCADE" onDelete="NO ACTION"/>
     </changeSet>
 
-    <changeSet id="add-contract_sla-contract-fk" author="fomin">
+    <changeSet id="add-project_sla-case_object-fk" author="fomin">
         <addForeignKeyConstraint
-                baseTableName="contract_sla"
-                baseColumnNames="contract_id"
-                constraintName="contract_sla-contract-id-fk"
-                referencedTableName="contract"
+                baseTableName="project_sla"
+                baseColumnNames="project_id"
+                constraintName="project_sla-case_object-id-fk"
+                referencedTableName="case_object"
                 referencedColumnNames="id"
                 onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>

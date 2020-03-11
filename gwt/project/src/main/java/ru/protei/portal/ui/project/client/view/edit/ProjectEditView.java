@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -28,12 +29,14 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateButtonSelector;
+import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditActivity;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -147,6 +150,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasValue<List<ProjectSla>> slaInput() {
+        return slaInput;
+    }
+
+    @Override
     public void updateProductDirection(Long directionId) {
         product.setDirectionId(directionId);
     }
@@ -216,6 +224,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
         addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
+        slaInput.setEnsureDebugId(DebugIds.PROJECT.SLA_INPUT);
     }
 
     @UiField
@@ -254,6 +263,10 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+
+    @Inject
+    @UiField(provided = true)
+    SlaInput slaInput;
 
     @UiField
     DivElement comments;

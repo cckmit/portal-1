@@ -322,8 +322,8 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public ContractSlaDAO getContractSlaDao() {
-        return new ContractSlaDAO_Impl();
+    public ProjectSlaDAO getProjectSlaDAO() {
+        return new ProjectSlaDAO_Impl();
     }
 
     @Bean
