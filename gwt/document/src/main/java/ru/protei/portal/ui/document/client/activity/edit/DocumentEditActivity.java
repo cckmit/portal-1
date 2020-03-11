@@ -216,7 +216,7 @@ public abstract class DocumentEditActivity
         document.setProjectName(view.project().getValue() == null? null : view.project().getValue().getDisplayText());
         document.setName(view.name().getValue());
         document.setAnnotation(view.annotation().getValue());
-        document.setKeywords(view.keywords().getValue());
+        document.setKeywords(new ArrayList<>(view.keywords().getValue()));
         return document;
     }
 
