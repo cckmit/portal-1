@@ -1,0 +1,2 @@
+INSERT INTO portal_dev.dev_unit_state (ID, UST_CODE, UST_INFO) VALUES (1, 'active', 'Активно');
+INSERT INTO portal_dev.dev_unit_state (ID, UST_CODE, UST_INFO) VALUES (2, 'deprecated', 'Устарело, более не используется');
