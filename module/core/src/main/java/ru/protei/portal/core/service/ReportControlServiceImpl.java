@@ -27,9 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -257,28 +255,46 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @Override
     public Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType) {
-        CompletableFuture[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream().map(report -> {
-            log.info("Scheduled Mail Reports = {}", report);
-            int days;
-            switch (enReportScheduledType) {
-                case WEEKLY: days = 7; break;
-                case DAILY:
-                default: days = 1;
-            }
-            report.getCaseQuery().setCreatedTo(new Date());
-            report.getCaseQuery().setCreatedFrom(new Date((new Date().getTime()) - days * 24 * 60 * 60 * 1000));
-            return doScheduledMailReports(report);
-        }).toArray(CompletableFuture[]::new);
+        log.info("processScheduledMailReports start");
+        CompletableFuture[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream()
+                .map(report -> {
+                    log.info("Scheduled Mail Reports = {}", report);
+                    setRange(report, enReportScheduledType);
+                    return doScheduledMailReports(report);
+                }).toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).join();
+        log.info("processScheduledMailReports end");
         return ok();
     }
 
     private CompletableFuture doScheduledMailReports(Report report) {
         return CompletableFuture.runAsync(() -> {
             processReport(report);
-            reportStorageService.getContent(report.getId())
-                    .ifOk(content -> publisherService.publishEvent(new MailReportEvent(this, report, content.getContent())))
-                    .ifError(error -> log.error("Scheduled Mail Reports failed = {}, error = {}", report, error));
+            Report processedReport = reportDAO.get(report.getId());
+            if (processedReport.getStatus().equals(En_ReportStatus.READY)) {
+                Result<ReportContent> contentResult = reportStorageService.getContent(processedReport.getId());
+                if (contentResult.isOk()) {
+                    publisherService.publishEvent(new MailReportEvent(this, processedReport, contentResult.getData().getContent()));
+                } else {
+                    log.error("Scheduled Mail Reports failed get content, report = {}, error = {}", processedReport, contentResult.getStatus());
+                    publisherService.publishEvent(new MailReportEvent(this, processedReport, null));
+                }
+            } else {
+                log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport, processedReport.getStatus());
+                publisherService.publishEvent(new MailReportEvent(this, processedReport, null));
+            }
         }, reportExecutorService);
+    }
+
+    private void setRange(Report report, En_ReportScheduledType enReportScheduledType) {
+        int days;
+        switch (enReportScheduledType) {
+            case WEEKLY: days = 7; break;
+            case DAILY:
+            default: days = 1;
+        }
+        Date now = new Date();
+        report.getCaseQuery().setCreatedFrom(new Date(now.getTime() - days * 24 * 60 * 60 * 1000));
+        report.getCaseQuery().setCreatedTo(now);
     }
 }

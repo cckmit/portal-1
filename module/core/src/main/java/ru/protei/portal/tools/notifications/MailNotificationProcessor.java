@@ -637,7 +637,9 @@ public class MailNotificationProcessor {
                 msg.setFrom(getFromAddress());
                 msg.setText(HelperFunc.nvlt(body, ""), true);
                 msg.setTo(recipients.getAddress());
-                msg.addAttachment(filename, new ByteArrayResource(IOUtils.toByteArray(content)));
+                if (content != null) {
+                    msg.addAttachment(filename, new ByteArrayResource(IOUtils.toByteArray(content)));
+                }
                 mailSendChannel.send(msg.getMimeMessage());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
