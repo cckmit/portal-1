@@ -121,12 +121,12 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
 
     private boolean validateView() {
         if(!view.addressValidator().isValid()){
-            fireEvent(new NotifyEvents.Show(lang.errSubnetAddress(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.reservedIpWrongSubnetAddress(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
         if(!view.maskValidator().isValid()){
-            fireEvent(new NotifyEvents.Show(lang.errSubnetMask(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(lang.reservedIpWrongSubnetMask(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 

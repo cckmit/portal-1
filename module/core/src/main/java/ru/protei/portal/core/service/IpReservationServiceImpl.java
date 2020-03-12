@@ -197,7 +197,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
 
     @Override
-    public Result<Long> releaseReservedIp( AuthToken token, ReservedIp reservedIp ) {
+    public Result<Long> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
         if (reservedIp == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }

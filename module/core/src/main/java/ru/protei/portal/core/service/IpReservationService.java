@@ -102,7 +102,7 @@ public interface IpReservationService {
      */
     @Privileged(En_Privilege.RESERVED_IP_REMOVE)
     @Auditable(En_AuditType.RESERVED_IP_REMOVE)
-    Result<Long> releaseReservedIp(AuthToken token, ReservedIp reservedIp);
+    Result<Long> removeReservedIp(AuthToken token, ReservedIp reservedIp);
 
     Result<Boolean> notifyOwnerAboutReleaseIp();
 
