@@ -2092,5 +2092,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCreator();
 
-    String contractValidUntil();
+    String technicalSupportValidity();
 }

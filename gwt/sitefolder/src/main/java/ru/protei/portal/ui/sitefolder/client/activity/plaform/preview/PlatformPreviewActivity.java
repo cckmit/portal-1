@@ -11,13 +11,11 @@ import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Date;
 import java.util.function.Consumer;
 
 public abstract class PlatformPreviewActivity implements Activity, AbstractPlatformPreviewActivity {
@@ -91,11 +89,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
         view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
+        view.setDateValid(project.getDateValid() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getDateValid()));
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
-    }
-
-    private void contractRequest(Long projectId, Consumer<Date> consumer) {
-        contractService.getPsgoContractValidDate(projectId, new FluentCallback<Date>().withSuccess(consumer));
     }
 
     private void fillView( Platform value ) {
@@ -113,13 +108,12 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
         if (value.getProjectId() != null){
             projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
-            contractRequest(value.getProjectId(), date -> view.setContractDateValid(date == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(date)));
         }
         else {
             view.setProject("", "");
             view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
             view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
-            view.setContractDateValid("");
+            view.setDateValid("");
             showContacts(value.getCompanyId());
         }
     }
@@ -138,8 +132,6 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
-    @Inject
-    ContractControllerAsync contractService;
 
 
     private Long platformId;

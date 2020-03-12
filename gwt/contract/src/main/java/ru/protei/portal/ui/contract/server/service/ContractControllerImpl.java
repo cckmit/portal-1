@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 
 @Service("ContractController")
 public class ContractControllerImpl implements ContractController {
@@ -72,22 +71,6 @@ public class ContractControllerImpl implements ContractController {
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    @Override
-    public Date getPsgoContractValidDate(Long projectId) throws RequestFailedException {
-        log.info("getContractValidDate: projectId={}", projectId);
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-
-        Result<Date> result = contractService.getPsgoContractValidDate(token, projectId);
-
-        if (result.isOk()) {
-            log.info("result: contractValidDate={}", result.getData());
-            return result.getData();
-        }
-
-        throw new RequestFailedException(result.getStatus());
     }
 
     @Autowired

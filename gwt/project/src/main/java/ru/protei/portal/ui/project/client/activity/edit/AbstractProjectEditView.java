@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -49,6 +50,8 @@ public interface AbstractProjectEditView extends IsWidget {
     HasWidgets getLinksContainer();
 
     HasVisibility addLinkButtonVisibility();
+
+    HasValue<Date> dateValid();
 
     void updateProductDirection(Long directionId);
 

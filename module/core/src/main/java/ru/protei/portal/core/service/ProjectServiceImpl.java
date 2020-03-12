@@ -168,6 +168,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElse(null)
         );
 
+        caseObject.setDateValid(project.getDateValid());
+
         caseObject.setManager(personDAO.get(caseObject.getManagerId()));
 
         if (project.getCustomerType() != null)
@@ -243,6 +245,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setDateValid(project.getDateValid());
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());

@@ -131,6 +131,9 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
+    @JdbcColumn(name = "date_valid")
+    private Date dateValid;
+
     // not db column
     private Long contractId;
 
@@ -534,6 +537,14 @@ public class CaseObject extends AuditableObject {
 
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
+    }
+
+    public Date getDateValid() {
+        return dateValid;
+    }
+
+    public void setDateValid(Date dateValid) {
+        this.dateValid = dateValid;
     }
 
     @Override

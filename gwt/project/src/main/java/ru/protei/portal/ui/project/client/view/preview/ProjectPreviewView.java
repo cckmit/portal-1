@@ -75,6 +75,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setTeam( String value ) { this.team.setInnerHTML( value ); }
 
     @Override
+    public void setDateValid(String value) {
+        dateValid.setInnerText(value);
+    }
+
+    @Override
     public HasVisibility backButtonVisibility() {
         return backButtonContainer;
     }
@@ -180,6 +185,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     SpanElement projectRegion;
     @UiField
     SpanElement projectDirection;
+    @UiField
+    SpanElement dateValid;
     @UiField
     SpanElement company;
     @UiField

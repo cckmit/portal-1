@@ -52,7 +52,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
-    public void setContractDateValid(String dateValid) {
+    public void setDateValid(String dateValid) {
         contractDateValid.setInnerText(dateValid);
     }
 
