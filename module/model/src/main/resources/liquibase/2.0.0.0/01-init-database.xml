@@ -19,6 +19,20 @@
         <dropTable tableName="admin_state" />
     </changeSet>
 
+    <changeSet id="drop-case_stage_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_stage_type" />
+        </preConditions>
+        <dropTable tableName="case_stage_type" />
+    </changeSet>
+
+    <changeSet id="drop-case_stage" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_stage" />
+        </preConditions>
+        <dropTable tableName="case_stage" />
+    </changeSet>
+
     <changeSet id="create-tables" author="eliseev">
         <sqlFile path="create-tables.sql" relativeToChangelogFile="true"/>
     </changeSet>
@@ -26,6 +40,8 @@
     <changeSet id="insert-data" author="eliseev">
         <sqlFile path="insert_data.sql" relativeToChangelogFile="true"/>
     </changeSet>
+
+
 
 
 </databaseChangeLog>
