@@ -7,8 +7,7 @@ public enum RedmineChangeType {
     STATUS_CHANGE("status_id"),
     PRIORITY_CHANGE("priority_id"),
     DESCRIPTION_CHANGE("description"),
-    SUBJECT_CHANGE("subject"),
-    COMMENT("comment");
+    SUBJECT_CHANGE("subject");
 
     private final String name;
 

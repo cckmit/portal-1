@@ -49,7 +49,9 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {PortalConfigTestConfiguration.class, RendererTestConfiguration.class,
+@ContextConfiguration(classes = {
+        PortalConfigTestConfiguration.class,
+        RendererTestConfiguration.class,
         TemplateServiceImplTest.ContextConfiguration.class})
 public class TemplateServiceImplTest {
 
