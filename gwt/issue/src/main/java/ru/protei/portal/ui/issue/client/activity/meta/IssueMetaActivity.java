@@ -355,9 +355,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
 
-        List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
+        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = subscriptionsList.stream()
+                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(meta.getProductId(), companySubscription.getProductId()))
+                        && (companySubscription.getPlatformId() == null || Objects.equals(meta.getPlatformId(), companySubscription.getPlatformId())))
+                .collect( Collectors.toList());
+
+        List<String> subscriptionsBasedOnPrivacyList = subscriptionsBasedOnPlatformAndProduct.stream()
                 .map(CompanySubscription::getEmail)
-                .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
+                .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail))
+                .collect( Collectors.toList());
 
         return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
                 ? subscriptionsListEmptyMessage

@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Platform;
@@ -39,6 +40,7 @@ public class CompanySubscriptionGroup  extends Composite
         initWidget( ourUiBinder.createAndBindUi( this ) );
         platformSelector.setDefaultValue(lang.selectPlatform());
         productSelector.setDefaultValue(lang.selectIssueProduct());
+        productSelector.setTypes(En_DevUnitType.PRODUCT);
     }
 
     @Override
