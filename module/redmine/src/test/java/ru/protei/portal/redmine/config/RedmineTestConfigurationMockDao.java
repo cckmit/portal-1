@@ -77,10 +77,6 @@ public class RedmineTestConfigurationMockDao {
         return mock( CompanyGroupHomeDAO.class );
     }
 
-    @Bean
-    public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return mock( AbsenceReasonDAO.class );
-    }
 
     @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {

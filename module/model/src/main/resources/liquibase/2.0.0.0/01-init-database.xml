@@ -5,6 +5,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
 
+    <changeSet id="drop-absence-reason" author="eliseev">
+        <preConditions>
+            <tableExists tableName="absence_reason" />
+        </preConditions>
+        <dropTable tableName="absence_reason" />
+    </changeSet>
+
     <changeSet id="create-tables" author="eliseev">
         <sqlFile path="create-tables.sql" relativeToChangelogFile="true"/>
     </changeSet>
@@ -13,48 +20,5 @@
         <sqlFile path="insert_data.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
-<!--    <changeSet id="insert_data_audit_type" author="eliseev">-->
-<!--        <sqlFile path="insert_data_audit_type.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_case_state" author="eliseev">-->
-<!--        <sqlFile path="insert_data_case_state.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_case_state_matrix" author="eliseev">-->
-<!--        <sqlFile path="insert_data_case_state_matrix.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_case_state_workflow" author="eliseev">-->
-<!--        <sqlFile path="insert_data_case_state_workflow.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_case_state_workflow_link" author="eliseev">-->
-<!--        <sqlFile path="insert_data_case_state_workflow_link.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_case_type" author="eliseev">-->
-<!--        <sqlFile path="insert_data_case_type.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_company" author="eliseev">-->
-<!--        <sqlFile path="insert_data_company.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_company_category" author="eliseev">-->
-<!--        <sqlFile path="insert_data_company_category.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_dev_unit_mrole" author="eliseev">-->
-<!--        <sqlFile path="insert_data_dev_unit_mrole.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_dev_unit_type" author="eliseev">-->
-<!--        <sqlFile path="insert_data_dev_unit_type.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
-
-<!--    <changeSet id="insert_data_location_type" author="eliseev">-->
-<!--        <sqlFile path="insert_data_location_type.sql" relativeToChangelogFile="true"/>-->
-<!--    </changeSet>-->
 
 </databaseChangeLog>

@@ -44,11 +44,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return new AbsenceReasonDAO_Impl();
-    }
-
-    @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {
         return new PersonAbsenceDAO_Impl();
     }
