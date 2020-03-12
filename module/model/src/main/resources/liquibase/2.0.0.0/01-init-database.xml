@@ -101,6 +101,10 @@
         <dropTable tableName="department_type" />
     </changeSet>
 
+    <changeSet id="remove-depTypeId" author="eliseev">
+        <dropColumn tableName="company_dep" columnName="depTypeId"/>
+    </changeSet>
+
     <changeSet id="drop-FK_DEVUNIT_STATE" author="eliseev">
         <preConditions>
             <foreignKeyConstraintExists foreignKeyTableName="dev_unit" foreignKeyName="FK_DEVUNIT_STATE" />
@@ -135,8 +139,6 @@
         </preConditions>
         <dropTable tableName="sys_config" />
     </changeSet>
-
-
 
 
 </databaseChangeLog>
