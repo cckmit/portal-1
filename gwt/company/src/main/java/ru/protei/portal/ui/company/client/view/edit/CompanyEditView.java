@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -17,13 +18,12 @@ import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTex
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
+import ru.protei.portal.ui.common.client.widget.companysubscription.list.CompanySubscriptionList;
 
 import java.util.List;
 
@@ -91,7 +91,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValue<List<Subscription> > companySubscriptions() {
+    public HasValue<List<CompanySubscription> > companySubscriptions() {
         return subscriptions;
     }
 
@@ -128,6 +128,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Override
     public void setParentCompanyEnabled( boolean isEnabled ) {
         parentCompany.setEnabled( isEnabled );
+    }
+
+    @Override
+    public void setCompanyIdToPlatformFilter (Long companyId) {
+        subscriptions.setPlatformFilter(companyId);
     }
 
     @UiHandler( "saveButton" )
@@ -201,7 +206,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Inject
     @UiField( provided = true )
-    SubscriptionList subscriptions;
+    CompanySubscriptionList subscriptions;
 
 
     @Inject

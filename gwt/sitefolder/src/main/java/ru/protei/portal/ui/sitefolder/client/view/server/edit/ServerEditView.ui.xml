@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'
-             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'>
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
+             xmlns:platform2="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -21,7 +22,7 @@
 
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderPlatform}"/></label>
-                    <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="dropdown-selector"/>
+                    <platform2:PlatformButtonSelector ui:field="platform" validation="true" styleName="dropdown-selector"/>
                 </div>
 
                 <div class="form-group col-md-12">

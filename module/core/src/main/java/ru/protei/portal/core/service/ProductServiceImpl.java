@@ -124,6 +124,8 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return error(En_ResultStatus.NOT_FOUND);
 
+        helper.fillAll( product );
+
         product.setParents(devUnitDAO.getParents(id));
         product.setChildren(devUnitDAO.getChildren(id));
         product.setProductDirection(devUnitDAO.getProductDirection(id));

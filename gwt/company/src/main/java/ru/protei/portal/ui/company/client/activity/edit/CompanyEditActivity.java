@@ -5,10 +5,8 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -20,13 +18,10 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,10 +117,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private boolean validateFieldsAndGetResult() {
         return view.companyNameValidator().isValid()
-                && view.companySubscriptionsValidator().isValid()
-                /*&&
-                view.actualAddressValidator().isValid() &&
-                view.legalAddressValidator().isValid()*/;
+                && view.companySubscriptionsValidator().isValid();
     }
 
     private void resetValidationStatus() {
@@ -162,12 +154,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.parentCompany().setValue(makeCompanyOption(company));
         view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
+        view.setCompanyIdToPlatformFilter(company.getId());
         view.companySubscriptions().setValue(
                 CollectionUtils.stream(company.getSubscriptions())
-                        .map(Subscription::fromCompanySubscription)
                         .collect(Collectors.toList())
         );
-
 
         view.webSite().setText(infoFacade.getWebSite());
 
@@ -200,9 +191,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setInfo(view.comment().getText());
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
         company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
-        company.setSubscriptions(view.companySubscriptions().getValue().stream()
-                .map(Subscription::toCompanySubscription)
-                .collect(Collectors.toList())
+        company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue())
         );
         infoFacade.setWebSite(view.webSite().getText());
     }

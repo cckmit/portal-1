@@ -24,6 +24,12 @@ public class CompanySubscription implements Serializable {
     @JdbcColumn(name = "lang_code")
     private String langCode;
 
+    @JdbcColumn(name = "platform_id")
+    private Long platformId;
+
+    @JdbcColumn(name = "dev_unit_id")
+    private Long productId;
+
 
     public CompanySubscription() {
     }
@@ -58,6 +64,22 @@ public class CompanySubscription implements Serializable {
 
     public void setLangCode(String langCode) {
         this.langCode = langCode;
+    }
+
+    public Long getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
     public String uniqueKey () {
