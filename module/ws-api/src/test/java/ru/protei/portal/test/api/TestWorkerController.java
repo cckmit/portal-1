@@ -1,7 +1,5 @@
 package ru.protei.portal.test.api;
 
-import org.apache.commons.io.IOUtils;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -34,7 +32,6 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.Photo;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;

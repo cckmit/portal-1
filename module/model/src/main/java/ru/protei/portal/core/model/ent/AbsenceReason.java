@@ -8,7 +8,7 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 /**
  * Created by michael on 05.07.16.
  */
-@JdbcEntity(table = "Absence_Reason")
+@JdbcEntity(table = "absence_Reason")
 public class AbsenceReason {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)

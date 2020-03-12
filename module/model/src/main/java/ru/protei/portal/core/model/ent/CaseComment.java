@@ -38,7 +38,7 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="cmanager_id")
     private Long caseManagerId;
 
-    @JdbcJoinedColumn(localColumn = "cmanager_id", table = "Person", remoteColumn = "ID", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn(localColumn = "cmanager_id", table = "person", remoteColumn = "ID", mappedColumn = "displayShortName")
     private String caseManagerShortName;
 
     @JdbcColumn(name="reply_to")

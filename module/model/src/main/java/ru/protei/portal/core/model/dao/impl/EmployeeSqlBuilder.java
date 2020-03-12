@@ -12,7 +12,7 @@ import java.util.List;
 public class EmployeeSqlBuilder {
     public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("Person.company_id in (select companyId from company_group_home)");
+            condition.append("person.company_id in (select companyId from company_group_home)");
 
             if (CollectionUtils.isNotEmpty(query.getIds())) {
                 condition.append(" and Person.id in " + HelperFunc.makeInArg(query.getIds()));

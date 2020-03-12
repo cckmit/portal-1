@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 
-@JdbcEntity(table = "JIRA_status_map_entry")
+@JdbcEntity(table = "jira_status_map_entry")
 public final class JiraStatusMapEntry {
 
     @JdbcColumn(name = "id")

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Оборудование
  */
-@JdbcEntity(table = "Equipment")
+@JdbcEntity(table = "equipment")
 public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
