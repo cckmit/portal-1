@@ -131,7 +131,7 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
-    @JdbcColumn(name = "date_valid")
+    @JdbcColumn(name = "technical_support")
     private Date dateValid;
 
     // not db column

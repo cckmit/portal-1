@@ -6,7 +6,7 @@
 
     <changeSet id="add-project-date_valid" author="fomin">
         <addColumn tableName="case_object">
-            <column name="date_valid" type="datetime">
+            <column name="technical_support" type="datetime">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
