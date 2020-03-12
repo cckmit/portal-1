@@ -50,7 +50,7 @@
                         <b>
                             <ui:text from="{lang.technicalSupportValidity}: "/>
                         </b>
-                        <span class="pre-formatted-info" ui:field="contractDateValid"/>
+                        <span class="pre-formatted-info" ui:field="technicalSupportValidity"/>
                     </div>
 
                     <h5>

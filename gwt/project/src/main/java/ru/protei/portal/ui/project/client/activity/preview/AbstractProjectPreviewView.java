@@ -39,7 +39,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void isFullScreen(boolean isFullScreen);
 
-    void setDateValid(String value);
+    void setTechnicalSupportValidity(String value);
 
     HasVisibility backButtonVisibility();
 

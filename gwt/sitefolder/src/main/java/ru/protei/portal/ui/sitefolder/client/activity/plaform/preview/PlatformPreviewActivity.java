@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -89,7 +90,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
         view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
-        view.setDateValid(project.getDateValid() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getDateValid()));
+        view.setTechnicalSupportValidity(formatTechnicalSupportValidityOrErrorMsg(project));
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }
 
@@ -113,7 +114,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
             view.setProject("", "");
             view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
             view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
-            view.setDateValid("");
+            view.setTechnicalSupportValidity(lang.technicalSupportValidityNotDefined());
             showContacts(value.getCompanyId());
         }
     }
@@ -124,6 +125,18 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         }
     }
 
+    private String formatTechnicalSupportValidityOrErrorMsg(ProjectInfo projectInfo) {
+        if (projectInfo.getTechnicalSupportValidity() != null) {
+            return DateTimeFormat.getFormat("dd.MM.yyyy").format(projectInfo.getTechnicalSupportValidity());
+        }
+
+        if (projectInfo.getManager() != null) {
+            return lang.technicalSupportValidityNotFound(projectInfo.getManager().getDisplayText());
+        }
+
+        return "";
+    }
+
     @Inject
     AbstractPlatformPreviewView view;
     @Inject
@@ -132,6 +145,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
+    @Inject
+    Lang lang;
 
 
     private Long platformId;

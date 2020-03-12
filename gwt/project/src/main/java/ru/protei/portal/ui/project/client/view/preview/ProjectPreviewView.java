@@ -75,8 +75,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setTeam( String value ) { this.team.setInnerHTML( value ); }
 
     @Override
-    public void setDateValid(String value) {
-        dateValid.setInnerText(value);
+    public void setTechnicalSupportValidity(String value) {
+        technicalSupportValidity.setInnerText(value);
     }
 
     @Override
@@ -165,6 +165,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
         contract.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
         platform.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORM_LABEL);
+        technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
     }
 
     @UiField
@@ -186,7 +187,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement projectDirection;
     @UiField
-    SpanElement dateValid;
+    DivElement technicalSupportValidity;
     @UiField
     SpanElement company;
     @UiField

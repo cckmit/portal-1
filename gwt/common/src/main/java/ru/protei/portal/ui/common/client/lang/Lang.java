@@ -2093,4 +2093,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCreator();
 
     String technicalSupportValidity();
+
+    String technicalSupportValidityNotFound(String managerName);
+
+    String technicalSupportValidityNotDefined();
 }

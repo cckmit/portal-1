@@ -51,9 +51,11 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasVisibility addLinkButtonVisibility();
 
-    HasValue<Date> dateValid();
+    HasValue<Date> technicalSupportValidity();
 
     void updateProductDirection(Long directionId);
+
+    void setDateValid(boolean valid);
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);

@@ -4,9 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="add-project-date_valid" author="fomin">
+    <changeSet id="add-project-technical_support_validity" author="fomin">
         <addColumn tableName="case_object">
-            <column name="technical_support" type="datetime">
+            <column name="technical_support_validity" type="datetime">
                 <constraints nullable="true"/>
             </column>
         </addColumn>

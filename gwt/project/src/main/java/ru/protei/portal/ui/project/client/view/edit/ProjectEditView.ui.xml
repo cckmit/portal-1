@@ -68,8 +68,8 @@
                 </div>
 
                 <div class="form-group col-md-4">
-                    <label ui:field="dateValidLabel"><ui:text from="{lang.technicalSupportValidity}"/></label>
-                    <single:SinglePicker ui:field="dateValid" formatValue="dd.MM.yyyy" mandatory="false"/>
+                    <label><ui:text from="{lang.technicalSupportValidity}"/></label>
+                    <single:SinglePicker ui:field="technicalSupportValidity" formatValue="dd.MM.yyyy" mandatory="false"/>
                 </div>
 
                 <div class="form-group col-md-12">

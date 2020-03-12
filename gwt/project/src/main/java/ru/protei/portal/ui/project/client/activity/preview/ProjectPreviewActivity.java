@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.stream.Collectors;
@@ -132,7 +131,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
-        view.setDateValid(project.getDateValid() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getDateValid()));
+        view.setTechnicalSupportValidity(project.getTechnicalSupportValidity() == null ? null : DateTimeFormat.getFormat("dd.MM.yyyy").format(project.getTechnicalSupportValidity()));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())

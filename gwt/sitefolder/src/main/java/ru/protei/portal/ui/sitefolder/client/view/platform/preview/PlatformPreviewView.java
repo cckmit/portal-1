@@ -52,8 +52,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
-    public void setDateValid(String dateValid) {
-        contractDateValid.setInnerText(dateValid);
+    public void setTechnicalSupportValidity(String technicalSupportValidity) {
+        this.technicalSupportValidity.setInnerText(technicalSupportValidity);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     Anchor project;
     @UiField
-    SpanElement contractDateValid;
+    SpanElement technicalSupportValidity;
     @UiField
     Label comment;
     @UiField

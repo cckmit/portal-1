@@ -149,13 +149,18 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
-    public HasValue<Date> dateValid() {
-        return dateValid;
+    public HasValue<Date> technicalSupportValidity() {
+        return technicalSupportValidity;
     }
 
     @Override
     public void updateProductDirection(Long directionId) {
         product.setDirectionId(directionId);
+    }
+
+    @Override
+    public void setDateValid(boolean valid) {
+        technicalSupportValidity.markInputValid(valid);
     }
 
     @UiHandler("saveButton")
@@ -223,6 +228,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
         addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
+        technicalSupportValidity.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
     }
 
     @UiField
@@ -264,7 +270,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Inject
     @UiField(provided = true)
-    SinglePicker dateValid;
+    SinglePicker technicalSupportValidity;
 
     @UiField
     DivElement comments;

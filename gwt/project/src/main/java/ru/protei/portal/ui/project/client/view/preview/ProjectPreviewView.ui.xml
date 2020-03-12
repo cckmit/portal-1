@@ -74,6 +74,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.technicalSupportValidity}"/>
+                                    </label>
+                                    <div ui:field="technicalSupportValidity"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group small hint-text pre-formatted-info m-t-10" ui:field="description"/>
@@ -93,15 +103,6 @@
                                 <ui:text from="{lang.contract}"/>
                             </h5>
                             <g:Anchor ui:field="contract" href="#" target="_blank"/>
-                        </div>
-                    </div>
-
-                    <div class="row form-group">
-                        <div class="col-md-12">
-                            <h5>
-                                <ui:text from="{lang.technicalSupportValidity}"/>
-                            </h5>
-                            <span ui:field="dateValid"/>
                         </div>
                     </div>
 
