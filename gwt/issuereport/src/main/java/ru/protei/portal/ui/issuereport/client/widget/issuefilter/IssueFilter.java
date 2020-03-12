@@ -661,7 +661,8 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
     private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,
-            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND));
+            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND,
+            En_CaseState.INFO_REQUEST, En_CaseState.NX_REQUEST, En_CaseState.CUST_REQUEST));
 
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );
     interface IssueFilterUiBinder extends UiBinder< HTMLPanel, IssueFilter > {}
