@@ -352,5 +352,20 @@ public class DaoMockTestConfiguration {
         return  mock(JiraSLAMapEntryDAO.class);
     }
 
+    @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return  mock(EducationWalletDAO.class);
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return  mock(EducationEntryDAO.class);
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return  mock(EducationEntryAttendanceDAO.class);
+    }
+
 
 }
