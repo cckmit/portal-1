@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -31,8 +32,9 @@ public class UserLogin extends AuditableObject {
     @JdbcColumn(name = "pwdExpired")
     private Date pwdExpired;
 
+    @JdbcEnumerated(EnumType.ID)
     @JdbcColumn(name = "astate")
-    private int adminStateId;
+    private En_AdminState adminStateId;
 
     @JdbcColumn(name = "personId")
     private Long personId;
@@ -123,11 +125,11 @@ public class UserLogin extends AuditableObject {
     }
 
     public int getAdminStateId() {
-        return adminStateId;
+        return adminStateId.getId();
     }
 
     public void setAdminStateId(int adminStateId) {
-        this.adminStateId = adminStateId;
+        this.adminStateId = En_AdminState.find( adminStateId );
     }
 
     public Long getPersonId() {

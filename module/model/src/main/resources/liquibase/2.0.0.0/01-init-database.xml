@@ -5,11 +5,37 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
 
+
+<!--//-->
+    <changeSet id="create-tables" author="eliseev">
+        <sqlFile path="create-tables.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="insert-data" author="eliseev">
+        <sqlFile path="insert_data.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+<!--    //-->
+
+    <changeSet id="drop-person_absence" author="eliseev">
+        <preConditions>
+            <tableExists tableName="person_absence" />
+        </preConditions>
+        <dropTable tableName="person_absence" />
+    </changeSet>
+
     <changeSet id="drop-absence-reason" author="eliseev">
         <preConditions>
             <tableExists tableName="absence_reason" />
         </preConditions>
         <dropTable tableName="absence_reason" />
+    </changeSet>
+
+    <changeSet id="drop-FK_ULOGIN_ASTATE" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyName="FK_ULOGIN_ASTATE" foreignKeyTableName="user_login" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="user_login" constraintName="FK_ULOGIN_ASTATE" />
     </changeSet>
 
     <changeSet id="drop-admin_state" author="eliseev">
@@ -19,11 +45,25 @@
         <dropTable tableName="admin_state" />
     </changeSet>
 
-    <changeSet id="drop-case_stage_type" author="eliseev">
+    <changeSet id="drop-case_refs" author="eliseev">
         <preConditions>
-            <tableExists tableName="case_stage_type" />
+            <tableExists tableName="case_refs" />
         </preConditions>
-        <dropTable tableName="case_stage_type" />
+        <dropTable tableName="case_refs" />
+    </changeSet>
+
+    <changeSet id="drop-case_term" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_term" />
+        </preConditions>
+        <dropTable tableName="case_term" />
+    </changeSet>
+
+    <changeSet id="drop-case_term_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_term_type" />
+        </preConditions>
+        <dropTable tableName="case_term_type" />
     </changeSet>
 
     <changeSet id="drop-case_stage" author="eliseev">
@@ -33,12 +73,11 @@
         <dropTable tableName="case_stage" />
     </changeSet>
 
-    <changeSet id="create-tables" author="eliseev">
-        <sqlFile path="create-tables.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="insert-data" author="eliseev">
-        <sqlFile path="insert_data.sql" relativeToChangelogFile="true"/>
+    <changeSet id="drop-case_stage_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_stage_type" />
+        </preConditions>
+        <dropTable tableName="case_stage_type" />
     </changeSet>
 
 
