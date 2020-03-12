@@ -12,3 +12,4 @@ dev_unit_state
 ## не используется 
 absence_reason
 sys_config
+admin_state

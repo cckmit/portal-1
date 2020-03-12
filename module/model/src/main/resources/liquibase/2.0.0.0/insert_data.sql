@@ -13,8 +13,8 @@ INSERT INTO auth_type (id, at_code, at_info) VALUES (2, 'ldap', 'Local LDAP');
 # INSERT INTO absence_reason (id, ar_code, ar_info, old_id, display_order) VALUES (10, 'leave_without_pay', 'Отпуск за свой счет', 10, 10);
 # INSERT INTO absence_reason (id, ar_code, ar_info, old_id, display_order) VALUES (11, 'schedule', 'Расписание', 11, 11);
 
-INSERT INTO admin_state (id, code) VALUES (1, 'locked');
-INSERT INTO admin_state (id, code) VALUES (2, 'unlocked');
+# INSERT INTO admin_state (id, code) VALUES (1, 'locked');
+# INSERT INTO admin_state (id, code) VALUES (2, 'unlocked');
 
 INSERT INTO audit_type (id, code, info) VALUES (1, 'ISSUE_MODIFY', 'Изменение обращения');
 INSERT INTO audit_type (id, code, info) VALUES (2, 'ISSUE_CREATE', 'Создание обращения');

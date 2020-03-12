@@ -12,6 +12,13 @@
         <dropTable tableName="absence_reason" />
     </changeSet>
 
+    <changeSet id="drop-admin_state" author="eliseev">
+        <preConditions>
+            <tableExists tableName="admin_state" />
+        </preConditions>
+        <dropTable tableName="admin_state" />
+    </changeSet>
+
     <changeSet id="create-tables" author="eliseev">
         <sqlFile path="create-tables.sql" relativeToChangelogFile="true"/>
     </changeSet>
