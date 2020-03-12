@@ -9,6 +9,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
@@ -255,9 +256,17 @@ public class ReportControlServiceImpl implements ReportControlService {
     }
 
     @Override
-    public Result<Void> processScheduledMailReports() {
-        CompletableFuture[] futures = reportDAO.getScheduledReports().stream().map(report -> {
+    public Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType) {
+        CompletableFuture[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream().map(report -> {
             log.info("Scheduled Mail Reports = {}", report);
+            int days;
+            switch (enReportScheduledType) {
+                case WEEKLY: days = 7; break;
+                case DAILY:
+                default: days = 1;
+            }
+            report.getCaseQuery().setCreatedTo(new Date());
+            report.getCaseQuery().setCreatedFrom(new Date((new Date().getTime()) - days * 24 * 60 * 60 * 1000));
             return doScheduledMailReports(report);
         }).toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).join();

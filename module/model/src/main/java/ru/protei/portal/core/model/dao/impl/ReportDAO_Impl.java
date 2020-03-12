@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -67,8 +68,13 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getScheduledReports() {
-        return new ArrayList<>();
+    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType) {
+        ReportQuery query = new ReportQuery();
+        query.setEnReportScheduledType(enReportScheduledType);
+        SqlCondition where = createSqlCondition(query);
+        return getList(new JdbcQueryParameters()
+                .withCondition(where.condition, where.args)
+        );
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(ReportQuery query, Long creatorId, Set<Long> excludeIds) {
@@ -139,6 +145,10 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
 
             if (CollectionUtils.isNotEmpty(query.getExcludeIds())) {
                 condition.append(" and report.id not in ").append(JdbcHelper.makeSqlStringCollection(query.getExcludeIds(), args, null));
+            }
+
+            if (query.getEnReportScheduledType() != null) {
+                condition.append(" and report.scheduled_type = '").append(query.getEnReportScheduledType().name()).append("'");
             }
         });
     }

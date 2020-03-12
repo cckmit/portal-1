@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
@@ -65,7 +66,7 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
      *
      * @return список отчетов
      */
-    List<Report> getScheduledReports();
+    List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType);
 
     @SqlConditionBuilder
     SqlCondition createSqlCondition(ReportQuery query);

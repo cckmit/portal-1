@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.service.ContractReminderService;
 import ru.protei.portal.core.service.EmployeeRegistrationReminderService;
 import ru.protei.portal.core.service.ReportControlService;
@@ -56,8 +57,16 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     }
 
     @Scheduled(cron = "0 0 6 * * ?") // at 06:00:00 am every day
-    public void processScheduledMailReports() {
-        reportControlService.processScheduledMailReports().ifError(response ->
+    public void processScheduledMailReportsDaily() {
+        reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
+                log.warn("fail to process reports : status={}", response.getStatus() )
+        );
+    }
+
+    @Scheduled(cron = "0 0 5 * * MON") // at 05:00:00 am every MONDAY
+//    @Scheduled(fixedRate = 60 * 1000) //
+    public void processScheduledMailReportsWeekly() {
+        if (true) reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
     }

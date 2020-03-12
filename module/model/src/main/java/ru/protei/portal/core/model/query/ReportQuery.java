@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 
 import java.util.Date;
@@ -25,6 +26,8 @@ public class ReportQuery extends BaseQuery {
     private Set<Long> includeIds;
 
     private Set<Long> excludeIds;
+
+    private En_ReportScheduledType enReportScheduledType;
 
     public ReportQuery() {}
 
@@ -114,6 +117,14 @@ public class ReportQuery extends BaseQuery {
         this.excludeIds = excludeIds;
     }
 
+    public En_ReportScheduledType getEnReportScheduledType() {
+        return enReportScheduledType;
+    }
+
+    public void setEnReportScheduledType(En_ReportScheduledType enReportScheduledType) {
+        this.enReportScheduledType = enReportScheduledType;
+    }
+
     @Override
     public String toString () {
         return "ReportQuery{" +
@@ -129,6 +140,7 @@ public class ReportQuery extends BaseQuery {
                 ", creatorId=" + creatorId +
                 ", includeIds=" + includeIds +
                 ", excludeIds=" + excludeIds +
+                ", enReportScheduledType=" + enReportScheduledType +
                 '}';
     }
 }
