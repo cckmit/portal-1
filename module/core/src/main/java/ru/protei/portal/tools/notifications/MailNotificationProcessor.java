@@ -603,7 +603,8 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipientWithAttachment(fetchNotificationEntryFromPerson(report.getCreator()),
+        sendMailToRecipientWithAttachment(
+                fetchNotificationEntryFromPerson(report.getCreator()),
                 bodyTemplate, subjectTemplate,
                 true,
                 event.getContent(), report.getName() + ".xls");

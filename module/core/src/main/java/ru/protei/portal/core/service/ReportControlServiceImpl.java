@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.ReportContent;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
@@ -271,18 +272,17 @@ public class ReportControlServiceImpl implements ReportControlService {
         return CompletableFuture.runAsync(() -> {
             processReport(report);
             Report processedReport = reportDAO.get(report.getId());
-            if (processedReport.getStatus().equals(En_ReportStatus.READY)) {
-                Result<ReportContent> contentResult = reportStorageService.getContent(processedReport.getId());
-                if (contentResult.isOk()) {
-                    publisherService.publishEvent(new MailReportEvent(this, processedReport, contentResult.getData().getContent()));
-                } else {
-                    log.error("Scheduled Mail Reports failed get content, report = {}, error = {}", processedReport, contentResult.getStatus());
-                    publisherService.publishEvent(new MailReportEvent(this, processedReport, null));
-                }
-            } else {
+            if (!processedReport.getStatus().equals(En_ReportStatus.READY)) {
                 log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport, processedReport.getStatus());
                 publisherService.publishEvent(new MailReportEvent(this, processedReport, null));
+                return;
             }
+            reportStorageService.getContent(processedReport.getId())
+                    .ifOk(content -> publisherService.publishEvent(new MailReportEvent(this, processedReport, content.getContent())))
+                    .ifError(error -> {
+                        log.error("Scheduled Mail Reports failed get content, report = {}, error = {}", processedReport, error.getStatus());
+                        publisherService.publishEvent(new MailReportEvent(this, processedReport, null));
+                    });
         }, reportExecutorService);
     }
 
@@ -294,7 +294,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             default: days = 1;
         }
         Date now = new Date();
-        report.getCaseQuery().setCreatedFrom(new Date(now.getTime() - days * 24 * 60 * 60 * 1000));
+        report.getCaseQuery().setCreatedFrom(new Date(now.getTime() - days * CrmConstants.Time.DAY));
         report.getCaseQuery().setCreatedTo(now);
     }
 }

@@ -63,10 +63,9 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         );
     }
 
-//    @Scheduled(cron = "0 0 5 * * MON") // at 05:00:00 am every MONDAY
-    @Scheduled(fixedRate = 60 * 1000) //
+    @Scheduled(cron = "0 0 5 * * MON") // at 05:00:00 am every MONDAY
     public void processScheduledMailReportsWeekly() {
-        if (true) reportControlService.processScheduledMailReports(En_ReportScheduledType.WEEKLY).ifError(response ->
+        reportControlService.processScheduledMailReports(En_ReportScheduledType.WEEKLY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
     }
