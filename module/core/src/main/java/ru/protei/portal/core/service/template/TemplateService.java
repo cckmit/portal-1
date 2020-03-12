@@ -42,7 +42,7 @@ public interface TemplateService {
 
     PreparedTemplate getMailReportBody(Report report);
 
-    PreparedTemplate getMailReportSubject(String title);
+    PreparedTemplate getMailReportSubject(Report report);
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 

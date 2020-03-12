@@ -382,9 +382,10 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailReportSubject(String title) {
+    public PreparedTemplate getMailReportSubject(Report report) {
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("reportTitle", title);
+        templateModel.put("reportTitle", report.getName());
+        templateModel.put("scheduledType", report.getScheduledType());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/report.subject.%s.ftl");
         template.setModel(templateModel);

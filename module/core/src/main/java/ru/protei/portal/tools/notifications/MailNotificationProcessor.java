@@ -590,7 +590,6 @@ public class MailNotificationProcessor {
     @EventListener
     public void onMailReportEvent(MailReportEvent event) {
         Report report = event.getReport();
-        Person recipient = report.getCreator();
 
         PreparedTemplate bodyTemplate = templateService.getMailReportBody(report);
         if (bodyTemplate == null) {
@@ -598,13 +597,13 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(report.getName());
+        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(report);
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for reporId={}", report.getId());
             return;
         }
 
-        sendMailToRecipientWithAttachment(fetchNotificationEntryFromPerson(recipient),
+        sendMailToRecipientWithAttachment(fetchNotificationEntryFromPerson(report.getCreator()),
                 bodyTemplate, subjectTemplate,
                 true,
                 event.getContent(), report.getName() + ".xls");
