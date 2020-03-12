@@ -33,7 +33,7 @@
 
     <changeSet id="drop-FK_ULOGIN_ASTATE" author="eliseev">
         <preConditions>
-            <foreignKeyConstraintExists foreignKeyName="FK_ULOGIN_ASTATE" foreignKeyTableName="user_login" />
+            <foreignKeyConstraintExists  foreignKeyTableName="user_login" foreignKeyName="FK_ULOGIN_ASTATE"/>
         </preConditions>
         <dropForeignKeyConstraint baseTableName="user_login" constraintName="FK_ULOGIN_ASTATE" />
     </changeSet>
@@ -78,6 +78,62 @@
             <tableExists tableName="case_stage_type" />
         </preConditions>
         <dropTable tableName="case_stage_type" />
+    </changeSet>
+
+    <changeSet id="drop-case_vroom" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_vroom" />
+        </preConditions>
+        <dropTable tableName="case_vroom" />
+    </changeSet>
+
+    <changeSet id="drop-FK_DEP_TYPE" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="company_dep" foreignKeyName="FK_DEP_TYPE" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="company_dep" constraintName="FK_DEP_TYPE" />
+    </changeSet>
+
+    <changeSet id="drop-department_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="department_type" />
+        </preConditions>
+        <dropTable tableName="department_type" />
+    </changeSet>
+
+    <changeSet id="drop-FK_DEVUNIT_STATE" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="dev_unit" foreignKeyName="FK_DEVUNIT_STATE" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="dev_unit" constraintName="FK_DEVUNIT_STATE" />
+    </changeSet>
+
+    <changeSet id="drop-dev_unit_state" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_state" />
+        </preConditions>
+        <dropTable tableName="dev_unit_state" />
+    </changeSet>
+
+    <changeSet id="drop-FK_CASE_TASK_TUNIT" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="case_task" foreignKeyName="FK_CASE_TASK_TUNIT" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="case_task" constraintName="FK_CASE_TASK_TUNIT" />
+    </changeSet>
+
+    <changeSet id="drop-time_unit" author="eliseev">
+        <preConditions>
+            <tableExists tableName="time_unit" />
+        </preConditions>
+        <dropTable tableName="time_unit" />
+    </changeSet>
+
+    <changeSet id="drop-sys_config" author="eliseev">
+        <preConditions>
+            <tableExists tableName="sys_config" />
+        </preConditions>
+        <dropTable tableName="sys_config" />
     </changeSet>
 
 

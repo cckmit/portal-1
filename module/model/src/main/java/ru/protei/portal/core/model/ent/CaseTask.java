@@ -25,8 +25,8 @@ public class CaseTask {
     @JdbcColumn(name = "task_info")
     private String taskInfo;
 
-    @JdbcColumn(name = "time_unit")
-    private char timeUnit;
+//    @JdbcColumn(name = "time_unit")
+//    private char timeUnit;
 
     @JdbcColumn(name = "EST_PERSON_ID")
     private Long estPersonId;
@@ -85,13 +85,13 @@ public class CaseTask {
         this.taskInfo = taskInfo;
     }
 
-    public char getTimeUnit() {
-        return timeUnit;
-    }
-
-    public void setTimeUnit(char timeUnit) {
-        this.timeUnit = timeUnit;
-    }
+//    public char getTimeUnit() {
+//        return timeUnit;
+//    }
+//
+//    public void setTimeUnit(char timeUnit) {
+//        this.timeUnit = timeUnit;
+//    }
 
     public Long getEstPersonId() {
         return estPersonId;

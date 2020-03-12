@@ -23,8 +23,8 @@ public class CompanyDepartment extends AuditableObject {
     @JdbcColumn(name = "created")
     private Date created;
 
-    @JdbcColumn(name = "depTypeId")
-    private int typeId;
+//    @JdbcColumn(name = "depTypeId")
+//    private int typeId;
 
     @JdbcColumn(name = "dep_name")
     private String name;
@@ -87,13 +87,13 @@ public class CompanyDepartment extends AuditableObject {
         this.created = created;
     }
 
-    public int getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
-    }
+//    public int getTypeId() {
+//        return typeId;
+//    }
+//
+//    public void setTypeId(int typeId) {
+//        this.typeId = typeId;
+//    }
 
     public String getName() {
         return name;

@@ -262,6 +262,9 @@ INSERT INTO dev_unit_type (ID, UNIT_TYPE, UNIT_INFO) VALUES (2, 'product', 'Пр
 INSERT INTO dev_unit_type (ID, UNIT_TYPE, UNIT_INFO) VALUES (3, 'product_direction', 'Направление');
 INSERT INTO dev_unit_type (ID, UNIT_TYPE, UNIT_INFO) VALUES (4, 'complex', 'Комплекс');
 
+INSERT INTO dev_unit_state (ID, UST_CODE, UST_INFO) VALUES (1, 'active', 'Активно');
+INSERT INTO dev_unit_state (ID, UST_CODE, UST_INFO) VALUES (2, 'deprecated', 'Устарело, более не используется');
+
 INSERT INTO location_type (ID, LOCATION_TYPE, LOCATION_INFO, WEIGHT) VALUES (1, 'DISTRICT', null, null);
 INSERT INTO location_type (ID, LOCATION_TYPE, LOCATION_INFO, WEIGHT) VALUES (2, 'REGION', null, null);
 INSERT INTO location_type (ID, LOCATION_TYPE, LOCATION_INFO, WEIGHT) VALUES (3, 'MUNICIPALITY', null, null);
@@ -305,9 +308,6 @@ INSERT INTO case_term_type (ID, TERM_CODE, TERM_INFO) VALUES (2, 'workaround', '
 INSERT INTO case_term_type (ID, TERM_CODE, TERM_INFO) VALUES (3, 'final', 'Конечное решение');
 
 INSERT INTO department_type (id, name, info) VALUES (1, 'отдел', '');
-
-INSERT INTO dev_unit_state (ID, UST_CODE, UST_INFO) VALUES (1, 'active', 'Активно');
-INSERT INTO dev_unit_state (ID, UST_CODE, UST_INFO) VALUES (2, 'deprecated', 'Устарело, более не используется');
 
 INSERT INTO time_unit (id, unit_code, unit_name, minutes) VALUES (1, 'm', 'минута', 1);
 INSERT INTO time_unit (id, unit_code, unit_name, minutes) VALUES (2, 'h', 'час', 60);

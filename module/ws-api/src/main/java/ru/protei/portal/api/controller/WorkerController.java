@@ -676,7 +676,7 @@ public class WorkerController {
             if (department.getId() == null) {
                 department.setCreated(new Date());
                 department.setCompanyId(operationData.homeItem().getCompanyId());
-                department.setTypeId(1);
+//                department.setTypeId(1);
                 department.setExternalId(rec.getDepartmentId().trim());
                 persistDepartment(department);
             } else {
