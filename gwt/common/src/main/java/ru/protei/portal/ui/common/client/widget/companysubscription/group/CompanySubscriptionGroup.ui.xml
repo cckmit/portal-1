@@ -22,9 +22,13 @@
                                                hasNullValue="true"
                                                mandatory="false"/>
             </div>
+
+            <div class="col-md-3">
+                <g:Button ui:field="removeButton" text="{lang.companySubscriptionGroupRemoveButton}" styleName="select2-add-button btn btn-flat btn-info btn-xs"/>
+            </div>
         </div>
 
-        <g:HTMLPanel ui:field="container"/>
+        <g:HTMLPanel ui:field="itemContainer"/>
 
         <br/>
     </g:HTMLPanel>

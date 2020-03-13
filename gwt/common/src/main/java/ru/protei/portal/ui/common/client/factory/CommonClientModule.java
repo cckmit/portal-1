@@ -56,6 +56,7 @@ import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
+import ru.protei.portal.ui.common.client.widget.companysubscription.list.CompanySubscriptionList;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
@@ -94,6 +95,7 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
+        bind( CompanySubscriptionList.class ).asEagerSingleton();
         bind( StateSelectorModel.class ).asEagerSingleton();
 
         bind( HomeCompanyService.class ).asEagerSingleton();

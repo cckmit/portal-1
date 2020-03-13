@@ -12,24 +12,6 @@ public class Subscription {
     private String email;
     private String langCode;
 
-    public static Subscription fromCompanySubscription( CompanySubscription cs ) {
-        Subscription subscription = new Subscription();
-        subscription.id = cs.getId();
-        subscription.entityId = cs.getCompanyId();
-        subscription.email = cs.getEmail();
-        subscription.langCode = cs.getLangCode();
-        return subscription;
-    }
-
-    public CompanySubscription toCompanySubscription() {
-        CompanySubscription cs = new CompanySubscription();
-        cs.setId( id );
-        cs.setCompanyId( entityId );
-        cs.setEmail( email );
-        cs.setLangCode( langCode );
-        return cs;
-    }
-
     public static Subscription fromProductSubscription( DevUnitSubscription cs ) {
         Subscription subscription = new Subscription();
         subscription.id = cs.getId();

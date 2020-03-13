@@ -1,16 +1,13 @@
 package ru.protei.portal.ui.common.client.widget.companysubscription.group;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -33,7 +30,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toMap;
 
 public class CompanySubscriptionGroup  extends Composite
-        implements HasValue<List<CompanySubscription>>, HasValidable, HasEnabled {
+        implements HasValue<List<CompanySubscription>>, HasValidable, HasEnabled, HasCloseHandlers<CompanySubscriptionGroup> {
 
     @Inject
     public void init() {
@@ -67,6 +64,7 @@ public class CompanySubscriptionGroup  extends Composite
     }
 
     public void setPlatformFilter(Long companyId){
+        this.companyId = companyId;
         platformSelector.setFilter(platformOption -> companyId != null && companyId.equals(platformOption.getCompanyId()));
     }
 
@@ -103,7 +101,7 @@ public class CompanySubscriptionGroup  extends Composite
     }
 
     private void clear() {
-        container.clear();
+        itemContainer.clear();
         value.clear();
         modelToView.clear();
         platformSelector.setValue(null);
@@ -112,12 +110,12 @@ public class CompanySubscriptionGroup  extends Composite
 
     @Override
     public boolean isEnabled() {
-        return container.getStyleName().contains("disabled");
+        return itemContainer.getStyleName().contains("disabled");
     }
 
     @Override
     public void setEnabled(boolean isEnabled) {
-        container.addStyleName(isEnabled ? "" : "disabled");
+        itemContainer.addStyleName(isEnabled ? "" : "disabled");
         for (CompanySubscriptionItem item : modelToView.keySet()) {
             item.setEnabled(isEnabled);
         }
@@ -127,6 +125,12 @@ public class CompanySubscriptionGroup  extends Composite
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<CompanySubscription>> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }
+
+    @Override
+    public HandlerRegistration addCloseHandler( CloseHandler<CompanySubscriptionGroup> handler ) {
+        return addHandler( handler, CloseEvent.getType() );
+    }
+
 
     @UiHandler("productSelector")
     public void onProductChanged(ValueChangeEvent<ProductShortView> event) {
@@ -140,14 +144,19 @@ public class CompanySubscriptionGroup  extends Composite
         value.forEach(companySubscription -> companySubscription.setPlatformId(platformId));
     }
 
+    @UiHandler("removeButton")
+    public void onRemoveClicked(ClickEvent event) {
+        CloseEvent.fire( this, this );
+    }
+
     private void makeItemAndFillValue( CompanySubscription subscription ) {
         CompanySubscriptionItem companySubscriptionItem = itemProvider.get();
         companySubscriptionItem.setValue( subscription );
         companySubscriptionItem.addCloseHandler( event -> {
-            if ( container.getWidgetCount() == 1 ) {
+            if ( itemContainer.getWidgetCount() == 1 ) {
                 return;
             }
-            container.remove( event.getTarget() );
+            itemContainer.remove( event.getTarget() );
             CompanySubscription remove = modelToView.remove( event.getTarget() );
             value.remove( remove );
             boolean isHasEmptyItem = modelToView.values().stream().anyMatch(s -> s.getEmail() == null || s.getEmail().isEmpty());
@@ -159,11 +168,12 @@ public class CompanySubscriptionGroup  extends Composite
             addEmptyItem();
             companySubscriptionItem.getValue().setPlatformId(platformId);
             companySubscriptionItem.getValue().setProductId(productId);
+            companySubscriptionItem.getValue().setCompanyId(companyId);
             value.add( companySubscriptionItem.getValue() );
         } );
 
         modelToView.put( companySubscriptionItem, subscription );
-        container.add( companySubscriptionItem );
+        itemContainer.add( companySubscriptionItem );
     }
 
     private void addEmptyItem() {
@@ -181,7 +191,7 @@ public class CompanySubscriptionGroup  extends Composite
     }
 
     @UiField
-    HTMLPanel container;
+    HTMLPanel itemContainer;
     @Inject
     Provider<CompanySubscriptionItem> itemProvider;
     @Inject
@@ -190,6 +200,8 @@ public class CompanySubscriptionGroup  extends Composite
     @Inject
     @UiField(provided = true)
     PlatformFormSelector platformSelector;
+    @UiField
+    Button removeButton;
     @Inject
     SiteFolderControllerAsync siteFolderController;
     @Inject
@@ -200,8 +212,9 @@ public class CompanySubscriptionGroup  extends Composite
 
     private List<CompanySubscription> value = new ArrayList<>();
     private Map<CompanySubscriptionItem, CompanySubscription> modelToView = new HashMap<>();
-    private Long platformId;
-    private Long productId;
+    private Long platformId = null;
+    private Long productId = null;
+    private Long companyId = null;
 
     interface CompanySubscriptionGroupUiBinder extends UiBinder<HTMLPanel, CompanySubscriptionGroup> {}
     private static CompanySubscriptionGroupUiBinder ourUiBinder = GWT.create(CompanySubscriptionGroupUiBinder.class);

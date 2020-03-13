@@ -191,8 +191,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setInfo(view.comment().getText());
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
         company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
-        company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue())
-        );
+        company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
         infoFacade.setWebSite(view.webSite().getText());
     }
 
