@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.query.EmployeeApiQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -380,6 +381,31 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data", hasSize(0)));
 
         personDAO.removeByKey(person.getId());
+    }
+
+
+    @Test
+    @Transactional
+    public void createTag() throws Exception {
+        Company company = makeCustomerCompany();
+        CaseTagInfo caseTagInfo = new CaseTagInfo();
+
+        caseTagInfo.setName("test tag");
+        caseTagInfo.setCompanyId(company.getId());
+
+        createPostResultAction("/api/tags/create", caseTagInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", notNullValue()));
+
+        companyDAO.removeByKey(company.getId());
+        caseTagDAO.removeByCondition("");
+    }
+
+    @Test
+    @Transactional
+    public void removeTag() throws Exception {
+
     }
 
     private void setThreadUserLogin(UserLogin userLogin) {
