@@ -83,7 +83,7 @@ public class CompanySubscription implements Serializable {
     }
 
     public String uniqueKey () {
-        return (this.email + "_" + String.valueOf(this.companyId));
+        return (this.email + "_" + this.companyId + "_" + this.productId + "_" + this.platformId);
     }
 
     public static boolean isProteiRecipient(String email){

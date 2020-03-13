@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
@@ -254,8 +255,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
         } else {
             caseMetaNotifiers.setNotifiers(null);
-
-
         }
 
         metaView.setCaseMetaNotifiers(caseMetaNotifiers.getNotifiers());
@@ -363,6 +362,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         List<String> subscriptionsBasedOnPrivacyList = subscriptionsBasedOnPlatformAndProduct.stream()
                 .map(CompanySubscription::getEmail)
                 .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail))
+                .distinct()
                 .collect( Collectors.toList());
 
         return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)

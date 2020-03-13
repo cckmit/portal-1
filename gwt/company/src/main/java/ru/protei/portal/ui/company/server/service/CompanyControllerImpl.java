@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
-import ru.protei.portal.core.service.CaseTagService;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
@@ -22,11 +20,9 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -237,9 +233,6 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Autowired
     private CaseStateService caseStateService;
-
-    @Autowired
-    private CaseTagService caseTagService;
 
     @Autowired
     SessionService sessionService;

@@ -137,4 +137,5 @@
 <!--  <include file="2020-02-29-add-person-contact-view.xml" relativeToChangelogFile="true"/>-->
   <include file="2020-02-26-add-audit-types.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-11-modify-companysubscription-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-12-change-unique-constraint-in-companysubscriprion-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

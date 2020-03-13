@@ -80,7 +80,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     @Override
     public Set<NotificationEntry> subscribers( CaseObjectMeta caseMeta ) {
         Set<NotificationEntry> result = new HashSet<>();
-        appendCompanySubscriptions(caseMeta.getInitiatorCompanyId(), result);
+        appendCompanySubscriptions(caseMeta, result);
         appendProductSubscriptions(caseMeta.getProductId(), result);
         appendNotifiers(caseMeta.getId(), result);
         //HomeCompany persons don't need to get notifications
@@ -103,10 +103,15 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         return devUnitId == null ? Collections.emptyList() : productSubscriptionDAO.listByDevUnitId(devUnitId);
     }
 
-    private void appendCompanySubscriptions(Long companyId, Set<NotificationEntry> result) {
-        List<CompanySubscription> companySubscriptions = safeGetByCompany( companyId );
-        log.info( "companySubscriptions: {}", companySubscriptions.stream().map(smsc->smsc.getEmail()).collect( Collectors.joining( "," ) ) );
-        companySubscriptions.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
+    private void appendCompanySubscriptions(CaseObjectMeta caseMeta, Set<NotificationEntry> result) {
+        List<CompanySubscription> companySubscriptions = safeGetByCompany(caseMeta.getInitiatorCompanyId());
+        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = companySubscriptions.stream()
+                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(caseMeta.getProductId(), companySubscription.getProductId()))
+                        && (companySubscription.getPlatformId() == null || Objects.equals(caseMeta.getPlatformId(), companySubscription.getPlatformId())))
+                .collect( Collectors.toList());
+
+        subscriptionsBasedOnPlatformAndProduct.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
+        log.info( "companySubscriptions: {}", result.stream().map(NotificationEntry::getAddress).collect( Collectors.joining( "," ) ) );
     }
 
     private void appendProductSubscriptions( Long devUnitId, Set<NotificationEntry> result ) {

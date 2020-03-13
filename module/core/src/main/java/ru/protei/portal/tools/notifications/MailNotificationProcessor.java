@@ -78,7 +78,7 @@ public class MailNotificationProcessor {
     // ------------------------
     @EventListener
     public void onCaseChanged(AssembledCaseEvent event){
-     /*   Collection<NotificationEntry> notifiers = collectNotifiers(event);
+        Collection<NotificationEntry> notifiers = collectNotifiers(event);
 
         if(CollectionUtils.isEmpty(notifiers)) {
             log.info( "Case notification :: subscribers not found, break notification" );
@@ -116,7 +116,7 @@ public class MailNotificationProcessor {
             }
         } catch (Exception e) {
             log.error( "Can't sent mail notification with case id = {}. Exception: ", event.getCaseObjectId(), e );
-        }*/
+        }
     }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
@@ -283,9 +283,9 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onUserLoginCreated(UserLoginUpdateEvent event) {
-      /*  if (event.getNotificationEntry() != null) {
+        if (event.getNotificationEntry() != null) {
             performUserLoginNotification(event, event.getNotificationEntry());
-        }*/
+        }
     }
 
     private void performUserLoginNotification(UserLoginUpdateEvent event, NotificationEntry notificationEntry) {
@@ -332,7 +332,7 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onEmployeeRegistrationEvent(EmployeeRegistrationEvent event) {
-     /*   EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
+        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
         if (employeeRegistration == null) {
             log.info("Failed to send employee registration notification: employee registration is null");
             return;
@@ -358,12 +358,12 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);*/
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
     }
 
     @EventListener
     public void onEmployeeRegistrationEmployeeFeedbackEvent( EmployeeRegistrationEmployeeFeedbackEvent event) {
-      /*  log.info( "onEmployeeRegistrationEmployeeFeedbackEvent(): {}", event );
+        log.info( "onEmployeeRegistrationEmployeeFeedbackEvent(): {}", event );
 
         try {
             String subject = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject();
@@ -375,12 +375,12 @@ public class MailNotificationProcessor {
             sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
         } catch (Exception e) {
             log.warn( "Failed to sent employee feedback notification: {}", event.getPerson().getDisplayName(), e );
-        }*/
+        }
     }
 
     @EventListener
     public void onEmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationDevelopmentAgendaEvent event) {
-       /* log.info( "onEmployeeRegistrationDevelopmentAgendaEvent(): {}", event );
+        log.info( "onEmployeeRegistrationDevelopmentAgendaEvent(): {}", event );
 
         try {
             String subject = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject();
@@ -392,12 +392,12 @@ public class MailNotificationProcessor {
             sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
         } catch (Exception e) {
             log.warn( "Failed to sent development agenda notification: {}", event.getPerson().getDisplayName(), e );
-        }*/
+        }
     }
 
     @EventListener
     public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationHeadOfDepartmentEvent event) {
-     /*   log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
+        log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
 
         String employeeFullName = event.getEmployeeFullName();
         Long employeeId = event.getEmployeeId();
@@ -415,12 +415,12 @@ public class MailNotificationProcessor {
 
         } catch (Exception e) {
             log.warn( "Failed to sent employee probation notification: employeeId={}", employeeId, e );
-        }*/
+        }
     }
 
     @EventListener
     public void onEmployeeRegistrationProbationCuratorsEvent( EmployeeRegistrationProbationCuratorsEvent event) {
-      /*  log.info( "onEmployeeRegistrationProbationCuratorsEvent(): {}", event );
+        log.info( "onEmployeeRegistrationProbationCuratorsEvent(): {}", event );
 
         String employeeFullName = event.getEmployeeFullName();
         Long employeeId = event.getEmployeeId();
@@ -438,7 +438,7 @@ public class MailNotificationProcessor {
 
         } catch (Exception e) {
             log.warn( "Failed to sent employee probation (for curator) notification: employeeId={}", employeeId, e );
-        }*/
+        }
     }
 
     // -----------------------
@@ -447,7 +447,7 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onContractDateOneDayRemainingEvent(ContractDateOneDayRemainingEvent event) {
-      /*  Contract contract = event.getContract();
+        Contract contract = event.getContract();
         ContractDate contractDate = event.getContractDate();
         Set<NotificationEntry> notifiers = event.getNotificationEntrySet();
         if (contract == null || contractDate == null || notifiers == null) {
@@ -483,7 +483,7 @@ public class MailNotificationProcessor {
                 notifiers.stream()
                         .filter(this::isNotProteiRecipient)
                         .collect(Collectors.toSet())
-        );*/
+        );
     }
 
     private void performContractDateOneDayRemainingNotification(Contract contract, ContractDate contractDate,
@@ -514,7 +514,7 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onDocumentMemberAddedEvent(DocumentMemberAddedEvent event) {
-       /* Document document = event.getDocument();
+        Document document = event.getDocument();
         List<Person> personList = event.getPersonList();
         if (document == null || CollectionUtils.isEmpty(personList)) {
             log.error("Failed to send document member added notification: incomplete data provided: " +
@@ -543,12 +543,12 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);*/
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
     }
 
     @EventListener
     public void onDocumentDocFileUpdatedByMemberEvent(DocumentDocFileUpdatedByMemberEvent event) {
-      /*  Person initiator = event.getInitiator();
+        Person initiator = event.getInitiator();
         Document document = event.getDocument();
         List<Person> personList = event.getPersonList();
         String comment = event.getComment();
@@ -577,7 +577,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);*/
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
     }
 
     // -----
@@ -597,12 +597,12 @@ public class MailNotificationProcessor {
     }
 
     private void sendMail(String address, String subject, String body) throws MessagingException {
-      /*  MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+        MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
         msg.setSubject(subject);
         msg.setFrom(getFromAddress());
         msg.setText(HelperFunc.nvlt(body, ""), true);
         msg.setTo(address);
-        mailSendChannel.send(msg.getMimeMessage());*/
+        mailSendChannel.send(msg.getMimeMessage());
     }
 
     private boolean isProteiRecipient(NotificationEntry entry) {
