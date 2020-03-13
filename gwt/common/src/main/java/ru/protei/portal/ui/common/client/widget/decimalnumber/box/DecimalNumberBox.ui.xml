@@ -18,7 +18,7 @@
             <label class="dn-separator">–</label>
             <div class="modtooltip">
                 <mask:MaskedTextBox ui:field="regNumModification" styleName="form-control dn-register-number-modifier"
-                                    mask="99"/>
+                                    mask="99" maxLength="2"/>
                 <label ui:field="getNextModificationMessage" class="text text-info">
                     <i class="fa fa-info-circle m-r-5 "/>
                     <ui:text from="{lang.equipmentGetNextModification}"/>
