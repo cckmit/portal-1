@@ -52,9 +52,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     PolicyService policyService;
-
-    @Autowired
-    JdbcManyRelationsHelper helper;
+//
+//    @Autowired
+//    JdbcManyRelationsHelper helper;
 
     @Autowired
     ProductSubscriptionDAO productSubscriptionDAO;

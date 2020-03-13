@@ -46,7 +46,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name = "old_id")
     private Long oldId;
 
-    @JdbcOneToMany(table = "DevUnitSubscription", localColumn = "id", remoteColumn = "dev_unit_id" )
+    @JdbcOneToMany(table = "dev_unit_subscription", localColumn = "id", remoteColumn = "dev_unit_id" )
     private List<DevUnitSubscription> subscriptions;
 
     @JdbcColumn(name = "wiki_link")

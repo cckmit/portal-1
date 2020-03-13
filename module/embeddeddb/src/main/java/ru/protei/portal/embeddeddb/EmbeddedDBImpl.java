@@ -76,7 +76,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
                 .withCharset(Charset.UTF8)
                 .withPort(port)
                 .withUser(DB_USERNAME, DB_PASSWORD)
-//                .withServerVariable("lower_case_table_names", 1)
+                .withServerVariable("lower_case_table_names", 1)//на 8ке не работает
                 .build();
     }
 }
