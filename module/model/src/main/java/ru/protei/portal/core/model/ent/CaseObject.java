@@ -131,6 +131,9 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
+    @JdbcColumn(name = "technical_support_validity")
+    private Date technicalSupportValidity;
+
     // not db column
     private Long contractId;
 
@@ -536,6 +539,14 @@ public class CaseObject extends AuditableObject {
         return new EntityOption(this.getName(), this.getId());
     }
 
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
     @Override
     public String toString() {
         return "CaseObject{" +
@@ -574,11 +585,14 @@ public class CaseObject extends AuditableObject {
                 ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
-                ", timeElapsedType=" + timeElapsedType +
-                ", jiraMetaData=" + caseObjectMetaJira +
                 ", platformId=" + platformId +
-                ", platformName=" + platformName +
+                ", platformName='" + platformName + '\'' +
+                ", technicalSupportValidity=" + technicalSupportValidity +
+                ", contractId=" + contractId +
+                ", contractNumber='" + contractNumber + '\'' +
                 ", timeElapsedType=" + timeElapsedType +
+                ", caseObjectMetaJira=" + caseObjectMetaJira +
+                ", jiraUrl='" + jiraUrl + '\'' +
                 '}';
     }
 }

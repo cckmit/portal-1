@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 /**
  * Реализация сервиса управления проектами
@@ -168,6 +167,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElse(null)
         );
 
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+
         caseObject.setManager(personDAO.get(caseObject.getManagerId()));
 
         if (project.getCustomerType() != null)
@@ -243,6 +244,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());

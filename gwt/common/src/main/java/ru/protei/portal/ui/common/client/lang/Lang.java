@@ -2099,4 +2099,10 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskAddRow();
 
     String issueCreator();
+
+    String technicalSupportValidity();
+
+    String technicalSupportValidityNotFound(String managerName);
+
+    String technicalSupportValidityNotDefined();
 }

@@ -88,6 +88,8 @@ public class Project extends AuditableObject {
 
     private Long platformId;
 
+    private Date technicalSupportValidity;
+
     public Long getId() {
         return id;
     }
@@ -280,6 +282,14 @@ public class Project extends AuditableObject {
         this.platformId = platformId;
     }
 
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
     public static Project fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
@@ -338,6 +348,8 @@ public class Project extends AuditableObject {
             projectInfo.setPlatformName(project.getPlatformName());
 
         }
+
+        projectInfo.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
 
         return projectInfo;
     }

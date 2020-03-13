@@ -46,6 +46,13 @@
                         <g:Anchor styleName="pre-formatted-info" ui:field="project" href="#" target="_blank"/>
                     </div>
 
+                    <div class="small">
+                        <b>
+                            <ui:text from="{lang.technicalSupportValidity}: "/>
+                        </b>
+                        <span class="pre-formatted-info" ui:field="technicalSupportValidity"/>
+                    </div>
+
                     <h5>
                         <ui:text from="{lang.siteFolderAttachments}"/>
                     </h5>
