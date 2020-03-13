@@ -13,7 +13,7 @@ public interface CaseTagService {
 
     Result<Long> update( AuthToken authToken, CaseTag caseTag);
 
-    Result<Long> removeTag( AuthToken authToken, CaseTag caseTag);
+    Result<Long> removeTag( AuthToken authToken, Long caseTagId);
 
     Result<List<CaseTag>> getTags(AuthToken token, CaseTagQuery query);
 

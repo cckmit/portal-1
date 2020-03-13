@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
@@ -54,6 +55,8 @@ public class PortalApiController {
     private ProductService productService;
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private CaseTagService caseTagService;
 
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
@@ -284,8 +287,28 @@ public class PortalApiController {
                 .flatMap(authToken -> employeeService.employeeList(authToken, makeEmployeeQuery(query)))
                 .map(SearchResult::getResults)
                 .map(employeeShortViews -> employeeShortViews.stream().map(PersonInfo::fromEmployeeShortView).collect(Collectors.toList()))
-                .ifOk(personInfos -> log.info("createProduct(): OK"))
-                .ifError(result -> log.warn("createProduct(): Can't find personInfos by query={}. {}", query, result));
+                .ifOk(personInfos -> log.info("getEmployees(): OK"))
+                .ifError(result -> log.warn("getEmployees(): Can't find personInfos by query={}. {}", query, result));
+    }
+
+    @PostMapping(value = "/tags/create")
+    public Result<Long> createCaseTag(HttpServletRequest request, HttpServletResponse response, @RequestBody CaseTagInfo caseTagInfo) {
+        log.info("API | createCaseTag(): caseTagInfo={}", caseTagInfo);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> caseTagService.create(authToken, CaseTagInfo.fromInfo(caseTagInfo)))
+                .ifOk(caseTagId -> log.info("createCaseTag(): OK"))
+                .ifError(result -> log.warn("createCaseTag(): Can't create tag={}. {}", caseTagInfo, result));
+    }
+
+    @PostMapping(value = "/tags/remove/{caseTagId:[0-9]+}")
+    public Result<Long> removeCaseTag(HttpServletRequest request, HttpServletResponse response, @PathVariable("caseTagId") Long caseTagId) {
+        log.info("API | removeCaseTag(): caseTagId={}", caseTagId);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> caseTagService.removeTag(authToken, caseTagId))
+                .ifOk(id -> log.info("removeCaseTag(): OK"))
+                .ifError(result -> log.warn("removeCaseTag(): Can't remove tag={}. {}", caseTagId, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
