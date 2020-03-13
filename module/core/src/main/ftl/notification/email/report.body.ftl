@@ -33,22 +33,6 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <style>
-        .markdown p,
-        .markdown blockquote,
-        .markdown ul,
-        .markdown ol,
-        .markdown dl,
-        .markdown table,
-        .markdown pre {
-            font-size: 14px !important;
-        }
-        .markdown p {
-            margin-bottom: 0;
-            margin-top: 0;
-        }
-        <#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false>
-    </style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>

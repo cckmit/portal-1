@@ -261,29 +261,30 @@ public class ReportControlServiceImpl implements ReportControlService {
                 .map(report -> {
                     log.info("Scheduled Mail Reports = {}", report);
                     setRange(report, enReportScheduledType);
-                    return doScheduledMailReports(report);
-                }).toArray(CompletableFuture[]::new);
+                    return createScheduledMailReportsTask(report);
+                })
+                .map(f -> f.thenAccept(mailReportEvent -> publisherService.publishEvent(mailReportEvent)))
+                .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).join();
         log.info("processScheduledMailReports end");
         return ok();
     }
 
-    private CompletableFuture doScheduledMailReports(Report report) {
-        return CompletableFuture.runAsync(() -> {
+    private CompletableFuture<MailReportEvent> createScheduledMailReportsTask(Report report) {
+        return CompletableFuture.supplyAsync(() -> {
             processReport(report);
             Report processedReport = reportDAO.get(report.getId());
             if (!processedReport.getStatus().equals(En_ReportStatus.READY)) {
                 log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport, processedReport.getStatus());
-                publisherService.publishEvent(new MailReportEvent(this, processedReport, null));
-                return;
+                return new MailReportEvent(this, processedReport, null);
             }
-            reportStorageService.getContent(processedReport.getId())
-                    .ifOk(content -> publisherService.publishEvent(new MailReportEvent(this, processedReport, content.getContent())))
-                    .ifError(error -> {
-                        log.error("Scheduled Mail Reports failed get content, report = {}, error = {}", processedReport, error.getStatus());
-                        publisherService.publishEvent(new MailReportEvent(this, processedReport, null));
-                    });
-        }, reportExecutorService);
+            Result<ReportContent> reportContentResult = reportStorageService.getContent(processedReport.getId());
+            if (reportContentResult.isOk()) {
+                return new MailReportEvent(this, processedReport, reportContentResult.getData().getContent());
+            } else {
+                log.error("Scheduled Mail Reports failed get content, report = {}, error = {}", processedReport, reportContentResult.getStatus());
+                return new MailReportEvent(this, processedReport, null);
+            }}, reportExecutorService);
     }
 
     private void setRange(Report report, En_ReportScheduledType enReportScheduledType) {
