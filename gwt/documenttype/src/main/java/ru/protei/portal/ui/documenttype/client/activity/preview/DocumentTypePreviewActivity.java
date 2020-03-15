@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DocumentTypeEvents;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -61,6 +60,7 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
             public void onSuccess(DocumentType type) {
                 fireEvent( new DocumentTypeEvents.Changed(type, isNew));
                 fireEvent(new DocumentTypeEvents.ClosePreview());
+                fireEvent(new DocumentTypeEvents.ChangeModel());
             }
         });
     }
@@ -76,8 +76,6 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
         view.gost().setValue(documentType.getGost());
     }
 
-    @Inject
-    Lang lang;
     @Inject
     AbstractDocumentTypePreviewView view;
     @Inject

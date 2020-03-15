@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonSaveAndContinue();
+
     String buttonApply();
 
     String buttonCancel();
@@ -855,7 +857,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inventoryNumberIsEmpty();
 
+    String decimalNumberIsInvalid();
+
     String documentApproveFieldsIsEmpty();
+
+    String documentPDFFileIsNotSet();
 
     String negativeInventoryNumber();
 
@@ -1061,6 +1067,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errCaseLinkAlreadyAdded();
 
+    String errCaseLinkNotFound();
+
     String linkedWith();
 
     String id();
@@ -1128,6 +1136,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderIP();
 
     String siteFolderPlatform();
+
+    String siteFolderPlatformRequestError();
 
     String siteFolderPlatforms();
 
@@ -1994,6 +2004,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUpdateOrDeleteLinkedObjectError();
 
+    String errSVN();
+
     String contactGeneratePassword();
 
     String passwordIsDisplay();
@@ -2066,6 +2078,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueAssignmentIssueReassignTo();
 
+    String contactSaved();
+
+    String contactDelete();
+
     String issueAssignmentToggleTable();
 
     String issueAssignmentReload();
@@ -2081,4 +2097,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskAddColumn();
 
     String issueAssignmentDeskAddRow();
+
+    String issueCreator();
 }

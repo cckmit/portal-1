@@ -72,9 +72,6 @@ public class DocumentEvents {
         }
     }
 
-    public static class ChangeModel {
-    }
-
     public static class CreateFromWizard {
 
         public HasWidgets parent;
@@ -86,6 +83,11 @@ public class DocumentEvents {
 
     public static class Save {
         public Save() {
+        }
+    }
+
+    public static class SaveAndContinue {
+        public SaveAndContinue() {
         }
     }
 

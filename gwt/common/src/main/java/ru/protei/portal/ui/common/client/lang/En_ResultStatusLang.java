@@ -60,6 +60,7 @@ public class En_ResultStatusLang {
             case THIS_LINK_ALREADY_ADDED: return lang.errCaseLinkAlreadyAdded();
             case NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE: return lang.documentTypeUnableToRemoveUsedDocumentType();
             case UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR: return lang.errUpdateOrDeleteLinkedObjectError();
+            case SVN_ERROR: return lang.errSVN();
             default: return lang.errUnknownResult();
         }
     }

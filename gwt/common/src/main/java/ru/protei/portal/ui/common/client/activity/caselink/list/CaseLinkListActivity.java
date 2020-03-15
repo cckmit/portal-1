@@ -47,6 +47,7 @@ public abstract class CaseLinkListActivity
     public void onShow(CaseLinkEvents.Show event) {
         this.show = event;
         pageId = event.pageId;
+        caseId = event.caseId;
 
         event.parent.clear();
         event.parent.add(view.asWidget());
@@ -60,7 +61,7 @@ public abstract class CaseLinkListActivity
 
         if (isCaseCreationMode()) return;
 
-        controller.getCaseLinks(event.caseId, new FluentCallback<List<CaseLink>>()
+        controller.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
                 .withError(this::showErrorFromServer)
                 .withSuccess(this::fillView)
         );
@@ -132,6 +133,9 @@ public abstract class CaseLinkListActivity
     }
 
     private void fillView(List<CaseLink> links) {
+        if (links.isEmpty() || !links.iterator().next().getCaseId().equals(caseId)) {
+            return;
+        }
         view.getLinksContainer().clear();
 
         if (CollectionUtils.isEmpty(links)) {
@@ -238,6 +242,9 @@ public abstract class CaseLinkListActivity
             itemWidget.setNumber(linkId);
             itemWidget.setName(value.getYouTrackInfo().getSummary());
             itemWidget.setState(value.getYouTrackInfo().getCaseState());
+        } else {
+            itemWidget.setName(value.getRemoteId());
+            itemWidget.setNumber(lang.errCaseLinkNotFound());
         }
 
         itemWidget.setHref(caseLinkProvider.getLink(value.getType(), linkId));
@@ -296,5 +303,6 @@ public abstract class CaseLinkListActivity
     private Set<CaseLink> linksSet = new HashSet<>();
     private CaseLinkEvents.Show show;
     private String pageId;
+    private Long caseId;
     private boolean createCrossLinks;
 }

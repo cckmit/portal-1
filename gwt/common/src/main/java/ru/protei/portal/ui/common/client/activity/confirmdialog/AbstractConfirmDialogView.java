@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.confirmdialog;
 
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -15,11 +16,6 @@ public interface AbstractConfirmDialogView extends IsWidget {
     void setText( String text );
 
     /**
-     * Задает текст подписи кнопки подтверждения действия.
-     */
-    void setConfirmButtonText( String text );
-
-    /**
      * Открыть окно подтверждения в центре экрана.
      */
     void center();
@@ -28,4 +24,14 @@ public interface AbstractConfirmDialogView extends IsWidget {
      * Закрыть окно подтверждения.
      */
     void hide();
+
+    /**
+     * Задает текст подписи кнопки подтверждения действия.
+     */
+    HasText confirmButtonText();
+
+    /**
+     * Задает текст подписи кнопки отмены действия.
+     */
+    HasText cancelButtonText();
 }

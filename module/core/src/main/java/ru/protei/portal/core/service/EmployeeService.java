@@ -4,7 +4,6 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.EmployeeShortView;

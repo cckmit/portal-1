@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dto;
 
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.struct.AuditableObject;
 
 import java.util.Objects;
@@ -8,13 +9,19 @@ public class DevUnitInfo extends AuditableObject {
 
     private Long id;
 
+    private int typeId;
+
+    private String name;
+
+    private String description;
+
+    private String wikiLink;
+
     private String configuration;
 
     private String cdrDescription;
 
     private String historyVersion;
-
-    private String description;
 
     @Override
     public String getAuditType() {
@@ -60,6 +67,65 @@ public class DevUnitInfo extends AuditableObject {
 
     public void setDescription( String description ) {
         this.description = description;
+    }
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getWikiLink() {
+        return wikiLink;
+    }
+
+    public void setWikiLink(String wikiLink) {
+        this.wikiLink = wikiLink;
+    }
+
+    public static DevUnitInfo toInfo( DevUnit devUnit ) {
+        if (devUnit == null) {
+            return null;
+        }
+
+        DevUnitInfo info = new DevUnitInfo();
+        info.setId( devUnit.getId() );
+        info.setConfiguration( devUnit.getConfiguration() );
+        info.setCdrDescription( devUnit.getCdrDescription() );
+        info.setHistoryVersion( devUnit.getHistoryVersion() );
+        info.setDescription( devUnit.getInfo() );
+        info.setName( devUnit.getName() );
+        info.setTypeId( devUnit.getTypeId() );
+        info.setWikiLink( devUnit.getWikiLink() );
+        return info;
+    }
+
+    public static DevUnit fromInfo(DevUnitInfo info) {
+        if (info == null) {
+            return null;
+        }
+
+        DevUnit devUnit = new DevUnit();
+        devUnit.setId(info.getId());
+        devUnit.setName(info.getName());
+        devUnit.setInfo(info.getDescription());
+        devUnit.setTypeId(info.getTypeId());
+        devUnit.setCdrDescription(info.getCdrDescription());
+        devUnit.setConfiguration(info.getConfiguration());
+        devUnit.setHistoryVersion(info.getHistoryVersion());
+        devUnit.setWikiLink(info.getWikiLink());
+
+        return devUnit;
     }
 
     public static final String DEV_UNIT_INFO = "DevUnitInfo";

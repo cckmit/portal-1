@@ -6,8 +6,10 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
-public class EmployeeSqlBuilder {
+import java.util.ArrayList;
+import java.util.List;
 
+public class EmployeeSqlBuilder {
     public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
@@ -32,11 +34,10 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                if (query.getSearchString().trim().contains(" ")){
+                if (query.getSearchString().trim().contains(" ")) {
                     condition.append(" and Person.displayname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
-                }
-                else {
+                } else {
                     condition.append(" and (Person.lastname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
                     condition.append(" or Person.firstname like ?)");
@@ -44,24 +45,33 @@ public class EmployeeSqlBuilder {
                 }
             }
 
-            if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'GENERAL_PHONE' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
-            }
-
-            if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'MOBILE_PHONE' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
-            }
-
             if (HelperFunc.isLikeRequired(query.getIpAddress())) {
                 condition.append(" and Person.ipaddress like ?");
                 args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
             }
 
-            if (HelperFunc.isLikeRequired(query.getEmail())) {
-                condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+            if (HelperFunc.isLikeRequired(query.getWorkPhone()) || HelperFunc.isLikeRequired(query.getMobilePhone()) || HelperFunc.isLikeRequired(query.getEmail())) {
+                condition.append(" and info.a = 'PUBLIC' and (");
+
+                List<String> orCondition = new ArrayList<>();
+
+                if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+                    orCondition.add("(info.t = 'GENERAL_PHONE' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
+                }
+
+                if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+                    orCondition.add("(info.t = 'MOBILE_PHONE' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
+                }
+
+                if (HelperFunc.isLikeRequired(query.getEmail())) {
+                    orCondition.add("(info.t = 'EMAIL' and info.v like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+                }
+
+                condition.append(String.join(" or ", orCondition));
+                condition.append(")");
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {

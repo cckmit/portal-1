@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -105,6 +106,18 @@ public class DecimalNumberBox extends Composite
         regNum.setEnabled(enabled);
     }
 
+    public void setClassifierCode(Integer classifierCode) {
+        this.classifierCode.setText(classifierCode == null ? null : NumberFormat.getFormat("000000").format(classifierCode));
+        value.setClassifierCode(classifierCode);
+        checkNextButtonState();
+    }
+
+    public void setRegisterNumber(Integer registerNumber) {
+        this.regNum.setText(registerNumber == null ? null : NumberFormat.getFormat("000").format(registerNumber));
+        value.setRegisterNumber(registerNumber);
+        checkNextButtonState();
+    }
+
     public void setHandler(DecimalNumberBoxHandler boxHandler) {
         this.handler = boxHandler;
     }
@@ -130,10 +143,12 @@ public class DecimalNumberBox extends Composite
 
     public void setFocusToRegisterNumberField(boolean isFocused) {
         regNum.setFocus(isFocused);
+        markBoxAsError(!isValid() || StringUtils.isNotBlank(msg.getInnerText()));
     }
 
     private void setFocusToNextButton(boolean isFocused) {
         next.setFocus(isFocused);
+        markBoxAsError(!isValid() || StringUtils.isNotBlank(msg.getInnerText()));
     }
 
     private void checkNextButtonState() {

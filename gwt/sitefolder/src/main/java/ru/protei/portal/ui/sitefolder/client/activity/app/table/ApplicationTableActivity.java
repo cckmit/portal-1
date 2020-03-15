@@ -104,44 +104,6 @@ public abstract class ApplicationTableActivity implements
         view.updateRow(event.app);
     }
 
-    @Event
-    public void onAppConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (appIdForRemove == null) {
-            return;
-        }
-
-        siteFolderController.removeApplication(appIdForRemove, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                appIdForRemove = null;
-                if (result) {
-                    fireEvent(new SiteFolderAppEvents.ChangeModel());
-                    fireEvent(new SiteFolderAppEvents.Show(serverId));
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onAppCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        appIdForRemove = null;
-    }
-
     @Override
     public void onItemClicked(Application value) {
         if (value == null) {
@@ -175,8 +137,7 @@ public abstract class ApplicationTableActivity implements
             return;
         }
 
-        appIdForRemove = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderAppConfirmRemove()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderAppConfirmRemove(), removeAction(value.getId())));
     }
 
     @Override
@@ -242,6 +203,26 @@ public abstract class ApplicationTableActivity implements
         return query;
     }
 
+    private Runnable removeAction(Long applicationId) {
+        return () -> siteFolderController.removeApplication(applicationId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new SiteFolderAppEvents.ChangeModel());
+                    fireEvent(new SiteFolderAppEvents.Show(serverId));
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Inject
     PolicyService policyService;
     @Inject
@@ -258,6 +239,5 @@ public abstract class ApplicationTableActivity implements
     AbstractPagerView pagerView;
 
     private Long serverId = null;
-    private Long appIdForRemove = null;
     private AppEvents.InitDetails initDetails;
 }

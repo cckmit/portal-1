@@ -83,6 +83,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setInventoryNumberMandatory(boolean isMandatory);
 
+    void setDecimalNumberHMandatory(boolean isMandatory);
+
     void uploaderApprovalSheetEnabled(boolean isEnabled);
 
     AbstractDocumentUploader documentDocUploader();

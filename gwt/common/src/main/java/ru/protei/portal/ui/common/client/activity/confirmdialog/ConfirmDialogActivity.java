@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
  * Активность окна подтверждения.
@@ -18,56 +20,38 @@ public abstract class ConfirmDialogActivity implements Activity, AbstractConfirm
 
     @Event
     public void onConfirmDialogShow( ConfirmDialogEvents.Show event ) {
-        if ( event.identity == null && event.action == null ) {
+        if (event.confirmAction == null) {
             return;
         }
 
-        identity = event.identity;
-        action = event.action;
-        view.setText( event.text );
-        if ( event.confirmButtonText != null ) {
-            view.setConfirmButtonText( event.confirmButtonText );
-        }
+        confirmAction = event.confirmAction;
+
+        fillView(event);
+    }
+
+    private void fillView(ConfirmDialogEvents.Show event) {
+        view.setText(event.text);
+        view.confirmButtonText().setText(StringUtils.isBlank(event.confirmButtonText) ? lang.buttonYes() : event.confirmButtonText);
+        view.cancelButtonText().setText(lang.buttonNo());
         view.center();
     }
 
     @Override
     public void onConfirmClicked() {
         view.hide();
-
-        String identityTmp = identity;
-        if (identityTmp != null) {
-            fireEvent( new ConfirmDialogEvents.Confirm(identityTmp) );
-            identity = null;
-        }
-
-        ConfirmDialogEvents.Show.Action actionTmp = action;
-        if (actionTmp != null) {
-            action.onConfirm();
-            action = null;
-        }
+        confirmAction.run();
     }
 
     @Override
     public void onCancelClicked() {
         view.hide();
-
-        String identityTmp = identity;
-        if (identityTmp != null) {
-            fireEvent( new ConfirmDialogEvents.Cancel( identityTmp ) );
-            identity = null;
-        }
-
-        ConfirmDialogEvents.Show.Action actionTmp = action;
-        if (actionTmp != null) {
-            action.onCancel();
-            action = null;
-        }
     }
 
     @Inject
     AbstractConfirmDialogView view;
 
-    private String identity;
-    private ConfirmDialogEvents.Show.Action action;
+    @Inject
+    Lang lang;
+
+    private Runnable confirmAction;
 }

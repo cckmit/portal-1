@@ -124,7 +124,7 @@ public abstract class DocumentTypeTableActivity
         fireEvent(new ConfirmDialogEvents.Show(lang.documentTypeRemoveConfirmMessage(), onConfirmRemoveClicked(value)));
     }
 
-    private ConfirmDialogEvents.Show.Action onConfirmRemoveClicked(DocumentType value) {
+    private Runnable onConfirmRemoveClicked(DocumentType value) {
         return () -> documentTypeService.removeDocumentType(value, new FluentCallback<Long>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {

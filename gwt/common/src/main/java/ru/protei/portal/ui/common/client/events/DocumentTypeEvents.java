@@ -31,4 +31,6 @@ public class DocumentTypeEvents {
     }
 
     public static class ClosePreview {}
+
+    public static class ChangeModel {}
 }

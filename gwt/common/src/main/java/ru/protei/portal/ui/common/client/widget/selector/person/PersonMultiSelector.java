@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -10,30 +12,34 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * Селектор сотрудников
+ * Селектор контактов
  */
-public class InitiatorMultiSelector extends InputPopupMultiSelector<PersonShortView> implements Refreshable
+public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView> implements Refreshable
 {
     @Inject
-    public void init(InitiatorModel model, Lang lang) {
-        this.model = model;
+    public void init(Lang lang) {
         this.lang = lang;
-        setModel( model );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
+        setItemRenderer(this::makeName);
+    }
 
-        setItemRenderer( person -> person.getName() );
+    private String makeName(PersonShortView personShortView) {
+        return TransliterationUtils.transliterate(personShortView.getName(), LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Override
     public void onShowPopupClicked(ClickEvent event) {
+        if (initiatorModel == null) {
+            super.onShowPopupClicked(event);
+            return;
+        }
+
         Collection companies = companiesSupplier.get();
         if (!CollectionUtils.isEmpty( companies )) {
             super.onShowPopupClicked(event);
@@ -50,13 +56,13 @@ public class InitiatorMultiSelector extends InputPopupMultiSelector<PersonShortV
     public void refresh() {
         Set<PersonShortView> value = getValue();
         if (!CollectionUtils.isEmpty( value )) {
-            value.retainAll( model.getValues() );
+            value.retainAll( initiatorModel.getValues() );
         }
         setValue( value );
     }
 
     public void updateCompanies() {
-        if (model == null || companiesSupplier == null) {
+        if (initiatorModel == null || companiesSupplier == null) {
             return;
         }
         Set<Long> companyIds = null;
@@ -67,7 +73,7 @@ public class InitiatorMultiSelector extends InputPopupMultiSelector<PersonShortV
             companyIds = companies.stream().map(EntityOption::getId).collect(Collectors.toSet());
         }
 
-        model.updateCompanies(this, companyIds, false);
+        initiatorModel.updateCompanies(this, companyIds, false);
 
     }
 
@@ -75,14 +81,17 @@ public class InitiatorMultiSelector extends InputPopupMultiSelector<PersonShortV
         this.companiesSupplier = companiesSupplier;
     }
 
+    public void setInitiatorModel(InitiatorModel model) {
+        this.initiatorModel = model;
+        setModel( model );
+    }
+
+    public void setPersonModel(PersonModel model) {
+        setAsyncModel(model);
+    }
+
     Lang lang;
-    private InitiatorModel model;
+    private InitiatorModel initiatorModel;
 
-
-    private Supplier<Set<EntityOption>> companiesSupplier = new Supplier<Set<EntityOption>>() {
-        @Override
-        public Set<EntityOption> get() {
-            return Collections.EMPTY_SET;
-        }
-    };
+    private Supplier<Set<EntityOption>> companiesSupplier = () -> Collections.EMPTY_SET;
 }

@@ -36,7 +36,7 @@ import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
@@ -45,7 +45,6 @@ import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractI
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -594,7 +593,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     CompanyMultiSelector companies;
     @Inject
     @UiField(provided = true)
-    InitiatorMultiSelector initiators;
+    PersonMultiSelector initiators;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector managers;
@@ -662,7 +661,8 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
     private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,
-            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND));
+            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND,
+            En_CaseState.INFO_REQUEST, En_CaseState.NX_REQUEST, En_CaseState.CUST_REQUEST));
 
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );
     interface IssueFilterUiBinder extends UiBinder< HTMLPanel, IssueFilter > {}
