@@ -72,7 +72,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
     @Override
     public void onRemoveClicked() {
-        caseTagController.removeTag(caseTag, new FluentCallback<Void>()
+        caseTagController.removeTag(caseTag.getId(), new FluentCallback<Long>()
                 .withSuccess(v -> {
                     dialogView.hidePopup();
                     fireEvent(new CaseTagEvents.Removed(caseTag));
