@@ -43,11 +43,13 @@ public class ProjectInfo implements Serializable {
 
     private Set<ProductShortView> products;
 
+    private Date technicalSupportValidity;
+
     public ProjectInfo() {
     }
 
     public ProjectInfo(Long id, String name, Date created, En_CustomerType customerType, EntityOption region,
-                       EntityOption productDirection, EntityOption manager, EntityOption contragent, Set<ProductShortView> products) {
+                       EntityOption productDirection, EntityOption manager, EntityOption contragent, Set<ProductShortView> products, Date technicalSupportValidity) {
         this.id = id;
         this.name = name;
         this.created = created;
@@ -57,6 +59,7 @@ public class ProjectInfo implements Serializable {
         this.manager = manager;
         this.contragent = contragent;
         this.products = products;
+        this.technicalSupportValidity = technicalSupportValidity;
     }
 
     public Long getId() {
@@ -95,6 +98,14 @@ public class ProjectInfo implements Serializable {
         return products;
     }
 
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
     public static ProjectInfo fromCaseObject(CaseObject project) {
         if (project == null)
             return null;
@@ -108,6 +119,7 @@ public class ProjectInfo implements Serializable {
                 project.getProduct() == null ? null : new EntityOption(project.getProduct().getName(), project.getProduct().getId()),
                 project.getManager() == null ? null : new EntityOption(project.getManager().getDisplayShortName(), project.getManagerId()),
                 project.getInitiatorCompany() == null ? null : new EntityOption(project.getInitiatorCompany().getCname(), project.getInitiatorCompanyId()),
-                project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()));
+                project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),
+                project.getTechnicalSupportValidity());
     }
 }

@@ -8,17 +8,18 @@ import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObjectTag;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import java.util.concurrent.TimeUnit;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -40,6 +41,10 @@ public class CaseTagServiceImpl implements CaseTagService {
     @Transactional
     public Result<Long> create( AuthToken authToken, CaseTag caseTag) {
         caseTag.setPersonId( authToken.getPersonId() );
+
+        if (caseTag.getId() != null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if (!isCaseTagValid(caseTag)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
@@ -74,13 +79,13 @@ public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     @Transactional
-    public Result<Long> removeTag( AuthToken authToken, CaseTag caseTag) {
-        if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
+    public Result<Long> removeTag( AuthToken authToken, Long caseTagId) {
+        if (caseTagId != null && !Objects.equals(caseTagDAO.get(caseTagId).getPersonId(), authToken.getPersonId())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
-        return !caseTagDAO.remove(caseTag) ?
-                Result.error( En_ResultStatus.NOT_REMOVED) :
-                ok(caseTag.getId());
+        return !caseTagDAO.removeByKey(caseTagId) ?
+                Result.error(En_ResultStatus.NOT_REMOVED) :
+                ok(caseTagId);
     }
 
     @Override
@@ -92,6 +97,24 @@ public class CaseTagServiceImpl implements CaseTagService {
         List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);
 
         return ok(caseTags);
+    }
+
+    @Override
+    public Result<CaseTag> getTag(AuthToken token, Long tagId) {
+        if (tagId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseTagQuery query = new CaseTagQuery();
+        query.setIds(Collections.singletonList(tagId));
+
+        Result<List<CaseTag>> tags = getTags(token, query);
+
+        if (CollectionUtils.isEmpty(tags.getData())) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        return ok(tags.getData().iterator().next());
     }
 
     @Override

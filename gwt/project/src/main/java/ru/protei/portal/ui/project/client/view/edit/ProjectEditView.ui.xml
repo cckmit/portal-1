@@ -9,6 +9,7 @@
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -36,8 +37,6 @@
                     <label><ui:text from="{lang.projectName}"/></label>
                     <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
                 </div>
-
-
 
                 <g:HTMLPanel ui:field="linksContainer" styleName="form-group col-md-12"/>
             </div>
@@ -67,6 +66,12 @@
                     <label><ui:text from="{lang.projectProducts}"/></label>
                     <devunit:DevUnitButtonSelector ui:field="product"/>
                 </div>
+
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.technicalSupportValidity}"/></label>
+                    <single:SinglePicker ui:field="technicalSupportValidity" formatValue="dd.MM.yyyy" mandatory="false"/>
+                </div>
+
                 <div class="form-group col-md-12">
                     <label ui:field="descriptionLabel"><ui:text from="{lang.projectDescription}"/></label>
                     <autoresizetextarea:AutoResizeTextArea ui:field="description" styleName="form-control" maxRows="10"/>

@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
@@ -34,6 +35,7 @@ import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditActiv
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -147,8 +149,18 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasValue<Date> technicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    @Override
     public void updateProductDirection(Long directionId) {
         product.setDirectionId(directionId);
+    }
+
+    @Override
+    public void setDateValid(boolean valid) {
+        technicalSupportValidity.markInputValid(valid);
     }
 
     @UiHandler("saveButton")
@@ -216,6 +228,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
         addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
+        technicalSupportValidity.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
     }
 
     @UiField
@@ -254,6 +267,10 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+
+    @Inject
+    @UiField(provided = true)
+    SinglePicker technicalSupportValidity;
 
     @UiField
     DivElement comments;

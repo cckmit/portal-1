@@ -52,6 +52,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
+    public void setTechnicalSupportValidity(String technicalSupportValidity) {
+        this.technicalSupportValidity.setInnerText(technicalSupportValidity);
+    }
+
+    @Override
     public void setProject(String value, String link) {
         project.setText(value);
         project.setHref(link);
@@ -117,6 +122,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     SpanElement parameters;
     @UiField
     Anchor project;
+    @UiField
+    SpanElement technicalSupportValidity;
     @UiField
     Label comment;
     @UiField

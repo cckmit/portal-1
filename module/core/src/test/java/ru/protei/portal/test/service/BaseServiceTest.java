@@ -221,8 +221,8 @@ public class BaseServiceTest {
         return company;
     }
 
-    protected CaseTag makeCaseTag( String tag1, En_CaseType type, Long companyId ) {
-        CaseTag caseTag = createCaseTag( tag1, type, companyId );
+    protected CaseTag makeCaseTag( String name, En_CaseType type, Long companyId ) {
+        CaseTag caseTag = createCaseTag( name, type, companyId );
         caseTag.setId( caseTagDAO.persist( caseTag ) );
         return caseTag;
     }
