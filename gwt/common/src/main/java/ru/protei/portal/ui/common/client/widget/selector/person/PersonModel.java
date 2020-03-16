@@ -4,15 +4,18 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -23,17 +26,21 @@ import java.util.Objects;
 /**
  * Модель контактных лиц
  */
-public abstract class PersonModel implements Activity, AsyncSelectorModel<PersonShortView> {
+public abstract class PersonModel extends BaseSelectorModel<PersonShortView> implements Activity {
     @Event
     public void onInit(AuthEvents.Success event) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
         cache.setLoadHandler(makeLoadHandler(makeQuery()));
-        cache.setChunkSize(CHUNK_SIZE);
     }
 
     @Override
     public PersonShortView get(int elementIndex, LoadingHandler handler) {
+        if (StringUtils.isNotBlank(this.searchString)) {
+            cache.clearCache();
+            return super.get(elementIndex, handler);
+        }
+
         if (currentPerson == null) {
             return cache.get(elementIndex, handler);
         }
@@ -45,8 +52,25 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
         return personShortView;
     }
 
-    public void clear() {
-        cache.clearCache();
+    @Override
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+        super.setSearchString(searchString);
+    }
+
+    protected void requestData(LoadingHandler selector, String searchText) {
+        personService.getPersonViewList(makeQuery(searchText), new RequestCallback<List<PersonShortView>>() {
+                    @Override
+                    public void onError(Throwable throwable) {
+                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    }
+
+                    @Override
+                    public void onSuccess(List<PersonShortView> options) {
+                        updateElements(options, selector);
+                    }
+                }
+        );
     }
 
     private SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler(PersonQuery query) {
@@ -90,6 +114,15 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
         return personQuery;
     }
 
+    private PersonQuery makeQuery(String searchString) {
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setDeleted(false);
+        personQuery.setSearchString(searchString);
+
+        return personQuery;
+    }
+
+
     @Inject
     PersonControllerAsync personService;
 
@@ -97,7 +130,7 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
     Lang lang;
 
     private PersonShortView currentPerson;
+    private String searchString;
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
-    private static final Integer CHUNK_SIZE = 1000;
 }
 

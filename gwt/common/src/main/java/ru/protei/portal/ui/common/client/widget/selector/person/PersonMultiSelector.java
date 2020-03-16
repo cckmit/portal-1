@@ -4,12 +4,14 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.*;
@@ -61,6 +63,19 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         setValue( value );
     }
 
+    @Override
+    protected ru.protei.portal.ui.common.client.selector.SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml) {
+        PopupSelectableItem<PersonShortView> item = new PopupSelectableItem<>();
+
+        if (value != null && value.isFired()) {
+            elementHtml = "<i class='fa fa-ban ban m-r-5'></i>" + elementHtml;
+        }
+
+        item.setElementHtml(elementHtml);
+        item.setSelected(isSelected(value));
+        return item;
+    }
+
     public void updateCompanies() {
         if (initiatorModel == null || companiesSupplier == null) {
             return;
@@ -87,7 +102,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     }
 
     public void setPersonModel(PersonModel model) {
-        setAsyncModel(model);
+        setAsyncSearchModel(model);
     }
 
     Lang lang;
