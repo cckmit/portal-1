@@ -63,7 +63,8 @@
         <person:EmployeeMultiSelector ui:field="managers"
                                       header="{lang.issueManager}"
                                       addStyleNames="form-group col-md-12 resize-md-6"
-                                      hasNullValue="true"/>
+                                      hasNullValue="true"
+                                      firedEmployeesVisible="true"/>
 
         <person:EmployeeMultiSelector ui:field="commentAuthors"
                                       header="{lang.issueCommentAuthor}"
