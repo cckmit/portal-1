@@ -36,11 +36,6 @@ public class CaseTagInfo {
 
     public CaseTagInfo() {}
 
-    public CaseTagInfo(Long id, String name, Long companyId) {
-        this.id = id;
-        this.name = name;
-        this.companyId = companyId;
-    }
     public static CaseTag fromInfo(CaseTagInfo info) {
 
         CaseTag caseTag = new CaseTag();
