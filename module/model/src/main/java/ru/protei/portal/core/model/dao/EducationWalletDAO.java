@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface EducationWalletDAO extends PortalBaseDAO<EducationWallet> {
     List<EducationWallet> getAll();
+    List<EducationWallet> getByWorkers(List<Long> workerIdList);
+    EducationWallet getByWorker(Long workerId);
+    EducationWallet getByDepartment(Long depId);
 }

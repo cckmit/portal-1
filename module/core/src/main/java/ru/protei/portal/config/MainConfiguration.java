@@ -827,6 +827,11 @@ public class MainConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
+    @Bean
+    public EducationService getEducationService() {
+        return new EducationServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {

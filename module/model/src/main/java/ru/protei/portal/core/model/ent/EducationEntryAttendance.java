@@ -11,10 +11,10 @@ public class EducationEntryAttendance implements Serializable {
     private Long id;
 
     @JdbcColumn(name="education_entry_id")
-    private String educationEntryId;
+    private Long educationEntryId;
 
     @JdbcColumn(name="worker_entry_id")
-    private String workerId;
+    private Long workerId;
 
     @JdbcColumn(name="approved")
     private boolean approved;
@@ -35,19 +35,19 @@ public class EducationEntryAttendance implements Serializable {
         this.id = id;
     }
 
-    public String getEducationEntryId() {
+    public Long getEducationEntryId() {
         return educationEntryId;
     }
 
-    public void setEducationEntryId(String educationEntryId) {
+    public void setEducationEntryId(Long educationEntryId) {
         this.educationEntryId = educationEntryId;
     }
 
-    public String getWorkerId() {
+    public Long getWorkerId() {
         return workerId;
     }
 
-    public void setWorkerId(String workerId) {
+    public void setWorkerId(Long workerId) {
         this.workerId = workerId;
     }
 
@@ -67,8 +67,8 @@ public class EducationEntryAttendance implements Serializable {
     public String toString() {
         return "EducationEntryAttendance{" +
                 "id=" + id +
-                ", educationEntryId='" + educationEntryId + '\'' +
-                ", workerId='" + workerId + '\'' +
+                ", educationEntryId=" + educationEntryId +
+                ", workerId=" + workerId +
                 ", approved=" + approved +
                 ", workerName='" + workerName + '\'' +
                 '}';

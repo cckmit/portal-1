@@ -5,6 +5,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @JdbcEntity(table = "education_entry")
 public class EducationEntry implements Serializable {
@@ -45,6 +46,11 @@ public class EducationEntry implements Serializable {
 
     @JdbcColumn(name = "extra_info")
     private String extraInfo;
+
+    @JdbcOneToMany(remoteColumn = "education_entry_id", additionalConditions = {
+            @JdbcManyJoinData(remoteColumn = "approved", value = "true", valueClass = Boolean.class)
+    })
+    private List<EducationEntryAttendance> attendanceList;
 
     public EducationEntry() {}
 
@@ -144,6 +150,14 @@ public class EducationEntry implements Serializable {
         this.extraInfo = extraInfo;
     }
 
+    public List<EducationEntryAttendance> getAttendanceList() {
+        return attendanceList;
+    }
+
+    public void setAttendanceList(List<EducationEntryAttendance> attendanceList) {
+        this.attendanceList = attendanceList;
+    }
+
     @Override
     public String toString() {
         return "EducationEntry{" +
@@ -159,6 +173,7 @@ public class EducationEntry implements Serializable {
                 ", dateStart=" + dateStart +
                 ", dateEnd=" + dateEnd +
                 ", extraInfo='" + extraInfo + '\'' +
+                ", attendanceList=" + attendanceList +
                 '}';
     }
 }

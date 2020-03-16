@@ -283,6 +283,11 @@ public class ServiceTestsConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
+    @Bean
+    public EducationService getEducationService() {
+        return new EducationServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {

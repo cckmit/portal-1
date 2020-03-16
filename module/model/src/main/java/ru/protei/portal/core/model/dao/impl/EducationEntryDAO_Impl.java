@@ -10,11 +10,17 @@ public class EducationEntryDAO_Impl extends PortalBaseJdbcDAO<EducationEntry> im
 
     @Override
     public List<EducationEntry> getAllForDate(Date date) {
-        return getListByCondition("date_end >= ?", date);
+        return getListByCondition("date_end IS NULL OR date_end >= ?", date);
     }
 
     @Override
     public List<EducationEntry> getApprovedForDate(Date date) {
-        return getListByCondition("approved is true AND date_end >= ?", date);
+        return getListByCondition("approved IS TRUE AND (date_end IS NULL OR date_end >= ?)", date);
+    }
+
+    @Override
+    public List<EducationEntry> getForWallet(Long depId, Date date) {
+        return getListByCondition("id IN (SELECT DISTINCT education_entry_id FROM education_entry_attendance WHERE worker_entry_id IN " +
+                "(SELECT DISTINCT id FROM worker_entry WHERE dep_id = ?) AND approved IS TRUE AND (date_end IS NULL OR date_end >= ?))", depId, date);
     }
 }

@@ -90,6 +90,10 @@ public enum En_Privilege {
     CONTRACT_EDIT (CONTRACT, EDIT),
     CONTRACT_CREATE (CONTRACT, CREATE),
 
+    EDUCATION_VIEW (EDUCATION, VIEW),
+    EDUCATION_EDIT (EDUCATION, EDIT),
+    EDUCATION_CREATE (EDUCATION, CREATE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),

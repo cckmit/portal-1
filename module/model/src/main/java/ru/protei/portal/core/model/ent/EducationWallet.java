@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @JdbcEntity(table = "education_wallet")
 public class EducationWallet implements Serializable {
@@ -18,6 +19,9 @@ public class EducationWallet implements Serializable {
 
     @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_name")
     private String departmentName;
+
+    // not db column
+    private List<EducationEntry> educationEntryList;
 
     public EducationWallet() {}
 
@@ -49,6 +53,14 @@ public class EducationWallet implements Serializable {
         return departmentName;
     }
 
+    public List<EducationEntry> getEducationEntryList() {
+        return educationEntryList;
+    }
+
+    public void setEducationEntryList(List<EducationEntry> educationEntryList) {
+        this.educationEntryList = educationEntryList;
+    }
+
     @Override
     public String toString() {
         return "EducationWallet{" +
@@ -56,6 +68,7 @@ public class EducationWallet implements Serializable {
                 ", departmentId='" + departmentId + '\'' +
                 ", coins=" + coins +
                 ", departmentName='" + departmentName + '\'' +
+                ", educationEntryList=" + educationEntryList +
                 '}';
     }
 }
