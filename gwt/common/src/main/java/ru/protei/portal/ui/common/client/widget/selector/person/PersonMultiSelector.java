@@ -68,7 +68,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         PopupSelectableItem<PersonShortView> item = new PopupSelectableItem<>();
 
         if (value != null && value.isFired()) {
-            elementHtml = "<i class='fa fa-ban ban m-r-5'></i>" + elementHtml;
+            item.setIcon("fa fa-ban ban m-r-5");
         }
 
         item.setElementHtml(elementHtml);
@@ -88,7 +88,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             companyIds = companies.stream().map(EntityOption::getId).collect(Collectors.toSet());
         }
 
-        initiatorModel.updateCompanies(this, companyIds, false);
+        initiatorModel.updateCompanies(this, companyIds, null);
 
     }
 

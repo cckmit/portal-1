@@ -32,7 +32,7 @@ public class EmployeeMultiSelector
         PopupSelectableItem<PersonShortView> item = new PopupSelectableItem<>();
 
         if (!CrmConstants.Employee.UNDEFINED.equals(value.getId()) && value.isFired()) {
-            elementHtml = "<i class='fa fa-ban ban m-r-5'></i>" + elementHtml;
+            item.setIcon("fa fa-ban ban m-r-5");
         }
 
         item.setElementHtml(elementHtml);

@@ -11,40 +11,29 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
-import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Модель контактных лиц
  */
-public abstract class PersonModel extends BaseSelectorModel<PersonShortView> implements Activity {
+public abstract class PersonModel implements AsyncSearchSelectorModel<PersonShortView>, Activity {
     @Event
     public void onInit(AuthEvents.Success event) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery()));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(null)));
     }
 
     @Override
     public PersonShortView get(int elementIndex, LoadingHandler handler) {
-        if (StringUtils.isNotBlank(this.searchString)) {
-            cache.clearCache();
-            return super.get(elementIndex, handler);
-        }
-
-        clean();
-
-        if (currentPerson == null) {
+        if (currentPerson == null || StringUtils.isNotBlank(searchString)) {
             return cache.get(elementIndex, handler);
         }
         if (elementIndex == 0) return currentPerson;
@@ -58,26 +47,19 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
     @Override
     public void setSearchString(String searchString) {
         this.searchString = searchString;
-        super.setSearchString(searchString);
-    }
-
-    protected void requestData(LoadingHandler selector, String searchText) {
-        makeRequest(makeQuery(searchText), options -> updateElements(options, selector));
+        cache.clearCache();
+        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
     }
 
     private SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler(PersonQuery query) {
         return (offset, limit, handler) -> {
             query.setOffset(offset);
             query.setLimit(limit);
-            makeRequest(query, handler::onSuccess);
+            personService.getPersonViewList(query, new FluentCallback<List<PersonShortView>>()
+                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                    .withSuccess(handler::onSuccess)
+            );
         };
-    }
-
-    private void makeRequest(PersonQuery query, Consumer<List<PersonShortView>> consumer) {
-        personService.getPersonViewList(query, new FluentCallback<List<PersonShortView>>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(consumer)
-        );
     }
 
     private void requestCurrentPerson(Long myId) {
@@ -95,15 +77,9 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
         currentPerson = person.toFullNameShortView();
     }
 
-    private PersonQuery makeQuery() {
+    private PersonQuery makeQuery(String searchString) {
         PersonQuery personQuery = new PersonQuery();
         personQuery.setDeleted(false);
-
-        return personQuery;
-    }
-
-    private PersonQuery makeQuery(String searchString) {
-        PersonQuery personQuery = makeQuery();
         personQuery.setSearchString(searchString);
 
         return personQuery;
