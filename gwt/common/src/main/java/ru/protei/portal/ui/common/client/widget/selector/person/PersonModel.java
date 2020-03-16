@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Модель контактных лиц
@@ -61,37 +62,22 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
     }
 
     protected void requestData(LoadingHandler selector, String searchText) {
-        personService.getPersonViewList(makeQuery(searchText), new RequestCallback<List<PersonShortView>>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    }
-
-                    @Override
-                    public void onSuccess(List<PersonShortView> options) {
-                        updateElements(options, selector);
-                    }
-                }
-        );
+        makeRequest(makeQuery(searchText), options -> updateElements(options, selector));
     }
 
     private SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler(PersonQuery query) {
         return (offset, limit, handler) -> {
             query.setOffset(offset);
             query.setLimit(limit);
-            personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
-                        @Override
-                        public void onError(Throwable throwable) {
-                            fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                        }
-
-                        @Override
-                        public void onSuccess(List<PersonShortView> options) {
-                            handler.onSuccess(options);
-                        }
-                    }
-            );
+            makeRequest(query, handler::onSuccess);
         };
+    }
+
+    private void makeRequest(PersonQuery query, Consumer<List<PersonShortView>> consumer) {
+        personService.getPersonViewList(query, new FluentCallback<List<PersonShortView>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(consumer)
+        );
     }
 
     private void requestCurrentPerson(Long myId) {
@@ -117,8 +103,7 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
     }
 
     private PersonQuery makeQuery(String searchString) {
-        PersonQuery personQuery = new PersonQuery();
-        personQuery.setDeleted(false);
+        PersonQuery personQuery = makeQuery();
         personQuery.setSearchString(searchString);
 
         return personQuery;
