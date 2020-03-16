@@ -41,6 +41,8 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
             return super.get(elementIndex, handler);
         }
 
+        clean();
+
         if (currentPerson == null) {
             return cache.get(elementIndex, handler);
         }
