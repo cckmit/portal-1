@@ -14,21 +14,21 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dto.CaseTagInfo;
-import ru.protei.portal.core.model.query.EmployeeApiQuery;
-import ru.protei.portal.core.model.struct.ContactInfo;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.embeddeddb.DatabaseConfiguration;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.EmployeeApiQuery;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -387,25 +387,35 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void createTag() throws Exception {
-        Company company = makeCustomerCompany();
         CaseTagInfo caseTagInfo = new CaseTagInfo();
 
-        caseTagInfo.setName("test tag");
+        caseTagInfo.setName("TestPortalApiController :: test tag");
         caseTagInfo.setCompanyId(company.getId());
 
-        createPostResultAction("/api/tags/create", caseTagInfo)
+        ResultActions resultActions = createPostResultAction("/api/tags/create", caseTagInfo)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data", notNullValue()));
 
-        companyDAO.removeByKey(company.getId());
-        caseTagDAO.removeByCondition("");
+        Result result = objectMapper.readValue(resultActions.andReturn().getResponse().getContentAsString(), Result.class);
+
+        Integer caseTagId = (Integer) result.getData();
+
+        caseTagDAO.removeByKey(caseTagId.longValue());
     }
 
     @Test
     @Transactional
     public void removeTag() throws Exception {
+        Company company = makeCustomerCompany();
+        CaseTag caseTag = createCaseTag("TestPortalApiController :: test tag", En_CaseType.CRM_SUPPORT, company.getId());
+        caseTag.setPersonId(person.getId());
+        caseTagDAO.persist(caseTag);
 
+        createPostResultAction("/api/tags/remove/" + caseTag.getId(), null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", notNullValue()));
     }
 
     private void setThreadUserLogin(UserLogin userLogin) {
