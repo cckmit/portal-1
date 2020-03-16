@@ -292,11 +292,19 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/tags/create")
-    public Result<Long> createCaseTag(HttpServletRequest request, HttpServletResponse response, @RequestBody CaseTagInfo caseTagInfo) {
+    public Result<CaseTag> createCaseTag(HttpServletRequest request, HttpServletResponse response, @RequestBody CaseTagInfo caseTagInfo) {
         log.info("API | createCaseTag(): caseTagInfo={}", caseTagInfo);
 
-        return authenticate(request, response, authService, sidGen, log)
-                .flatMap(authToken -> caseTagService.create(authToken, CaseTagInfo.fromInfo(caseTagInfo)))
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return caseTagService.create(authToken, CaseTagInfo.toCaseTag(caseTagInfo))
+                .flatMap(tagId -> caseTagService.getTag(authToken, tagId))
                 .ifOk(caseTagId -> log.info("createCaseTag(): OK"))
                 .ifError(result -> log.warn("createCaseTag(): Can't create tag={}. {}", caseTagInfo, result));
     }

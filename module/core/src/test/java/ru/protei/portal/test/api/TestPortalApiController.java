@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -35,9 +34,8 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
+import java.io.IOException;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -56,6 +54,7 @@ public class TestPortalApiController extends BaseServiceTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    private static final long FAKE_ID = 10000L;
     private Person person;
     private UserLogin userLogin;
     private Company company;
@@ -397,17 +396,28 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data", notNullValue()));
 
-        Result result = objectMapper.readValue(resultActions.andReturn().getResponse().getContentAsString(), Result.class);
+        CaseTag result = getData(resultActions, CaseTag.class);
 
-        Integer caseTagId = (Integer) result.getData();
+        caseTagDAO.removeByKey(result.getId());
+    }
 
-        caseTagDAO.removeByKey(caseTagId.longValue());
+    @Test
+    @Transactional
+    public void createTagWithId() throws Exception {
+        CaseTagInfo caseTagInfo = new CaseTagInfo();
+
+        caseTagInfo.setName("TestPortalApiController :: test tag");
+        caseTagInfo.setCompanyId(company.getId());
+        caseTagInfo.setId(FAKE_ID);
+
+        createPostResultAction("/api/tags/create", caseTagInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
     @Test
     @Transactional
     public void removeTag() throws Exception {
-        Company company = makeCustomerCompany();
         CaseTag caseTag = createCaseTag("TestPortalApiController :: test tag", En_CaseType.CRM_SUPPORT, company.getId());
         caseTag.setPersonId(person.getId());
         caseTagDAO.persist(caseTag);
@@ -416,6 +426,24 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data", notNullValue()));
+    }
+
+    @Test
+    @Transactional
+    public void removeNotMyTag() throws Exception {
+        CaseTag caseTag = createCaseTag("TestPortalApiController :: test tag", En_CaseType.CRM_SUPPORT, company.getId());
+
+        Person person = makePerson(company);
+        caseTag.setPersonId(person.getId());
+
+        Long persistedTagId = caseTagDAO.persist(caseTag);
+
+        createPostResultAction("/api/tags/remove/" + caseTag.getId(), null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.PERMISSION_DENIED.toString())));
+
+        caseTagDAO.removeByKey(persistedTagId);
+        personDAO.removeByKey(person.getId());
     }
 
     private void setThreadUserLogin(UserLogin userLogin) {
@@ -433,6 +461,11 @@ public class TestPortalApiController extends BaseServiceTest {
         }
 
         return mockMvc.perform( builder );
+    }
+
+    private <T> T getData(ResultActions resultActions, Class<T> clazz) throws IOException {
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(contentAsString.substring(contentAsString.indexOf("\"data\":") + "\"data\":".length(), contentAsString.lastIndexOf("}")), clazz);
     }
 
     @Autowired

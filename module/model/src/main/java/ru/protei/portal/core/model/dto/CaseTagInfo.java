@@ -3,7 +3,9 @@ package ru.protei.portal.core.model.dto;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 
-public class CaseTagInfo {
+import java.io.Serializable;
+
+public class CaseTagInfo implements Serializable {
     private Long id;
 
     private String name;
@@ -36,7 +38,10 @@ public class CaseTagInfo {
 
     public CaseTagInfo() {}
 
-    public static CaseTag fromInfo(CaseTagInfo info) {
+    public static CaseTag toCaseTag(CaseTagInfo info) {
+        if (info == null) {
+            return null;
+        }
 
         CaseTag caseTag = new CaseTag();
 
