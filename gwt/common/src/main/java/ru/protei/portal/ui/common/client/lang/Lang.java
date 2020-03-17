@@ -251,6 +251,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companySubscriptionGroupAddButton();
 
+    String companySubscriptionGroupDefaultValuePlatfromSelector();
+
+    String companySubscriptionGroupDefaultValueProductSelector();
+
     String issues();
 
     String issueNumber();

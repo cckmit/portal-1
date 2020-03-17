@@ -35,8 +35,8 @@ public class CompanySubscriptionGroup  extends Composite
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        platformSelector.setDefaultValue(lang.selectPlatform());
-        productSelector.setDefaultValue(lang.selectIssueProduct());
+        platformSelector.setDefaultValue(lang.companySubscriptionGroupDefaultValuePlatfromSelector());
+        productSelector.setDefaultValue(lang.companySubscriptionGroupDefaultValueProductSelector());
         productSelector.setTypes(En_DevUnitType.PRODUCT);
         removeButton.setVisible(false);
     }
