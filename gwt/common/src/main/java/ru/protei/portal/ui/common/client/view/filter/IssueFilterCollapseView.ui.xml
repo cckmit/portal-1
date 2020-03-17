@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:issuefilter='urn:import:ru.protei.portal.ui.common.client.view.filter'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -17,7 +16,7 @@
         </div>
 
         <div class="card-body p-t-0 filter-content">
-            <issuefilter:IssueFilterView ui:field="issueFilterParamView" styleName="row"/>
+            <g:HTMLPanel ui:field="container"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

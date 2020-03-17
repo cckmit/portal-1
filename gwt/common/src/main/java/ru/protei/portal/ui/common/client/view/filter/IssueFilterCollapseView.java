@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterView;
@@ -33,8 +34,8 @@ public class IssueFilterCollapseView extends Composite implements AbstractIssueC
     }
 
     @Override
-    public AbstractIssueFilterView getIssueFilterParamView() {
-        return issueFilterParamView;
+    public HasWidgets getContainer () {
+        return container;
     }
 
     @UiHandler("filterRestoreBtn")
@@ -60,12 +61,10 @@ public class IssueFilterCollapseView extends Composite implements AbstractIssueC
     @Inject
     @UiField
     Lang lang;
-
     @UiField
     HTMLPanel root;
-    @Inject
-    @UiField(provided = true)
-    IssueFilterView issueFilterParamView;
+    @UiField()
+    HTMLPanel container;
     @UiField
     Anchor filterRestoreBtn;
     @UiField
