@@ -6,7 +6,7 @@ package ru.protei.portal.core.model.dict.lang;
 public interface ContactItemLang {
 
     String contactMobilePhone();
-    String contactPersonalPhone();
+    String contactWorkPhone();
     String contactActualAddress();
     String contactLegalAddress();
     String contactEmail();
