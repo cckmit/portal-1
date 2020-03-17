@@ -72,7 +72,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
     }
 
     private MysqldConfig buildConfig(int port) {
-        return MysqldConfig.aMysqldConfig(Version.v5_7_19)
+        return MysqldConfig.aMysqldConfig(Version.v5_7_27)
                 .withCharset(Charset.UTF8)
                 .withPort(port)
                 .withUser(DB_USERNAME, DB_PASSWORD)

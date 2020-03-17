@@ -12,7 +12,7 @@ public class PortalConfigTestConfiguration {
 
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigReloadable("portal.properties");//TODO replace by TestPortalConfig
     }
 
 }

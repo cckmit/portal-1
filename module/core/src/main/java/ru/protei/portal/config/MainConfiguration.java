@@ -99,7 +99,7 @@ public class MainConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigReloadable("portal.properties");
     }
 
     /**

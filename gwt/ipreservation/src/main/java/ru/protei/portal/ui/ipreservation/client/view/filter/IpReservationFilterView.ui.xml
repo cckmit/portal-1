@@ -15,7 +15,9 @@
                 </div>-->
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpOwner}"/></label>
-                    <person:EmployeeButtonSelector hasNullValue="true" ui:field="owner" defaultValue="{lang.selectReservedIpOwnere}"/>
+                    <person:EmployeeButtonSelector hasNullValue="true" ui:field="owner"
+                                                   defaultValue="{lang.selectReservedIpOwner}"
+                                                   firedEmployeesVisible="true"/>
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

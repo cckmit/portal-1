@@ -5,8 +5,6 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
-
 public interface ContractControllerAsync {
 
     void getContracts(ContractQuery query, AsyncCallback<SearchResult<Contract>> callback);

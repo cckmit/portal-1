@@ -202,9 +202,20 @@ public class MultipleDecimalNumberInput
         DecimalNumber value = box.getValue();
         DecimalNumberQuery query = new DecimalNumberQuery( box.getValue(), getUsedModificationsByClassifierAndRegNumber( value ) );
 
+        if (gettingNextAvailableModification) {
+            return;
+        }
+
+        gettingNextAvailableModification = true;
         dataProvider.getNextAvailableModification(query, new FluentCallback<Integer>()
-                .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
-                .withSuccess(successAction)
+                .withError(throwable -> {
+                    gettingNextAvailableModification = false;
+                    box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER);
+                })
+                .withSuccess(result -> {
+                    gettingNextAvailableModification = false;
+                    successAction.accept(result);
+                })
         );
     }
 
@@ -371,6 +382,8 @@ public class MultipleDecimalNumberInput
     private List<DecimalNumber> values = new ArrayList<>();
 
     private List<DecimalNumberBox> numberBoxes = new ArrayList<>();
+
+    boolean gettingNextAvailableModification = false;
 
     interface DecimalNumberListUiBinder extends UiBinder< HTMLPanel, MultipleDecimalNumberInput> {}
     private static DecimalNumberListUiBinder ourUiBinder = GWT.create( DecimalNumberListUiBinder.class );

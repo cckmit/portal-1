@@ -12,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.config.PortalConfigReloadable;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
@@ -110,7 +111,7 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigReloadable("portal.properties");
     }
 
     @Bean

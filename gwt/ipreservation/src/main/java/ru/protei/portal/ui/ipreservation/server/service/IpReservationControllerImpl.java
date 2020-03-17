@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.query.ReservedIpQuery;

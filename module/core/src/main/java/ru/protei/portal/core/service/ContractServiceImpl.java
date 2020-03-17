@@ -8,16 +8,23 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
+
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 

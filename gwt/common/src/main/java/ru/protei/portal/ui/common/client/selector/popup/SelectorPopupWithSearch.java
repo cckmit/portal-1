@@ -2,23 +2,25 @@ package ru.protei.portal.ui.common.client.selector.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
-
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.selector.SearchHandler;
 import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.popup.BasePopupView;
 
 import java.util.logging.Logger;
 
@@ -120,8 +122,8 @@ public class SelectorPopupWithSearch extends BasePopupView
     }
 
     @UiHandler( "search" )
-    public void onSearchInputChanged( ValueChangeEvent<String> event ) {
-        searchHandler.onSearch( search.getValue() );
+    public void onSearchInputChanged( InputEvent event ) {
+        changeSearchTimer.schedule(200);
     }
 
     @UiHandler("addButton")
@@ -198,6 +200,12 @@ public class SelectorPopupWithSearch extends BasePopupView
     private SearchHandler searchHandler = ignoreSearch;
     private boolean isSearchAutoFocus = true;
     private HandlerRegistration scrolForPagingHandleRegistration;
+    private Timer changeSearchTimer = new Timer() {
+        @Override
+        public void run() {
+            searchHandler.onSearch( search.getValue() );
+        }
+    };
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopupWithSearch> {
     }

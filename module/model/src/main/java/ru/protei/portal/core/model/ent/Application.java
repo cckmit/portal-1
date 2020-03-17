@@ -36,7 +36,6 @@ public class Application extends AuditableObject {
     @JdbcJoinedObject(localColumn = "dev_unit_id", remoteColumn = "id")
     private DevUnit component;
 
-
     public Long getId() {
         return id;
     }

@@ -1,17 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Договор

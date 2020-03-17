@@ -2102,6 +2102,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCreator();
 
+    String technicalSupportValidity();
+
+    String technicalSupportValidityNotFound(String managerName);
+
+    String technicalSupportValidityNotDefined();
+
     String ipReservation();
 
     String subnet();
@@ -2142,7 +2148,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpSubnetMask();
 
-    String selectReservedIpOwnere();
+    String selectReservedIpOwner();
 
     String reservedIpIpReleased();
 

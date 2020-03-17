@@ -43,13 +43,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static ru.protei.portal.core.event.AssembledEventFactory.makeAssembledEvent;
 import static ru.protei.portal.core.event.AssembledEventFactory.makeComment;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {PortalConfigTestConfiguration.class, RendererTestConfiguration.class,
+@ContextConfiguration(classes = {
+        PortalConfigTestConfiguration.class,
+        RendererTestConfiguration.class,
         TemplateServiceImplTest.ContextConfiguration.class})
 public class TemplateServiceImplTest {
 

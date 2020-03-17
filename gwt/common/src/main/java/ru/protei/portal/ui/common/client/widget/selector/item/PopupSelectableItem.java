@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -48,7 +50,12 @@ public class PopupSelectableItem<T>
 
     @Override
     public void setElementHtml(String html ) {
-        checkbox.setHTML(html);
+        label.setInnerHTML(html);
+    }
+
+    @Override
+    public void setIcon(String style) {
+        icon.setClassName(style);
     }
 
     public void setSelected( Boolean isSelected ) {
@@ -96,6 +103,12 @@ public class PopupSelectableItem<T>
 
     @UiField
     CheckBox checkbox;
+
+    @UiField
+    Element icon;
+
+    @UiField
+    SpanElement label;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, PopupSelectableItem> {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

@@ -178,14 +178,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
     }
 
-    @Deprecated
-    public void includeCaseComments (List<CaseComment> commentList) {
+    public void putAddedComments( List<CaseComment> commentList) {
         comments.putAddedEntries( commentList );
         lastUpdated = currentTimeMillis();
     }
 
-    @Deprecated
-    public void includeCaseAttachments (List<Attachment> attachments1) {
+    public void putAddedAttachments( List<Attachment> attachments1) {
         this.lastUpdated = currentTimeMillis();
         DiffCollectionResult<Attachment> diff = new DiffCollectionResult<>();
         diff.putAddedEntries( attachments1 );
@@ -224,6 +222,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public CaseObject getCaseObject() {
         return lastState;
+    }
+
+    public String getExtId() {
+        return getCaseObject() == null ? null : getCaseObject().getExtId();
     }
 
     public CaseObjectMeta getCaseMeta() {
