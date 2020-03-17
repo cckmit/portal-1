@@ -199,6 +199,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactPersonalPhone();
 
+    String contactWorkPhone();
+
     String contactEmail();
 
     String contactActualAddress();

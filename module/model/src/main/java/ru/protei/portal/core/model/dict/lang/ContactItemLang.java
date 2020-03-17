@@ -7,6 +7,7 @@ public interface ContactItemLang {
 
     String contactMobilePhone();
     String contactPersonalPhone();
+    String contactWorkPhone();
     String contactActualAddress();
     String contactLegalAddress();
     String contactEmail();
