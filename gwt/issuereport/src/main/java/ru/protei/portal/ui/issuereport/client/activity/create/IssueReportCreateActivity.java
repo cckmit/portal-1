@@ -13,9 +13,11 @@ import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -24,20 +26,19 @@ import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractIssueFilterActivity {
+        AbstractIssueReportCreateActivity, AbstractIssueFilterActivity, AbstractIssueFilterParamActivity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.getIssueFilter().setActivity(this);
     }
 
     @Event
@@ -130,17 +131,6 @@ public abstract class IssueReportCreateActivity implements Activity,
         fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id)));
     }
 
-//    @Override
-//    public void onUserFilterChanged() {
-//    public void onUserFilterChanged(Long id, Consumer<CaseFilter> consumer) {
-//
-//        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
-//                .withErrorMessage(lang.errNotFound())
-//                .withSuccess(caseFilter ->
-//                    consumer.accept(caseFilter)));
-//    }
-//    }
-
     private boolean isCreateFilterAction = true;
 
     @Override
@@ -153,7 +143,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         CaseFilter userFilter = fillUserFilter();
         if ( !isCreateFilterAction ){
-            userFilter.setId( view.getIssueFilterParams().userFilter().getValue().getId() );
+            userFilter.setId( view.getIssueFilter().userFilter().getValue().getId() );
         }
 
         filterService.saveIssueFilter( userFilter, new RequestCallback< CaseFilter >() {
@@ -170,7 +160,7 @@ public abstract class IssueReportCreateActivity implements Activity,
                 view.getIssueFilter().editBtnVisibility().setVisible(true);
                 view.getIssueFilter().removeFilterBtnVisibility().setVisible(true);
 
-                view.getIssueFilter().getIssueFilterWidget().userFilter().setValue(filter.toShortView());
+                view.getIssueFilter().userFilter().setValue(filter.toShortView());
 
                 showUserFilterControls();
             }
@@ -182,40 +172,45 @@ public abstract class IssueReportCreateActivity implements Activity,
         showUserFilterControls();
     }
 
-//    @Override
-//    public void onUserFilterChanged(Long id, Consumer<CaseFilter> consumer) {
-//
-//        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
-//                .withErrorMessage(lang.errNotFound())
-//                .withSuccess(caseFilter ->
-//                    consumer.accept(caseFilter)));
-//    }
-//
-//    @Override
-//    public void onSaveFilterClicked(CaseFilter caseFilter, Consumer<CaseFilterShortView> consumer) {
-//
-//        if (!validateQuery(caseFilter.getType(), caseFilter.getParams())) {
-//            return;
-//        }
-//
-//        filterService.saveIssueFilter(caseFilter, new FluentCallback<CaseFilter>()
-//                .withError(throwable -> {
-//                    defaultErrorHandler.accept(throwable);
-//                    fireEvent(new NotifyEvents.Show(lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR));
-//                })
-//                .withSuccess(filter -> {
-//                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-//                    fireEvent(new IssueEvents.ChangeUserFilterModel());
-//                    consumer.accept(filter.toShortView());
-//                }));
-//    }
-//
-//    @Override
-//    public void onRemoveFilterClicked(Long id) {
-//        if (id != null) {
-//            fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id)));
-//        }
-//    }
+    @Override
+    public void onUserFilterChanged() {
+
+    }
+
+    @Override
+    public void onFilterChanged() {
+        String validateMessage = view.getIssueFilterParams().validateMultiSelectorsTotalCount();
+        if ( validateMessage != null) {
+            fireEvent(new NotifyEvents.Show(validateMessage, NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        boolean searchFieldCorrect = view.getIssueFilterParams().isSearchFieldCorrect();
+        if(searchFieldCorrect) {
+//            loadTable();
+        }
+        view.getIssueFilterParams().searchByCommentsWarningVisibility().setVisible(!searchFieldCorrect);
+        view.getIssueFilter().createEnabled().setEnabled(searchFieldCorrect);
+    }
+
+    @Override
+    public void onCompaniesFilterChanged() {
+        onFilterChanged();
+        updateInitiatorSelector();
+    }
+
+    private void updateInitiatorSelector() {
+        view.getIssueFilterParams().updateInitiators();
+    }
+
+
+
+    private void fillFilterFields( CaseFilter filter ) {
+        view.getIssueFilter().removeFilterBtnVisibility().setVisible( true );
+        view.getIssueFilter().editBtnVisibility().setVisible( true );
+        view.getIssueFilter().filterName().setValue( filter.getName() );
+        view.getIssueFilterParams().fillFilterFields(filter.getParams(), filter.getSelectorsParams());
+    }
 
     private void showUserFilterName(){
         view.getIssueFilter().setUserFilterControlsVisibility(false);
@@ -231,7 +226,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         CaseFilter filter = new CaseFilter();
         filter.setName(view.getIssueFilter().filterName().getValue());
         filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        CaseQuery query = IssueFilterUtils.makeCaseQuery(view.getIssueFilterParams());
+        CaseQuery query = view.getIssueFilterParams().getFilterFields();
         filter.setParams(query);
         query.setSearchString(view.getIssueFilterParams().searchPattern().getValue());
         return filter;

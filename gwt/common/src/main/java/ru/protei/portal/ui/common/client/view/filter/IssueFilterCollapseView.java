@@ -13,8 +13,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterView;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterCollapseActivity;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
@@ -29,7 +28,7 @@ public class IssueFilterCollapseView extends Composite implements AbstractIssueC
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterCollapseActivity activity) {
+    public void setActivity(AbstractIssueCollapseFilterActivity activity) {
         this.activity = activity;
     }
 
@@ -72,7 +71,7 @@ public class IssueFilterCollapseView extends Composite implements AbstractIssueC
     @UiField
     LabelElement labelFilters;
 
-    private AbstractIssueFilterCollapseActivity activity;
+    private AbstractIssueCollapseFilterActivity activity;
 
     private static IssueFilterCollapseView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterCollapseView.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterCollapseView> {}

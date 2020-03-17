@@ -41,4 +41,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     IssueFilterParamView getIssueFilterParams();
 
     CaseQuery getValue();
+
+    void presetFilterType();
+
+    HasValue<CaseFilterShortView> userFilter();
 }

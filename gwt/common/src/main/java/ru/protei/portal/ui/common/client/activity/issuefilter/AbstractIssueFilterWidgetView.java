@@ -32,8 +32,6 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     AbstractIssueFilterParamActivity getActivity();
 
-    HasValue<CaseFilterShortView> userFilter();
-
     HasValue<String> searchPattern();
 
     HasValue<Boolean> searchByComments();
@@ -66,7 +64,6 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasValue<Set<En_CaseState>> states();
 
-
     HasVisibility searchByCommentsWarningVisibility();
 
     HasVisibility productsVisibility();
@@ -81,6 +78,8 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
+    CaseQuery getFilterFields();
+
     void setCompaniesErrorStyle(boolean hasError);
 
     void setProductsErrorStyle(boolean hasError);
@@ -94,10 +93,4 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
 
     void updateInitiators();
-
-    void changeUserFilterValueName(CaseFilterShortView value);
-
-    void addUserFilterDisplayOption(CaseFilterShortView value);
-
-    void presetFilterType();
 }

@@ -4,7 +4,6 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
@@ -15,10 +14,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="user-filter form-group col-md-12">
-            <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
-        </div>
-
         <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12 m-b-0"/>
         <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-md-12 local-search-options-container">
             <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
@@ -30,12 +25,12 @@
             <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
         </div>
 
-        <div class="form-group col-md-12 resize-md-6">
+        <div ui:field="modifiedRangeContainer" class="form-group col-md-12 resize-md-6">
             <label ui:field="labelUpdated"><ui:text from="{lang.updated}"/></label>
             <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
         </div>
 
-        <div class="form-group col-md-12 resize-md-6">
+        <div ui:field="sortByContainer" class="form-group col-md-12 resize-md-6">
             <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
             <div class="control-group">
                 <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
@@ -80,12 +75,12 @@
             <threestate:ThreeStateButton ui:field="searchPrivate"/>
         </g:HTMLPanel>
 
-        <div class="form-group col-md-12 resize-md-6">
+        <div ui:field="importanceContainer" class="form-group col-md-12 resize-md-6">
             <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label>
             <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
         </div>
 
-        <div class="form-group col-md-12">
+        <div ui:field="stateContainer" class="form-group col-md-12">
             <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
             <issuestate:IssueStatesOptionList ui:field="state"/>
         </div>

@@ -2,9 +2,9 @@ package ru.protei.portal.ui.common.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -16,16 +16,14 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterCollapseActivity;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
-
-import java.util.function.Consumer;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
+import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -46,12 +44,14 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     protected void onAttach() {
         super.onAttach();
         issueFilterParamView.watchForScrollOf(root);
+        watchForScrollOf(root);
     }
 
     @Override
     protected void onDetach() {
         super.onDetach();
         issueFilterParamView.stopWatchForScrollOf(root);
+        stopWatchForScrollOf(root);
     }
 
     @Override
@@ -67,6 +67,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void resetFilter() {
         issueFilterParamView.resetFilter();
+        userFilter.setValue(null);
         removeBtn.setVisible(false);
         saveBtn.setVisible(false);
         createBtn.setVisible(true);
@@ -77,16 +78,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public HasEnabled createEnabled() {
         return createBtn;
-    }
-
-    @Override
-    public void changeUserFilterValueName( CaseFilterShortView value ){
-        issueFilterParamView.changeUserFilterValueName( value );
-    }
-
-    @Override
-    public void addUserFilterDisplayOption( CaseFilterShortView value ){
-        issueFilterParamView.addUserFilterDisplayOption( value );
     }
 
     @Override
@@ -144,7 +135,17 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Override
     public CaseQuery getValue() {
-        return IssueFilterUtils.makeCaseQuery(issueFilterParamView);
+        return issueFilterParamView.getFilterFields();
+    }
+
+    @Override
+    public void presetFilterType() {
+        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+    }
+
+    @Override
+    public HasValue<CaseFilterShortView> userFilter() {
+        return userFilter;
     }
 
     @UiHandler( "resetBtn" )
@@ -194,7 +195,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         if (activity == null) {
             return;
         }
-        CaseFilterShortView value = issueFilterParamView.userFilter().getValue();
+        CaseFilterShortView value = userFilter.getValue();
         if (value == null || value.getId() == null) {
             return;
         }
@@ -208,6 +209,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     private void ensureDebugIds() {
+        userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
         okBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_OK_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_CANCEL_BUTTON);
@@ -224,9 +226,43 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     };
 
-    public void updateFilterType(En_CaseFilterType filterType) {
-        issueFilterParamView.updateFilterType(filterType);
+    @Override
+    public void changeUserFilterValueName(CaseFilterShortView value) {
+        userFilter.changeValueName(value );
     }
+
+    @Override
+    public void addUserFilterDisplayOption(CaseFilterShortView value) {
+        userFilter.addDisplayOption(value);
+    }
+
+    @UiHandler("userFilter")
+    public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
+        if (activity != null) {
+            activity.onUserFilterChanged();
+        }
+    }
+
+    public void watchForScrollOf(Widget widget) {
+        userFilter.watchForScrollOf(widget);
+    }
+
+    public void stopWatchForScrollOf(Widget widget) {
+        userFilter.stopWatchForScrollOf(widget);
+    }
+
+    public void updateFilterType(En_CaseFilterType filterType) {
+        this.filterType = filterType;
+        resetFilter();
+        userFilter.updateFilterType(filterType);
+        applyVisibilityByFilterType();
+    }
+
+    private void applyVisibilityByFilterType() {
+        issueFilterParamView.applyVisibilityByFilterType(this.filterType);
+    }
+
+    private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
 
     @Inject
     @UiField
@@ -234,6 +270,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     HTMLPanel root;
+
+    @Inject
+    @UiField(provided = true)
+    IssueFilterSelector userFilter;
     @Inject
     @UiField(provided = true)
     IssueFilterParamView issueFilterParamView;

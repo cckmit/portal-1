@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.IsWidget;
  */
 public interface AbstractIssueCollapseFilterView extends IsWidget {
 
-    void setActivity(AbstractIssueFilterCollapseActivity activity);
+    void setActivity(AbstractIssueCollapseFilterActivity activity);
 
     HasWidgets getContainer();
 }
