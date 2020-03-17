@@ -27,7 +27,7 @@ public class ReportQuery extends BaseQuery {
 
     private Set<Long> excludeIds;
 
-    private En_ReportScheduledType enReportScheduledType;
+    private List<En_ReportScheduledType> scheduledTypes;
 
     public ReportQuery() {}
 
@@ -117,12 +117,12 @@ public class ReportQuery extends BaseQuery {
         this.excludeIds = excludeIds;
     }
 
-    public En_ReportScheduledType getEnReportScheduledType() {
-        return enReportScheduledType;
+    public List<En_ReportScheduledType> getScheduledTypes() {
+        return scheduledTypes;
     }
 
-    public void setEnReportScheduledType(En_ReportScheduledType enReportScheduledType) {
-        this.enReportScheduledType = enReportScheduledType;
+    public void setScheduledTypes(List<En_ReportScheduledType> scheduledTypes) {
+        this.scheduledTypes = scheduledTypes;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ReportQuery extends BaseQuery {
                 ", creatorId=" + creatorId +
                 ", includeIds=" + includeIds +
                 ", excludeIds=" + excludeIds +
-                ", enReportScheduledType=" + enReportScheduledType +
+                ", enReportScheduledType=" + scheduledTypes +
                 '}';
     }
 }

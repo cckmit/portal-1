@@ -201,7 +201,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     public Result processOldReports() {
         List<Report> reports = reportDAO.getReportsByStatuses(
                 Arrays.asList(En_ReportStatus.READY, En_ReportStatus.ERROR),
-                new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime())
+                new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime()),
+                Arrays.asList(En_ReportScheduledType.NONE)
         );
         if (CollectionUtils.isEmpty(reports)) {
             log.debug("old reports to process : 0");
@@ -230,7 +231,8 @@ public class ReportControlServiceImpl implements ReportControlService {
         synchronized (reportsInProcess) {
             List<Report> reports = reportDAO.getReportsByStatuses(
                     Collections.singletonList(En_ReportStatus.PROCESS),
-                    new Date(System.currentTimeMillis() - config.data().reportConfig().getHangInterval())
+                    new Date(System.currentTimeMillis() - config.data().reportConfig().getHangInterval()),
+                    Arrays.asList(En_ReportScheduledType.NONE)
             );
             if (CollectionUtils.isEmpty(reports)) {
                 log.debug("hang reports to process : 0");

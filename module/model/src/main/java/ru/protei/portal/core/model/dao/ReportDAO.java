@@ -59,7 +59,7 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
      * @param lastModifiedBefore дата до которой были последние изменения
      * @return список отчетов
      */
-    List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore);
+    List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore, List<En_ReportScheduledType> scheduledTypes);
 
     /**
      * Получить отчеты для запланированной рассылки

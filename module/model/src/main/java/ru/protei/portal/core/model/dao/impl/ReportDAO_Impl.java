@@ -56,10 +56,11 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore) {
+    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore, List<En_ReportScheduledType> scheduledTypes) {
         ReportQuery query = new ReportQuery();
         query.setStatuses(statuses);
         query.setToModified(lastModifiedBefore);
+        query.setScheduledTypes(scheduledTypes);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
@@ -70,7 +71,7 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     @Override
     public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType) {
         ReportQuery query = new ReportQuery();
-        query.setEnReportScheduledType(enReportScheduledType);
+        query.setScheduledTypes(Arrays.asList(enReportScheduledType));
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
@@ -147,8 +148,8 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
                 condition.append(" and report.id not in ").append(JdbcHelper.makeSqlStringCollection(query.getExcludeIds(), args, null));
             }
 
-            if (query.getEnReportScheduledType() != null) {
-                condition.append(" and report.scheduled_type = '").append(query.getEnReportScheduledType().name()).append("'");
+            if (CollectionUtils.isNotEmpty(query.getScheduledTypes())) {
+                condition.append(" and report.scheduled_type in ").append(JdbcHelper.makeSqlStringCollection(query.getScheduledTypes(), args, null));
             }
         });
     }

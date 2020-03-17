@@ -603,11 +603,18 @@ public class MailNotificationProcessor {
             return;
         }
 
-        sendMailToRecipientWithAttachment(
-                fetchNotificationEntryFromPerson(report.getCreator()),
-                bodyTemplate, subjectTemplate,
-                true,
-                event.getContent(), report.getName() + ".xls");
+        if ( event.getContent() != null) {
+            sendMailToRecipientWithAttachment(
+                    fetchNotificationEntryFromPerson(report.getCreator()),
+                    bodyTemplate, subjectTemplate,
+                    true,
+                    event.getContent(), report.getName() + ".xls");
+        } else {
+            sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(report.getCreator())),
+                    bodyTemplate, subjectTemplate,
+                    true);
+        }
+
     }
 
     // -----
@@ -637,9 +644,7 @@ public class MailNotificationProcessor {
                 msg.setFrom(getFromAddress());
                 msg.setText(HelperFunc.nvlt(body, ""), true);
                 msg.setTo(recipients.getAddress());
-                if (content != null) {
-                    msg.addAttachment(filename, new ByteArrayResource(IOUtils.toByteArray(content)));
-                }
+                msg.addAttachment(filename, new ByteArrayResource(IOUtils.toByteArray(content)));
                 mailSendChannel.send(msg.getMimeMessage());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);

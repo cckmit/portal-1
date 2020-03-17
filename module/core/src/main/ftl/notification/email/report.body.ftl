@@ -118,20 +118,20 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         <#if filter.createdFrom?? || filter.createdTo??>
                             ${_filterCreated} :
                             <#if filter.createdFrom??>
-                                ${_filterFrom} ${filter.createdFrom?datetime}
+                                ${_filterFrom?lower_case} ${filter.createdFrom?datetime}
                             </#if>
                             <#if filter.createdTo??>
-                                ${_filterTo} ${filter.createdTo?datetime}
+                                ${_filterTo?lower_case} ${filter.createdTo?datetime}
                             </#if>
                             <br>
                         </#if>
                         <#if filter.modifiedFrom?? || filter.modifiedTo??>
                             ${_filterUpdated} :
                             <#if filter.modifiedFrom??>
-                                ${_filterFrom} ${filter.modifiedFrom?datetime}
+                                ${_filterFrom?lower_case} ${filter.modifiedFrom?datetime}
                             </#if>
                             <#if filter.modifiedTo??>
-                                ${_filterTo} ${filter.modifiedTo?datetime}
+                                ${_filterTo?lower_case} ${filter.modifiedTo?datetime}
                             </#if>
                             <br>
                         </#if>

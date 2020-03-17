@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.lang.En_ReportScheduledTypeLang;
 import ru.protei.portal.ui.common.client.lang.En_ReportTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -14,9 +15,10 @@ import java.util.Date;
 public class InfoColumn extends StaticColumn<Report> {
 
     @Inject
-    public InfoColumn(Lang lang, En_ReportTypeLang reportTypeLang) {
+    public InfoColumn(Lang lang, En_ReportTypeLang reportTypeLang, En_ReportScheduledTypeLang scheduledTypeLang) {
         this.lang = lang;
         this.reportTypeLang = reportTypeLang;
+        this.scheduledTypeLang = scheduledTypeLang;
     }
 
     @Override
@@ -50,6 +52,10 @@ public class InfoColumn extends StaticColumn<Report> {
         type.setInnerText(value == null ? "" : lang.type() + ": " + reportTypeLang.getType(value.getReportType()));
         divElement.appendChild(type);
 
+        Element scheduledType = DOM.createElement("p");
+        scheduledType.setInnerText(value == null ? "" : lang.reportScheduledType() + ": " + scheduledTypeLang.getType(value.getScheduledType()));
+        divElement.appendChild(scheduledType);
+
         cell.appendChild(divElement);
     }
 
@@ -74,4 +80,5 @@ public class InfoColumn extends StaticColumn<Report> {
 
     private Lang lang;
     private En_ReportTypeLang reportTypeLang;
+    private En_ReportScheduledTypeLang scheduledTypeLang;
 }
