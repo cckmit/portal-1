@@ -245,6 +245,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companySubscriptionGroupRemoveButton();
 
+    String companySubscriptionGroupCollapseButton();
+
+    String companySubscriptionGroupExpandButton();
+
     String companySubscriptionGroupAddButton();
 
     String issues();

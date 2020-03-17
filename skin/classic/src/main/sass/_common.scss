@@ -1293,6 +1293,19 @@ td.info {
   content: "\f448";
 }
 
+.remove-group-button{
+  height: 35px;
+}
+
+.collapse-group-button{
+  height: 35px;
+  width: 85px;
+}
+
+.add-group-button{
+  height: 35px;
+}
+
 /**** STATES ****/
 .state-created {
   color: #ef5350 !important;

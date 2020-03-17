@@ -5,9 +5,10 @@
 
     <g:HTMLPanel>
 
-        <g:Button ui:field="addButton" text="{lang.companySubscriptionGroupAddButton}" styleName="select2-add-button btn btn-flat btn-info btn-xs"/>
-        <g:HTMLPanel ui:field="groupContainer">
+        <g:HTMLPanel ui:field="groupContainer"/>
 
-        </g:HTMLPanel>
+        <g:Button ui:field="addButton" text="{lang.companySubscriptionGroupAddButton}" styleName="btn btn-info btn-xs add-group-button"/>
+        <br/><br/>
+
     </g:HTMLPanel>
 </ui:UiBinder>

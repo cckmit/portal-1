@@ -20,8 +20,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.companysubscription.item.CompanySubscriptionItem;
-import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -38,6 +38,7 @@ public class CompanySubscriptionGroup  extends Composite
         platformSelector.setDefaultValue(lang.selectPlatform());
         productSelector.setDefaultValue(lang.selectIssueProduct());
         productSelector.setTypes(En_DevUnitType.PRODUCT);
+        removeButton.setVisible(false);
     }
 
     @Override
@@ -73,6 +74,7 @@ public class CompanySubscriptionGroup  extends Composite
             platformSelector.setValue(null);
             return;
         }
+        collapseGroupAndShowRemoveButton();
         this.platformId = platformId;
         siteFolderController.getPlatform(platformId, new FluentCallback<Platform>()
                 .withSuccess(platform -> platformSelector.setValue(new PlatformOption(platform.getName(), platformId)))
@@ -84,6 +86,7 @@ public class CompanySubscriptionGroup  extends Composite
             productSelector.setValue(null);
             return;
         }
+        collapseGroupAndShowRemoveButton();
         this.productId = productId;
         productControllerAsync.getProduct(productId, new FluentCallback<DevUnit>()
                 .withSuccess(product -> productSelector.setValue(new ProductShortView(productId, product.getName(), product.getStateId())))
@@ -149,6 +152,26 @@ public class CompanySubscriptionGroup  extends Composite
         CloseEvent.fire( this, this );
     }
 
+    @UiHandler("collapseButton")
+    public void onCollapseClicked(ClickEvent event) {
+        setCollapseGroup(!itemContainer.getStyleName().contains("hide"));
+    }
+
+    private void collapseGroupAndShowRemoveButton(){
+        setCollapseGroup(true);
+        removeButton.setVisible(true);
+    }
+
+    private void setCollapseGroup (boolean toCollapse){
+        if (toCollapse){
+            itemContainer.addStyleName("hide");
+            collapseButton.setText(lang.companySubscriptionGroupExpandButton());
+        } else {
+            itemContainer.removeStyleName("hide");
+            collapseButton.setText(lang.companySubscriptionGroupCollapseButton());
+        }
+    }
+
     private void makeItemAndFillValue( CompanySubscription subscription ) {
         CompanySubscriptionItem companySubscriptionItem = itemProvider.get();
         companySubscriptionItem.setValue( subscription );
@@ -196,12 +219,14 @@ public class CompanySubscriptionGroup  extends Composite
     Provider<CompanySubscriptionItem> itemProvider;
     @Inject
     @UiField(provided = true)
-    DevUnitFormSelector productSelector;
+    DevUnitButtonSelector productSelector;
     @Inject
     @UiField(provided = true)
-    PlatformFormSelector platformSelector;
+    PlatformButtonSelector platformSelector;
     @UiField
     Button removeButton;
+    @UiField
+    Button collapseButton;
     @Inject
     SiteFolderControllerAsync siteFolderController;
     @Inject

@@ -7,29 +7,29 @@
 
     <g:HTMLPanel>
         <div class="row">
-            <div class="col-md-3">
-                <devunit:DevUnitFormSelector ui:field="productSelector"
+            <div class="col-md-4">
+                <devunit:DevUnitButtonSelector ui:field="productSelector"
                                              validation="false"
                                              header="{lang.issueProduct}"
-                                             hasNullValue="true"
-                                             mandatory="false"/>
+                                             hasNullValue="true"/>
             </div>
 
-            <div class="col-md-3">
-                <selector:PlatformFormSelector ui:field="platformSelector"
+            <div class="col-md-4">
+                <selector:PlatformButtonSelector ui:field="platformSelector"
                                                validation="false"
                                                header="{lang.siteFolderPlatform}"
-                                               hasNullValue="true"
-                                               mandatory="false"/>
+                                               hasNullValue="true"/>
             </div>
 
-            <div class="col-md-3">
-                <g:Button ui:field="removeButton" text="{lang.companySubscriptionGroupRemoveButton}" styleName="select2-add-button btn btn-flat btn-info btn-xs"/>
+            <div class="col-md-4 align-self-end">
+                <g:Button ui:field="collapseButton" text="{lang.companySubscriptionGroupCollapseButton}" styleName="btn btn-xs btn-complete collapse-group-button"/>
+                <g:Button ui:field="removeButton" text="{lang.companySubscriptionGroupRemoveButton}" styleName="btn btn-info btn-xs remove-group-button"/>
             </div>
         </div>
 
-        <g:HTMLPanel ui:field="itemContainer"/>
+        <g:HTMLPanel ui:field="itemContainer">
+            <br/>
+        </g:HTMLPanel>
 
-        <br/>
     </g:HTMLPanel>
 </ui:UiBinder>
