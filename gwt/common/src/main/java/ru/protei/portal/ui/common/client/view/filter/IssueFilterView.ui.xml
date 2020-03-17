@@ -5,16 +5,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="card card-default no-border card-fixed issue-filter filter-collapsable">
-        <div class="filter-header">
-            <label ui:field="labelFilters"><ui:text from="{lang.filters}"/></label>
-            <g:Anchor ui:field="filterCollapseBtn" styleName="btn btn-default btn-sm filter-btn-collapse">
-                <span class="fas fa-compress-arrows-alt"/>
-            </g:Anchor>
-            <g:Anchor ui:field="filterRestoreBtn" styleName="btn btn-default btn-sm filter-btn-restore">
-                <span class="fas fa-expand-arrows-alt"/>
-            </g:Anchor>
-        </div>
-
         <div class="card-body p-t-0 filter-content">
             <issuefilter:IssueFilterParamView ui:field="issueFilterParamView" styleName="row"/>
         </div>

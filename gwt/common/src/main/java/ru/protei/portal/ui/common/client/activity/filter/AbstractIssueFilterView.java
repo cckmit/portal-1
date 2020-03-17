@@ -1,11 +1,13 @@
-package ru.protei.portal.ui.issue.client.activity.filter;
+package ru.protei.portal.ui.common.client.activity.filter;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 
 /**
  * Абстракция вида фильтра обращений
@@ -35,4 +37,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setUserFilterControlsVisibility(boolean hasVisible);
 
     HasVisibility editBtnVisibility();
+
+    IssueFilterParamView getIssueFilterParams();
+
+    CaseQuery getValue();
 }

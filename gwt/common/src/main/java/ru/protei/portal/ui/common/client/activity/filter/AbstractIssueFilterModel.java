@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issuereport.client.widget.issuefilter.model;
+package ru.protei.portal.ui.common.client.activity.filter;
 
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.view.CaseFilterShortView;

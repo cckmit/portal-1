@@ -493,6 +493,45 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         timer.schedule(300);
     }
 
+    public void updateFilterType(En_CaseFilterType filterType) {
+        this.filterType = filterType;
+        resetFilter();
+        userFilter.updateFilterType(filterType);
+        applyVisibilityByFilterType();
+    }
+
+    private void applyVisibilityByFilterType() {
+        if (filterType == null) {
+            return;
+        }
+
+        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
+//            modifiedRangeContainer.removeClassName(HIDE);
+//            sortByContainer.removeClassName(HIDE);
+            labelCreated.setInnerText(lang.created());
+        } else {
+//            modifiedRangeContainer.addClassName(HIDE);
+//            sortByContainer.addClassName(HIDE);
+            labelCreated.setInnerText(lang.period());
+        }
+        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
+        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
+//            importanceContainer.addClassName(HIDE);
+//            stateContainer.addClassName(HIDE);
+        } else {
+//            importanceContainer.removeClassName(HIDE);
+//            stateContainer.removeClassName(HIDE);
+        }
+    }
+
+    private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
+
     @Inject
     @UiField
     Lang lang;

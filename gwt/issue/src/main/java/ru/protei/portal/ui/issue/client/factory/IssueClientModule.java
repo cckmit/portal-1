@@ -2,15 +2,17 @@ package ru.protei.portal.ui.issue.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.view.filter.IssueFilterCollapseView;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateView;
 import ru.protei.portal.ui.issue.client.activity.create.IssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.issue.client.activity.meta.IssueMetaActivity;
@@ -20,7 +22,7 @@ import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.create.IssueCreateView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueEditView;
-import ru.protei.portal.ui.issue.client.view.filter.IssueFilterView;
+import ru.protei.portal.ui.common.client.view.filter.IssueFilterView;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 import ru.protei.portal.ui.issue.client.view.table.IssueTableView;
 
@@ -48,6 +50,7 @@ public class IssueClientModule extends AbstractGinModule {
         bind( AbstractIssueMetaView.class ).to( IssueMetaView.class );
 
         bind( AbstractIssueFilterView.class ).to(IssueFilterView.class).in(Singleton.class);
+        bind(AbstractIssueCollapseFilterView.class ).to(IssueFilterCollapseView.class).in(Singleton.class);
     }
 }
 

@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.filter.*;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -39,9 +40,6 @@ import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -53,7 +51,7 @@ import java.util.List;
  */
 public abstract class IssueTableActivity
         implements AbstractIssueTableActivity, AbstractPagerActivity, Activity, 
-        AbstractIssueFilterActivity, AbstractIssueFilterParamActivity
+        AbstractIssueFilterActivity, AbstractIssueFilterParamActivity, AbstractIssueFilterCollapseActivity
 {
 
     @PostConstruct
@@ -63,14 +61,18 @@ public abstract class IssueTableActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
+        collapseFilterView.setActivity(this);
+
+        filterView = collapseFilterView.getIssueFilterParamView();
         filterView.setActivity(this);
-        filterView.getIssueFilterWidget().setActivity(this);
-        view.getFilterContainer().add( filterView.asWidget() );
+
         filterParamView = filterView.getIssueFilterWidget();
+        filterParamView.setActivity(this);
         filterParamView.setInitiatorModel(initiatorModel);
         filterParamView.setCreatorModel(personModel);
         filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
 
+        view.getFilterContainer().add( collapseFilterView.asWidget() );
         pagerView.setActivity( this );
 
         toggleFilterCollapseState();
@@ -79,7 +81,7 @@ public abstract class IssueTableActivity
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
-        filterView.getIssueFilterWidget().presetFilterType();
+        filterParamView.presetFilterType();
         updateCaseStatesFilter();
     }
 
@@ -244,7 +246,7 @@ public abstract class IssueTableActivity
                 filterView.editBtnVisibility().setVisible(true);
                 filterView.removeFilterBtnVisibility().setVisible(true);
 
-                filterView.getIssueFilterWidget().userFilter().setValue(filter.toShortView());
+                filterParamView.userFilter().setValue(filter.toShortView());
 
                 showUserFilterControls();
             }
@@ -495,6 +497,8 @@ public abstract class IssueTableActivity
     @Inject
     AbstractIssueTableView view;
     @Inject
+    AbstractIssueCollapseFilterView collapseFilterView;
+
     AbstractIssueFilterView filterView;
 
     @Inject

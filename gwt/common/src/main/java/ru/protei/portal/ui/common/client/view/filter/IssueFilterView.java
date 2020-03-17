@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.view.filter;
+package ru.protei.portal.ui.common.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -11,13 +11,21 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterCollapseActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+
+import java.util.function.Consumer;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -129,6 +137,16 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         return saveBtn;
     }
 
+    @Override
+    public IssueFilterParamView getIssueFilterParams() {
+        return issueFilterParamView;
+    }
+
+    @Override
+    public CaseQuery getValue() {
+        return IssueFilterUtils.makeCaseQuery(issueFilterParamView);
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( issueFilterParamView.getActivity() != null ) {
@@ -189,24 +207,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         filterNameChangedTimer.schedule( 300 );
     }
 
-    @UiHandler("filterRestoreBtn")
-    public void onFilterRestoreBtnClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onFilterRestore();
-        }
-    }
-
-    @UiHandler("filterCollapseBtn")
-    public void onFilterCollapseBtnClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onFilterCollapse();
-        }
-    }
-
     private void ensureDebugIds() {
-        labelFilters.setId(DebugIds.FILTER.FILTERS_LABEL);
-        filterCollapseBtn.ensureDebugId(DebugIds.FILTER.COLLAPSE_BUTTON);
-        filterRestoreBtn.ensureDebugId(DebugIds.FILTER.RESTORE_BUTTON);
         filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
         okBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_OK_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_CANCEL_BUTTON);
@@ -222,6 +223,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             setFilterNameContainerErrorStyle( filterName.getValue().isEmpty() );
         }
     };
+
+    public void updateFilterType(En_CaseFilterType filterType) {
+        issueFilterParamView.updateFilterType(filterType);
+    }
 
     @Inject
     @UiField
@@ -248,12 +253,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     TextBox filterName;
     @UiField
     DivElement filterNameContainer;
-    @UiField
-    Anchor filterRestoreBtn;
-    @UiField
-    Anchor filterCollapseBtn;
-    @UiField
-    LabelElement labelFilters;
 
     private AbstractIssueFilterActivity activity;
 

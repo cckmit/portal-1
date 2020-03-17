@@ -1,14 +1,9 @@
-package ru.protei.portal.ui.issue.client.activity.filter;
+package ru.protei.portal.ui.common.client.activity.filter;
 
 /**
  * Абстракция активности фильтра обращений
  */
 public interface AbstractIssueFilterActivity {
-
-    void onFilterCollapse();
-
-    void onFilterRestore();
-
     void onSaveFilterClicked();
 
     void onFilterRemoveClicked( Long id );
