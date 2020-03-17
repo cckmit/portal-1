@@ -1,16 +1,20 @@
 package ru.protei.portal.ui.common.client.widget.mask;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.ui.common.client.events.HasInputHandlers;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.events.InputHandler;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 public class MaskedTextBox extends TextBox implements
         KeyboardListener,
-        FocusListener {
+        FocusListener, HasInputHandlers {
     private String mask;
     private HashSet<String> literals = new HashSet<String>();
     private ArrayList<String> masks = new ArrayList<String>();
@@ -212,4 +216,8 @@ public class MaskedTextBox extends TextBox implements
     public void complete(){
     }
 
+    @Override
+    public HandlerRegistration addInputHandler(InputHandler handler) {
+        return addDomHandler(handler, InputEvent.getType());
+    }
 }
