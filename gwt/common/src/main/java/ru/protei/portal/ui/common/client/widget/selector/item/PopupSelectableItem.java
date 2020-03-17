@@ -53,7 +53,6 @@ public class PopupSelectableItem<T>
         label.setInnerHTML(html);
     }
 
-    @Override
     public void setIcon(String style) {
         icon.setClassName(style);
     }

@@ -8,8 +8,6 @@ import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler
 
 
 public interface SelectorItem<T> extends TakesValue<T>, HasVisibility, HasKeyUpHandlers, IsWidget {
-    void setIcon(String style);
-
     void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler );
 
     void setElementHtml( String elementHtml );
