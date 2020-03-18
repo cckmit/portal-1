@@ -6,8 +6,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -17,6 +15,7 @@ import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoView;
 import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity.JiraStatusInfo;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.view.info.column.SimpleClickColumn;
 
 import java.util.List;
 
@@ -49,75 +48,31 @@ public class JiraInfoView extends Composite implements AbstractJiraInfoView {
     }
 
     private void initTable() {
+        ClickColumn<JiraStatusInfo> jiraStatus = new SimpleClickColumn<JiraStatusInfo>()
+                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoJiraStatus()))
+                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.jiraStatus))
+                .withClassName("jira-status");
+
+        ClickColumn<JiraStatusInfo> crmStatus = new SimpleClickColumn<JiraStatusInfo>()
+                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoCrmStatus()))
+                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.crmStatus))
+                .withClassName("crm-status");
+
+        ClickColumn<JiraStatusInfo> definition = new SimpleClickColumn<JiraStatusInfo>()
+                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoStatusDefinition()))
+                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.definition))
+                .withClassName("status-definition");
+
+        ClickColumn<JiraStatusInfo> comment = new SimpleClickColumn<JiraStatusInfo>()
+                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoStatusComment()))
+                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.comment))
+                .withClassName("status-comment");
+
         table.addColumn(jiraStatus.header, jiraStatus.values);
         table.addColumn(crmStatus.header, crmStatus.values);
         table.addColumn(definition.header, definition.values);
         table.addColumn(comment.header, comment.values);
     }
-
-    private ClickColumn<JiraStatusInfo> jiraStatus = new ClickColumn<JiraStatusInfo>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.jiraInfoJiraStatus());
-            columnHeader.addClassName("jira-status");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, JiraStatusInfo value) {
-            Element jiraStatusElement = DOM.createDiv();
-            jiraStatusElement.setInnerHTML(value.jiraStatus);
-            cell.appendChild(jiraStatusElement);
-            cell.addClassName("jira-status");
-        }
-    };
-
-    private ClickColumn<JiraStatusInfo> crmStatus = new ClickColumn<JiraStatusInfo>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.jiraInfoCrmStatus());
-            columnHeader.addClassName("crm-status");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, JiraStatusInfo value) {
-            Element crmStatus = DOM.createDiv();
-            crmStatus.setInnerHTML(value.crmStatus);
-            cell.appendChild(crmStatus);
-            cell.addClassName("crm-status");
-        }
-    };
-
-    private ClickColumn<JiraStatusInfo> definition = new ClickColumn<JiraStatusInfo>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.jiraInfoStatusDefinition());
-            columnHeader.addClassName("status-definition");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, JiraStatusInfo value) {
-            Element definition = DOM.createDiv();
-            definition.setInnerHTML(value.definition);
-            cell.appendChild(definition);
-            cell.addClassName("status-definition");
-        }
-    };
-
-    private ClickColumn<JiraStatusInfo> comment = new ClickColumn<JiraStatusInfo>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.jiraInfoStatusComment());
-            columnHeader.addClassName("status-comment");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, JiraStatusInfo value) {
-            Element comment = DOM.createDiv();
-            comment.setInnerHTML(value.comment);
-            cell.appendChild(comment);
-            cell.addClassName("status-comment");
-        }
-    };
 
     @UiField
     TableWidget<JiraStatusInfo> table;
