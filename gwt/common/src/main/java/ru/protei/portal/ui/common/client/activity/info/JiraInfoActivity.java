@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.JiraStatusMapEntry;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.JiraInfoEvents;
 import ru.protei.portal.ui.common.client.service.JiraStatusControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -23,6 +24,7 @@ public abstract class JiraInfoActivity implements AbstractJiraInfoActivity, Acti
 
     @Event
     public void onSuccess(AuthEvents.Success event) {
+        view.setActivity(this);
         fillView();
     }
 
@@ -30,6 +32,11 @@ public abstract class JiraInfoActivity implements AbstractJiraInfoActivity, Acti
     public void onShow(JiraInfoEvents.Show event) {
         init.parent.clear();
         init.parent.add(view.asWidget());
+    }
+
+    @Override
+    public void onBackButtonClicked() {
+        fireEvent(new IssueEvents.Show());
     }
 
     private void fillView() {

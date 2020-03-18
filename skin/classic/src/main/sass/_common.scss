@@ -3986,9 +3986,9 @@ table {
 .jira-info {
   padding: 15px;
 
-  div {
-    margin-top: 10px;
-    margin-bottom: 10px;
+  .jira-info-item {
+    margin-top: 40px;
+    margin-bottom: 40px;
   }
 
   table {
@@ -4007,5 +4007,16 @@ table {
     .status-comment {
       width: 35%;
     }
+  }
+
+  .jira-info-footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 8px 5px;
+    background-color: #ededed;
+    border-top: 1px solid #dadada;
+    z-index: 150;
   }
 }

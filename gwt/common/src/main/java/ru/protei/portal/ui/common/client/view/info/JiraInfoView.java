@@ -2,10 +2,13 @@ package ru.protei.portal.ui.common.client.view.info;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import ru.brainworm.factory.widget.table.client.TableWidget;
@@ -17,8 +20,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.List;
 
-public class JiraJiraInfoView extends Composite implements AbstractJiraInfoView {
-    public JiraJiraInfoView() {
+public class JiraInfoView extends Composite implements AbstractJiraInfoView {
+    public JiraInfoView() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initTable();
     }
@@ -38,6 +41,11 @@ public class JiraJiraInfoView extends Composite implements AbstractJiraInfoView 
     @Override
     public void setImage(String imageUrl) {
         image.setSrc(imageUrl);
+    }
+
+    @UiHandler("backButton")
+    public void onBackButtonClicked(ClickEvent event) {
+        activity.onBackButtonClicked();
     }
 
     private void initTable() {
@@ -120,9 +128,12 @@ public class JiraJiraInfoView extends Composite implements AbstractJiraInfoView 
     @UiField
     Lang lang;
 
+    @UiField
+    Button backButton;
+
     private AbstractJiraInfoActivity activity;
 
-    interface JiraInfoViewUiBinder extends UiBinder<HTMLPanel, JiraJiraInfoView> {
+    interface JiraInfoViewUiBinder extends UiBinder<HTMLPanel, JiraInfoView> {
     }
     private static JiraInfoViewUiBinder ourUiBinder = GWT.create(JiraInfoViewUiBinder.class);
 }

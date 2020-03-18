@@ -9,19 +9,22 @@
             <ui:text from="{lang.jiraInfoPageHeader}"/>
         </h2>
 
-        <div>
+        <div class="jira-info-item">
             <h5>
                 <ui:text from="{lang.jiraInfoStatusMap}"/>
             </h5>
             <table:TableWidget ui:field="table"/>
         </div>
 
-        <div>
-            <h5 class="m-t-5">
+        <div class="jira-info-item">
+            <h5>
                 <ui:text from="{lang.jiraInfoWorkFlow}"/>
             </h5>
             <img ui:field="image" src=""/>
         </div>
 
+        <div class="jira-info-footer text-right">
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.jiraInfoBackButton}"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

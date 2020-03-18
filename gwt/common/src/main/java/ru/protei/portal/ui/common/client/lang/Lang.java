@@ -2121,4 +2121,6 @@ public interface Lang extends Messages, ContactItemLang {
     String jiraInfoStatusDefinition();
 
     String jiraInfoStatusComment();
+
+    String jiraInfoBackButton();
 }
