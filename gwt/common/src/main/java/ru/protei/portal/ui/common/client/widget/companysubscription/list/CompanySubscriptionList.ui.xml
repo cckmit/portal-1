@@ -6,6 +6,7 @@
     <g:HTMLPanel>
 
         <g:HTMLPanel ui:field="groupContainer"/>
+        <br/>
 
         <g:Button ui:field="addButton" text="{lang.companySubscriptionGroupAddButton}" styleName="btn btn-info btn-xs add-group-button"/>
         <br/><br/>

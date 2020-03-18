@@ -38,7 +38,8 @@ public class CompanySubscriptionGroup  extends Composite
         platformSelector.setDefaultValue(lang.companySubscriptionGroupDefaultValuePlatfromSelector());
         productSelector.setDefaultValue(lang.companySubscriptionGroupDefaultValueProductSelector());
         productSelector.setTypes(En_DevUnitType.PRODUCT);
-        removeButton.setVisible(false);
+        removeButton.setVisible(true);
+        setCollapseGroup(true);
     }
 
     @Override
@@ -69,12 +70,16 @@ public class CompanySubscriptionGroup  extends Composite
         platformSelector.setFilter(platformOption -> companyId != null && companyId.equals(platformOption.getCompanyId()));
     }
 
+    public void expandGroupAndHideRemoveButton(){
+        setCollapseGroup(false);
+        removeButton.setVisible(false);
+    }
+
     public void setPlatformSelector(Long platformId){
         if (platformId == null) {
             platformSelector.setValue(null);
             return;
         }
-        collapseGroupAndShowRemoveButton();
         this.platformId = platformId;
         siteFolderController.getPlatform(platformId, new FluentCallback<Platform>()
                 .withSuccess(platform -> platformSelector.setValue(new PlatformOption(platform.getName(), platformId)))
@@ -86,7 +91,6 @@ public class CompanySubscriptionGroup  extends Composite
             productSelector.setValue(null);
             return;
         }
-        collapseGroupAndShowRemoveButton();
         this.productId = productId;
         productControllerAsync.getProduct(productId, new FluentCallback<DevUnit>()
                 .withSuccess(product -> productSelector.setValue(new ProductShortView(productId, product.getName(), product.getStateId())))
@@ -113,12 +117,12 @@ public class CompanySubscriptionGroup  extends Composite
 
     @Override
     public boolean isEnabled() {
-        return itemContainer.getStyleName().contains("disabled");
+        return !itemContainer.getStyleName().contains("disabled");
     }
 
     @Override
     public void setEnabled(boolean isEnabled) {
-        itemContainer.addStyleName(isEnabled ? "" : "disabled");
+        itemContainer.setStyleName("disabled", !isEnabled);
         for (CompanySubscriptionItem item : modelToView.keySet()) {
             item.setEnabled(isEnabled);
         }
@@ -155,11 +159,6 @@ public class CompanySubscriptionGroup  extends Composite
     @UiHandler("collapseButton")
     public void onCollapseClicked(ClickEvent event) {
         setCollapseGroup(!itemContainer.getStyleName().contains("hide"));
-    }
-
-    private void collapseGroupAndShowRemoveButton(){
-        setCollapseGroup(true);
-        removeButton.setVisible(true);
     }
 
     private void setCollapseGroup (boolean toCollapse){

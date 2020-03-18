@@ -18,12 +18,9 @@ import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.companysubscription.group.CompanySubscriptionGroup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.common.client.widget.companysubscription.item.CompanySubscriptionItem;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Список подписчиков на рассылку для компании
@@ -51,24 +48,23 @@ public abstract class CompanySubscriptionList
     @Override
     public void setValue(List<CompanySubscription> values, boolean fireEvents ) {
         clear();
-        this.value = values == null ? new ArrayList<>() : values;
-        value.forEach(companySubscription -> {
-            if (!groupSubscriptionMap.containsKey(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()))) {
-                groupSubscriptionMap.put(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()), new ArrayList<>());
+        values = values == null ? new ArrayList<>() : values;
+        values.forEach(companySubscription -> {
+            if (!existedGroupsMap.containsKey(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()))) {
+                existedGroupsMap.put(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()), new ArrayList<>());
             }
-            groupSubscriptionMap.get(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId())).add(companySubscription);
+            existedGroupsMap.get(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId())).add(companySubscription);
         });
 
-        if (!groupSubscriptionMap.containsKey(Pair.of(null, null))) {
+        if (!existedGroupsMap.containsKey(Pair.of(null, null))) {
             addEmptyItem();
         }
 
-        for (Map.Entry<Pair<Long, Long>, List<CompanySubscription>> pairListEntry : groupSubscriptionMap.entrySet()) {
-            makeGroupAndFillValue(pairListEntry.getKey(), pairListEntry.getValue(), null);
-        }
+        makeFirstGroup(existedGroupsMap);
+        makeOtherGroups(existedGroupsMap);
 
         if(fireEvents) {
-            ValueChangeEvent.fire( this, this.value );
+            ValueChangeEvent.fire( this, values );
         }
     }
 
@@ -79,15 +75,14 @@ public abstract class CompanySubscriptionList
 
     @Override
     public boolean isValid() {
-        return modelToView.keySet().stream().allMatch(CompanySubscriptionItem::isValid);
+        return allGroupsList.stream().allMatch(CompanySubscriptionGroup::isValid);
     }
 
     public void clear() {
         groupContainer.clear();
-        value.clear();
-        modelToView.clear();
-        groupSubscriptionMap.clear();
-        newGroups.clear();
+        existedGroupsMap.clear();
+        newGroupsList.clear();
+        allGroupsList.clear();
     }
 
     @Override
@@ -97,9 +92,10 @@ public abstract class CompanySubscriptionList
 
     @Override
     public void setEnabled(boolean isEnabled) {
-        groupContainer.addStyleName(isEnabled ? "" : "disabled");
-        for (CompanySubscriptionItem item : modelToView.keySet()) {
-            item.setEnabled(isEnabled);
+        groupContainer.setStyleName("disabled", !isEnabled);
+
+        for (CompanySubscriptionGroup group : allGroupsList) {
+            group.setEnabled(isEnabled);
         }
     }
 
@@ -111,8 +107,8 @@ public abstract class CompanySubscriptionList
     @UiHandler("addButton")
     public void onAddClicked (ClickEvent event){
         Pair<Pair<Long, Long>, List<CompanySubscription>> newGroup = Pair.of(Pair.of(null,null), new ArrayList<>());
-        newGroups.add(newGroup);
-        makeGroupAndFillValue(newGroup.getA(), newGroup.getB(), newGroups.size()-1);
+        newGroupsList.add(newGroup);
+        makeGroupAndFillValue(newGroup.getA(), newGroup.getB(), newGroupsList.size()-1);
     }
 
     public void setPlatformFilter(Long companyId){
@@ -125,35 +121,40 @@ public abstract class CompanySubscriptionList
         companySubscriptionGroupWidget.setProductSelector(platformAndProduct.getB());
         companySubscriptionGroupWidget.setValue(subscriptionsList);
         companySubscriptionGroupWidget.setPlatformFilter(companyId);
+        if (platformAndProduct.getB() == null && platformAndProduct.getA() == null && groupIndex == null){
+            companySubscriptionGroupWidget.expandGroupAndHideRemoveButton();
+        }
         groupContainer.add( companySubscriptionGroupWidget );
+        allGroupsList.add(companySubscriptionGroupWidget);
 
         companySubscriptionGroupWidget.addCloseHandler(event -> {
             fireEvent(new ConfirmDialogEvents.Show(lang.companySubscriptionGroupRemoveConfirmMessage(), () -> {
                 if (groupIndex != null){
-                    newGroups.remove(groupIndex);
+                    newGroupsList.remove(groupIndex);
                 } else {
-                    groupSubscriptionMap.remove(platformAndProduct);
+                    existedGroupsMap.remove(platformAndProduct);
                 }
                 groupContainer.remove(companySubscriptionGroupWidget);
+                allGroupsList.remove(companySubscriptionGroupWidget);
             }));
         });
     }
 
     private void addEmptyItem() {
-        groupSubscriptionMap.put(Pair.of(null,null), new ArrayList<>());
+        existedGroupsMap.put(Pair.of(null,null), new ArrayList<>());
     }
 
     private List<CompanySubscription> prepareValue() {
         List<CompanySubscription> companySubscriptions = new ArrayList<>();
 
-        for (List<CompanySubscription> companySubscriptionsList : groupSubscriptionMap.values()) {
+        for (List<CompanySubscription> companySubscriptionsList : existedGroupsMap.values()) {
             Collection<CompanySubscription> c = companySubscriptionsList.stream()
                     .filter(value -> value.getEmail() != null && !value.getEmail().isEmpty() )
                     .collect(Collectors.toList());
 
             companySubscriptions.addAll(c);
         }
-        for (Pair<Pair<Long, Long>, List<CompanySubscription>> newGroup : newGroups) {
+        for (Pair<Pair<Long, Long>, List<CompanySubscription>> newGroup : newGroupsList) {
             Collection<CompanySubscription> c = newGroup.getB().stream()
                     .filter(value -> value.getEmail() != null && !value.getEmail().isEmpty() )
                     .collect(Collectors.toList());
@@ -162,6 +163,18 @@ public abstract class CompanySubscriptionList
         }
 
         return companySubscriptions.stream().distinct().collect(Collectors.toList());
+    }
+
+    private void makeFirstGroup(Map<Pair<Long, Long>, List<CompanySubscription>> groupSubscriptionMap) {
+        makeGroupAndFillValue(Pair.of(null,null), groupSubscriptionMap.get(Pair.of(null,null)), null);
+    }
+
+    private void makeOtherGroups(Map<Pair<Long, Long>, List<CompanySubscription>> groupSubscriptionMap) {
+        for (Map.Entry<Pair<Long, Long>, List<CompanySubscription>> pairListEntry : groupSubscriptionMap.entrySet()) {
+            if (!pairListEntry.getKey().equals(Pair.of(null,null))) {
+                makeGroupAndFillValue(pairListEntry.getKey(), pairListEntry.getValue(), null);
+            }
+        }
     }
 
     @UiField
@@ -174,10 +187,9 @@ public abstract class CompanySubscriptionList
     @Inject
     Lang lang;
 
-    private List<CompanySubscription> value = new ArrayList<>();
-    private Map<CompanySubscriptionItem, CompanySubscription> modelToView = new HashMap<>();
-    private Map<Pair<Long, Long>, List<CompanySubscription>> groupSubscriptionMap = new HashMap<>();
-    private List<Pair<Pair<Long, Long>, List<CompanySubscription>>> newGroups = new ArrayList<>();
+    private List<CompanySubscriptionGroup> allGroupsList = new ArrayList<>();
+    private Map<Pair<Long, Long>, List<CompanySubscription>> existedGroupsMap = new HashMap<>();
+    private List<Pair<Pair<Long, Long>, List<CompanySubscription>>> newGroupsList = new ArrayList<>();
     private Long companyId;
 
     interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, CompanySubscriptionList> {}
