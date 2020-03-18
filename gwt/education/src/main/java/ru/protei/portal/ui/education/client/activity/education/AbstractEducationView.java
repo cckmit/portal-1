@@ -8,9 +8,7 @@ public interface AbstractEducationView extends IsWidget {
 
     void setActivity(AbstractEducationActivity activity);
 
-    HasWidgets leftContainer();
-
-    HasWidgets rightContainer();
+    HasWidgets container();
 
     HasVisibility toggleButtonVisibility();
 }

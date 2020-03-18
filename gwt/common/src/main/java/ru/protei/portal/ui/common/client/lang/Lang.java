@@ -2083,4 +2083,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskAddRow();
 
     String education();
+
+    String educationConferences();
+
+    String educationCourses();
 }

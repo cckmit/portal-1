@@ -27,7 +27,6 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
     @Event(Type.FILL_CONTENT)
     public void onShow(EducationEvents.Show event) {
         boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        boolean isWorkerCanRequest = isWorker && policyService.hasPrivilegeFor(En_Privilege.EDUCATION_EDIT);
         boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
         boolean hasAccess = isWorker || isAdmin;
         if (!hasAccess) {
@@ -69,7 +68,7 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
 
     private void showWorkerView() {
         isAdminShowed = false;
-
+        fireEvent(new EducationEvents.ShowWorker(view.container()));
     }
 
     private void showAdminView() {

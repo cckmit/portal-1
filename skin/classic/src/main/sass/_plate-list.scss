@@ -263,6 +263,13 @@ ul.plate-list {
       z-index: 0;
       box-sizing: border-box;
     }
+
+    &.plate-list-entry-wallet {
+      height: auto;
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
   }
 }
 

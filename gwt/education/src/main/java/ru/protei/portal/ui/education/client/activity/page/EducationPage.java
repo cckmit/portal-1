@@ -40,6 +40,11 @@ public abstract class EducationPage implements Activity {
         fireEvent(show);
     }
 
+    @Event
+    public void onShow(EducationEvents.Show event) {
+        fireSelectTab();
+    }
+
     private void fireSelectTab() {
         fireEvent(new ActionBarEvents.Clear());
         if (hasAccess()) {

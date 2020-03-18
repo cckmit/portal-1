@@ -24,13 +24,8 @@ public class EducationView extends Composite implements AbstractEducationView {
     }
 
     @Override
-    public HasWidgets leftContainer() {
-        return left;
-    }
-
-    @Override
-    public HasWidgets rightContainer() {
-        return right;
+    public HasWidgets container() {
+        return container;
     }
 
     @Override
@@ -57,9 +52,7 @@ public class EducationView extends Composite implements AbstractEducationView {
     Lang lang;
 
     @UiField
-    HTMLPanel left;
-    @UiField
-    HTMLPanel right;
+    HTMLPanel container;
     @UiField
     Button toggleButton;
     @UiField

@@ -5,7 +5,12 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.education.client.activity.education.AbstractEducationView;
 import ru.protei.portal.ui.education.client.activity.education.EducationActivity;
 import ru.protei.portal.ui.education.client.activity.page.EducationPage;
+import ru.protei.portal.ui.education.client.activity.wallet.AbstractEducationWalletView;
+import ru.protei.portal.ui.education.client.activity.worker.AbstractEducationWorkerView;
+import ru.protei.portal.ui.education.client.activity.worker.EducationWorkerActivity;
 import ru.protei.portal.ui.education.client.view.education.EducationView;
+import ru.protei.portal.ui.education.client.view.wallet.EducationWalletView;
+import ru.protei.portal.ui.education.client.view.worker.EducationWorkerView;
 
 public class EducationClientModule extends AbstractGinModule {
     @Override
@@ -16,5 +21,8 @@ public class EducationClientModule extends AbstractGinModule {
         bind(EducationActivity.class).asEagerSingleton();
         bind(AbstractEducationView.class).to(EducationView.class).in(Singleton.class);
 
+        bind(EducationWorkerActivity.class).asEagerSingleton();
+        bind(AbstractEducationWorkerView.class).to(EducationWorkerView.class).in(Singleton.class);
+        bind(AbstractEducationWalletView.class).to(EducationWalletView.class);
     }
 }

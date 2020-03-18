@@ -18,9 +18,6 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <g:HTMLPanel styleName="col-md-8" ui:field="left"/>
-            <g:HTMLPanel styleName="col-md-4" ui:field="right"/>
-        </div>
+        <g:HTMLPanel ui:field="container"/>
     </g:HTMLPanel>
 </ui:UiBinder>

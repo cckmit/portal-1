@@ -1,0 +1,25 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:platelist='urn:import:ru.protei.portal.ui.common.client.widget.platelist'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="row">
+        <div class="col-md-9">
+            <platelist:PlateList ui:field="walletList"
+                                 styleName="plate-list"
+                                 createButtonVisible="false"/>
+            <loading:IndeterminateCircleLoading ui:field="walletLoadingView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false"/>
+            <g:HTMLPanel ui:field="walletFailedView" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div><i class="fas fa-exclamation-circle fa-5x"/></div>
+                        <div><h5 class="hint-text" ui:field="walletFailedViewText"/></div>
+                    </div>
+                </div>
+            </g:HTMLPanel>
+        </div>
+        <g:HTMLPanel ui:field="tableContainer" styleName="col-md-3"/>
+    </g:HTMLPanel>
+</ui:UiBinder>
