@@ -12,7 +12,7 @@ public class EducationWallet implements Serializable {
     private Long id;
 
     @JdbcColumn(name="dep_id")
-    private String departmentId;
+    private Long departmentId;
 
     @JdbcColumn(name="coins")
     private Integer coins;
@@ -33,11 +33,11 @@ public class EducationWallet implements Serializable {
         this.id = id;
     }
 
-    public String getDepartmentId() {
+    public Long getDepartmentId() {
         return departmentId;
     }
 
-    public void setDepartmentId(String departmentId) {
+    public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
     }
 
@@ -65,7 +65,7 @@ public class EducationWallet implements Serializable {
     public String toString() {
         return "EducationWallet{" +
                 "id=" + id +
-                ", departmentId='" + departmentId + '\'' +
+                ", departmentId=" + departmentId +
                 ", coins=" + coins +
                 ", departmentName='" + departmentName + '\'' +
                 ", educationEntryList=" + educationEntryList +

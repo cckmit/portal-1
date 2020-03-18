@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @JdbcEntity(table = "education_entry_attendance")
 public class EducationEntryAttendance implements Serializable {
@@ -16,14 +17,20 @@ public class EducationEntryAttendance implements Serializable {
     @JdbcColumn(name="worker_entry_id")
     private Long workerId;
 
-    @JdbcColumn(name="approved")
-    private boolean approved;
+    @JdbcColumn(name="charged")
+    private boolean charged;
+
+    @JdbcColumn(name="date_requested")
+    private Date dateRequested;
 
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
             @JdbcJoinPath(localColumn = "worker_entry_id", table = "worker_entry", remoteColumn = "id"),
             @JdbcJoinPath(localColumn = "personId", table = "Person", remoteColumn = "id")
     })
     private String workerName;
+
+    @JdbcJoinedColumn(mappedColumn="coins", localColumn="education_entry_id", table="education_entry", remoteColumn="id")
+    private Integer coins;
 
     public EducationEntryAttendance() {}
 
@@ -51,16 +58,28 @@ public class EducationEntryAttendance implements Serializable {
         this.workerId = workerId;
     }
 
-    public boolean isApproved() {
-        return approved;
+    public boolean isCharged() {
+        return charged;
     }
 
-    public void setApproved(boolean approved) {
-        this.approved = approved;
+    public void setCharged(boolean charged) {
+        this.charged = charged;
+    }
+
+    public Date getDateRequested() {
+        return dateRequested;
+    }
+
+    public void setDateRequested(Date dateRequested) {
+        this.dateRequested = dateRequested;
     }
 
     public String getWorkerName() {
         return workerName;
+    }
+
+    public Integer getCoins() {
+        return coins;
     }
 
     @Override
@@ -69,8 +88,10 @@ public class EducationEntryAttendance implements Serializable {
                 "id=" + id +
                 ", educationEntryId=" + educationEntryId +
                 ", workerId=" + workerId +
-                ", approved=" + approved +
+                ", charged=" + charged +
+                ", dateRequested=" + dateRequested +
                 ", workerName='" + workerName + '\'' +
+                ", coins=" + coins +
                 '}';
     }
 }
