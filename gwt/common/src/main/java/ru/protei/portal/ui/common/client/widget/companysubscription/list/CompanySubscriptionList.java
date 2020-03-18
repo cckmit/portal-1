@@ -11,10 +11,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.struct.Pair;
-import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.companysubscription.group.CompanySubscriptionGroup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -25,9 +23,9 @@ import java.util.stream.Collectors;
 /**
  * Список подписчиков на рассылку для компании
  */
-public abstract class CompanySubscriptionList
+public class CompanySubscriptionList
         extends Composite
-        implements HasValue<List<CompanySubscription>>, HasValidable, HasEnabled, Activity
+        implements HasValue<List<CompanySubscription>>, HasValidable, HasEnabled
 {
 
     @Inject
@@ -148,11 +146,9 @@ public abstract class CompanySubscriptionList
         }
 
         companySubscriptionGroupWidget.addCloseHandler(event -> {
-            fireEvent(new ConfirmDialogEvents.Show(lang.companySubscriptionGroupRemoveConfirmMessage(), () -> {
-                groupsList.remove(groupIndex);
-                groupContainer.remove(companySubscriptionGroupWidget);
-                widgetGroupsList.remove(companySubscriptionGroupWidget);
-            }));
+            groupsList.remove(groupIndex);
+            groupContainer.remove(companySubscriptionGroupWidget);
+            widgetGroupsList.remove(companySubscriptionGroupWidget);
         });
 
         groupContainer.add( companySubscriptionGroupWidget );

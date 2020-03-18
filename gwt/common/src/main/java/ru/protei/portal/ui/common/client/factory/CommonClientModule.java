@@ -95,7 +95,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
-        bind( CompanySubscriptionList.class ).asEagerSingleton();
         bind( StateSelectorModel.class ).asEagerSingleton();
 
         bind( HomeCompanyService.class ).asEagerSingleton();
