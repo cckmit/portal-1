@@ -126,6 +126,14 @@ public class CompanySubscriptionGroup  extends Composite
     @Override
     public void setEnabled(boolean isEnabled) {
         itemContainer.setStyleName("disabled", !isEnabled);
+        removeButton.setStyleName("disabled", !isEnabled);
+        collapseButton.setStyleName("disabled", !isEnabled);
+        productSelector.setEnabled(isEnabled);
+        platformSelector.setEnabled(isEnabled);
+        if (!isEnabled) {
+            expandGroup();
+        }
+
         for (CompanySubscriptionItem item : modelToView.keySet()) {
             item.setEnabled(isEnabled);
         }

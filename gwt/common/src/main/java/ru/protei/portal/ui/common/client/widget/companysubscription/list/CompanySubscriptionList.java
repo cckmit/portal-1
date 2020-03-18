@@ -111,6 +111,7 @@ public abstract class CompanySubscriptionList
     @Override
     public void setEnabled(boolean isEnabled) {
         groupContainer.setStyleName("disabled", !isEnabled);
+        addButton.setStyleName("disabled", !isEnabled);
 
         for (CompanySubscriptionGroup group : widgetGroupsList) {
             group.setEnabled(isEnabled);
