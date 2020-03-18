@@ -18,7 +18,7 @@ public interface EducationService {
     @Privileged(En_Privilege.EDUCATION_VIEW)
     Result<List<EducationEntry>> getCurrentEntries(AuthToken token);
 
-    @Privileged(En_Privilege.EDUCATION_EDIT)
+    @Privileged({En_Privilege.EDUCATION_VIEW, En_Privilege.EDUCATION_EDIT})
     Result<EducationEntry> requestNewEntry(AuthToken token, EducationEntry entry, List<Long> workerIds);
 
     @Privileged(En_Privilege.EDUCATION_VIEW)

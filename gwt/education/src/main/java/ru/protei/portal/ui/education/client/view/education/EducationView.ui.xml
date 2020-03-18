@@ -1,0 +1,26 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="p-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-toolbar full-width justify-content-end">
+                    <div class="btn-group form-group">
+                        <g:Button ui:field="toggleButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                            <i class="fas fa-exchange-alt"/>
+                        </g:Button>
+                        <g:Button ui:field="reloadButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                            <i class="fas fa-redo-alt"/>
+                        </g:Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <g:HTMLPanel styleName="col-md-8" ui:field="left"/>
+            <g:HTMLPanel styleName="col-md-4" ui:field="right"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
