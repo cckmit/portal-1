@@ -24,6 +24,7 @@
             <div class="col-md-4 align-self-end">
                 <g:Button ui:field="collapseButton" text="{lang.companySubscriptionGroupCollapseButton}" styleName="btn btn-xs btn-complete collapse-group-button"/>
                 <g:Button ui:field="removeButton" text="{lang.companySubscriptionGroupRemoveButton}" styleName="btn btn-info btn-xs remove-group-button"/>
+                <span ui:field="quantity"/>
             </div>
         </div>
 

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.companysubscription.group;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -56,6 +57,7 @@ public class CompanySubscriptionGroup  extends Composite
     public void setValue(List<CompanySubscription> values, boolean fireEvents ) {
         clear();
         this.value = values == null ? new ArrayList<>() : values;
+        setQuantityText();
 
         value.forEach( this :: makeItemAndFillValue );
         addEmptyItem();
@@ -192,6 +194,7 @@ public class CompanySubscriptionGroup  extends Composite
             itemContainer.remove( event.getTarget() );
             CompanySubscription remove = modelToView.remove( event.getTarget() );
             value.remove( remove );
+            setQuantityText();
             boolean isHasEmptyItem = modelToView.values().stream().anyMatch(s -> s.getEmail() == null || s.getEmail().isEmpty());
             if(!isHasEmptyItem)
                 addEmptyItem();
@@ -203,6 +206,7 @@ public class CompanySubscriptionGroup  extends Composite
             companySubscriptionItem.getValue().setProductId(productId);
             companySubscriptionItem.getValue().setCompanyId(companyId);
             value.add( companySubscriptionItem.getValue() );
+            setQuantityText();
         } );
 
         modelToView.put( companySubscriptionItem, subscription );
@@ -223,6 +227,10 @@ public class CompanySubscriptionGroup  extends Composite
         return new ArrayList<>(c);
     }
 
+    private void setQuantityText() {
+        quantity.setInnerText(" " + lang.companySubscriptionGroupQuantity() + ": " + value.size());
+    }
+
     @UiField
     HTMLPanel itemContainer;
     @Inject
@@ -237,6 +245,8 @@ public class CompanySubscriptionGroup  extends Composite
     Button removeButton;
     @UiField
     Button collapseButton;
+    @UiField
+    SpanElement quantity;
     @Inject
     SiteFolderControllerAsync siteFolderController;
     @Inject

@@ -255,6 +255,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companySubscriptionGroupDefaultValueProductSelector();
 
+    String companySubscriptionGroupQuantity();
+
     String issues();
 
     String issueNumber();
