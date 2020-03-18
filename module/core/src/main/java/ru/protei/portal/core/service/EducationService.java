@@ -23,4 +23,13 @@ public interface EducationService {
 
     @Privileged(En_Privilege.EDUCATION_VIEW)
     Result<EducationEntryAttendance> requestNewAttendance(AuthToken token, EducationEntryAttendance attendance);
+
+    @Privileged(En_Privilege.EDUCATION_CREATE)
+    Result<List<EducationEntry>> adminGetEntries(AuthToken token, boolean showOnlyNotApproved, boolean showOutdated);
+
+    @Privileged(En_Privilege.EDUCATION_CREATE)
+    Result<EducationEntry> adminModifyEntry(AuthToken token, EducationEntry entry);
+
+    @Privileged(En_Privilege.EDUCATION_CREATE)
+    Result<EducationEntry> adminDeleteEntry(AuthToken token, Long entryId);
 }

@@ -126,12 +126,127 @@ public class EducationServiceImpl implements EducationService {
         attendance.setId(educationEntryAttendanceDAO.persist(attendance));
 
         wallet.setCoins(wallet.getCoins() - entry.getCoins());
-        if (!educationWalletDAO.merge(wallet)) {
+        if (!educationWalletDAO.partialMerge(wallet, "coins")) {
             log.warn("Failed to reduce wallet coins for attendance : {}", attendance);
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
         return ok(attendance);
+    }
+
+    @Override
+    public Result<List<EducationEntry>> adminGetEntries(AuthToken token, boolean showOnlyNotApproved, boolean showOutdated) {
+
+        List<EducationEntry> entries = showOutdated
+                ? emptyIfNull(educationEntryDAO.getAll())
+                : emptyIfNull(educationEntryDAO.getAllForDate(new Date()));
+
+        if (showOnlyNotApproved) {
+            entries = stream(entries)
+                    .filter(entry -> !entry.isApproved())
+                    .collect(Collectors.toList());
+        }
+
+        return ok(entries);
+    }
+
+    @Override
+    @Transactional
+    public Result<EducationEntry> adminModifyEntry(AuthToken token, EducationEntry entry) {
+
+        if (entry.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        Result<EducationEntry> validation = validateEducationEntry(entry);
+        if (validation.isError()) {
+            return error(validation.getStatus());
+        }
+
+        EducationEntry oldEntry = educationEntryDAO.get(entry.getId());
+        if (oldEntry == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        boolean isDeclineApprovedAction = oldEntry.isApproved() && !entry.isApproved();
+        if (isDeclineApprovedAction) {
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        if (!educationEntryDAO.merge(entry)) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        boolean isApproveAction = !oldEntry.isApproved() && entry.isApproved();
+        if (isApproveAction) {
+            List<EducationEntryAttendance> attendanceList = educationEntryAttendanceDAO.getAllForEntry(entry.getId());
+            for (EducationEntryAttendance attendance : attendanceList) {
+                if (attendance.isCharged()) {
+                    log.warn("Attendance was charged before entry approval! Charge for it again : {}", attendance);
+                }
+                EducationWallet wallet = educationWalletDAO.get(attendance.getEducationEntryId());
+                wallet.setCoins(wallet.getCoins() - entry.getCoins());
+                if (!educationWalletDAO.partialMerge(wallet, "coins")) {
+                    log.warn("Failed to reduce wallet coins for attendance : {}", attendance);
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                }
+                attendance.setCharged(true);
+                if (!educationEntryAttendanceDAO.partialMerge(attendance, "charged")) {
+                    log.warn("Failed to set charged for attendance : {}", attendance);
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                }
+            }
+        }
+
+        boolean isApprovedCostModifyAction = oldEntry.isApproved() && !Objects.equals(oldEntry.getCoins(), entry.getCoins());
+        if (isApprovedCostModifyAction) {
+            List<EducationEntryAttendance> attendanceList = stream(educationEntryAttendanceDAO.getAllForEntry(entry.getId()))
+                    .filter(EducationEntryAttendance::isCharged)
+                    .collect(Collectors.toList());
+            for (EducationEntryAttendance attendance : attendanceList) {
+                int delta = oldEntry.getCoins() - entry.getCoins();
+                EducationWallet wallet = educationWalletDAO.get(attendance.getEducationEntryId());
+                wallet.setCoins(wallet.getCoins() + delta);
+                if (!educationWalletDAO.partialMerge(wallet, "coins")) {
+                    log.warn("Failed to modify wallet coins by delta {} for attendance : {}", delta, attendance);
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                }
+            }
+        }
+
+        return ok(entry);
+    }
+
+    @Override
+    @Transactional
+    public Result<EducationEntry> adminDeleteEntry(AuthToken token, Long entryId) {
+
+        if (entryId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EducationEntry entry = educationEntryDAO.get(entryId);
+        if (entry == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        List<EducationEntryAttendance> attendanceList = stream(educationEntryAttendanceDAO.getAllForEntry(entry.getId()))
+                .filter(EducationEntryAttendance::isCharged)
+                .collect(Collectors.toList());
+        for (EducationEntryAttendance attendance : attendanceList) {
+            EducationWallet wallet = educationWalletDAO.get(attendance.getEducationEntryId());
+            wallet.setCoins(wallet.getCoins() + entry.getCoins());
+            if (!educationWalletDAO.partialMerge(wallet, "coins")) {
+                log.warn("Failed to put back wallet coins for attendance : {}", attendance);
+                throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+            }
+        }
+
+        if (!educationEntryDAO.removeByKey(entryId)) {
+            log.warn("Failed to remove entry : {}", entry);
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+        }
+
+        return ok(entry);
     }
 
 
