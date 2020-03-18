@@ -24,15 +24,15 @@ public class IpReservationClientModule extends AbstractGinModule {
         bind( ReservedIpTableActivity.class ).asEagerSingleton ();
         bind( AbstractReservedIpTableView.class ).to(ReservedIpTableView.class).in(Singleton.class);
 
-        bind( SubnetEditActivity.class ).asEagerSingleton();
+/*        bind( SubnetEditActivity.class ).asEagerSingleton();
         bind( AbstractSubnetEditView.class ).to(SubnetEditView.class).in(Singleton.class);
 
         bind( ReservedIpEditActivity.class ).asEagerSingleton();
-        bind( AbstractReservedIpEditView.class ).to(ReservedIpEditView.class).in(Singleton.class);
+        bind( AbstractReservedIpEditView.class ).to(ReservedIpEditView.class).in(Singleton.class);*/
 
 /*
         bind( ReservedIpCreateActivity.class ).asEagerSingleton();
-        bind( AbstractReseredIpCreateView.class ).to(ReseredIpCreateView.class).in(Singleton.class);
+        bind( AbstractReservedIpCreateView.class ).to(ReservedIpCreateView.class).in(Singleton.class);
 */
     }
 }

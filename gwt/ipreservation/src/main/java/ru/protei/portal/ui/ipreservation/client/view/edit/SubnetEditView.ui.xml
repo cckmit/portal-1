@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
+             xmlns:switcher='urn:import:ru.protei.portal.ui.common.client.widget.switcher'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -9,21 +10,29 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
             <div class="row">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.reservedIpSubnetAddress}"/>
                     </label>
                     <validablefield:ValidableTextBox ui:field="address" styleName="form-control" />
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.reservedIpSubnetMask}"/>
                     </label>
-                    <g:Label ui:field="mask" styleName="m-b-15 inline-block"/>
+                    <validablefield:ValidableTextBox ui:field="mask" styleName="form-control" />
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-md-6">
+                <div class="col-md-12">
+                    <label>
+                        <ui:text from="{lang.reservedIpSubnetMask}"/>
+                    </label>
+                    <switcher:Switcher ui:field="local"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
                     <label><ui:text from="{lang.comment}"/></label>
                     <autoresizetextarea:AutoResizeTextArea ui:field="comment"
                                                            styleName="form-control" minRows="2" maxRows="10"/>

@@ -31,11 +31,6 @@
                                  baseTableName="subnet" baseColumnNames="creator_id"
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
-
-        <addForeignKeyConstraint constraintName="fk_owner_id_to_subnet"
-                                 baseTableName="subnet" baseColumnNames="owner_id"
-                                 referencedTableName="person" referencedColumnNames="id"
-                                 onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>
 
     <changeSet id="create-reserved-ip-address-table" author="frost">
@@ -71,7 +66,7 @@
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
 
-        <addForeignKeyConstraint constraintName="fk_owner_id_to_subnet"
+        <addForeignKeyConstraint constraintName="fk_owner_id_to_ip"
                                  baseTableName="reserved_ip" baseColumnNames="owner_id"
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>

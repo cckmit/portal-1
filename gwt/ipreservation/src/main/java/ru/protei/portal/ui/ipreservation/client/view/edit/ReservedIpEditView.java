@@ -87,7 +87,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
         }
         macAddress.ensureDebugId(DebugIds.RESERVED_IP.MAC_ADDRESS_INPUT);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
-        //owner.setEnsureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
+        owner.setEnsureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }

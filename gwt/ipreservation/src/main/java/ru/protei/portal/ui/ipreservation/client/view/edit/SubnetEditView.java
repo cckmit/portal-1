@@ -93,9 +93,6 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
     }
 
     @UiField
-    HTMLPanel root;
-
-    @UiField
     ValidableTextBox address;
     @UiField
     ValidableTextBox mask;

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.ipreservation.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -43,10 +44,11 @@ public abstract class ReservedIpTableActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        filterView.resetFilter();
+        //filterView.resetFilter();
     }
 
     //@Event(Type.FILL_CONTENT)
+    @Event
     public void onShow( IpReservationEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -68,6 +70,11 @@ public abstract class ReservedIpTableActivity
     }
 
     @Event
+    public void onClosePreview(DocumentTypeEvents.ClosePreview event) {
+        animation.closeDetails();
+    }
+
+    @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
         if (!UiConstants.ActionBarIdentity.RESERVED_IP.equals(event.identity)) {
             return;
@@ -77,6 +84,7 @@ public abstract class ReservedIpTableActivity
 
         animation.showDetails();
         fireEvent(new IpReservationEvents.CreateReservedIp());
+        //fireEvent(new IpReservationEvents.ShowPreview(view.getPreviewContainer(), null));
     }
 
     @Event
@@ -109,6 +117,11 @@ public abstract class ReservedIpTableActivity
     }*/
 
     @Override
+    public void onFilterChanged() {
+        requestReservedIps();
+    }
+
+    @Override
     public void onItemClicked(ReservedIp value) {
         if ( !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
             return;
@@ -118,7 +131,7 @@ public abstract class ReservedIpTableActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new IpReservationEvents.EditReservedIp( value ) );
+            fireEvent( new IpReservationEvents.EditReservedIp( view.getPreviewContainer(), value.getId() ) );
         }
     }
 
@@ -157,9 +170,15 @@ public abstract class ReservedIpTableActivity
     }
 
     @Override
-    public void onFilterChanged() {
-//        this.page = 0;
-        requestReservedIps(/* this.page*/ );
+    public void onRefreshClicked(ReservedIp value) {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
+            return;
+        }
+        if (value != null) {
+            refreshAction(value);
+/*            fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpReleaseConfirmMessage(), lang.reservedIpIpRelease(), removeAction(value)));*/
+        }
     }
 
 /*    @Override
@@ -261,17 +280,26 @@ public abstract class ReservedIpTableActivity
     private Runnable removeAction(ReservedIp reservedIp) {
         return () -> ipReservationService.removeReservedIp(reservedIp, new FluentCallback<Long>()
                 .withSuccess(id -> {
-                    fireEvent(new DocumentEvents.Show());
+                    fireEvent(new IpReservationEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.reservedIpIpReleased(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
 
-    private Runnable removeAction(Subnet subnet) {
+/*    private Runnable removeAction(Subnet subnet) {
         return () -> ipReservationService.removeSubnet(subnet, new FluentCallback<Long>()
                 .withSuccess(id -> {
                     fireEvent(new DocumentEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.reservedIpSubnetRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 }));
+    }*/
+
+    private void refreshAction(ReservedIp reservedIp) {
+/*        return () -> ipReservationService.refreshReservedIp(reservedIp, new FluentCallback<Long>()
+                .withSuccess(id -> {
+                    fireEvent(new IpReservationEvents.Show());
+                }));*/
+        //fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));
+        Window.alert("Refresh IPs");
     }
 
     @Inject

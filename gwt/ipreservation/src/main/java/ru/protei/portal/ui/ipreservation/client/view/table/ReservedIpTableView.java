@@ -118,7 +118,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         @Override
         public void fillColumnValue(Element cell, ReservedIp value) {
             cell.setInnerText(value.getIpAddress() +
-                    (value.getIpAddress() != null ? " [" + value.getMacAddress() + "]" : "")
+                    (value.getMacAddress() != null ? " [" + value.getMacAddress() + "]" : "")
             );
         }
     };
@@ -161,7 +161,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         }
 
         @Override
-        public void fillColumnValue(Element cell, ReservedIp value) { cell.setInnerText(value.getOwner().getName()); }
+        public void fillColumnValue(Element cell, ReservedIp value) { cell.setInnerText(String.valueOf(value.getOwnerId())); }
     };
 
     private ClickColumn<ReservedIp> comment = new ClickColumn<ReservedIp>() {

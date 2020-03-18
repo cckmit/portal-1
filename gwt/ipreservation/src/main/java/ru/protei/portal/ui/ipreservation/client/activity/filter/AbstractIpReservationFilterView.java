@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Subnet;
-import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 /**
  * Представление поиска зарезервированного IP
@@ -14,7 +14,7 @@ public interface AbstractIpReservationFilterView extends IsWidget {
 
     HasValue<String> search();
     HasValue<Subnet> subnet();
-    HasValue<EmployeeShortView> owner();
+    HasValue<PersonShortView> owner();
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();
 

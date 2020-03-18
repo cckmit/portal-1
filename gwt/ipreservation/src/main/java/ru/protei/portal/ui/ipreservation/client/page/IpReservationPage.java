@@ -31,7 +31,7 @@ public abstract class IpReservationPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.RESERVED_IP_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.RESERVED_IP, ТAB, DebugIds.SIDEBAR_MENU.RESERVED_IP ) );
-            fireEvent( new AppEvents.InitPage( new IpReservationEvents.Show( true ) ) );
+            fireEvent( new AppEvents.InitPage( new IpReservationEvents.Show( ) ) );
         }
     }
 
@@ -57,7 +57,7 @@ public abstract class IpReservationPage
         }
 
         fireSelectTab();
-        fireEvent( new IpReservationEvents.Show( true ) );
+        fireEvent( new IpReservationEvents.Show( ) );
     }
 
     private void fireSelectTab() {

@@ -48,6 +48,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryEmployeeRegistration();
             case CONTRACT:
                 return lang.privilegeContract();
+            case SUBNET:
+                return lang.subnet();
             case RESERVED_IP:
                 return lang.ipReservation();
             default:

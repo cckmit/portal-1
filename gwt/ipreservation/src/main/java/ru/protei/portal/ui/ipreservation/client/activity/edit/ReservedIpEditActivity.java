@@ -31,7 +31,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
     @Event
     public void onShow (IpReservationEvents.EditReservedIp event) {
-        if (!hasPrivileges(event.reservedIp.getId())) {
+        if (!hasPrivileges(event.reservedIpId)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }

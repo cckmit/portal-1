@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.common.client.events;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
 
@@ -14,30 +16,11 @@ public class IpReservationEvents {
      * Показать список зарезервированных IP
      */
     @Url( value = "ip_reservation", primary = true )
-    public static class Show {
-        @Omit
-        public Boolean clearScroll = false;
-        public Show () {}
-        public Show (Boolean clearScroll) {
-            this.clearScroll = clearScroll;
-        }
-    }
+    public static class Show {}
 
     /**
      * Показать карточку зарезервированного IP
      */
-/*    public static class ShowPreview {
-
-        public ShowPreview( HasWidgets parent, ReservedIp reservedIp, boolean isShouldWrap ) {
-            this.parent = parent;
-            this.reservedIp = reservedIp;
-            this.isShouldWrap = isShouldWrap;
-        }
-
-        public HasWidgets parent;
-        public ReservedIp reservedIp;
-        public boolean isShouldWrap;
-    }*/
 
 /*    @Url(value = "reserved_ip_preview", primary = true)
     public static class ShowFullScreen {
@@ -55,35 +38,39 @@ public class IpReservationEvents {
     /**
      * Показать форму создания подсети
      */
-    @Url(value = "subnet")
+/*    @Url(value = "subnet")*/
     public static class CreateSubnet {}
 
-    @Url( value = "subnet")
+/*    @Url( value = "subnet")*/
     public static class EditSubnet {
-        public EditSubnet () {
-            subnet = null;
+/*        public EditSubnet () {
+            subnetId = null;
+        }*/
+        public EditSubnet (HasWidgets parent, Long subnetId) {
+            this.parent = parent;
+            this.subnetId = subnetId;
         }
-        public EditSubnet (Subnet subnet) {
-            this.subnet = subnet;
-        }
-        public Subnet subnet;
+        public Long subnetId;
+        public HasWidgets parent;
     }
 
     /**
      * Показать форму резервирования IP
      */
-    @Url(value = "reserved_ip")
+/*    @Url(value = "reserved_ip")*/
     public static class CreateReservedIp {}
 
-    @Url( value = "reserved_ip")
+/*    @Url( value = "reserved_ip")*/
     public static class EditReservedIp {
-        public EditReservedIp () {
-            reservedIp = null;
+/*        public EditReservedIp () {
+            reservedIpId = null;
+        }*/
+        public EditReservedIp (HasWidgets parent, Long reservedIpId) {
+            this.parent = parent;
+            this.reservedIpId = reservedIpId;
         }
-        public EditReservedIp (ReservedIp reservedIp) {
-            this.reservedIp = reservedIp;
-        }
-        public ReservedIp reservedIp;
+        public Long reservedIpId;
+        public HasWidgets parent;
     }
 
     //public static class ChangeModel {}

@@ -13,12 +13,12 @@ import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 public interface AbstractReservedIpTableActivity  extends
         ClickColumn.Handler<ReservedIp>, EditClickColumn.EditHandler<ReservedIp>,
         RemoveClickColumn.RemoveHandler<ReservedIp>, RefreshClickColumn.RefreshHandler<ReservedIp> {
-
+/*
     //void onItemClicked( Subnet value );
     void onItemClicked( ReservedIp value );
     //void onEditClicked( Subnet value );
     void onEditClicked( ReservedIp value );
     //void oRemoveClicked( Subnet value );
     void oRemoveClicked( ReservedIp value );
-    void oRefreshClicked( ReservedIp value );
+    void oRefreshClicked( ReservedIp value );*/
 }

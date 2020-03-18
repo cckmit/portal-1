@@ -34,7 +34,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
 
     @Event
     public void onShow (IpReservationEvents.EditSubnet event) {
-        if (!hasPrivileges(event.subnet.getId())) {
+        if (!hasPrivileges(event.subnetId)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -42,12 +42,12 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        if (event.subnet.getId() == null) {
+        if (event.subnetId == null) {
             subnet = new Subnet();
             resetView();
         } else {
             resetView();
-            requestSubnet(event.subnet.getId(), this::fillView);
+            requestSubnet(event.subnetId, this::fillView);
         }
     }
 

@@ -9,10 +9,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Договор
+ * Зарезервированный IP-адрес
  */
 @JdbcEntity(table = "reserved_ip")
-public class ReservedIp extends AuditableObject implements Serializable {
+public class ReservedIp extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTOINCREMENT)
     private Long id;
@@ -55,6 +55,8 @@ public class ReservedIp extends AuditableObject implements Serializable {
 
     @JdbcColumn(name = "last_check_info")
     private String lastCheckInfo;
+
+    public ReservedIp() {}
 
     @Override
     public Long getId() { return id; }

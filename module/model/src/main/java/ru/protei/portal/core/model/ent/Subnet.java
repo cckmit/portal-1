@@ -8,10 +8,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Договор
+ * Подсеть
  */
 @JdbcEntity(table = "subnet")
-public class Subnet extends AuditableObject implements Serializable {
+public class Subnet extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTOINCREMENT)
     private Long id;
@@ -22,7 +22,7 @@ public class Subnet extends AuditableObject implements Serializable {
     @JdbcColumn(name="creator_id")
     private Long creatorId;
 
-    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "owner_id", remoteColumn = "id", table = "person")
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "creator_id", remoteColumn = "id", table = "person")
     private String creator;
 
     @JdbcColumn(name="address")
@@ -36,6 +36,8 @@ public class Subnet extends AuditableObject implements Serializable {
 
     @JdbcColumn(name="comment")
     private String comment;
+
+    public Subnet() {}
 
     @Override
     public Long getId() { return id; }
