@@ -90,4 +90,8 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
 
     void updateInitiators();
+
+    String validateMultiSelectorsTotalCount();
+
+    boolean isSearchFieldCorrect();
 }

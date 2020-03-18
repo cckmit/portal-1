@@ -14,15 +14,17 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
-import ru.protei.portal.ui.common.client.activity.filter.IssueFilterActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
@@ -35,8 +37,16 @@ public abstract class IssueReportCreateActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.getIssueFilter().setActivity(issueFilterActivity, this);
-        view.getIssueFilterParams().setActivity(this);
+        issueFilterActivity.setModel(this);
+        filterView.setActivity(issueFilterActivity);
+
+        view.getIssueFilter().setActivity(issueFilterActivity);
+
+        filterParamView = view.getIssueFilterParams();
+        filterParamView.setActivity(this);
+        filterParamView.setInitiatorModel(initiatorModel);
+        filterParamView.setCreatorModel(personModel);
+        filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
     }
 
     @Event
@@ -46,7 +56,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        view.fillReportTypes(makeReportTypeList());
+//        view.fillReportTypes(makeReportTypeList());
     }
 
     @Event(Type.FILL_CONTENT)
@@ -55,6 +65,12 @@ public abstract class IssueReportCreateActivity implements Activity,
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
+
+        applyFilterViewPrivileges();
+
+        filterView.resetFilter();
+        filterView.presetFilterType();
+//        updateCaseStatesFilter();
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -70,11 +86,17 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
     }
 
+    private void applyFilterViewPrivileges() {
+        filterParamView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterParamView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
+        filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+    }
+
     @Override
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();
-        CaseQuery query = view.getIssueFilter().getValue();
+        CaseQuery query = view.getIssueFilterParams().getFilterFields();
 
         if (!validateQuery(reportType, query)) {
             return;
@@ -279,11 +301,14 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Inject
     PolicyService policyService;
     @Inject
-    IssueFilterControllerAsync filterService;
+    PersonModel personModel;
     @Inject
-    DefaultErrorHandler defaultErrorHandler;
+    InitiatorModel initiatorModel;
     @Inject
-    IssueFilterActivity issueFilterActivity;
+    AbstractIssueFilterView filterView;
+    @Inject
+    AbstractIssueFilterActivity issueFilterActivity;
+    private AbstractIssueFilterWidgetView filterParamView;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

@@ -12,18 +12,18 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterActivity;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
+
+import javax.annotation.PostConstruct;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -55,9 +55,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterActivity activity, AbstractIssueFilterModel model) {
+    public void setActivity(AbstractIssueFilterActivity activity) {
         this.activity = activity;
-        this.model = model;
     }
 
     @Override
@@ -125,13 +124,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public IssueFilterParamView getIssueFilterParams() {
+    public AbstractIssueFilterWidgetView getIssueFilterParams() {
         return issueFilterParamView;
-    }
-
-    @Override
-    public CaseQuery getValue() {
-        return issueFilterParamView.getFilterFields();
     }
 
     @Override
@@ -147,7 +141,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         resetFilter();
-        model.onUserFilterChanged();
+        activity.onUserFilterChanged(null);
     }
 
     @UiHandler( "saveBtn" )
@@ -232,13 +226,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler("userFilter")
     public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
-        filterService.getIssueFilter(event.getValue().getId(), new FluentCallback<CaseFilter>()
-                .withErrorMessage(lang.errNotFound())
-                .withSuccess(caseFilter -> {
-                            issueFilterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
-                            model.onUserFilterChanged();
-                        })
-        );
+        activity.onUserFilterChanged(event.getValue().getId());
     }
 
     public void watchForScrollOf(Widget widget) {
@@ -292,11 +280,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField
     DivElement filterNameContainer;
 
-    @Inject
-    IssueFilterControllerAsync filterService;
-
     private AbstractIssueFilterActivity activity;
-    private AbstractIssueFilterModel model;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterView > {}

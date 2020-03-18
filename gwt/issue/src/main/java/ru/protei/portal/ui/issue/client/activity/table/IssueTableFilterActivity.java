@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.*;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -61,7 +62,8 @@ public abstract class IssueTableFilterActivity
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());
 
-        filterView.setActivity(issueFilterActivity, this);
+        issueFilterActivity.setModel(this);
+        filterView.setActivity(issueFilterActivity);
 
         filterParamView = filterView.getIssueFilterParams();
         filterParamView.setActivity(this);
@@ -77,19 +79,23 @@ public abstract class IssueTableFilterActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        filterView.resetFilter();
-        filterView.presetFilterType();
-        updateCaseStatesFilter();
+//        filterView.resetFilter();
+//        filterView.presetFilterType();
+//        updateCaseStatesFilter();
     }
 
     @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
         applyFilterViewPrivileges();
 
+        filterView.resetFilter();
+        filterView.presetFilterType();
+        updateCaseStatesFilter();
+
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-//        showUserFilterControls();
+//        issueFilterActivity.showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -112,7 +118,7 @@ public abstract class IssueTableFilterActivity
             loadTable();
         }
 
-        validateSearchField(isSearchFieldCorrect());
+        validateSearchField(filterParamView.isSearchFieldCorrect());
     }
 
     @Event
@@ -443,6 +449,7 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     AbstractIssueFilterActivity issueFilterActivity;
+    private AbstractIssueFilterWidgetView filterParamView;
 
     @Inject
     PersonModel personModel;
@@ -450,7 +457,6 @@ public abstract class IssueTableFilterActivity
     private CaseQuery query = null;
 
     private static String CREATE_ACTION;
-    private IssueFilterParamView filterParamView;
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
 }

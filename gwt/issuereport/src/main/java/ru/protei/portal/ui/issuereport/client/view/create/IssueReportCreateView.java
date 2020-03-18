@@ -10,14 +10,12 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterView;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.IssueFilter;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
 
 import java.util.List;
@@ -50,7 +48,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public IssueFilterParamView getIssueFilterParams() {
+    public AbstractIssueFilterWidgetView getIssueFilterParams() {
         return issueFilter.getIssueFilterParams();
     }
 

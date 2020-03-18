@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.activity.filter;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -16,9 +15,14 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 public abstract class IssueFilterActivity implements Activity, AbstractIssueFilterActivity {
-    @PostConstruct
+    @Inject
     public void onInit() {
         filterParamView = filterView.getIssueFilterParams();
+    }
+
+    @Override
+    public void setModel(AbstractIssueFilterModel model) {
+        this.model = model;
     }
 
     @Override
@@ -76,12 +80,34 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
         showUserFilterControls();
     }
 
-    private void showUserFilterName(){
+    @Override
+    public void onUserFilterChanged(Long id) {
+        if (id == null){
+            filterView.resetFilter();
+            showUserFilterControls();
+
+            model.onUserFilterChanged();
+            return;
+        }
+
+        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
+                .withErrorMessage(lang.errNotFound())
+                .withSuccess(caseFilter -> {
+                    filterView.removeFilterBtnVisibility().setVisible( true );
+                    filterView.editBtnVisibility().setVisible( true );
+                    filterView.filterName().setValue( caseFilter.getName() );
+                    filterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
+                    model.onUserFilterChanged();
+                })
+        );
+    }
+
+    public void showUserFilterName(){
         filterView.setUserFilterControlsVisibility(false);
         filterView.setUserFilterNameVisibility(true);
     }
 
-    private void showUserFilterControls() {
+    public void showUserFilterControls() {
         filterView.setUserFilterControlsVisibility(true);
         filterView.setUserFilterNameVisibility(false);
     }
@@ -94,6 +120,7 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
                 .withSuccess(aBoolean -> {
                     fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeUserFilterModel());
+                    filterView.resetFilter();
                     filterView.getIssueFilterParams().resetFilter();
                 }));
     }
@@ -115,6 +142,8 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
     AbstractIssueFilterView filterView;
 
     private AbstractIssueFilterWidgetView filterParamView;
+
+    private AbstractIssueFilterModel model;
 
     @Inject
     Lang lang;

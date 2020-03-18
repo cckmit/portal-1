@@ -4,6 +4,8 @@ package ru.protei.portal.ui.common.client.activity.filter;
  * Абстракция активности фильтра обращений
  */
 public interface AbstractIssueFilterActivity {
+    void setModel(AbstractIssueFilterModel model);
+
     void onSaveFilterClicked();
 
     void onFilterRemoveClicked( Long id );
@@ -13,4 +15,6 @@ public interface AbstractIssueFilterActivity {
     void onCancelSavingFilterClicked();
 
     void onCreateFilterClicked();
+
+    void onUserFilterChanged(Long id);
 }

@@ -22,6 +22,9 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterActivity;
 import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
@@ -36,8 +39,6 @@ import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.IssueStates;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
-import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
@@ -51,6 +52,7 @@ import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
+import ru.protei.portal.ui.common.client.view.filter.IssueFilterView;
 import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
@@ -129,7 +131,6 @@ public class CommonClientModule extends AbstractGinModule {
         bind( CaseTagEditActivity.class ).asEagerSingleton();
         bind( AbstractCaseTagEditView.class ).to( CaseTagEditView.class ).in( Singleton.class );
 
-        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
         bind( CustomerTypeModel.class ).asEagerSingleton();
 
         // Models
@@ -144,6 +145,9 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
 
+        bind( AbstractIssueFilterActivity.class ).to(IssueFilterActivity.class).asEagerSingleton();
+        bind( AbstractIssueFilterView.class ).to( IssueFilterView.class ).in( Singleton.class );
+        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
     }
 }
 
