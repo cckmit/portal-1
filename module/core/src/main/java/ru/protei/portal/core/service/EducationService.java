@@ -22,7 +22,7 @@ public interface EducationService {
     Result<EducationEntry> requestNewEntry(AuthToken token, EducationEntry entry, List<Long> workerIds);
 
     @Privileged(En_Privilege.EDUCATION_VIEW)
-    Result<EducationEntryAttendance> requestNewAttendance(AuthToken token, EducationEntryAttendance attendance);
+    Result<EducationEntryAttendance> requestNewAttendance(AuthToken token, Long educationEntryId, Long personId);
 
     @Privileged(En_Privilege.EDUCATION_CREATE)
     Result<List<EducationEntry>> adminGetEntries(AuthToken token, boolean showOnlyNotApproved, boolean showOutdated);

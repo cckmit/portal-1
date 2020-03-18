@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.EducationWalletDAO;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.time.LocalDate;
@@ -50,6 +51,9 @@ public class EducationServiceImpl implements EducationService {
     @Transactional
     public Result<EducationEntry> requestNewEntry(AuthToken token, EducationEntry entry, List<Long> workerIds) {
 
+        if (CollectionUtils.isEmpty(workerIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
         Result<EducationEntry> validation = validateEducationEntry(entry);
         if (validation.isError()) {
             return error(validation.getStatus());
@@ -100,9 +104,14 @@ public class EducationServiceImpl implements EducationService {
 
     @Override
     @Transactional
-    public Result<EducationEntryAttendance> requestNewAttendance(AuthToken token, EducationEntryAttendance attendance) {
+    public Result<EducationEntryAttendance> requestNewAttendance(AuthToken token, Long educationEntryId, Long personId) {
 
-        EducationWallet wallet = educationWalletDAO.getByWorker(attendance.getWorkerId());
+        WorkerEntry workerEntry = workerEntryDAO.getByPersonId(personId);
+        if (workerEntry == null) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        EducationWallet wallet = educationWalletDAO.getByWorker(workerEntry.getId());
         if (wallet == null) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -113,7 +122,7 @@ public class EducationServiceImpl implements EducationService {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        EducationEntry entry = educationEntryDAO.get(attendance.getEducationEntryId());
+        EducationEntry entry = educationEntryDAO.get(educationEntryId);
         if (entry == null) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -121,6 +130,9 @@ public class EducationServiceImpl implements EducationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        EducationEntryAttendance attendance = new EducationEntryAttendance();
+        attendance.setEducationEntryId(educationEntryId);
+        attendance.setWorkerId(workerEntry.getId());
         attendance.setCharged(true);
         attendance.setDateRequested(new Date());
         attendance.setId(educationEntryAttendanceDAO.persist(attendance));

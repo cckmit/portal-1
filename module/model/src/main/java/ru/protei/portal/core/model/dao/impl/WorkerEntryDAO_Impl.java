@@ -51,6 +51,11 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     }
 
     @Override
+    public WorkerEntry getByPersonId(Long personId) {
+        return getByCondition("worker_entry.personId = ?", personId);
+    }
+
+    @Override
     public List< WorkerEntry > getWorkers(WorkerEntryQuery query) {
         return listByQuery(query);
     }

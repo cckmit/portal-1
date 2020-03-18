@@ -22,6 +22,7 @@
     <inherits name="ru.protei.portal.ui.employee.Employee"/>
     <inherits name="ru.protei.portal.ui.employeeregistration.EmployeeRegistration"/>
     <inherits name="ru.protei.portal.ui.contract.Contract"/>
+    <inherits name="ru.protei.portal.ui.education.Education"/>
 
     <entry-point class='ru.protei.portal.app.portal.client.Main'/>
 
