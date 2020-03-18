@@ -3982,3 +3982,30 @@ table {
     z-index: 150;
   }
 }
+
+.jira-info {
+  padding: 15px;
+
+  div {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  table {
+    .jira-status {
+      width: 15%;
+    }
+
+    .crm-status {
+      width: 15%;
+    }
+
+    .status-definition {
+      width: 35%;
+    }
+
+    .status-comment {
+      width: 35%;
+    }
+  }
+}

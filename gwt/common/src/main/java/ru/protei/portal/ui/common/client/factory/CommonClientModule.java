@@ -24,9 +24,9 @@ import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivit
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
-import ru.protei.portal.ui.common.client.activity.info.AbstractInfoActivity;
-import ru.protei.portal.ui.common.client.activity.info.AbstractInfoView;
-import ru.protei.portal.ui.common.client.activity.info.InfoActivity;
+import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoActivity;
+import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoView;
+import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
@@ -39,8 +39,6 @@ import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.IssueStates;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
-import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
@@ -55,7 +53,7 @@ import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
-import ru.protei.portal.ui.common.client.view.info.InfoView;
+import ru.protei.portal.ui.common.client.view.info.JiraJiraInfoView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
@@ -136,8 +134,8 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
         bind( CustomerTypeModel.class ).asEagerSingleton();
 
-        bind(AbstractInfoActivity.class).to(InfoActivity.class).asEagerSingleton();
-        bind(AbstractInfoView.class).to(InfoView.class).in(Singleton.class);
+        bind(AbstractJiraInfoActivity.class).to(JiraInfoActivity.class).asEagerSingleton();
+        bind(AbstractJiraInfoView.class).to(JiraJiraInfoView.class).in(Singleton.class);
 
         // Models
         bind( PrivilegeModel.class ).asEagerSingleton();

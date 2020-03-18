@@ -5,8 +5,10 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcJoinedColumn;
 
+import java.io.Serializable;
+
 @JdbcEntity(table = "JIRA_status_map_entry")
-public final class JiraStatusMapEntry {
+public final class JiraStatusMapEntry implements Serializable {
 
     @JdbcColumn(name = "id")
     private long id;
@@ -64,5 +66,25 @@ public final class JiraStatusMapEntry {
 
     public En_CaseState getLocalStatus() {
         return En_CaseState.getById((long) localStatusId);
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    @Override
+    public String toString() {
+        return "JiraStatusMapEntry{" +
+                "id=" + id +
+                ", mapId=" + mapId +
+                ", jiraStatusName='" + jiraStatusName + '\'' +
+                ", localStatusId=" + localStatusId +
+                ", localStatusName='" + localStatusName + '\'' +
+                ", info='" + info + '\'' +
+                '}';
     }
 }
