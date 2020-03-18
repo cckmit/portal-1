@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
+    <g:HTMLPanel styleName="subscription-group">
         <div class="row">
             <div class="col-md-4">
                 <platform:PlatformButtonSelector ui:field="platformSelector"

@@ -8,6 +8,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -147,8 +148,17 @@ public class CompanySubscriptionList
 
         companySubscriptionGroupWidget.addCloseHandler(event -> {
             groupsList.remove(groupIndex);
-            groupContainer.remove(companySubscriptionGroupWidget);
             widgetGroupsList.remove(companySubscriptionGroupWidget);
+            companySubscriptionGroupWidget.addStyleName("zero-opacity");
+
+            Timer timer = new Timer() {
+                @Override
+                public void run() {
+                    groupContainer.remove(companySubscriptionGroupWidget);
+                }
+            };
+
+            timer.schedule(500);
         });
 
         groupContainer.add( companySubscriptionGroupWidget );

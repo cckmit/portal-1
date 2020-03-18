@@ -1293,17 +1293,28 @@ td.info {
   content: "\f448";
 }
 
-.remove-group-button{
+.remove-group-button {
   height: 35px;
 }
 
-.collapse-group-button{
+.collapse-group-button {
   height: 35px;
   width: 85px;
 }
 
-.add-group-button{
+.add-group-button {
   height: 35px;
+}
+
+.subscription-group {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.zero-opacity {
+  opacity: 0;
 }
 
 /**** STATES ****/
