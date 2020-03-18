@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -17,13 +16,10 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.*;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -36,6 +32,7 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -51,7 +48,7 @@ import java.util.List;
  */
 public abstract class IssueTableFilterActivity
         implements AbstractIssueTableActivity, AbstractPagerActivity, Activity, 
-        AbstractIssueFilterParamActivity, AbstractIssueCollapseFilterActivity
+        AbstractIssueCollapseFilterActivity, AbstractIssueFilterModel
 {
 
     @PostConstruct
@@ -64,9 +61,9 @@ public abstract class IssueTableFilterActivity
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());
 
-        filterView.setActivity(issueFilterActivity);
+        filterView.setActivity(issueFilterActivity, this);
 
-        filterParamView = filterView.getIssueFilterWidget();
+        filterParamView = filterView.getIssueFilterParams();
         filterParamView.setActivity(this);
         filterParamView.setInitiatorModel(initiatorModel);
         filterParamView.setCreatorModel(personModel);
@@ -166,17 +163,21 @@ public abstract class IssueTableFilterActivity
     }
 
     @Override
-    public void onFilterChanged() {
-        if ( !validateMultiSelectorsTotalCount() ){
+    public void onUserFilterChanged() {
+        String validateString = filterParamView.validateMultiSelectorsTotalCount();
+        if ( validateString != null ){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchCompanies(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
-        if(isSearchFieldCorrect()) {
+        boolean searchFieldCorrect = filterParamView.isSearchFieldCorrect();
+        if(searchFieldCorrect) {
             loadTable();
         }
-        validateSearchField(isSearchFieldCorrect());
+        validateSearchField(searchFieldCorrect);
     }
 
+/*
     @Override
     public void onUserFilterChanged() {
         CaseFilterShortView filter = filterView.userFilter().getValue();
@@ -201,14 +202,12 @@ public abstract class IssueTableFilterActivity
             }
         } );
     }
-
-
-
-    @Override
-    public void onCompaniesFilterChanged() {
-        onFilterChanged();
-        updateInitiatorSelector();
-    }
+*/
+//    @Override
+//    public void onCompaniesFilterChanged() {
+//        onFilterChanged();
+//        updateInitiatorSelector();
+//    }
 
     @Override
     public void loadData(int offset, int limit, final AsyncCallback<List<CaseShortView>> asyncCallback) {
@@ -315,7 +314,7 @@ public abstract class IssueTableFilterActivity
             @Override
             public void onSuccess( SelectorsParams selectorsParams ) {
                 filterParamView.fillFilterFields(caseQuery, selectorsParams);
-                onFilterChanged();
+//                onFilterChanged();
             }
         } );
     }
@@ -451,7 +450,7 @@ public abstract class IssueTableFilterActivity
     private CaseQuery query = null;
 
     private static String CREATE_ACTION;
-    private AbstractIssueFilterWidgetView filterParamView;
+    private IssueFilterParamView filterParamView;
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
 }

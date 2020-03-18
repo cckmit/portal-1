@@ -13,11 +13,9 @@ import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -26,19 +24,19 @@ import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractIssueFilterActivity, AbstractIssueFilterParamActivity {
+        AbstractIssueReportCreateActivity, AbstractIssueFilterModel {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.getIssueFilter().setActivity(this);
+        view.getIssueFilter().setActivity(issueFilterActivity, this);
+        view.getIssueFilterParams().setActivity(this);
     }
 
     @Event
@@ -114,7 +112,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         applyIssueFilterVisibilityByPrivileges();
     }
 
-    @Override
+/*    @Override
     public void onSaveFilterClicked() {
         isCreateFilterAction = false;
         showUserFilterName();
@@ -124,16 +122,16 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onCreateFilterClicked() {
         isCreateFilterAction = true;
         showUserFilterName();
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void onFilterRemoveClicked( Long id ) {
         fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id)));
     }
 
-    private boolean isCreateFilterAction = true;
+    private boolean isCreateFilterAction = true;*/
 
-    @Override
+/*    @Override
     public void onOkSavingFilterClicked() {
         if (view.getIssueFilter().filterName().getValue().isEmpty()){
             view.getIssueFilter().setFilterNameContainerErrorStyle( true );
@@ -165,45 +163,29 @@ public abstract class IssueReportCreateActivity implements Activity,
                 showUserFilterControls();
             }
         } );
-    }
+    }*/
 
+/*
     @Override
     public void onCancelSavingFilterClicked() {
         showUserFilterControls();
     }
+*/
 
     @Override
     public void onUserFilterChanged() {
-
+        ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
-    @Override
-    public void onFilterChanged() {
-        String validateMessage = view.getIssueFilterParams().validateMultiSelectorsTotalCount();
-        if ( validateMessage != null) {
-            fireEvent(new NotifyEvents.Show(validateMessage, NotifyEvents.NotifyType.ERROR));
-            return;
-        }
-
-        boolean searchFieldCorrect = view.getIssueFilterParams().isSearchFieldCorrect();
-        if(searchFieldCorrect) {
-//            loadTable();
-        }
-        view.getIssueFilterParams().searchByCommentsWarningVisibility().setVisible(!searchFieldCorrect);
-        view.getIssueFilter().createEnabled().setEnabled(searchFieldCorrect);
-    }
-
-    @Override
-    public void onCompaniesFilterChanged() {
-        onFilterChanged();
-        updateInitiatorSelector();
-    }
-
+//    @Override
+//    public void onCompaniesFilterChanged() {
+//        onFilterChanged();
+//        updateInitiatorSelector();
+//    }
+/*
     private void updateInitiatorSelector() {
         view.getIssueFilterParams().updateInitiators();
     }
-
-
 
     private void fillFilterFields( CaseFilter filter ) {
         view.getIssueFilter().removeFilterBtnVisibility().setVisible( true );
@@ -220,7 +202,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     private void showUserFilterControls() {
         view.getIssueFilter().setUserFilterControlsVisibility(true);
         view.getIssueFilter().setUserFilterNameVisibility(false);
-    }
+    }*/
 
     private CaseFilter fillUserFilter() {
         CaseFilter filter = new CaseFilter();
@@ -233,9 +215,9 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
 
-    private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
+/*    private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
         return validateQuery(En_ReportType.valueOf(filterType.name()), query);
-    }
+    }*/
 
     private boolean validateQuery(En_ReportType reportType, CaseQuery query) {
         if (reportType == null || query == null) {
@@ -276,7 +258,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         return Arrays.asList(En_ReportType.CASE_OBJECTS);
     }
 
-    private Runnable removeAction(Long filterId) {
+/*    private Runnable removeAction(Long filterId) {
         return () -> filterService.removeIssueFilter(filterId, new FluentCallback<Boolean>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -286,7 +268,7 @@ public abstract class IssueReportCreateActivity implements Activity,
                     fireEvent(new IssueEvents.ChangeUserFilterModel());
                     view.getIssueFilter().resetFilter();
                 }));
-    }
+    }*/
 
     @Inject
     Lang lang;
@@ -300,6 +282,8 @@ public abstract class IssueReportCreateActivity implements Activity,
     IssueFilterControllerAsync filterService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    IssueFilterActivity issueFilterActivity;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

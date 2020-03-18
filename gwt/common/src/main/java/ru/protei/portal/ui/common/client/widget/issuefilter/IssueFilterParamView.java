@@ -22,7 +22,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -69,7 +69,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterParamActivity activity) {
+    public void setActivity(AbstractIssueFilterModel activity) {
         this.activity = activity;
     }
 
@@ -81,12 +81,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setCreatorModel(PersonModel personModel) {
         creators.setPersonModel(personModel);
-    }
-
-    // ?
-    @Override
-    public AbstractIssueFilterParamActivity getActivity() {
-        return activity;
     }
 
     @Override
@@ -376,7 +370,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiHandler("companies")
     public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
         if (activity != null) {
-            activity.onCompaniesFilterChanged();
+//            activity.onCompaniesFilterChanged();
         }
     }
 
@@ -483,7 +477,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private void onFilterChanged() {
         if (activity != null) {
-            activity.onFilterChanged();
+            activity.onUserFilterChanged();
         }
     }
 
@@ -642,7 +636,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     PolicyService policyService;
 
     private Timer timer = null;
-    private AbstractIssueFilterParamActivity activity = null;
+    private AbstractIssueFilterModel activity = null;
 
     interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterParamView> {}
     private static IssueFilterUiBinder ourUiBinder = GWT.create(IssueFilterUiBinder.class);

@@ -17,13 +17,13 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -55,13 +55,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterActivity activity) {
+    public void setActivity(AbstractIssueFilterActivity activity, AbstractIssueFilterModel model) {
         this.activity = activity;
-    }
-
-    @Override
-    public AbstractIssueFilterWidgetView getIssueFilterWidget() {
-        return issueFilterParamView;
+        this.model = model;
     }
 
     @Override
@@ -86,7 +82,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue< String > filterName() {
+    public HasValue<String> filterName() {
         return filterName;
     }
 
@@ -150,10 +146,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
-        if ( issueFilterParamView.getActivity() != null ) {
-            resetFilter();
-            issueFilterParamView.getActivity().onFilterChanged();
-        }
+        resetFilter();
+        model.onUserFilterChanged();
     }
 
     @UiHandler( "saveBtn" )
@@ -238,9 +232,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler("userFilter")
     public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
-        if (activity != null) {
-            activity.onUserFilterChanged();
-        }
+        filterService.getIssueFilter(event.getValue().getId(), new FluentCallback<CaseFilter>()
+                .withErrorMessage(lang.errNotFound())
+                .withSuccess(caseFilter -> {
+                            issueFilterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
+                            model.onUserFilterChanged();
+                        })
+        );
     }
 
     public void watchForScrollOf(Widget widget) {
@@ -294,7 +292,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField
     DivElement filterNameContainer;
 
+    @Inject
+    IssueFilterControllerAsync filterService;
+
     private AbstractIssueFilterActivity activity;
+    private AbstractIssueFilterModel model;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterView > {}

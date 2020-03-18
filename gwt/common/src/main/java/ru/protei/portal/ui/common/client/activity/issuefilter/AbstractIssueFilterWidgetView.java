@@ -10,11 +10,10 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
@@ -24,13 +23,11 @@ import java.util.function.Supplier;
 
 public interface AbstractIssueFilterWidgetView extends IsWidget {
 
-    void setActivity(AbstractIssueFilterParamActivity activity);
+    void setActivity(AbstractIssueFilterModel activity);
 
     void setInitiatorModel(InitiatorModel initiatorModel);
 
     void setCreatorModel(PersonModel personModel);
-
-    AbstractIssueFilterParamActivity getActivity();
 
     HasValue<String> searchPattern();
 

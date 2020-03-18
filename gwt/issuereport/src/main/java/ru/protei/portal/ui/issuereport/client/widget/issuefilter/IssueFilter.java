@@ -176,11 +176,11 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
             return;
         }
 
-        model.onUserFilterChanged(value.getId(), caseFilter -> {
-            setValue(caseFilter.getParams());
-            filterName.setValue(caseFilter.getName());
-            showUserFilterControls();
-        });
+//        model.onUserFilterChanged(value.getId(), caseFilter -> {
+//            setValue(caseFilter.getParams());
+//            filterName.setValue(caseFilter.getName());
+//            showUserFilterControls();
+//        });
     }
 
     @UiHandler("search")
@@ -302,10 +302,10 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
             userFilter.setId(this.userFilter.getValue().getId());
         }
 
-        model.onSaveFilterClicked(userFilter, caseFilterShortView -> {
-            this.userFilter.setValue(caseFilterShortView);
-            showUserFilterControls();
-        });
+//        model.onSaveFilterClicked(userFilter, caseFilterShortView -> {
+//            this.userFilter.setValue(caseFilterShortView);
+//            showUserFilterControls();
+//        });
     }
 
     @UiHandler("cancelBtn")
@@ -327,7 +327,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         if (value == null || value.getId() == null) {
             return;
         }
-        model.onRemoveFilterClicked(value.getId());
+//        model.onRemoveFilterClicked(value.getId());
     }
 
     private void applyVisibilityByFilterType() {

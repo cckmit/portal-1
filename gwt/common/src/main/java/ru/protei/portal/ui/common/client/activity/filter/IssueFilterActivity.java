@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -16,12 +15,10 @@ import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.function.Consumer;
-
-public abstract class IssueFilterActivity implements Activity, AbstractIssueFilterActivity, AbstractIssueFilterModel {
+public abstract class IssueFilterActivity implements Activity, AbstractIssueFilterActivity {
     @PostConstruct
     public void onInit() {
-        filterParamView = filterView.getIssueFilterWidget();
+        filterParamView = filterView.getIssueFilterParams();
     }
 
     @Override
@@ -97,7 +94,7 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
                 .withSuccess(aBoolean -> {
                     fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeUserFilterModel());
-//                    view.getIssueFilter().resetFilter();
+                    filterView.getIssueFilterParams().resetFilter();
                 }));
     }
 
@@ -109,21 +106,6 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
         filter.setParams(query);
         query.setSearchString(filterParamView.searchPattern().getValue());
         return filter;
-    }
-
-    @Override
-    public void onUserFilterChanged(Long id, Consumer<CaseFilter> consumer) {
-
-    }
-
-    @Override
-    public void onSaveFilterClicked(CaseFilter caseFilter, Consumer<CaseFilterShortView> consumer) {
-
-    }
-
-    @Override
-    public void onRemoveFilterClicked(Long id) {
-
     }
 
     @Inject
