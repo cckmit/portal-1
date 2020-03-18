@@ -70,8 +70,11 @@ public class CompanySubscriptionGroup  extends Composite
         platformSelector.setFilter(platformOption -> companyId != null && companyId.equals(platformOption.getCompanyId()));
     }
 
-    public void expandGroupAndHideRemoveButton(){
+    public void expandGroup(){
         setCollapseGroup(false);
+    }
+
+    public void hideRemoveButton(){
         removeButton.setVisible(false);
     }
 

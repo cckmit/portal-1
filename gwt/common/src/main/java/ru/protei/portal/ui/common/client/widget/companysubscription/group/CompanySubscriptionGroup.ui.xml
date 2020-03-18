@@ -8,16 +8,16 @@
     <g:HTMLPanel>
         <div class="row">
             <div class="col-md-4">
-                <devunit:DevUnitButtonSelector ui:field="productSelector"
-                                             validation="false"
-                                             header="{lang.issueProduct}"
-                                             hasNullValue="true"/>
-            </div>
-
-            <div class="col-md-4">
                 <platform:PlatformButtonSelector ui:field="platformSelector"
                                                validation="false"
                                                header="{lang.siteFolderPlatform}"
+                                               hasNullValue="true"/>
+            </div>
+
+            <div class="col-md-4">
+                <devunit:DevUnitButtonSelector ui:field="productSelector"
+                                               validation="false"
+                                               header="{lang.issueProduct}"
                                                hasNullValue="true"/>
             </div>
 
