@@ -1,0 +1,34 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="row clearfix">
+        <div class="col-md-2">
+            <div class="form-group form-group-default">
+                <label ui:field="importance"/>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group form-group-default">
+                <div>
+                    <span ui:field="reactionTime"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group form-group-default">
+                <div>
+                    <span ui:field="temporarySolutionTime"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group form-group-default">
+                <div>
+                    <span ui:field="fullSolutionTime"/>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

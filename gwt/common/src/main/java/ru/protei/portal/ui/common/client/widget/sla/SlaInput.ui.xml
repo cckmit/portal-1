@@ -18,9 +18,6 @@
                 <label><ui:text from="{lang.projectSlaFullTime}"/></label>
             </div>
         </div>
-        <sla:SlaRowItem ui:field="criticalItem" importance="{lang.criticalImportance}"/>
-        <sla:SlaRowItem ui:field="importantItem" importance="{lang.importantImportance}"/>
-        <sla:SlaRowItem ui:field="basicItem" importance="{lang.basicImportance}"/>
-        <sla:SlaRowItem ui:field="cosmeticItem" importance="{lang.cosmeticImportance}"/>
+        <g:HTMLPanel ui:field="itemsContainer"/>
     </g:HTMLPanel>
 </ui:UiBinder>

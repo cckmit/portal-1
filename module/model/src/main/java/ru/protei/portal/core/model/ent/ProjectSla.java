@@ -74,6 +74,22 @@ public class ProjectSla implements Serializable {
         this.projectId = projectId;
     }
 
+    public boolean isEmpty() {
+        if (reactionTime != null) {
+            return false;
+        }
+
+        if (temporarySolutionTime != null) {
+            return false;
+        }
+
+        if (fullSolutionTime != null) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public String toString() {
         return "ContractSLA{" +

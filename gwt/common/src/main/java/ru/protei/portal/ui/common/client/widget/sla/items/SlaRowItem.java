@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.sla;
+package ru.protei.portal.ui.common.client.widget.sla.items;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
@@ -11,7 +11,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 
 public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
@@ -26,6 +28,7 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
         projectSla.setReactionTime(reactionTime.getTime());
         projectSla.setTemporarySolutionTime(temporarySolutionTime.getTime());
         projectSla.setFullSolutionTime(fullSolutionTime.getTime());
+        projectSla.setImportanceLevelId(importanceLevel.getId());
 
         return projectSla;
     }
@@ -53,14 +56,21 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    public void setImportance(String importance) {
-        this.importance.setInnerText(importance);
+    public void setImportance(En_ImportanceLevel importance) {
+        this.importanceLevel = importance;
+        this.importance.setInnerText(importanceLang.getImportanceName(importanceLevel));
+    }
+
+    public void clear() {
+        reactionTime.setTime(null);
+        temporarySolutionTime.setTime(null);
+        fullSolutionTime.setTime(null);
     }
 
     public void setEnsureDebugId(String debugId) {
-        reactionTime.ensureDebugId(debugId + "-reaction-time");
-        temporarySolutionTime.ensureDebugId(debugId + "-temporary-solution-time");
-        fullSolutionTime.ensureDebugId(debugId + "-complete-solution-time");
+        reactionTime.ensureDebugId(debugId + "-" + importanceLang.getImportanceName(importanceLevel) + "-reaction-time");
+        temporarySolutionTime.ensureDebugId(debugId + "-" + importanceLang.getImportanceName(importanceLevel) + "-temporary-solution-time");
+        fullSolutionTime.ensureDebugId(debugId + "-" + importanceLang.getImportanceName(importanceLevel) + "-complete-solution-time");
     }
 
     @UiField
@@ -77,6 +87,11 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
     @Inject
     @UiField(provided = true)
     TimeTextBox fullSolutionTime;
+
+    private En_ImportanceLevel importanceLevel;
+
+    @Inject
+    private En_CaseImportanceLang importanceLang;
 
     interface SlaRowItemUiBinder extends UiBinder<HTMLPanel, SlaRowItem> {
     }

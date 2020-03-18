@@ -10,49 +10,27 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.ui.common.client.widget.sla.items.SlaRowItem;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SlaInput extends Composite implements HasValue<List<ProjectSla>> {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initView();
     }
 
     @Override
     public List<ProjectSla> getValue() {
-        List<ProjectSla> result = new ArrayList<>();
-
-        ProjectSla criticalSla = criticalItem.getValue();
-        ProjectSla importantSla = importantItem.getValue();
-        ProjectSla basicSla = basicItem.getValue();
-        ProjectSla cosmeticSla = cosmeticItem.getValue();
-
-        if (criticalSla != null) {
-            criticalSla.setImportanceLevelId(En_ImportanceLevel.CRITICAL.getId());
-            result.add(criticalSla);
-        }
-
-        if (importantSla != null) {
-            importantSla.setImportanceLevelId(En_ImportanceLevel.IMPORTANT.getId());
-            result.add(importantSla);
-        }
-
-        if (basicSla != null) {
-            basicSla.setImportanceLevelId(En_ImportanceLevel.BASIC.getId());
-            result.add(basicSla);
-        }
-
-        if (cosmeticSla != null) {
-            cosmeticSla.setImportanceLevelId(En_ImportanceLevel.COSMETIC.getId());
-            result.add(cosmeticSla);
-        }
-
-        return result;
+        return collectSla();
     }
 
     @Override
@@ -62,24 +40,10 @@ public class SlaInput extends Composite implements HasValue<List<ProjectSla>> {
 
     @Override
     public void setValue(List<ProjectSla> value, boolean fireEvents) {
+        clearItems();
+
         if (CollectionUtils.isNotEmpty(value)) {
-            value.forEach(contractSla -> {
-                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.CRITICAL.getId()) {
-                    criticalItem.setValue(contractSla);
-                }
-
-                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.IMPORTANT.getId()) {
-                    importantItem.setValue(contractSla);
-                }
-
-                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.BASIC.getId()) {
-                    basicItem.setValue(contractSla);
-                }
-
-                if (contractSla.getImportanceLevelId() == En_ImportanceLevel.COSMETIC.getId()) {
-                    cosmeticItem.setValue(contractSla);
-                }
-            });
+            value.forEach(projectSla -> importanceToItemMap.get(En_ImportanceLevel.find(projectSla.getImportanceLevelId())).setValue(projectSla));
         }
 
         if (fireEvents) {
@@ -93,27 +57,38 @@ public class SlaInput extends Composite implements HasValue<List<ProjectSla>> {
     }
 
     public void setEnsureDebugId(String debugId) {
-        criticalItem.setEnsureDebugId(debugId + "-critical");
-        importantItem.setEnsureDebugId(debugId + "-important");
-        basicItem.setEnsureDebugId(debugId + "-basic");
-        cosmeticItem.setEnsureDebugId(debugId + "-cosmetic");
+        for (SlaRowItem item : importanceToItemMap.values()) {
+            item.setEnsureDebugId(debugId);
+        }
     }
 
-    @Inject
-    @UiField(provided = true)
-    SlaRowItem criticalItem;
+    private void initView() {
+        for (En_ImportanceLevel importance : En_ImportanceLevel.values()) {
+            SlaRowItem item = slaRowItemProvider.get();
+            item.setImportance(importance);
+            importanceToItemMap.put(importance, item);
+            itemsContainer.add(item.asWidget());
+        }
+    }
+
+    private void clearItems() {
+        importanceToItemMap.values().forEach(SlaRowItem::clear);
+    }
+
+    private List<ProjectSla> collectSla() {
+        return importanceToItemMap.values()
+                .stream()
+                .map(SlaRowItem::getValue)
+                .collect(Collectors.toList());
+    }
+
+    @UiField
+    HTMLPanel itemsContainer;
 
     @Inject
-    @UiField(provided = true)
-    SlaRowItem importantItem;
+    private Provider<SlaRowItem> slaRowItemProvider;
 
-    @Inject
-    @UiField(provided = true)
-    SlaRowItem basicItem;
-
-    @Inject
-    @UiField(provided = true)
-    SlaRowItem cosmeticItem;
+    private Map<En_ImportanceLevel, SlaRowItem> importanceToItemMap = new HashMap<>();
 
     interface SlaInputUiBinder extends UiBinder<HTMLPanel, SlaInput> {
     }

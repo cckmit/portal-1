@@ -104,6 +104,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public HasVisibility slaContainerVisibility() {
+        return slaContainer;
+    }
+
+    @Override
     public void setContract(String value, String link) {
         contract.setText(value);
         contract.setHref(link);

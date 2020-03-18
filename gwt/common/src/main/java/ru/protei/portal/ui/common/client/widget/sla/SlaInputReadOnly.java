@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.sla;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -11,27 +10,26 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
+import ru.protei.portal.ui.common.client.widget.sla.items.SlaRowItemReadOnly;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SlaInputReadOnly extends Composite implements HasValue<List<ProjectSla>> {
     @Inject
-    public SlaInputReadOnly(Lang lang) {
-        workTimeFormatter = new WorkTimeFormatter(lang);
+    public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        initView();
     }
 
     @Override
     public List<ProjectSla> getValue() {
-        return projectSlas;
+        return collectSla();
     }
 
     @Override
@@ -41,109 +39,50 @@ public class SlaInputReadOnly extends Composite implements HasValue<List<Project
 
     @Override
     public void setValue(List<ProjectSla> value, boolean fireEvents) {
-        if (CollectionUtils.isEmpty(value)) {
-            projectSlas = Collections.emptyList();
+        clearView();
 
-            criticalReactionTime.setInnerText("");
-            criticalTemporarySolution.setInnerText("");
-            criticalFullSolution.setInnerText("");
-
-            importantReactionTime.setInnerText("");
-            importantTemporarySolution.setInnerText("");
-            importantFullSolution.setInnerText("");
-
-            basicReactionTime.setInnerText("");
-            basicTemporarySolution.setInnerText("");
-            basicFullSolution.setInnerText("");
-
-            cosmeticReactionTime.setInnerText("");
-            cosmeticTemporarySolution.setInnerText("");
-            cosmeticFullSolution.setInnerText("");
-
-        } else {
-            projectSlas = new ArrayList<>(value);
-            projectSlas.forEach(sla -> {
-                if (sla.getImportanceLevelId() == En_ImportanceLevel.CRITICAL.getId()) {
-                    criticalReactionTime.setInnerText(format(sla.getReactionTime()));
-                    criticalTemporarySolution.setInnerText(format(sla.getTemporarySolutionTime()));
-                    criticalFullSolution.setInnerText(format(sla.getFullSolutionTime()));
-                }
-
-                if (sla.getImportanceLevelId() == En_ImportanceLevel.IMPORTANT.getId()) {
-                    importantReactionTime.setInnerText(format(sla.getReactionTime()));
-                    importantTemporarySolution.setInnerText(format(sla.getTemporarySolutionTime()));
-                    importantFullSolution.setInnerText(format(sla.getFullSolutionTime()));
-                }
-
-                if (sla.getImportanceLevelId() == En_ImportanceLevel.BASIC.getId()) {
-                    basicReactionTime.setInnerText(format(sla.getReactionTime()));
-                    basicTemporarySolution.setInnerText(format(sla.getTemporarySolutionTime()));
-                    basicFullSolution.setInnerText(format(sla.getFullSolutionTime()));
-                }
-
-                if (sla.getImportanceLevelId() == En_ImportanceLevel.COSMETIC.getId()) {
-                    cosmeticReactionTime.setInnerText(format(sla.getReactionTime()));
-                    cosmeticTemporarySolution.setInnerText(format(sla.getTemporarySolutionTime()));
-                    cosmeticFullSolution.setInnerText(format(sla.getFullSolutionTime()));
-                }
-            });
+        if (CollectionUtils.isNotEmpty(value)) {
+            value.forEach(projectSla -> importanceToItemMap.get(En_ImportanceLevel.find(projectSla.getImportanceLevelId())).setValue(projectSla));
         }
 
         if (fireEvents) {
-            ValueChangeEvent.fire(this, projectSlas);
+            ValueChangeEvent.fire(this, value);
         }
     }
-
-    private String format(Long value) {
-        return value == null ? "" : workTimeFormatter.asString(value);
-    }
-
-    @UiField
-    SpanElement criticalReactionTime;
-
-    @UiField
-    SpanElement criticalTemporarySolution;
-
-    @UiField
-    SpanElement criticalFullSolution;
-
-    @UiField
-    SpanElement importantReactionTime;
-
-    @UiField
-    SpanElement importantTemporarySolution;
-
-    @UiField
-    SpanElement importantFullSolution;
-
-    @UiField
-    SpanElement basicReactionTime;
-
-    @UiField
-    SpanElement basicTemporarySolution;
-
-    @UiField
-    SpanElement basicFullSolution;
-
-    @UiField
-    SpanElement cosmeticReactionTime;
-
-    @UiField
-    SpanElement cosmeticTemporarySolution;
-
-    @UiField
-    SpanElement cosmeticFullSolution;
-
-    private WorkTimeFormatter workTimeFormatter;
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ProjectSla>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    private List<ProjectSla> projectSlas;
-
-    interface SlaInputReadOnlyUiBinder extends UiBinder<HTMLPanel, SlaInputReadOnly> {
+    private void initView() {
+        for (En_ImportanceLevel importance : En_ImportanceLevel.values()) {
+            SlaRowItemReadOnly item = slaRowItemReadOnlyProvider.get();
+            item.setImportance(importanceLang.getImportanceName(importance));
+            importanceToItemMap.put(importance, item);
+            root.add(item.asWidget());
+        }
     }
+
+    private void clearView() {
+        importanceToItemMap.values().forEach(SlaRowItemReadOnly::clear);
+    }
+
+    private List<ProjectSla> collectSla() {
+        return importanceToItemMap.values().stream().map(SlaRowItemReadOnly::getValue).collect(Collectors.toList());
+    }
+
+    @UiField
+    HTMLPanel root;
+
+    @Inject
+    private Provider<SlaRowItemReadOnly> slaRowItemReadOnlyProvider;
+
+    @Inject
+    private En_CaseImportanceLang importanceLang;
+
+    private Map<En_ImportanceLevel, SlaRowItemReadOnly> importanceToItemMap = new HashMap<>();
+
+    interface SlaInputReadOnlyUiBinder extends UiBinder<HTMLPanel, SlaInputReadOnly> {}
     private static SlaInputReadOnlyUiBinder ourUiBinder = GWT.create(SlaInputReadOnlyUiBinder.class);
 }

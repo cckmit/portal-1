@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="form-group-attached">
+    <g:HTMLPanel ui:field="root" styleName="form-group-attached">
         <div class="row clearfix">
             <div class="col-md-2">
             </div>
@@ -26,126 +26,6 @@
                     <label>
                         <ui:text from="{lang.projectSlaFullTime}"/>
                     </label>
-                </div>
-            </div>
-        </div>
-        <div class="row clearfix">
-            <div class="col-md-2">
-                <div class="form-group form-group-default">
-                    <label>
-                        <ui:text from="{lang.criticalImportance}"/>
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="criticalReactionTime"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="criticalTemporarySolution"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="criticalFullSolution"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row clearfix">
-            <div class="col-md-2">
-                <div class="form-group form-group-default">
-                    <label>
-                        <ui:text from="{lang.importantImportance}"/>
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="importantReactionTime"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="importantTemporarySolution"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="importantFullSolution"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row clearfix">
-            <div class="col-md-2">
-                <div class="form-group form-group-default">
-                    <label>
-                        <ui:text from="{lang.basicImportance}"/>
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="basicReactionTime"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="basicTemporarySolution"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="basicFullSolution"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row clearfix">
-            <div class="col-md-2">
-                <div class="form-group form-group-default">
-                    <label>
-                        <ui:text from="{lang.cosmeticImportance}"/>
-                    </label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="cosmeticReactionTime"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="cosmeticTemporarySolution"/>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group form-group-default">
-                    <div>
-                        <span ui:field="cosmeticFullSolution"/>
-                    </div>
                 </div>
             </div>
         </div>

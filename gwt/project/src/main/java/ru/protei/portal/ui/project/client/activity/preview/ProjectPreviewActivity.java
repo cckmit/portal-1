@@ -8,6 +8,8 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -20,6 +22,7 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -131,6 +134,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setProduct(value.getSingleProduct() == null ? "" : value.getSingleProduct().getName());
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
         view.slaInputReadOnly().setValue(project.getProjectSlas());
+        view.slaContainerVisibility().setVisible(isSlaContainerVisible(project.getProjectSlas()));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
@@ -148,6 +152,18 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
+    }
+
+    private boolean isSlaContainerVisible(List<ProjectSla> projectSlas) {
+        if (CollectionUtils.isEmpty(projectSlas)) {
+            return false;
+        }
+
+        if (project.getProjectSlas().stream().allMatch(ProjectSla::isEmpty)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Inject

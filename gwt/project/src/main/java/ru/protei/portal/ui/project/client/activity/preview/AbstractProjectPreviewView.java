@@ -39,6 +39,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     HasValue<List<ProjectSla>> slaInputReadOnly();
 
+    HasVisibility slaContainerVisibility();
+
     void setContract(String value, String link);
 
     void setPlatform(String value, String link);
