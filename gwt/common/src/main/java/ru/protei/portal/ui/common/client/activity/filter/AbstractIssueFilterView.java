@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 
@@ -12,7 +13,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
  */
 public interface AbstractIssueFilterView extends IsWidget {
 
-    void setActivity(AbstractIssueFilterActivity activity);
+    void setIssueFilterParam(AbstractIssueFilterWidgetView issueFilterParamView);
 
     HasValue<String> filterName();
 
@@ -39,4 +40,6 @@ public interface AbstractIssueFilterView extends IsWidget {
     void presetFilterType();
 
     HasValue<CaseFilterShortView> userFilter();
+
+    void updateFilterType(En_CaseFilterType filterType);
 }

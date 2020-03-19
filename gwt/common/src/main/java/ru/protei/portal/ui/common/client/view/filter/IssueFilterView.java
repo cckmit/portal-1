@@ -15,15 +15,10 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterActivity;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.common.client.activity.filter.IssueFilterActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-
-import javax.annotation.PostConstruct;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -37,7 +32,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 
     @Override
@@ -55,8 +49,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterActivity activity) {
-        this.activity = activity;
+    public void setIssueFilterParam(AbstractIssueFilterWidgetView issueFilterParamView) {
+        this.issueFilterParamView = issueFilterParamView;
+        issueFilterParamViewContainer.add(issueFilterParamView.asWidget());
+        activity.setView(this, issueFilterParamView);
     }
 
     @Override
@@ -260,9 +256,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Inject
     @UiField(provided = true)
     IssueFilterSelector userFilter;
-    @Inject
-    @UiField(provided = true)
-    IssueFilterParamView issueFilterParamView;
+    @UiField
+    HTMLPanel issueFilterParamViewContainer;
     @UiField
     Button resetBtn;
     @UiField
@@ -280,7 +275,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiField
     DivElement filterNameContainer;
 
-    private AbstractIssueFilterActivity activity;
+    @Inject
+    AbstractIssueFilterActivity activity;
+
+    AbstractIssueFilterWidgetView issueFilterParamView;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterView > {}

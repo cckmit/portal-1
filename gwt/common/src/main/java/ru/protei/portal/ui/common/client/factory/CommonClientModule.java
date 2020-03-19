@@ -145,9 +145,9 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
 
-        bind( AbstractIssueFilterActivity.class ).to(IssueFilterActivity.class).asEagerSingleton();
-        bind( AbstractIssueFilterView.class ).to( IssueFilterView.class ).in( Singleton.class );
-        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
+        bind( AbstractIssueFilterActivity.class ).to( IssueFilterActivity.class ).in( Singleton.class );
+        bind( AbstractIssueFilterView.class ).to( IssueFilterView.class );
+        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class );
     }
 }
 

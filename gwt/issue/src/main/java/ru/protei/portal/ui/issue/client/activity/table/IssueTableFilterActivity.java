@@ -33,7 +33,6 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -59,17 +58,15 @@ public abstract class IssueTableFilterActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
-        collapseFilterView.setActivity(this);
-        collapseFilterView.getContainer().add(filterView.asWidget());
-
-        issueFilterActivity.setModel(this);
-        filterView.setActivity(issueFilterActivity);
-
-        filterParamView = filterView.getIssueFilterParams();
-        filterParamView.setActivity(this);
+        filterParamView.setModel(this);
         filterParamView.setInitiatorModel(initiatorModel);
         filterParamView.setCreatorModel(personModel);
         filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
+
+        filterView.setIssueFilterParam(filterParamView);
+
+        collapseFilterView.setActivity(this);
+        collapseFilterView.getContainer().add(filterView.asWidget());
 
         view.getFilterContainer().add( collapseFilterView.asWidget() );
         pagerView.setActivity( this );
@@ -79,23 +76,18 @@ public abstract class IssueTableFilterActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-//        filterView.resetFilter();
-//        filterView.presetFilterType();
-//        updateCaseStatesFilter();
+        filterView.resetFilter();
+        filterView.presetFilterType();
+        updateCaseStatesFilter();
     }
 
     @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
         applyFilterViewPrivileges();
 
-        filterView.resetFilter();
-        filterView.presetFilterType();
-        updateCaseStatesFilter();
-
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-//        issueFilterActivity.showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -415,9 +407,6 @@ public abstract class IssueTableFilterActivity
     AbstractIssueCollapseFilterView collapseFilterView;
 
     @Inject
-    AbstractIssueFilterView filterView;
-
-    @Inject
     IssueControllerAsync issueService;
 
     @Inject
@@ -448,8 +437,9 @@ public abstract class IssueTableFilterActivity
     InitiatorModel initiatorModel;
 
     @Inject
-    AbstractIssueFilterActivity issueFilterActivity;
-    private AbstractIssueFilterWidgetView filterParamView;
+    AbstractIssueFilterView filterView;
+    @Inject
+    AbstractIssueFilterWidgetView filterParamView;
 
     @Inject
     PersonModel personModel;

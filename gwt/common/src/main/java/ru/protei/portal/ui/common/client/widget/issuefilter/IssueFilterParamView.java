@@ -69,8 +69,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterModel activity) {
-        this.activity = activity;
+    public void setModel(AbstractIssueFilterModel model) {
+        this.model = model;
     }
 
     @Override
@@ -207,6 +207,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setValue(null);
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
+
+        model.onUserFilterChanged();
     }
 
     @Override
@@ -243,6 +245,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         products().setValue(products);
 
         tags().setValue(setOf( filter.getCaseTags() ) );
+
+        model.onUserFilterChanged();
     }
 
     @Override
@@ -369,7 +373,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("companies")
     public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
-        if (activity != null) {
+        if (model != null) {
 //            activity.onCompaniesFilterChanged();
         }
     }
@@ -476,8 +480,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     private void onFilterChanged() {
-        if (activity != null) {
-            activity.onUserFilterChanged();
+        if (model != null) {
+            model.onUserFilterChanged();
         }
     }
 
@@ -636,7 +640,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     PolicyService policyService;
 
     private Timer timer = null;
-    private AbstractIssueFilterModel activity = null;
+    private AbstractIssueFilterModel model;
 
     interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterParamView> {}
     private static IssueFilterUiBinder ourUiBinder = GWT.create(IssueFilterUiBinder.class);

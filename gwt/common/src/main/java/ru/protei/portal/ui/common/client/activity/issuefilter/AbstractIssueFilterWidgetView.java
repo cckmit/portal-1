@@ -3,7 +3,9 @@ package ru.protei.portal.ui.common.client.activity.issuefilter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -22,8 +24,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public interface AbstractIssueFilterWidgetView extends IsWidget {
-
-    void setActivity(AbstractIssueFilterModel activity);
+    void setModel(AbstractIssueFilterModel model);
 
     void setInitiatorModel(InitiatorModel initiatorModel);
 
@@ -94,4 +95,10 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     String validateMultiSelectorsTotalCount();
 
     boolean isSearchFieldCorrect();
+
+    void watchForScrollOf(Widget widget);
+
+    void stopWatchForScrollOf(Widget widget);
+
+    void applyVisibilityByFilterType(En_CaseFilterType filterType);
 }

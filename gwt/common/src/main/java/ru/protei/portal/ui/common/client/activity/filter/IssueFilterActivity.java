@@ -15,14 +15,10 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 public abstract class IssueFilterActivity implements Activity, AbstractIssueFilterActivity {
-    @Inject
-    public void onInit() {
-        filterParamView = filterView.getIssueFilterParams();
-    }
-
     @Override
-    public void setModel(AbstractIssueFilterModel model) {
-        this.model = model;
+    public void setView(AbstractIssueFilterView view, AbstractIssueFilterWidgetView paramView) {
+        filterView = view;
+        filterParamView = paramView;
     }
 
     @Override
@@ -86,7 +82,7 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
             filterView.resetFilter();
             showUserFilterControls();
 
-            model.onUserFilterChanged();
+
             return;
         }
 
@@ -97,7 +93,6 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
                     filterView.editBtnVisibility().setVisible( true );
                     filterView.filterName().setValue( caseFilter.getName() );
                     filterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
-                    model.onUserFilterChanged();
                 })
         );
     }
@@ -138,12 +133,8 @@ public abstract class IssueFilterActivity implements Activity, AbstractIssueFilt
     @Inject
     IssueFilterControllerAsync filterService;
 
-    @Inject
-    AbstractIssueFilterView filterView;
-
+    private AbstractIssueFilterView filterView;
     private AbstractIssueFilterWidgetView filterParamView;
-
-    private AbstractIssueFilterModel model;
 
     @Inject
     Lang lang;

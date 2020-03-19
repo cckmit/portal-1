@@ -1,10 +1,12 @@
 package ru.protei.portal.ui.common.client.activity.filter;
 
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+
 /**
  * Абстракция активности фильтра обращений
  */
 public interface AbstractIssueFilterActivity {
-    void setModel(AbstractIssueFilterModel model);
+    void setView(AbstractIssueFilterView view, AbstractIssueFilterWidgetView paramView);
 
     void onSaveFilterClicked();
 
