@@ -2084,7 +2084,21 @@ public interface Lang extends Messages, ContactItemLang {
 
     String education();
 
+    String educationConference();
+
+    String educationCourse();
+
+    String educationLiterature();
+
     String educationConferences();
 
     String educationCourses();
+
+    String educationActualEntries();
+
+    String educationEntryAttendance();
+
+    String educationRequestEntry();
+
+    String educationEntryAttendanceRequested();
 }

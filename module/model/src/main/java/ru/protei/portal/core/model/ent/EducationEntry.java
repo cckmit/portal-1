@@ -47,9 +47,7 @@ public class EducationEntry implements Serializable {
     @JdbcColumn(name = "extra_info")
     private String extraInfo;
 
-    @JdbcOneToMany(remoteColumn = "education_entry_id", additionalConditions = {
-            @JdbcManyJoinData(remoteColumn = "approved", value = "true", valueClass = Boolean.class)
-    })
+    @JdbcOneToMany(remoteColumn = "education_entry_id")
     private List<EducationEntryAttendance> attendanceList;
 
     public EducationEntry() {}

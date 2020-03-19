@@ -1,0 +1,28 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="row">
+        <div class="col-md-3">
+            <g:Image ui:field="image" styleName="image-h-center-of-parent"/>
+        </div>
+        <div class="col-md-9">
+            <div>
+                <g:Anchor ui:field="link"><span ui:field="title" style="font-weight-bold"/></g:Anchor>
+            </div>
+            <div>
+                <span class="d-inline align-middle badge badge-secondary" ui:field="type"/>
+                <img class="d-inline align-middle protei-coin" src="./images/protei-coin.png"/>
+                <span class="d-inline align-middle semi-bold" ui:field="coins"/>
+            </div>
+            <div>
+                <b><ui:text from="{lang.educationEntryAttendance}: "/></b>
+                <span ui:field="attendance"/>
+            </div>
+            <div>
+                <span ui:field="dateAndLocation"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

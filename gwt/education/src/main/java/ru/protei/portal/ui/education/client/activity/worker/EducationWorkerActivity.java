@@ -15,7 +15,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EducationControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -36,18 +35,22 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
     @Event
     public void onShow(EducationEvents.ShowWorker event) {
         boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        boolean isWorkerCanRequest = isWorker && policyService.hasPrivilegeFor(En_Privilege.EDUCATION_EDIT);
         if (!isWorker) {
             fireEvent(new ForbiddenEvents.Show(event.parent));
             return;
         }
         showView(event.parent);
+        showTable();
         loadWallets();
     }
 
     private void showView(HasWidgets parent) {
         parent.clear();
         parent.add(view.asWidget());
+    }
+
+    private void showTable() {
+        fireEvent(new EducationEvents.ShowWorkerTable(view.tableContainer()));
     }
 
     private void loadWallets() {
@@ -93,9 +96,6 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
         return view;
     }
 
-
-    @Inject
-    Lang lang;
     @Inject
     En_ResultStatusLang resultStatusLang;
     @Inject

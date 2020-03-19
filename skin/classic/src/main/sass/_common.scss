@@ -837,6 +837,15 @@ label.bordered:after {
   }
 }
 
+.education-table {
+  margin-top: -7px;
+  border: 1px solid rgba(0,0,0,.125);
+  thead {
+    display: none;
+  }
+}
+
+
 .dev-unit-type-list-image {
   position: absolute;
   display: block;
@@ -1128,25 +1137,6 @@ label.bordered:after {
 }
 
 /************************/
-
-.badge {
-  display: inline-block;
-  min-width: 10px;
-  padding: 0.5em;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  background-color: $info_dark_color;
-  border-radius: 50%;
-  font-size: 1.5em;
-
-  > i {
-    min-width: 1em;
-  }
-}
 
 /* inputSelector */
 
@@ -3985,4 +3975,12 @@ table {
 
 .protei-coin {
   width: 24px;
+}
+
+.image-h-center-of-parent {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
 }

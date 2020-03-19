@@ -40,7 +40,7 @@
             <column name="link" type="VARCHAR(1024)">
                 <constraints nullable="false"/>
             </column>
-            <column name="image" type="VARCHAR(8192)"/>
+            <column name="image" type="LONGTEXT"/>
             <column name="location" type="VARCHAR(1024)"/>
             <column name="date_start" type="DATETIME"/>
             <column name="date_end" type="DATETIME"/>
@@ -82,5 +82,8 @@
                                  baseTableName="education_entry_attendance" baseColumnNames="worker_entry_id"
                                  referencedTableName="worker_entry" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
+
+        <addUniqueConstraint constraintName="uq_education_entry_attendance_entry_worker"
+                             tableName="education_entry_attendance" columnNames="education_entry_id, worker_entry_id"/>
     </changeSet>
 </databaseChangeLog>

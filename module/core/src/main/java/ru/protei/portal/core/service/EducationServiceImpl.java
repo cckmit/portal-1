@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -34,7 +35,7 @@ public class EducationServiceImpl implements EducationService {
     public Result<List<EducationWallet>> getAllWallets(AuthToken token) {
         List<EducationWallet> wallets = emptyIfNull(educationWalletDAO.getAll());
         for (EducationWallet wallet : wallets) {
-            List<EducationEntry> educationEntryList = educationEntryDAO.getForWallet(wallet.getId(), new Date());
+            List<EducationEntry> educationEntryList = educationEntryDAO.getForWallet(wallet.getDepartmentId(), new Date());
             wallet.setEducationEntryList(emptyIfNull(educationEntryList));
         }
         return ok(wallets);
@@ -130,20 +131,25 @@ public class EducationServiceImpl implements EducationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        EducationEntryAttendance attendance = new EducationEntryAttendance();
-        attendance.setEducationEntryId(educationEntryId);
-        attendance.setWorkerId(workerEntry.getId());
-        attendance.setCharged(true);
-        attendance.setDateRequested(new Date());
-        attendance.setId(educationEntryAttendanceDAO.persist(attendance));
+        try {
+            EducationEntryAttendance attendance = new EducationEntryAttendance();
+            attendance.setEducationEntryId(educationEntryId);
+            attendance.setWorkerId(workerEntry.getId());
+            attendance.setCharged(true);
+            attendance.setDateRequested(new Date());
+            attendance.setId(educationEntryAttendanceDAO.persist(attendance));
 
-        wallet.setCoins(wallet.getCoins() - entry.getCoins());
-        if (!educationWalletDAO.partialMerge(wallet, "coins")) {
-            log.warn("Failed to reduce wallet coins for attendance : {}", attendance);
-            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            wallet.setCoins(wallet.getCoins() - entry.getCoins());
+            if (!educationWalletDAO.partialMerge(wallet, "coins")) {
+                log.warn("Failed to reduce wallet coins for attendance : {}", attendance);
+                throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+            }
+
+            return ok(attendance);
+
+        } catch (DuplicateKeyException e) {
+            return error(En_ResultStatus.ALREADY_EXIST);
         }
-
-        return ok(attendance);
     }
 
     @Override
