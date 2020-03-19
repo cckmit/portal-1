@@ -44,7 +44,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     public HasText comment() { return comment; }
 
     @Override
-    public HasValue<PersonShortView> owner() { return owner; }
+    public HasValue<PersonShortView> owner() { return null; }
 
     @Override
     public HasValue<Subnet> subnet() { return null; }
@@ -87,7 +87,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
         }
         macAddress.ensureDebugId(DebugIds.RESERVED_IP.MAC_ADDRESS_INPUT);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
-        owner.setEnsureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
+        //owner.setEnsureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }
@@ -98,9 +98,9 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     ValidableTextBox macAddress;
     @UiField
     TextArea comment;
-    @Inject
+/*    @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector owner;
+    EmployeeButtonSelector owner;*/
 /*    @Inject
     @UiField(provided = true)
     SubnetButtonSelector subnet;*/
@@ -115,6 +115,6 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
 
     private AbstractReservedIpEditActivity activity;
 
-    interface ReservedIpEditViewUiBinder extends UiBinder<HTMLPanel, ReservedIpEditView> {}
     private static ReservedIpEditViewUiBinder ourUiBinder = GWT.create(ReservedIpEditViewUiBinder.class);
+    interface ReservedIpEditViewUiBinder extends UiBinder<HTMLPanel, ReservedIpEditView> {}
 }

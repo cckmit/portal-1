@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -54,24 +55,31 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
     public HasValue<Subnet> subnet() { return null; }
 
     @Override
-    public HasValue<PersonShortView> owner() { return owner(); }
+    public HasValue<PersonShortView> owner() { return null; }
 
     @Override
-    public HasValue<RangePicker> reserveDate() { return null; }
+    public HasValue<DateInterval> reserveDate() { return reserveDate; }
 
     @Override
-    public HasValue<RangePicker> releaseDate() { return null; }
+    public HasValue<DateInterval> releaseDate() { return releaseDate; }
 
     @Override
-    public HasValue<RangePicker> lastActiveDate() { return null; }
+    public HasValue<DateInterval> lastActiveDate() { return lastActiveDate; }
+
+    @Override
+    public HasValue<Boolean> onlyLocal() { return onlyLocal; }
 
     @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.ip_address );
         sortDir.setValue( true );
         search.setValue( "" );
-        owner.setValue(null);
-        subnet().setValue(null);
+        //owner.setValue(null);
+/*        subnet.setValue(null);*/
+        reserveDate.setValue(null);
+        releaseDate.setValue(null);
+        lastActiveDate.setValue(null);
+        onlyLocal.setValue(false);
     }
 
     @UiHandler( "resetBtn" )
@@ -111,9 +119,46 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
         }
     };
 
+    @UiHandler("onlyLocal")
+    public void onOnlyLocalClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+/*    @UiHandler( "owner" )
+    public void onOwnerSelected( ValueChangeEvent<PersonShortView> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }*/
+
+
+    @UiField
+    CleanableSearchBox search;
+
+/*    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector owner;*/
+
+/*    @Inject
+    @UiField(provided = true)
+    SubnetButtonSelector subnet;*/
+
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector owner;
+    RangePicker reserveDate;
+
+    @Inject
+    @UiField(provided = true)
+    RangePicker releaseDate;
+
+    @Inject
+    @UiField(provided = true)
+    RangePicker lastActiveDate;
+
+    @UiField
+    CheckBox onlyLocal;
 
     @Inject
     @UiField( provided = true )
@@ -121,9 +166,6 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
 
     @UiField
     ToggleButton sortDir;
-
-    @UiField
-    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;
@@ -134,6 +176,6 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
 
     AbstractIpReservationFilterActivity activity;
 
-    private static IpReservationFilterView.IpReservationFilterViewUiBinder ourUiBinder = GWT.create( IpReservationFilterView.IpReservationFilterViewUiBinder.class );
+    private static IpReservationFilterViewUiBinder ourUiBinder = GWT.create( IpReservationFilterViewUiBinder.class );
     interface IpReservationFilterViewUiBinder extends UiBinder<HTMLPanel, IpReservationFilterView> {}
 }

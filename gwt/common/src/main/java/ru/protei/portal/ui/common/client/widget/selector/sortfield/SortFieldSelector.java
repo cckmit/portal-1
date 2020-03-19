@@ -87,6 +87,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case RESERVED_IP:
                 addOption( En_SortField.ip_address );
+                addOption( En_SortField.check_date);
                 break;
         }
     }

@@ -111,6 +111,6 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
 
     private AbstractSubnetEditActivity activity;
 
-    interface SubnetEditViewUiBinder extends UiBinder<HTMLPanel, SubnetEditView> {}
     private static SubnetEditViewUiBinder ourUiBinder = GWT.create(SubnetEditViewUiBinder.class);
+    interface SubnetEditViewUiBinder extends UiBinder<HTMLPanel, SubnetEditView> {}
 }

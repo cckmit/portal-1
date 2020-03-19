@@ -21,7 +21,6 @@ public class IpReservationEvents {
     /**
      * Показать карточку зарезервированного IP
      */
-
 /*    @Url(value = "reserved_ip_preview", primary = true)
     public static class ShowFullScreen {
         public ShowFullScreen() {
@@ -38,10 +37,16 @@ public class IpReservationEvents {
     /**
      * Показать форму создания подсети
      */
-/*    @Url(value = "subnet")*/
-    public static class CreateSubnet {}
+    public static class CreateSubnet {
+        public CreateSubnet(HasWidgets parent, Subnet subnet) {
+            this.parent = parent;
+            this.subnet = subnet;
+        }
 
-/*    @Url( value = "subnet")*/
+        public Subnet subnet;
+        public HasWidgets parent;
+    }
+
     public static class EditSubnet {
 /*        public EditSubnet () {
             subnetId = null;
@@ -57,10 +62,16 @@ public class IpReservationEvents {
     /**
      * Показать форму резервирования IP
      */
-/*    @Url(value = "reserved_ip")*/
-    public static class CreateReservedIp {}
+    public static class CreateReservedIp {
+        public CreateReservedIp(HasWidgets parent, ReservedIp reservedIp) {
+            this.parent = parent;
+            this.reservedIp = reservedIp;
+        }
 
-/*    @Url( value = "reserved_ip")*/
+        public ReservedIp reservedIp;
+        public HasWidgets parent;
+    }
+
     public static class EditReservedIp {
 /*        public EditReservedIp () {
             reservedIpId = null;

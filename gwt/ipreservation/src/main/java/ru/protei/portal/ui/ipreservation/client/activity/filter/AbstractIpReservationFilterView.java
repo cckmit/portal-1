@@ -2,7 +2,7 @@ package ru.protei.portal.ui.ipreservation.client.activity.filter;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -16,9 +16,10 @@ public interface AbstractIpReservationFilterView extends IsWidget {
     HasValue<String> search();
     HasValue<Subnet> subnet();
     HasValue<PersonShortView> owner();
-    HasValue<RangePicker> reserveDate();
-    HasValue<RangePicker> releaseDate();
-    HasValue<RangePicker> lastActiveDate();
+    HasValue<DateInterval> reserveDate();
+    HasValue<DateInterval> releaseDate();
+    HasValue<DateInterval> lastActiveDate();
+    HasValue<Boolean> onlyLocal();
 
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();

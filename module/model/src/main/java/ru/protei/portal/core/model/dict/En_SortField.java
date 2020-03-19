@@ -129,7 +129,11 @@ public enum En_SortField {
      * subnet address
      */
     address("address"),
-    ;
+
+    /**
+     * last active IP-address date
+     */
+    check_date("last_check_date");
 
     private String fieldName;
     private String bundleKey;
