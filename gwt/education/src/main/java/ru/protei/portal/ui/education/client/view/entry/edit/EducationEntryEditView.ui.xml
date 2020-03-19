@@ -1,0 +1,75 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:education='urn:import:ru.protei.portal.ui.education.client.view.widget'
+             xmlns:daterange='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
+             xmlns:imagepicker='urn:import:ru.protei.portal.ui.common.client.widget.imagepicker'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body">
+            <div class="row">
+
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.educationEntryTitle}"/></label>
+                    <validatefield:ValidableTextBox ui:field="title" styleName="form-control" notNull="true"/>
+                </div>
+                <education:entry.EducationEntryTypeButtonSelector ui:field="type" styleName="form-group col-md-4 dropdown-selector"
+                                                                  header="{lang.educationEntryType}"
+                                                                  validation="true" searchEnabled="false"/>
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.educationEntryCoins}"/></label>
+                    <validatefield:ValidableTextBox ui:field="coins" styleName="form-control" notNull="true" regexp="^\d+$"/>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.educationEntryLink}"/></label>
+                    <g:TextBox ui:field="link" styleName="form-control"/>
+                </div>
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.educationEntryLocation}"/></label>
+                    <g:TextBox ui:field="location" styleName="form-control"/>
+                </div>
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.educationEntryDates}"/></label>
+                    <daterange:RangePicker ui:field="dates" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.educationEntryDescription}"/></label>
+                    <autoresizetextarea:AutoResizeTextArea ui:field="description" styleName="form-control"
+                                                           minRows="2" maxRows="10"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.educationEntryImage}"/></label>
+                    <imagepicker:ImageBase64Picker ui:field="imagePicker">
+                        <span class="btn btn-white" ui:field="imagePickerButton">
+                            <i class="far fa-file-image"/>
+                            <span class="text-transform-initial"><ui:text from='{lang.selectImage}'/></span>
+                        </span>
+                    </imagepicker:ImageBase64Picker>
+                    <g:Image ui:field="imagePreview" styleName="m-t-5 border"/>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <g:Button styleName="btn btn-danger" ui:field="declineButton">
+                <i class="fas fa-trash-alt"/>
+                <span class="bold"><ui:text from="{lang.educationEntryActionDecline}"/></span>
+            </g:Button>
+            <g:Button styleName="btn btn-complete" ui:field="approveButton">
+                <i class="fas fa-thumbs-up"/>
+                <span class="bold"><ui:text from="{lang.educationEntryActionApprove}"/></span>
+            </g:Button>
+            <g:Button ui:field="saveButton" styleName="btn btn-complete">
+                <span class="bold"><ui:text from="{lang.buttonSave}"/></span>
+            </g:Button>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default">
+                <span class="bold"><ui:text from="{lang.buttonClose}"/></span>
+            </g:Button>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

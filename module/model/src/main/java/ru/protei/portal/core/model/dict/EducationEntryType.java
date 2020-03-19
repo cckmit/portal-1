@@ -14,4 +14,13 @@ public enum EducationEntryType implements HasId {
 
     private final int id;
     public int getId() { return id; }
+
+    public static EducationEntryType byId(int id) {
+        for (EducationEntryType type : EducationEntryType.values()) {
+            if (type.getId() == id) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.EducationEntry;
 
@@ -11,7 +12,9 @@ public class EducationEvents {
         public Show () {}
     }
 
+    @Url(value = "education_entry")
     public static class EditEducationEntry {
+        @Omit
         public EducationEntry entry;
         public EditEducationEntry() {}
         public EditEducationEntry(EducationEntry entry) {

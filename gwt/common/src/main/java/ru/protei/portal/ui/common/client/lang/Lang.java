@@ -2101,4 +2101,29 @@ public interface Lang extends Messages, ContactItemLang {
     String educationRequestEntry();
 
     String educationEntryAttendanceRequested();
+
+    String educationEntryTitle();
+
+    String educationEntryType();
+
+    String educationEntryCoins();
+
+    String educationEntryLink();
+
+    String educationEntryLocation();
+
+    String educationEntryDates();
+
+    String educationEntryDescription();
+
+    String educationEntryImage();
+
+    String educationEntryActionApprove();
+
+    String educationEntryActionDecline();
+
+    String educationEntryActionDeclined();
+
+    String selectImage();
+
 }
