@@ -1,9 +1,11 @@
 package ru.protei.portal.tools.notifications;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
@@ -18,7 +20,9 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.CaseCommentService;
+import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -27,14 +31,17 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.filterToList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -580,6 +587,36 @@ public class MailNotificationProcessor {
         sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
     }
 
+    @EventListener
+    public void onMailReportEvent(MailReportEvent event) {
+        Report report = event.getReport();
+
+        PreparedTemplate bodyTemplate = templateService.getMailReportBody(report);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for reporId={}", report.getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getMailReportSubject(report);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for reporId={}", report.getId());
+            return;
+        }
+
+        if ( event.getContent() != null) {
+            sendMailToRecipientWithAttachment(
+                    fetchNotificationEntryFromPerson(report.getCreator()),
+                    bodyTemplate, subjectTemplate,
+                    true,
+                    event.getContent(), report.getName() + ".xls");
+        } else {
+            sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(report.getCreator())),
+                    bodyTemplate, subjectTemplate,
+                    true);
+        }
+
+    }
+
     // -----
     // Utils
     // -----
@@ -594,6 +631,24 @@ public class MailNotificationProcessor {
                 log.error("Failed to make MimeMessage", e);
             }
         });
+    }
+
+    private void sendMailToRecipientWithAttachment(NotificationEntry recipients, PreparedTemplate bodyTemplate,
+                                                   PreparedTemplate subjectTemplate, boolean isShowPrivacy,
+                                                   InputStream content, String filename) {
+            try {
+                String body = bodyTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
+                String subject = subjectTemplate.getText(recipients.getAddress(), recipients.getLangCode(), isShowPrivacy);
+                MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+                msg.setSubject(subject);
+                msg.setFrom(getFromAddress());
+                msg.setText(HelperFunc.nvlt(body, ""), true);
+                msg.setTo(recipients.getAddress());
+                msg.addAttachment(filename, new ByteArrayResource(IOUtils.toByteArray(content)));
+                mailSendChannel.send(msg.getMimeMessage());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage", e);
+            }
     }
 
     private void sendMail(String address, String subject, String body) throws MessagingException {
