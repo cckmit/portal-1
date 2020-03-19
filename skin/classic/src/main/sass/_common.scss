@@ -3982,3 +3982,12 @@ table {
     z-index: 150;
   }
 }
+
+.form-group {
+  .form-control {
+    &.sla-input-time {
+      border: 1px solid rgba(0, 0, 0, 0.07);
+      padding-left: 5px;
+    }
+  }
+}

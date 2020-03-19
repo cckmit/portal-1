@@ -7,13 +7,13 @@
             <label ui:field="importance"/>
         </div>
         <div class="form-group col-md-3">
-            <timefield:TimeTextBox ui:field="reactionTime" styleName="form-control time-elapsed"/>
+            <timefield:TimeTextBox ui:field="reactionTime" styleName="form-control time-elapsed sla-input-time"/>
         </div>
         <div class="form-group col-md-3">
-            <timefield:TimeTextBox ui:field="temporarySolutionTime" styleName="form-control time-elapsed"/>
+            <timefield:TimeTextBox ui:field="temporarySolutionTime" styleName="form-control time-elapsed sla-input-time"/>
         </div>
         <div class="form-group col-md-3">
-            <timefield:TimeTextBox ui:field="fullSolutionTime" styleName="form-control time-elapsed"/>
+            <timefield:TimeTextBox ui:field="fullSolutionTime" styleName="form-control time-elapsed sla-input-time"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

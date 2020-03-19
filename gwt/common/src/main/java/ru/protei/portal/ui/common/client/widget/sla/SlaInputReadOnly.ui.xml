@@ -6,6 +6,11 @@
     <g:HTMLPanel ui:field="root" styleName="form-group-attached">
         <div class="row clearfix">
             <div class="col-md-2">
+                <div class="form-group form-group-default">
+                    <label>
+                        <ui:text from="{lang.projectImportance}"/>
+                    </label>
+                </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group form-group-default">

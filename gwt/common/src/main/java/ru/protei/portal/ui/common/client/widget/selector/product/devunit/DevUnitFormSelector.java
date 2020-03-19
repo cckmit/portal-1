@@ -44,6 +44,14 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
         return item;
     }
 
+    public void setState(En_DevUnitState enDevUnitState) {
+        model.setUnitState(enDevUnitState);
+    }
+
+    public void setDirectionId(Long directionId) {
+        model.setDirectionId(directionId);
+    }
+
     private ProductModel model;
 
 }

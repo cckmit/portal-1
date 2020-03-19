@@ -2099,4 +2099,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSlaFullTime();
 
     String projectSla();
+
+    String projectImportance();
 }

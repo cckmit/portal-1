@@ -23,12 +23,18 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -242,27 +248,27 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Inject
     @UiField( provided = true )
-    ProductDirectionButtonSelector productDirection;
+    ProductDirectionFormSelector productDirection;
 
     @Inject
     @UiField( provided = true )
-    RegionStateButtonSelector projectState;
+    RegionStateFormSelector projectState;
 
     @Inject
     @UiField( provided = true )
-    RegionButtonSelector projectRegion;
+    RegionFormSelector projectRegion;
 
     @Inject
     @UiField(provided = true)
-    CompanySelector company;
+    CompanyFormSelector company;
 
     @Inject
     @UiField(provided = true)
-    DevUnitButtonSelector product;
+    DevUnitFormSelector product;
 
     @Inject
     @UiField(provided = true)
-    CustomerTypeSelector customerType;
+    CustomerFormSelector customerType;
 
     @Inject
     @UiField(provided = true)

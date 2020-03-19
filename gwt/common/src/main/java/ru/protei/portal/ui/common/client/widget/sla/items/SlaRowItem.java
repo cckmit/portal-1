@@ -68,9 +68,11 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
     }
 
     public void setEnsureDebugId(String debugId) {
-        reactionTime.ensureDebugId(debugId + "-" + importanceLang.getImportanceName(importanceLevel) + "-reaction-time");
-        temporarySolutionTime.ensureDebugId(debugId + "-" + importanceLang.getImportanceName(importanceLevel) + "-temporary-solution-time");
-        fullSolutionTime.ensureDebugId(debugId + "-" + importanceLang.getImportanceName(importanceLevel) + "-complete-solution-time");
+        String importanceName = importanceLang.getImportanceName(importanceLevel);
+
+        reactionTime.ensureDebugId(debugId + "-" + importanceName + "-reaction-time");
+        temporarySolutionTime.ensureDebugId(debugId + "-" + importanceName + "-temporary-solution-time");
+        fullSolutionTime.ensureDebugId(debugId + "-" + importanceName + "-complete-solution-time");
     }
 
     @UiField
