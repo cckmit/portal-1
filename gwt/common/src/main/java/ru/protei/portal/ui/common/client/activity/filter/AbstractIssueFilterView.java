@@ -12,8 +12,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
  * Абстракция вида фильтра обращений
  */
 public interface AbstractIssueFilterView extends IsWidget {
-
-    void setIssueFilterParam(AbstractIssueFilterWidgetView issueFilterParamView);
+    void setModel(AbstractIssueFilterModel model);
 
     HasValue<String> filterName();
 

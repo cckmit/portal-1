@@ -15,14 +15,11 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
@@ -35,15 +32,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-
-        filterParamView.setModel(this);
-        filterParamView.setInitiatorModel(initiatorModel);
-        filterParamView.setCreatorModel(personModel);
-        filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
-
-        filterView.setIssueFilterParam(filterParamView);
-
-        view.getIssueFilterContainer().add(filterView.asWidget());
+        filterView.getIssueFilterParams().setModel(this);
     }
 
     @Event
@@ -72,22 +61,22 @@ public abstract class IssueReportCreateActivity implements Activity,
         if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
-            filterParamView.companies().setValue(companyIds);
-            filterParamView.updateInitiators();
+            filterView.getIssueFilterParams().companies().setValue(companyIds);
+            filterView.getIssueFilterParams().updateInitiators();
         }
     }
 
     private void applyFilterViewPrivileges() {
-        filterParamView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterParamView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
-        filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.getIssueFilterParams().managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
+        filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
     }
 
     @Override
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();
-        CaseQuery query = filterParamView.getFilterFields();
+        CaseQuery query = filterView.getIssueFilterParams().getFilterFields();
 
         if (!validateQuery(reportType, query)) {
             return;
@@ -182,15 +171,9 @@ public abstract class IssueReportCreateActivity implements Activity,
     ReportControllerAsync reportController;
     @Inject
     PolicyService policyService;
-    @Inject
-    PersonModel personModel;
-    @Inject
-    InitiatorModel initiatorModel;
 
     @Inject
     AbstractIssueFilterView filterView;
-    @Inject
-    AbstractIssueFilterWidgetView filterParamView;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

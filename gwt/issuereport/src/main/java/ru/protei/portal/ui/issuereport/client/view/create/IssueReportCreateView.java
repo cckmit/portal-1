@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.view.filter.IssueFilterWidget;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
@@ -37,11 +37,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Override
     public HasValue<String> name() {
         return name;
-    }
-
-    @Override
-    public HasWidgets getIssueFilterContainer() {
-        return issueFilterContainer;
     }
 
     @Override
@@ -82,8 +77,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     ReportTypeButtonSelector reportType;
     @UiField
     TextBox name;
-    @UiField
-    HTMLPanel issueFilterContainer;
+    @Inject
+    @UiField(provided = true)
+    IssueFilterWidget issueFilterWidget;
     @UiField
     Button createButton;
     @UiField

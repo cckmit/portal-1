@@ -20,7 +20,6 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.*;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -58,16 +57,10 @@ public abstract class IssueTableFilterActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
-        filterParamView.setModel(this);
-        filterParamView.setInitiatorModel(initiatorModel);
-        filterParamView.setCreatorModel(personModel);
-        filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
-
-        filterView.setIssueFilterParam(filterParamView);
+        filterView.getIssueFilterParams().setModel(this);
 
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());
-
         view.getFilterContainer().add( collapseFilterView.asWidget() );
         pagerView.setActivity( this );
 
@@ -97,8 +90,8 @@ public abstract class IssueTableFilterActivity
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             HashSet<EntityOption> companyIds = new HashSet<>();
             companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
-            filterParamView.companies().setValue( companyIds );
-            filterParamView.updateInitiators();
+            filterView.getIssueFilterParams().companies().setValue( companyIds );
+            filterView.getIssueFilterParams().updateInitiators();
         }
 
         clearScroll(event);
@@ -110,7 +103,7 @@ public abstract class IssueTableFilterActivity
             loadTable();
         }
 
-        validateSearchField(filterParamView.isSearchFieldCorrect());
+        validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());
     }
 
     @Event
@@ -162,13 +155,13 @@ public abstract class IssueTableFilterActivity
 
     @Override
     public void onUserFilterChanged() {
-        String validateString = filterParamView.validateMultiSelectorsTotalCount();
+        String validateString = filterView.getIssueFilterParams().validateMultiSelectorsTotalCount();
         if ( validateString != null ){
             fireEvent( new NotifyEvents.Show( lang.errTooMuchCompanies(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
-        boolean searchFieldCorrect = filterParamView.isSearchFieldCorrect();
+        boolean searchFieldCorrect = filterView.getIssueFilterParams().isSearchFieldCorrect();
         if(searchFieldCorrect) {
             loadTable();
         }
@@ -263,13 +256,8 @@ public abstract class IssueTableFilterActivity
     }
 
     private void validateSearchField(boolean isCorrect){
-        filterParamView.searchByCommentsWarningVisibility().setVisible(!isCorrect);
+        filterView.getIssueFilterParams().searchByCommentsWarningVisibility().setVisible(!isCorrect);
         filterView.createEnabled().setEnabled(isCorrect);
-    }
-
-    private boolean isSearchFieldCorrect(){
-        return !filterParamView.searchByComments().getValue() ||
-                filterParamView.searchPattern().getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
 
     private void loadTable() {
@@ -294,13 +282,6 @@ public abstract class IssueTableFilterActivity
         }
     }
 
-    private void fillFilterFields( CaseFilter filter ) {
-        filterView.removeFilterBtnVisibility().setVisible( true );
-        filterView.editBtnVisibility().setVisible( true );
-        filterView.filterName().setValue( filter.getName() );
-        filterParamView.fillFilterFields(filter.getParams(), filter.getSelectorsParams());
-    }
-
     private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
         filterView.resetFilter();
         filterService.getSelectorsParams( caseQuery, new RequestCallback<SelectorsParams>() {
@@ -311,8 +292,7 @@ public abstract class IssueTableFilterActivity
 
             @Override
             public void onSuccess( SelectorsParams selectorsParams ) {
-                filterParamView.fillFilterFields(caseQuery, selectorsParams);
-//                onFilterChanged();
+                filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
             }
         } );
     }
@@ -328,49 +308,18 @@ public abstract class IssueTableFilterActivity
     }
 
     private CaseQuery getQuery() {
-        return filterParamView.getFilterFields();
-    }
-
-    private boolean validateMultiSelectorsTotalCount() {
-        boolean isValid = true;
-        if (filterParamView.companies().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchCompanies(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setCompaniesErrorStyle(true);
-            isValid =  false;
-        } else {
-            filterParamView.setCompaniesErrorStyle(false);
-        }
-        if (filterParamView.products().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchProducts(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setProductsErrorStyle(true);
-            isValid = false;
-        } else {
-            filterParamView.setProductsErrorStyle(false);
-        }
-        if (filterParamView.managers().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchManagers(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setManagersErrorStyle(true);
-            isValid = false;
-        }
-        if (filterParamView.initiators().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchInitiators(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setInitiatorsErrorStyle(true);
-            isValid = false;
-        } else {
-            filterParamView.setManagersErrorStyle(false);
-        }
-        return isValid;
+        return filterView.getIssueFilterParams().getFilterFields();
     }
 
     private void applyFilterViewPrivileges() {
-        filterParamView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterParamView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
-        filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.getIssueFilterParams().managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
+        filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
     }
 
     private void updateCaseStatesFilter() {
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
-            filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+            filterView.getIssueFilterParams().setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
         }
     }
 
@@ -384,10 +333,6 @@ public abstract class IssueTableFilterActivity
         } else {
             animation.filterRestore();
         }
-    }
-
-    private void updateInitiatorSelector() {
-        filterParamView.updateInitiators();
     }
 
     private void clearScroll(IssueEvents.Show event) {
@@ -434,13 +379,10 @@ public abstract class IssueTableFilterActivity
     IssueFilterService issueFilterService;
 
     @Inject
-    InitiatorModel initiatorModel;
-
-    @Inject
     AbstractIssueFilterView filterView;
-    @Inject
-    AbstractIssueFilterWidgetView filterParamView;
 
+    @Inject
+    InitiatorModel initiatorModel;
     @Inject
     PersonModel personModel;
 

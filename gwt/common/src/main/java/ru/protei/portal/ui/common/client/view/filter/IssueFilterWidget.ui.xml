@@ -12,7 +12,7 @@
         </div>
 
         <div class="card-body p-t-0 filter-content">
-            <g:HTMLPanel ui:field="issueFilterParamViewContainer" styleName="row"/>
+            <issuefilter:IssueFilterParamView ui:field="issueFilterParamView" styleName="row"/>
         </div>
 
         <div class="card-footer filter-content text-right">
