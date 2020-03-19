@@ -2161,4 +2161,6 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpSubnetRemove();
 
     String reservedIpIpRelease();
+
+    String reservedIpOnlyLocal();
 }

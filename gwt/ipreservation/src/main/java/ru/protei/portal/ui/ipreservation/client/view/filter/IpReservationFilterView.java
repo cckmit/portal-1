@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -20,8 +21,6 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.ipreservation.client.activity.filter.AbstractIpReservationFilterActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.filter.AbstractIpReservationFilterView;
 
-import java.util.HashSet;
-
 /**
  * Представление фильтра подсистемы резервирования IP
  */
@@ -30,6 +29,7 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         sortField.setType(ModuleType.RESERVED_IP);
+        resetFilter();
     }
 
     @Override
@@ -51,10 +51,19 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
     public HasValue<String> search() { return search; }
 
     @Override
-    public HasValue<Subnet> subnet() { return subnet(); }
+    public HasValue<Subnet> subnet() { return null; }
 
     @Override
     public HasValue<PersonShortView> owner() { return owner(); }
+
+    @Override
+    public HasValue<RangePicker> reserveDate() { return null; }
+
+    @Override
+    public HasValue<RangePicker> releaseDate() { return null; }
+
+    @Override
+    public HasValue<RangePicker> lastActiveDate() { return null; }
 
     @Override
     public void resetFilter() {
@@ -62,6 +71,7 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
         sortDir.setValue( true );
         search.setValue( "" );
         owner.setValue(null);
+        subnet().setValue(null);
     }
 
     @UiHandler( "resetBtn" )
