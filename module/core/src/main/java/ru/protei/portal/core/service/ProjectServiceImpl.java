@@ -353,6 +353,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private void updateLocations( CaseObject caseObject, EntityOption location ) {
+        if ( location == null ) {
+            return;
+        }
+
         boolean locationFound = false;
 
         if ( caseObject.getLocations() != null ) {
@@ -367,10 +371,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if ( locationFound ) {
-            return;
-        }
-
-        if ( location == null ) {
             return;
         }
 

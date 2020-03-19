@@ -57,7 +57,7 @@
                         <team:TeamSelector ui:field="team" addStyleNames="form-group col-md-12"/>
                     </div>
 
-                    <div class="form-group col-md-12" ui:field="documents">
+                    <div class="form-group form-group-default col-md-12" ui:field="documents">
                         <label><ui:text from="{lang.equipmentDocuments}"/></label>
                         <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
                     </div>
@@ -83,10 +83,11 @@
                                 </div>
                                 <div class="row clearfix reset-no-padding">
                                     <div class="col-md-12">
-                                        <region:RegionFormSelector ui:field="projectRegion" validation="true"
+                                        <region:RegionFormSelector ui:field="projectRegion"
+                                                                   validation="false"
                                                                    header="{lang.projectRegion}"
                                                                    hasNullValue="true"
-                                                                   mandatory="true"/>
+                                                                   mandatory="false"/>
                                     </div>
                                 </div>
                                 <div class="row clearfix reset-no-padding">

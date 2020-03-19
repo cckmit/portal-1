@@ -15,6 +15,7 @@ public class RegionFormSelector extends FormSelector<EntityOption> implements Se
         setSelectorModel(regionModel);
 
         setSearchAutoFocus( true );
+        setSearchEnabled(true);
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
     }
 

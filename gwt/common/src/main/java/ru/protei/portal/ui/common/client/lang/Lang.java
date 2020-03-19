@@ -1850,8 +1850,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errInvalidCurrentPassword();
 
-    String errSaveProjectNeedSelectRegion();
-
     String errSaveProjectNeedSelectDirection();
 
     String errSaveProjectNeedSelectCustomerType();
