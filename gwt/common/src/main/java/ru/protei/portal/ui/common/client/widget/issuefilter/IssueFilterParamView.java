@@ -373,9 +373,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @UiHandler("companies")
     public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
-        if (model != null) {
-//            activity.onCompaniesFilterChanged();
-        }
+        initiators.updateCompanies();
+        onFilterChanged();
     }
 
     @UiHandler("initiators")

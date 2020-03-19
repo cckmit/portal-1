@@ -197,7 +197,7 @@ public abstract class IssueFilterWidget extends Composite
 
     @UiHandler("userFilter")
     public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
-        onUserFilterChanged(event.getValue().getId());
+        onUserFilterChanged(event.getValue());
     }
 
     @Override
@@ -242,15 +242,15 @@ public abstract class IssueFilterWidget extends Composite
         } );
     }
 
-    private void onUserFilterChanged(Long id) {
-        if (id == null){
+    private void onUserFilterChanged(CaseFilterShortView filter) {
+        if (filter == null){
             resetFilter();
             showUserFilterControls();
 
             return;
         }
 
-        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
+        filterService.getIssueFilter(filter.getId(), new FluentCallback<CaseFilter>()
                 .withErrorMessage(lang.errNotFound())
                 .withSuccess(caseFilter -> {
                     removeFilterBtnVisibility().setVisible( true );
@@ -266,7 +266,7 @@ public abstract class IssueFilterWidget extends Composite
         setUserFilterNameVisibility(true);
     }
 
-    private void showUserFilterControls() {
+    public void showUserFilterControls() {
         setUserFilterControlsVisibility(true);
         setUserFilterNameVisibility(false);
     }

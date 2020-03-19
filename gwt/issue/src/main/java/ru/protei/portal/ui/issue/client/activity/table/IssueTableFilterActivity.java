@@ -12,10 +12,8 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
@@ -32,8 +30,6 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
@@ -81,6 +77,8 @@ public abstract class IssueTableFilterActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
+
+        filterView.showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -167,38 +165,6 @@ public abstract class IssueTableFilterActivity
         }
         validateSearchField(searchFieldCorrect);
     }
-
-/*
-    @Override
-    public void onUserFilterChanged() {
-        CaseFilterShortView filter = filterView.userFilter().getValue();
-        if (filter == null){
-            filterView.resetFilter();
-//            showUserFilterControls();
-
-            onFilterChanged();
-            return;
-        }
-
-        filterService.getIssueFilter( filter.getId(), new RequestCallback< CaseFilter >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( CaseFilter filter ) {
-                fillFilterFields( filter );
-                onFilterChanged();
-            }
-        } );
-    }
-*/
-//    @Override
-//    public void onCompaniesFilterChanged() {
-//        onFilterChanged();
-//        updateInitiatorSelector();
-//    }
 
     @Override
     public void loadData(int offset, int limit, final AsyncCallback<List<CaseShortView>> asyncCallback) {
@@ -380,11 +346,6 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     AbstractIssueFilterView filterView;
-
-    @Inject
-    InitiatorModel initiatorModel;
-    @Inject
-    PersonModel personModel;
 
     private CaseQuery query = null;
 

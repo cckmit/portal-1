@@ -41,4 +41,6 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue<CaseFilterShortView> userFilter();
 
     void updateFilterType(En_CaseFilterType filterType);
+
+    void showUserFilterControls();
 }
