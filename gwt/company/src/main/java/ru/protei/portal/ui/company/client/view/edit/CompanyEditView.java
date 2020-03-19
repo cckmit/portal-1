@@ -23,7 +23,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
-import ru.protei.portal.ui.common.client.widget.companysubscription.list.CompanySubscriptionList;
+import ru.protei.portal.ui.company.client.widget.companysubscription.list.CompanySubscriptionList;
 
 import java.util.List;
 

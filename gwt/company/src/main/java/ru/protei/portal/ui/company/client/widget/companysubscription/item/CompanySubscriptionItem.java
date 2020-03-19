@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.companysubscription.item;
+package ru.protei.portal.ui.company.client.widget.companysubscription.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyUpEvent;

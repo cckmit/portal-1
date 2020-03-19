@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.companysubscription.list;
+package ru.protei.portal.ui.company.client.widget.companysubscription.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,7 +15,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.companysubscription.group.CompanySubscriptionGroup;
+import ru.protei.portal.ui.company.client.widget.companysubscription.group.CompanySubscriptionGroup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.*;

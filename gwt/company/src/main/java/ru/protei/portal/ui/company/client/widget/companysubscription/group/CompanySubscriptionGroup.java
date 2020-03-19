@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.companysubscription.group;
+package ru.protei.portal.ui.company.client.widget.companysubscription.group;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.companysubscription.item.CompanySubscriptionItem;
+import ru.protei.portal.ui.company.client.widget.companysubscription.item.CompanySubscriptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
