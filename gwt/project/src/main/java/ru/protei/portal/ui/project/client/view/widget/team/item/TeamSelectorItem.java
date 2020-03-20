@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.project.client.view.widget.selector.ProjectRoleButtonSelector;
+import ru.protei.portal.ui.project.client.view.widget.selector.ProjectRoleFormSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
 
 import java.util.Comparator;
@@ -122,7 +122,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
 
     @Inject
     @UiField(provided = true)
-    ProjectRoleButtonSelector role;
+    ProjectRoleFormSelector role;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector members;

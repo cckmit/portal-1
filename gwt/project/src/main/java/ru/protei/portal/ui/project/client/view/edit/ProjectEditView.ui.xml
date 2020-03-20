@@ -12,7 +12,7 @@
              xmlns:sla="urn:import:ru.protei.portal.ui.common.client.widget.sla"
 >
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body row no-margin">
@@ -20,11 +20,13 @@
                 <div class="row p-b-10">
                     <div class="btn-toolbar flex-wrap">
                         <div class="btn-group form-group">
-                            <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.backToIssues}">
+                            <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                      title="{lang.backToIssues}">
                                 <i class="fa fa-arrow-left"/>
                             </g:Button>
 
-                            <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.linkAdd}">
+                            <g:Button ui:field="addLinkButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                      title="{lang.linkAdd}">
                                 <i class="fas fa-link"/>
                             </g:Button>
                         </div>
@@ -34,8 +36,11 @@
                         <g:Label ui:field="number" styleName="m-b-15 inline-block"/>
                     </h5>
                     <div class="form-group form-group-default col-md-12">
-                        <label><ui:text from="{lang.projectName}"/></label>
-                        <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control" notNull="true"/>
+                        <label class="fade">
+                            <ui:text from="{lang.projectName}"/>
+                        </label>
+                        <validablefield:ValidableTextBox ui:field="projectName" styleName="form-control"
+                                                         notNull="true"/>
                     </div>
 
                     <g:HTMLPanel ui:field="linksContainer" styleName="form-group col-md-12 p-l-0 p-r-0"/>
@@ -43,22 +48,32 @@
 
                 <div class="row">
                     <div class="form-group form-group-default col-md-12">
-                        <label ui:field="descriptionLabel"><ui:text from="{lang.projectDescription}"/></label>
-                        <autoresizetextarea:AutoResizeTextArea ui:field="description" styleName="form-control" maxRows="10"/>
+                        <label class="fade" ui:field="descriptionLabel">
+                            <ui:text from="{lang.projectDescription}"/>
+                        </label>
+                        <autoresizetextarea:AutoResizeTextArea ui:field="description" styleName="form-control"
+                                                               maxRows="10"/>
                     </div>
 
                     <div class="form-group form-group-default col-md-12">
-                        <label><ui:text from="{lang.projectSla}"/></label>
+                        <label class="fade">
+                            <ui:text from="{lang.projectSla}"/>
+                        </label>
                         <sla:SlaInput ui:field="slaInput"/>
                     </div>
 
-                    <div class="form-group form-group-default col-md-12" ui:field="documents">
-                        <label><ui:text from="{lang.equipmentDocuments}"/></label>
-                        <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
+                    <div class="form-group col-md-12" ui:field="documents">
+                        <label>
+                            <ui:text from="{lang.equipmentDocuments}"/>
+                        </label>
+                        <g:HTMLPanel ui:field="documentsContainer"
+                                     styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
                     </div>
 
                     <div class="form-group col-md-12" ui:field="comments">
-                        <label><ui:text from="{lang.comments}"/></label>
+                        <label>
+                            <ui:text from="{lang.comments}"/>
+                        </label>
                         <g:HTMLPanel ui:field="commentsContainer"/>
                     </div>
                 </div>
@@ -66,69 +81,68 @@
             <div class="col-lg-4">
                 <div class="card card-default">
                     <div class="card-body">
-                        <div>
-                            <div class="form-group form-group-attached">
-                                <div class="row clearfix reset-no-padding">
-                                    <div class="col-md-12">
-                                        <state:RegionStateFormSelector ui:field="projectState" validation="false"
-                                                                       header="{lang.projectState}"
-                                                                       hasNullValue="true"
-                                                                       mandatory="false"/>
-                                    </div>
-                                </div>
-                                <div class="row clearfix reset-no-padding">
-                                    <div class="col-md-12">
-                                        <region:RegionFormSelector ui:field="projectRegion"
-                                                                   validation="false"
-                                                                   header="{lang.projectRegion}"
+                        <div class="form-group form-group-attached">
+                            <div class="row clearfix reset-no-padding">
+                                <div class="col-md-12">
+                                    <state:RegionStateFormSelector ui:field="projectState" validation="false"
+                                                                   header="{lang.projectState}"
                                                                    hasNullValue="true"
                                                                    mandatory="false"/>
-                                    </div>
                                 </div>
-                                <div class="row clearfix reset-no-padding">
-                                    <div class="col-md-12">
-                                        <company:CompanyFormSelector ui:field="company" validation="true"
-                                                                     header="{lang.projectCustomerCompany}"
-                                                                     hasNullValue="false"
-                                                                     mandatory="true"/>
-                                    </div>
+                            </div>
+                            <div class="row clearfix reset-no-padding">
+                                <div class="col-md-12">
+                                    <region:RegionFormSelector ui:field="projectRegion"
+                                                               validation="false"
+                                                               header="{lang.projectRegion}"
+                                                               hasNullValue="true"
+                                                               mandatory="false"/>
                                 </div>
-                                <div class="row clearfix reset-no-padding">
-                                    <div class="col-md-12">
-                                        <cutomertype:CustomerFormSelector ui:field="customerType" validation="true"
-                                                                          header="{lang.projectCustomerType}"
-                                                                          hasNullValue="true"
-                                                                          mandatory="true"/>
-                                    </div>
+                            </div>
+                            <div class="row clearfix reset-no-padding">
+                                <div class="col-md-12">
+                                    <company:CompanyFormSelector ui:field="company" validation="true"
+                                                                 header="{lang.projectCustomerCompany}"
+                                                                 hasNullValue="false"
+                                                                 mandatory="true"/>
                                 </div>
-                                <div class="row clearfix reset-no-padding">
-                                    <div class="col-md-12">
-                                        <productdirection:ProductDirectionFormSelector ui:field="productDirection"
-                                                                                       validation="true"
-                                                                                       header="{lang.projectDirection}"
-                                                                                       hasNullValue="true"
-                                                                                       mandatory="true"/>
-                                    </div>
+                            </div>
+                            <div class="row clearfix reset-no-padding">
+                                <div class="col-md-12">
+                                    <cutomertype:CustomerFormSelector ui:field="customerType" validation="true"
+                                                                      header="{lang.projectCustomerType}"
+                                                                      hasNullValue="true"
+                                                                      mandatory="true"/>
                                 </div>
-                                <div class="row clearfix reset-no-padding">
-                                    <div class="col-md-12">
-                                        <devunit:DevUnitFormSelector ui:field="product" validation="false"
-                                                                     header="{lang.projectProducts}"
-                                                                     hasNullValue="true"
-                                                                     mandatory="false"/>
-                                    </div>
+                            </div>
+                            <div class="row clearfix reset-no-padding">
+                                <div class="col-md-12">
+                                    <productdirection:ProductDirectionFormSelector ui:field="productDirection"
+                                                                                   validation="true"
+                                                                                   header="{lang.projectDirection}"
+                                                                                   hasNullValue="true"
+                                                                                   mandatory="true"/>
                                 </div>
+                            </div>
+                            <div class="row clearfix reset-no-padding">
+                                <div class="col-md-12">
+                                    <devunit:DevUnitFormSelector ui:field="product" validation="false"
+                                                                 header="{lang.projectProducts}"
+                                                                 hasNullValue="true"
+                                                                 mandatory="false"/>
+                                </div>
+                            </div>
+                        </div>
 
-                                <div class="form-group m-t-10 m-b-0">
-                                    <label>Информация о заявителе</label>
-                                </div>
+                        <div class="form-group m-t-10 m-b-0">
+                            <label>
+                                <ui:text from="{lang.projectTeam}"/>
+                            </label>
+                        </div>
 
-                                <div class="row clearfix reset-no-padding">
-                                    <div class="col-md-12">
-                                        <label><ui:text from="{lang.projectTeam}"/></label>
-                                        <team:TeamSelector ui:field="team" addStyleNames="form-group col-md-12"/>
-                                    </div>
-                                </div>
+                        <div class="form-group row clearfix">
+                            <div class="col-md-12">
+                                <team:TeamSelector ui:field="team" styleName="project-team-selector"/>
                             </div>
                         </div>
                     </div>
