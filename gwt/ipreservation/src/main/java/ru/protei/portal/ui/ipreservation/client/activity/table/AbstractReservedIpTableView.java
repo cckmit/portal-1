@@ -16,9 +16,11 @@ public interface AbstractReservedIpTableView extends IsWidget {
     void updateRow(ReservedIp reservedIp);
     void clearRecords();
 
+    void hideElements();
+    void showElements();
+
     HasWidgets getPreviewContainer();
     HasWidgets getFilterContainer();
-/*    HasWidgets getPagerContainer();*/
 
     void clearSelection();
 }

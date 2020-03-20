@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.ipreservation.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -24,33 +25,32 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.setActivity(this);
     }
 
-    @Event
+/*    @Event
     public void onInitDetails(AppEvents.InitDetails event) {
         this.initDetails = event;
-    }
+    }*/
 
     @Event
     public void onShow (IpReservationEvents.EditReservedIp event) {
-        if (!hasPrivileges(event.reservedIpId)) {
+        Window.alert("onShow");
+        if (!hasPrivileges(event.reservedIp.getId())) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        event.parent.clear();
+        event.parent.add(view.asWidget());
 
         fillView();
     }
 
     @Override
     public void onSaveClicked() {
-        boolean isNew = reservedIp.getId() == null;
-
-        if (isNew && !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_CREATE) ) {
+        if (isNew() && !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_CREATE) ) {
             return;
         }
 
-        if (!isNew && !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
+        if (!isNew() && !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
             return;
         }
 
@@ -64,13 +64,13 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
         ipReservationService.updateReservedIp(reservedIp, new RequestCallback<ReservedIp>() {
             @Override
-            public void onError(Throwable throwable) {
-            }
+            public void onError(Throwable throwable) { }
 
             @Override
             public void onSuccess(ReservedIp reservedIp) {
-                fireEvent( new IpReservationEvents.ChangedReservedIp(reservedIp, isNew));
+                fireEvent( new IpReservationEvents.ChangedReservedIp(reservedIp, isNew()));
                 fireEvent( new IpReservationEvents.CloseEdit());
+                fireEvent( new IpReservationEvents.ChangedReservedIp(reservedIp, true));
             }
         });
     }
@@ -80,7 +80,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         fireEvent(new IpReservationEvents.CloseEdit());
     }
 
-    private boolean isNew(ReservedIp reservedIp) {
+    private boolean isNew() {
         return reservedIp.getId() == null;
     }
 
@@ -103,7 +103,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.subnet().setValue(reservedIp.getSubnet());
         //view.subnetEnabled().setEnabled(reservedIp.getId() == null);
         view.comment().setText(reservedIp.getComment());
-        view.owner().setValue(reservedIp.getOwner());
+        view.owner().setValue(reservedIp.getOwner().toFullNameShortView());
     }
 
     private ReservedIp fillReservedIp(ReservedIp reservedIp) {
@@ -135,11 +135,12 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     }
 
     private boolean hasPrivileges(Long reservedIpId) {
-        if (reservedIpId == null && policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE)) {
+        if (isNew() && policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE)) {
             return true;
         }
 
-        if (reservedIpId != null && (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
+        // @todo проверка на принадлежность к сисадминству
+        if (!isNew() && (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
                 || reservedIp.getOwnerId().equals(policyService.getProfile().getId()))) {
             return true;
         }
@@ -157,6 +158,6 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     PolicyService policyService;
 
     private ReservedIp reservedIp;
-
-    private AppEvents.InitDetails initDetails;
+/*
+    private AppEvents.InitDetails initDetails;*/
 }

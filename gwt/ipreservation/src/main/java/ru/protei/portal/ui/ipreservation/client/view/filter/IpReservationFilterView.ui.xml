@@ -17,15 +17,15 @@
                     <subnet:SubnetButtonSelector ui:field="subnet" />
                 </div>
             </div>-->
-<!--            <div class="row">
+            <div class="row">
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpOwner}"/></label>
-                    <person:EmployeeButtonSelector ui:field="owner"
+                    <person:EmployeeButtonSelector ui:field="ipOwner"
                                                    hasNullValue="true"
                                                    defaultValue="{lang.selectReservedIpOwner}"
                                                    firedEmployeesVisible="true"/>
                 </div>
-            </div>-->
+            </div>
             <div class="row">
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpReserveDate}"/></label>

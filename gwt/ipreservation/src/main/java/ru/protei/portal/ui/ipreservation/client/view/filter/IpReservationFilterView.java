@@ -30,7 +30,7 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         sortField.setType(ModuleType.RESERVED_IP);
-        resetFilter();
+        //resetFilter();
     }
 
     @Override
@@ -39,14 +39,10 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
     }
 
     @Override
-    public HasValue<En_SortField> sortField() {
-        return sortField;
-    }
+    public HasValue<En_SortField> sortField() { return sortField; }
 
     @Override
-    public HasValue<Boolean> sortDir() {
-        return sortDir;
-    }
+    public HasValue<Boolean> sortDir() { return sortDir; }
 
     @Override
     public HasValue<String> search() { return search; }
@@ -55,7 +51,7 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
     public HasValue<Subnet> subnet() { return null; }
 
     @Override
-    public HasValue<PersonShortView> owner() { return null; }
+    public HasValue<PersonShortView> owner() { return ipOwner; }
 
     @Override
     public HasValue<DateInterval> reserveDate() { return reserveDate; }
@@ -74,7 +70,7 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
         sortField.setValue( En_SortField.ip_address );
         sortDir.setValue( true );
         search.setValue( "" );
-        //owner.setValue(null);
+        ipOwner.setValue(null);
 /*        subnet.setValue(null);*/
         reserveDate.setValue(null);
         releaseDate.setValue(null);
@@ -126,20 +122,20 @@ public class IpReservationFilterView extends Composite implements AbstractIpRese
         }
     }
 
-/*    @UiHandler( "owner" )
+    @UiHandler( "ipOwner" )
     public void onOwnerSelected( ValueChangeEvent<PersonShortView> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
-    }*/
+    }
 
 
     @UiField
     CleanableSearchBox search;
 
-/*    @Inject
+    @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector owner;*/
+    EmployeeButtonSelector ipOwner;
 
 /*    @Inject
     @UiField(provided = true)

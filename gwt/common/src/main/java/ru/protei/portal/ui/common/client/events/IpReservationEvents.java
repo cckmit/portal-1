@@ -38,19 +38,17 @@ public class IpReservationEvents {
      * Показать форму создания подсети
      */
     public static class CreateSubnet {
-        public CreateSubnet(HasWidgets parent, Subnet subnet) {
+        public CreateSubnet(HasWidgets parent) {
             this.parent = parent;
-            this.subnet = subnet;
+            this.subnetId = null;
         }
 
-        public Subnet subnet;
+        public Long subnetId;
         public HasWidgets parent;
     }
 
     public static class EditSubnet {
-/*        public EditSubnet () {
-            subnetId = null;
-        }*/
+        public EditSubnet () { subnetId = null; }
         public EditSubnet (HasWidgets parent, Long subnetId) {
             this.parent = parent;
             this.subnetId = subnetId;
@@ -76,15 +74,15 @@ public class IpReservationEvents {
 /*        public EditReservedIp () {
             reservedIpId = null;
         }*/
-        public EditReservedIp (HasWidgets parent, Long reservedIpId) {
+        public EditReservedIp (HasWidgets parent, ReservedIp reservedIp) {
             this.parent = parent;
-            this.reservedIpId = reservedIpId;
+            this.reservedIp = reservedIp;
         }
-        public Long reservedIpId;
+        public ReservedIp reservedIp;
         public HasWidgets parent;
     }
 
-    //public static class ChangeModel {}
+    public static class ChangeModel {}
 
     public static class ChangedSubnet {
         public ChangedSubnet(Subnet subnet, boolean needRefreshList) {

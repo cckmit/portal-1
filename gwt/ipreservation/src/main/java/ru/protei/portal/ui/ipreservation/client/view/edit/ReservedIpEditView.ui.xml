@@ -28,7 +28,7 @@
                     <label>
                         <ui:text from="{lang.reservedIpOwner}"/>
                     </label>
-                    <person:EmployeeButtonSelector ui:field="owner"
+                    <person:EmployeeButtonSelector ui:field="ipOwner"
                                                    hasNullValue="false"
                                                    defaultValue="{lang.selectReservedIpOwner}"
                                                    firedEmployeesVisible="true"/>

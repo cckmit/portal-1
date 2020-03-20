@@ -3,10 +3,12 @@ package ru.protei.portal.ui.ipreservation.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIp;
@@ -38,18 +40,27 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         this.activity = activity;
 
         editClickColumn.setHandler( activity );
+        editClickColumn.setColumnProvider( columnProvider );
         editClickColumn.setEditHandler( activity );
 
         removeClickColumn.setHandler( activity );
+        removeClickColumn.setColumnProvider( columnProvider );
         removeClickColumn.setRemoveHandler( activity );
 
         refreshClickColumn.setHandler( activity );
+        refreshClickColumn.setColumnProvider( columnProvider );
         refreshClickColumn.setRefreshHandler( activity );
 
-        columns.forEach(clickColumn -> {
-            clickColumn.setHandler( activity );
-            clickColumn.setColumnProvider( columnProvider );
-        });
+        address.setHandler( activity );
+        address.setColumnProvider( columnProvider );
+        usePeriod.setHandler( activity );
+        usePeriod.setColumnProvider( columnProvider );
+        owner.setHandler( activity );
+        owner.setColumnProvider( columnProvider );
+        comment.setHandler( activity );
+        comment.setColumnProvider( columnProvider );
+        lastCheck.setHandler( activity );
+        lastCheck.setColumnProvider( columnProvider );
     }
 
     @Override
@@ -75,6 +86,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-8", "col-md-4");
     }
 
     @Override
@@ -92,21 +104,32 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         table.addCustomRow( elem, "subnet", null );
     }*/
 
+    @Override
+    public void hideElements() {
+        hideComment.setVisibility( false );
+        hideOwner.setVisibility( false );
+    }
+
+    @Override
+    public void showElements() {
+        hideComment.setVisibility( true );
+        hideOwner.setVisibility( true );
+    }
+
+
     private void initTable () {
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT) );
         refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW) );
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE) );
 
-        columns.add(address);
-        columns.add(owner);
-        columns.add(usePeriod);
-        columns.add(comment);
-        columns.add(lastCheck);
-        columns.add(refreshClickColumn);
-        columns.add(editClickColumn);
-        columns.add(removeClickColumn);
-
-        columns.forEach(c -> table.addColumn(c.header, c.values));
+        table.addColumn(address.header, address.values);
+        table.addColumn(usePeriod.header, usePeriod.values);
+        hideOwner = table.addColumn( owner.header, owner.values );
+        hideComment = table.addColumn( comment.header, comment.values );
+        table.addColumn(lastCheck.header, lastCheck.values);
+        table.addColumn(editClickColumn.header, editClickColumn.values);
+        table.addColumn(refreshClickColumn.header, refreshClickColumn.values);
+        table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 
     private ClickColumn<ReservedIp> address = new ClickColumn<ReservedIp>() {
@@ -117,9 +140,22 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
 
         @Override
         public void fillColumnValue(Element cell, ReservedIp value) {
-            cell.setInnerText(value.getIpAddress() +
-                    (value.getMacAddress() != null ? " [" + value.getMacAddress() + "]" : "")
-            );
+            if ( value == null ) { return; }
+
+            cell.addClassName( "number" );
+            com.google.gwt.dom.client.Element divElement = DOM.createDiv();
+
+            com.google.gwt.dom.client.Element ipElement = DOM.createElement( "p" );
+            ipElement.addClassName( "number-size" );
+            ipElement.setInnerText( value.getIpAddress() );
+            divElement.appendChild( ipElement );
+
+            if (value.getMacAddress() != null) {
+                com.google.gwt.dom.client.Element macElement = DOM.createElement("p");
+                macElement.setInnerText( "[" + value.getMacAddress() + "]");
+                divElement.appendChild(macElement);
+            }
+            cell.appendChild( divElement );
         }
     };
 
@@ -148,9 +184,23 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
 
         @Override
         public void fillColumnValue(Element cell, ReservedIp value) {
-            String lastCheckDate = value == null || value.getLastCheckDate() == null ? null :
-                    DateFormatter.formatDateTime(value.getLastCheckDate());
-            cell.setInnerText(lastCheckDate + "<br>" + value.getLastCheckInfo());
+            if ( value == null ) { return; }
+
+            com.google.gwt.dom.client.Element divElement = DOM.createDiv();
+
+            if (value.getLastCheckDate() != null) {
+                com.google.gwt.dom.client.Element checkDateElement = DOM.createElement("p");
+                checkDateElement.setInnerText(DateFormatter.formatDateTime(value.getLastCheckDate()));
+                divElement.appendChild(checkDateElement);
+            }
+            if (value.getLastCheckInfo() != null) {
+
+                com.google.gwt.dom.client.Element checkInfoElement = DOM.createElement("p");
+                checkInfoElement.setInnerText( value.getLastCheckInfo() );
+                divElement.appendChild(checkInfoElement);
+            }
+
+            cell.appendChild( divElement );
         }
     };
 
@@ -161,7 +211,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         }
 
         @Override
-        public void fillColumnValue(Element cell, ReservedIp value) { cell.setInnerText(String.valueOf(value.getOwnerId())); }
+        public void fillColumnValue(Element cell, ReservedIp value) { cell.setInnerText(value.getOwner().getDisplayName()); }
     };
 
     private ClickColumn<ReservedIp> comment = new ClickColumn<ReservedIp>() {
@@ -196,6 +246,9 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     RefreshClickColumn<ReservedIp> refreshClickColumn;
     @Inject
     RemoveClickColumn<ReservedIp> removeClickColumn;
+
+    AbstractColumn hideComment;
+    AbstractColumn hideOwner;
 
     private AbstractReservedIpTableActivity activity;
 

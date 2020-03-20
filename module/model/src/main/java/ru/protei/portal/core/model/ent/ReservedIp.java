@@ -23,17 +23,22 @@ public class ReservedIp extends AuditableObject {
     @JdbcColumn(name="creator_id")
     private Long creatorId;
 
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "creator_id", remoteColumn = "id", table = "person")
+    private String creator;
+
     @JdbcColumn(name="subnet_id")
     private Long subnetId;
 
-    @JdbcJoinedObject(localColumn = "subnet_id", remoteColumn = "id", table = "subnet")
+    @JdbcJoinedObject(localColumn = "subnet_id", table = "subnet")
     private Subnet subnet;
 
     @JdbcColumn(name="owner_id")
     private Long ownerId;
 
-    @JdbcJoinedObject( localColumn = "owner_id", remoteColumn = "id", table = "person")
-    private PersonShortView owner;
+    @JdbcJoinedObject(localColumn = "owner_id")
+    private Person owner;
+/*    @JdbcJoinedObject(localColumn = "contractor_id")
+    private Person contractor;*/
 
     @JdbcColumn(name="ip_address")
     private String ipAddress;
@@ -71,6 +76,10 @@ public class ReservedIp extends AuditableObject {
 
     public void setCreatorId(Long creatorId) { this.creatorId = creatorId; }
 
+    public String getCreator() { return creator; }
+
+    public void setCreator(String creator) { this.creator = creator; }
+
     public Long getSubnetId() { return subnetId; }
 
     public void setSubnetId(Long subnetId) { this.subnetId = subnetId; }
@@ -83,9 +92,9 @@ public class ReservedIp extends AuditableObject {
 
     public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
 
-    public PersonShortView getOwner() { return owner; }
+    public Person getOwner() { return owner; }
 
-    public void setOwner(PersonShortView owner) { this.owner = owner; }
+    public void setOwner(Person owner) { this.owner = owner; }
 
     public String getIpAddress() { return ipAddress; }
 

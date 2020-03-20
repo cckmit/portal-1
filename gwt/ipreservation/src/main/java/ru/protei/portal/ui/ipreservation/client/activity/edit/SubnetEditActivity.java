@@ -33,6 +33,15 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     }
 
     @Event
+    public void onShow (IpReservationEvents.CreateSubnet event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
+        subnet = new Subnet();
+        resetView();
+    }
+
+    @Event
     public void onShow (IpReservationEvents.EditSubnet event) {
         if (!hasPrivileges(event.subnetId)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -67,7 +76,8 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
                 })
                 .withSuccess(aVoid -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(new IpReservationEvents.CloseEdit());
+                    fireEvent(new IpReservationEvents.ChangedSubnet(subnet, true));
                 })
         );
     }
@@ -77,7 +87,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
         fireEvent(new Back());
     }
 
-    private boolean isNew(Subnet subnet) {
+    private boolean isNew() {
         return subnet.getId() == null;
     }
 
@@ -134,11 +144,11 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     }
 
     private boolean hasPrivileges(Long subnetId) {
-        if (subnetId == null && policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)) {
+        if (isNew() && policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)) {
             return true;
         }
 
-        if (subnetId != null && policyService.hasPrivilegeFor(En_Privilege.SUBNET_EDIT)) {
+        if (!isNew() && policyService.hasPrivilegeFor(En_Privilege.SUBNET_EDIT)) {
             return true;
         }
 

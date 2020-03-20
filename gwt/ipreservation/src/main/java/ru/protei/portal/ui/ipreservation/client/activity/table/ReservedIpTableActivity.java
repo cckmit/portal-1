@@ -28,7 +28,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
  * Активность таблицы зарезервированных IP
  */
 public abstract class ReservedIpTableActivity
-        implements AbstractReservedIpTableActivity, AbstractIpReservationFilterActivity, /*AbstractPagerActivity,*/ Activity
+        implements AbstractReservedIpTableActivity, AbstractIpReservationFilterActivity, Activity
 {
 
     @PostConstruct
@@ -40,13 +40,11 @@ public abstract class ReservedIpTableActivity
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
-
-        //pagerView.setActivity( this );
     }
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        //filterView.resetFilter();
+        filterView.resetFilter();
     }
 
     @Event
@@ -58,16 +56,13 @@ public abstract class ReservedIpTableActivity
 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-        //view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_CREATE ) ?
             new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.RESERVED_IP ) :
             new ActionBarEvents.Clear()
         );
 
-/*        clearScroll( event );*/
-
-        requestReservedIps( /*this.page*/ );
+        requestReservedIps();
     }
 
     @Event
@@ -85,7 +80,6 @@ public abstract class ReservedIpTableActivity
 
         animation.showDetails();
         fireEvent(new IpReservationEvents.CreateReservedIp(view.getPreviewContainer(), null));
-        //fireEvent(new IpReservationEvents.ShowPreview(view.getPreviewContainer(), null));
     }
 
     @Event
@@ -124,6 +118,7 @@ public abstract class ReservedIpTableActivity
 
     @Override
     public void onItemClicked(ReservedIp value) {
+        Window.alert("onItemClicked");
         if ( !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
             return;
         }
@@ -132,19 +127,17 @@ public abstract class ReservedIpTableActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new IpReservationEvents.EditReservedIp( view.getPreviewContainer(), value.getId() ) );
+            fireEvent( new IpReservationEvents.EditReservedIp( view.getPreviewContainer(), value ) );
         }
     }
 
 /*    @Override
     public void onEditClicked( Subnet value ) {
-*//*        persistScrollTopPosition();*//*
         onItemClicked(value);
     }*/
 
     @Override
     public void onEditClicked( ReservedIp value ) {
-        /*        persistScrollTopPosition();*/
         onItemClicked(value);
     }
 
@@ -165,7 +158,7 @@ public abstract class ReservedIpTableActivity
             return;
         }
 
-        fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpReleaseConfirmMessage(), lang.reservedIpIpRelease(), onConfirmRemoveClicked(value)));
+        fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpReleaseConfirmMessage(), lang.reservedIpIpReleased(), onConfirmRemoveClicked(value)));
     }
 
     @Override
@@ -177,12 +170,6 @@ public abstract class ReservedIpTableActivity
         refreshAction(value);
     }
 
-/*    @Override
-    public void onPageSelected( int page ) {
-        this.page = page;
-        requestReservedIps( this.page );
-    }*/
-
     private Runnable onConfirmRemoveClicked(ReservedIp value) {
         return () -> ipReservationService.removeReservedIp(value, new FluentCallback<Long>()
                 .withError(throwable -> {
@@ -193,7 +180,7 @@ public abstract class ReservedIpTableActivity
                     }
                 })
                 .withSuccess(result -> {
-                    fireEvent(new NotifyEvents.Show(lang.reservedIpSubnetRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.reservedIpIpReleased(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IpReservationEvents.Show());
                 })
         );
@@ -222,41 +209,6 @@ public abstract class ReservedIpTableActivity
         });
     }
 
-/*    private void requestReservedIps( *//*int page*//* ) {
-        view.clearRecords();
-        animation.closeDetails();
-
-        boolean isFirstChunk = page == 0;
-        marker = new Date().getTime();
-
-        ReservedIpQuery query = makeQuery();
-        query.setOffset( page*PAGE_SIZE );
-        query.setLimit( PAGE_SIZE );
-
-        ipReservationService.getReservedIpList( query, new FluentCallback< SearchResult< ReservedIp > >()
-                .withMarkedSuccess( marker, ( m, r ) -> {
-                    if ( marker == m ) {
-                        if ( isFirstChunk ) {
-                            pagerView.setTotalCount( r.getTotalCount() );
-                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
-                        }
-                        pagerView.setCurrentPage( page );
-                        r.getResults().forEach(view::addRow);
-                        restoreScrollTopPositionOrClearSelection();
-                    }
-                } )
-                .withErrorMessage( lang.errGetList() ) );
-    }*/
-
-/*    private void showPreview(ReservedIp value) {
-        if (value == null || value.getId() == null) {
-            animation.closeDetails();
-        } else {
-            animation.showDetails();
-            fireEvent(new IpReservationEvents.ShowPreview(view.getPreviewContainer(), value.getId(), true));
-        }
-    }*/
-
     private ReservedIpQuery makeQuery() {
         ReservedIpQuery query = new ReservedIpQuery();
         query.searchString = filterView.search().getValue();
@@ -264,30 +216,6 @@ public abstract class ReservedIpTableActivity
         query.setSortField(filterView.sortField().getValue());
         return query;
     }
-
-/*    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
-    }
-
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
-            view.clearSelection();
-            return;
-        }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }*/
-
-/*    private void clearScroll(IpReservationEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-            this.page = 0;
-        }
-    }*/
 
 /*    private Runnable removeAction(ReservedIp reservedIp) {
         return () -> ipReservationService.removeReservedIp(reservedIp, new FluentCallback<Long>()
@@ -324,8 +252,6 @@ public abstract class ReservedIpTableActivity
     IpReservationControllerAsync ipReservationService;
     @Inject
     TableAnimation animation;
-/*    @Inject
-    AbstractPagerView pagerView;*/
     @Inject
     PolicyService policyService;
     @Inject
@@ -333,8 +259,4 @@ public abstract class ReservedIpTableActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
-
-/*    private long marker;
-    private Integer scrollTop;
-    private int page = 0;*/
 }
