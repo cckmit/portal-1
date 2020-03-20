@@ -87,7 +87,6 @@ public class Equipment extends AuditableObject {
     @JdbcColumn(name = "linked_equipment_id")
     private Long linkedEquipmentId;
 
-
     @JdbcOneToMany(table = "decimal_number", localColumn = "linked_equipment_id", remoteColumn = "entity_id")
     private List<DecimalNumber> linkedEquipmentDecimalNumbers;
 

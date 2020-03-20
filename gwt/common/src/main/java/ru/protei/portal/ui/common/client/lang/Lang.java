@@ -197,7 +197,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactMobilePhone();
 
-    String contactPersonalPhone();
+    String contactWorkPhone();
 
     String contactEmail();
 
@@ -857,7 +857,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inventoryNumberIsEmpty();
 
+    String decimalNumberIsInvalid();
+
     String documentApproveFieldsIsEmpty();
+
+    String documentPDFFileIsNotSet();
 
     String negativeInventoryNumber();
 
@@ -1132,6 +1136,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderIP();
 
     String siteFolderPlatform();
+
+    String siteFolderPlatformRequestError();
 
     String siteFolderPlatforms();
 
@@ -1668,6 +1674,14 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
+    String reportScheduledType();
+
+    String reportScheduledTypeNone();
+
+    String reportScheduledTypeDaily();
+
+    String reportScheduledTypeWeekly();
+
     String employeeRegistrationNumberColumn();
 
     String employeeRegistrationCurators();
@@ -1996,6 +2010,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUpdateOrDeleteLinkedObjectError();
 
+    String errSVN();
+
     String contactGeneratePassword();
 
     String passwordIsDisplay();
@@ -2089,6 +2105,30 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskAddRow();
 
     String issueCreator();
+
+    String technicalSupportValidity();
+
+    String technicalSupportValidityNotFound(String managerName);
+
+    String technicalSupportValidityNotDefined();
+
+    String jiraInfoPageHeader();
+
+    String issueJiraInfo();
+
+    String jiraInfoStatusMap();
+
+    String jiraInfoWorkFlow();
+
+    String jiraInfoJiraStatus();
+
+    String jiraInfoCrmStatus();
+
+    String jiraInfoStatusDefinition();
+
+    String jiraInfoStatusComment();
+
+    String jiraInfoBackButton();
 
     String projectSlaTemporaryTime();
 

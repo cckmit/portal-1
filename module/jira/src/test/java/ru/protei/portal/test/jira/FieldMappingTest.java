@@ -2,28 +2,17 @@ package ru.protei.portal.test.jira;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.test.jira.config.JiraTestConfiguration;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
+import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith( SpringJUnit4ClassRunner.class )
-@WebAppConfiguration
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, JiraTestConfiguration.class})
 public class FieldMappingTest {
     public static final int FIRST_MAP_ID = 1;
 
-    @Autowired
-    JiraStatusMapEntryDAO statusMapEntryDAO;
+    JiraStatusMapEntryDAO statusMapEntryDAO = new JiraStatusMapEntryDAO_ImplMock();
 
     @Test
     public void testStatusMapping () {

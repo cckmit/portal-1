@@ -29,6 +29,16 @@
                                 <span ui:field="state"/>
                             </div>
                         </div>
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.technicalSupportValidity}"/>
+                                    </label>
+                                    <div ui:field="technicalSupportValidity"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group form-group-default">

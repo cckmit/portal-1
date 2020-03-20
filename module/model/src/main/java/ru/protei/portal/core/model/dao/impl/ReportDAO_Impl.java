@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -13,9 +14,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportDAO {
 
@@ -57,14 +56,25 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore) {
+    public List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore, List<En_ReportScheduledType> scheduledTypes) {
         ReportQuery query = new ReportQuery();
         query.setStatuses(statuses);
         query.setToModified(lastModifiedBefore);
+        query.setScheduledTypes(scheduledTypes);
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
+        );
+    }
+
+    @Override
+    public List<Report> getScheduledReports(En_ReportScheduledType enReportScheduledType) {
+        ReportQuery query = new ReportQuery();
+        query.setScheduledTypes(Arrays.asList(enReportScheduledType));
+        SqlCondition where = createSqlCondition(query);
+        return getList(new JdbcQueryParameters()
+                .withCondition(where.condition, where.args)
         );
     }
 
@@ -136,6 +146,10 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
 
             if (CollectionUtils.isNotEmpty(query.getExcludeIds())) {
                 condition.append(" and report.id not in ").append(JdbcHelper.makeSqlStringCollection(query.getExcludeIds(), args, null));
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getScheduledTypes())) {
+                condition.append(" and report.scheduled_type in ").append(JdbcHelper.makeSqlStringCollection(query.getScheduledTypes(), args, null));
             }
         });
     }

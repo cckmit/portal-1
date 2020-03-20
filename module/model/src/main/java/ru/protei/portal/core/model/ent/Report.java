@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -73,6 +74,13 @@ public class Report implements Serializable {
 
     @JdbcColumn(name = "is_restricted")
     private boolean isRestricted;
+
+    /**
+     * Запланированность отчета
+     */
+    @JdbcColumn(name = "scheduled_type")
+    @JdbcEnumerated(EnumType.STRING)
+    private En_ReportScheduledType scheduledType;
 
     public Long getId() {
         return id;
@@ -162,6 +170,14 @@ public class Report implements Serializable {
         this.isRestricted = restricted;
     }
 
+    public En_ReportScheduledType getScheduledType() {
+        return scheduledType;
+    }
+
+    public void setScheduledType(En_ReportScheduledType scheduledType) {
+        this.scheduledType = scheduledType;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
@@ -176,6 +192,7 @@ public class Report implements Serializable {
                 ", modified=" + modified +
                 ", locale='" + locale + '\'' +
                 ", isRestricted=" + isRestricted +
+                ", scheduledType=" + scheduledType +
                 '}';
     }
 }

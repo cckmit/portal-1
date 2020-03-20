@@ -134,6 +134,9 @@ public class CaseObject extends AuditableObject {
     @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
     private List<ProjectSla> projectSlas;
 
+    @JdbcColumn(name = "technical_support_validity")
+    private Date technicalSupportValidity;
+
     // not db column
     private Long contractId;
 
@@ -547,6 +550,14 @@ public class CaseObject extends AuditableObject {
         return new EntityOption(this.getName(), this.getId());
     }
 
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
     @Override
     public String toString() {
         return "CaseObject{" +
@@ -588,6 +599,10 @@ public class CaseObject extends AuditableObject {
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
+                ", contractId=" + contractId +
+                ", contractNumber='" + contractNumber + '\'' +
+                ", platformName='" + platformName + '\'' +
+                ", technicalSupportValidity=" + technicalSupportValidity +
                 ", contractId=" + contractId +
                 ", contractNumber='" + contractNumber + '\'' +
                 ", timeElapsedType=" + timeElapsedType +

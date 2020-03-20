@@ -71,7 +71,8 @@
 
             <person:EmployeeMultiSelector ui:field="managers"
                                           header="{lang.issueManager}"
-                                          addStyleNames="form-group col-md-4"/>
+                                          addStyleNames="form-group col-md-4"
+                                          firedEmployeesVisible="true"/>
 
             <casetag:CaseTagMultiSelector ui:field="tags"
                                           caseType="CRM_SUPPORT"

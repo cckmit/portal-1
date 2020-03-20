@@ -11,13 +11,17 @@
                 <div class="card card-transparent no-margin">
                     <div class="card-body">
                         <div class="row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label><ui:text from="{lang.issueReportsType}"/></label>
                                 <reporttype:ReportTypeButtonSelector ui:field="reportType"/>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label><ui:text from="{lang.issueReportsTitle}"/></label>
                                 <g:TextBox ui:field="name" styleName="form-control"/>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <g:Label ui:field="scheduledTypeLabel"><ui:text from="{lang.reportScheduledType}"/></g:Label>
+                                <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
                             </div>
                         </div>
                     </div>

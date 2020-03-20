@@ -163,6 +163,9 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showComments(false);
         view.showDocuments(false);
 
+        view.technicalSupportValidity().setValue(null);
+        view.setDateValid(true);
+
         view.numberVisibility().setVisible(false);
 
         view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
@@ -193,6 +196,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showComments(true);
         view.showDocuments(true);
 
+        view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
+
         fillCaseLinks(project.getId());
 
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
@@ -210,6 +215,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
+        project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
         project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));

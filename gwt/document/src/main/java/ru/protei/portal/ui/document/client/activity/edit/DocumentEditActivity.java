@@ -32,6 +32,7 @@ import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentMode
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.core.model.helper.DocumentUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -59,7 +60,8 @@ public abstract class DocumentEditActivity
 
         placeView(event.parent);
         view.drawInWizardContainer(true);
-        fillView(new Document());
+        this.document = new Document();
+        fillView(document);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -89,7 +91,11 @@ public abstract class DocumentEditActivity
 
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
-        requestDocumentAndFillView(event.id, this::fillView);
+        requestDocumentAndFillView(event.id,
+                doc -> {
+                    this.document = doc;
+                    fillView(doc);
+                });
     }
 
     @Event
@@ -210,7 +216,7 @@ public abstract class DocumentEditActivity
         document.setProjectName(view.project().getValue() == null? null : view.project().getValue().getDisplayText());
         document.setName(view.name().getValue());
         document.setAnnotation(view.annotation().getValue());
-        document.setKeywords(view.keywords().getValue());
+        document.setKeywords(new ArrayList<>(view.keywords().getValue()));
         return document;
     }
 
@@ -234,25 +240,16 @@ public abstract class DocumentEditActivity
 
         setEquipmentEnabled(isEquipmentEnabled);
         setDocumentTypeEnabled(documentCategory != null);
-        setDecimalNumberEnabled(isDesignationEnabled);
-        setInventoryNumberEnabled(isDesignationEnabled);
-        setInventoryNumberMandatory(needToCheckInventoryNumber(project));
+        view.decimalNumberEnabled(isEnableDecimalNumberByApproved(document) && isDesignationEnabled);
+        view.inventoryNumberEnabled(isEnableInventoryNumberByApproved(document) && isDesignationEnabled);
+        setInventoryNumberMandatory(DocumentUtils.needToCheckInventoryNumber(project,
+                view.isApproved().getValue(), view.documentType().getValue()));
         setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
-    private void setDecimalNumberEnabled(boolean isEnabled) {
-        view.decimalNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.decimalNumber().setValue(null);
-        }
-    }
-    private void setInventoryNumberEnabled(boolean isEnabled) {
-        view.inventoryNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.inventoryNumber().setValue(null);
-        }
-    }
+
     private void setInventoryNumberMandatory(boolean isMandatory) {
         view.setInventoryNumberMandatory(isMandatory);
+        view.setDecimalNumberHMandatory(isMandatory);
     }
     private void setEquipmentEnabled(boolean isEnabled) {
         view.equipmentEnabled(isEnabled);
@@ -304,51 +301,21 @@ public abstract class DocumentEditActivity
     }
 
     private boolean checkDocumentValid(Document newDocument) {
-        if (!isValidDocument(newDocument)) {
+        boolean isValid = (document.getId() == null) ?
+                DocumentUtils.isValidNewDocument(
+                        newDocument,
+                        project,
+                        view.documentDocUploader().isFileSet(),
+                        view.documentPdfUploader().isFileSet())
+                : DocumentUtils.isValidDocument(
+                        newDocument,
+                        project);
+
+        if (!isValid) {
             fireErrorMessage(getValidationErrorMessage(newDocument));
-            return false;
         }
-        return true;
-    }
 
-    private boolean isValidDocument(Document document) {
-        boolean isNew = document.getId() == null;
-        boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
-        boolean isDocFileSet = view.documentDocUploader().isFileSet();
-
-        if (isNew && isDocFileSet && !isPdfFileSet) {
-            return StringUtils.isNotEmpty(document.getName()) &&
-                    document.getProjectId() != null;
-        } else {
-            return document.isValid()
-                    && isValidInventoryNumberForMinistryOfDefence(document)
-                    && isValidApproveFields(document);
-        }
-    }
-
-    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        if (needToCheckInventoryNumber(project)) {
-            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-        }
-        return true;
-    }
-
-    private boolean needToCheckInventoryNumber(ProjectInfo project) {
-        return  view.isApproved().getValue()
-                && project != null
-                && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
-                && view.documentCategory().getValue() != null
-                && view.documentCategory().getValue() != En_DocumentCategory.ABROAD;
-    }
-
-    private boolean isValidApproveFields(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        return document.getApprovedBy() != null && document.getApprovalDate() != null;
+        return isValid;
     }
 
     private void saveDocument(Document document) {
@@ -371,6 +338,7 @@ public abstract class DocumentEditActivity
             uploadDoc(() ->
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
+                            this.document = doc;
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             if (stayOnPage){
@@ -459,16 +427,26 @@ public abstract class DocumentEditActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (needToCheckInventoryNumber(project)) {
+        if (DocumentUtils.needToCheckInventoryNumber(project,
+                view.isApproved().getValue(), view.documentType().getValue())) {
             if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
                 return lang.inventoryNumberIsEmpty();
             } else if (doc.getInventoryNumber() < 0) {
                 return lang.negativeInventoryNumber();
             }
         }
+
+        if (!DocumentUtils.isValidDecimalNumber(doc)) {
+            return lang.decimalNumberIsInvalid();
+        }
+
         if (doc.getApproved()) {
             if (doc.getApprovedBy() == null || doc.getApprovalDate() == null) {
                 return lang.documentApproveFieldsIsEmpty();
+            }
+
+            if (!view.documentPdfUploader().isFileSet()) {
+                return lang.documentPDFFileIsNotSet();
             }
         }
         return null;
@@ -519,8 +497,6 @@ public abstract class DocumentEditActivity
     }
 
     private void fillView(Document document) {
-        this.document = document;
-
         boolean isNew = document.getId() == null;
 
         view.setDownloadCloudsVisible(!isNew);
@@ -555,9 +531,13 @@ public abstract class DocumentEditActivity
             PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
+            view.inventoryNumberEnabled(true);
+            view.decimalNumberEnabled(true);
         } else {
             view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
+            view.inventoryNumberEnabled(isEnableInventoryNumberByApproved(this.document));
+            view.decimalNumberEnabled(isEnableDecimalNumberByApproved(this.document));
         }
 
         view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
@@ -596,6 +576,13 @@ public abstract class DocumentEditActivity
     private void setButtonsEnabled (boolean isEnabled){
         view.setButtonsEnabled(isEnabled);
         fireEvent(new DocumentEvents.SetButtonsEnabled(isEnabled));
+    }
+
+    private Boolean isEnableInventoryNumberByApproved(Document doc) {
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getInventoryNumber() == null;
+    }
+    private Boolean isEnableDecimalNumberByApproved(Document doc) {
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
     }
 
     @Inject

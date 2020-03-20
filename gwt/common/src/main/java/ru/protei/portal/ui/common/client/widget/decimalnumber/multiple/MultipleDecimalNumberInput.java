@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBox;
@@ -120,7 +121,23 @@ public class MultipleDecimalNumberInput
                 isValid = false;
             }
         }
+
+        isValid = isValid && isNumbersEqual();
+
         return isValid;
+    }
+
+    private boolean isNumbersEqual() {
+        DecimalNumber ideal = CollectionUtils.getFirst(values);
+
+        if (ideal == null) {
+            return false;
+        }
+
+        boolean isClassifierCodeEqual = values.stream().allMatch(value -> Objects.equals(value.getClassifierCode(), ideal.getClassifierCode()));
+        boolean isRegistrationNumberEqual = values.stream().allMatch(value -> Objects.equals(value.getRegisterNumber(), ideal.getRegisterNumber()));
+
+        return isClassifierCodeEqual && isRegistrationNumberEqual;
     }
 
     private void setNewValues(List<DecimalNumber> values, boolean isEnabled) {
@@ -165,6 +182,7 @@ public class MultipleDecimalNumberInput
             numberBoxes.remove( box );
             checkIfCorrect();
             fireValuesChanged();
+            addPamr.setEnabled(numberBoxes.isEmpty());
         } );
         box.addValueChangeHandler( event -> {
             fireValuesChanged();
@@ -173,13 +191,13 @@ public class MultipleDecimalNumberInput
                     checkExistNumber(box);
                 }
             }
-
-            correctNumbers(box.getValue());
         } );
+        box.addCorrectDecimalNumberHandler(event -> correctNumbers(box.getValue()));
         box.setEnabled(isEnabled);
 
         numberBoxes.add(box);
         placeBox(number, box);
+        addPamr.setEnabled(false);
     }
 
     private void createEmptyBox(En_OrganizationCode orgCode) {
@@ -188,6 +206,7 @@ public class MultipleDecimalNumberInput
         values.add( emptyNumber );
 
         createBoxAndFillValue( emptyNumber, true );
+        addPamr.setEnabled(false);
     }
 
     private void placeBox( DecimalNumber number, DecimalNumberBox box ) {
@@ -202,9 +221,20 @@ public class MultipleDecimalNumberInput
         DecimalNumber value = box.getValue();
         DecimalNumberQuery query = new DecimalNumberQuery( box.getValue(), getUsedModificationsByClassifierAndRegNumber( value ) );
 
+        if (gettingNextAvailableModification) {
+            return;
+        }
+
+        gettingNextAvailableModification = true;
         dataProvider.getNextAvailableModification(query, new FluentCallback<Integer>()
-                .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
-                .withSuccess(successAction)
+                .withError(throwable -> {
+                    gettingNextAvailableModification = false;
+                    box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER);
+                })
+                .withSuccess(result -> {
+                    gettingNextAvailableModification = false;
+                    successAction.accept(result);
+                })
         );
     }
 
@@ -371,6 +401,8 @@ public class MultipleDecimalNumberInput
     private List<DecimalNumber> values = new ArrayList<>();
 
     private List<DecimalNumberBox> numberBoxes = new ArrayList<>();
+
+    boolean gettingNextAvailableModification = false;
 
     interface DecimalNumberListUiBinder extends UiBinder< HTMLPanel, MultipleDecimalNumberInput> {}
     private static DecimalNumberListUiBinder ourUiBinder = GWT.create( DecimalNumberListUiBinder.class );

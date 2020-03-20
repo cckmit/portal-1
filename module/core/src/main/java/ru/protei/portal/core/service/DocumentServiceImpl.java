@@ -24,10 +24,12 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.core.model.helper.DocumentUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -136,6 +138,9 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional
     public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author) {
+        if (document == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
@@ -144,17 +149,17 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if (document == null || !isValidNewDocument(document, withDoc, withPdf, withApprovalSheet)) {
+        if (document.getProjectId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        if (!DocumentUtils.isValidNewDocument(document, projectInfo, withDoc, withPdf)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         En_ResultStatus validationStatus = checkDocumentDesignationValid(null, document);
         if (validationStatus != En_ResultStatus.OK) {
             return error(validationStatus);
-        }
-
-        if (document.getApproved() && !withPdf) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         return lockService.doWithLock(Document.class, DOCUMENT_ID_FOR_CREATE, LockStrategy.TRANSACTION, LOCK_TIMEOUT_TIME_UNIT, LOCK_TIMEOUT, () -> {
@@ -213,6 +218,9 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional
     public Result<Document> updateDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author) {
+        if (document == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
@@ -221,7 +229,8 @@ public class DocumentServiceImpl implements DocumentService {
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if (document == null || document.getId() == null || !isValidDocument(document)) {
+        ProjectInfo projectInfo = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        if (document.getId() == null || !DocumentUtils.isValidDocument(document, projectInfo)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -255,7 +264,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
             if (!oldDocument.getApproved() && document.getApproved() && !(isPdfInSvn || withPdf)) {
-                return error(En_ResultStatus.INCORRECT_PARAMS);
+                return error(En_ResultStatus.SVN_ERROR);
             }
 
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
@@ -545,35 +554,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     private <T> boolean isValueSetTwice(T oldObj, T newObj) {
         return oldObj != null && !oldObj.equals(newObj);
-    }
-
-    private boolean isValidNewDocument(Document document, boolean withDoc, boolean withPdf, boolean withApprovalSheet) {
-        if (withDoc && !withPdf) {
-            return StringUtils.isNotEmpty(document.getName()) &&
-                    document.getProjectId() != null;
-        } else {
-            return isValidDocument(document);
-        }
-    }
-
-    private boolean isValidDocument(Document document){
-        return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
-    }
-
-    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        Project project = Project.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
-        if (project == null) {
-            return false;
-        }
-        if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
-                && document.getType() != null
-                && document.getType().getDocumentCategory() != En_DocumentCategory.ABROAD) {
-            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-        }
-        return true;
     }
 
     private En_DocumentFormat predictDocFormat(FileItem fileItem) {

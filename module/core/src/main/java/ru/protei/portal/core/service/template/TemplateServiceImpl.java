@@ -364,7 +364,36 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private List<Map<String, Object>> getCommentsModelKeys( List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
+    @Override
+    public PreparedTemplate getMailReportBody(Report report) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportId", report.getId());
+        templateModel.put("name", report.getName());
+        templateModel.put("created", report.getCreated());
+        templateModel.put("creator", report.getCreator().getDisplayShortName());
+        templateModel.put("type", report.getReportType());
+        templateModel.put("status", report.getStatus());
+        templateModel.put("filter", report.getCaseQuery());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getMailReportSubject(Report report) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportTitle", report.getName());
+        templateModel.put("scheduledType", report.getScheduledType());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map( comment -> {

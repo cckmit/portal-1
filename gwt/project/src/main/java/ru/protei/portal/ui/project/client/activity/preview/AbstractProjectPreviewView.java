@@ -47,6 +47,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void isFullScreen(boolean isFullScreen);
 
+    void setTechnicalSupportValidity(String value);
+
     HasVisibility backButtonVisibility();
 
     HasWidgets getCommentsContainer();

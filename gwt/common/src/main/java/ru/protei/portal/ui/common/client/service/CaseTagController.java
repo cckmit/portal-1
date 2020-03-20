@@ -15,7 +15,7 @@ public interface CaseTagController extends RemoteService {
 
     Long create( CaseTag caseTag) throws RequestFailedException;
 
-    void removeTag(CaseTag caseTag) throws RequestFailedException;
+    Long removeTag(Long caseTagId) throws RequestFailedException;
 
     List<CaseTag> getTags(CaseTagQuery query) throws RequestFailedException;
 

@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.common.client.widget.jirasla;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -26,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JiraSLASelector extends Composite implements HasValue<CaseObjectMetaJira>, HasVisibility, HasEnabled {
+public class JiraSLASelector extends Composite implements HasValue<CaseObjectMetaJira>, HasVisibility, HasEnabled, HasClickHandlers {
 
     @Inject
     public void init() {
@@ -70,11 +73,22 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addHandler(handler, ClickEvent.getType());
+    }
+
     @UiHandler("severity")
     public void severityChanged(ValueChangeEvent<String> event) {
         fillValueFromView();
         renderView();
         fireChanged();
+    }
+
+    @UiHandler("jiraInfoLink")
+    public void onJiraInfoClick(ClickEvent event) {
+        event.preventDefault();
+        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
     }
 
     private void fireChanged() {
@@ -214,7 +228,6 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
     @Inject
     @UiField
     Lang lang;
-
     @UiField
     TextBox issueType;
     @Inject
@@ -225,6 +238,8 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
     @UiField
     TextBox timeOfDecision;
 
+    @UiField
+    Anchor jiraInfoLink;
     private CaseObjectMetaJira value;
     private List<JiraSLAMapEntry> cache;
     private boolean severityShouldBeEnabled = false;

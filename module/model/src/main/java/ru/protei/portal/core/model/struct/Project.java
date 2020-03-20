@@ -88,6 +88,8 @@ public class Project extends AuditableObject {
 
     private Long platformId;
 
+    private Date technicalSupportValidity;
+
     private List<ProjectSla> projectSlas;
 
     public Long getId() {
@@ -282,6 +284,14 @@ public class Project extends AuditableObject {
         this.platformId = platformId;
     }
 
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
     public List<ProjectSla> getProjectSlas() {
         return projectSlas;
     }
@@ -348,6 +358,8 @@ public class Project extends AuditableObject {
             projectInfo.setPlatformName(project.getPlatformName());
 
         }
+
+        projectInfo.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
 
         projectInfo.setProjectSlas(project.getProjectSlas());
 

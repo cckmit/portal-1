@@ -18,7 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Order(0)
 public class JiraServiceLayerInterceptorLogging {
 
-    @Pointcut("within(ru.protei.portal.jira.service..*)")
+    @Pointcut("within(ru.protei.portal.jira.service.*)")
     private void inServiceLayer() {}
 
     @Around("inServiceLayer()")

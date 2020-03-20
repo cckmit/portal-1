@@ -79,4 +79,8 @@ public class CrmConstants {
     public interface RegistrationNumber {
         int MAX_SIZE = 3;
     }
+
+    public interface Image {
+        String JIRA_WORKFLOW = "./images/jira-workflow.jpg";
+    }
 }

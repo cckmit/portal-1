@@ -9,6 +9,7 @@
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:sla="urn:import:ru.protei.portal.ui.common.client.widget.sla"
 >
 

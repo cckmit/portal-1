@@ -124,6 +124,7 @@ public class IssueFilterUtils {
         }
             EntityOption option = new EntityOption();
             option.setId( company.getId() );
+            option.setDisplayText( company.getCname() );
         return option;
     }
 

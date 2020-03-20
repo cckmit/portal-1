@@ -3983,6 +3983,44 @@ table {
   }
 }
 
+.jira-info {
+  padding: 15px;
+
+  .jira-info-item {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  table {
+    .jira-status {
+      width: 15%;
+    }
+
+    .crm-status {
+      width: 15%;
+    }
+
+    .status-definition {
+      width: 35%;
+    }
+
+    .status-comment {
+      width: 35%;
+    }
+  }
+
+  .jira-info-footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 8px 5px;
+    background-color: #ededed;
+    border-top: 1px solid #dadada;
+    z-index: 150;
+  }
+}
+
 .form-group {
   .form-control {
     &.sla-input-time {

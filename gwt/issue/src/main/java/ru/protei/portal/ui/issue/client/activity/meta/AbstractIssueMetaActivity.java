@@ -13,4 +13,5 @@ public interface AbstractIssueMetaActivity {
     default void onInitiatorChanged(){};
     default void onPlatformChanged(){};
     default void onTimeElapsedChanged(){};
+    default void onJiraInfoClicked(){};
 }
