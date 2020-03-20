@@ -2113,4 +2113,22 @@ public interface Lang extends Messages, ContactItemLang {
     String technicalSupportValidityNotFound(String managerName);
 
     String technicalSupportValidityNotDefined();
+
+    String jiraInfoPageHeader();
+
+    String issueJiraInfo();
+
+    String jiraInfoStatusMap();
+
+    String jiraInfoWorkFlow();
+
+    String jiraInfoJiraStatus();
+
+    String jiraInfoCrmStatus();
+
+    String jiraInfoStatusDefinition();
+
+    String jiraInfoStatusComment();
+
+    String jiraInfoBackButton();
 }

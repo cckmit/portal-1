@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -418,6 +419,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiHandler("jiraSlaSelector")
     public void onJiraSlaChanged(ValueChangeEvent<CaseObjectMetaJira> event) {
         activity.onCaseMetaJiraChanged();
+    }
+
+    @UiHandler("jiraSlaSelector")
+    public void onJiraInfoClicked(ClickEvent event) {
+        activity.onJiraInfoClicked();
     }
 
     @UiField

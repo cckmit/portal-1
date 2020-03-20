@@ -708,6 +708,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public JiraStatusService getJiraSlaService() {
+        return new JiraStatusServiceImpl();
+    }
+
+    @Bean
     public ExportDataService getExportDataService(@Autowired PortalConfig config) {
         return config.data().legacySysConfig().isExportEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
     }

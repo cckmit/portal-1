@@ -123,6 +123,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged( meta );
     }
 
+    @Override
+    public void onJiraInfoClicked() {
+        fireEvent(new JiraInfoEvents.Show());
+    }
+
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
         onCaseMetaChanged(caseMeta, null);
     }
