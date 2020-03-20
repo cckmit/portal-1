@@ -14,23 +14,26 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12 m-b-0"/>
+
+        <div class="row">
+            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12 m-b-0"/>
+        </div>
         <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-md-12 local-search-options-container">
             <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
             <g:CheckBox ui:field="searchByComments" text="{lang.searchByComments}" styleName="checkbox"/>
         </g:HTMLPanel>
 
-        <div class="form-group col-md-12 resize-md-6">
+        <div class="form-group col-md-4 col-12">
             <label ui:field="labelCreated"><ui:text from="{lang.created}"/></label>
             <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
         </div>
 
-        <div ui:field="modifiedRangeContainer" class="form-group col-md-12 resize-md-6">
+        <div ui:field="modifiedRangeContainer" class="form-group col-md-4 col-12">
             <label ui:field="labelUpdated"><ui:text from="{lang.updated}"/></label>
             <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
         </div>
 
-        <div ui:field="sortByContainer" class="form-group col-md-12 resize-md-6">
+        <div ui:field="sortByContainer" class="form-group col-md-4 col-12">
             <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
             <div class="control-group">
                 <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />

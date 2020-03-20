@@ -6,7 +6,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="card card-default no-border card-fixed issue-filter filter-collapsable">
+    <g:HTMLPanel ui:field="root" styleName="">
         <div class="user-filter form-group col-md-12">
             <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
         </div>
