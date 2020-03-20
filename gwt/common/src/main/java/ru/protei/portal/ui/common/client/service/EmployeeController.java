@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -39,4 +40,6 @@ public interface EmployeeController extends RemoteService {
     PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
 
     EmployeeShortView getEmployeeShortView( Long employeeId) throws RequestFailedException;
+
+    List<WorkerEntryShortView> getWorkerEntryList(int offset, int limit) throws RequestFailedException;
 }

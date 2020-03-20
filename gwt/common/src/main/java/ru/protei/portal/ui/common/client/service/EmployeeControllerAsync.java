@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -36,4 +37,6 @@ public interface EmployeeControllerAsync {
     void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
 
     void getEmployeeShortView(Long employeeId, AsyncCallback<EmployeeShortView> async);
+
+    void getWorkerEntryList(int offset, int limit, AsyncCallback<List<WorkerEntryShortView>> async);
 }

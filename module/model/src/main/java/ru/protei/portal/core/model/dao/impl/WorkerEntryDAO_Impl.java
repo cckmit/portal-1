@@ -67,7 +67,7 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
 
     @Override
     public List<WorkerEntry> getPartialWorkersDepartments(List<Long> workerIdList) {
-        return partialGetListByCondition("worker_entry.id IN " + makeInArg(workerIdList, String::valueOf), Collections.emptyList(), "id, dep_id");
+        return partialGetListByCondition("worker_entry.id IN " + makeInArg(workerIdList, String::valueOf), Collections.emptyList(), "id", "dep_id");
     }
 
     @SqlConditionBuilder

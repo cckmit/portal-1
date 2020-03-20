@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.EmployeeController;
@@ -67,6 +68,12 @@ public class EmployeeControllerImpl implements EmployeeController {
         log.info("getEmployeeShortView(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeShortView(token, employeeId));
+    }
+
+    @Override
+    public List<WorkerEntryShortView> getWorkerEntryList(int offset, int limit) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getWorkerEntryList(token, offset, limit));
     }
 
     @Autowired

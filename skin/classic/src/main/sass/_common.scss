@@ -2626,6 +2626,10 @@ div.select2-container {
   }
 }
 
+.required > div.select2-container {
+  border: 1px solid $error_color;
+}
+
 .case-subscribers {
   div.select2-container {
     border: 0 !important;

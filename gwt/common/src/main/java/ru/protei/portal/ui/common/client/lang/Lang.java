@@ -2118,6 +2118,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String educationEntryImage();
 
+    String educationEntryParticipants();
+
     String educationEntryActionApprove();
 
     String educationEntryActionDecline();

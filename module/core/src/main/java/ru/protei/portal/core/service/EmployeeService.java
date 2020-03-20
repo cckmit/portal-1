@@ -6,10 +6,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.view.EmployeeDetailView;
-import ru.protei.portal.core.model.view.EmployeeShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -34,4 +31,6 @@ public interface EmployeeService {
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employee);
+
+    Result<List<WorkerEntryShortView>> getWorkerEntryList(AuthToken token, int offset, int limit);
 }
