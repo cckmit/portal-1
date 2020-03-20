@@ -90,6 +90,8 @@ public class Project extends AuditableObject {
 
     private Date technicalSupportValidity;
 
+    private List<ProjectSla> projectSlas;
+
     public Long getId() {
         return id;
     }
@@ -290,6 +292,14 @@ public class Project extends AuditableObject {
         this.technicalSupportValidity = technicalSupportValidity;
     }
 
+    public List<ProjectSla> getProjectSlas() {
+        return projectSlas;
+    }
+
+    public void setProjectSlas(List<ProjectSla> projectSlas) {
+        this.projectSlas = projectSlas;
+    }
+
     public static Project fromCaseObject(CaseObject project ) {
         if (project == null)
             return null;
@@ -350,6 +360,8 @@ public class Project extends AuditableObject {
         }
 
         projectInfo.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+
+        projectInfo.setProjectSlas(project.getProjectSlas());
 
         return projectInfo;
     }

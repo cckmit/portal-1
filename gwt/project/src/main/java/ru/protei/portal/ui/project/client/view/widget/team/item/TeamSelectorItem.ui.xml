@@ -3,13 +3,13 @@
              xmlns:role='urn:import:ru.protei.portal.ui.project.client.view.widget.selector'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
 
-    <g:HTMLPanel ui:field="container" styleName="row form-group">
-        <div class="col-md-4">
-            <role:ProjectRoleButtonSelector ui:field="role"/>
+    <g:HTMLPanel styleName="project-team-selector-item">
+        <div>
+            <role:ProjectRoleFormSelector ui:field="role" header="Роль"/>
         </div>
 
-        <div class="col-md-8">
-            <person:EmployeeMultiSelector ui:field="members" firedEmployeesVisible="false"/>
+        <div>
+            <person:EmployeeMultiSelector ui:field="members" firedEmployeesVisible="false" buttonStyle="btn-info btn-xs"/>
         </div>
     </g:HTMLPanel>
 

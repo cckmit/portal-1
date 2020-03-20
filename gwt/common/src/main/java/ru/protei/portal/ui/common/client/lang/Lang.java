@@ -1864,8 +1864,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errInvalidCurrentPassword();
 
-    String errSaveProjectNeedSelectRegion();
-
     String errSaveProjectNeedSelectDirection();
 
     String errSaveProjectNeedSelectCustomerType();
@@ -2131,4 +2129,14 @@ public interface Lang extends Messages, ContactItemLang {
     String jiraInfoStatusComment();
 
     String jiraInfoBackButton();
+
+    String projectSlaTemporaryTime();
+
+    String projectSlaReactionTime();
+
+    String projectSlaFullTime();
+
+    String projectSla();
+
+    String projectImportance();
 }

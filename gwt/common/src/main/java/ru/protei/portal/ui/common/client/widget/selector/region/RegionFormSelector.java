@@ -2,23 +2,20 @@ package ru.protei.portal.ui.common.client.widget.selector.region;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-/**
- * Селектор регионов
- */
-public class RegionButtonSelector extends ButtonSelector<EntityOption> implements SelectorWithModel<EntityOption> {
+public class RegionFormSelector extends FormSelector<EntityOption> implements SelectorWithModel<EntityOption> {
 
     @Inject
     public void init( RegionModel regionModel ) {
         setSelectorModel(regionModel);
 
-        setSearchEnabled(true);
         setSearchAutoFocus( true );
+        setSearchEnabled(true);
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );
     }
 
