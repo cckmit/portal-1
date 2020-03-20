@@ -7,10 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.ResultStatusException;
-import ru.protei.portal.core.model.dao.EducationEntryAttendanceDAO;
-import ru.protei.portal.core.model.dao.EducationEntryDAO;
-import ru.protei.portal.core.model.dao.EducationWalletDAO;
-import ru.protei.portal.core.model.dao.WorkerEntryDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -18,10 +15,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -36,7 +30,8 @@ public class EducationServiceImpl implements EducationService {
     public Result<List<EducationWallet>> getAllWallets(AuthToken token) {
         List<EducationWallet> wallets = emptyIfNull(educationWalletDAO.getAll());
         for (EducationWallet wallet : wallets) {
-            List<EducationEntry> educationEntryList = educationEntryDAO.getForWallet(wallet.getDepartmentId(), new Date());
+            List<Long> depIds = getDepartmentGraph(wallet.getDepartmentId());
+            List<EducationEntry> educationEntryList = educationEntryDAO.getForWallet(depIds, new Date());
             wallet.setEducationEntryList(emptyIfNull(educationEntryList));
         }
         return ok(wallets);
@@ -61,24 +56,16 @@ public class EducationServiceImpl implements EducationService {
             return error(validation.getStatus());
         }
 
-        List<EducationWallet> wallets = educationWalletDAO.getByWorkers(workerIds);
-
-        Map<Long, Long> workersToDepartments = stream(workerEntryDAO.getPartialWorkersDepartments(workerIds))
-                .collect(Collectors.toMap(
-                        WorkerEntry::getId,
-                        WorkerEntry::getDepartmentId
-                ));
-
-        for (Long depId : workersToDepartments.values()) {
-            if (!walletsContainsDepartment(wallets, depId)) {
-                return error(En_ResultStatus.PERMISSION_DENIED);
-            }
-        }
-
-        for (EducationWallet wallet : wallets) {
+        Map<Long, EducationWallet> worker2wallet = new HashMap<>();
+        for (Long workerId : workerIds) {
+            EducationWallet wallet = selectWalletForWorker(workerId).getData();
             if (wallet == null) {
                 return error(En_ResultStatus.PERMISSION_DENIED);
             }
+            worker2wallet.put(workerId, wallet);
+        }
+
+        for (EducationWallet wallet : worker2wallet.values()) {
             if (wallet.getCoins() == null || wallet.getCoins() < 0) {
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
@@ -113,10 +100,11 @@ public class EducationServiceImpl implements EducationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        EducationWallet wallet = educationWalletDAO.getByWorker(workerEntry.getId());
-        if (wallet == null) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
+        Result<EducationWallet> walletResult = selectWalletForWorker(workerEntry.getId());
+        if (walletResult.isError()) {
+            return error(walletResult.getStatus());
         }
+        EducationWallet wallet = walletResult.getData();
         if (wallet.getCoins() == null || wallet.getCoins() < 0) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
@@ -199,7 +187,11 @@ public class EducationServiceImpl implements EducationService {
                 if (attendance.isCharged()) {
                     log.warn("Attendance was charged before entry approval! Charge for it again : {}", attendance);
                 }
-                EducationWallet wallet = educationWalletDAO.get(attendance.getEducationEntryId());
+                EducationWallet wallet = selectWalletForWorker(attendance.getWorkerId()).getData();
+                if (wallet == null) {
+                    log.warn("Failed to find wallet for attendance : {}", attendance);
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                }
                 wallet.setCoins(wallet.getCoins() - entry.getCoins());
                 if (!educationWalletDAO.partialMerge(wallet, "coins")) {
                     log.warn("Failed to reduce wallet coins for attendance : {}", attendance);
@@ -220,7 +212,11 @@ public class EducationServiceImpl implements EducationService {
                     .collect(Collectors.toList());
             for (EducationEntryAttendance attendance : attendanceList) {
                 int delta = oldEntry.getCoins() - entry.getCoins();
-                EducationWallet wallet = educationWalletDAO.get(attendance.getEducationEntryId());
+                EducationWallet wallet = selectWalletForWorker(attendance.getWorkerId()).getData();
+                if (wallet == null) {
+                    log.warn("Failed to find wallet for attendance : {}", attendance);
+                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+                }
                 wallet.setCoins(wallet.getCoins() + delta);
                 if (!educationWalletDAO.partialMerge(wallet, "coins")) {
                     log.warn("Failed to modify wallet coins by delta {} for attendance : {}", delta, attendance);
@@ -249,7 +245,11 @@ public class EducationServiceImpl implements EducationService {
                 .filter(EducationEntryAttendance::isCharged)
                 .collect(Collectors.toList());
         for (EducationEntryAttendance attendance : attendanceList) {
-            EducationWallet wallet = educationWalletDAO.get(attendance.getEducationEntryId());
+            EducationWallet wallet = selectWalletForWorker(attendance.getWorkerId()).getData();
+            if (wallet == null) {
+                log.warn("Failed to find wallet for attendance : {}", attendance);
+                throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+            }
             wallet.setCoins(wallet.getCoins() + entry.getCoins());
             if (!educationWalletDAO.partialMerge(wallet, "coins")) {
                 log.warn("Failed to put back wallet coins for attendance : {}", attendance);
@@ -266,11 +266,79 @@ public class EducationServiceImpl implements EducationService {
     }
 
 
+    private Result<EducationWallet> selectWalletForWorker(Long workerId) {
+
+        Long depId = workerEntryDAO.getPartialWorkerDepartment(workerId).getDepartmentId();
+
+        List<Long> departmentIdList = getDepartmentGraph(depId);
+        if (CollectionUtils.isEmpty(departmentIdList)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        List<EducationWallet> wallets = educationWalletDAO.getByDepartments(departmentIdList);
+        if (CollectionUtils.isEmpty(departmentIdList)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (wallets.size() == 1) {
+            return ok(wallets.get(0));
+        }
+
+        EducationWallet wallet = null;
+        for (Long departmentId : departmentIdList) {
+            wallet = stream(wallets)
+                    .filter(w -> Objects.equals(w.getDepartmentId(), departmentId))
+                    .findFirst()
+                    .orElse(null);
+            if (wallet != null) {
+                break;
+            }
+        }
+
+        if (wallet == null) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        log.info("Found multiple wallets for worker with id={} : {}. Selected wallet is {}",
+                workerId, stream(wallets).map(EducationWallet::getId).collect(Collectors.toList()), wallet.getId());
+
+        return ok(wallet);
+    }
+
+    private List<Long> getDepartmentGraph(Long depId) {
+        // Список подразделений по уменьшению (родитель->сын)
+        List<Long> departments = new ArrayList<>();
+        departments.add(depId);
+        fillParentDepartments(departments, depId);
+        fillChildDepartments(departments, depId);
+        return departments;
+    }
+
+    private void fillParentDepartments(List<Long> departments, Long depId) {
+        Long parentDepId = depId;
+        for (;;) {
+            parentDepId = companyDepartmentDAO.getPartialParentDepByDep(parentDepId).getParentId();
+            if (parentDepId == null) break;
+            departments.add(0, parentDepId);
+        }
+    }
+
+    private void fillChildDepartments(List<Long> departments, Long depId) {
+        List<Long> childDepIds = stream(companyDepartmentDAO.getPartialDepByParentDep(depId))
+                .map(CompanyDepartment::getId)
+                .collect(Collectors.toList());
+        for (Long childDepId : childDepIds) {
+            departments.add(childDepId);
+            fillChildDepartments(departments, childDepId);
+        }
+    }
+
     private boolean isQuotaExceededForDepartment(Long depId) {
         LocalDate now = LocalDate.now();
         Date monthStart = java.sql.Date.valueOf(now.withDayOfMonth(1));
         Date monthEnd = java.sql.Date.valueOf(now.withDayOfMonth(now.lengthOfMonth()));
-        long spent = stream(educationEntryAttendanceDAO.getAllForDepAndDates(depId, monthStart, monthEnd))
+        List<Long> depIds = getDepartmentGraph(depId);
+        long spent = stream(educationEntryAttendanceDAO.getAllForDepAndDates(depIds, monthStart, monthEnd))
                 .filter(attendance -> attendance.getCoins() != null)
                 .mapToLong(EducationEntryAttendance::getCoins)
                 .sum();
@@ -286,17 +354,11 @@ public class EducationServiceImpl implements EducationService {
         return quota;
     }
 
-    private boolean walletsContainsDepartment(List<EducationWallet> wallets, Long depId) {
-        for (EducationWallet wallet : wallets) {
-            if (Objects.equals(wallet.getDepartmentId(), depId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private Result<EducationEntry> validateEducationEntry(EducationEntry entry) {
         if (entry.getType() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        if (entry.getCoins() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
         switch (entry.getType()) {
@@ -355,6 +417,8 @@ public class EducationServiceImpl implements EducationService {
     EducationEntryAttendanceDAO educationEntryAttendanceDAO;
     @Autowired
     WorkerEntryDAO workerEntryDAO;
+    @Autowired
+    CompanyDepartmentDAO companyDepartmentDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 

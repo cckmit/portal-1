@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface EducationEntryAttendanceDAO extends PortalBaseDAO<EducationEntryAttendance> {
     List<EducationEntryAttendance> getAllForEntry(Long entryId);
-    List<EducationEntryAttendance> getAllForDepAndDates(Long depId, Date rangeFrom, Date rangeTo);
+    List<EducationEntryAttendance> getAllForDepAndDates(List<Long> depIds, Date rangeFrom, Date rangeTo);
     boolean saveOrUpdate(EducationEntryAttendance entry);
 }

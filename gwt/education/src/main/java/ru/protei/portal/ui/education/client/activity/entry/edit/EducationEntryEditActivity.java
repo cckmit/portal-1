@@ -71,6 +71,7 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
             return;
         }
         fillDto(entry);
+        entry.setApproved(true);
         educationController.adminModifyEntry(entry, new FluentCallback<EducationEntry>()
                 .withSuccess(en -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

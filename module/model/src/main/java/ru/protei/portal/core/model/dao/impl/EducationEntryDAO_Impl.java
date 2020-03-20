@@ -6,6 +6,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+
 public class EducationEntryDAO_Impl extends PortalBaseJdbcDAO<EducationEntry> implements EducationEntryDAO {
 
     @Override
@@ -28,8 +30,10 @@ public class EducationEntryDAO_Impl extends PortalBaseJdbcDAO<EducationEntry> im
     }
 
     @Override
-    public List<EducationEntry> getForWallet(Long depId, Date date) {
-        return getListByCondition("id IN (SELECT DISTINCT education_entry_id FROM education_entry_attendance WHERE worker_entry_id IN " +
-                "(SELECT DISTINCT id FROM worker_entry WHERE dep_id = ?)) AND approved IS TRUE AND (date_end IS NULL OR date_end >= ?)", depId, date);
+    public List<EducationEntry> getForWallet(List<Long> depIds, Date date) {
+        return getListByCondition("id IN " +
+                "(SELECT DISTINCT education_entry_id FROM education_entry_attendance WHERE worker_entry_id IN " +
+                    "(SELECT DISTINCT id FROM worker_entry WHERE dep_id IN " + makeInArg(depIds, String::valueOf) + ")" +
+                ") AND approved IS TRUE AND (date_end IS NULL OR date_end >= ?)", date);
     }
 }

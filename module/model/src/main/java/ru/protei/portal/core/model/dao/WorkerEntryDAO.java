@@ -19,5 +19,5 @@ public interface WorkerEntryDAO extends PortalBaseDAO<WorkerEntry> {
     WorkerEntry getByPersonId(Long personId);
     List< WorkerEntry > getWorkers(WorkerEntryQuery query);
     List< WorkerEntry > getWorkersByDepartment(Long depId);
-    List< WorkerEntry > getPartialWorkersDepartments(List<Long> workerIdList);
+    WorkerEntry getPartialWorkerDepartment(Long workerId);
 }

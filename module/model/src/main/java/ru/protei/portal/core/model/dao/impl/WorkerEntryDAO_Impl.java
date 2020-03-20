@@ -9,8 +9,6 @@ import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
-
 /**
  * Created by turik on 19.08.16.
  */
@@ -66,8 +64,8 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     }
 
     @Override
-    public List<WorkerEntry> getPartialWorkersDepartments(List<Long> workerIdList) {
-        return partialGetListByCondition("worker_entry.id IN " + makeInArg(workerIdList, String::valueOf), Collections.emptyList(), "id", "dep_id");
+    public WorkerEntry getPartialWorkerDepartment(Long workerId) {
+        return partialGetByCondition("worker_entry.id = ?", Collections.singletonList(workerId), "id", "dep_id");
     }
 
     @SqlConditionBuilder

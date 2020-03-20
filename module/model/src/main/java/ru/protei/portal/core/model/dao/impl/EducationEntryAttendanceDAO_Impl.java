@@ -6,6 +6,8 @@ import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+
 public class EducationEntryAttendanceDAO_Impl extends PortalBaseJdbcDAO<EducationEntryAttendance> implements EducationEntryAttendanceDAO {
 
     @Override
@@ -14,8 +16,8 @@ public class EducationEntryAttendanceDAO_Impl extends PortalBaseJdbcDAO<Educatio
     }
 
     @Override
-    public List<EducationEntryAttendance> getAllForDepAndDates(Long depId, Date rangeFrom, Date rangeTo) {
-        return getListByCondition("worker_entry_id IN (SELECT DISTINCT id FROM worker_entry WHERE dep_id = ?)" +
-                " AND (date_requested BETWEEN ? AND ?)", depId, rangeFrom, rangeTo);
+    public List<EducationEntryAttendance> getAllForDepAndDates(List<Long> depIds, Date rangeFrom, Date rangeTo) {
+        return getListByCondition("worker_entry_id IN (SELECT DISTINCT id FROM worker_entry WHERE dep_id IN " + makeInArg(depIds, String::valueOf) + ")" +
+                " AND (date_requested BETWEEN ? AND ?)", rangeFrom, rangeTo);
     }
 }

@@ -10,7 +10,7 @@ public interface EducationEntryDAO extends PortalBaseDAO<EducationEntry> {
     List<EducationEntry> getAll();
     SearchResult<EducationEntry> getAll(int offset, int limit, Boolean approved, Date date);
     List<EducationEntry> getApprovedForDate(Date date);
-    List<EducationEntry> getForWallet(Long depId, Date date);
+    List<EducationEntry> getForWallet(List<Long> depIds, Date date);
     EducationEntry get(Long id);
     boolean saveOrUpdate(EducationEntry entry);
 }

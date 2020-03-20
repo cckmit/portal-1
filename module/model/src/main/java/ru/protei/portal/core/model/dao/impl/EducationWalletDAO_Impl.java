@@ -10,13 +10,8 @@ import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 public class EducationWalletDAO_Impl extends PortalBaseJdbcDAO<EducationWallet> implements EducationWalletDAO {
 
     @Override
-    public List<EducationWallet> getByWorkers(List<Long> workerIdList) {
-        return getListByCondition("dep_id IN (SELECT dep_id FROM worker_entry WHERE id IN " + makeInArg(workerIdList, String::valueOf) + ")");
-    }
-
-    @Override
-    public EducationWallet getByWorker(Long workerId) {
-        return getByCondition("dep_id = (SELECT dep_id FROM worker_entry WHERE id = ?)", workerId);
+    public List<EducationWallet> getByDepartments(List<Long> depIdList) {
+        return getListByCondition("dep_id IN " + makeInArg(depIdList, String::valueOf));
     }
 
     @Override

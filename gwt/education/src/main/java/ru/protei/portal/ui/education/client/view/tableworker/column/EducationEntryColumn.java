@@ -10,6 +10,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.inject.Inject;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+
 public class EducationEntryColumn extends Composite {
 
     @Inject
@@ -18,7 +20,12 @@ public class EducationEntryColumn extends Composite {
     }
 
     public void setImage(String url) {
-        this.image.setUrl(url);
+        if (isEmpty(url)) {
+            this.image.setVisible(false);
+        } else {
+            this.image.setVisible(true);
+            this.image.setUrl(url);
+        }
     }
 
     public void setLink(String link) {
