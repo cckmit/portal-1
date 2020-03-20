@@ -9,7 +9,7 @@
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:sla="urn:import:ru.protei.portal.ui.common.client.widget.sla"
 >
 
@@ -130,6 +130,12 @@
                                                                  header="{lang.projectProducts}"
                                                                  hasNullValue="true"
                                                                  mandatory="false"/>
+                                </div>
+                            </div>
+                            <div class="row clearfix reset-no-padding">
+                                <div class="form-group form-group-default technical-validity" ui:field="approvalDateContainer">
+                                    <label class="fade" ui:field="approvalDateLabel"><ui:text from="{lang.technicalSupportValidity}"/></label>
+                                    <datepicker:SinglePicker ui:field="technicalSupportValidity" type="DATE" formatValue="dd.MM.yyyy"/>
                                 </div>
                             </div>
                         </div>
