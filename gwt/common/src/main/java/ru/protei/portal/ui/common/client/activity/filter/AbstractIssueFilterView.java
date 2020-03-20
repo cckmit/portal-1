@@ -5,8 +5,12 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+
+import java.util.function.Function;
 
 /**
  * Абстракция вида фильтра обращений
@@ -43,4 +47,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     void updateFilterType(En_CaseFilterType filterType);
 
     void showUserFilterControls();
+
+    void addAdditionalFilterValidate(Function<CaseFilter, Boolean> validate);
+
+    CaseQuery getFilterFieldsByFilterType();
 }

@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -32,7 +33,10 @@ public abstract class IssueReportCreateActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.getIssueFilterContainer().add(filterView.asWidget());
         filterView.getIssueFilterParams().setModel(this);
+        filterView.addAdditionalFilterValidate(
+                caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
     }
 
     @Event
@@ -66,17 +70,11 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
     }
 
-    private void applyFilterViewPrivileges() {
-        filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterView.getIssueFilterParams().managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
-        filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
-    }
-
     @Override
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();
-        CaseQuery query = filterView.getIssueFilterParams().getFilterFields();
+        CaseQuery query = filterView.getFilterFieldsByFilterType();
 
         if (!validateQuery(reportType, query)) {
             return;
@@ -120,9 +118,9 @@ public abstract class IssueReportCreateActivity implements Activity,
         ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
-/*    private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
+    private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
         return validateQuery(En_ReportType.valueOf(filterType.name()), query);
-    }*/
+    }
 
     private boolean validateQuery(En_ReportType reportType, CaseQuery query) {
         if (reportType == null || query == null) {
@@ -145,15 +143,16 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
-//        if (view.getIssueFilter().productsVisibility().isVisible()) {
-//            view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-//        }
-//        if (view.getIssueFilter().managersVisibility().isVisible()) {
-//            view.getIssueFilter().managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
-//        }
-//        if (view.getIssueFilter().searchPrivateVisibility().isVisible()) {
-//            view.getIssueFilter().searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-//        }
+        AbstractIssueFilterWidgetView issueFilterParams = filterView.getIssueFilterParams();
+        if (issueFilterParams.productsVisibility().isVisible()) {
+            issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+        }
+        if (issueFilterParams.managersVisibility().isVisible()) {
+            issueFilterParams.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
+        }
+        if (issueFilterParams.searchPrivateVisibility().isVisible()) {
+            issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        }
     }
 
     private List<En_ReportType> makeReportTypeList() {

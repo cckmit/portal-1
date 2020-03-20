@@ -25,7 +25,7 @@
             </div>
             <div class="container-fluid padding-15 bg-white">
                 <div class="card card-transparent no-margin">
-                    <issuefilter:IssueFilterWidget ui:field="issueFilterWidget" styleName="card-body"/>
+                    <g:HTMLPanel ui:field="issueFilterWidgetContainer" styleName="card-body"/>
                 </div>
             </div>
         </div>
