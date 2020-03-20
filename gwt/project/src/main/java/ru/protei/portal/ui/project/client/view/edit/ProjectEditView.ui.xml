@@ -52,11 +52,6 @@
                         <sla:SlaInput ui:field="slaInput"/>
                     </div>
 
-                    <div class="form-group form-group-default col-md-12">
-                        <label><ui:text from="{lang.projectTeam}"/></label>
-                        <team:TeamSelector ui:field="team" addStyleNames="form-group col-md-12"/>
-                    </div>
-
                     <div class="form-group form-group-default col-md-12" ui:field="documents">
                         <label><ui:text from="{lang.equipmentDocuments}"/></label>
                         <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
@@ -121,6 +116,17 @@
                                                                      header="{lang.projectProducts}"
                                                                      hasNullValue="true"
                                                                      mandatory="false"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group m-t-10 m-b-0">
+                                    <label>Информация о заявителе</label>
+                                </div>
+
+                                <div class="row clearfix reset-no-padding">
+                                    <div class="col-md-12">
+                                        <label><ui:text from="{lang.projectTeam}"/></label>
+                                        <team:TeamSelector ui:field="team" addStyleNames="form-group col-md-12"/>
                                     </div>
                                 </div>
                             </div>
