@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.education.client.activity.entry.edit;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -41,6 +42,7 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
 
     @Event(Type.FILL_CONTENT)
     public void onShow(EducationEvents.EditEducationEntry event) {
+        HasWidgets container = event.parent != null ? event.parent : initDetails.parent;
         EducationEntry entry = event.entry;
         boolean isCreationMode = entry == null;
         boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
@@ -48,11 +50,11 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
         boolean isWorkerCreationMode = isWorkerCanRequest && isCreationMode;
         boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
         if (!isWorkerCreationMode && !isAdmin) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        container.clear();
+        container.add(view.asWidget());
         fillView(entry == null ? new EducationEntry() : entry, isAdmin, isCreationMode);
     }
 

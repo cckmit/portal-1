@@ -2126,6 +2126,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String educationEntryActionDeclined();
 
+    String educationShowOnlyNotApproved();
+
+    String educationShowOutdated();
+
     String selectImage();
 
 }

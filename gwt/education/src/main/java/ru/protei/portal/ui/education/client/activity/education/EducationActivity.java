@@ -10,7 +10,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
-import ru.protei.portal.ui.common.client.lang.Lang;
 
 public abstract class EducationActivity implements Activity, AbstractEducationActivity {
 
@@ -73,11 +72,9 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
 
     private void showAdminView() {
         isAdminShowed = true;
-
+        fireEvent(new EducationEvents.ShowAdmin(view.container()));
     }
 
-    @Inject
-    Lang lang;
     @Inject
     AbstractEducationView view;
     @Inject

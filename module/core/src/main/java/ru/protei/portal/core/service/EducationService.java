@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.core.model.ent.EducationWallet;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface EducationService {
     Result<EducationEntryAttendance> requestNewAttendance(AuthToken token, Long educationEntryId, Long personId);
 
     @Privileged(En_Privilege.EDUCATION_CREATE)
-    Result<List<EducationEntry>> adminGetEntries(AuthToken token, boolean showOnlyNotApproved, boolean showOutdated);
+    Result<SearchResult<EducationEntry>> adminGetEntries(AuthToken token, int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated);
 
     @Privileged(En_Privilege.EDUCATION_CREATE)
     Result<EducationEntry> adminModifyEntry(AuthToken token, EducationEntry entry);

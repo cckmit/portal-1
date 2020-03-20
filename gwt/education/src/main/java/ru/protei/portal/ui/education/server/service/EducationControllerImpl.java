@@ -10,6 +10,7 @@ import ru.protei.portal.core.service.EducationService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.EducationController;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -45,9 +46,9 @@ public class EducationControllerImpl implements EducationController {
     }
 
     @Override
-    public List<EducationEntry> adminGetEntries(boolean showOnlyNotApproved, boolean showOutdated) throws RequestFailedException {
+    public SearchResult<EducationEntry> adminGetEntries(int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(educationService.adminGetEntries(token, showOnlyNotApproved, showOutdated));
+        return checkResultAndGetData(educationService.adminGetEntries(token, offset, limit, showOnlyNotApproved, showOutdated));
     }
 
     @Override

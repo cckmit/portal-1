@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.core.model.ent.EducationWallet;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public interface EducationController extends RemoteService {
 
     EducationEntryAttendance requestNewAttendance(Long educationEntryId) throws RequestFailedException;
 
-    List<EducationEntry> adminGetEntries(boolean showOnlyNotApproved, boolean showOutdated) throws RequestFailedException;
+    SearchResult<EducationEntry> adminGetEntries(int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated) throws RequestFailedException;
 
     EducationEntry adminModifyEntry(EducationEntry entry) throws RequestFailedException;
 

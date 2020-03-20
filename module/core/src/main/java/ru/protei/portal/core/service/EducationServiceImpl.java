@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.time.LocalDate;
@@ -153,17 +154,14 @@ public class EducationServiceImpl implements EducationService {
     }
 
     @Override
-    public Result<List<EducationEntry>> adminGetEntries(AuthToken token, boolean showOnlyNotApproved, boolean showOutdated) {
+    public Result<SearchResult<EducationEntry>> adminGetEntries(AuthToken token, int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated) {
 
-        List<EducationEntry> entries = showOutdated
-                ? emptyIfNull(educationEntryDAO.getAll())
-                : emptyIfNull(educationEntryDAO.getAllForDate(new Date()));
-
-        if (showOnlyNotApproved) {
-            entries = stream(entries)
-                    .filter(entry -> !entry.isApproved())
-                    .collect(Collectors.toList());
-        }
+        SearchResult<EducationEntry> entries = educationEntryDAO.getAll(
+                offset,
+                limit,
+                showOnlyNotApproved ? false : null,
+                showOutdated ? null : new Date()
+        );
 
         return ok(entries);
     }

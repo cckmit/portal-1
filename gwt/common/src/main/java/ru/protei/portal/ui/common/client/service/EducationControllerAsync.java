@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.core.model.ent.EducationWallet;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface EducationControllerAsync {
 
     void requestNewAttendance(Long educationEntryId, AsyncCallback<EducationEntryAttendance> async);
 
-    void adminGetEntries(boolean showOnlyNotApproved, boolean showOutdated, AsyncCallback<List<EducationEntry>> async);
+    void adminGetEntries(int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated, AsyncCallback<SearchResult<EducationEntry>> async);
 
     void adminModifyEntry(EducationEntry entry, AsyncCallback<EducationEntry> async);
 
