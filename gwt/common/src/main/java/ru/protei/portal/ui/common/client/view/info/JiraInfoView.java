@@ -14,8 +14,8 @@ import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoActivity;
 import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoView;
 import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity.JiraStatusInfo;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.view.info.column.SimpleClickColumn;
 
 import java.util.List;
 
@@ -48,25 +48,10 @@ public class JiraInfoView extends Composite implements AbstractJiraInfoView {
     }
 
     private void initTable() {
-        ClickColumn<JiraStatusInfo> jiraStatus = new SimpleClickColumn<JiraStatusInfo>()
-                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoJiraStatus()))
-                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.jiraStatus))
-                .withClassName("jira-status");
-
-        ClickColumn<JiraStatusInfo> crmStatus = new SimpleClickColumn<JiraStatusInfo>()
-                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoCrmStatus()))
-                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.crmStatus))
-                .withClassName("crm-status");
-
-        ClickColumn<JiraStatusInfo> definition = new SimpleClickColumn<JiraStatusInfo>()
-                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoStatusDefinition()))
-                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.definition))
-                .withClassName("status-definition");
-
-        ClickColumn<JiraStatusInfo> comment = new SimpleClickColumn<JiraStatusInfo>()
-                .withColumnHeaderConsumer(columnHeader -> columnHeader.setInnerText(lang.jiraInfoStatusComment()))
-                .withColumnValueConsumer((cell, value) -> cell.setInnerHTML(value.comment))
-                .withClassName("status-comment");
+        ClickColumn<JiraStatusInfo> jiraStatus = new DynamicColumn<>(lang.jiraInfoJiraStatus(), "jira-status", jiraStatusInfo -> jiraStatusInfo.jiraStatus);
+        ClickColumn<JiraStatusInfo> crmStatus = new DynamicColumn<>(lang.jiraInfoCrmStatus(), "crm-status", jiraStatusInfo -> jiraStatusInfo.crmStatus);
+        ClickColumn<JiraStatusInfo> definition = new DynamicColumn<>(lang.jiraInfoStatusDefinition(), "status-definition", jiraStatusInfo -> jiraStatusInfo.definition);
+        ClickColumn<JiraStatusInfo> comment = new DynamicColumn<>(lang.jiraInfoStatusComment(), "status-comment", jiraStatusInfo -> jiraStatusInfo.comment);
 
         table.addColumn(jiraStatus.header, jiraStatus.values);
         table.addColumn(crmStatus.header, crmStatus.values);
