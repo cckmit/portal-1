@@ -33,8 +33,11 @@
                     </div>
 
                     <h5 class="no-margin col-md-12 p-l-0">
-                        <g:Label ui:field="number" styleName="m-b-15 inline-block"/>
+                        <g:Label ui:field="number" styleName="inline-block"/>
                     </h5>
+
+                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group col-md-12 m-0 p-0"/>
+
                     <div class="form-group form-group-default col-md-12">
                         <label class="fade">
                             <ui:text from="{lang.projectName}"/>
@@ -43,10 +46,6 @@
                                                          notNull="true"/>
                     </div>
 
-                    <g:HTMLPanel ui:field="linksContainer" styleName="form-group col-md-12 p-l-0 p-r-0"/>
-                </div>
-
-                <div class="row">
                     <div class="form-group form-group-default col-md-12">
                         <label class="fade" ui:field="descriptionLabel">
                             <ui:text from="{lang.projectDescription}"/>

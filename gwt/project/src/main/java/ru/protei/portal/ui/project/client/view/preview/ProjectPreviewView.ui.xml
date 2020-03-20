@@ -78,21 +78,21 @@
             <div class="form-group small hint-text pre-formatted-info m-t-10" ui:field="description"/>
 
             <div class="row form-group">
-                <g:HTMLPanel ui:field="slaContainer" styleName="col-md-10">
-                    <h5>
-                        <ui:text from="{lang.projectSla}"/>
-                    </h5>
-                    <sla:SlaInputReadOnly ui:field="slaInputReadOnly"/>
-                </g:HTMLPanel>
-            </div>
-
-            <div class="row form-group">
                 <div class="col-md-12">
                     <h5>
                         <ui:text from="{lang.projectTeam}"/>
                     </h5>
                     <div ui:field="team"/>
                 </div>
+            </div>
+
+            <div class="row form-group">
+                <g:HTMLPanel ui:field="slaContainer" styleName="col-md-12">
+                    <h5>
+                        <ui:text from="{lang.projectSla}"/>
+                    </h5>
+                    <sla:SlaInputReadOnly ui:field="slaInputReadOnly"/>
+                </g:HTMLPanel>
             </div>
 
             <div class="row form-group">
