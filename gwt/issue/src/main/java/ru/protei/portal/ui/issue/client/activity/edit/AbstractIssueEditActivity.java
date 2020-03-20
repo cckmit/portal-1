@@ -9,10 +9,6 @@ public interface AbstractIssueEditActivity {
 
     void onNameAndDescriptionEditClicked();
 
-    void onCopyNumberClicked();
-
-    void onCopyNumberAndName();
-
     void onOpenEditViewClicked();
 
     void onAddTagClicked(IsWidget target);
@@ -20,4 +16,8 @@ public interface AbstractIssueEditActivity {
     void onAddLinkClicked(IsWidget target);
 
     void onBackClicked();
+
+    void fireSuccessCopyNotify();
+
+    void fireErrorCopyNotify();
 }

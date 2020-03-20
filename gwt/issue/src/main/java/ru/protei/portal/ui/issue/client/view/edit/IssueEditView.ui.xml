@@ -33,7 +33,7 @@
 
                     <g:HTMLPanel ui:field="numberPanel">
                         <h5 class="number-copy-panel no-margin">
-                            <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" href="#">
+                            <g:Anchor ui:field="copyNumber" styleName="copy-issue-number" >
                                 <i class="far fa-clone"/>
                             </g:Anchor>
                             <span ui:field="number"/>

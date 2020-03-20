@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -65,6 +64,8 @@ public abstract class IssueEditActivity implements
         };
 
         issueInfoWidget.setFileUploadHandler( uploadHandler );
+
+        setNotifyFunctionsForJavascript(this);
     }
 
     @Event
@@ -87,7 +88,17 @@ public abstract class IssueEditActivity implements
         viewModeIsPreview(false);
         container.clear();
         requestIssue(event.caseNumber, container);
+
     }
+
+    private static native void setNotifyFunctionsForJavascript(AbstractIssueEditActivity activity)/*-{
+        $wnd.fireSuccessCopyNotify = function () {
+            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireSuccessCopyNotify()();
+        }
+        $wnd.fireErrorCopyNotify = function () {
+            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireErrorCopyNotify()();
+        }
+    }-*/;
 
     @Event
     public void onShow( IssueEvents.ShowPreview event ) {
@@ -170,17 +181,6 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
-    public void onCopyNumberClicked() {
-        boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(issue.getCaseNumber()));
-
-        if (isCopied) {
-            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
-        } else {
-            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-        }
-    }
-
-    @Override
     public void onNameAndDescriptionEditClicked() {
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
         boolean readOnly = isReadOnly();
@@ -225,14 +225,13 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
-    public void onCopyNumberAndName() {
-        boolean isCopied = ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() );
+    public void fireSuccessCopyNotify() {
+        fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+    }
 
-        if (isCopied) {
-            fireEvent( new NotifyEvents.Show( lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS ) );
-        } else {
-            fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
-        }
+    @Override
+    public void fireErrorCopyNotify() {
+        fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
     }
 
     private void requestIssue(Long number, HasWidgets container) {
@@ -325,6 +324,8 @@ public abstract class IssueEditActivity implements
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setCopyNameText(String.valueOf(issue.getCaseNumber()));
+        view.setCopyNameAndNumberText(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
