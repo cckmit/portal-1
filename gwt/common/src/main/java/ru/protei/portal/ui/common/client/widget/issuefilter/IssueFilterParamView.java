@@ -15,6 +15,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePic
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -26,6 +27,7 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterMode
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
@@ -212,6 +214,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         model.onUserFilterChanged();
     }
 
+    @Override
+    public void presetCompany(Company company) {
+        HashSet<EntityOption> companyIds = new HashSet<>();
+        companyIds.add(IssueFilterUtils.toEntityOption(company));
+        companies.setValue(companyIds);
+        updateInitiators();
+    }
+
     private void toggleMsgSearchThreshold() {
         if (searchByComments.getValue()) {
             int actualLength = search.getValue().length();
@@ -324,42 +334,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setCompaniesErrorStyle(boolean hasError) {
-        if (hasError) {
-            companies.addStyleName(REQUIRED);
-        } else {
-            companies.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
-    public void setProductsErrorStyle(boolean hasError) {
-        if (hasError) {
-            products.addStyleName(REQUIRED);
-        } else {
-            products.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
-    public void setManagersErrorStyle(boolean hasError) {
-        if (hasError) {
-            managers.addStyleName(REQUIRED);
-        } else {
-            managers.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
-    public void setInitiatorsErrorStyle(boolean hasError) {
-        if (hasError) {
-            initiators.addStyleName(REQUIRED);
-        } else {
-            initiators.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
     public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter) {
         state.setFilter(caseStateFilter);
     }
@@ -367,11 +341,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
         initiators.setCompaniesSupplier(collectionSupplier);
-    }
-
-    @Override
-    public void updateInitiators() {
-        initiators.updateCompanies();
     }
 
     @UiHandler("search")
@@ -599,6 +568,42 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 search.getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
 
+    private void setCompaniesErrorStyle(boolean hasError) {
+        if (hasError) {
+            companies.addStyleName(REQUIRED);
+        } else {
+            companies.removeStyleName(REQUIRED);
+        }
+    }
+
+    private void setProductsErrorStyle(boolean hasError) {
+        if (hasError) {
+            products.addStyleName(REQUIRED);
+        } else {
+            products.removeStyleName(REQUIRED);
+        }
+    }
+
+    private void setManagersErrorStyle(boolean hasError) {
+        if (hasError) {
+            managers.addStyleName(REQUIRED);
+        } else {
+            managers.removeStyleName(REQUIRED);
+        }
+    }
+
+    private void setInitiatorsErrorStyle(boolean hasError) {
+        if (hasError) {
+            initiators.addStyleName(REQUIRED);
+        } else {
+            initiators.removeStyleName(REQUIRED);
+        }
+    }
+
+    private void updateInitiators() {
+        initiators.updateCompanies();
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -666,10 +671,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField(provided = true)
     IssueStatesOptionList state;
 
-    @UiField
-    DivElement sortByContainer;
+
     @UiField
     DivElement modifiedRangeContainer;
+    @UiField
+    DivElement sortByContainer;
+
     @UiField
     DivElement importanceContainer;
     @UiField

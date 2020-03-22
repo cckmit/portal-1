@@ -87,10 +87,7 @@ public abstract class IssueTableFilterActivity
         );
 
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
-            HashSet<EntityOption> companyIds = new HashSet<>();
-            companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
-            filterView.getIssueFilterParams().companies().setValue( companyIds );
-            filterView.getIssueFilterParams().updateInitiators();
+            filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
         }
 
         clearScroll(event);

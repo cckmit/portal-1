@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
@@ -20,11 +19,9 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 public abstract class IssueReportCreateActivity implements Activity,
@@ -63,10 +60,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.reset();
 
         if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
-            HashSet<EntityOption> companyIds = new HashSet<>();
-            companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
-            filterView.getIssueFilterParams().companies().setValue(companyIds);
-            filterView.getIssueFilterParams().updateInitiators();
+            filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
         }
     }
 

@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
@@ -73,11 +72,6 @@ public abstract class IssueFilterWidget extends Composite
     }
 
     @Override
-    public void setModel(AbstractIssueFilterModel model) {
-        issueFilterParamView.setModel(model);
-    }
-
-    @Override
     public void resetFilter() {
         issueFilterParamView.resetFilter();
         userFilter.setValue(null);
@@ -99,54 +93,6 @@ public abstract class IssueFilterWidget extends Composite
     }
 
     @Override
-    public HasVisibility removeFilterBtnVisibility(){
-        return removeBtn;
-    }
-
-    @Override
-    public HasValue<String> filterName() {
-        return filterName;
-    }
-
-    @Override
-    public void setFilterNameContainerErrorStyle( boolean hasError ) {
-        if ( hasError ) {
-            filterName.addStyleName(REQUIRED);
-        } else {
-            filterName.removeStyleName( REQUIRED );
-        }
-    }
-
-    @Override
-    public void setUserFilterNameVisibility( boolean hasVisible ) {
-        if ( hasVisible ) {
-            filterNameContainer.removeClassName( HIDE );
-        } else {
-            filterNameContainer.addClassName( HIDE );
-        }
-    }
-
-    @Override
-    public void setUserFilterControlsVisibility( boolean hasVisible ) {
-        if ( hasVisible ) {
-            createBtn.removeStyleName( HIDE );
-            saveBtn.removeStyleName( HIDE );
-            resetBtn.removeStyleName( HIDE );
-            removeBtn.removeStyleName( HIDE );
-        } else {
-            saveBtn.addStyleName( HIDE );
-            createBtn.addStyleName( HIDE );
-            resetBtn.addStyleName( HIDE );
-            removeBtn.addStyleName( HIDE );
-        }
-    }
-
-    @Override
-    public HasVisibility editBtnVisibility() {
-        return saveBtn;
-    }
-
-    @Override
     public AbstractIssueFilterWidgetView getIssueFilterParams() {
         return issueFilterParamView;
     }
@@ -157,8 +103,13 @@ public abstract class IssueFilterWidget extends Composite
     }
 
     @Override
-    public HasValue<CaseFilterShortView> userFilter() {
-        return userFilter;
+    public void addAdditionalFilterValidate(Function<CaseFilter, Boolean> validate) {
+        additionalValidate = validate;
+    }
+
+    @Override
+    public CaseQuery getFilterFieldsByFilterType() {
+        return issueFilterParamView.getFilterFields(filterType);
     }
 
     @UiHandler( "resetBtn" )
@@ -214,16 +165,6 @@ public abstract class IssueFilterWidget extends Composite
         onUserFilterChanged(event.getValue());
     }
 
-    @Override
-    public void changeUserFilterValueName(CaseFilterShortView value) {
-        userFilter.changeValueName(value );
-    }
-
-    @Override
-    public void addUserFilterDisplayOption(CaseFilterShortView value) {
-        userFilter.addDisplayOption(value);
-    }
-
     private void onOkSavingFilterClicked() {
         if (filterName.getValue().isEmpty()){
             setFilterNameContainerErrorStyle( true );
@@ -231,16 +172,16 @@ public abstract class IssueFilterWidget extends Composite
             return;
         }
 
-        CaseFilter userFilter = fillUserFilter();
-        if (additionalValidate != null && !additionalValidate.apply(userFilter)) {
+        CaseFilter filledUserFilter = fillUserFilter();
+        if (additionalValidate != null && !additionalValidate.apply(filledUserFilter)) {
             return;
         }
 
         if ( !isCreateFilterAction ){
-            userFilter.setId( userFilter().getValue().getId() );
+            filledUserFilter.setId( userFilter.getValue().getId() );
         }
 
-        filterService.saveIssueFilter( userFilter, new RequestCallback< CaseFilter >() {
+        filterService.saveIssueFilter( filledUserFilter, new RequestCallback< CaseFilter >() {
             @Override
             public void onError( Throwable throwable ) {
                 defaultErrorHandler.accept(throwable);
@@ -254,7 +195,7 @@ public abstract class IssueFilterWidget extends Composite
 
                 editBtnVisibility().setVisible(true);
                 removeFilterBtnVisibility().setVisible(true);
-                userFilter().setValue(filter.toShortView());
+                userFilter.setValue(filter.toShortView());
 
                 showUserFilterControls();
             }
@@ -273,7 +214,7 @@ public abstract class IssueFilterWidget extends Composite
                 .withErrorMessage(lang.errNotFound())
                 .withSuccess(caseFilter -> {
                     issueFilterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
-                    filterName().setValue( caseFilter.getName() );
+                    filterName.setValue( caseFilter.getName() );
                     removeFilterBtnVisibility().setVisible( true );
                     editBtnVisibility().setVisible( true );
                 })
@@ -288,16 +229,6 @@ public abstract class IssueFilterWidget extends Composite
     public void showUserFilterControls() {
         setUserFilterControlsVisibility(true);
         setUserFilterNameVisibility(false);
-    }
-
-    @Override
-    public void addAdditionalFilterValidate(Function<CaseFilter, Boolean> validate) {
-        additionalValidate = validate;
-    }
-
-    @Override
-    public CaseQuery getFilterFieldsByFilterType() {
-        return issueFilterParamView.getFilterFields(filterType);
     }
 
     private Runnable removeAction(Long filterId) {
@@ -352,6 +283,44 @@ public abstract class IssueFilterWidget extends Composite
         issueFilterParamView.applyVisibilityByFilterType(filterType);
     }
 
+    private HasVisibility removeFilterBtnVisibility(){
+        return removeBtn;
+    }
+
+    private void setFilterNameContainerErrorStyle( boolean hasError ) {
+        if ( hasError ) {
+            filterName.addStyleName(REQUIRED);
+        } else {
+            filterName.removeStyleName( REQUIRED );
+        }
+    }
+
+    private void setUserFilterNameVisibility( boolean hasVisible ) {
+        if ( hasVisible ) {
+            filterNameContainer.removeClassName( HIDE );
+        } else {
+            filterNameContainer.addClassName( HIDE );
+        }
+    }
+
+    private void setUserFilterControlsVisibility( boolean hasVisible ) {
+        if ( hasVisible ) {
+            createBtn.removeStyleName( HIDE );
+            saveBtn.removeStyleName( HIDE );
+            resetBtn.removeStyleName( HIDE );
+            removeBtn.removeStyleName( HIDE );
+        } else {
+            saveBtn.addStyleName( HIDE );
+            createBtn.addStyleName( HIDE );
+            resetBtn.addStyleName( HIDE );
+            removeBtn.addStyleName( HIDE );
+        }
+    }
+
+    private HasVisibility editBtnVisibility() {
+        return saveBtn;
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -392,7 +361,7 @@ public abstract class IssueFilterWidget extends Composite
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 
-    Function<CaseFilter, Boolean> additionalValidate;
+    private Function<CaseFilter, Boolean> additionalValidate;
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
     private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,
