@@ -16,8 +16,6 @@ import java.util.function.Function;
  * Абстракция вида фильтра обращений
  */
 public interface AbstractIssueFilterView extends IsWidget {
-    void setModel(AbstractIssueFilterModel model);
-
     HasValue<String> filterName();
 
     HasVisibility removeFilterBtnVisibility();

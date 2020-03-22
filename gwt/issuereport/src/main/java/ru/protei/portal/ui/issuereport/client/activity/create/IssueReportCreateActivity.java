@@ -34,7 +34,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onInit() {
         view.setActivity(this);
         view.getIssueFilterContainer().add(filterView.asWidget());
-        filterView.getIssueFilterParams().setModel(this);
+        filterView.getIssueFilterParams().setModel(this, true);
         filterView.addAdditionalFilterValidate(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
     }

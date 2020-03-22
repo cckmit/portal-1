@@ -73,11 +73,6 @@ public abstract class IssueFilterWidget extends Composite
     }
 
     @Override
-    public void setModel(AbstractIssueFilterModel model) {
-        issueFilterParamView.setModel(model);
-    }
-
-    @Override
     public void resetFilter() {
         issueFilterParamView.resetFilter();
         userFilter.setValue(null);

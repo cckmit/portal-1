@@ -54,7 +54,7 @@ public abstract class IssueTableFilterActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
-        filterView.getIssueFilterParams().setModel(this);
+        filterView.getIssueFilterParams().setModel(this, false);
 
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());

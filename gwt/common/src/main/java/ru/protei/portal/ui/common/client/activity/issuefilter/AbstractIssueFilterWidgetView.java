@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public interface AbstractIssueFilterWidgetView extends IsWidget {
-    void setModel(AbstractIssueFilterModel model);
+    void setModel(AbstractIssueFilterModel model, Boolean wideStyle);
 
     void setInitiatorModel(InitiatorModel initiatorModel);
 

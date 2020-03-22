@@ -69,8 +69,23 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setModel(AbstractIssueFilterModel model) {
+    public void setModel(AbstractIssueFilterModel model, Boolean wideStyle) {
         this.model = model;
+        String colStyle = wideStyle? "col-md-4": "col-md-12 resize-md-6";
+
+        modifiedRangeContainer.addClassName(colStyle);
+        dateCratedContainer.addClassName(colStyle);
+        sortByContainer.addClassName(colStyle);
+        creators.addStyleName(colStyle);
+        products.addStyleName(colStyle);
+        companies.addStyleName(colStyle);
+        initiators.addStyleName(colStyle);
+        managers.addStyleName(colStyle);
+        commentAuthors.addStyleName(colStyle);
+        tags.addStyleName(colStyle);
+        searchPrivateContainer.addStyleName(colStyle);
+        importanceContainer.addClassName(colStyle);
+        stateContainer.addClassName(colStyle);
     }
 
     @Override
@@ -665,10 +680,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField(provided = true)
     IssueStatesOptionList state;
 
-    @UiField
-    DivElement sortByContainer;
+
     @UiField
     DivElement modifiedRangeContainer;
+    @UiField
+    DivElement dateCratedContainer;
+    @UiField
+    DivElement sortByContainer;
+
     @UiField
     DivElement importanceContainer;
     @UiField
