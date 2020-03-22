@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -74,23 +75,15 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     void resetFilter();
 
+    void presetCompany(Company company);
+
     void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
     CaseQuery getFilterFields(En_CaseFilterType filterType);
 
-    void setCompaniesErrorStyle(boolean hasError);
-
-    void setProductsErrorStyle(boolean hasError);
-
-    void setManagersErrorStyle(boolean hasError);
-
-    void setInitiatorsErrorStyle(boolean hasError);
-
     void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter);
 
     void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
-
-    void updateInitiators();
 
     String validateMultiSelectorsTotalCount();
 
