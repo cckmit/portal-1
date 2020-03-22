@@ -553,6 +553,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             sortByContainer.addClassName(HIDE);
             labelCreated.setInnerText(lang.period());
         }
+        creators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));

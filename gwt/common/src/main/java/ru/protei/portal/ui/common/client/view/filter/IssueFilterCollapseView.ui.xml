@@ -15,6 +15,6 @@
             </g:Anchor>
         </div>
 
-        <g:HTMLPanel styleName="card-body p-t-0 filter-content" ui:field="container"/>
+        <g:HTMLPanel ui:field="container"/>
     </g:HTMLPanel>
 </ui:UiBinder>

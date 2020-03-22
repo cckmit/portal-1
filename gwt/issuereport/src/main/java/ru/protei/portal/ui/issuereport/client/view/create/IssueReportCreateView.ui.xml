@@ -24,7 +24,9 @@
                 </div>
             </div>
             <div class="container-fluid padding-15 bg-white">
-                <g:HTMLPanel ui:field="issueFilterWidgetContainer" styleName="card card-transparent no-margin"/>
+                <div class="card card-transparent no-margin">
+                    <g:HTMLPanel ui:field="issueFilterWidgetContainer"/>
+                </div>
             </div>
         </div>
         <div class="card-footer">
