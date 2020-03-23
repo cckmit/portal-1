@@ -4,16 +4,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 
 public class IssueNameWidget extends Composite  {
@@ -34,10 +33,8 @@ public class IssueNameWidget extends Composite  {
         nameRO.setInnerHTML( issueName );
     }
 
-    @UiHandler("copyNumberAndName")
-    public void onCopyNumberAndNameClick( ClickEvent event ) {
-        event.preventDefault();
-        activity.onCopyNumberAndName();
+    public void setCopyText ( String copyText ) {
+        copyNumberAndName.getElement().setAttribute("onclick", ClipboardUtils.generateOnclickText(copyText));
     }
 
     private void ensureDebugIds() {
