@@ -42,8 +42,6 @@ public class En_SortFieldLang {
                 return lang.equipmentNameBySldWrks();
             case equipment_decimal_number:
                 return lang.equipmentDecimalNumber();
-            case linked_equipment_decimal_numbers:
-                return lang.equipmentPrimaryUse();
             case birthday:
                 return lang.birthday();
             case employee_ip:
