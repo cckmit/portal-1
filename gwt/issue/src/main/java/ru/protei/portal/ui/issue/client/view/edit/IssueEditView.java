@@ -35,7 +35,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void setActivity( AbstractIssueEditActivity activity ) {
         this.activity = activity;
         nameWidget.setActivity( activity );
-
     }
 
     @Override

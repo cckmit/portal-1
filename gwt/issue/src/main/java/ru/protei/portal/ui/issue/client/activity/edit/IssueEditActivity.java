@@ -88,7 +88,6 @@ public abstract class IssueEditActivity implements
         viewModeIsPreview(false);
         container.clear();
         requestIssue(event.caseNumber, container);
-
     }
 
     @Event
