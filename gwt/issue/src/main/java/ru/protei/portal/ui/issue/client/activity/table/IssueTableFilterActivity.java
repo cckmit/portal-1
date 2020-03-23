@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
@@ -55,6 +56,7 @@ public abstract class IssueTableFilterActivity
         view.setAnimation( animation );
 
         filterView.getIssueFilterParams().setModel(this);
+        filterView.setModel(issueFilterWidgetModel);
 
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());
@@ -343,7 +345,9 @@ public abstract class IssueTableFilterActivity
     IssueFilterService issueFilterService;
 
     @Inject
-    AbstractIssueFilterView filterView;
+    IssueFilterWidget filterView;
+    @Inject
+    AbstractIssueFilterWidgetModel issueFilterWidgetModel;
 
     private CaseQuery query = null;
 

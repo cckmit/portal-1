@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.issuefilter;
+package ru.protei.portal.ui.common.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -24,7 +24,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
@@ -55,7 +55,7 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.*;
 
-public class IssueFilterParamView extends Composite implements AbstractIssueFilterWidgetView {
+public class IssueFilterParamView extends Composite implements AbstractIssueFilterParamView {
 
     @Inject
     public void init() {

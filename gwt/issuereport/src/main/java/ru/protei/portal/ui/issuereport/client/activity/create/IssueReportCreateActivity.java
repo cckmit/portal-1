@@ -13,12 +13,13 @@ import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
@@ -31,9 +32,10 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onInit() {
         view.setActivity(this);
         view.getIssueFilterContainer().add(filterView.asWidget());
-        filterView.getIssueFilterParams().setModel(this);
-        filterView.addAdditionalFilterValidate(
+        issueFilterWidgetModel.addAdditionalFilterValidate(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
+        filterView.setModel(issueFilterWidgetModel);
+        filterView.getIssueFilterParams().setModel(this);
     }
 
     @Event
@@ -137,7 +139,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
-        AbstractIssueFilterWidgetView issueFilterParams = filterView.getIssueFilterParams();
+        AbstractIssueFilterParamView issueFilterParams = filterView.getIssueFilterParams();
         if (issueFilterParams.productsVisibility().isVisible()) {
             issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
         }
@@ -166,7 +168,9 @@ public abstract class IssueReportCreateActivity implements Activity,
     PolicyService policyService;
 
     @Inject
-    AbstractIssueFilterView filterView;
+    IssueFilterWidget filterView;
+    @Inject
+    AbstractIssueFilterWidgetModel issueFilterWidgetModel;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

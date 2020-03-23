@@ -22,10 +22,11 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -50,13 +51,12 @@ import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
-import ru.protei.portal.ui.common.client.view.filter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
@@ -143,8 +143,8 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
 
-        bind( AbstractIssueFilterView.class ).to( IssueFilterWidget.class );
-        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class );
+        bind( AbstractIssueFilterWidgetModel.class ).to( IssueFilterWidgetModel.class );
+        bind( AbstractIssueFilterParamView.class ).to( IssueFilterParamView.class );
     }
 }
 

@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -187,7 +187,7 @@ public class IssueFilterUtils {
         return persons;
     }
 
-    public static CaseQuery makeCaseQuery(AbstractIssueFilterWidgetView filterWidgetView) {
+    public static CaseQuery makeCaseQuery(AbstractIssueFilterParamView filterWidgetView) {
         CaseQuery query = new CaseQuery();
         query.setType(En_CaseType.CRM_SUPPORT);
         String searchString = filterWidgetView.searchPattern().getValue();

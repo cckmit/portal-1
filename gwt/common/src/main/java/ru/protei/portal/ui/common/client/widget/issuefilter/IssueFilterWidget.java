@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.view.filter;
+package ru.protei.portal.ui.common.client.widget.issuefilter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -11,41 +11,32 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
+import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 /**
  * Представление фильтра обращений
  */
-public abstract class IssueFilterWidget extends Composite
-        implements Activity, AbstractIssueFilterView {
+public class IssueFilterWidget extends Composite {
 
     @Inject
     public void onInit() {
@@ -71,7 +62,11 @@ public abstract class IssueFilterWidget extends Composite
         userFilter.stopWatchForScrollOf(root);
     }
 
-    @Override
+
+    public void setModel(AbstractIssueFilterWidgetModel model) {
+        this.model = model;
+    }
+
     public void resetFilter() {
         issueFilterParamView.resetFilter();
         userFilter.setValue(null);
@@ -87,27 +82,18 @@ public abstract class IssueFilterWidget extends Composite
         }
     }
 
-    @Override
     public HasEnabled createEnabled() {
         return createBtn;
     }
 
-    @Override
-    public AbstractIssueFilterWidgetView getIssueFilterParams() {
+    public AbstractIssueFilterParamView getIssueFilterParams() {
         return issueFilterParamView;
     }
 
-    @Override
     public void presetFilterType() {
         userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
-    @Override
-    public void addAdditionalFilterValidate(Function<CaseFilter, Boolean> validate) {
-        additionalValidate = validate;
-    }
-
-    @Override
     public CaseQuery getFilterFieldsByFilterType() {
         return issueFilterParamView.getFilterFields(filterType);
     }
@@ -132,7 +118,23 @@ public abstract class IssueFilterWidget extends Composite
     @UiHandler( "okBtn" )
     public void onOkBtnClicked ( ClickEvent event ) {
         event.preventDefault();
-        onOkSavingFilterClicked();
+        if (isEmpty(filterName.getValue())) {
+            setFilterNameContainerErrorStyle( true );
+        }
+
+        CaseFilter filledUserFilter = fillUserFilter();
+        if (!isCreateFilterAction) {
+            filledUserFilter.setId(userFilter.getValue().getId());
+        }
+
+        model.onOkSavingFilterClicked(filterName.getValue(), filledUserFilter,
+                filter -> {
+                    editBtnVisibility().setVisible(true);
+                    removeFilterBtnVisibility().setVisible(true);
+                    userFilter.setValue(filter.toShortView());
+
+                    showUserFilterControls();
+                });
     }
 
     @UiHandler( "cancelBtn" )
@@ -151,7 +153,10 @@ public abstract class IssueFilterWidget extends Composite
         if (value == null || value.getId() == null) {
             return;
         }
-        fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(value.getId())));
+        model.onRemoveClicked(value.getId(), () -> {
+            resetFilter();
+            issueFilterParamView.resetFilter();
+        });
     }
 
     @UiHandler( "filterName" )
@@ -165,43 +170,6 @@ public abstract class IssueFilterWidget extends Composite
         onUserFilterChanged(event.getValue());
     }
 
-    private void onOkSavingFilterClicked() {
-        if (filterName.getValue().isEmpty()){
-            setFilterNameContainerErrorStyle( true );
-            fireEvent( new NotifyEvents.Show( lang.errFilterNameRequired(), NotifyEvents.NotifyType.ERROR ) );
-            return;
-        }
-
-        CaseFilter filledUserFilter = fillUserFilter();
-        if (additionalValidate != null && !additionalValidate.apply(filledUserFilter)) {
-            return;
-        }
-
-        if ( !isCreateFilterAction ){
-            filledUserFilter.setId( userFilter.getValue().getId() );
-        }
-
-        filterService.saveIssueFilter( filledUserFilter, new RequestCallback< CaseFilter >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                defaultErrorHandler.accept(throwable);
-                fireEvent( new NotifyEvents.Show( lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( CaseFilter filter ) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new IssueEvents.ChangeUserFilterModel());
-
-                editBtnVisibility().setVisible(true);
-                removeFilterBtnVisibility().setVisible(true);
-                userFilter.setValue(filter.toShortView());
-
-                showUserFilterControls();
-            }
-        } );
-    }
-
     private void onUserFilterChanged(CaseFilterShortView filter) {
         if (filter == null){
             resetFilter();
@@ -210,15 +178,12 @@ public abstract class IssueFilterWidget extends Composite
             return;
         }
 
-        filterService.getIssueFilter(filter.getId(), new FluentCallback<CaseFilter>()
-                .withErrorMessage(lang.errNotFound())
-                .withSuccess(caseFilter -> {
-                    issueFilterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
-                    filterName.setValue( caseFilter.getName() );
-                    removeFilterBtnVisibility().setVisible( true );
-                    editBtnVisibility().setVisible( true );
-                })
-        );
+        model.onUserFilterChanged(filter.getId(), caseFilter -> {
+            issueFilterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
+            filterName.setValue( caseFilter.getName() );
+            removeFilterBtnVisibility().setVisible( true );
+            editBtnVisibility().setVisible( true );
+        });
     }
 
     private void showUserFilterName(){
@@ -231,18 +196,6 @@ public abstract class IssueFilterWidget extends Composite
         setUserFilterNameVisibility(false);
     }
 
-    private Runnable removeAction(Long filterId) {
-        return () -> filterService.removeIssueFilter(filterId, new FluentCallback<Boolean>()
-                .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(aBoolean -> {
-                    fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeUserFilterModel());
-                    resetFilter();
-                    getIssueFilterParams().resetFilter();
-                }));
-    }
 
     private CaseFilter fillUserFilter() {
         CaseFilter filter = new CaseFilter();
@@ -352,16 +305,12 @@ public abstract class IssueFilterWidget extends Composite
     DivElement filterNameContainer;
 
     @Inject
-    IssueFilterControllerAsync filterService;
-    @Inject
     PersonModel personModel;
     @Inject
     InitiatorModel initiatorModel;
 
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
+    AbstractIssueFilterWidgetModel model;
 
-    private Function<CaseFilter, Boolean> additionalValidate;
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
     private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,

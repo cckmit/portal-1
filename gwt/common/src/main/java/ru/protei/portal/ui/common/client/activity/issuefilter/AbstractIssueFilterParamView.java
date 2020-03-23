@@ -24,7 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public interface AbstractIssueFilterWidgetView extends IsWidget {
+public interface AbstractIssueFilterParamView extends IsWidget {
     void setModel(AbstractIssueFilterModel model);
 
     void setInitiatorModel(InitiatorModel initiatorModel);
