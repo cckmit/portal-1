@@ -1,23 +1,17 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:issuefilter='urn:import:ru.protei.portal.ui.common.client.widget.issuefilter'>
+             xmlns:issuefilter='urn:import:ru.protei.portal.ui.common.client.widget.issuefilter'
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:filter="urn:import:ru.protei.portal.ui.common.client.view.filter">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="card card-default no-border card-fixed issue-filter filter-collapsable">
-        <div class="filter-header">
-            <label ui:field="labelFilters"><ui:text from="{lang.filters}"/></label>
-            <g:Anchor ui:field="filterCollapseBtn" styleName="btn btn-default btn-sm filter-btn-collapse">
-                <span class="fas fa-compress-arrows-alt"/>
-            </g:Anchor>
-            <g:Anchor ui:field="filterRestoreBtn" styleName="btn btn-default btn-sm filter-btn-restore">
-                <span class="fas fa-expand-arrows-alt"/>
-            </g:Anchor>
+    <g:HTMLPanel ui:field="root">
+        <div class="user-filter form-group col-md-12">
+            <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
         </div>
 
-        <div class="card-body p-t-0 filter-content">
-            <issuefilter:IssueFilterParamView ui:field="issueFilterParamView" styleName="row"/>
-        </div>
+        <filter:IssueFilterParamView ui:field="issueFilterParamView" styleName="card-body p-t-0 filter-content"/>
 
         <div class="card-footer filter-content text-right">
             <div class="user-filter-name hide" ui:field="filterNameContainer">

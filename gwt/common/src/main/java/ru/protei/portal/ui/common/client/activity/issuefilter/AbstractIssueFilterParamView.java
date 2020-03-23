@@ -3,18 +3,20 @@ package ru.protei.portal.ui.common.client.activity.issuefilter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
@@ -22,17 +24,12 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public interface AbstractIssueFilterWidgetView extends IsWidget {
-
-    void setActivity(AbstractIssueFilterParamActivity activity);
+public interface AbstractIssueFilterParamView extends IsWidget {
+    void setModel(AbstractIssueFilterModel model);
 
     void setInitiatorModel(InitiatorModel initiatorModel);
 
     void setCreatorModel(PersonModel personModel);
-
-    AbstractIssueFilterParamActivity getActivity();
-
-    HasValue<CaseFilterShortView> userFilter();
 
     HasValue<String> searchPattern();
 
@@ -66,7 +63,6 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasValue<Set<En_CaseState>> states();
 
-
     HasVisibility searchByCommentsWarningVisibility();
 
     HasVisibility productsVisibility();
@@ -79,25 +75,23 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     void resetFilter();
 
+    void presetCompany(Company company);
+
     void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
-    void setCompaniesErrorStyle(boolean hasError);
-
-    void setProductsErrorStyle(boolean hasError);
-
-    void setManagersErrorStyle(boolean hasError);
-
-    void setInitiatorsErrorStyle(boolean hasError);
+    CaseQuery getFilterFields(En_CaseFilterType filterType);
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter);
 
     void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
 
-    void updateInitiators();
+    String validateMultiSelectorsTotalCount();
 
-    void changeUserFilterValueName(CaseFilterShortView value);
+    boolean isSearchFieldCorrect();
 
-    void addUserFilterDisplayOption(CaseFilterShortView value);
+    void watchForScrollOf(Widget widget);
 
-    void presetFilterType();
+    void stopWatchForScrollOf(Widget widget);
+
+    void applyVisibilityByFilterType(En_CaseFilterType filterType);
 }

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.activity.filter;
+package ru.protei.portal.ui.common.client.activity.filter;
 
 import com.google.gwt.storage.client.Storage;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;

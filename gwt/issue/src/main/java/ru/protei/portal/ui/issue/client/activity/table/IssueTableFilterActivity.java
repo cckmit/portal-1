@@ -13,16 +13,14 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterView;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -33,27 +31,21 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
-import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**
  * Активность таблицы обращений
  */
-public abstract class IssueTableActivity
+public abstract class IssueTableFilterActivity
         implements AbstractIssueTableActivity, AbstractPagerActivity, Activity, 
-        AbstractIssueFilterActivity, AbstractIssueFilterParamActivity
+        AbstractIssueCollapseFilterActivity, AbstractIssueFilterModel
 {
 
     @PostConstruct
@@ -63,14 +55,11 @@ public abstract class IssueTableActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
-        filterView.setActivity(this);
-        filterView.getIssueFilterWidget().setActivity(this);
-        view.getFilterContainer().add( filterView.asWidget() );
-        filterParamView = filterView.getIssueFilterWidget();
-        filterParamView.setInitiatorModel(initiatorModel);
-        filterParamView.setCreatorModel(personModel);
-        filterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( filterParamView.companies().getValue()));
+        filterView.getIssueFilterParams().setModel(this);
 
+        collapseFilterView.setActivity(this);
+        collapseFilterView.getContainer().add(filterView.asWidget());
+        view.getFilterContainer().add( collapseFilterView.asWidget() );
         pagerView.setActivity( this );
 
         toggleFilterCollapseState();
@@ -79,7 +68,7 @@ public abstract class IssueTableActivity
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
-        filterView.getIssueFilterWidget().presetFilterType();
+        filterView.presetFilterType();
         updateCaseStatesFilter();
     }
 
@@ -90,7 +79,8 @@ public abstract class IssueTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-        showUserFilterControls();
+
+        filterView.showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -98,10 +88,7 @@ public abstract class IssueTableActivity
         );
 
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
-            HashSet<EntityOption> companyIds = new HashSet<>();
-            companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
-            filterParamView.companies().setValue( companyIds );
-            filterParamView.updateInitiators();
+            filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
         }
 
         clearScroll(event);
@@ -113,7 +100,7 @@ public abstract class IssueTableActivity
             loadTable();
         }
 
-        validateSearchField(isSearchFieldCorrect());
+        validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());
     }
 
     @Event
@@ -164,102 +151,18 @@ public abstract class IssueTableActivity
     }
 
     @Override
-    public void onFilterChanged() {
-        if ( !validateMultiSelectorsTotalCount() ){
+    public void onUserFilterChanged() {
+        String validateString = filterView.getIssueFilterParams().validateMultiSelectorsTotalCount();
+        if ( validateString != null ){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchCompanies(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
-        if(isSearchFieldCorrect()) {
+        boolean searchFieldCorrect = filterView.getIssueFilterParams().isSearchFieldCorrect();
+        if(searchFieldCorrect) {
             loadTable();
         }
-        validateSearchField(isSearchFieldCorrect());
-    }
-
-    @Override
-    public void onSaveFilterClicked() {
-        isCreateFilterAction = false;
-        showUserFilterName();
-    }
-
-    @Override
-    public void onCreateFilterClicked() {
-        isCreateFilterAction = true;
-        showUserFilterName();
-    }
-
-    @Override
-    public void onFilterRemoveClicked( Long id ) {
-        fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id)));
-    }
-
-    @Override
-    public void onUserFilterChanged() {
-        CaseFilterShortView filter = filterParamView.userFilter().getValue();
-        if (filter == null){
-            filterView.resetFilter();
-            showUserFilterControls();
-
-            onFilterChanged();
-            return;
-        }
-
-        filterService.getIssueFilter( filter.getId(), new RequestCallback< CaseFilter >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( CaseFilter filter ) {
-                fillFilterFields( filter );
-                onFilterChanged();
-            }
-        } );
-    }
-
-    @Override
-    public void onOkSavingFilterClicked() {
-        if (filterView.filterName().getValue().isEmpty()){
-            filterView.setFilterNameContainerErrorStyle( true );
-            fireEvent( new NotifyEvents.Show( lang.errFilterNameRequired(), NotifyEvents.NotifyType.ERROR ) );
-            return;
-        }
-
-        CaseFilter userFilter = fillUserFilter();
-        if ( !isCreateFilterAction ){
-            userFilter.setId( filterParamView.userFilter().getValue().getId() );
-        }
-
-        filterService.saveIssueFilter( userFilter, new RequestCallback< CaseFilter >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( CaseFilter filter ) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new IssueEvents.ChangeUserFilterModel());
-
-                filterView.editBtnVisibility().setVisible(true);
-                filterView.removeFilterBtnVisibility().setVisible(true);
-
-                filterView.getIssueFilterWidget().userFilter().setValue(filter.toShortView());
-
-                showUserFilterControls();
-            }
-        } );
-    }
-
-    @Override
-    public void onCancelSavingFilterClicked() {
-        showUserFilterControls();
-    }
-
-    @Override
-    public void onCompaniesFilterChanged() {
-        onFilterChanged();
-        updateInitiatorSelector();
+        validateSearchField(searchFieldCorrect);
     }
 
     @Override
@@ -318,13 +221,8 @@ public abstract class IssueTableActivity
     }
 
     private void validateSearchField(boolean isCorrect){
-        filterParamView.searchByCommentsWarningVisibility().setVisible(!isCorrect);
+        filterView.getIssueFilterParams().searchByCommentsWarningVisibility().setVisible(!isCorrect);
         filterView.createEnabled().setEnabled(isCorrect);
-    }
-
-    private boolean isSearchFieldCorrect(){
-        return !filterParamView.searchByComments().getValue() ||
-                filterParamView.searchPattern().getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
 
     private void loadTable() {
@@ -349,13 +247,6 @@ public abstract class IssueTableActivity
         }
     }
 
-    private void fillFilterFields( CaseFilter filter ) {
-        filterView.removeFilterBtnVisibility().setVisible( true );
-        filterView.editBtnVisibility().setVisible( true );
-        filterView.filterName().setValue( filter.getName() );
-        filterParamView.fillFilterFields(filter.getParams(), filter.getSelectorsParams());
-    }
-
     private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
         filterView.resetFilter();
         filterService.getSelectorsParams( caseQuery, new RequestCallback<SelectorsParams>() {
@@ -366,8 +257,7 @@ public abstract class IssueTableActivity
 
             @Override
             public void onSuccess( SelectorsParams selectorsParams ) {
-                filterParamView.fillFilterFields(caseQuery, selectorsParams);
-                onFilterChanged();
+                filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
             }
         } );
     }
@@ -383,69 +273,18 @@ public abstract class IssueTableActivity
     }
 
     private CaseQuery getQuery() {
-        return IssueFilterUtils.makeCaseQuery(filterParamView);
-    }
-
-    private CaseFilter fillUserFilter() {
-        CaseFilter filter = new CaseFilter();
-        filter.setName(filterView.filterName().getValue());
-        filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        CaseQuery query = IssueFilterUtils.makeCaseQuery(filterParamView);
-        filter.setParams(query);
-        query.setSearchString(filterParamView.searchPattern().getValue());
-        return filter;
-    }
-
-    private boolean validateMultiSelectorsTotalCount() {
-        boolean isValid = true;
-        if (filterParamView.companies().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchCompanies(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setCompaniesErrorStyle(true);
-            isValid =  false;
-        } else {
-            filterParamView.setCompaniesErrorStyle(false);
-        }
-        if (filterParamView.products().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchProducts(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setProductsErrorStyle(true);
-            isValid = false;
-        } else {
-            filterParamView.setProductsErrorStyle(false);
-        }
-        if (filterParamView.managers().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchManagers(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setManagersErrorStyle(true);
-            isValid = false;
-        }
-        if (filterParamView.initiators().getValue().size() > 50){
-            fireEvent( new NotifyEvents.Show( lang.errTooMuchInitiators(), NotifyEvents.NotifyType.ERROR ) );
-            filterParamView.setInitiatorsErrorStyle(true);
-            isValid = false;
-        } else {
-            filterParamView.setManagersErrorStyle(false);
-        }
-        return isValid;
+        return filterView.getIssueFilterParams().getFilterFields(En_CaseFilterType.CASE_OBJECTS);
     }
 
     private void applyFilterViewPrivileges() {
-        filterParamView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterParamView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
-        filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
-    }
-
-    private void showUserFilterName(){
-        filterView.setUserFilterControlsVisibility(false);
-        filterView.setUserFilterNameVisibility(true);
-    }
-
-    private void showUserFilterControls() {
-        filterView.setUserFilterControlsVisibility(true);
-        filterView.setUserFilterNameVisibility(false);
+        filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.getIssueFilterParams().managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
+        filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
     }
 
     private void updateCaseStatesFilter() {
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
-            filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+            filterView.getIssueFilterParams().setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
         }
     }
 
@@ -461,10 +300,6 @@ public abstract class IssueTableActivity
         }
     }
 
-    private void updateInitiatorSelector() {
-        filterParamView.updateInitiators();
-    }
-
     private void clearScroll(IssueEvents.Show event) {
         if (event.clearScroll) {
             event.clearScroll = false;
@@ -472,30 +307,14 @@ public abstract class IssueTableActivity
         }
     }
 
-    private Runnable removeAction(Long filterId) {
-        return () -> filterService.removeIssueFilter(filterId, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new IssueEvents.ChangeUserFilterModel());
-                filterView.resetFilter();
-                loadTable();
-            }
-        });
-    }
-
     @Inject
     Lang lang;
 
     @Inject
     AbstractIssueTableView view;
+
     @Inject
-    AbstractIssueFilterView filterView;
+    AbstractIssueCollapseFilterView collapseFilterView;
 
     @Inject
     IssueControllerAsync issueService;
@@ -525,16 +344,11 @@ public abstract class IssueTableActivity
     IssueFilterService issueFilterService;
 
     @Inject
-    InitiatorModel initiatorModel;
-
-    @Inject
-    PersonModel personModel;
+    IssueFilterWidget filterView;
 
     private CaseQuery query = null;
 
     private static String CREATE_ACTION;
-    private AbstractIssueFilterWidgetView filterParamView;
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
-    private boolean isCreateFilterAction = true;
 }

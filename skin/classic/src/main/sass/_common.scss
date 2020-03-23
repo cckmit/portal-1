@@ -2112,72 +2112,6 @@ a {
   }
 }
 
-.sf-detailed-list {
-  margin: -5px !important;
-
-  .sf-detailed-list-item {
-    position: relative;
-    width: 100% !important;
-    height: initial !important;
-    min-height: 22px;
-    margin: 2px 0 !important;
-    padding: 5px !important;
-    overflow: hidden;
-    border: none;
-    box-sizing: border-box;
-
-    .sf-detailed-list-item-content {
-      position: relative;
-      line-height: 1.2em;
-      width: calc(100% - 28px);
-
-      > span {
-        display: inline-block;
-        width: 100%;
-        height: 1.2em;
-        word-wrap: break-word;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      > .comment {
-        white-space: pre-wrap !important;
-      }
-    }
-
-    .sf-detailed-list-item-controls {
-      position: absolute;
-      display: block;
-      top: 0;
-      right: 0;
-      width: 28px;
-      height: 100%;
-      vertical-align: middle;
-      text-align: center;
-
-      > * {
-        display: block;
-        float: left;
-        width: 14px;
-        padding: 8px 7px;
-        vertical-align: middle;
-        text-align: center;
-      }
-
-      &:after {
-        content: "";
-        display: block;
-        clear: both;
-      }
-    }
-
-    &:hover, &:active {
-      background-color: #f6f7f8;
-    }
-  }
-}
-
 /**** PROJECTS ****/
 
 .project-main-info {
@@ -2690,6 +2624,11 @@ div.select2-container {
     border-bottom: 2px solid #dee4e5;
     padding: 15px;
   }
+
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
 }
 
 .user-filter-name {
@@ -2792,18 +2731,6 @@ div.select2-container {
       color: #797979;
     }
   }
-}
-.report-issue-filter {
-  .user-filter {
-    padding-bottom: 15px;
-  }
-  .col-xs-12.resize-xs-6 {
-    width: 50% !important;
-  }
-}
-
-.resize-vertical {
-  resize: vertical;
 }
 
 .sf-detailed-list {
@@ -2949,16 +2876,6 @@ div.select2-container {
 
 .nowrap {
   white-space: nowrap;
-}
-
-.report-issue-filter {
-  .user-filter {
-    padding-bottom: 15px;
-  }
-
-  .col-xs-12.resize-xs-6 {
-    width: 50% !important;
-  }
 }
 
 .resize-vertical {
