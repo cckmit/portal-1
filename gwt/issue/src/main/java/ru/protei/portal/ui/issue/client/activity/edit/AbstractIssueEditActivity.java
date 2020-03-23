@@ -16,8 +16,4 @@ public interface AbstractIssueEditActivity {
     void onAddLinkClicked(IsWidget target);
 
     void onBackClicked();
-
-    void fireSuccessCopyNotify();
-
-    void fireErrorCopyNotify();
 }

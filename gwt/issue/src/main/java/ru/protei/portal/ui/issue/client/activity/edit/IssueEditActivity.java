@@ -215,12 +215,10 @@ public abstract class IssueEditActivity implements
         fireEvent(new Back());
     }
 
-    @Override
     public void fireSuccessCopyNotify() {
         fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
     }
 
-    @Override
     public void fireErrorCopyNotify() {
         fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
     }
