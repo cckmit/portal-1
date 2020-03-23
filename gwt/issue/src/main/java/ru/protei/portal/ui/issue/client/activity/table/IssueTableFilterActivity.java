@@ -56,7 +56,6 @@ public abstract class IssueTableFilterActivity
         view.setAnimation( animation );
 
         filterView.getIssueFilterParams().setModel(this);
-        filterView.setModel(issueFilterWidgetModel);
 
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());
@@ -346,8 +345,6 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     IssueFilterWidget filterView;
-    @Inject
-    AbstractIssueFilterWidgetModel issueFilterWidgetModel;
 
     private CaseQuery query = null;
 

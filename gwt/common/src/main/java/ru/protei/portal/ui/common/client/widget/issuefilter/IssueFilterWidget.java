@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
@@ -28,6 +29,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -39,8 +41,9 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIR
 public class IssueFilterWidget extends Composite {
 
     @Inject
-    public void onInit() {
+    public void onInit(IssueFilterWidgetModel model) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        this.model = model;
         ensureDebugIds();
         issueFilterParamView.setInitiatorModel(initiatorModel);
         issueFilterParamView.setCreatorModel(personModel);
@@ -62,9 +65,8 @@ public class IssueFilterWidget extends Composite {
         userFilter.stopWatchForScrollOf(root);
     }
 
-
-    public void setModel(AbstractIssueFilterWidgetModel model) {
-        this.model = model;
+    public void addAdditionalFilterValidate(Function<CaseFilter, Boolean> validate) {
+        model.addAdditionalFilterValidate(validate);
     }
 
     public void resetFilter() {

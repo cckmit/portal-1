@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
-import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -32,9 +31,8 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onInit() {
         view.setActivity(this);
         view.getIssueFilterContainer().add(filterView.asWidget());
-        issueFilterWidgetModel.addAdditionalFilterValidate(
+        filterView.addAdditionalFilterValidate(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
-        filterView.setModel(issueFilterWidgetModel);
         filterView.getIssueFilterParams().setModel(this);
     }
 
@@ -169,8 +167,6 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Inject
     IssueFilterWidget filterView;
-    @Inject
-    AbstractIssueFilterWidgetModel issueFilterWidgetModel;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
