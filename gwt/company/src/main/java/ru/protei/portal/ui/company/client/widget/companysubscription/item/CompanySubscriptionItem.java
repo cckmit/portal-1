@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.subscription.item;
+package ru.protei.portal.ui.company.client.widget.companysubscription.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -11,25 +11,27 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 
 /**
- * Один элемент списка чекбоксов
+ * Один элемент списка
  */
-public class SubscriptionItem
+public class CompanySubscriptionItem
         extends Composite
-        implements TakesValue<Subscription>,
-        HasCloseHandlers<SubscriptionItem>,
+        implements TakesValue<CompanySubscription>,
+        HasCloseHandlers<CompanySubscriptionItem>,
         HasAddHandlers, HasEnabled
 {
     @Inject
@@ -39,7 +41,7 @@ public class SubscriptionItem
     }
 
     @Override
-    public Subscription getValue() {
+    public CompanySubscription getValue() {
         value.setEmail( email.getValue());
         value.setLangCode( locale.getValue());
 
@@ -47,9 +49,9 @@ public class SubscriptionItem
     }
 
     @Override
-    public void setValue( Subscription value ) {
+    public void setValue( CompanySubscription value ) {
          if ( value == null ) {
-            value = new Subscription();
+            value = new CompanySubscription();
         }
         this.value = value;
 
@@ -69,7 +71,7 @@ public class SubscriptionItem
     }
 
     @Override
-    public HandlerRegistration addCloseHandler( CloseHandler<SubscriptionItem> handler ) {
+    public HandlerRegistration addCloseHandler( CloseHandler<CompanySubscriptionItem> handler ) {
         return addHandler( handler, CloseEvent.getType() );
     }
 
@@ -111,9 +113,9 @@ public class SubscriptionItem
     @UiField(provided = true)
     LocaleButtonSelector locale;
 
-    private Subscription value;
+    private CompanySubscription value;
 
 
-    interface PairItemUiBinder extends UiBinder< HTMLPanel, SubscriptionItem> {}
+    interface PairItemUiBinder extends UiBinder< HTMLPanel, CompanySubscriptionItem> {}
     private static PairItemUiBinder ourUiBinder = GWT.create( PairItemUiBinder.class );
 }

@@ -42,7 +42,7 @@ import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -77,7 +77,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setProduct( DevUnit product ) {
+    public void setProduct(DevUnit product) {
         this.product.setValue(ProductShortView.fromProduct(product));
     }
 

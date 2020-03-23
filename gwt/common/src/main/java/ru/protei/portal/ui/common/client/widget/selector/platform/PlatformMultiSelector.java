@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.platform;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PlatformOption;

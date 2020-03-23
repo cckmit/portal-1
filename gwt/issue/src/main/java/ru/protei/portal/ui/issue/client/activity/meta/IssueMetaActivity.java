@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
@@ -259,8 +260,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
         } else {
             caseMetaNotifiers.setNotifiers(null);
-
-
         }
 
         metaView.setCaseMetaNotifiers(caseMetaNotifiers.getNotifiers());
@@ -360,9 +359,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
 
-        List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
+        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = subscriptionsList.stream()
+                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(meta.getProductId(), companySubscription.getProductId()))
+                        && (companySubscription.getPlatformId() == null || Objects.equals(meta.getPlatformId(), companySubscription.getPlatformId())))
+                .collect( Collectors.toList());
+
+        List<String> subscriptionsBasedOnPrivacyList = subscriptionsBasedOnPlatformAndProduct.stream()
                 .map(CompanySubscription::getEmail)
-                .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
+                .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail))
+                .distinct()
+                .collect( Collectors.toList());
 
         return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
                 ? subscriptionsListEmptyMessage

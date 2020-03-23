@@ -19,9 +19,8 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServerFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServerFilterView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformMultiSelector;
 
-import java.util.List;
 import java.util.Set;
 
 public class ServerFilterView extends Composite implements AbstractServerFilterView {

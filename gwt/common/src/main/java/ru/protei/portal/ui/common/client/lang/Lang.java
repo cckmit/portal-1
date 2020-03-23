@@ -241,6 +241,22 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companyChildrenLabel();
 
+    String companySubscriptionGroupRemoveConfirmMessage();
+
+    String companySubscriptionGroupRemoveButton();
+
+    String companySubscriptionGroupCollapseButton();
+
+    String companySubscriptionGroupExpandButton();
+
+    String companySubscriptionGroupAddButton();
+
+    String companySubscriptionGroupAnyValuePlatformSelector();
+
+    String companySubscriptionGroupAnyValueProductSelector();
+
+    String companySubscriptionGroupQuantity();
+
     String issues();
 
     String issueNumber();

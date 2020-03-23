@@ -407,14 +407,15 @@ public class DebugIds {
         }
     }
 
+    public interface COMPANY {
+        String SUBSCRIPTIONS = "company-subscriptions";
+    }
+
     public interface PRODUCT {
         String NAME = "product-name";
         String WIKI_LINK = "product-wiki-link";
         String DESCRIPTION = "product-description";
         String SUBSCRIPTIONS = "product-subscriptions";
-        String SUBSCRIPTIONS_ITEM = "product-subscriptions-item";
-        String SUBSCRIPTIONS_ITEM_LANG_CODE = "product-subscriptions-item-lang-code";
-        String SUBSCRIPTIONS_ITEM_EMAIL = "product-subscriptions-item-email";
         String INCLUDES = "product-includes";
         String PRODUCTS = "product-products";
         String ALIASES = "product-aliases";
