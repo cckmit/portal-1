@@ -403,6 +403,10 @@ public class DebugIds {
         }
     }
 
+    public interface COMPANY {
+        String SUBSCRIPTIONS = "company-subscriptions";
+    }
+
     public interface PRODUCT {
         String NAME = "product-name";
         String WIKI_LINK = "product-wiki-link";

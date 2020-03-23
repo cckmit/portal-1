@@ -33,6 +33,7 @@ public class CompanySubscriptionList
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugId(DebugIds.COMPANY.SUBSCRIPTIONS);
     }
 
     @Override
