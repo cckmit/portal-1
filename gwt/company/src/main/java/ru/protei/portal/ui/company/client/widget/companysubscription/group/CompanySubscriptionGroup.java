@@ -36,8 +36,6 @@ public class CompanySubscriptionGroup  extends Composite
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        platformSelector.setDefaultValue(lang.companySubscriptionGroupDefaultValuePlatfromSelector());
-        productSelector.setDefaultValue(lang.companySubscriptionGroupDefaultValueProductSelector());
         productSelector.setTypes(En_DevUnitType.PRODUCT);
         removeButton.setVisible(true);
         setCollapseGroup(true);
@@ -57,7 +55,7 @@ public class CompanySubscriptionGroup  extends Composite
     public void setValue(List<CompanySubscription> values, boolean fireEvents ) {
         clear();
         this.value = values == null ? new ArrayList<>() : values;
-        setQuantityText();
+        setQuantityText(value.size());
 
         value.forEach( this :: makeItemAndFillValue );
         addEmptyItem();
@@ -67,7 +65,7 @@ public class CompanySubscriptionGroup  extends Composite
         }
     }
 
-    public void setPlatformFilter(Long companyId){
+    public void setCompanyIdToSubscriptionsGroup(Long companyId){
         this.companyId = companyId;
         platformSelector.setFilter(platformOption -> companyId != null && companyId.equals(platformOption.getCompanyId()));
     }
@@ -194,7 +192,7 @@ public class CompanySubscriptionGroup  extends Composite
             itemContainer.remove( event.getTarget() );
             CompanySubscription remove = modelToView.remove( event.getTarget() );
             value.remove( remove );
-            setQuantityText();
+            setQuantityText(value.size());
             boolean isHasEmptyItem = modelToView.values().stream().anyMatch(s -> s.getEmail() == null || s.getEmail().isEmpty());
             if(!isHasEmptyItem)
                 addEmptyItem();
@@ -206,7 +204,7 @@ public class CompanySubscriptionGroup  extends Composite
             companySubscriptionItem.getValue().setProductId(productId);
             companySubscriptionItem.getValue().setCompanyId(companyId);
             value.add( companySubscriptionItem.getValue() );
-            setQuantityText();
+            setQuantityText(value.size());
         } );
 
         modelToView.put( companySubscriptionItem, subscription );
@@ -227,8 +225,8 @@ public class CompanySubscriptionGroup  extends Composite
         return new ArrayList<>(c);
     }
 
-    private void setQuantityText() {
-        quantity.setInnerText(" " + lang.companySubscriptionGroupQuantity() + ": " + value.size());
+    private void setQuantityText(int size) {
+        quantity.setInnerText(" " + lang.companySubscriptionGroupQuantity() + ": " + size);
     }
 
     @UiField

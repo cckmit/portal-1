@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.struct.Pair;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.company.client.widget.companysubscription.group.CompanySubscriptionGroup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -129,7 +130,7 @@ public class CompanySubscriptionList
         makeGroupAndFillValue(newGroup.getA(), newGroup.getB(), groupsList.size()-1);
     }
 
-    public void setPlatformFilter(Long companyId){
+    public void setCompanyId(Long companyId){
         this.companyId = companyId;
     }
 
@@ -138,7 +139,7 @@ public class CompanySubscriptionList
         companySubscriptionGroupWidget.setPlatformSelector(platformAndProduct.getA());
         companySubscriptionGroupWidget.setProductSelector(platformAndProduct.getB());
         companySubscriptionGroupWidget.setValue(subscriptionsList);
-        companySubscriptionGroupWidget.setPlatformFilter(companyId);
+        companySubscriptionGroupWidget.setCompanyIdToSubscriptionsGroup(companyId);
         if (platformAndProduct.getB() == null && platformAndProduct.getA() == null){
             companySubscriptionGroupWidget.expandGroup();
             if (groupIndex == 0) {

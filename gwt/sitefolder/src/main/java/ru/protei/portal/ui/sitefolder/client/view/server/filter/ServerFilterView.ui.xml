@@ -3,8 +3,7 @@
              xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'
-             xmlns:platform2="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform">
+             xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -23,7 +22,7 @@
 
                 <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-md-12"/>
 
-                <platform2:PlatformMultiSelector ui:field="platforms" header="{lang.siteFolderPlatform}" addStyleNames="form-group col-md-12"/>
+                <platform:PlatformMultiSelector ui:field="platforms" header="{lang.siteFolderPlatform}" addStyleNames="form-group col-md-12"/>
 
                 <div class="form-group col-md-12">
                     <label>

@@ -4,14 +4,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="change-unique-constraint-in-companysubscriprion-table" author="vologzhanin">
+    <changeSet id="drop-unique-constraint-in-companysubscriprion-table" author="vologzhanin">
 
         <dropUniqueConstraint constraintName="uq_company_subscription"
                               tableName="CompanySubscription"/>
 
-        <addUniqueConstraint tableName="CompanySubscription"
-                             columnNames="email_addr,company_id, dev_unit_id, platform_id"
-                             constraintName="uq_company_subscription" />
     </changeSet>
 
 </databaseChangeLog>

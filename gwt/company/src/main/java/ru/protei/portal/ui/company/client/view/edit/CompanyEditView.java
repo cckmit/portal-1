@@ -131,8 +131,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public void setCompanyIdToPlatformFilter (Long companyId) {
-        subscriptions.setPlatformFilter(companyId);
+    public void setCompanyIdToSubscriptionsList(Long companyId) {
+        subscriptions.setCompanyId(companyId);
     }
 
     @UiHandler( "saveButton" )

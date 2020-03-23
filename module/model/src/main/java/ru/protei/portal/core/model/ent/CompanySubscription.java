@@ -82,7 +82,7 @@ public class CompanySubscription implements Serializable {
         this.productId = productId;
     }
 
-    public String uniqueKey () {
+    private String uniqueKey () {
         return (this.email + "_" + this.companyId + "_" + this.productId + "_" + this.platformId);
     }
 

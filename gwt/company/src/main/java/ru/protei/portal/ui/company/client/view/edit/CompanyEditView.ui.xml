@@ -5,9 +5,7 @@
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
-             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.companysubscription.list"
-             xmlns:list2="urn:import:ru.protei.portal.ui.company.client.companysubscription.list"
-             xmlns:list3="urn:import:ru.protei.portal.ui.company.client.widget.companysubscription.list">
+             xmlns:list="urn:import:ru.protei.portal.ui.company.client.widget.companysubscription.list">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -50,7 +48,7 @@
                                 <label>
                                     <ui:text from="{lang.companySubscription}"/>
                                 </label>
-                                <list3:CompanySubscriptionList ui:field="subscriptions"/>
+                                <list:CompanySubscriptionList ui:field="subscriptions"/>
                             </div>
 
                             <div class="form-group col-md-12">

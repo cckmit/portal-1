@@ -1,5 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
+             xmlns:product="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform"
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
@@ -9,16 +9,18 @@
         <div class="row">
             <div class="col-md-4">
                 <platform:PlatformButtonSelector ui:field="platformSelector"
-                                               validation="false"
-                                               header="{lang.siteFolderPlatform}"
-                                               hasNullValue="true"/>
+                                                 validation="false"
+                                                 header="{lang.siteFolderPlatform}"
+                                                 hasNullValue="true"
+                                                 defaultValue="{lang.companySubscriptionGroupAnyValuePlatformSelector}"/>
             </div>
 
             <div class="col-md-4">
-                <devunit:DevUnitButtonSelector ui:field="productSelector"
+                <product:DevUnitButtonSelector ui:field="productSelector"
                                                validation="false"
                                                header="{lang.issueProduct}"
-                                               hasNullValue="true"/>
+                                               hasNullValue="true"
+                                               defaultValue="{lang.companySubscriptionGroupAnyValueProductSelector}"/>
             </div>
 
             <div class="col-md-4 align-self-end">

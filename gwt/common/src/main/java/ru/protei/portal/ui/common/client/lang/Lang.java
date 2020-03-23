@@ -251,9 +251,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companySubscriptionGroupAddButton();
 
-    String companySubscriptionGroupDefaultValuePlatfromSelector();
+    String companySubscriptionGroupAnyValuePlatformSelector();
 
-    String companySubscriptionGroupDefaultValueProductSelector();
+    String companySubscriptionGroupAnyValueProductSelector();
 
     String companySubscriptionGroupQuantity();
 

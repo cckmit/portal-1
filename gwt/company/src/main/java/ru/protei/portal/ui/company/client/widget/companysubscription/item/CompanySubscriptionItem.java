@@ -38,9 +38,6 @@ public class CompanySubscriptionItem
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         email.setRegexp( CrmConstants.Masks.EMAIL );
-        //ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM);
-        locale.setEnsureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_LANG_CODE);
-        //email.ensureDebugId( DebugIds.PRODUCT.SUBSCRIPTIONS_ITEM_EMAIL);
     }
 
     @Override

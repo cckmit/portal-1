@@ -40,5 +40,5 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     void setParentCompanyFilter(Selector.SelectorFilter<EntityOption> companyFilter );
     void setParentCompanyEnabled( boolean isEnabled );
-    void setCompanyIdToPlatformFilter (Long companyId);
+    void setCompanyIdToSubscriptionsList(Long companyId);
 }

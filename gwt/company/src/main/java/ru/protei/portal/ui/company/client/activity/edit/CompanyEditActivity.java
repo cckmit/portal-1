@@ -154,7 +154,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.parentCompany().setValue(makeCompanyOption(company));
         view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
-        view.setCompanyIdToPlatformFilter(company.getId());
+        view.setCompanyIdToSubscriptionsList(company.getId());
         view.companySubscriptions().setValue(
                 CollectionUtils.stream(company.getSubscriptions())
                         .collect(Collectors.toList())
