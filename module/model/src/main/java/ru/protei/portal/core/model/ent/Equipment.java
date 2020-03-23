@@ -82,10 +82,11 @@ public class Equipment extends AuditableObject {
     @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "entity_id")
     private List<DecimalNumber> decimalNumbers;
 
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "entity_id", table = "decimal_number", sqlTableAlias = "decimal_number"),
-    }, mappedColumn = "classifier_code")
-    private Integer classifierCode;
+    // специальная вью со обработанным номером для сортировки (classifierCode + registerNumber)
+    @JdbcJoinedColumn(mappedColumn = "sort_decimal",
+            table = "view_equipments_decimal_number_sort", sqlTableAlias = "decimal_view" ,
+            localColumn = "id",remoteColumn = "Equipment_id")
+    private String sortDecimal;
 
     /**
      * Первичное применение
@@ -95,11 +96,6 @@ public class Equipment extends AuditableObject {
 
     @JdbcOneToMany(table = "decimal_number", localColumn = "linked_equipment_id", remoteColumn = "entity_id")
     private List<DecimalNumber> linkedEquipmentDecimalNumbers;
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "linked_equipment_id", remoteColumn = "entity_id", table = "decimal_number", sqlTableAlias = "linked_equipment_decimal_number"),
-    }, mappedColumn = "classifier_code")
-    private Integer linkedEquipmentClassifierCode;
 
     public Equipment() {
     }
@@ -246,20 +242,12 @@ public class Equipment extends AuditableObject {
         return authorShortName;
     }
 
-    public Integer getClassifierCode() {
-        return classifierCode;
+    public String getSortDecimal() {
+        return sortDecimal;
     }
 
-    public void setClassifierCode(Integer classifierCode) {
-        this.classifierCode = classifierCode;
-    }
-
-    public Integer getLinkedEquipmentClassifierCode() {
-        return linkedEquipmentClassifierCode;
-    }
-
-    public void setLinkedEquipmentClassifierCode(Integer linkedEquipmentClassifierCode) {
-        this.linkedEquipmentClassifierCode = linkedEquipmentClassifierCode;
+    public void setSortDecimal(String sortDecimal) {
+        this.sortDecimal = sortDecimal;
     }
 
     @Override

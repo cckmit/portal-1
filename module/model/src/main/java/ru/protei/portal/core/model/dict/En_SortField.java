@@ -93,7 +93,7 @@ public enum En_SortField {
     /**
      * equipment_decimal_number
      */
-    equipment_decimal_number("decimal_number_classifier_code"),
+    equipment_decimal_number("decimal_view_sort_decimal"),
 
     /**
      * project
