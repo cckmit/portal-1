@@ -91,15 +91,6 @@ public abstract class IssueEditActivity implements
 
     }
 
-    private static native void setNotifyFunctionsForJavascript(AbstractIssueEditActivity activity)/*-{
-        $wnd.fireSuccessCopyNotify = function () {
-            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireSuccessCopyNotify()();
-        }
-        $wnd.fireErrorCopyNotify = function () {
-            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireErrorCopyNotify()();
-        }
-    }-*/;
-
     @Event
     public void onShow( IssueEvents.ShowPreview event ) {
         HasWidgets container = event.parent;
@@ -293,6 +284,15 @@ public abstract class IssueEditActivity implements
     private void reloadComments() {
         fireEvent(new CaseCommentEvents.Reload());
     }
+
+    private static native void setNotifyFunctionsForJavascript(AbstractIssueEditActivity activity)/*-{
+        $wnd.fireSuccessCopyNotify = function () {
+            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireSuccessCopyNotify()();
+        }
+        $wnd.fireErrorCopyNotify = function () {
+            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireErrorCopyNotify()();
+        }
+    }-*/;
 
     private void attachToContainer(HasWidgets container) {
         container.add(view.asWidget());

@@ -34,7 +34,7 @@ public class IssueNameWidget extends Composite  {
     }
 
     public void setCopyText ( String copyText ) {
-        copyNumberAndName.getElement().setAttribute("onclick", ClipboardUtils.generateOnclick(copyText));
+        copyNumberAndName.getElement().setAttribute("onclick", ClipboardUtils.generateOnclickText(copyText));
     }
 
     private void ensureDebugIds() {

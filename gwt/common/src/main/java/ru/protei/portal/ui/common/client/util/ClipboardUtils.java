@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.util;
 
 public class ClipboardUtils {
-    public static String generateOnclick(String text) {
+    public static String generateOnclickText(String text) {
         return
                 "            var textArea = document.createElement(\"textarea\");" +
                         "            textArea.style.position = \"fixed\";" +

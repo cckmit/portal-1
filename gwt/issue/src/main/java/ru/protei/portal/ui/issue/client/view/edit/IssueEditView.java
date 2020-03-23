@@ -68,7 +68,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setCopyNameText ( String copyText ) {
-        copyNumber.getElement().setAttribute("onclick", ClipboardUtils.generateOnclick(String.valueOf(copyText)));
+        copyNumber.getElement().setAttribute("onclick", ClipboardUtils.generateOnclickText(String.valueOf(copyText)));
     }
 
     @Override
