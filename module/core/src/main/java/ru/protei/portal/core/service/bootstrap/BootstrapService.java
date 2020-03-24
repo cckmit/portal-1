@@ -52,6 +52,25 @@ public class BootstrapService {
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
+        fillImportanceLevels();
+    }
+
+    private void fillImportanceLevels() {
+        if (!companyImportanceItemDAO.getAll().isEmpty()){
+            return;
+        }
+
+        List<Company> companies = companyDAO.getAll();
+        List<CompanyImportanceItem> importanceItems = new ArrayList<>();
+
+        for (Company company : companies) {
+            if (company.getId() > 0) {
+                for (En_ImportanceLevel value : En_ImportanceLevel.values(true)) {
+                    importanceItems.add(new CompanyImportanceItem(company.getId(), value.getId(), value.getId()));
+                }
+            }
+        }
+        companyImportanceItemDAO.persistBatch(importanceItems);
     }
 
     private void autoPatchDefaultRoles () {
@@ -338,6 +357,10 @@ if(true) return; //TODO remove
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     DocumentDAO documentDAO;
+    @Autowired
+    CompanyDAO companyDAO;
+    @Autowired
+    CompanyImportanceItemDAO companyImportanceItemDAO;
     @Autowired
     DocumentSvnApi documentSvnApi;
     @Autowired
