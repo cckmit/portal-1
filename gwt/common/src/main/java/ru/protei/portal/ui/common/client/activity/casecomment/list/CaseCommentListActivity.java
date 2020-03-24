@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
@@ -298,9 +299,15 @@ public abstract class CaseCommentListActivity
         });
     }
 
-    private void addTempAttachment(Attachment attach){
+    private void addTempAttachment(Attachment attach) {
+        String message = view.message().getValue();
+        view.message().setValue(isEmpty(message)? makeImageString(attach) : message + "\n" + makeImageString(attach));
         view.attachmentContainer().add(attach);
         tempAttachments.add(attach);
+    }
+
+    private String makeImageString(Attachment attach) {
+        return ("![" +  attach.getFileName() +"]("+ DOWNLOAD_PATH + attach.getExtLink() +")");
     }
 
     private void fillView(List<CaseComment> comments){
@@ -706,4 +713,6 @@ public abstract class CaseCommentListActivity
 
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
+
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 }
