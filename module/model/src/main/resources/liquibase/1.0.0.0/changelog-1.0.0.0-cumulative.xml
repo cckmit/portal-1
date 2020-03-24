@@ -140,4 +140,5 @@
   <include file="2020-03-06-add-project_sla-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-11-modify-companysubscription-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-12-drop-unique-constraint-in-companysubscriprion-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-24-add-company_importance_item-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

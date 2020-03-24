@@ -1868,6 +1868,14 @@ a {
     background-color: #e30000 !important;
   }
 
+  &.medium {
+    &:before {
+      content: "M";
+      color: #333333;
+    }
+    background-color: #eeff00 !important;
+  }
+
   &.center {
     display: block;
     margin: 0 auto;
@@ -1908,6 +1916,11 @@ a {
 
 .case-importance-critical {
   color: #e30000;
+  font-weight: bold;
+}
+
+.case-importance-medium {
+  color: #c9d600;
   font-weight: bold;
 }
 

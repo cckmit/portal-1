@@ -36,6 +36,16 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcOneToMany(table = "company", localColumn = "id", remoteColumn = "parent_company_id" )
     private List<Company> childCompanies;
 
+    public List<Integer> getImportanceIds() {
+        return importanceIds;
+    }
+
+    public void setImportanceIds(List<Integer> importanceIds) {
+        this.importanceIds = importanceIds;
+    }
+
+    private List<Integer> importanceIds;
+
     @JdbcColumn(name = "cname")
     private String cname;
 

@@ -7,6 +7,8 @@ import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 
+import java.util.List;
+
 /**
  * Селектор критичности кейсов
  */
@@ -19,20 +21,23 @@ public class ImportanceFormSelector extends FormSelector<En_ImportanceLevel> {
                 "importance-item",
                 value == null ? null : ImportanceStyleProvider.getImportanceIcon(value) + " selector"
         ));
-
-        fillOptions();
     }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
 
-    private void fillOptions() {
-        if ( defaultValue != null ) {
-            addOption( null );
-        }
-        for ( En_ImportanceLevel value : En_ImportanceLevel.values() ) {
-            addOption( value );
+    @Override
+    public void fillOptions(List<En_ImportanceLevel> options) {
+        clearOptions();
+        if (options != null || !options.isEmpty() ) {
+            for ( En_ImportanceLevel value : options) {
+                addOption( value );
+            }
+        } else {
+            if (defaultValue != null) {
+                addOption(null);
+            }
         }
     }
 

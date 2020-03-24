@@ -228,6 +228,13 @@ public class CompanyControllerImpl implements CompanyController {
         return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
     }
 
+    @Override
+    public List<Integer> getImportanceLevels(Long companyId) throws RequestFailedException {
+        log.info("getImportanceLevels()");
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(companyService.getImportanceLevels(companyId));
+    }
+
     @Autowired
     private CompanyService companyService;
 

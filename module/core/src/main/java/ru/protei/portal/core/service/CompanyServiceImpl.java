@@ -263,6 +263,12 @@ public class CompanyServiceImpl implements CompanyService {
         return ok(companyDAO.getAllHomeCompanyIds());
     }
 
+    @Override
+    public Result<List<Integer>> getImportanceLevels(Long companyId) {
+        List<Integer> result = companyDAO.getImportanceLevels(companyId);
+        return ok(result);
+    }
+
     private boolean updateCompanySubscription(Long companyId, List<CompanySubscription> companySubscriptions ) {
         log.info( "binding update to linked company subscription for companyId = {}", companyId );
 

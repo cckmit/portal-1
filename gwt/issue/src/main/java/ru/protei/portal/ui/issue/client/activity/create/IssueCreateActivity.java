@@ -182,6 +182,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
 
+        fillImportanceSelector(companyOption.getId());
+
         issueMetaView.initiatorUpdateCompany(companyOption);
 
         initiatorSelectorAllowAddNew(companyOption.getId());
@@ -285,6 +287,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
+        fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
@@ -301,6 +304,24 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 
         return caseObjectMeta;
+    }
+    private void fillImportanceSelector(Long id) {
+        issueMetaView.fillImportanceOptions(new ArrayList<>());
+        companyService.getImportanceLevels(id, new FluentCallback<List<Integer>>()
+                .withSuccess(list -> {
+                    List<En_ImportanceLevel> importanceLevels = new ArrayList<>();
+                    for (Integer integer : list) {
+                        importanceLevels.add(En_ImportanceLevel.getById(integer));
+                    }
+                    issueMetaView.fillImportanceOptions(importanceLevels);
+                    checkImportanceSelectedValue(importanceLevels);
+                }));
+    }
+
+    private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
+        if (!importanceLevels.contains(issueMetaView.importance().getValue())){
+            issueMetaView.importance().setValue(null);
+        }
     }
 
     private CaseObject fillCaseCreateRequest(CaseObject caseObject) {

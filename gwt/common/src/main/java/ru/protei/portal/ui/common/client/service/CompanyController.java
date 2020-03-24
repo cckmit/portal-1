@@ -95,4 +95,6 @@ public interface CompanyController extends RemoteService {
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
 
     List<Long> getAllHomeCompanyIds() throws RequestFailedException;
+
+    List<Integer> getImportanceLevels(Long id) throws RequestFailedException;;
 }

@@ -53,4 +53,6 @@ public interface CompanyService {
     Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
 
     Result<List<Long>> getAllHomeCompanyIds(AuthToken token);
+
+    Result<List<Integer>> getImportanceLevels(Long companyId);
 }

@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -26,12 +27,12 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
@@ -201,6 +202,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
+        fillImportanceSelector(company.getId());
+
         meta.setInitiatorCompany(company);
 
         metaView.initiatorUpdateCompany(company);
@@ -253,6 +256,25 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onCreateContactClicked() {
         if (metaView.getCompany() != null) {
             fireEvent(new ContactEvents.Edit(null, metaView.getCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+        }
+    }
+
+    private void fillImportanceSelector(Long id) {
+        metaView.fillImportanceOptions(new ArrayList<>());
+        companyService.getImportanceLevels(id, new FluentCallback<List<Integer>>()
+                .withSuccess(list -> {
+                    List<En_ImportanceLevel> importanceLevels = new ArrayList<>();
+                    for (Integer integer : list) {
+                        importanceLevels.add(En_ImportanceLevel.getById(integer));
+                    }
+                    metaView.fillImportanceOptions(importanceLevels);
+                    checkImportanceSelectedValue(importanceLevels);
+                }));
+    }
+
+    private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
+        if (!importanceLevels.contains(metaView.importance().getValue())){
+            metaView.importance().setValue(null);
         }
     }
 
@@ -326,6 +348,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                             fireEvent(new CaseStateEvents.UpdateSelectorOptions());
                         })
         );
+        fillImportanceSelector(meta.getInitiatorCompanyId());
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
