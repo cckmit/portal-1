@@ -23,7 +23,9 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -114,7 +116,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContract(value.getContractNumber() == null ? "" : lang.contractNum(value.getContractNumber()), LinkUtils.makeLink(Contract.class, value.getContractId()));
+        view.setContracts(value.getContractIdToNumber() == null ? null : createNumberToLinkMap(value.getContractIdToNumber()));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makeLink(Platform.class, value.getPlatformId()));
 
         if( value.getTeam() != null ) {
@@ -154,6 +156,18 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
+    }
+
+    private Map<String, String> createNumberToLinkMap(Map<Long, String> contractIdToNumber) {
+        Map<String, String> numberToLink = new HashMap<>();
+        for (Map.Entry<Long, String> currentEntry : contractIdToNumber.entrySet()) {
+            String number = currentEntry.getValue();
+            String link = LinkUtils.makeLink(Contract.class, currentEntry.getKey());
+
+            numberToLink.put(number, link);
+        }
+
+        return numberToLink;
     }
 
     private boolean isSlaContainerVisible(List<ProjectSla> projectSlas) {

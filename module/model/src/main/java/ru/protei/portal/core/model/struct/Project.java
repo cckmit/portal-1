@@ -74,9 +74,11 @@ public class Project extends AuditableObject {
 
     private Person creator;
 
-    private Long contractId;
+    private List<Long> contractIds;
 
-    private String contractNumber;
+    private List<String> contractNumbers;
+
+    private Map<Long, String> contractIdToNumber;
 
     private boolean deleted;
 
@@ -236,20 +238,28 @@ public class Project extends AuditableObject {
         return products == null ? null : products.stream().findAny().orElse(null);
     }
 
-    public Long getContractId() {
-        return contractId;
+    public List<Long> getContractIds() {
+        return contractIds;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
+    public void setContractIds(List<Long> contractIds) {
+        this.contractIds = contractIds;
     }
 
-    public String getContractNumber() {
-        return contractNumber;
+    public List<String> getContractNumbers() {
+        return contractNumbers;
     }
 
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
+    public void setContractNumbers(List<String> contractNumbers) {
+        this.contractNumbers = contractNumbers;
+    }
+
+    public Map<Long, String> getContractIdToNumber() {
+        return contractIdToNumber;
+    }
+
+    public void setContractIdToNumber(Map<Long, String> contractIdToNumber) {
+        this.contractIdToNumber = contractIdToNumber;
     }
 
     public EntityOption getManager() {
@@ -342,8 +352,7 @@ public class Project extends AuditableObject {
                                         .collect(Collectors.toSet()) );
         }
 
-        projectInfo.setContractId(project.getContractId());
-        projectInfo.setContractNumber(project.getContractNumber());
+        projectInfo.setContractIdToNumber(project.getContractIdToNumber());
 
         if (project.getManager() != null) {
             projectInfo.setManager(new EntityOption(project.getManager().getDisplayShortName(), project.getManagerId()));

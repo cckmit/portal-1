@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -138,10 +135,13 @@ public class CaseObject extends AuditableObject {
     private Date technicalSupportValidity;
 
     // not db column
-    private Long contractId;
+    private List<Long> contractIds;
 
     // not db column
-    private String contractNumber;
+    private List<String> contractNumbers;
+
+    // not db column
+    private Map<Long, String> contractIdToNumber;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -505,20 +505,28 @@ public class CaseObject extends AuditableObject {
         this.platformName = platformName;
     }
 
-    public Long getContractId() {
-        return contractId;
+    public List<Long> getContractIds() {
+        return contractIds;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
+    public void setContractIds(List<Long> contractIds) {
+        this.contractIds = contractIds;
     }
 
-    public String getContractNumber() {
-        return contractNumber;
+    public List<String> getContractNumbers() {
+        return contractNumbers;
     }
 
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
+    public void setContractNumbers(List<String> contractNumbers) {
+        this.contractNumbers = contractNumbers;
+    }
+
+    public Map<Long, String> getContractIdToNumber() {
+        return contractIdToNumber;
+    }
+
+    public void setContractIdToNumber(Map<Long, String> contractIdToNumber) {
+        this.contractIdToNumber = contractIdToNumber;
     }
 
     public String getJiraUrl() {
@@ -599,12 +607,11 @@ public class CaseObject extends AuditableObject {
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
-                ", contractId=" + contractId +
-                ", contractNumber='" + contractNumber + '\'' +
+                ", contractId=" + contractIds +
                 ", platformName='" + platformName + '\'' +
                 ", technicalSupportValidity=" + technicalSupportValidity +
-                ", contractId=" + contractId +
-                ", contractNumber='" + contractNumber + '\'' +
+                ", contractId=" + contractIds +
+                ", contractNumber='" + contractNumbers + '\'' +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +

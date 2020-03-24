@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
@@ -118,11 +118,10 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
-        Contract contract = contractDAO.getByProjectId(id);
+        List<Contract> contracts = contractDAO.getByProjectId(id);
 
-        if (contract != null) {
-            project.setContractId(contract.getId());
-            project.setContractNumber(contract.getNumber());
+        if (CollectionUtils.isNotEmpty(contracts)) {
+            project.setContractIdToNumber(contracts.stream().collect(toMap(Contract::getId, Contract::getNumber)));
         }
 
         return ok(Project.fromCaseObject(project));

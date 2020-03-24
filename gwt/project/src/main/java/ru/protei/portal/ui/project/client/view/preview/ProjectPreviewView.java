@@ -22,6 +22,7 @@ import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPrevie
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Вид превью проекта
@@ -117,6 +118,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setContract(String value, String link) {
         contract.setText(value);
         contract.setHref(link);
+    }
+
+    @Override
+    public void setContracts(Map<String, String> contractNumberToLink) {
+
     }
 
     @Override

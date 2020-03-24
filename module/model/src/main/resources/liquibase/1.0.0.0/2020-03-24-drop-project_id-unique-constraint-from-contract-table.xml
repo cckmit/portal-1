@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="drop-project_id-foreign-key-from-contract-table" author="fomin">
+        <dropForeignKeyConstraint baseTableName="contract"
+                                  constraintName="project_id_to_case_object_fk"/>
+    </changeSet>
+
+    <changeSet id="add-project_id-column-to-contract-without-unique-constraint" author="fomin">
+        <addColumn tableName="contract">
+            <column name="temp_project_id" type="bigint" valueComputed="project_id"/>
+        </addColumn>
+        <dropColumn tableName="contract" columnName="project_id"/>
+        <renameColumn tableName="contract" columnDataType="bigint" oldColumnName="temp_project_id" newColumnName="project_id"/>
+    </changeSet>
+
+    <changeSet id="recover-project_id-foreign-key-in-contract-table" author="fomin">
+        <addForeignKeyConstraint constraintName="project_id_to_case_object_fk"
+                                 baseTableName="contract" baseColumnNames="project_id"
+                                 referencedTableName="case_object" referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
+    </changeSet>
+
+</databaseChangeLog>
