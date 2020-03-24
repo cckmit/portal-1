@@ -42,8 +42,6 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     HasVisibility slaContainerVisibility();
 
-    void setContract(String value, String link);
-
     void setContracts(Map<String, String> contractNumberToLink);
 
     void setPlatform(String value, String link);

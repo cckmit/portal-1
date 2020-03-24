@@ -2,14 +2,12 @@ package ru.protei.portal.ui.project.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
@@ -115,14 +113,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setContract(String value, String link) {
-        contract.setText(value);
-        contract.setHref(link);
-    }
-
-    @Override
     public void setContracts(Map<String, String> contractNumberToLink) {
-
+        addLinksToContainer(contractNumberToLink, contracts);
     }
 
     @Override
@@ -167,6 +159,18 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
+    private void addLinksToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer) {
+        linksContainer.getElement().removeAllChildren();
+
+        for (Map.Entry<String, String> currEntry : nameToLink.entrySet()) {
+            AnchorElement parent = AnchorElement.as(DOM.createAnchor());
+            parent.setInnerText(currEntry.getKey());
+            parent.setHref(currEntry.getValue());
+            parent.setAttribute("target", "_blank");
+            linksContainer.getElement().appendChild(parent);
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -186,7 +190,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         product.ensureDebugId(DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
         documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
-        contract.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
+        contracts.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACTS_CONTAINER);
         platform.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORM_LABEL);
         technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
         slaInputReadOnly.ensureDebugId(DebugIds.PROJECT_PREVIEW.SLA_INPUT);
@@ -199,7 +203,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     Anchor header;
     @UiField
-    Anchor contract;
+    HTMLPanel contracts;
     @UiField
     Anchor platform;
     @UiField
