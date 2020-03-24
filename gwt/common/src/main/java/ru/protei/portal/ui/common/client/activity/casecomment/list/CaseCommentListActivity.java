@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
@@ -29,7 +28,6 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.util.CaseCommentUtils;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -43,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.*;
 
 /**
  * Активность списка комментариев
@@ -57,7 +56,11 @@ public abstract class CaseCommentListActivity
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
+                if (attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(lastAttachedByPaste, lastAttachedByPasteStrPosition, attachment);
+                }
                 addTempAttachment(attachment);
+                lastAttachedByPaste = false;
             }
             @Override
             public void onError(En_FileUploadStatus status, String details) {
@@ -128,7 +131,7 @@ public abstract class CaseCommentListActivity
             fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.INFO));
             return;
         }
-        if ( caseComment == null || !CaseCommentUtils.isEnableEdit( caseComment, profile.getId() ) ) {
+        if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
             fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
@@ -163,7 +166,7 @@ public abstract class CaseCommentListActivity
     public void onEditClicked( AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
 
-        if ( caseComment == null || !CaseCommentUtils.isEnableEdit( caseComment, profile.getId() ) ) {
+        if ( caseComment == null || !isEnableEdit( caseComment, profile.getId() ) ) {
             fireEvent( new NotifyEvents.Show( lang.errEditIssueCommentNotAllowed(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
@@ -201,7 +204,7 @@ public abstract class CaseCommentListActivity
 
         comment = null;
 
-        String message = CaseCommentUtils.appendQuote(view.message().getValue(), value.getText(), textMarkup);
+        String message = appendQuote(view.message().getValue(), value.getText(), textMarkup);
         view.message().setValue( message, true );
         view.focus();
     }
@@ -281,6 +284,12 @@ public abstract class CaseCommentListActivity
         fireChangedPreview();
     }
 
+    @Override
+    public void setLastAttachedByPasteStrPosition(Integer value) {
+        lastAttachedByPaste = true;
+        lastAttachedByPasteStrPosition = value;
+    }
+
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -299,15 +308,13 @@ public abstract class CaseCommentListActivity
         });
     }
 
-    private void addTempAttachment(Attachment attach) {
-        String message = view.message().getValue();
-        view.message().setValue(isEmpty(message)? makeImageString(attach) : message + "\n" + makeImageString(attach));
-        view.attachmentContainer().add(attach);
-        tempAttachments.add(attach);
+    private void addImageToMessage(Boolean copyPaste, Integer strPosition, Attachment attach) {
+        view.message().setValue(addImageInMessage(view.message().getValue(), copyPaste, strPosition, attach));
     }
 
-    private String makeImageString(Attachment attach) {
-        return ("![" +  attach.getFileName() +"]("+ DOWNLOAD_PATH + attach.getExtLink() +")");
+    private void addTempAttachment(Attachment attach) {
+        view.attachmentContainer().add(attach);
+        tempAttachments.add(attach);
     }
 
     private void fillView(List<CaseComment> comments){
@@ -395,7 +402,7 @@ public abstract class CaseCommentListActivity
 
         itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
-        itemView.enabledEdit( isModifyEnabled && CaseCommentUtils.isEnableEdit( value, profile.getId() ) );
+        itemView.enabledEdit( isModifyEnabled && isEnableEdit( value, profile.getId() ) );
         itemView.enableReply(isModifyEnabled);
         itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
         itemViewToModel.put( itemView, value );
@@ -714,5 +721,6 @@ public abstract class CaseCommentListActivity
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
 
-    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
+    private Boolean lastAttachedByPaste;
+    private Integer lastAttachedByPasteStrPosition;
 }

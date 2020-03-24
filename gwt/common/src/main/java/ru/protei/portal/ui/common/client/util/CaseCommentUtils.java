@@ -1,10 +1,14 @@
 package ru.protei.portal.ui.common.client.util;
 
+import com.google.gwt.core.client.GWT;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.Date;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 /**
  * Утилита по работе с комментариями
@@ -60,7 +64,19 @@ public class CaseCommentUtils {
         }
     }
 
+    public static String addImageInMessage(String message, Boolean copyPaste, Integer strPosition, Attachment attach) {
+        if (copyPaste) {
+            return message.substring(0, strPosition) + NEW_LINE_SYMBOL + makeImageString(attach) + NEW_LINE_SYMBOL + message.substring(strPosition);
+        } else {
+            return isEmpty(message)? makeImageString(attach) : message + NEW_LINE_SYMBOL + makeImageString(attach);
+        }
+    }
+
+    public static String makeImageString(Attachment attach) {
+        return ("![alt=" +  attach.getFileName() +"]("+ DOWNLOAD_PATH + attach.getExtLink() +")");
+    }
+
     private static final long EDIT_PERIOD = 300000;
     private final static String NEW_LINE_SYMBOL = "\n";
-
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 }

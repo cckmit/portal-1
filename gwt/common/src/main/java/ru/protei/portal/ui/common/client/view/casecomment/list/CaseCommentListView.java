@@ -207,6 +207,7 @@ public class CaseCommentListView
 
     @UiHandler("comment")
     public void onBase64Pasted(PasteEvent event) {
+        activity.setLastAttachedByPasteStrPosition(event.getStrPos());
         if (event.getJsons() != null && !event.getJsons().isEmpty()) {
             fileUploader.uploadBase64Files(event.getJsons());
         } else {
