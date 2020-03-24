@@ -28,6 +28,4 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
     Map<Long,Long> mapLegacyId ();
 
     boolean updateState(Company tempCompany);
-
-    List<Integer> getImportanceLevels(Long companyId);
 }

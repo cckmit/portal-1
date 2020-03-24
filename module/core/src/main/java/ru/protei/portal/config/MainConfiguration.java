@@ -334,6 +334,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
+    }
+
+    @Bean
     public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
         return new PersonCompanyEntryDAO_Impl();
     }

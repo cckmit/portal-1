@@ -44,12 +44,6 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     }
 
     @Override
-    public List<Integer> getImportanceLevels(Long companyId) {
-        String query = "select importance_level_id from company_importance_item where company_id=? order by `order`";
-        return jdbcTemplate.queryForList(query, Integer.class, companyId);
-    }
-
-    @Override
     public List<Long> getAllHomeCompanyIds() {
         String query = "SELECT companyId FROM company_group_home";
         return jdbcTemplate.queryForList(query, Long.class);

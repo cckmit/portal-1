@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.CompanyGroupDAO;
-import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
@@ -35,6 +32,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     CompanyDAO companyDAO;
+
+    @Autowired
+    CompanyImportanceItemDAO companyImportanceItemDAO;
 
     @Autowired
     CompanyGroupDAO companyGroupDAO;
@@ -221,6 +221,8 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
+        addCommonImportanceLevels(companyId);
+
         return ok(company);
     }
 
@@ -265,8 +267,19 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Result<List<Integer>> getImportanceLevels(Long companyId) {
-        List<Integer> result = companyDAO.getImportanceLevels(companyId);
+        List<Integer> result = companyImportanceItemDAO.getImportanceLevels(companyId);
         return ok(result);
+    }
+
+    private void addCommonImportanceLevels(Long companyId) {
+        log.info( "adding common importance levels for companyId = {}", companyId );
+
+        List<CompanyImportanceItem> importanceItems = new ArrayList<>();
+
+        for (En_ImportanceLevel value : En_ImportanceLevel.values(true)) {
+            importanceItems.add(new CompanyImportanceItem(companyId, value.getId(), value.getId()));
+        }
+        companyImportanceItemDAO.persistBatch(importanceItems);
     }
 
     private boolean updateCompanySubscription(Long companyId, List<CompanySubscription> companySubscriptions ) {

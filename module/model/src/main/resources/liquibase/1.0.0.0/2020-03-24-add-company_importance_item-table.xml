@@ -11,7 +11,7 @@
             </column>
             <column name="company_id" type="BIGINT" />
             <column name="importance_level_id" type="INT" />
-            <column name="order" type="INT" />
+            <column name="order_number" type="INT" />
         </createTable>
     </changeSet>
 
