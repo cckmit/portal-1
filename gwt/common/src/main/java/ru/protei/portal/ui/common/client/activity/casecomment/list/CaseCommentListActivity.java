@@ -56,8 +56,8 @@ public abstract class CaseCommentListActivity
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
-                if (attachment.getMimeType().startsWith("image/")) {
-                    addImageToMessage(lastAttachedByPaste, lastAttachedByPasteStrPosition, attachment);
+                if (lastAttachedByPaste && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(true, lastAttachedByPasteStrPosition, attachment);
                 }
                 addTempAttachment(attachment);
                 lastAttachedByPaste = false;
@@ -308,8 +308,8 @@ public abstract class CaseCommentListActivity
         });
     }
 
-    private void addImageToMessage(Boolean copyPaste, Integer strPosition, Attachment attach) {
-        view.message().setValue(addImageInMessage(view.message().getValue(), copyPaste, strPosition, attach));
+    private void addImageToMessage(boolean addToPosition, Integer strPosition, Attachment attach) {
+        view.message().setValue(addImageInMessage(view.message().getValue(), addToPosition, strPosition, attach));
     }
 
     private void addTempAttachment(Attachment attach) {
@@ -721,6 +721,6 @@ public abstract class CaseCommentListActivity
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
 
-    private Boolean lastAttachedByPaste;
+    private boolean lastAttachedByPaste;
     private Integer lastAttachedByPasteStrPosition;
 }

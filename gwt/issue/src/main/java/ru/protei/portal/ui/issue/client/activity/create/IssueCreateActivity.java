@@ -54,8 +54,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
-                if (attachment.getMimeType().startsWith("image/")) {
-                    addImageToMessage(lastAttachedByPaste, lastAttachedByPasteStrPosition, attachment);
+                if (lastAttachedByPaste && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(true, lastAttachedByPasteStrPosition, attachment);
                 }
                 lastAttachedByPaste = false;
                 view.attachmentsContainer().add(attachment);
@@ -255,8 +255,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         lastAttachedByPasteStrPosition = value;
     }
 
-    private void addImageToMessage(Boolean copyPaste, Integer strPosition, Attachment attach) {
-        view.description().setValue(addImageInMessage(view.description().getValue(), copyPaste, strPosition, attach));
+    private void addImageToMessage(boolean addInPosition, Integer strPosition, Attachment attach) {
+        view.description().setValue(addImageInMessage(view.description().getValue(), addInPosition, strPosition, attach));
     }
 
     private void fillView() {
@@ -472,6 +472,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
 
-    private Boolean lastAttachedByPaste;
+    private boolean lastAttachedByPaste;
     private Integer lastAttachedByPasteStrPosition;
 }
