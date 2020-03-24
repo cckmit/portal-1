@@ -90,7 +90,7 @@ public class ImagePasteTextArea extends TextArea implements HasPasteHandlers {
         });
     }-*/;
 
-    private static class Base64Image extends JavaScriptObject {
+    public static class Base64Image extends JavaScriptObject {
 
         protected Base64Image() {}
 

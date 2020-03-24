@@ -31,6 +31,10 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         ensureDebugIds();
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
+        description.setPasteHandler((json, strPosition) -> {
+            fileUploader.uploadBase64File(json);
+            activity.setLastAttachedByPasteStrPosition(strPosition);
+        });
     }
 
     @Override

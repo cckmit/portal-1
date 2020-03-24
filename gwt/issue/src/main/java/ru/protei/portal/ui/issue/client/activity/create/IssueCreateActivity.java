@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
+import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -53,6 +54,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess(Attachment attachment) {
+                if (attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(lastAttachedByPaste, lastAttachedByPasteStrPosition, attachment);
+                }
+                lastAttachedByPaste = false;
                 view.attachmentsContainer().add(attachment);
             }
 
@@ -242,6 +247,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
         localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
+    }
+
+    @Override
+    public void setLastAttachedByPasteStrPosition(Integer value) {
+        lastAttachedByPaste = true;
+        lastAttachedByPasteStrPosition = value;
+    }
+
+    private void addImageToMessage(Boolean copyPaste, Integer strPosition, Attachment attach) {
+        view.description().setValue(addImageInMessage(view.description().getValue(), copyPaste, strPosition, attach));
     }
 
     private void fillView() {
@@ -456,4 +471,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
+
+    private Boolean lastAttachedByPaste;
+    private Integer lastAttachedByPasteStrPosition;
 }
