@@ -80,7 +80,8 @@ public class CrmConstants {
         int MAX_SIZE = 3;
     }
 
-    public interface Image {
-        String JIRA_WORKFLOW = "./images/jira-workflow.jpg";
+    public interface Jira {
+        String INFO_LINK = "jiraInfo";
+        String WORKFLOW_IMAGE = "./images/jira-workflow.jpg";
     }
 }
