@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -116,7 +117,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContracts(value.getContractIdToNumber() == null ? null : createNumberToLinkMap(value.getContractIdToNumber()));
+        view.setContracts(value.getContracts() == null ? null : value.getContracts().stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makeLink(Contract.class, contract.getId()))));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makeLink(Platform.class, value.getPlatformId()));
 
         if( value.getTeam() != null ) {
@@ -156,18 +157,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT)));
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
-    }
-
-    private Map<String, String> createNumberToLinkMap(Map<Long, String> contractIdToNumber) {
-        Map<String, String> numberToLink = new HashMap<>();
-        for (Map.Entry<Long, String> currentEntry : contractIdToNumber.entrySet()) {
-            String number = currentEntry.getValue();
-            String link = LinkUtils.makeLink(Contract.class, currentEntry.getKey());
-
-            numberToLink.put(number, link);
-        }
-
-        return numberToLink;
     }
 
     private boolean isSlaContainerVisible(List<ProjectSla> projectSlas) {

@@ -135,13 +135,7 @@ public class CaseObject extends AuditableObject {
     private Date technicalSupportValidity;
 
     // not db column
-    private List<Long> contractIds;
-
-    // not db column
-    private List<String> contractNumbers;
-
-    // not db column
-    private Map<Long, String> contractIdToNumber;
+    private List<EntityOption> contracts;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -505,28 +499,12 @@ public class CaseObject extends AuditableObject {
         this.platformName = platformName;
     }
 
-    public List<Long> getContractIds() {
-        return contractIds;
+    public List<EntityOption> getContracts() {
+        return contracts;
     }
 
-    public void setContractIds(List<Long> contractIds) {
-        this.contractIds = contractIds;
-    }
-
-    public List<String> getContractNumbers() {
-        return contractNumbers;
-    }
-
-    public void setContractNumbers(List<String> contractNumbers) {
-        this.contractNumbers = contractNumbers;
-    }
-
-    public Map<Long, String> getContractIdToNumber() {
-        return contractIdToNumber;
-    }
-
-    public void setContractIdToNumber(Map<Long, String> contractIdToNumber) {
-        this.contractIdToNumber = contractIdToNumber;
+    public void setContracts(List<EntityOption> contracts) {
+        this.contracts = contracts;
     }
 
     public String getJiraUrl() {
@@ -607,11 +585,8 @@ public class CaseObject extends AuditableObject {
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
-                ", contractId=" + contractIds +
-                ", platformName='" + platformName + '\'' +
                 ", technicalSupportValidity=" + technicalSupportValidity +
-                ", contractId=" + contractIds +
-                ", contractNumber='" + contractNumbers + '\'' +
+                ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +

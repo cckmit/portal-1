@@ -74,11 +74,7 @@ public class Project extends AuditableObject {
 
     private Person creator;
 
-    private List<Long> contractIds;
-
-    private List<String> contractNumbers;
-
-    private Map<Long, String> contractIdToNumber;
+    private List<EntityOption> contracts;
 
     private boolean deleted;
 
@@ -238,28 +234,12 @@ public class Project extends AuditableObject {
         return products == null ? null : products.stream().findAny().orElse(null);
     }
 
-    public List<Long> getContractIds() {
-        return contractIds;
+    public List<EntityOption> getContracts() {
+        return contracts;
     }
 
-    public void setContractIds(List<Long> contractIds) {
-        this.contractIds = contractIds;
-    }
-
-    public List<String> getContractNumbers() {
-        return contractNumbers;
-    }
-
-    public void setContractNumbers(List<String> contractNumbers) {
-        this.contractNumbers = contractNumbers;
-    }
-
-    public Map<Long, String> getContractIdToNumber() {
-        return contractIdToNumber;
-    }
-
-    public void setContractIdToNumber(Map<Long, String> contractIdToNumber) {
-        this.contractIdToNumber = contractIdToNumber;
+    public void setContracts(List<EntityOption> contracts) {
+        this.contracts = contracts;
     }
 
     public EntityOption getManager() {
@@ -352,7 +332,7 @@ public class Project extends AuditableObject {
                                         .collect(Collectors.toSet()) );
         }
 
-        projectInfo.setContractIdToNumber(project.getContractIdToNumber());
+        projectInfo.setContracts(project.getContracts());
 
         if (project.getManager() != null) {
             projectInfo.setManager(new EntityOption(project.getManager().getDisplayShortName(), project.getManagerId()));
@@ -405,15 +385,23 @@ public class Project extends AuditableObject {
                 ", description='" + description + '\'' +
                 ", stateId=" + stateId +
                 ", customerType=" + customerType +
+                ", customer=" + customer +
                 ", productDirection=" + productDirection +
                 ", created=" + created +
-                ", region=" + region +
+                ", creatorId=" + creatorId +
                 ", team=" + team +
+                ", region=" + region +
+                ", links=" + links +
+                ", products=" + products +
+                ", creator=" + creator +
+                ", contracts=" + contracts +
                 ", deleted=" + deleted +
-                ", manager" + manager +
-                ", contragent" + contragent +
-                ", platformName" + platformName +
-                ", platformId" + platformId +
+                ", manager=" + manager +
+                ", contragent=" + contragent +
+                ", platformName='" + platformName + '\'' +
+                ", platformId=" + platformId +
+                ", technicalSupportValidity=" + technicalSupportValidity +
+                ", projectSlas=" + projectSlas +
                 '}';
     }
 }

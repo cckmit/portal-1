@@ -121,7 +121,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Contract> contracts = contractDAO.getByProjectId(id);
 
         if (CollectionUtils.isNotEmpty(contracts)) {
-            project.setContractIdToNumber(contracts.stream().collect(toMap(Contract::getId, Contract::getNumber)));
+            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
 
         return ok(Project.fromCaseObject(project));
