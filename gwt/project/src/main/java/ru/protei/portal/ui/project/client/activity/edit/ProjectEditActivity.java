@@ -256,6 +256,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
+        if (!view.slaValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.projectSlaNotValid(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         return true;
     }
 

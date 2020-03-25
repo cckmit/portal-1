@@ -3,9 +3,11 @@
              xmlns:role='urn:import:ru.protei.portal.ui.project.client.view.widget.selector'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
 
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
     <g:HTMLPanel styleName="project-team-selector-item">
         <div>
-            <role:ProjectRoleFormSelector ui:field="role" header="Роль"/>
+            <role:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}"/>
         </div>
 
         <div>

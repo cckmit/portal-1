@@ -161,6 +161,11 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasValidable slaValidator() {
+        return slaInput;
+    }
+
+    @Override
     public void updateProductDirection(Long directionId) {
         product.setDirectionId(directionId);
     }

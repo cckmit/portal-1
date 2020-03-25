@@ -2155,4 +2155,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSla();
 
     String projectImportance();
+
+    String projectSlaNotValid();
+
+    String projectTeamRole();
 }
