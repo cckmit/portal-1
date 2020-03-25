@@ -9,7 +9,10 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.core.service.IpReservationService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.IpReservationController;
@@ -35,6 +38,18 @@ public class IpReservationControllerImpl implements IpReservationController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(ipReservationService.getSubnets(token, reservedIpQuery));
+    }
+
+    @Override
+    public List<SubnetOption> getSubnetsOptionList(ReservedIpQuery query) throws RequestFailedException {
+
+        log.info("getPlatformsOptionList(): query={}", query);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<List<SubnetOption>> response = ipReservationService.getSubnetsOptionList(token, query);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
     }
 
     @Override

@@ -4,7 +4,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -21,7 +24,7 @@ public interface IpReservationControllerAsync {
 
     void saveSubnet(Subnet subnet, AsyncCallback<Subnet> async);
 
-/*    void getSubnetViewList(ReservedIpQuery query, AsyncCallback<List<SubnetShortView>> callback);*/
+    void getSubnetsOptionList(ReservedIpQuery query, AsyncCallback<List<SubnetOption>> async);
 
     void isSubnetUnique(String address, Long exceptId, AsyncCallback<Boolean> async);
 

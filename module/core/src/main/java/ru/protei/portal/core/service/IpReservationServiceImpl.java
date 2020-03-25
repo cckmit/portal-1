@@ -9,10 +9,13 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -62,6 +65,22 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    public Result<List<SubnetOption>> getSubnetsOptionList(AuthToken token, ReservedIpQuery query) {
+
+        List<Subnet> result = subnetDAO.listByQuery(query);
+
+        if (result == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        List<SubnetOption> options = result.stream()
+                .map(s -> new SubnetOption(s.getAddress() + "." +  s.getMask(), s.getId()))
+                .collect(Collectors.toList());
+
+        return ok(options);
+    }
+
+    @Override
     public Result< Map< Subnet, List<ReservedIp>>> getReservedIpsBySubnets(AuthToken token, ReservedIpQuery query ) {
         Map< Subnet, List<ReservedIp> > subnetToReservedIpsMap = new HashMap<>();
         /*
@@ -98,6 +117,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             return error(En_ResultStatus.ALREADY_EXIST);
 
         subnet.setCreated(new Date());
+        subnet.setCreatorId(token.getPersonId());
         Long subnetId = subnetDAO.persist(subnet);
 
         if (subnetId == null)
@@ -116,10 +136,13 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         Subnet oldSubnet = subnetDAO.get(subnet.getId());
 
-        if (!Objects.equals(oldSubnet.getAddress(), subnet.getAddress()) ||
+        /*
+           @todo временно открыть редактирование адреса и маски
+         */
+/*        if (!Objects.equals(oldSubnet.getAddress(), subnet.getAddress()) ||
             !Objects.equals(oldSubnet.getMask(), subnet.getMask())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
+        }*/
 
         Boolean result = subnetDAO.merge(subnet);
         if ( !result ) {
@@ -154,6 +177,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         reservedIp.setCreated(new Date());
+        reservedIp.setCreatorId(token.getPersonId());
         Long reservedIpId = reservedIpDAO.persist(reservedIp);
 
         if (reservedIpId == null)

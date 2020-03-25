@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
+import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -41,7 +42,10 @@ public interface IpReservationService {
     @Privileged(En_Privilege.RESERVED_IP_VIEW)
     Result<SearchResult<Subnet>> getSubnets(AuthToken token, ReservedIpQuery query);
 
-    @Privileged(En_Privilege.RESERVED_IP_VIEW)
+    @Privileged( requireAny = { En_Privilege.SUBNET_VIEW, En_Privilege.RESERVED_IP_VIEW })
+    Result<List<SubnetOption>> getSubnetsOptionList(AuthToken token, ReservedIpQuery query);
+
+    @Privileged(En_Privilege.SUBNET_VIEW)
     Result<Subnet> getSubnet(AuthToken token, Long id);
 
     /**

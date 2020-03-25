@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.IpReservationEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -31,22 +28,17 @@ public abstract class IpReservationPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.RESERVED_IP_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.RESERVED_IP, ТAB, DebugIds.SIDEBAR_MENU.RESERVED_IP ) );
-            fireEvent( new AppEvents.InitPage( new IpReservationEvents.Show( ) ) );
+            fireEvent( new AppEvents.InitPage(showReservedIp) );
         }
     }
 
     @Event
-    public void onShowTable( IpReservationEvents.Show event ) {
+    public void onShowTable( IpReservationEvents.ShowReservedIp event ) {
         fireSelectTab();
     }
 
     @Event
-    public void onShowSubnetDetail( IpReservationEvents.EditSubnet event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowReservedIpDetail( IpReservationEvents.EditReservedIp event ) {
+    public void onShowSubnet( IpReservationEvents.ShowSubnet event ) {
         fireSelectTab();
     }
 
@@ -57,16 +49,15 @@ public abstract class IpReservationPage
         }
 
         fireSelectTab();
-        fireEvent( new IpReservationEvents.Show( ) );
+        fireEvent(showReservedIp);
     }
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_VIEW ) ) {
+        if ( policyService.hasAnyPrivilegeOf( En_Privilege.SUBNET_VIEW, En_Privilege.RESERVED_IP_VIEW ) ) {
             fireEvent(new MenuEvents.Select(ТAB));
         }
     }
-
 
     @Inject
     Lang lang;
@@ -74,5 +65,5 @@ public abstract class IpReservationPage
     private PolicyService policyService;
 
     private String ТAB;
+    private IpReservationEvents.ShowReservedIp showReservedIp = new IpReservationEvents.ShowReservedIp();
 }
-

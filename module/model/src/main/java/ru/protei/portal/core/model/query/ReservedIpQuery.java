@@ -4,7 +4,9 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,7 +14,9 @@ import java.util.Set;
  */
 public class ReservedIpQuery extends BaseQuery {
 
-    private Set<Long> ownerIds;
+    private List<Long> ownerIds;
+
+    private List<Long> subnetIds;
 
     private Boolean onlyLocal;
 
@@ -31,12 +35,13 @@ public class ReservedIpQuery extends BaseQuery {
 
     public ReservedIpQuery(String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
+        this.subnetIds = new ArrayList<>();
     }
 
     public ReservedIpQuery(Date reservedFrom, Date reservedTo,
                            Date releasedFrom, Date releasedTo,
-                           Set<Long> ownerIds, boolean onlyLocal,
-                           String searchString,
+                           List<Long> ownerIds, List<Long> subnetIds,
+                           boolean onlyLocal, String searchString,
                            En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         this.reservedFrom = reservedFrom;
@@ -45,6 +50,7 @@ public class ReservedIpQuery extends BaseQuery {
         this.releasedTo = releasedTo;
         this.onlyLocal = onlyLocal;
         this.ownerIds = ownerIds;
+        this.subnetIds = subnetIds;
     }
 
     public Boolean getOnlyLocal() {
@@ -87,13 +93,42 @@ public class ReservedIpQuery extends BaseQuery {
         this.releasedTo = releasedTo;
     }
 
-    public Set<Long> getOwnerIds() {
+    public List<Long> getOwnerIds() {
         return ownerIds;
     }
 
-    public void setOwnerIds(Set<Long> ownerIds) {
+    public void setOwnerIds(List<Long> ownerIds) {
         this.ownerIds = ownerIds;
     }
+
+    public void setOwnerId(Long ownerId) {
+        if (ownerId == null) {
+            this.ownerIds.clear();
+            return;
+        }
+        this.ownerIds = new ArrayList<>();
+        this.ownerIds.add(ownerId);
+    }
+
+    public List<Long> getSubnetIds() { return subnetIds; }
+
+    public void setSubnetIds(List<Long> subnetIds) {
+        this.subnetIds = subnetIds != null ? subnetIds : new ArrayList<>();
+    }
+
+/*
+    public void setSubnetId(Long subnetId) {
+        if (subnetId == null) {
+            this.subnetIds.clear();
+            return;
+        }
+        this.subnetIds = new ArrayList<>();
+        this.subnetIds.add(subnetId);
+    }
+
+    public void addSubnetId(Long subnetId) {
+        this.subnetIds.add(subnetId);
+    }*/
 
     @Override
     public boolean isParamsPresent() {
@@ -109,11 +144,15 @@ public class ReservedIpQuery extends BaseQuery {
     public String toString() {
         return "ReservedIpQuery{" +
                 "ownerIds=" + ownerIds +
+                ", subnetIds=" + subnetIds +
                 ", onlyLocal=" + onlyLocal +
                 ", reservedFrom=" + reservedFrom +
                 ", reservedTo=" + reservedTo +
                 ", releasedFrom=" + releasedFrom +
                 ", releasedTo=" + releasedTo +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
                 '}';
     }
 }

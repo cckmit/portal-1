@@ -8,15 +8,16 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
-import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -25,13 +26,11 @@ import ru.protei.portal.ui.ipreservation.client.activity.filter.AbstractIpReserv
 import ru.protei.portal.ui.ipreservation.client.activity.filter.AbstractIpReservationFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.stream.Collectors;
-
 /**
- * Активность таблицы зарезервированных IP
+ * Активность таблицы подсетей
  */
-public abstract class ReservedIpTableActivity
-        implements AbstractReservedIpTableActivity, AbstractIpReservationFilterActivity, Activity
+public abstract class SubnetTableActivity
+        implements AbstractSubnetTableActivity, AbstractIpReservationFilterActivity, Activity
 {
 
     @PostConstruct
@@ -42,6 +41,12 @@ public abstract class ReservedIpTableActivity
         view.setAnimation( animation );
 
         filterView.setActivity( this );
+        filterView.sortField().setValue(En_SortField.address);
+        filterView.sortDir().setValue(true);
+        filterView.ownerVisibility().setVisible(false);
+        filterView.subnetsVisibility().setVisible(false);
+        filterView.datesVisibility().setVisible(false);
+
         view.getFilterContainer().add( filterView.asWidget() );
     }
 
@@ -51,8 +56,8 @@ public abstract class ReservedIpTableActivity
     }
 
     @Event
-    public void onShow( IpReservationEvents.ShowReservedIp event ) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
+    public void onShow( IpReservationEvents.ShowSubnet event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -64,15 +69,15 @@ public abstract class ReservedIpTableActivity
 
         fireEvent(new ActionBarEvents.Clear());
 
-        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
-            fireEvent(new ActionBarEvents.Add(lang.reservedIpSubnetsBtn(), "", UiConstants.ActionBarIdentity.SUBNET));
+        if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
+            fireEvent(new ActionBarEvents.Add(lang.reservedIpIpsBtn(), "", UiConstants.ActionBarIdentity.RESERVED_IP));
         }
 
-        if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE)) {
-            fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.RESERVED_IP ));
+        if (policyService.hasPrivilegeFor( En_Privilege.SUBNET_CREATE )) {
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.SUBNET));
         }
 
-        requestReservedIps();
+        requestSubnets();
     }
 
     @Event
@@ -81,30 +86,30 @@ public abstract class ReservedIpTableActivity
     }
 
     @Event
-    public void onSubnetBtnClicked(ActionBarEvents.Clicked event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
+    public void onReservedIpBtnClicked(ActionBarEvents.Clicked event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
-        if (!(UiConstants.ActionBarIdentity.SUBNET.equals(event.identity))) {
+        if (!(UiConstants.ActionBarIdentity.RESERVED_IP.equals(event.identity))) {
             return;
         }
 
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new IpReservationEvents.ShowSubnet());
+        fireEvent(new IpReservationEvents.ShowReservedIp());
     }
 
     @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.RESERVED_IP.equals(event.identity)) {
+        if (!UiConstants.ActionBarIdentity.SUBNET.equals(event.identity)) {
             return;
         }
 
         view.clearSelection();
 
         animation.showDetails();
-        fireEvent(new IpReservationEvents.CreateReservedIp(view.getPreviewContainer()));
+        fireEvent(new IpReservationEvents.EditSubnet(view.getPreviewContainer()));
     }
 
     @Event
@@ -113,23 +118,23 @@ public abstract class ReservedIpTableActivity
     }
 
     @Event
-    public void onChanged(IpReservationEvents.ChangedReservedIp event) {
+    public void onChanged(IpReservationEvents.ChangedSubnet event) {
         if ( event.needRefreshList ) {
-            updateListAndSelect(event.reservedIp);
+            updateListAndSelect(event.subnet);
             return;
         }
 
-        view.updateRow(event.reservedIp);
+        view.updateRow(event.subnet);
     }
 
     @Override
     public void onFilterChanged() {
-        requestReservedIps();
+        requestSubnets();
     }
 
     @Override
-    public void onItemClicked(ReservedIp value) {
-        if ( !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
+    public void onItemClicked(Subnet value) {
+        if ( !policyService.hasPrivilegeFor( En_Privilege.SUBNET_EDIT ) ) {
             return;
         }
 
@@ -137,66 +142,66 @@ public abstract class ReservedIpTableActivity
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new IpReservationEvents.EditReservedIp( view.getPreviewContainer(), value ) );
+            fireEvent( new IpReservationEvents.EditSubnet( view.getPreviewContainer(), value ) );
         }
     }
 
     @Override
-    public void onEditClicked( ReservedIp value ) {
+    public void onEditClicked( Subnet value ) {
         onItemClicked(value);
     }
 
     @Override
-    public void onRemoveClicked(ReservedIp value) {
-        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)) {
+    public void onRemoveClicked(Subnet value) {
+        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE)) {
             return;
         }
 
-        fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpReleaseConfirmMessage(), lang.reservedIpIpRelease(), onConfirmRemoveClicked(value)));
+        fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpSubnetRemoveConfirmMessage(), lang.reservedIpSubnetRemove(), onConfirmRemoveClicked(value)));
     }
 
     @Override
-    public void onRefreshClicked(ReservedIp value) {
-        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
+    public void onRefreshClicked(Subnet value) {
+        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
             return;
         }
 
         refreshAction(value);
     }
 
-    private Runnable onConfirmRemoveClicked(ReservedIp value) {
-        return () -> ipReservationService.removeReservedIp(value, new FluentCallback<Long>()
+    private Runnable onConfirmRemoveClicked(Subnet value) {
+        return () -> ipReservationService.removeSubnet(value, new FluentCallback<Long>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
-                        fireEvent(new NotifyEvents.Show(lang.reservedIpUnableToRemove(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new NotifyEvents.Show(lang.reservedIpSubnetUnableToRemove(), NotifyEvents.NotifyType.ERROR));
                     } else {
                         errorHandler.accept(throwable);
                     }
                 })
                 .withSuccess(result -> {
-                    fireEvent(new NotifyEvents.Show(lang.reservedIpIpReleased(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IpReservationEvents.ShowReservedIp());
+                    fireEvent(new NotifyEvents.Show(lang.reservedIpSubnetRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IpReservationEvents.ShowSubnet());
                 })
         );
     }
 
-    private void updateListAndSelect(ReservedIp reservedIp ) {
-        requestReservedIps();
-        onItemClicked( reservedIp );
+    private void updateListAndSelect(Subnet subnet) {
+        requestSubnets();
+        onItemClicked( subnet );
     }
 
-    private void requestReservedIps() {
+    private void requestSubnets() {
         view.clearRecords();
         animation.closeDetails();
 
-        ipReservationService.getReservedIpList( makeQuery(), new RequestCallback<SearchResult<ReservedIp>>() {
+        ipReservationService.getSubnetList( makeQuery(), new RequestCallback<SearchResult<Subnet>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess(SearchResult<ReservedIp> result) {
+            public void onSuccess(SearchResult<Subnet> result) {
                 view.clearRecords();
                 result.getResults().forEach(view::addRow);
             }
@@ -206,31 +211,24 @@ public abstract class ReservedIpTableActivity
     private ReservedIpQuery makeQuery() {
         ReservedIpQuery query = new ReservedIpQuery();
         query.searchString = filterView.search().getValue();
-        query.setOwnerId(filterView.owner().getValue().getId());
-        query.setSubnetIds(filterView.subnets().getValue() == null
-                ? null
-                : filterView.subnets().getValue().stream()
-                .map(SubnetOption::getId)
-                .collect(Collectors.toList())
-        );
-        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setSortField(filterView.sortField().getValue());
+/*        query.setSortDir(En_SortDir.ASC);
+        query.setSortField(En_SortField.address);*/
         return query;
     }
 
-    private void refreshAction(ReservedIp reservedIp) {
-/*        return () -> ipReservationService.refreshReservedIp(reservedIp, new FluentCallback<Long>()
+    private void refreshAction(Subnet subnet) {
+/*        return () -> ipReservationService.refreshSubnet(subnet, new FluentCallback<Long>()
                 .withSuccess(id -> {
-                    fireEvent(new IpReservationEvents.Show());
+                    fireEvent(new IpReservationEvents.ShowSubnet());
                 }));*/
-        //fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));
-        Window.alert("Refresh IPs");
+/*        fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));*/
+        Window.alert("Refresh subnet");
     }
 
     @Inject
     Lang lang;
     @Inject
-    AbstractReservedIpTableView view;
+    AbstractSubnetTableView view;
     @Inject
     AbstractIpReservationFilterView filterView;
     @Inject

@@ -2150,7 +2150,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectReservedIpOwner();
 
+    String reservedIpIpRelease();
+
     String reservedIpIpReleased();
+
+    String reservedIpSubnetRemove();
 
     String reservedIpSubnetRemoved();
 
@@ -2158,11 +2162,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpReleaseConfirmMessage();
 
-    String reservedIpSubnetRemove();
-
-    String reservedIpIpRelease();
-
     String reservedIpOnlyLocal();
 
     String reservedIpUnableToRemove();
+
+    String reservedIpSubnetUnableToRemove();
+
+    String reservedIpSubnetsBtn();
+
+    String reservedIpIpsBtn();
 }

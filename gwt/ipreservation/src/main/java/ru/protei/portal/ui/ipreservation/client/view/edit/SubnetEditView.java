@@ -41,9 +41,6 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
     public HasValue<String> mask() { return mask; }
 
     @Override
-    public HasValue<Boolean> local() { return local; }
-
-    @Override
     public HasText comment() { return comment; }
 
     @Override
@@ -60,6 +57,12 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
     public HasVisibility saveVisibility() {
         return saveButton;
     }
+
+    @Override
+    public HasEnabled addressEnabled () { return address; }
+
+    @Override
+    public HasEnabled maskEnabled () { return mask; }
 
     @Override
     public HasEnabled saveEnabled() {
@@ -87,7 +90,6 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
         address.ensureDebugId(DebugIds.SUBNET.ADDRESS_INPUT);
         mask.ensureDebugId(DebugIds.SUBNET.MASK_INPUT);
         comment.ensureDebugId(DebugIds.SUBNET.COMMENT_INPUT);
-        local.ensureDebugId(DebugIds.SUBNET.LOCAL_SWITCHER);
         saveButton.ensureDebugId(DebugIds.SUBNET.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.SUBNET.CANCEL_BUTTON);
     }
@@ -98,8 +100,6 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
     ValidableTextBox mask;
     @UiField
     TextArea comment;
-    @UiField
-    Switcher local;
 
     @UiField
     Button saveButton;

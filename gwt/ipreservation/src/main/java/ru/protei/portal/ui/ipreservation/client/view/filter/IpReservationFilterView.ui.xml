@@ -3,21 +3,17 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:subnet='urn:import:ru.protei.portal.ui.ipreservation.client.view.widget.selector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
-            </div>
-<!--            <div class="row">
-                <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.subnet}"/></label>
-                    <subnet:SubnetButtonSelector ui:field="subnet" />
-                </div>
-            </div>-->
-            <div class="row">
+
+                <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}" addStyleNames="form-group col-md-12"/>
+
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpOwner}"/></label>
                     <person:EmployeeButtonSelector ui:field="ipOwner"
@@ -25,31 +21,22 @@
                                                    defaultValue="{lang.selectReservedIpOwner}"
                                                    firedEmployeesVisible="true"/>
                 </div>
-            </div>
-            <div class="row">
+
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpReserveDate}"/></label>
                     <range:RangePicker ui:field="reserveDate" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
                 </div>
-            </div>
-            <div class="row">
+
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpReleaseDate}"/></label>
                     <range:RangePicker ui:field="releaseDate" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
                 </div>
-            </div>
-            <div class="row">
+
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpCheckDate}"/></label>
                     <range:RangePicker ui:field="lastActiveDate" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
                 </div>
-            </div>
-            <div class="row">
-                <div class="form-group col-md-12">
-                    <g:CheckBox ui:field="onlyLocal" styleName="checkbox" text="{lang.reservedIpOnlyLocal}"/>
-                </div>
-            </div>
-            <div class="row">
+
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">

@@ -37,8 +37,6 @@ public class ReservedIp extends AuditableObject {
 
     @JdbcJoinedObject(localColumn = "owner_id")
     private Person owner;
-/*    @JdbcJoinedObject(localColumn = "contractor_id")
-    private Person contractor;*/
 
     @JdbcColumn(name="ip_address")
     private String ipAddress;

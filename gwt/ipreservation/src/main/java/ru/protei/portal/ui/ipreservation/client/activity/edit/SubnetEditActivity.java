@@ -1,8 +1,7 @@
 package ru.protei.portal.ui.ipreservation.client.activity.edit;
 
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -13,9 +12,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
-
-import java.util.function.Consumer;
 
 /**
  * Активность карточки создания и редактирования подсети
@@ -28,53 +24,40 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     }
 
     @Event
-    public void onInitDetails(AppEvents.InitDetails event) {
-        this.initDetails = event;
-    }
-
-    @Event
-    public void onShow (IpReservationEvents.CreateSubnet event) {
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
-
-        subnet = new Subnet();
-        resetView();
-    }
-
-    @Event
     public void onShow (IpReservationEvents.EditSubnet event) {
-        if (!hasPrivileges(event.subnetId)) {
-            fireEvent(new ForbiddenEvents.Show());
-            return;
-        }
+        event.parent.clear();
+        event.parent.add(view.asWidget());
 
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
+        this.subnet = event.subnet;
 
-        if (event.subnetId == null) {
-            subnet = new Subnet();
-            resetView();
-        } else {
-            resetView();
-            requestSubnet(event.subnetId, this::fillView);
-        }
+        fillView();
     }
 
     @Override
     public void onSaveClicked() {
+        if (isNew() && !policyService.hasPrivilegeFor( En_Privilege.SUBNET_CREATE) ) {
+            return;
+        }
+
+        if (!isNew() && !policyService.hasPrivilegeFor( En_Privilege.SUBNET_EDIT ) ) {
+            return;
+        }
+
         if (!validateView()) {
             return;
         }
 
-        fillSubnet(subnet);
+        fillSubnet();
 
         view.saveEnabled().setEnabled(false);
 
         ipReservationService.saveSubnet(subnet, new FluentCallback<Subnet>()
                 .withError(throwable -> {
+                    view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(aVoid -> {
+                    view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IpReservationEvents.CloseEdit());
                     fireEvent(new IpReservationEvents.ChangedSubnet(subnet, true));
@@ -84,14 +67,14 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new IpReservationEvents.CloseEdit());
     }
 
     private boolean isNew() {
-        return subnet.getId() == null;
+        return subnet == null || subnet.getId() == null;
     }
 
-    private void requestSubnet(Long subnetId, Consumer<Subnet> successAction) {
+/*    private void requestSubnet(Long subnetId, Consumer<Subnet> successAction) {
         ipReservationService.getSubnet( subnetId, new RequestCallback<Subnet>() {
             @Override
             public void onError(Throwable throwable) {}
@@ -102,30 +85,33 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
                 successAction.accept(subnet);
             }
         });
-    }
+    }*/
 
     private void resetView () {
         view.address().setValue("");
         view.mask().setValue("");
         view.comment().setText("");
-        view.local().setValue(true);
 
         view.saveVisibility().setVisible( hasPrivileges(subnet == null ? null : subnet.getId()) );
         view.saveEnabled().setEnabled(true);
     }
 
-    private void fillView(Subnet subnet) {
+    private void fillView() {
+        if (subnet == null) {
+            subnet = new Subnet();
+        }
         view.address().setValue(subnet.getAddress());
         view.mask().setValue(subnet.getMask());
         view.comment().setText(subnet.getComment());
-        view.local().setValue(subnet.isLocal());
+
+        view.addressEnabled().setEnabled(subnet.getId() == null);
+        view.maskEnabled().setEnabled(subnet.getId() == null);
     }
 
-    private Subnet fillSubnet(Subnet subnet) {
+    private Subnet fillSubnet() {
         subnet.setAddress(view.address().getValue());
         subnet.setMask(view.mask().getValue());
         subnet.setComment(view.comment().getText());
-        subnet.setLocal(view.local().getValue());
         return subnet;
     }
 
@@ -165,6 +151,4 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     PolicyService policyService;
 
     private Subnet subnet;
-
-    private AppEvents.InitDetails initDetails;
 }

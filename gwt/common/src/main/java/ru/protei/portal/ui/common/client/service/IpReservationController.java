@@ -4,7 +4,10 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -23,7 +26,7 @@ public interface IpReservationController extends RemoteService {
 
     Subnet saveSubnet(Subnet subnet) throws RequestFailedException;
 
-/*    List<SubnetShortView> getSubnetViewList(ReservedIpQuery query) throws RequestFailedException;*/
+    List<SubnetOption> getSubnetsOptionList(ReservedIpQuery query) throws RequestFailedException;
 
     boolean isSubnetUnique(String address, Long exceptId) throws RequestFailedException;
 

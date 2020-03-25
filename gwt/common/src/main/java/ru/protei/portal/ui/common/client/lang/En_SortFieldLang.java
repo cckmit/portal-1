@@ -44,6 +44,8 @@ public class En_SortFieldLang {
                 return lang.birthday();
             case employee_ip:
                 return lang.employeeIPAddress();
+            case address:
+                return lang.reservedIpSubnetAddress();
             case ip_address:
                 return lang.reservedIpAddress();
             case check_date:

@@ -12,12 +12,13 @@ public interface AbstractSubnetEditView extends IsWidget {
 
     HasValue<String> address();
     HasValue<String> mask();
-    HasValue<Boolean> local();
     HasText comment();
 
     HasValidable addressValidator();
     HasValidable maskValidator();
 
+    HasEnabled maskEnabled ();
+    HasEnabled addressEnabled ();
     HasEnabled saveEnabled();
 
     HasVisibility saveVisibility();
