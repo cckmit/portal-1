@@ -15,13 +15,14 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.widget.sla.items.SlaRowItem;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SlaInput extends Composite implements HasValue<List<ProjectSla>> {
+public class SlaInput extends Composite implements HasValue<List<ProjectSla>>, HasValidable {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -54,6 +55,18 @@ public class SlaInput extends Composite implements HasValue<List<ProjectSla>> {
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ProjectSla>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public void setValid(boolean isValid) {
+        for (SlaRowItem item : importanceToItemMap.values()) {
+            item.setValid(isValid);
+        }
+    }
+
+    @Override
+    public boolean isValid() {
+        return importanceToItemMap.values().stream().allMatch(SlaRowItem::isValid);
     }
 
     public void setEnsureDebugId(String debugId) {

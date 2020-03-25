@@ -15,8 +15,9 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
-public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
+public class SlaRowItem extends Composite implements HasValue<ProjectSla>, HasValidable {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -54,6 +55,30 @@ public class SlaRowItem extends Composite implements HasValue<ProjectSla> {
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ProjectSla> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public void setValid(boolean isValid) {
+        reactionTime.setValid(isValid);
+        temporarySolutionTime.setValid(isValid);
+        fullSolutionTime.setValid(isValid);
+    }
+
+    @Override
+    public boolean isValid() {
+        if (!reactionTime.isValid()) {
+            return false;
+        }
+
+        if (!temporarySolutionTime.isValid()) {
+            return false;
+        }
+
+        if (!fullSolutionTime.isValid()) {
+            return false;
+        }
+
+        return true;
     }
 
     public void setImportance(En_ImportanceLevel importance) {

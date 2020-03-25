@@ -57,6 +57,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     HasValue<List<ProjectSla>> slaInput();
 
+    HasValidable slaValidator();
+
     void updateProductDirection(Long directionId);
 
     void setDateValid(boolean valid);
