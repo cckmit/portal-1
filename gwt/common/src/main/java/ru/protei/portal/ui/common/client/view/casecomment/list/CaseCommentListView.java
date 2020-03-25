@@ -15,6 +15,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
@@ -30,6 +31,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.privacytype.PrivacyTypeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
@@ -253,8 +255,37 @@ public class CaseCommentListView
     }
 
     @Override
-    public HasValue<Boolean> privateComment() {
-        return privateComment;
+    public void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType) {
+        this.extendedPrivacyType = extendedPrivacyType;
+        if (extendedPrivacyType) {
+            privateComment.addStyleName("hide");
+
+            privacyType.removeStyleName("hide");
+            privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
+        } else {
+            privateComment.removeStyleName("hide");
+            privateComment.setValue(false);
+
+            privacyType.addStyleName("hide");
+        }
+    }
+
+    @Override
+    public void setPrivacyType(En_CaseCommentPrivacyType privacyType) {
+        if (extendedPrivacyType) {
+            this.privacyType.setValue(privacyType);
+        } else {
+            privateComment.setValue(privacyType == En_CaseCommentPrivacyType.PRIVATE);
+        }
+    }
+
+    @Override
+    public En_CaseCommentPrivacyType getPrivacyTypeComment() {
+        if (extendedPrivacyType) {
+            return privacyType.getValue();
+        } else {
+            return privateComment.getValue() ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
+        }
     }
 
     private void ensureDebugIds() {
@@ -280,6 +311,9 @@ public class CaseCommentListView
     FlowPanel commentsContainer;
     @UiField
     CheckBox privateComment;
+    @Inject
+    @UiField(provided = true)
+    PrivacyTypeButtonSelector privacyType;
     @UiField
     Button send;
     @Inject
@@ -322,6 +356,7 @@ public class CaseCommentListView
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
     private AbstractCaseCommentListActivity activity;
+    private boolean extendedPrivacyType;
 
     private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);
     interface CaseCommentListUiBinder extends UiBinder<HTMLPanel, CaseCommentListView> {}

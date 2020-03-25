@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -48,11 +49,15 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     HasVisibility getPrivacyVisibility();
 
-    HasValue<Boolean> privateComment();
-
     void setMarkupLabel(String label, String link);
 
     boolean isDisplayPreview();
 
     void setTimeElapsedVisibility(boolean visible);
+
+    void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType);
+
+    En_CaseCommentPrivacyType getPrivacyTypeComment();
+
+    void setPrivacyType(En_CaseCommentPrivacyType privacyType);
 }

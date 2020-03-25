@@ -93,6 +93,11 @@
   border-radius: 4px;
   min-height: 20px;
 
+  &.private-customer-message {
+    background-color: #fef5ee;
+    border-color: #f9edbb;
+  }
+
   &.private-message {
     background-color: #fef6dd;
     border-color: #f9d35b;

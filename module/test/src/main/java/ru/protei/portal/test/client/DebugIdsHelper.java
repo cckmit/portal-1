@@ -152,4 +152,18 @@ public class DebugIdsHelper {
             return DebugIds.PRODUCT_TYPES_BUTTON.DEFAULT + id;
         }
     }
+    public static final class PRIVACY_TYPE {
+        public static String byOrdinal(int ordinal) {
+            if (ordinal == 0) {
+                return DebugIds.PRIVACY_TYPE_BUTTON.PUBLIC;
+            }
+            if (ordinal == 1) {
+                return DebugIds.PRIVACY_TYPE_BUTTON.PRIVATE_CUSTOMER;
+            }
+            if (ordinal == 2) {
+                return DebugIds.PRIVACY_TYPE_BUTTON.PRIVATE;
+            }
+            return DebugIds.PRIVACY_TYPE_BUTTON.DEFAULT + ordinal;
+        }
+    }
 }

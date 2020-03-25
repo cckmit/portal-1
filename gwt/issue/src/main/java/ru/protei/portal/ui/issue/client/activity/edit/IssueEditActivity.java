@@ -275,7 +275,12 @@ public abstract class IssueEditActivity implements
                 .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
                 .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
                 .withPrivateCase( issue.isPrivateCase() )
-                .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
+                .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) )
+                .withExtendedPrivacyType( selectExtendedPrivacyType( issue ) ) );
+    }
+
+    private boolean selectExtendedPrivacyType(CaseObject issue) {
+        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType());
     }
 
     private void reloadComments() {

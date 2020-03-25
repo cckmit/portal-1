@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseCommentPrivateType;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -84,7 +84,7 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name = "private_type")
     @JdbcEnumerated
-    private En_CaseCommentPrivateType privateType;
+    private En_CaseCommentPrivacyType privateType;
 
     // not db column
     private Date updated;
@@ -278,12 +278,12 @@ public class CaseComment extends AuditableObject {
     }
 
     public boolean isPrivateComment() {
-        return privateType == En_CaseCommentPrivateType.PRIVATE;
+        return privateType == En_CaseCommentPrivacyType.PRIVATE;
     }
 
     public void setPrivateComment(boolean privateComment) {
         this.privateComment = privateComment;
-        this.privateType = privateComment ? En_CaseCommentPrivateType.PRIVATE : En_CaseCommentPrivateType.PUBLIC;
+        this.privateType = privateComment ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
     }
 
     public Date getUpdated() {
@@ -302,14 +302,14 @@ public class CaseComment extends AuditableObject {
         this.deleted = deleted;
     }
 
-    public En_CaseCommentPrivateType getPrivateType() {
+    public En_CaseCommentPrivacyType getPrivateType() {
         return privateType;
     }
 
-    public void setPrivateType(En_CaseCommentPrivateType privateType) {
+    public void setPrivateType(En_CaseCommentPrivacyType privateType) {
         this.privateType = privateType;
+        this.privateComment = privateType == En_CaseCommentPrivacyType.PRIVATE;
     }
-
 
     @Override
     public String getAuditType() {

@@ -107,7 +107,7 @@ public abstract class CaseCommentListActivity
             view.setMarkupLabel(lang.textJiraWikiMarkupSupport(), configStorage.getConfigData().markupHelpLinkJiraMarkup);
         }
 
-        view.privateComment().setValue(false);
+        view.setExtendedPrivacyTypeAndResetSelector(event.extendedPrivacyType);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
         reloadComments();
@@ -356,7 +356,7 @@ public abstract class CaseCommentListActivity
         itemView.clearElapsedTime();
         fillTimeElapsed(value, itemView);
         if (isPrivateVisible) {
-            itemView.setPrivacyFlag(value.isPrivateComment());
+            itemView.setPrivacyType(value.getPrivateType());
         }
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
@@ -526,7 +526,8 @@ public abstract class CaseCommentListActivity
         comment.setText(view.message().getValue());
         comment.setTimeElapsed(view.timeElapsed().getTime());
         comment.setTimeElapsedType(elapsedType != null ? elapsedType : En_TimeElapsedType.NONE);
-        comment.setPrivateComment(isPrivateCase || view.privateComment().getValue());
+
+        comment.setPrivateType(isPrivateCase ? En_CaseCommentPrivacyType.PRIVATE : view.getPrivacyTypeComment());
         comment.setCaseAttachments(tempAttachments.stream()
                 .map(a -> new CaseAttachment(caseId, a.getId(), commentId))
                 .collect(Collectors.toList())

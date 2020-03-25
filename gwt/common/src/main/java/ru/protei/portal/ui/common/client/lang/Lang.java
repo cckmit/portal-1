@@ -371,6 +371,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cosmeticImportance();
 
+    String privacyTypePublic();
+
+    String privacyTypePrivateCustomers();
+
+    String privacyTypePrivate();
+
     String comments();
 
     String product();

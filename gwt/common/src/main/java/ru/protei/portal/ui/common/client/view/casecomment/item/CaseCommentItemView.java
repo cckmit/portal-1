@@ -12,10 +12,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
@@ -209,10 +209,15 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setPrivacyFlag(Boolean value) {
-        if ( value ) {
-            messageContainer.addClassName("private-message");
-            privateComment.setClassName("fa m-l-10 fa-lock text-danger");
+    public void setPrivacyType(En_CaseCommentPrivacyType value) {
+        switch (value) {
+            case PRIVATE:
+                messageContainer.addClassName("private-message");
+                privateType.setClassName("fa m-l-10 fa-lock text-danger");
+                break;
+            case PRIVATE_CUSTOMERS:
+                messageContainer.addClassName("private-customer-message");
+                privateType.setClassName("fa m-l-10 fa-lock text-warning");
         }
     }
 
@@ -258,7 +263,7 @@ public class CaseCommentItemView
     }
 
     private void setTestAttributes() {
-        privateComment.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.PRIVACY_ICON);
+        privateType.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.PRIVACY_ICON);
         reply.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.REPLY_BUTTON);
         edit.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.EDIT_BUTTON);
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CASE_COMMENT.COMMENT_ITEM.REMOVE_BUTTON);
@@ -275,7 +280,7 @@ public class CaseCommentItemView
     @UiField
     HTMLPanel message;
     @UiField
-    Element privateComment;
+    Element privateType;
     @UiField
     Anchor remove;
     @UiField

@@ -189,6 +189,13 @@ public class DebugIds {
         String COSMETIC = "importance-button-cosmetic";
     }
 
+    public interface PRIVACY_TYPE_BUTTON {
+        String DEFAULT = "privacy-type-button-";
+        String PUBLIC = "privacy-type-button-public";
+        String PRIVATE_CUSTOMER = "privacy-type-button-private-customer";
+        String PRIVATE = "privacy-type-button-private";
+    }
+
     public interface PRODUCT_TYPES_BUTTON {
         String DEFAULT = "product-types-button-";
         String COMPONENT = "product-types-button-component";

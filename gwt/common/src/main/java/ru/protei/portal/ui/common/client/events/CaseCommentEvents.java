@@ -3,9 +3,6 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.ent.CaseComment;
-
-import java.util.function.Consumer;
 
 public class CaseCommentEvents {
 
@@ -48,6 +45,10 @@ public class CaseCommentEvents {
             this.textMarkup = textMarkup;
             return this;
         }
+        public Show withExtendedPrivacyType(boolean b) {
+            this.extendedPrivacyType = b;
+            return this;
+        }
 
         public HasWidgets parent;
         public En_CaseType caseType;
@@ -57,6 +58,7 @@ public class CaseCommentEvents {
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
+        public boolean extendedPrivacyType = false;
     }
 
     /**
