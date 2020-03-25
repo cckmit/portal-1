@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -122,11 +123,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onTimeElapsedChanged() {
         meta.setTimeElapsed(metaView.getTimeElapsed());
         onCaseMetaChanged( meta );
-    }
-
-    @Override
-    public void onJiraInfoClicked() {
-        fireEvent(new JiraInfoEvents.Show());
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
@@ -332,6 +328,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setProduct( meta.getProduct() );
         metaView.setManager( meta.getManager() );
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
+        metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {

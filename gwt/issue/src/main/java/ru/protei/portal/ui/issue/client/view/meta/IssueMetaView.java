@@ -308,6 +308,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         return timeElapsedType;
     }
 
+    @Override
+    public void setJiraInfoLink(String link) {
+        jiraSlaSelector.setJiraInfoLink(link);
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
@@ -419,11 +424,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiHandler("jiraSlaSelector")
     public void onJiraSlaChanged(ValueChangeEvent<CaseObjectMetaJira> event) {
         activity.onCaseMetaJiraChanged();
-    }
-
-    @UiHandler("jiraSlaSelector")
-    public void onJiraInfoClicked(ClickEvent event) {
-        activity.onJiraInfoClicked();
     }
 
     @UiField

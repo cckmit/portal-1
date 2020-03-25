@@ -6,7 +6,7 @@
 
     <g:HTMLPanel styleName="jira-sla-selector">
         <label class="jira-sla-selector-header">Jira</label>
-        <g:Anchor ui:field="jiraInfoLink" styleName="far fa-xs fa-question-circle" href="#"/>
+        <g:Anchor ui:field="jiraInfoLink" styleName="far fa-xs fa-question-circle" href="#" target="_blank"/>
         <div class="form-group-attached">
             <div class="row">
                 <div class="col-md-6">

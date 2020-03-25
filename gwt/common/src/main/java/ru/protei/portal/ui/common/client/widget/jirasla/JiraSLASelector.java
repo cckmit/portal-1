@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JiraSLASelector extends Composite implements HasValue<CaseObjectMetaJira>, HasVisibility, HasEnabled, HasClickHandlers {
+public class JiraSLASelector extends Composite implements HasValue<CaseObjectMetaJira>, HasVisibility, HasEnabled {
 
     @Inject
     public void init() {
@@ -73,11 +73,6 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @Override
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return addHandler(handler, ClickEvent.getType());
-    }
-
     @UiHandler("severity")
     public void severityChanged(ValueChangeEvent<String> event) {
         fillValueFromView();
@@ -85,10 +80,8 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
         fireChanged();
     }
 
-    @UiHandler("jiraInfoLink")
-    public void onJiraInfoClick(ClickEvent event) {
-        event.preventDefault();
-        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
+    public void setJiraInfoLink(String link) {
+        jiraInfoLink.setHref(link);
     }
 
     private void fireChanged() {
