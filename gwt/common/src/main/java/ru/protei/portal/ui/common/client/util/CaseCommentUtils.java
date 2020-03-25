@@ -73,10 +73,9 @@ public class CaseCommentUtils {
     }
 
     public static String makeImageString(Attachment attach) {
-        return ("![alt=" +  attach.getFileName() +"]("+ DOWNLOAD_PATH + attach.getExtLink() +")");
+        return ("![alt=" +  attach.getFileName() +"]("+ attach.getExtLink() +")");
     }
 
     private static final long EDIT_PERIOD = 300000;
     private final static String NEW_LINE_SYMBOL = "\n";
-    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 }
