@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivateType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -80,6 +81,10 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name = "private_flag")
     private boolean privateComment;
+
+    @JdbcColumn(name = "private_type")
+    @JdbcEnumerated
+    private En_CaseCommentPrivateType privateType;
 
     // not db column
     private Date updated;
@@ -273,11 +278,12 @@ public class CaseComment extends AuditableObject {
     }
 
     public boolean isPrivateComment() {
-        return privateComment;
+        return privateType == En_CaseCommentPrivateType.PRIVATE;
     }
 
     public void setPrivateComment(boolean privateComment) {
         this.privateComment = privateComment;
+        this.privateType = privateComment ? En_CaseCommentPrivateType.PRIVATE : En_CaseCommentPrivateType.PUBLIC;
     }
 
     public Date getUpdated() {
@@ -295,6 +301,15 @@ public class CaseComment extends AuditableObject {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
+    public En_CaseCommentPrivateType getPrivateType() {
+        return privateType;
+    }
+
+    public void setPrivateType(En_CaseCommentPrivateType privateType) {
+        this.privateType = privateType;
+    }
+
 
     @Override
     public String getAuditType() {
@@ -339,6 +354,7 @@ public class CaseComment extends AuditableObject {
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 ", privateComment=" + privateComment +
+                ", privateType=" + privateType +
                 ", updated=" + updated +
                 ", deleted=" + deleted +
                 '}';
