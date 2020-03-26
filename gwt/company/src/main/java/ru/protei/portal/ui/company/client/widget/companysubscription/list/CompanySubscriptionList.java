@@ -70,8 +70,6 @@ public class CompanySubscriptionList
             }
         });
 
-
-
         makeFirstGroup();
         makeOtherGroups();
 
@@ -201,7 +199,7 @@ public class CompanySubscriptionList
     Lang lang;
 
     private List<CompanySubscriptionGroup> widgetGroupsList = new ArrayList<>();
-    private Map<Integer,Pair<Pair<Long, Long>, List<CompanySubscription>>> groupsMap = new HashMap<>();
+    private Map<Integer, Pair<Pair<Long, Long>, List<CompanySubscription>>> groupsMap = new HashMap<>();
     private Long companyId;
 
     interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, CompanySubscriptionList> {}

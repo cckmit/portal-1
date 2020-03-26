@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
@@ -211,13 +210,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         companyService.getCompanyWithParentCompanySubscriptions(
                 selectedCompanyId,
                 new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                subscriptions,
-                                CollectionUtils.isEmpty(subscriptions) ?
-                                        lang.issueCompanySubscriptionNotDefined() :
-                                        lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                )
-                        ))
+                        .setOnSuccess(subscriptions -> {
+                            subscriptions = filterByPlatformAndProduct(subscriptions);
+                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    CollectionUtils.isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            );
+                        })
         );
 
         companyService.getCompanyCaseStates(
@@ -305,13 +307,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         companyService.getCompanyWithParentCompanySubscriptions(
                 meta.getInitiatorCompanyId(),
                 new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                subscriptions,
-                                CollectionUtils.isEmpty(subscriptions) ?
-                                        lang.issueCompanySubscriptionNotDefined() :
-                                        lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                )
-                        ))
+                        .setOnSuccess(subscriptions -> {
+                            subscriptions = filterByPlatformAndProduct(subscriptions);
+                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    CollectionUtils.isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            );
+                        })
         );
 
         companyService.getCompanyCaseStates(
@@ -351,17 +356,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
-        this.subscriptionsList = subscriptionsList;
         this.subscriptionsListEmptyMessage = emptyMessage;
 
         if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
 
-        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = subscriptionsList.stream()
-                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(meta.getProductId(), companySubscription.getProductId()))
-                        && (companySubscription.getPlatformId() == null || Objects.equals(meta.getPlatformId(), companySubscription.getPlatformId())))
-                .collect( Collectors.toList());
-
-        List<String> subscriptionsBasedOnPrivacyList = subscriptionsBasedOnPlatformAndProduct.stream()
+        List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail))
                 .distinct()
@@ -370,6 +369,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
                 ? subscriptionsListEmptyMessage
                 : String.join(", ", subscriptionsBasedOnPrivacyList);
+    }
+
+    private List<CompanySubscription> filterByPlatformAndProduct(List<CompanySubscription> subscriptionsList) {
+        this.subscriptionsList = subscriptionsList;
+
+        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsList;
+
+        return subscriptionsList.stream()
+                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(meta.getProductId(), companySubscription.getProductId()))
+                        && (companySubscription.getPlatformId() == null || Objects.equals(meta.getPlatformId(), companySubscription.getPlatformId())))
+                .collect( Collectors.toList());
     }
 
     private boolean isCompanyChangeAllowed(boolean isPrivateCase) {
