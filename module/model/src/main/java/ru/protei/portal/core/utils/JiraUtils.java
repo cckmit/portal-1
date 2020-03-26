@@ -36,4 +36,7 @@ public class JiraUtils {
             this.projectId = projectId;
         }
     }
+
+    public static final String PROJECT_CUSTOMER_ROLE = "Project Customer Role";
+    public static final String PROJECT_SUPPORT_ROLE = "Project Support Role";
 }

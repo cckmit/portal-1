@@ -106,7 +106,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     private Comment convertComment (CaseComment ourComment, Person initiator) {
         String body = TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText();
         return (ourComment.getPrivateType() == En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS) ?
-                Comment.createWithRoleLevel(body, "Project Support Role")
+                Comment.createWithRoleLevel(body, JiraUtils.PROJECT_SUPPORT_ROLE)
                 : Comment.valueOf(body);
     }
 

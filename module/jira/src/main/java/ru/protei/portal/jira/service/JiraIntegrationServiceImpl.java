@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.utils.EntityCache;
+import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.mapper.CachedPersonMapper;
@@ -424,7 +425,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private En_CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
-
         En_CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(statusMapId, issueStatusName);
         if (state == null){
             logger.error("unable to map jira-status " + issueStatusName + " to portal case-state");
@@ -533,8 +533,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private static En_CaseCommentPrivacyType makePrivacyType(Comment comment) {
-        if (comment.getVisibility() != null &&
-                (comment.getVisibility().getType() == ROLE && !comment.getVisibility().getValue().equals("Project Customer Role"))) {
+        Visibility visibility = comment.getVisibility();
+        if (visibility != null &&
+                (visibility.getType() == ROLE && !visibility.getValue().equals(JiraUtils.PROJECT_CUSTOMER_ROLE))) {
             return En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS;
         }
         return En_CaseCommentPrivacyType.PUBLIC;
