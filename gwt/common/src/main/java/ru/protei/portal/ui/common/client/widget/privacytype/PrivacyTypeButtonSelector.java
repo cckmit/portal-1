@@ -21,7 +21,7 @@ public class PrivacyTypeButtonSelector extends ToggleBtnGroup<En_CaseCommentPriv
                     "btn btn-default no-border",
                     privacyTypeLang.getName(value),
                     value);
-            setEnsureDebugId(value, DebugIdsHelper.PRIVACY_TYPE.byOrdinal(value.ordinal()));
+            setEnsureDebugId(value, DebugIdsHelper.PRIVACY_TYPE.byId(value.getId()));
         }
     }
     @Inject

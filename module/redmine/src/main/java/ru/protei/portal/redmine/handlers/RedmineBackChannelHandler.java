@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -49,6 +50,12 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
              * А вообще такого быть не должно, здесь должна быть ТОЛЬКО отправка
              * сообщения удаленной стороне
              **/
+
+            String extAppId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
+            if (extAppId == null) {
+                logger.debug("case {} has no ext-app-id", caseId);
+                return;
+            }
 
             commonService.getExternalCaseAppData(caseId)
                     .flatMap(this::findEndpointAndIssueId)
@@ -165,6 +172,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     private CommonService commonService;
     @Autowired
     private PortalConfig portalConfig;
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
 
     private static class EndpointAndIssueId {
         public RedmineEndpoint endpoint;

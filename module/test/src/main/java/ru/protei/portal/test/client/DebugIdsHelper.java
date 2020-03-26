@@ -153,17 +153,17 @@ public class DebugIdsHelper {
         }
     }
     public static final class PRIVACY_TYPE {
-        public static String byOrdinal(int ordinal) {
-            if (ordinal == 0) {
+        public static String byId(int id) {
+            if (id == 0) {
                 return DebugIds.PRIVACY_TYPE_BUTTON.PUBLIC;
             }
-            if (ordinal == 1) {
+            if (id == 1) {
                 return DebugIds.PRIVACY_TYPE_BUTTON.PRIVATE_CUSTOMER;
             }
-            if (ordinal == 2) {
+            if (id == 2) {
                 return DebugIds.PRIVACY_TYPE_BUTTON.PRIVATE;
             }
-            return DebugIds.PRIVACY_TYPE_BUTTON.DEFAULT + ordinal;
+            return DebugIds.PRIVACY_TYPE_BUTTON.DEFAULT + id;
         }
     }
 }
