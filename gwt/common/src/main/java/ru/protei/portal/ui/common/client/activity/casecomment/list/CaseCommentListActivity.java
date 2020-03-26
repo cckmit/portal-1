@@ -356,7 +356,7 @@ public abstract class CaseCommentListActivity
         itemView.clearElapsedTime();
         fillTimeElapsed(value, itemView);
         if (isPrivateVisible) {
-            itemView.setPrivacyType(value.getPrivateType());
+            itemView.setPrivacyType(value.getPrivacyType());
         }
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
@@ -527,7 +527,7 @@ public abstract class CaseCommentListActivity
         comment.setTimeElapsed(view.timeElapsed().getTime());
         comment.setTimeElapsedType(elapsedType != null ? elapsedType : En_TimeElapsedType.NONE);
 
-        comment.setPrivateType(isPrivateCase ? En_CaseCommentPrivacyType.PRIVATE : view.getPrivacyTypeComment());
+        comment.setPrivacyType(isPrivateCase ? En_CaseCommentPrivacyType.PRIVATE : view.getPrivacyTypeComment());
         comment.setCaseAttachments(tempAttachments.stream()
                 .map(a -> new CaseAttachment(caseId, a.getId(), commentId))
                 .collect(Collectors.toList())

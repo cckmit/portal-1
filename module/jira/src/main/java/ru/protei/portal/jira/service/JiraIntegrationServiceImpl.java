@@ -420,7 +420,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
         our.setText(comment.getBody());
-        our.setPrivateType(makePrivacyType(comment));
+        our.setPrivacyType(makePrivacyType(comment));
         return our;
     }
 

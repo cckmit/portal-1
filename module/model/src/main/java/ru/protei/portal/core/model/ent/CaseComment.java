@@ -82,9 +82,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "private_flag")
     private boolean privateComment;
 
-    @JdbcColumn(name = "private_type")
+    @JdbcColumn(name = "privacy_type")
     @JdbcEnumerated
-    private En_CaseCommentPrivacyType privateType;
+    private En_CaseCommentPrivacyType privacyType;
 
     // not db column
     private Date updated;
@@ -278,12 +278,12 @@ public class CaseComment extends AuditableObject {
     }
 
     public boolean isPrivateComment() {
-        return privateType == En_CaseCommentPrivacyType.PRIVATE;
+        return privacyType == En_CaseCommentPrivacyType.PRIVATE;
     }
 
     public void setPrivateComment(boolean privateComment) {
         this.privateComment = privateComment;
-        this.privateType = privateComment ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
+        this.privacyType = privateComment ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
     }
 
     public Date getUpdated() {
@@ -302,13 +302,13 @@ public class CaseComment extends AuditableObject {
         this.deleted = deleted;
     }
 
-    public En_CaseCommentPrivacyType getPrivateType() {
-        return privateType;
+    public En_CaseCommentPrivacyType getPrivacyType() {
+        return privacyType;
     }
 
-    public void setPrivateType(En_CaseCommentPrivacyType privateType) {
-        this.privateType = privateType;
-        this.privateComment = privateType == En_CaseCommentPrivacyType.PRIVATE;
+    public void setPrivacyType(En_CaseCommentPrivacyType privacyType) {
+        this.privacyType = privacyType;
+        this.privateComment = privacyType == En_CaseCommentPrivacyType.PRIVATE;
     }
 
     @Override
@@ -354,7 +354,7 @@ public class CaseComment extends AuditableObject {
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 ", privateComment=" + privateComment +
-                ", privateType=" + privateType +
+                ", privacyType=" + privacyType +
                 ", updated=" + updated +
                 ", deleted=" + deleted +
                 '}';

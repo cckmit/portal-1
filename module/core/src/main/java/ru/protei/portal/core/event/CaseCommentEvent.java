@@ -82,7 +82,7 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return "{" +
                 "id=" + caseComment.getId() +
                 ", caseId=" + caseComment.getCaseId() +
-                ", privateType=" + caseComment.getPrivateType() +
+                ", privacyType=" + caseComment.getPrivacyType() +
                 ", text length='" + StringUtils.length( caseComment.getText() ) + '\'' +
                 ", timeElapsedType=" + caseComment.getTimeElapsedType() +
                 ", timeElapsed=" + caseComment.getTimeElapsed() +
