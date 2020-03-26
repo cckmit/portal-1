@@ -14,6 +14,7 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.utils.JiraUtils;
@@ -103,7 +104,10 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     }
 
     private Comment convertComment (CaseComment ourComment, Person initiator) {
-        return Comment.valueOf(TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText());
+        String body = TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText();
+        return (ourComment.getPrivateType() == En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS) ?
+                Comment.createWithRoleLevel(body, "Project Support Role")
+                : Comment.valueOf(body);
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {

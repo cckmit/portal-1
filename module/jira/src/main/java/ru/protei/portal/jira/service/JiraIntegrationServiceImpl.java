@@ -39,6 +39,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import static com.atlassian.jira.rest.client.api.domain.Visibility.Type.ROLE;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -418,6 +419,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
         our.setText(comment.getBody());
+        our.setPrivateType(makePrivacyType(comment));
         return our;
     }
 
@@ -528,6 +530,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     private static User fromBasicUserInfo (BasicUser basicUser) {
         return new User(basicUser.getSelf(), basicUser.getDisplayName(), basicUser.getDisplayName(), null, true,
                 null, fakeAvatarURI_map, null);
+    }
+
+    private static En_CaseCommentPrivacyType makePrivacyType(Comment comment) {
+        if (comment.getVisibility() != null &&
+                (comment.getVisibility().getType() == ROLE && !comment.getVisibility().getValue().equals("Project Customer Role"))) {
+            return En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS;
+        }
+        return En_CaseCommentPrivacyType.PUBLIC;
     }
 
     private static String makeExternalIssueID (Long endpointId, Issue issue) {
