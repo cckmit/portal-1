@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
@@ -81,12 +82,12 @@ public interface IpReservationService {
     /**
      * Резервирование IP-адресов
      * @param token
-     * @param reservedIp
+     * @param reservedIpRequest
      * @return
      */
     @Privileged(En_Privilege.RESERVED_IP_CREATE)
     @Auditable(En_AuditType.RESERVED_IP_CREATE)
-    Result<List<ReservedIp>> createReservedIp(AuthToken token, ReservedIp reservedIp);
+    Result<List<ReservedIp>> createReservedIp(AuthToken token, ReservedIpRequest reservedIpRequest);
 
     /**
      * Редактирование параметров зарезервированного IP-адреса

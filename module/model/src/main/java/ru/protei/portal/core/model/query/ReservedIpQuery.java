@@ -18,8 +18,6 @@ public class ReservedIpQuery extends BaseQuery {
 
     private List<Long> subnetIds;
 
-    private Boolean onlyLocal;
-
     private Date reservedFrom;
 
     private Date reservedTo;
@@ -27,6 +25,10 @@ public class ReservedIpQuery extends BaseQuery {
     private Date releasedFrom;
 
     private Date releasedTo;
+
+    private Date activeFrom;
+
+    private Date activeTo;
 
     public ReservedIpQuery() {
         sortField = En_SortField.ip_address;
@@ -40,25 +42,19 @@ public class ReservedIpQuery extends BaseQuery {
 
     public ReservedIpQuery(Date reservedFrom, Date reservedTo,
                            Date releasedFrom, Date releasedTo,
+                           Date activeFrom, Date activeTo,
                            List<Long> ownerIds, List<Long> subnetIds,
-                           boolean onlyLocal, String searchString,
+                           String searchString,
                            En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         this.reservedFrom = reservedFrom;
         this.reservedTo = reservedTo;
         this.releasedFrom = releasedFrom;
         this.releasedTo = releasedTo;
-        this.onlyLocal = onlyLocal;
+        this.activeFrom = activeFrom;
+        this.activeTo = activeTo;
         this.ownerIds = ownerIds;
         this.subnetIds = subnetIds;
-    }
-
-    public Boolean getOnlyLocal() {
-        return onlyLocal;
-    }
-
-    public void setOnlyLocal(Boolean onlyLocal) {
-        this.onlyLocal = onlyLocal;
     }
 
     public Date getReservedFrom() {
@@ -91,6 +87,20 @@ public class ReservedIpQuery extends BaseQuery {
 
     public void setReleasedTo(Date releasedTo) {
         this.releasedTo = releasedTo;
+    }
+
+    public Date getActiveFrom() {
+        return activeFrom;
+    }
+
+    public void setActiveFrom(Date activeFrom) {
+        this.activeFrom = activeFrom;
+    }
+
+    public Date getActiveTo() { return activeTo; }
+
+    public void setActiveTo(Date activeTo) {
+        this.activeTo = activeTo;
     }
 
     public List<Long> getOwnerIds() {
@@ -130,26 +140,30 @@ public class ReservedIpQuery extends BaseQuery {
         this.subnetIds.add(subnetId);
     }*/
 
-    @Override
+/*    @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 CollectionUtils.isNotEmpty(ownerIds) ||
+                CollectionUtils.isNotEmpty(subnetIds) ||
                 reservedFrom != null ||
                 reservedTo != null ||
                 releasedFrom != null ||
-                releasedTo != null;
-    }
+                releasedTo != null ||
+                activeFrom != null ||
+                activeTo != null;
+    }*/
 
     @Override
     public String toString() {
         return "ReservedIpQuery{" +
                 "ownerIds=" + ownerIds +
                 ", subnetIds=" + subnetIds +
-                ", onlyLocal=" + onlyLocal +
                 ", reservedFrom=" + reservedFrom +
                 ", reservedTo=" + reservedTo +
                 ", releasedFrom=" + releasedFrom +
                 ", releasedTo=" + releasedTo +
+                ", activeFrom=" + activeFrom +
+                ", activeTo=" + activeTo +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

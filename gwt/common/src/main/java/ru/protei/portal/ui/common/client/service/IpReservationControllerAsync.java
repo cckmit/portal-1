@@ -1,12 +1,10 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.dto.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
-import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
-import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -34,7 +32,7 @@ public interface IpReservationControllerAsync {
 
     void getReservedIp(Long reservedIpId, AsyncCallback<ReservedIp> async);
 
-    void createReservedIp(ReservedIp reservedIp, AsyncCallback<List<ReservedIp>> async);
+    void createReservedIp(ReservedIpRequest reservedIpRequest, AsyncCallback<List<ReservedIp>> async);
 
     void updateReservedIp(ReservedIp reservedIp, AsyncCallback<ReservedIp> async);
 

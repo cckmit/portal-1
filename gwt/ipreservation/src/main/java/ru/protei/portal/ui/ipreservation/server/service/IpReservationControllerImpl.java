@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
@@ -130,16 +131,16 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public List<ReservedIp> createReservedIp( ReservedIp reservedIp ) throws RequestFailedException {
+    public List<ReservedIp> createReservedIp( ReservedIpRequest reservedIpRequest ) throws RequestFailedException {
 
-        log.info( "createReservedIp(): reservedIp={}", reservedIp );
+        log.info( "createReservedIp(): reservedIpRequest={}", reservedIpRequest );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        if ( reservedIp == null )
+        if ( reservedIpRequest == null )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
-        Result<List<ReservedIp>> response = ipReservationService.createReservedIp( token, reservedIp );
+        Result<List<ReservedIp>> response = ipReservationService.createReservedIp( token, reservedIpRequest );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );

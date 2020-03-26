@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
@@ -164,36 +165,58 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Override
     /* @todo задача резервирования долна выполняться в фоне? */
-    public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIp reservedIp) {
+    public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
         /*
            @todo если задан "конкретный IP"
                 - проверка IP по маске
                 - проверка уникальности IP
-                - arping IP
                 - создание
+                - проверка IP через NRPE
+                - update IP с ответом от NRPE
          */
-        if (!validateFields(reservedIp)) {
+        if (!validateFields(reservedIpRequest)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        ArrayList<ReservedIp> reservedIps = new ArrayList<>();
+
+        ReservedIp reservedIp = new ReservedIp();
         reservedIp.setCreated(new Date());
         reservedIp.setCreatorId(token.getPersonId());
-        Long reservedIpId = reservedIpDAO.persist(reservedIp);
+        reservedIp.setOwnerId(reservedIpRequest.getOwnerId());
+        reservedIp.setReserveDate(reservedIpRequest.getReserveDate());
+        reservedIp.setReleaseDate(reservedIpRequest.getReleaseDate());
+        reservedIp.setComment(reservedIpRequest.getComment());
 
-        if (reservedIpId == null)
-            return error(En_ResultStatus.NOT_CREATED);
+        if (reservedIpRequest.isExact()) {
+            reservedIp.setIpAddress(reservedIpRequest.getIpAddress());
+            reservedIp.setMacAddress(reservedIpRequest.getMacAddress());
+            //@todo number?
 
-        reservedIp.setId(reservedIpId);
-        ArrayList<ReservedIp> reservedIps = new ArrayList<>();
-        reservedIps.add(reservedIp);
+            Long reservedIpId = reservedIpDAO.persist(reservedIp);
 
-         /*
+            if (reservedIpId == null)
+                return error(En_ResultStatus.NOT_CREATED);
+
+            reservedIp.setId(reservedIpId);
+
+            /*
+               @todo запрос на NRPE,
+               ответ внести в reservedIp и merge в БД
+             */
+
+            reservedIps.add(reservedIp);
+        } else {
+                     /*
            @todo если задано "любая свободная подсеть"
                 - проверка валидности кол-ва на null и 0
-                - проверка подсетей на налчие требуемого кол-ва свободных IP
-                - пройти по всем подходящим подсетям, резервируя IP, попутно проверяя их через arping
+                - проверка подсетей на наличие требуемого кол-ва свободных IP
+                - пройти по всем подходящим подсетям, резервируя IP, попутно проверяя их через NRPE
          */
 
+
+
+        }
 
         return ok(reservedIps);
     }
@@ -257,8 +280,8 @@ public class IpReservationServiceImpl implements IpReservationService {
         return true;
     }
 
-    private boolean validateFields(ReservedIp reservedIp) {
-        if (reservedIp == null) {
+    private boolean validateFields(ReservedIpRequest reservedIpRequest) {
+        if (reservedIpRequest == null) {
             return false;
         }
 
@@ -269,17 +292,36 @@ public class IpReservationServiceImpl implements IpReservationService {
              - проверить дату освобождения на null, если пользователь неадмин
         */
 
-        if (reservedIp.getOwnerId() == null) {
+        if (reservedIpRequest.getOwnerId() == null) {
             return false;
         }
 
-        if (StringUtils.isBlank(reservedIp.getIpAddress())) {
+        if (StringUtils.isBlank(reservedIpRequest.getIpAddress())) {
             return false;
         }
 
         return true;
     }
 
+    private boolean validateFields(ReservedIp reservedIp) {
+        if (reservedIp == null) {
+            return false;
+        }
+
+        if (reservedIp.getOwnerId() == null) {
+            return false;
+        }
+
+        if (!StringUtils.isBlank(reservedIp.getIpAddress()) && isValidMacAdress(reservedIp.getMacAddress())) {
+            return false;
+        }
+
+        /* @todo
+             - проверить дату освобождения на null, если пользователь неадмин
+        */
+
+        return true;
+    }
 
     @Override
     public Result<Boolean> notifyOwnerAboutReleaseIp() {
@@ -304,6 +346,12 @@ public class IpReservationServiceImpl implements IpReservationService {
          */
         return ok(true );
     }
+
+
+    private boolean isValidMacAdress(String macAddress) {
+        return true;
+    }
+
 
     public static final int SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS = 3;
 

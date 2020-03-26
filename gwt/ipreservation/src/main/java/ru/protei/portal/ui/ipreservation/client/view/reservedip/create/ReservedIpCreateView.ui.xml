@@ -1,0 +1,54 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:subnet='urn:import:ru.protei.portal.ui.ipreservation.client.view.widget.selector'
+             xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
+        <div class="card-body">
+            <div class="row">
+
+                <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}" addStyleNames="form-group col-md-12"/>
+
+                <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.reservedIpIpAddress}"/>
+                    </label>
+                    <validablefield:ValidableTextBox ui:field="ipAddress" styleName="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.reservedIpMacAddress}"/>
+                    </label>
+                    <validablefield:ValidableTextBox ui:field="macAddress" styleName="form-control" />
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label>
+                    <ui:text from="{lang.reservedIpOwner}"/>
+                </label>
+                <person:EmployeeButtonSelector ui:field="ipOwner"
+                                               hasNullValue="false"
+                                               defaultValue="{lang.selectReservedIpOwner}"
+                                               firedEmployeesVisible="true"/>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label><ui:text from="{lang.comment}"/></label>
+                    <autoresizetextarea:AutoResizeTextArea ui:field="comment"
+                                                           styleName="form-control" minRows="2" maxRows="10"/>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="text-right">
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

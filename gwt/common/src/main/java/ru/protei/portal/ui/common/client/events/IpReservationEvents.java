@@ -9,6 +9,9 @@ import ru.protei.portal.core.model.ent.Subnet;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * События по резервированию IP
  */
@@ -46,11 +49,17 @@ public class IpReservationEvents {
     }
 
     public static class ChangedReservedIp {
-        public ChangedReservedIp(ReservedIp reservedIp, boolean needRefreshList) {
+/*        public ChangedReservedIp(ReservedIp reservedIp, boolean needRefreshList) {
             this.reservedIp = reservedIp;
             this.needRefreshList = needRefreshList;
+        }*/
+
+        public ChangedReservedIp(List<ReservedIp> reservedIps) {
+            this.reservedIpList = new ArrayList<>(reservedIps);
+            this.needRefreshList = true;
         }
 
+        public List<ReservedIp> reservedIpList;
         public ReservedIp reservedIp;
         public boolean needRefreshList = false;
     }
@@ -61,19 +70,6 @@ public class IpReservationEvents {
     @Url( value = "subnets", primary = true )
     public static class ShowSubnet  {
     }
-
-    /**
-     * Показать форму создания подсети
-     */
-/*    public static class CreateSubnet {
-        public CreateSubnet(HasWidgets parent) {
-            this.parent = parent;
-            this.subnetId = null;
-        }
-
-        public Long subnetId;
-        public HasWidgets parent;
-    }*/
 
     /**
      * Показать форму  редактирования подсети
