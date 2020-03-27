@@ -240,12 +240,16 @@ public class CaseCommentListView
     private HasVisibility privacyVisibility = new HasVisibility() {
         @Override
         public boolean isVisible() {
-            return privateComment.isVisible();
+            return extendedPrivacyType ? privacyType.isVisible() : privateComment.isVisible();
         }
 
         @Override
         public void setVisible( boolean b ) {
-            privateComment.setVisible( b );
+            if (extendedPrivacyType) {
+                privacyType.setVisible(b);
+            } else {
+                privateComment.setVisible(b);
+            }
         }
     };
 
@@ -267,15 +271,6 @@ public class CaseCommentListView
             privateComment.setValue(false);
 
             privacyType.addStyleName("hide");
-        }
-    }
-
-    @Override
-    public void setPrivacyType(En_CaseCommentPrivacyType privacyType) {
-        if (extendedPrivacyType) {
-            this.privacyType.setValue(privacyType);
-        } else {
-            privateComment.setValue(privacyType == En_CaseCommentPrivacyType.PRIVATE);
         }
     }
 
