@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -192,13 +193,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         companyService.getCompanyWithParentCompanySubscriptions(
                 companyOption.getId(),
                 new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                subscriptions,
-                                CollectionUtils.isEmpty(subscriptions) ?
-                                        lang.issueCompanySubscriptionNotDefined() :
-                                        lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                )
-                        ))
+                        .setOnSuccess(subscriptions -> {
+                            subscriptions = filterByPlatformAndProduct(subscriptions);
+                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    CollectionUtils.isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            );
+                        })
         );
 
         companyService.getCompanyCaseStates(companyOption.getId(), new ShortRequestCallback<List<CaseState>>()
@@ -229,7 +233,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPrivacyChanged() {
-        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
     @Override
@@ -381,20 +385,30 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
-        this.subscriptionsList = subscriptionsList;
         this.subscriptionsListEmptyMessage = emptyMessage;
 
-        if (CollectionUtils.isEmpty(subscriptionsList)) {
-            return emptyMessage;
-        }
+        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
 
         List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
-                .filter(mail -> !view.isPrivate().getValue() || CompanySubscription.isProteiRecipient(mail)).collect( Collectors.toList());
+                .filter(mail -> !view.isPrivate().getValue() || CompanySubscription.isProteiRecipient(mail))
+                .distinct()
+                .collect( Collectors.toList());
 
         return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
-                ? emptyMessage
+                ? subscriptionsListEmptyMessage
                 : String.join(", ", subscriptionsBasedOnPrivacyList);
+    }
+
+    private List<CompanySubscription> filterByPlatformAndProduct(List<CompanySubscription> subscriptionsList) {
+        this.subscriptionsList = subscriptionsList;
+
+        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsList;
+
+        return subscriptionsList.stream()
+                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(issueMetaView.getProduct() == null ? null : issueMetaView.getProduct().getId(), companySubscription.getProductId()))
+                        && (companySubscription.getPlatformId() == null || Objects.equals(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(), companySubscription.getPlatformId())))
+                .collect( Collectors.toList());
     }
 
     private String transliteration(String input) {

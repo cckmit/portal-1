@@ -51,9 +51,11 @@ public class CompanySubscriptionList
         clear();
         values = values == null ? new ArrayList<>() : values;
 
+        addEmptyFirstGroup();
+
         values.forEach(companySubscription -> {
             boolean isGroupExisted = false;
-            for (Pair<Pair<Long, Long>, List<CompanySubscription>> pair : groupsList) {
+            for (Pair<Pair<Long, Long>, List<CompanySubscription>> pair : groupsMap.values()) {
                 if (Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()).equals(pair.getA())){
                     pair.getB().add(companySubscription);
                     isGroupExisted = true;
@@ -62,23 +64,11 @@ public class CompanySubscriptionList
             }
 
             if (!isGroupExisted){
-                List<CompanySubscription> subscriptions = new ArrayList<>();
-                subscriptions.add(companySubscription);
-                groupsList.add(Pair.of(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()), subscriptions));
+                List<CompanySubscription> newGroup = new ArrayList<>();
+                newGroup.add(companySubscription);
+                groupsMap.put(groupsMap.size(), Pair.of(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()), newGroup));
             }
         });
-
-        boolean isNullNullGroupExisted = false;
-        for (Pair<Pair<Long, Long>, List<CompanySubscription>> pair : groupsList) {
-            if (Pair.of(null, null).equals(pair.getA())){
-                isNullNullGroupExisted = true;
-                break;
-            }
-        }
-
-        if (!isNullNullGroupExisted) {
-            addEmptyItem();
-        }
 
         makeFirstGroup();
         makeOtherGroups();
@@ -100,7 +90,7 @@ public class CompanySubscriptionList
 
     public void clear() {
         groupContainer.clear();
-        groupsList.clear();
+        groupsMap.clear();
         widgetGroupsList.clear();
     }
 
@@ -127,8 +117,8 @@ public class CompanySubscriptionList
     @UiHandler("addButton")
     public void onAddClicked (ClickEvent event){
         Pair<Pair<Long, Long>, List<CompanySubscription>> newGroup = Pair.of(Pair.of(null,null), new ArrayList<>());
-        groupsList.add(newGroup);
-        makeGroupAndFillValue(newGroup.getA(), newGroup.getB(), groupsList.size()-1);
+        groupsMap.put(groupsMap.size(), newGroup);
+        makeGroupAndFillValue(newGroup.getA(), newGroup.getB(), groupsMap.size()-1);
     }
 
     public void setCompanyId(Long companyId){
@@ -149,7 +139,7 @@ public class CompanySubscriptionList
         }
 
         companySubscriptionGroupWidget.addCloseHandler(event -> {
-            groupsList.remove(groupIndex);
+            groupsMap.remove(groupIndex);
             widgetGroupsList.remove(companySubscriptionGroupWidget);
             companySubscriptionGroupWidget.addStyleName("zero-opacity");
 
@@ -167,14 +157,14 @@ public class CompanySubscriptionList
         widgetGroupsList.add(companySubscriptionGroupWidget);
     }
 
-    private void addEmptyItem() {
-        groupsList.add(Pair.of(Pair.of(null, null), new ArrayList<>()));
+    private void addEmptyFirstGroup() {
+        groupsMap.put(0, Pair.of(Pair.of(null, null), new ArrayList<>()));
     }
 
     private List<CompanySubscription> prepareValue() {
         List<CompanySubscription> companySubscriptions = new ArrayList<>();
 
-        for (Pair<Pair<Long, Long>, List<CompanySubscription>> newGroup : groupsList) {
+        for (Pair<Pair<Long, Long>, List<CompanySubscription>> newGroup : groupsMap.values()) {
             Collection<CompanySubscription> c = newGroup.getB().stream()
                     .filter(value -> value.getEmail() != null && !value.getEmail().isEmpty() )
                     .collect(Collectors.toList());
@@ -186,16 +176,12 @@ public class CompanySubscriptionList
     }
 
     private void makeFirstGroup() {
-        for (Pair<Pair<Long, Long>, List<CompanySubscription>> pair : groupsList) {
-            if (pair.getA().equals(Pair.of(null, null))) {
-                makeGroupAndFillValue(Pair.of(null,null), pair.getB(), 0);
-            }
-        }
+        makeGroupAndFillValue(Pair.of(null,null), groupsMap.get(0).getB(), 0);
     }
 
     private void makeOtherGroups() {
         int currentIndex = 1;
-        for (Pair<Pair<Long, Long>, List<CompanySubscription>> pair : groupsList) {
+        for (Pair<Pair<Long, Long>, List<CompanySubscription>> pair : groupsMap.values()) {
             if (!pair.getA().equals(Pair.of(null, null))) {
                 makeGroupAndFillValue(pair.getA(), pair.getB(), currentIndex++);
             }
@@ -213,7 +199,7 @@ public class CompanySubscriptionList
     Lang lang;
 
     private List<CompanySubscriptionGroup> widgetGroupsList = new ArrayList<>();
-    private List<Pair<Pair<Long, Long>, List<CompanySubscription>>> groupsList = new ArrayList<>();
+    private Map<Integer, Pair<Pair<Long, Long>, List<CompanySubscription>>> groupsMap = new HashMap<>();
     private Long companyId;
 
     interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, CompanySubscriptionList> {}
