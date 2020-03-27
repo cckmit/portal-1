@@ -180,6 +180,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
+    public void onProductChanged(){
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
+    }
+
+    @Override
+    public void onPlatformChanged(){
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
+    }
+
+
+    @Override
     public void onCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
 
