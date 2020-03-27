@@ -51,7 +51,7 @@ public class CompanySubscriptionList
         clear();
         values = values == null ? new ArrayList<>() : values;
 
-        addEmptyItem();
+        addEmptyFirstGroup();
 
         values.forEach(companySubscription -> {
             boolean isGroupExisted = false;
@@ -64,9 +64,9 @@ public class CompanySubscriptionList
             }
 
             if (!isGroupExisted){
-                List<CompanySubscription> subscriptions = new ArrayList<>();
-                subscriptions.add(companySubscription);
-                groupsMap.put(groupsMap.size(), Pair.of(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()), subscriptions));
+                List<CompanySubscription> newGroup = new ArrayList<>();
+                newGroup.add(companySubscription);
+                groupsMap.put(groupsMap.size(), Pair.of(Pair.of(companySubscription.getPlatformId(), companySubscription.getProductId()), newGroup));
             }
         });
 
@@ -157,7 +157,7 @@ public class CompanySubscriptionList
         widgetGroupsList.add(companySubscriptionGroupWidget);
     }
 
-    private void addEmptyItem() {
+    private void addEmptyFirstGroup() {
         groupsMap.put(0, Pair.of(Pair.of(null, null), new ArrayList<>()));
     }
 
