@@ -6,7 +6,8 @@
 
     <changeSet id="add-equipment-decimal-number-sort-view" author="porubov">
         <createView viewName="view_equipments_decimal_number_sort">
-            SELECT Equipment.id Equipment_id, concat(min(decimal_number.classifier_code), min(decimal_number.reg_number)) sort_decimal
+            SELECT Equipment.id Equipment_id,
+                CONCAT(MIN(decimal_number.classifier_code), LPAD(MIN(decimal_number.reg_number), 3, '0')) sort_decimal
             FROM Equipment LEFT OUTER JOIN decimal_number ON Equipment.id = decimal_number.entity_id
             GROUP BY Equipment_id;
         </createView>
