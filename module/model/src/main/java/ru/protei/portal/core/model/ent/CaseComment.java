@@ -79,9 +79,6 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "original_author_full_name")
     private String originalAuthorFullName;
 
-    @JdbcColumn(name = "private_flag")
-    private boolean privateComment;
-
     @JdbcColumn(name = "privacy_type")
     @JdbcEnumerated
     private En_CaseCommentPrivacyType privacyType;
@@ -282,7 +279,6 @@ public class CaseComment extends AuditableObject {
     }
 
     public void setPrivateComment(boolean privateComment) {
-        this.privateComment = privateComment;
         this.privacyType = privateComment ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
     }
 
@@ -308,7 +304,6 @@ public class CaseComment extends AuditableObject {
 
     public void setPrivacyType(En_CaseCommentPrivacyType privacyType) {
         this.privacyType = privacyType;
-        this.privateComment = privacyType == En_CaseCommentPrivacyType.PRIVATE;
     }
 
     @Override
@@ -353,7 +348,6 @@ public class CaseComment extends AuditableObject {
                 ", remoteLink=" + remoteLink +
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
-                ", privateComment=" + privateComment +
                 ", privacyType=" + privacyType +
                 ", updated=" + updated +
                 ", deleted=" + deleted +

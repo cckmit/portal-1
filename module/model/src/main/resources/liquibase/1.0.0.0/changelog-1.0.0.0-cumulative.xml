@@ -141,4 +141,5 @@
   <include file="2020-03-11-modify-companysubscription-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-12-drop-unique-constraint-in-companysubscriprion-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-26-add-privacy-type-in-case-comment-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-28-remove-private-flag-in-case-comment-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
