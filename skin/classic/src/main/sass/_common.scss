@@ -1892,48 +1892,9 @@ a {
 }
 
 .privacy-level {
-  display: inline-block;
   width: 18px;
   height: 18px;
-  border-radius: 2px;
-  background-color: #e6e6e6;
-
-  &:before {
-    content: "?";
-    display: block;
-    width: 18px;
-    height: 18px;
-    text-align: center;
-    line-height: 22px;
-    font-size: 10px;
-    font-weight: bold;
-    text-decoration: none;
-    font-style: normal;
-    position: relative;
-    bottom: 1px;
-    color: #333333;
-  }
-
-  &.public {
-    &:before {
-      color: #333333;
-    }
-    background-color: #e6e6e6 !important;
-  }
-
-  &.private-customer {
-    &:before {
-      color: #333333;
-    }
-    background-color: #fed74a !important;
-  }
-
-  &.private {
-    &:before {
-      color: #ffffff;
-    }
-    background-color: #e30000 !important;
-  }
+  font-size: 13px;
 
   &.center {
     display: block;

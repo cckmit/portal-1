@@ -10,20 +10,43 @@ import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 public class PrivacyTypeButtonSelector extends ToggleBtnGroup<En_CaseCommentPrivacyType> {
     @Inject
     public void init() {
+        this.extendedPrivacy = false;
+        fillOptions();
+    }
+
+    public void setExtendedPrivacy(boolean extendedPrivacy) {
+        fillOptions(extendedPrivacy);
+    }
+
+    private void fillOptions(boolean extendedPrivacy) {
+        if (this.extendedPrivacy == extendedPrivacy) {
+            return;
+        }
+        this.extendedPrivacy = extendedPrivacy;
         fillOptions();
     }
 
     private void fillOptions() {
         clear();
-        for (En_CaseCommentPrivacyType value : En_CaseCommentPrivacyType.values()) {
-            addBtnWithIconAndTooltip(
-                    PrivacyTypeStyleProvider.getIcon(value),
-                    "btn btn-default no-border",
-                    privacyTypeLang.getName(value),
-                    value);
-            setEnsureDebugId(value, DebugIdsHelper.PRIVACY_TYPE.byId(value.getId()));
+        addButton(En_CaseCommentPrivacyType.PUBLIC);
+        addButton(En_CaseCommentPrivacyType.PRIVATE);
+        if (extendedPrivacy) {
+            addButton(En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS);
         }
     }
+
+    private void addButton(En_CaseCommentPrivacyType value) {
+        addBtnWithIconAndTooltip(
+                PrivacyTypeStyleProvider.getIcon(value),
+                "btn btn-default",
+                privacyTypeLang.getName(value),
+                value);
+
+        setEnsureDebugId(value, DebugIdsHelper.PRIVACY_TYPE.byId(value.getId()));
+    }
+
+    private boolean extendedPrivacy;
+
     @Inject
     En_CaseCommentPrivacyTypeLang privacyTypeLang;
 }

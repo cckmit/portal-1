@@ -237,50 +237,20 @@ public class CaseCommentListView
         }
     }
 
-    private HasVisibility privacyVisibility = new HasVisibility() {
-        @Override
-        public boolean isVisible() {
-            return extendedPrivacyType ? privacyType.isVisible() : privateComment.isVisible();
-        }
-
-        @Override
-        public void setVisible( boolean b ) {
-            if (extendedPrivacyType) {
-                privacyType.setVisible(b);
-            } else {
-                privateComment.setVisible(b);
-            }
-        }
-    };
-
     @Override
     public HasVisibility getPrivacyVisibility() {
-        return privacyVisibility;
+        return privacyType;
     }
 
     @Override
     public void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType) {
-        this.extendedPrivacyType = extendedPrivacyType;
-        if (extendedPrivacyType) {
-            privateComment.addStyleName("hide");
-
-            privacyType.removeStyleName("hide");
-            privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
-        } else {
-            privateComment.removeStyleName("hide");
-            privateComment.setValue(false);
-
-            privacyType.addStyleName("hide");
-        }
+        privacyType.setExtendedPrivacy(extendedPrivacyType);
+        privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
     }
 
     @Override
-    public En_CaseCommentPrivacyType getPrivacyTypeComment() {
-        if (extendedPrivacyType) {
-            return privacyType.getValue();
-        } else {
-            return privateComment.getValue() ? En_CaseCommentPrivacyType.PRIVATE : En_CaseCommentPrivacyType.PUBLIC;
-        }
+    public HasValue<En_CaseCommentPrivacyType> getPrivacyTypeComment() {
+        return privacyType;
     }
 
     private void ensureDebugIds() {
@@ -291,7 +261,6 @@ public class CaseCommentListView
         commentsContainer.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.COMMENTS_LIST);
         newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON);
         comment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT);
-        privateComment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.PRIVACY_BUTTON);
         send.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.SEND_BUTTON);
         filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD);
         timeElapsed.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED);
@@ -304,8 +273,6 @@ public class CaseCommentListView
     DndAutoResizeTextArea comment;
     @UiField
     FlowPanel commentsContainer;
-    @UiField
-    CheckBox privateComment;
     @Inject
     @UiField(provided = true)
     PrivacyTypeButtonSelector privacyType;

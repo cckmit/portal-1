@@ -213,11 +213,11 @@ public class CaseCommentItemView
         switch (value) {
             case PRIVATE:
                 messageContainer.addClassName("private-message");
-                privateType.setClassName("fa m-l-10 fa-lock text-danger");
+                privateType.setClassName("fa fa-lock text-danger m-l-10");
                 break;
             case PRIVATE_CUSTOMERS:
                 messageContainer.addClassName("private-customer-message");
-                privateType.setClassName("fa m-l-10 fa-lock text-warning");
+                privateType.setClassName("fa fa-unlock text-warning m-l-10");
         }
     }
 
