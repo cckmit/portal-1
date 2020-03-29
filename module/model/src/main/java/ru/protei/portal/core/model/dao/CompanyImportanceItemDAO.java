@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CompanyImportanceItemDAO extends PortalBaseDAO<CompanyImportanceItem> {
 
-    List<Integer> getImportanceLevels(Long companyId);
+    List<Integer> getSortedImportanceLevels(Long companyId);
 }
