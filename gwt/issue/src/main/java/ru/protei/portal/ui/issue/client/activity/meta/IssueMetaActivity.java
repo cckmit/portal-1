@@ -261,11 +261,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void fillImportanceSelector(Long id) {
         metaView.fillImportanceOptions(new ArrayList<>());
-        companyService.getImportanceLevels(id, new FluentCallback<List<Integer>>()
+        companyService.getImportanceLevels(id, new FluentCallback<List<CompanyImportanceItem>>()
                 .withSuccess(list -> {
                     List<En_ImportanceLevel> importanceLevels = new ArrayList<>();
-                    for (Integer integer : list) {
-                        importanceLevels.add(En_ImportanceLevel.getById(integer));
+                    for (CompanyImportanceItem item : list) {
+                        importanceLevels.add(En_ImportanceLevel.getById(item.getImportanceLevelId()));
                     }
                     metaView.fillImportanceOptions(importanceLevels);
                     checkImportanceSelectedValue(importanceLevels);

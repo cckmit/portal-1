@@ -96,5 +96,5 @@ public interface CompanyController extends RemoteService {
 
     List<Long> getAllHomeCompanyIds() throws RequestFailedException;
 
-    List<Integer> getImportanceLevels(Long id) throws RequestFailedException;;
+    List<CompanyImportanceItem> getImportanceLevels(Long id) throws RequestFailedException;;
 }

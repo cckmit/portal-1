@@ -266,8 +266,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<Integer>> getImportanceLevels(Long companyId) {
-        List<Integer> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
+    public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
+        List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
     }
 

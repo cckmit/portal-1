@@ -92,5 +92,5 @@ public interface CompanyControllerAsync {
 
     void getAllHomeCompanyIds(AsyncCallback<List<Long>> async);
 
-    void getImportanceLevels(Long id, AsyncCallback<List<Integer>> async);
+    void getImportanceLevels(Long id, AsyncCallback<List<CompanyImportanceItem>> async);
 }

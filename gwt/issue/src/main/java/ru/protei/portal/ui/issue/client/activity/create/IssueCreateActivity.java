@@ -307,11 +307,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
     private void fillImportanceSelector(Long id) {
         issueMetaView.fillImportanceOptions(new ArrayList<>());
-        companyService.getImportanceLevels(id, new FluentCallback<List<Integer>>()
+        companyService.getImportanceLevels(id, new FluentCallback<List<CompanyImportanceItem>>()
                 .withSuccess(list -> {
                     List<En_ImportanceLevel> importanceLevels = new ArrayList<>();
-                    for (Integer integer : list) {
-                        importanceLevels.add(En_ImportanceLevel.getById(integer));
+                    for (CompanyImportanceItem item : list) {
+                        importanceLevels.add(En_ImportanceLevel.getById(item.getImportanceLevelId()));
                     }
                     issueMetaView.fillImportanceOptions(importanceLevels);
                     checkImportanceSelectedValue(importanceLevels);

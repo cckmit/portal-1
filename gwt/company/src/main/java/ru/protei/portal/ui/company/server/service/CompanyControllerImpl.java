@@ -229,7 +229,7 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List<Integer> getImportanceLevels(Long companyId) throws RequestFailedException {
+    public List<CompanyImportanceItem> getImportanceLevels(Long companyId) throws RequestFailedException {
         log.info("getImportanceLevels()");
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(companyService.getImportanceLevels(companyId));
