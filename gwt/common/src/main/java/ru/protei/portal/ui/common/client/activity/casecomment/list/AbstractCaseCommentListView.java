@@ -57,5 +57,5 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void setExtendedPrivacyTypeAndResetSelector(boolean extendedPrivacyType);
 
-    HasValue<En_CaseCommentPrivacyType> getPrivacyTypeComment();
+    HasValue<En_CaseCommentPrivacyType> privacyType();
 }

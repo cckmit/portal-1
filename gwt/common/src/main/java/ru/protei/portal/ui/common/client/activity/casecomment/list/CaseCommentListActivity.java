@@ -187,6 +187,7 @@ public abstract class CaseCommentListActivity
         }
 
         view.getPrivacyVisibility().setVisible(false);
+        view.privacyType().setValue(caseComment.getPrivacyType());
 
         view.focus();
     }
@@ -526,7 +527,7 @@ public abstract class CaseCommentListActivity
         comment.setText(view.message().getValue());
         comment.setTimeElapsed(view.timeElapsed().getTime());
         comment.setTimeElapsedType(elapsedType != null ? elapsedType : En_TimeElapsedType.NONE);
-        comment.setPrivacyType(isPrivateCase ? En_CaseCommentPrivacyType.PRIVATE : view.getPrivacyTypeComment().getValue());
+        comment.setPrivacyType(isPrivateCase ? En_CaseCommentPrivacyType.PRIVATE : view.privacyType().getValue());
         comment.setCaseAttachments(tempAttachments.stream()
                 .map(a -> new CaseAttachment(caseId, a.getId(), commentId))
                 .collect(Collectors.toList())

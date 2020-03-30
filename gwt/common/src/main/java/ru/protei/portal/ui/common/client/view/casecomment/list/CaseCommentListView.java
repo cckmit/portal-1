@@ -249,7 +249,7 @@ public class CaseCommentListView
     }
 
     @Override
-    public HasValue<En_CaseCommentPrivacyType> getPrivacyTypeComment() {
+    public HasValue<En_CaseCommentPrivacyType> privacyType() {
         return privacyType;
     }
 
