@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Активность таблицы зарезервированных IP
  */
-public abstract class ReservedReservedIpTableActivity
+public abstract class ReservedIpTableActivity
         implements AbstractReservedIpTableActivity, AbstractReservedIpFilterActivity, Activity
 {
 
@@ -70,7 +70,7 @@ public abstract class ReservedReservedIpTableActivity
         }
 
         if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE)) {
-            fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.RESERVED_IP ));
+            fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.RESERVED_IP_CREATE ));
         }
 
         requestReservedIps();
@@ -83,12 +83,13 @@ public abstract class ReservedReservedIpTableActivity
 
     @Event
     public void onSubnetBtnClicked(ActionBarEvents.Clicked event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+        if (!(UiConstants.ActionBarIdentity.SUBNET.equals(event.identity))) {
             return;
         }
+        fireEvent(new ActionBarEvents.Clear());
 
-        if (!(UiConstants.ActionBarIdentity.SUBNET.equals(event.identity))) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
@@ -98,7 +99,7 @@ public abstract class ReservedReservedIpTableActivity
 
     @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.RESERVED_IP.equals(event.identity)) {
+        if (!UiConstants.ActionBarIdentity.RESERVED_IP_CREATE.equals(event.identity)) {
             return;
         }
 
@@ -116,7 +117,6 @@ public abstract class ReservedReservedIpTableActivity
     @Event
     public void onChanged(IpReservationEvents.ChangedReservedIp event) {
         if ( event.needRefreshList ) {
-
             if (!CollectionUtils.isEmpty(event.reservedIpList)) {
                 event.reservedIpList.forEach( ip -> updateListAndSelect(ip));
             } else {
@@ -230,7 +230,7 @@ public abstract class ReservedReservedIpTableActivity
                     fireEvent(new IpReservationEvents.Show());
                 }));*/
         //fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));
-        Window.alert("Refresh IPs");
+        Window.alert("Refresh IP " + reservedIp.getIpAddress());
     }
 
     @Inject

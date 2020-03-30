@@ -126,7 +126,6 @@ public class ReservedIpQuery extends BaseQuery {
         this.subnetIds = subnetIds != null ? subnetIds : new ArrayList<>();
     }
 
-/*
     public void setSubnetId(Long subnetId) {
         if (subnetId == null) {
             this.subnetIds.clear();
@@ -138,7 +137,7 @@ public class ReservedIpQuery extends BaseQuery {
 
     public void addSubnetId(Long subnetId) {
         this.subnetIds.add(subnetId);
-    }*/
+    }
 
 /*    @Override
     public boolean isParamsPresent() {

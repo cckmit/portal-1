@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.dto;
+package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.view.SubnetOption;
 
@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Объект-wrapper для запроса резервирования IP адресов по параметрам
  */
-public class ReservedIpRequest implements Serializable {
+public class ReservedIpRequest implements Serializable{
 
     private Set<SubnetOption> subnets;
 

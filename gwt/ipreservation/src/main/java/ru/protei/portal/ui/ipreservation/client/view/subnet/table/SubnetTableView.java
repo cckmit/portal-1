@@ -21,7 +21,6 @@ import ru.protei.portal.ui.ipreservation.client.activity.subnet.table.AbstractSu
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Представление таблицы подсетей
  */
@@ -114,7 +113,7 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
             com.google.gwt.dom.client.Element addrElement = DOM.createElement( "p" );
             addrElement.addClassName( "number-size" );
-	    String address = value.getAddress();
+	        String address = value.getAddress();
 
             if (value.getMask() != null) {
                 address += "." + value.getMask();

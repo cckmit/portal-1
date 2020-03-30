@@ -14,7 +14,9 @@ public interface AbstractReservedIpCreateView extends IsWidget {
 
     void setActivity(AbstractReservedIpCreateActivity activity);
 
+    HasValue<Boolean> mode();
     HasValue<String> ipAddress();
+    HasValue<Long> number();
     HasValue<String> macAddress();
     HasText comment();
     HasValue<Set<SubnetOption>> subnets();
@@ -23,7 +25,13 @@ public interface AbstractReservedIpCreateView extends IsWidget {
     HasValidable ipAddressValidator();
     HasValidable macAddressValidator();
 
+/*    HasWidgets getExaсtIpContainer();
+    HasWidgets getAnyFreeIpsContainer();*/
+
+    HasVisibility exaсtIpVisibility();
+    HasVisibility anyFreeIpsVisibility();
     HasVisibility saveVisibility();
 
+    HasEnabled ownerEnabled();
     HasEnabled saveEnabled();
 }

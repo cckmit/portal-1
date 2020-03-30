@@ -29,13 +29,13 @@ public class ReservedIp extends AuditableObject {
     @JdbcColumn(name="subnet_id")
     private Long subnetId;
 
-    @JdbcJoinedObject(localColumn = "subnet_id", table = "subnet")
+    @JdbcJoinedObject( localColumn = "subnet_id", remoteColumn = "id", table = "subnet", updateLocalColumn = false )
     private Subnet subnet;
 
     @JdbcColumn(name="owner_id")
     private Long ownerId;
 
-    @JdbcJoinedObject(localColumn = "owner_id")
+    @JdbcJoinedObject( localColumn = "owner_id", remoteColumn = "id", table = "person", updateLocalColumn = false )
     private Person owner;
 
     @JdbcColumn(name="ip_address")

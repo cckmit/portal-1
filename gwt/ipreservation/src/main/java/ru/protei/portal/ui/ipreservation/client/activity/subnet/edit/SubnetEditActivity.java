@@ -58,8 +58,9 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
                 .withSuccess(aVoid -> {
                     view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IpReservationEvents.CloseEdit());
                     fireEvent(new IpReservationEvents.ChangedSubnet(subnet, true));
+                    fireEvent(new IpReservationEvents.CloseEdit());
+                    fireEvent(new IpReservationEvents.ChangeModel());
                 })
         );
     }
@@ -100,11 +101,12 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
             subnet = new Subnet();
         }
         view.address().setValue(subnet.getAddress());
-        view.mask().setValue(subnet.getMask());
+        //view.mask().setValue(subnet.getMask());
+        view.mask().setValue("0/24");
         view.comment().setText(subnet.getComment());
 
         view.addressEnabled().setEnabled(subnet.getId() == null);
-        view.maskEnabled().setEnabled(subnet.getId() == null);
+        view.maskEnabled().setEnabled(false);
     }
 
     private Subnet fillSubnet() {

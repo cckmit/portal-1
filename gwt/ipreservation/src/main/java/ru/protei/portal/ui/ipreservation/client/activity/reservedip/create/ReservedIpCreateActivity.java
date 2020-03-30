@@ -1,12 +1,15 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.create;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dto.ReservedIpRequest;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.IpReservationEvents;
@@ -29,7 +32,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Event
     public void onShow (IpReservationEvents.CreateReservedIp event) {
-        if (hasPrivileges()) {
+        if (!hasPrivileges()) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -46,11 +49,11 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return;
         }
 
-        ReservedIpRequest request = fillReservedIpRequest();
+/*        ReservedIpRequest request = fillReservedIpRequest();*/
 
         view.saveEnabled().setEnabled(false);
 
-        ipReservationService.createReservedIp(reservedIpRequest, new FluentCallback<List<ReservedIp>>()
+        ipReservationService.createReservedIp(fillReservedIpRequest(), new FluentCallback<List<ReservedIp>>()
                 .withError(throwable -> {
                     view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
@@ -58,8 +61,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 .withSuccess(reservedIpList -> {
                     view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IpReservationEvents.ChangedReservedIp(reservedIpList));
                     fireEvent(new IpReservationEvents.CloseEdit());
-                    fireEvent(new IpReservationEvents.ChangedReservedIp(reservedIpList, true));
                 })
         );
     }
@@ -69,22 +72,46 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         fireEvent(new IpReservationEvents.CloseEdit());
     }
 
+    @Override
+    public void onExactIpClicked() {
+        view.exaсtIpVisibility().setVisible(true);
+    }
+
+    @Override
+    public void onAnyFreeIpsClicked() {
+        view.anyFreeIpsVisibility().setVisible(true);
+    }
+
     private void resetView () {
         view.ipAddress().setValue("");
+        view.number().setValue(null);
         view.macAddress().setValue("");
         view.subnets().setValue(null);
-        view.owner().setValue(null);
+        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)) {
+            view.mode().setValue(true);
+            view.owner().setValue(null);
+            view.ownerEnabled().setEnabled(true);
+        } else {
+            view.mode().setValue(policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE));
+            PersonShortView ipOwner = new PersonShortView(
+                    policyService.getProfile().getFullName(),
+                    policyService.getProfile().getId(),
+                    policyService.getProfile().isFired());
+            view.owner().setValue(ipOwner);
+            view.ownerEnabled().setEnabled(false);
+        }
         view.comment().setText("");
+        // @todo dates
 
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(true);
     }
 
     private ReservedIpRequest fillReservedIpRequest() {
-        reservedIpRequest = new ReservedIpRequest();
+        ReservedIpRequest reservedIpRequest = new ReservedIpRequest();
 
-        reservedIpRequest.setExact(view.exact().getValue());
-        if (view.exact().getValue()) {
+        reservedIpRequest.setExact(view.mode().getValue());
+        if (view.mode().getValue()) {
             reservedIpRequest.setIpAddress(view.ipAddress().getValue());
             reservedIpRequest.setMacAddress(view.macAddress().getValue());
         } else {
@@ -94,8 +121,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
         reservedIpRequest.setOwnerId(view.owner().getValue().getId());
         reservedIpRequest.setComment(view.comment().getText());
-        reservedIpRequest.setReserveDate(view.reserveDate().getValue());
-        reservedIpRequest.setReleaseDate(view.releaseDate().getValue());
+/*        reservedIpRequest.setReserveDate(view.reserveDate().getValue());
+        reservedIpRequest.setReleaseDate(view.releaseDate().getValue());*/
         return reservedIpRequest;
     }
 
@@ -130,7 +157,6 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpNeedSelectOwner(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
-
         */
 
         return true;
@@ -152,6 +178,4 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     IpReservationControllerAsync ipReservationService;
     @Inject
     PolicyService policyService;
-
-    private ReservedIpRequest reservedIpRequest;
 }

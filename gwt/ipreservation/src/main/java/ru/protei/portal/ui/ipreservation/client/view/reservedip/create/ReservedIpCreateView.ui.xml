@@ -4,6 +4,7 @@
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:subnet='urn:import:ru.protei.portal.ui.ipreservation.client.view.widget.selector'
              xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
+             xmlns:switcher='urn:import:ru.protei.portal.ui.common.client.widget.switcher'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -11,9 +12,24 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
             <div class="row">
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.reservedIpMode}"/>
+                    </label>
+                    <switcher:Switcher ui:field="mode"/>
+                </div>
+            </div>
+            <g:HTMLPanel ui:field="anyFreeIpsContainer" styleName="row" visible="false">
+                <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}" addStyleNames="form-group col-md-10"/>
 
-                <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}" addStyleNames="form-group col-md-12"/>
-
+                <div class="form-group col-md-2">
+                    <label>
+                        <ui:text from="{lang.reservedIpNumber}"/>
+                    </label>
+                    <g:LongBox ui:field="number" styleName="form-control"/>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="exactIpContainer" styleName="row" visible="false">
                 <div class="form-group col-md-6">
                     <label>
                         <ui:text from="{lang.reservedIpIpAddress}"/>
@@ -26,18 +42,18 @@
                     </label>
                     <validablefield:ValidableTextBox ui:field="macAddress" styleName="form-control" />
                 </div>
-            </div>
-            <div class="form-group col-md-6">
-                <label>
-                    <ui:text from="{lang.reservedIpOwner}"/>
-                </label>
-                <person:EmployeeButtonSelector ui:field="ipOwner"
-                                               hasNullValue="false"
-                                               defaultValue="{lang.selectReservedIpOwner}"
-                                               firedEmployeesVisible="true"/>
-            </div>
+            </g:HTMLPanel>
             <div class="row">
                 <div class="form-group col-md-6">
+                    <label>
+                        <ui:text from="{lang.reservedIpOwner}"/>
+                    </label>
+                    <person:EmployeeButtonSelector ui:field="ipOwner"
+                                                   hasNullValue="false"
+                                                   defaultValue="{lang.selectReservedIpOwner}"
+                                                   firedEmployeesVisible="true"/>
+                </div>
+                <div class="form-group col-md-12">
                     <label><ui:text from="{lang.comment}"/></label>
                     <autoresizetextarea:AutoResizeTextArea ui:field="comment"
                                                            styleName="form-control" minRows="2" maxRows="10"/>

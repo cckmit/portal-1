@@ -3,6 +3,7 @@ package ru.protei.portal.ui.ipreservation.client.view.reservedip.create;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -13,12 +14,11 @@ import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.create.AbstractReservedIpCreateActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.create.AbstractReservedIpCreateView;
-import ru.protei.portal.ui.ipreservation.client.activity.reservedip.edit.AbstractReservedIpEditActivity;
-import ru.protei.portal.ui.ipreservation.client.activity.reservedip.edit.AbstractReservedIpEditView;
 import ru.protei.portal.ui.ipreservation.client.view.widget.selector.SubnetMultiSelector;
 
 import java.util.Set;
@@ -40,7 +40,13 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     }
 
     @Override
+    public HasValue<Boolean> mode() { return mode; }
+
+    @Override
     public HasValue<String> ipAddress() { return ipAddress; }
+
+    @Override
+    public HasValue<Long> number() { return number; }
 
     @Override
     public HasValue<String> macAddress() { return macAddress; }
@@ -54,6 +60,14 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @Override
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
+/*    @Override
+    public HasWidgets getExaсtIpContainer() { return exactIpContainer; }
+
+    @Override
+    public HasWidgets getAnyFreeIpsContainer() {
+        return anyFreeIpsContainer;
+    }*/
+
     @Override
     public HasValidable ipAddressValidator() { return ipAddress; }
 
@@ -62,6 +76,15 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
 
     @Override
     public HasVisibility saveVisibility() { return saveButton; }
+
+    @Override
+    public HasVisibility exaсtIpVisibility() { return exactIpContainer; }
+
+    @Override
+    public HasVisibility anyFreeIpsVisibility() { return anyFreeIpsContainer; }
+
+    @Override
+    public HasEnabled ownerEnabled() { return ipOwner; }
 
     @Override
     public HasEnabled saveEnabled() { return saveButton; }
@@ -80,19 +103,38 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         }
     }
 
+    @UiHandler("mode")
+    public void onChangeReserveMode(ValueChangeEvent<Boolean> event) {
+        if (event.getValue()) {
+            activity.onExactIpClicked();
+        } else {
+            activity.onAnyFreeIpsClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+        mode.ensureDebugId(DebugIds.RESERVED_IP.MODE_SWITCHER);
+        ipAddress.ensureDebugId(DebugIds.RESERVED_IP.IP_ADDRESS_INPUT);
         macAddress.ensureDebugId(DebugIds.RESERVED_IP.MAC_ADDRESS_INPUT);
+        number.ensureDebugId(DebugIds.RESERVED_IP.NUMBER_INPUT);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
         ipOwner.setEnsureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
+        /*
+           @todo dates
+         */
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }
 
     @UiField
+    Switcher mode;
+    @UiField
     ValidableTextBox ipAddress;
+    @UiField
+    LongBox number;
     @UiField
     ValidableTextBox macAddress;
     @UiField
@@ -105,6 +147,11 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @Inject
     @UiField(provided = true)
     SubnetMultiSelector subnets;
+
+    @UiField
+    HTMLPanel exactIpContainer;
+    @UiField
+    HTMLPanel anyFreeIpsContainer;
 
     @UiField
     Button saveButton;

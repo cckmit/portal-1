@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dto.ReservedIpRequest;
+import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
-import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
-import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.core.service.IpReservationService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -102,6 +102,13 @@ public class IpReservationControllerImpl implements IpReservationController {
         return ServiceUtils.checkResultAndGetData(ipReservationService.getReservedIpsBySubnets(token, reservedIpQuery));
 
     }
+
+/*    @Override
+    public SearchResult<ReservedIp> getReservedIpsBySubnet(Long subnetId) throws RequestFailedException {
+        log.info("getReservedIpsBySubnet(): subnet_id={}", subnetId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
+    }*/
 
     @Override
     public SearchResult<ReservedIp> getReservedIpList( ReservedIpQuery reservedIpQuery ) throws RequestFailedException {

@@ -6,4 +6,7 @@ package ru.protei.portal.ui.ipreservation.client.activity.reservedip.create;
 public interface AbstractReservedIpCreateActivity {
     void onSaveClicked();
     void onCancelClicked();
+
+    void onExactIpClicked();
+    void onAnyFreeIpsClicked();
 }

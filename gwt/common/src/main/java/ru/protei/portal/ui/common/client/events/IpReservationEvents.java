@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.events;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
@@ -11,6 +12,7 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * События по резервированию IP
@@ -30,9 +32,7 @@ public class IpReservationEvents {
     public static class CreateReservedIp {
         public CreateReservedIp(HasWidgets parent) {
             this.parent = parent;
-            this.reservedIp = null;
         }
-        public ReservedIp reservedIp;
         public HasWidgets parent;
     }
 
@@ -49,10 +49,10 @@ public class IpReservationEvents {
     }
 
     public static class ChangedReservedIp {
-/*        public ChangedReservedIp(ReservedIp reservedIp, boolean needRefreshList) {
+        public ChangedReservedIp(ReservedIp reservedIp, boolean needRefreshList) {
             this.reservedIp = reservedIp;
             this.needRefreshList = needRefreshList;
-        }*/
+        }
 
         public ChangedReservedIp(List<ReservedIp> reservedIps) {
             this.reservedIpList = new ArrayList<>(reservedIps);
@@ -97,7 +97,7 @@ public class IpReservationEvents {
         public boolean needRefreshList = false;
     }
 
-    public static class CloseEdit {}
+    public static class CloseEdit {  }
 
     public static class ChangeModel {}
 

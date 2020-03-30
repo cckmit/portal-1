@@ -784,19 +784,20 @@ public class DebugIds {
         String ADDRESS_INPUT = "subnet-address-input";
         String MASK_INPUT = "subnet-mask-input";
         String COMMENT_INPUT = "subnet-comment-input";
-        String LOCAL_SWITCHER = "subnet-local-switcher";
         String SAVE_BUTTON = "subnet-save-button";
         String CANCEL_BUTTON = "subnet-cancel-button";
     }
 
     public interface RESERVED_IP {
+        String MODE_SWITCHER = "reservedip-mode-switcher";
         String IP_ADDRESS_INPUT = "reservedip-address-input";
         String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
+        String NUMBER_INPUT = "reservedip-number-input";
         String SUBNET_SELECTOR = "reservedip-subnet-selector";
         String OWNER_SELECTOR = "reservedip-owner-selector";
         String COMMENT_INPUT = "reservedip-comment-input";
-
-        /* @todo остальные поля  */
+        String RESERVE_DATE_RANGE_INPUT = "reservedip-reserve-date-range-input";
+        String RELEASE_DATE_RANGE_INPUT = "reservedip-release-date-date-created-range-input";
         String SAVE_BUTTON = "reservedip-save-button";
         String CANCEL_BUTTON = "reservedip-cancel-button";
     }

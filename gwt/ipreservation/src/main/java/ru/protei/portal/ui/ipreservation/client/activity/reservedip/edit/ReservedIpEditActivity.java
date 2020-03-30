@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -46,11 +47,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
     @Override
     public void onSaveClicked() {
-        if (isNew() && !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_CREATE) ) {
-            return;
-        }
-
-        if (!isNew() && !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
+        if (!hasPrivileges(reservedIp.getId())) {
             return;
         }
 
@@ -70,8 +67,8 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
                 .withSuccess(aVoid -> {
                     view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IpReservationEvents.CloseEdit());
                     fireEvent(new IpReservationEvents.ChangedReservedIp(reservedIp, true));
+                    fireEvent(new IpReservationEvents.CloseEdit());
                 })
         );
     }
@@ -101,6 +98,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     private void resetView () {
         view.macAddress().setValue("");
         view.owner().setValue(null);
+        // @todo dates
         view.comment().setText("");
 
         view.saveVisibility().setVisible( hasPrivileges(reservedIp == null ? null : reservedIp.getId()) );
@@ -147,13 +145,9 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     }
 
     private boolean hasPrivileges(Long reservedIpId) {
-        if (isNew() && policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE)) {
-            return true;
-        }
-
         // @todo проверка на принадлежность к сисадминству
-        if (!isNew() && (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
-                || reservedIp.getOwnerId().equals(policyService.getProfile().getId()))) {
+        if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
+                || reservedIp.getOwnerId().equals(policyService.getProfile().getId())) {
             return true;
         }
 

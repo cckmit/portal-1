@@ -8,7 +8,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -21,8 +20,6 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterActivity;
-import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterView;
 import ru.protei.portal.ui.ipreservation.client.activity.subnet.filter.AbstractSubnetFilterActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.subnet.filter.AbstractSubnetFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -42,7 +39,6 @@ public abstract class SubnetTableActivity
         view.setAnimation( animation );
 
         filterView.setActivity( this );
-
         view.getFilterContainer().add( filterView.asWidget() );
     }
 
@@ -70,7 +66,7 @@ public abstract class SubnetTableActivity
         }
 
         if (policyService.hasPrivilegeFor( En_Privilege.SUBNET_CREATE )) {
-            fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.SUBNET));
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.SUBNET_CREATE));
         }
 
         requestSubnets();
@@ -83,14 +79,15 @@ public abstract class SubnetTableActivity
 
     @Event
     public void onReservedIpBtnClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.RESERVED_IP.equals(event.identity))) {
+            return;
+        }
+
         if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
-        if (!(UiConstants.ActionBarIdentity.RESERVED_IP.equals(event.identity))) {
-            return;
-        }
 
         fireEvent(new ActionBarEvents.Clear());
         fireEvent(new IpReservationEvents.ShowReservedIp());
@@ -98,7 +95,7 @@ public abstract class SubnetTableActivity
 
     @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.SUBNET.equals(event.identity)) {
+        if (!UiConstants.ActionBarIdentity.SUBNET_CREATE.equals(event.identity)) {
             return;
         }
 
@@ -218,7 +215,7 @@ public abstract class SubnetTableActivity
                     fireEvent(new IpReservationEvents.ShowSubnet());
                 }));*/
 /*        fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));*/
-        Window.alert("Refresh subnet");
+        Window.alert("Refresh subnet " + subnet.getAddress());
     }
 
     @Inject

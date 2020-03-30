@@ -11,9 +11,9 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.IpReservationEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public abstract class SubnetModel extends BaseSelectorModel<SubnetOption> implem
 
     @Override
     protected void requestData( LoadingHandler selector, String searchText ) {
-        ipReservationController.getSubnetsOptionList(new ReservedIpQuery(null, En_SortField.address, En_SortDir.ASC),
+        ipReservationController.getSubnetsOptionList(new ReservedIpQuery(searchText, En_SortField.address, En_SortDir.ASC),
                 new FluentCallback<List<SubnetOption>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));

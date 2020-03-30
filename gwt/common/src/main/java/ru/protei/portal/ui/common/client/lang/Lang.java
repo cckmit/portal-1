@@ -2171,4 +2171,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpSubnetsBtn();
 
     String reservedIpIpsBtn();
+
+    String reservedIpNumber();
+
+    String reservedIpMode();
 }
