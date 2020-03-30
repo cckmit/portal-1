@@ -27,7 +27,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_timeDayLiteral" value="${timeDayLiteral}"/>
 <@set name="_timeHourLiteral" value="${timeHourLiteral}"/>
 <@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
-<@set name="_privateComment" value="${privateComment}"/>
+<@set name="_privacyTypePrivateCustomers" value="${privacyTypePrivateCustomers}"/>
+<@set name="_privacyTypePrivate" value="${privacyTypePrivate}"/>
 <@set name="_platform" value="${issuePlatform}"/>
 
 <#noparse>
@@ -302,8 +303,11 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
                     <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
                     <#if showPrivacy>
-                        <#if caseComment.isPrivateComment>
-                            <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(${_privateComment})</span>
+                        <#if caseComment.privacyType.name() == "PRIVATE">
+                            <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(${_privacyTypePrivate})</span>
+                        </#if>
+                        <#if caseComment.privacyType.name() == "PRIVATE_CUSTOMERS">
+                            <span style="font-size:10px;margin-bottom:5px;color:yellow;line-height: 17px;margin-right:5px">(${_privacyTypePrivateCustomers})</span>
                         </#if>
                     </#if>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
