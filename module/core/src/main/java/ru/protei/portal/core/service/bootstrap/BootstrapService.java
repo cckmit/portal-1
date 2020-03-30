@@ -56,6 +56,10 @@ public class BootstrapService {
     }
 
     private void fillImportanceLevels() {
+        if(importanceLevelDAO.getAll().size() == 4){
+            importanceLevelDAO.persist(new ImportanceLevel(5L, "medium", "medium"));
+        }
+
         if (!companyImportanceItemDAO.getAll().isEmpty()){
             return;
         }
@@ -361,6 +365,8 @@ if(true) return; //TODO remove
     CompanyDAO companyDAO;
     @Autowired
     CompanyImportanceItemDAO companyImportanceItemDAO;
+    @Autowired
+    ImportanceLevelDAO importanceLevelDAO;
     @Autowired
     DocumentSvnApi documentSvnApi;
     @Autowired

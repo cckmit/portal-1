@@ -13,11 +13,9 @@ public class CompanyImportanceItemDAO_Impl extends PortalBaseJdbcDAO<CompanyImpo
 
     @Override
     public List<CompanyImportanceItem> getSortedImportanceLevels(Long companyId) {
-      //  String query = "select importance_level_id from company_importance_item where company_id=? order by `order_number`";
         List<CompanyImportanceItem> importanceLevels = getList(new JdbcQueryParameters()
         .withCondition("company_id=?", companyId)
         .withSort(new JdbcSort(JdbcSort.Direction.ASC, "order_number")));
-        //return jdbcTemplate.queryForList(query, Integer.class, companyId);
         return importanceLevels;
     }
 }
