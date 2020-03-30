@@ -307,7 +307,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(${_privacyTypePrivate})</span>
                         </#if>
                         <#if caseComment.privacyType.name() == "PRIVATE_CUSTOMERS">
-                            <span style="font-size:10px;margin-bottom:5px;color:yellow;line-height: 17px;margin-right:5px">(${_privacyTypePrivateCustomers})</span>
+                            <span style="font-size:10px;margin-bottom:5px;color:darkgoldenrod;line-height: 17px;margin-right:5px">(${_privacyTypePrivateCustomers})</span>
                         </#if>
                     </#if>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
