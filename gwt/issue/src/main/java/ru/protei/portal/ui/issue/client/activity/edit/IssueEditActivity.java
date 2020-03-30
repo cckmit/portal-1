@@ -38,6 +38,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -54,6 +55,10 @@ public abstract class IssueEditActivity implements
         AttachmentUploader.FileUploadHandler uploadHandler = new AttachmentUploader.FileUploadHandler() {
             @Override
             public void onSuccess( Attachment attachment ) {
+                if (lastAttachedByPaste && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(true, lastAttachedByPasteStrPosition, attachment);
+                }
+                lastAttachedByPaste = false;
                 addAttachmentsToCase( Collections.singleton( attachment ) );
             }
 
@@ -64,6 +69,10 @@ public abstract class IssueEditActivity implements
         };
 
         issueInfoWidget.setFileUploadHandler( uploadHandler );
+        issueNameDescriptionEditWidget.setPasteHandler((json, strPosition) -> {
+            issueInfoWidget.getFileUploader().uploadBase64File(json);
+            setLastAttachedByPasteStrPosition(strPosition);
+        });
 
         setNotifyFunctionsForJavascript(this);
     }
@@ -181,15 +190,19 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
+        issueInfoWidget.getDescriptionRO().setClassName("HIDE");
+        view.getInfoContainer().add(issueInfoWidget);
+
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
-                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup);
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo(), issue.getAttachments()), textMarkup);
     }
 
     @Override
     public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
         issue.setName(changeRequest.getName());
         issue.setInfo(changeRequest.getInfo());
+        issue.setAttachments(changeRequest.getAttachments());
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
@@ -214,12 +227,21 @@ public abstract class IssueEditActivity implements
         fireEvent(new Back());
     }
 
+    public void setLastAttachedByPasteStrPosition(Integer value) {
+        lastAttachedByPaste = true;
+        lastAttachedByPasteStrPosition = value;
+    }
+
     public void fireSuccessCopyNotify() {
         fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
     }
 
     public void fireErrorCopyNotify() {
         fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
+    }
+
+    private void addImageToMessage(boolean addInPosition, Integer strPosition, Attachment attach) {
+        issueNameDescriptionEditWidget.description().setValue(addImageInMessage(issueNameDescriptionEditWidget.description().getValue(), addInPosition, strPosition, attach));
     }
 
     private void requestIssue(Long number, HasWidgets container) {
@@ -409,6 +431,9 @@ public abstract class IssueEditActivity implements
 
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
+
+    private boolean lastAttachedByPaste;
+    private Integer lastAttachedByPasteStrPosition;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

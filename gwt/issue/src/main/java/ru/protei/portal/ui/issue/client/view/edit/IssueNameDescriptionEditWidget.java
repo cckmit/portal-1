@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueNameDescriptionEditWidgetActivity;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -38,11 +39,19 @@ public class IssueNameDescriptionEditWidget extends Composite {
         description.setDisplayPreviewHandler( isDisplay -> onDisplayPreviewChanged( AbstractIssueEditView.DESCRIPTION, isDisplay ) );
     }
 
+    public void setPasteHandler(BiConsumer<String, Integer> pasteHandler) {
+        description.setPasteHandler(pasteHandler);
+    }
+
+    public HasValue<String> description(){
+        return description;
+    }
+
     public void setActivity( AbstractIssueNameDescriptionEditWidgetActivity activity ) {
         this.activity = activity;
     }
 
-    public void setIssueIdNameDescription( CaseNameAndDescriptionChangeRequest changeRequest, En_TextMarkup textMarkup ) {
+    public void setIssueIdNameDescription(CaseNameAndDescriptionChangeRequest changeRequest, En_TextMarkup textMarkup ) {
         this.changeRequest = changeRequest;
         description.setRenderer( ( text, consumer ) -> renderMarkupText( text, textMarkup, consumer ) );
         setDescriptionPreviewAllowed( makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ) );
