@@ -44,8 +44,8 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="reply_to")
     private Long replyTo;
 
-    @JdbcColumn(name="vroom")
-    private Long vroomId;
+//    @JdbcColumn(name="vroom")
+//    private Long vroomId;
 
     @JdbcColumn(name="comment_text")
     private String text;
@@ -184,13 +184,13 @@ public class CaseComment extends AuditableObject {
         this.replyTo = replyTo;
     }
 
-    public Long getVroomId() {
-        return vroomId;
-    }
-
-    public void setVroomId(Long vroomId) {
-        this.vroomId = vroomId;
-    }
+//    public Long getVroomId() {
+//        return vroomId;
+//    }
+//
+//    public void setVroomId(Long vroomId) {
+//        this.vroomId = vroomId;
+//    }
 
     public String getText() {
         return text;
@@ -327,7 +327,7 @@ public class CaseComment extends AuditableObject {
                 ", caseManagerId=" + caseManagerId +
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", replyTo=" + replyTo +
-                ", vroomId=" + vroomId +
+//                ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
                 ", caseAttachments=" + caseAttachments +
