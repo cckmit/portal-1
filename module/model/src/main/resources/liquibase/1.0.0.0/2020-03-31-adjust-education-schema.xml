@@ -6,5 +6,11 @@
 
     <changeSet id="adjust-education-tables" author="buchmastov">
         <dropColumn tableName="education_entry" columnName="approved"/>
+        <dropColumn tableName="education_entry_attendance" columnName="charged"/>
+        <addColumn tableName="education_entry_attendance">
+            <column name="approved" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

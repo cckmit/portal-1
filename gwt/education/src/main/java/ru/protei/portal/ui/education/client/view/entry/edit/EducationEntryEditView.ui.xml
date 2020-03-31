@@ -5,7 +5,8 @@
              xmlns:daterange='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
              xmlns:imagepicker='urn:import:ru.protei.portal.ui.common.client.widget.imagepicker'
-             xmlns:workerselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.worker.entry'>
+             xmlns:workerselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.worker.entry'
+             xmlns:attendance='urn:import:ru.protei.portal.ui.education.client.view.widget.attendance'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -59,22 +60,11 @@
                                                          header="{lang.educationEntryParticipants}"
                                                          addStyleNames="form-group col-md-4"/>
             </div>
+            <attendance:EducationEntryAttendanceApprovalWidget styleName="row" ui:field="attendance"/>
         </div>
         <div class="card-footer text-right">
-            <g:Button styleName="btn btn-danger" ui:field="declineButton">
-                <i class="fas fa-trash-alt"/>
-                <span class="bold"><ui:text from="{lang.educationEntryActionDecline}"/></span>
-            </g:Button>
-            <g:Button styleName="btn btn-complete" ui:field="approveButton">
-                <i class="fas fa-thumbs-up"/>
-                <span class="bold"><ui:text from="{lang.educationEntryActionApprove}"/></span>
-            </g:Button>
-            <g:Button ui:field="saveButton" styleName="btn btn-complete">
-                <span class="bold"><ui:text from="{lang.buttonSave}"/></span>
-            </g:Button>
-            <g:Button ui:field="cancelButton" styleName="btn btn-default">
-                <span class="bold"><ui:text from="{lang.buttonClose}"/></span>
-            </g:Button>
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonClose}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

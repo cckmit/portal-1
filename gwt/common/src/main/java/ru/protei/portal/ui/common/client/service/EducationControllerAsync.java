@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.EducationWallet;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EducationControllerAsync {
 
@@ -20,7 +21,5 @@ public interface EducationControllerAsync {
 
     void adminGetEntries(int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated, AsyncCallback<SearchResult<EducationEntry>> async);
 
-    void adminModifyEntry(EducationEntry entry, AsyncCallback<EducationEntry> async);
-
-    void adminDeleteEntry(Long entryId, AsyncCallback<EducationEntry> async);
+    void adminSaveEntryAndAttendance(EducationEntry entry, Map<Long, Boolean> worker2approve, AsyncCallback<EducationEntry> async);
 }

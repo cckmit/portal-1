@@ -7,8 +7,11 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.EducationEntryType;
+import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.ui.education.client.model.Approve;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface AbstractEducationEntryEditView extends IsWidget {
@@ -33,6 +36,8 @@ public interface AbstractEducationEntryEditView extends IsWidget {
 
     HasValue<Set<WorkerEntryShortView>> participants();
 
+    HasValue<Map<EducationEntryAttendance, Approve>> attendance();
+
     void setTitleRequired(boolean isRequired);
 
     void setTypeRequired(boolean isRequired);
@@ -55,11 +60,5 @@ public interface AbstractEducationEntryEditView extends IsWidget {
 
     HasVisibility participantsVisibility();
 
-    HasVisibility declineButtonVisibility();
-
-    HasVisibility approveButtonVisibility();
-
-    HasVisibility saveButtonVisibility();
-
-    HasEnabled approveButtonEnabled();
+    HasVisibility attendanceVisibility();
 }

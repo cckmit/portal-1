@@ -16,6 +16,11 @@ public class EducationEntryAttendanceDAO_Impl extends PortalBaseJdbcDAO<Educatio
     }
 
     @Override
+    public List<EducationEntryAttendance> getAllForEntryAndWorkers(Long entryId, List<Long> workerIds) {
+        return getListByCondition("education_entry_id = ? AND worker_entry_id IN " + makeInArg(workerIds, String::valueOf), entryId);
+    }
+
+    @Override
     public List<EducationEntryAttendance> getAllForDepAndDates(List<Long> depIds, Date rangeFrom, Date rangeTo) {
         return getListByCondition("worker_entry_id IN (SELECT DISTINCT id FROM worker_entry WHERE dep_id IN " + makeInArg(depIds, String::valueOf) + ")" +
                 " AND (date_requested BETWEEN ? AND ?)", rangeFrom, rangeTo);

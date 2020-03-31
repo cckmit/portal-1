@@ -2,6 +2,14 @@ package ru.protei.portal.ui.education.client.activity.entry.edit;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -11,6 +19,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EducationEntry;
+import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -20,11 +29,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EducationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
+import ru.protei.portal.ui.education.client.model.Approve;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
@@ -64,35 +69,6 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
     }
 
     @Override
-    public void onApproveClicked() {
-        boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-//        boolean isApproved = entry.isApproved(); // TODO will be changed to attendance entry
-        if (!isAdmin /*|| isApproved*/) {
-            return;
-        }
-        fillDto(entry);
-//        entry.setApproved(true);
-        educationController.adminModifyEntry(entry, new FluentCallback<EducationEntry>()
-                .withSuccess(en -> {
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
-                }));
-    }
-
-    @Override
-    public void onDeclineClicked() {
-        boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-        if (!isAdmin) {
-            return;
-        }
-        educationController.adminDeleteEntry(entry.getId(), new FluentCallback<EducationEntry>()
-                .withSuccess(en -> {
-                    fireEvent(new NotifyEvents.Show(lang.educationEntryActionDeclined(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
-                }));
-    }
-
-    @Override
     public void onSaveClicked() {
         boolean isCreationMode = entry.getId() == null;
         boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
@@ -111,7 +87,15 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
                         fireEvent(new Back());
                     }));
         } else if (isAdmin) {
-            educationController.adminModifyEntry(entry, new FluentCallback<EducationEntry>()
+            Map<Long, Boolean> worker2approve = stream(view.attendance().getValue().entrySet())
+                    .filter(entry -> entry.getValue() == Approve.APPROVED
+                                    || entry.getValue() == Approve.DECLINED
+                                    || entry.getValue() == Approve.APPROVED_FINAL_DECLINED)
+                    .collect(Collectors.toMap(
+                        entry -> entry.getKey().getWorkerId(),
+                        entry -> entry.getValue() == Approve.APPROVED
+                    ));
+            educationController.adminSaveEntryAndAttendance(entry, worker2approve, new FluentCallback<EducationEntry>()
                     .withSuccess(en -> {
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         fireEvent(new Back());
@@ -137,10 +121,19 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
         view.image().setValue(entry.getImage());
         view.participants().setValue(new HashSet<>());
         view.participantsVisibility().setVisible(isCreationMode);
-        view.approveButtonVisibility().setVisible(isAdmin && !isCreationMode);
-        view.declineButtonVisibility().setVisible(isAdmin && !isCreationMode);
-        view.saveButtonVisibility().setVisible(isCreationMode/* || entry.isApproved()*/);
-        view.approveButtonEnabled().setEnabled(isAdmin/* && !entry.isApproved()*/);
+        view.attendanceVisibility().setVisible(isAdmin && !isCreationMode);
+        if (isAdmin && !isCreationMode) {
+            @SuppressWarnings("RedundantStreamOptionalCall")
+            Map<EducationEntryAttendance, Approve> value = stream(entry.getAttendanceList())
+                    .sorted(Comparator.comparing(EducationEntryAttendance::isApproved))
+                    .collect(Collectors.toMap(
+                        attendance -> attendance,
+                        attendance -> attendance.isApproved() ? Approve.APPROVED_FINAL : Approve.UNKNOWN
+                    ));
+            view.attendance().setValue(value);
+        } else {
+            view.attendance().setValue(Collections.emptyMap());
+        }
         syncViewRequiredState(entry.getType());
     }
 

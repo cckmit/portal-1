@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface EducationEntryDAO extends PortalBaseDAO<EducationEntry> {
     List<EducationEntry> getAll();
-    SearchResult<EducationEntry> getResultForDate(int offset, int limit, Date date);
+    SearchResult<EducationEntry> getResultForDate(int offset, int limit, Date date, Boolean approvedAttendances);
     List<EducationEntry> getAllForDate(Date date);
     List<EducationEntry> getForWallet(List<Long> depIds, Date date);
     EducationEntry get(Long id);

@@ -19,6 +19,14 @@ public class CollectionUtils {
         return !isEmpty(collection);
     }
 
+    public static <K, V> boolean isEmpty(Map<K, V> map) {
+        return (null == map || map.isEmpty());
+    }
+
+    public static <K, V> boolean isNotEmpty(Map<K, V> map) {
+        return !isEmpty(map);
+    }
+
     public static boolean isEmpty( Iterable iterable ) {
         return (null == iterable || !iterable.iterator().hasNext());
     }
@@ -295,5 +303,9 @@ public class CollectionUtils {
         }
 
         return null;
+    }
+
+    public static <T> Predicate<T> not(Predicate<T> predicate) {
+        return predicate.negate();
     }
 }

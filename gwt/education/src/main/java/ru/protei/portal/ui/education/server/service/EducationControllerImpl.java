@@ -14,6 +14,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -52,15 +53,9 @@ public class EducationControllerImpl implements EducationController {
     }
 
     @Override
-    public EducationEntry adminModifyEntry(EducationEntry entry) throws RequestFailedException {
+    public EducationEntry adminSaveEntryAndAttendance(EducationEntry entry, Map<Long, Boolean> worker2approve) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(educationService.adminModifyEntry(token, entry));
-    }
-
-    @Override
-    public EducationEntry adminDeleteEntry(Long entryId) throws RequestFailedException {
-        AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(educationService.adminDeleteEntry(token, entryId));
+        return checkResultAndGetData(educationService.adminSaveEntryAndAttendance(token, entry, worker2approve));
     }
 
     @Autowired

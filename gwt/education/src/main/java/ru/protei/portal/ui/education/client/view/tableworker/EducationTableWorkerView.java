@@ -114,6 +114,7 @@ public class EducationTableWorkerView extends Composite implements AbstractEduca
         int limit = 5;
         int size = emptyIfNull(value.getAttendanceList()).size();
         return stream(value.getAttendanceList())
+                .filter(EducationEntryAttendance::isApproved)
                 .map(EducationEntryAttendance::getWorkerName)
                 .limit(limit)
                 .collect(Collectors.joining(", "))

@@ -15,6 +15,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePic
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -23,8 +24,11 @@ import ru.protei.portal.ui.common.client.widget.selector.worker.entry.WorkerEntr
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.education.client.activity.entry.edit.AbstractEducationEntryEditActivity;
 import ru.protei.portal.ui.education.client.activity.entry.edit.AbstractEducationEntryEditView;
+import ru.protei.portal.ui.education.client.model.Approve;
+import ru.protei.portal.ui.education.client.view.widget.attendance.EducationEntryAttendanceApprovalWidget;
 import ru.protei.portal.ui.education.client.view.widget.entry.EducationEntryTypeButtonSelector;
 
+import java.util.Map;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
@@ -91,9 +95,14 @@ public class EducationEntryEditView extends Composite implements AbstractEducati
     }
 
     @Override
+    public HasValue<Map<EducationEntryAttendance, Approve>> attendance() {
+        return attendance;
+    }
+
+    @Override
     public void setTitleRequired(boolean isRequired) {
         title.setNotNull(isRequired);
-        title.setRegexp(isRequired ? "^\\S+$" : "^.*$");
+        title.setRegexp(isRequired ? "^.+$" : "^.*$");
         title.setValue(title.getValue());
     }
 
@@ -113,14 +122,14 @@ public class EducationEntryEditView extends Composite implements AbstractEducati
     @Override
     public void setLinkRequired(boolean isRequired) {
         link.setNotNull(isRequired);
-        link.setRegexp(isRequired ? "^\\S+$" : "^.*$");
+        link.setRegexp(isRequired ? "^.+$" : "^.*$");
         link.setValue(link.getValue());
     }
 
     @Override
     public void setLocationRequired(boolean isRequired) {
         location.setNotNull(isRequired);
-        location.setRegexp(isRequired ? "^\\S+$" : "^.*$");
+        location.setRegexp(isRequired ? "^.+$" : "^.*$");
         location.setValue(location.getValue());
     }
 
@@ -166,23 +175,8 @@ public class EducationEntryEditView extends Composite implements AbstractEducati
     }
 
     @Override
-    public HasVisibility declineButtonVisibility() {
-        return declineButton;
-    }
-
-    @Override
-    public HasVisibility approveButtonVisibility() {
-        return approveButton;
-    }
-
-    @Override
-    public HasVisibility saveButtonVisibility() {
-        return saveButton;
-    }
-
-    @Override
-    public HasEnabled approveButtonEnabled() {
-        return approveButton;
+    public HasVisibility attendanceVisibility() {
+        return attendance;
     }
 
     @Override
@@ -225,20 +219,6 @@ public class EducationEntryEditView extends Composite implements AbstractEducati
         setParticipantsRequired(participantsRequired);
     }
 
-    @UiHandler("declineButton")
-    public void declineButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onDeclineClicked();
-        }
-    }
-
-    @UiHandler("approveButton")
-    public void approveButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onApproveClicked();
-        }
-    }
-
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -278,10 +258,9 @@ public class EducationEntryEditView extends Composite implements AbstractEducati
     @Inject
     @UiField(provided = true)
     WorkerEntryMultiSelector participants;
-    @UiField
-    Button declineButton;
-    @UiField
-    Button approveButton;
+    @Inject
+    @UiField(provided = true)
+    EducationEntryAttendanceApprovalWidget attendance;
     @UiField
     Button saveButton;
     @UiField

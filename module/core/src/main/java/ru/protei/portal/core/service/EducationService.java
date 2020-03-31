@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.EducationWallet;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EducationService {
 
@@ -29,8 +30,5 @@ public interface EducationService {
     Result<SearchResult<EducationEntry>> adminGetEntries(AuthToken token, int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated);
 
     @Privileged(En_Privilege.EDUCATION_CREATE)
-    Result<EducationEntry> adminModifyEntry(AuthToken token, EducationEntry entry);
-
-    @Privileged(En_Privilege.EDUCATION_CREATE)
-    Result<EducationEntry> adminDeleteEntry(AuthToken token, Long entryId);
+    Result<EducationEntry> adminSaveEntryAndAttendance(AuthToken token, EducationEntry entry, Map<Long, Boolean> worker2approve);
 }

@@ -6,10 +6,6 @@ public interface AbstractEducationEntryEditActivity {
 
     void onTypeChanged(EducationEntryType type);
 
-    void onApproveClicked();
-
-    void onDeclineClicked();
-
     void onSaveClicked();
 
     void onCloseClicked();

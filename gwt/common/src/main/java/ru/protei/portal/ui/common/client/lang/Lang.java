@@ -2124,7 +2124,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String educationEntryActionDecline();
 
-    String educationEntryActionDeclined();
 
     String educationShowOnlyNotApproved();
 

@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="form-group col-md-12">
+        <div class="btn-group">
+            <g:Button styleName="btn btn-danger" ui:field="btnDecline">
+                <i class="fas fa-trash-alt"/>
+                <span class="bold"><ui:text from="{lang.educationEntryActionDecline}"/></span>
+            </g:Button>
+            <g:Button styleName="btn btn-success" ui:field="btnAccept">
+                <i class="fas fa-thumbs-up"/>
+                <span class="bold"><ui:text from="{lang.educationEntryActionApprove}"/></span>
+            </g:Button>
+        </div>
+        <span class="p-l-10" ui:field="label" />
+    </g:HTMLPanel>
+</ui:UiBinder>

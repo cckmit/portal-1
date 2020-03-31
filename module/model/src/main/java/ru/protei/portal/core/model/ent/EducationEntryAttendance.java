@@ -17,8 +17,8 @@ public class EducationEntryAttendance implements Serializable {
     @JdbcColumn(name="worker_entry_id")
     private Long workerId;
 
-    @JdbcColumn(name="charged")
-    private boolean charged;
+    @JdbcColumn(name="approved")
+    private boolean approved;
 
     @JdbcColumn(name="date_requested")
     private Date dateRequested;
@@ -58,12 +58,12 @@ public class EducationEntryAttendance implements Serializable {
         this.workerId = workerId;
     }
 
-    public boolean isCharged() {
-        return charged;
+    public boolean isApproved() {
+        return approved;
     }
 
-    public void setCharged(boolean charged) {
-        this.charged = charged;
+    public void setApproved(boolean approved) {
+        this.approved = approved;
     }
 
     public Date getDateRequested() {
@@ -88,7 +88,7 @@ public class EducationEntryAttendance implements Serializable {
                 "id=" + id +
                 ", educationEntryId=" + educationEntryId +
                 ", workerId=" + workerId +
-                ", charged=" + charged +
+                ", approved=" + approved +
                 ", dateRequested=" + dateRequested +
                 ", workerName='" + workerName + '\'' +
                 ", coins=" + coins +

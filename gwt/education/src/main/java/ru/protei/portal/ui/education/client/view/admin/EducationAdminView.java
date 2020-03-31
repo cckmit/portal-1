@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.EducationEntry;
+import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -17,6 +18,9 @@ import ru.protei.portal.ui.common.client.lang.EducationEntryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.education.client.activity.admin.AbstractEducationAdminActivity;
 import ru.protei.portal.ui.education.client.activity.admin.AbstractEducationAdminView;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.not;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class EducationAdminView extends Composite implements AbstractEducationAdminView {
 
@@ -113,8 +117,9 @@ public class EducationAdminView extends Composite implements AbstractEducationAd
     private final ClickColumn<EducationEntry> approveColumn = new ClickColumn<EducationEntry>() {
         protected void fillColumnHeader(Element columnHeader) {}
         protected void fillColumnValue(Element cell, EducationEntry value) {
-//            String icon = value.isApproved() ? "fas fa-thumbs-up" : "far fa-question-circle"; // TODO will be changed to attendance entry
-            String icon = "fas fa-thumbs-up";
+            boolean hasNotApprovedAttendances = stream(value.getAttendanceList())
+                    .anyMatch(not(EducationEntryAttendance::isApproved));
+            String icon = hasNotApprovedAttendances ? "far fa-question-circle" : "fas fa-thumbs-up";
             cell.setInnerHTML("<i class='" + icon + "'></i>");
         }
     };

@@ -9,6 +9,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Map;
 
 @RemoteServiceRelativePath("springGwtServices/EducationController")
 public interface EducationController extends RemoteService {
@@ -23,7 +24,5 @@ public interface EducationController extends RemoteService {
 
     SearchResult<EducationEntry> adminGetEntries(int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated) throws RequestFailedException;
 
-    EducationEntry adminModifyEntry(EducationEntry entry) throws RequestFailedException;
-
-    EducationEntry adminDeleteEntry(Long entryId) throws RequestFailedException;
+    EducationEntry adminSaveEntryAndAttendance(EducationEntry entry, Map<Long, Boolean> worker2approve) throws RequestFailedException;
 }
