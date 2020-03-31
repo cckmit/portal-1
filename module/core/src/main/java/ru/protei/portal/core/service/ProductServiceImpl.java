@@ -124,6 +124,8 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return error(En_ResultStatus.NOT_FOUND);
 
+        helper.fillAll( product );
+
         product.setParents(devUnitDAO.getParents(id));
         product.setChildren(devUnitDAO.getChildren(id));
         product.setProductDirection(devUnitDAO.getProductDirection(id));
@@ -351,6 +353,8 @@ public class ProductServiceImpl implements ProductService {
         if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
         if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
         if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
+        if (product.getWikiLink() != null) devUnit.setWikiLink( product.getWikiLink() );
+        if (product.getName() != null) devUnit.setName( product.getName() );
         return devUnit;
     }
 

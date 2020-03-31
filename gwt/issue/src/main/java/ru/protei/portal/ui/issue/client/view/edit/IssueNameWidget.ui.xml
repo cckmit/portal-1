@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
     <g:HTMLPanel>
         <h5 ui:field="nameROPanel" class="number-and-name-copy-panel no-margin">
-            <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name" href="#">
+            <g:Anchor ui:field="copyNumberAndName" styleName="copy-issue-number-and-name">
                 <i class="far fa-clone"/>
             </g:Anchor>
             <label ui:field="nameRO" class="semi-bold large-text"/>

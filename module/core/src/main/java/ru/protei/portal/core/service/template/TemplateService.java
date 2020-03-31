@@ -40,6 +40,10 @@ public interface TemplateService {
 
     PreparedTemplate getDocumentDocFileUpdatedByMemberSubject(String documentName);
 
+    PreparedTemplate getMailReportBody(Report report);
+
+    PreparedTemplate getMailReportSubject(Report report);
+
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException;

@@ -134,8 +134,13 @@
   <include file="2020-02-10-add-user-case-assignment-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-02-13-add-default-user-field-redmine-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-02-27-modify-case_tag-table.xml" relativeToChangelogFile="true"/>
-<!--  <include file="2020-02-29-add-person-contact-view.xml" relativeToChangelogFile="true"/>-->
   <include file="2020-02-26-add-audit-types.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-11-add-report-scheduled-type-in-report-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-12-add-project-technical_support_validity.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-06-add-project_sla-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-11-modify-companysubscription-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-12-drop-unique-constraint-in-companysubscriprion-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-23-add-equipment-decimal-number-sort-view.xml" relativeToChangelogFile="true"/>
+
   <include file="2020-03-17-table-refactoring.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

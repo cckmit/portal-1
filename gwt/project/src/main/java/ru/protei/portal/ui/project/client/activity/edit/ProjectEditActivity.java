@@ -170,6 +170,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
         view.saveEnabled().setEnabled(true);
+        view.slaInput().setValue(null);
 
         if (project == null || project.getId() == null) fillCaseLinks(null);
     }
@@ -189,6 +190,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.customerType().setValue(project.getCustomerType());
         view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
 
+        view.slaInput().setValue(project.getProjectSlas());
         view.numberVisibility().setVisible( true );
 
         view.showComments(true);
@@ -217,6 +219,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
+        project.setProjectSlas(view.slaInput().getValue());
         return project;
     }
 
@@ -240,10 +243,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if(view.region().getValue() == null){
-            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectRegion(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
         if(view.direction().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectDirection(), NotifyEvents.NotifyType.ERROR));
             return false;
@@ -254,6 +253,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         }
         if(view.company().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (!view.slaValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.projectSlaNotValid(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 

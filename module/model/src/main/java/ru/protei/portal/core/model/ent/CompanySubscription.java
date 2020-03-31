@@ -24,6 +24,12 @@ public class CompanySubscription implements Serializable {
     @JdbcColumn(name = "lang_code")
     private String langCode;
 
+    @JdbcColumn(name = "platform_id")
+    private Long platformId;
+
+    @JdbcColumn(name = "dev_unit_id")
+    private Long productId;
+
 
     public CompanySubscription() {
     }
@@ -60,8 +66,24 @@ public class CompanySubscription implements Serializable {
         this.langCode = langCode;
     }
 
-    public String uniqueKey () {
-        return (this.email + "_" + String.valueOf(this.companyId));
+    public Long getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    private String uniqueKey () {
+        return (this.email + "_" + this.companyId + "_" + this.productId + "_" + this.platformId);
     }
 
     public static boolean isProteiRecipient(String email){

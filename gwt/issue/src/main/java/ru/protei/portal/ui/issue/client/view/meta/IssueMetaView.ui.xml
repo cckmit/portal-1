@@ -6,9 +6,9 @@
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector"
              xmlns:jirasla="urn:import:ru.protei.portal.ui.common.client.widget.jirasla"
-             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
+             xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -74,7 +74,7 @@
             </div>
             <g:HTMLPanel ui:field="platformContainer" styleName="row">
                 <div class="col-md-12">
-                    <selector:PlatformFormSelector ui:field="platform"
+                    <platform:PlatformFormSelector ui:field="platform"
                                                    validation="false"
                                                    header="{lang.siteFolderPlatform}"
                                                    mandatory="false"/>

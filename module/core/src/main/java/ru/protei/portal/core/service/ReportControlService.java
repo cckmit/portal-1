@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 
 /**
  * Сервис автоматического контролирования и управления отчетами
@@ -27,5 +28,12 @@ public interface ReportControlService {
      * @return результат выполнения операции
      */
     Result<Void> processHangReports();
+
+    /**
+     * Обработать отчеты по расписанию
+     *
+     * @return результат выполнения операции
+     */
+    Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType);
 
 }

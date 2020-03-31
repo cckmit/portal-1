@@ -33,7 +33,7 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
         myId = event.profile.getId();
     }
 
-    public void updateCompanies( Refreshable selector, Set<Long> companyIds, boolean fired) {
+    public void updateCompanies( Refreshable selector, Set<Long> companyIds, Boolean fired) {
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 

@@ -3,7 +3,7 @@
              xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'>
+             xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 

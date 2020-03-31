@@ -104,7 +104,6 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
 
     private boolean validate() {
         return view.nameValidator().isValid() &&
-                view.regionValidator().isValid() &&
                 view.directionValidator().isValid() &&
                 view.customerTypeValidator().isValid() &&
                 view.companyValidator().isValid();

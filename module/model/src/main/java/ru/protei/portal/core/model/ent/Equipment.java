@@ -81,6 +81,12 @@ public class Equipment extends AuditableObject {
     @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "entity_id")
     private List<DecimalNumber> decimalNumbers;
 
+    // специальная вью со обработанным номером для сортировки (classifierCode + registerNumber)
+    @JdbcJoinedColumn(mappedColumn = "sort_decimal",
+            table = "view_equipments_decimal_number_sort", sqlTableAlias = "decimal_view" ,
+            localColumn = "id",remoteColumn = "Equipment_id")
+    private String sortDecimal;
+
     /**
      * Первичное применение
      */
@@ -233,6 +239,14 @@ public class Equipment extends AuditableObject {
 
     public String getAuthorShortName() {
         return authorShortName;
+    }
+
+    public String getSortDecimal() {
+        return sortDecimal;
+    }
+
+    public void setSortDecimal(String sortDecimal) {
+        this.sortDecimal = sortDecimal;
     }
 
     @Override

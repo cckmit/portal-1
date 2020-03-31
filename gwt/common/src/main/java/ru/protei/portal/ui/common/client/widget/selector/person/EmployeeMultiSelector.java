@@ -4,7 +4,10 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 
 /**
  * Селектор сотрудников
@@ -22,6 +25,19 @@ public class EmployeeMultiSelector
         setFilter(personView -> !personView.isFired());
         setItemRenderer(PersonShortView::getName);
         setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
+    }
+
+    @Override
+    protected SelectorItem<PersonShortView> makeSelectorItem(PersonShortView value, String elementHtml) {
+        PopupSelectableItem<PersonShortView> item = new PopupSelectableItem<>();
+
+        if (!CrmConstants.Employee.UNDEFINED.equals(value.getId()) && value.isFired()) {
+            item.setIcon("fa fa-ban ban m-r-5");
+        }
+
+        item.setElementHtml(elementHtml);
+        item.setSelected(isSelected(value));
+        return item;
     }
 
     @Override

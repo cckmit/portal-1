@@ -197,7 +197,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactMobilePhone();
 
-    String contactPersonalPhone();
+    String contactWorkPhone();
 
     String contactEmail();
 
@@ -240,6 +240,22 @@ public interface Lang extends Messages, ContactItemLang {
     String companyParentLabel();
 
     String companyChildrenLabel();
+
+    String companySubscriptionGroupRemoveConfirmMessage();
+
+    String companySubscriptionGroupRemoveButton();
+
+    String companySubscriptionGroupCollapseButton();
+
+    String companySubscriptionGroupExpandButton();
+
+    String companySubscriptionGroupAddButton();
+
+    String companySubscriptionGroupAnyValuePlatformSelector();
+
+    String companySubscriptionGroupAnyValueProductSelector();
+
+    String companySubscriptionGroupQuantity();
 
     String issues();
 
@@ -1674,6 +1690,14 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
+    String reportScheduledType();
+
+    String reportScheduledTypeNone();
+
+    String reportScheduledTypeDaily();
+
+    String reportScheduledTypeWeekly();
+
     String employeeRegistrationNumberColumn();
 
     String employeeRegistrationCurators();
@@ -1855,8 +1879,6 @@ public interface Lang extends Messages, ContactItemLang {
     String crmPrefix();
 
     String errInvalidCurrentPassword();
-
-    String errSaveProjectNeedSelectRegion();
 
     String errSaveProjectNeedSelectDirection();
 
@@ -2105,4 +2127,36 @@ public interface Lang extends Messages, ContactItemLang {
     String technicalSupportValidityNotFound(String managerName);
 
     String technicalSupportValidityNotDefined();
+
+    String jiraInfoPageHeader();
+
+    String issueJiraInfo();
+
+    String jiraInfoStatusMap();
+
+    String jiraInfoWorkFlow();
+
+    String jiraInfoJiraStatus();
+
+    String jiraInfoCrmStatus();
+
+    String jiraInfoStatusDefinition();
+
+    String jiraInfoStatusComment();
+
+    String jiraInfoBackButton();
+
+    String projectSlaTemporaryTime();
+
+    String projectSlaReactionTime();
+
+    String projectSlaFullTime();
+
+    String projectSla();
+
+    String projectImportance();
+
+    String projectSlaNotValid();
+
+    String projectTeamRole();
 }

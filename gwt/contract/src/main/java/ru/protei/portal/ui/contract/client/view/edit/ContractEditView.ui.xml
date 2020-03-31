@@ -11,7 +11,8 @@
              xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money"
              xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
-             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
+             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 

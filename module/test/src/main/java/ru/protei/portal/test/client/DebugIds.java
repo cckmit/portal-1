@@ -357,6 +357,7 @@ public class DebugIds {
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-technical-support-validity-container";
+        String SLA_INPUT = "project-sla-input";
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
@@ -380,6 +381,7 @@ public class DebugIds {
         String CONTRACT_LABEL = "project-preview-contract-label";
         String PLATFORM_LABEL = "project-preview-platform-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
+        String SLA_INPUT = "project-preview-sla-input";
     }
 
     public interface COMPANY_TABLE {
@@ -405,14 +407,15 @@ public class DebugIds {
         }
     }
 
+    public interface COMPANY {
+        String SUBSCRIPTIONS = "company-subscriptions";
+    }
+
     public interface PRODUCT {
         String NAME = "product-name";
         String WIKI_LINK = "product-wiki-link";
         String DESCRIPTION = "product-description";
         String SUBSCRIPTIONS = "product-subscriptions";
-        String SUBSCRIPTIONS_ITEM = "product-subscriptions-item";
-        String SUBSCRIPTIONS_ITEM_LANG_CODE = "product-subscriptions-item-lang-code";
-        String SUBSCRIPTIONS_ITEM_EMAIL = "product-subscriptions-item-email";
         String INCLUDES = "product-includes";
         String PRODUCTS = "product-products";
         String ALIASES = "product-aliases";

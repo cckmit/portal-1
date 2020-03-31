@@ -9,10 +9,6 @@ public interface AbstractIssueEditActivity {
 
     void onNameAndDescriptionEditClicked();
 
-    void onCopyNumberClicked();
-
-    void onCopyNumberAndName();
-
     void onOpenEditViewClicked();
 
     void onAddTagClicked(IsWidget target);

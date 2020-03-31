@@ -9,26 +9,21 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class IssueReportCreateActivity implements Activity,
         AbstractIssueReportCreateActivity, AbstractIssueFilterModel {
@@ -36,7 +31,10 @@ public abstract class IssueReportCreateActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.getIssueFilter().setModel(this);
+        view.getIssueFilterContainer().add(filterView.asWidget());
+        filterView.addAdditionalFilterValidate(
+                caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
+        filterView.getIssueFilterParams().setModel(this);
     }
 
     @Event
@@ -47,6 +45,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         view.fillReportTypes(makeReportTypeList());
+        view.fillReportScheduledTypes(Arrays.asList(En_ReportScheduledType.values()));
     }
 
     @Event(Type.FILL_CONTENT)
@@ -63,10 +62,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.reset();
 
         if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
-            HashSet<EntityOption> companyIds = new HashSet<>();
-            companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
-            view.getIssueFilter().companies().setValue(companyIds);
-            view.getIssueFilter().updateInitiators();
+            filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
         }
     }
 
@@ -74,7 +70,8 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();
-        CaseQuery query = view.getIssueFilter().getValue();
+        En_ReportScheduledType scheduledType = view.reportScheduledType().getValue();
+        CaseQuery query = filterView.getFilterFieldsByFilterType();
 
         if (!validateQuery(reportType, query)) {
             return;
@@ -82,6 +79,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         Report report = new Report();
         report.setReportType(reportType);
+        report.setScheduledType(scheduledType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
         report.setCaseQuery(query);
@@ -108,43 +106,14 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onReportTypeChanged() {
+    public void onReportTypeChanged(En_CaseFilterType filterType) {
+        filterView.updateFilterType(filterType);
         applyIssueFilterVisibilityByPrivileges();
     }
 
     @Override
-    public void onUserFilterChanged(Long id, Consumer<CaseFilter> consumer) {
-
-        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
-                .withErrorMessage(lang.errNotFound())
-                .withSuccess(caseFilter ->
-                    consumer.accept(caseFilter)));
-    }
-
-    @Override
-    public void onSaveFilterClicked(CaseFilter caseFilter, Consumer<CaseFilterShortView> consumer) {
-
-        if (!validateQuery(caseFilter.getType(), caseFilter.getParams())) {
-            return;
-        }
-
-        filterService.saveIssueFilter(caseFilter, new FluentCallback<CaseFilter>()
-                .withError(throwable -> {
-                    defaultErrorHandler.accept(throwable);
-                    fireEvent(new NotifyEvents.Show(lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(filter -> {
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeUserFilterModel());
-                    consumer.accept(filter.toShortView());
-                }));
-    }
-
-    @Override
-    public void onRemoveFilterClicked(Long id) {
-        if (id != null) {
-            fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id)));
-        }
+    public void onUserFilterChanged() {
+        ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
     private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
@@ -172,14 +141,15 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
-        if (view.getIssueFilter().productsVisibility().isVisible()) {
-            view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+        AbstractIssueFilterParamView issueFilterParams = filterView.getIssueFilterParams();
+        if (issueFilterParams.productsVisibility().isVisible()) {
+            issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
         }
-        if (view.getIssueFilter().managersVisibility().isVisible()) {
-            view.getIssueFilter().managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
+        if (issueFilterParams.managersVisibility().isVisible()) {
+            issueFilterParams.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
         }
-        if (view.getIssueFilter().searchPrivateVisibility().isVisible()) {
-            view.getIssueFilter().searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        if (issueFilterParams.searchPrivateVisibility().isVisible()) {
+            issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
         }
     }
 
@@ -190,18 +160,6 @@ public abstract class IssueReportCreateActivity implements Activity,
         return Arrays.asList(En_ReportType.CASE_OBJECTS);
     }
 
-    private Runnable removeAction(Long filterId) {
-        return () -> filterService.removeIssueFilter(filterId, new FluentCallback<Boolean>()
-                .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(aBoolean -> {
-                    fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeUserFilterModel());
-                    view.getIssueFilter().reset();
-                }));
-    }
-
     @Inject
     Lang lang;
     @Inject
@@ -210,10 +168,9 @@ public abstract class IssueReportCreateActivity implements Activity,
     ReportControllerAsync reportController;
     @Inject
     PolicyService policyService;
+
     @Inject
-    IssueFilterControllerAsync filterService;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
+    IssueFilterWidget filterView;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
