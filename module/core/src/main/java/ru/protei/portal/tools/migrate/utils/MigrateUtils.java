@@ -131,7 +131,7 @@ public class MigrateUtils {
     }
 
     public static DevUnit fromExternalProject (ExternalDevProject project) {
-        DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), project.getName(), project.getInfo());
+        DevUnit u = new DevUnit(En_DevUnitType.COMPONENT, project.getName(), project.getInfo());
         u.setCreated(project.getCreated());
         u.setCreatorId(null);
         u.setLastUpdate(project.getLastUpdate());
@@ -141,7 +141,7 @@ public class MigrateUtils {
     }
 
     public static DevUnit fromExternalProduct (ExternalProduct product) {
-        DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), product.getName(), product.getInfo());
+        DevUnit u = new DevUnit(En_DevUnitType.PRODUCT, product.getName(), product.getInfo());
         u.setCreated(product.getCreated());
         u.setCreatorId(null);
         u.setLastUpdate(product.getLastUpdate());

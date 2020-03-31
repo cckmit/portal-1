@@ -43,7 +43,7 @@ public class BaseServiceTest {
         DevUnit product = new DevUnit();
         product.setName( productName );
         product.setCreated( new Date() );
-        product.setTypeId( En_DevUnitType.PRODUCT.getId() );
+        product.setType( En_DevUnitType.PRODUCT );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
         product.setInfo( "info" );
         product.setHistoryVersion( "historyVersion" );

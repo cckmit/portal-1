@@ -23,7 +23,8 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     private Long id;
 
     @JdbcColumn(name="UTYPE_ID")
-    private int typeId;
+    @JdbcEnumerated( EnumType.ID )
+    private En_DevUnitType devUnitType;
 
     @JdbcColumn(name="CREATED")
     private Date created;
@@ -110,11 +111,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     }
 
     public DevUnit (En_DevUnitType type, String name, String info) {
-        this (type.getId(), name, info);
-    }
-
-    public DevUnit(int typeId, String name, String info) {
-        this.typeId = typeId;
+        this.devUnitType = type;
         this.name = name;
         this.info = info;
         this.created = new Date();
@@ -130,11 +127,11 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     }
 
     public int getTypeId() {
-        return typeId;
+        return devUnitType.getId();
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setType(En_DevUnitType devUnitType) {
+        this.devUnitType = devUnitType;
     }
 
     public Date getCreated() {
@@ -206,7 +203,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     }
 
     public En_DevUnitType getType () {
-        return En_DevUnitType.forId(this.typeId);
+        return devUnitType;
     }
 
     public List<DevUnit> getParents() {
@@ -315,7 +312,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     public String toString() {
         return "DevUnit{" +
                 "id=" + id +
-                ", typeId=" + typeId +
+                ", devUnitType=" + devUnitType +
                 ", created=" + created +
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +

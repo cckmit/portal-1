@@ -212,7 +212,7 @@ public class BootstrapService {
             DevUnit complex = new DevUnit();
             complex.setName(complexName);
             complex.setStateId(En_DevUnitState.ACTIVE.getId());
-            complex.setTypeId(En_DevUnitType.COMPLEX.getId());
+            complex.setType(En_DevUnitType.COMPLEX);
             complex.setChildren(project.getProducts().stream().filter(DevUnit::isProduct).collect(toList()));
             complex.setCreated(new Date());
 

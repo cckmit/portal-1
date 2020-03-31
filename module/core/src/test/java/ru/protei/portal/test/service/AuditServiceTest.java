@@ -50,7 +50,7 @@ public class AuditServiceTest {
         product.setCreatorId( 1L );
         product.setInfo( "Unit-test" );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
-        product.setTypeId( En_DevUnitType.PRODUCT.getId() );
+        product.setType( En_DevUnitType.PRODUCT );
 
         auditObject.setEntryInfo( product );
 

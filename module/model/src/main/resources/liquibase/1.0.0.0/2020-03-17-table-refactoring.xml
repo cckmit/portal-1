@@ -158,4 +158,33 @@
         </sql>
     </changeSet>
 
+    <changeSet id="drop-FK_LOCATION_TYPE" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="location" foreignKeyName="FK_LOCATION_TYPE" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="location" constraintName="FK_LOCATION_TYPE" />
+    </changeSet>
+    <changeSet id="drop-location_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="location_type" />
+        </preConditions>
+        <dropTable tableName="location_type" />
+    </changeSet>
+
+    <changeSet id="drop-FK_DEV_UNIT_TYPE" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="dev_unit" foreignKeyName="FK_DEV_UNIT_TYPE" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="dev_unit" constraintName="FK_DEV_UNIT_TYPE" />
+    </changeSet>
+    <changeSet id="drop-dev_unit_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_type" />
+        </preConditions>
+        <dropTable tableName="dev_unit_type" />
+    </changeSet>
+
+
+
+
 </databaseChangeLog>
