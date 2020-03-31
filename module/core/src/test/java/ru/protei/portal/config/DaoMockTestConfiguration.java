@@ -180,11 +180,6 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return  mock(CompanyCategoryDAO.class);
-    }
-
-    @Bean
     public CaseAttachmentDAO getCaseAttachmentDAO() {
         return  mock(CaseAttachmentDAO.class);
     }

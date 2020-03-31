@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
@@ -40,7 +41,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     public HasValue<Boolean> showDeprecated() { return showDeprecated; }
 
     @Override
-    public HasValue<Set< EntityOption >> categories() {
+    public HasValue<Set<En_CompanyCategory>> categories() {
         return categories;
     }
 

@@ -2159,4 +2159,14 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSlaNotValid();
 
     String projectTeamRole();
+
+    String companyCategoryCustomer();
+
+    String companyCategoryPartner();
+
+    String companyCategorySubcontractor();
+
+    String companyCategoryOfficial();
+
+    String companyCategoryHome();
 }

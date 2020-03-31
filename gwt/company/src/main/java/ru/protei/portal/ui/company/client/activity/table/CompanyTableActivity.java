@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Company;
@@ -175,7 +176,7 @@ public abstract class CompanyTableActivity implements
             cq.setCategoryIds(
                     filterView.categories().getValue()
                             .stream()
-                            .map( EntityOption::getId )
+                            .map( En_CompanyCategory::getId )
                             .collect( Collectors.toList() ));
 
         return cq;

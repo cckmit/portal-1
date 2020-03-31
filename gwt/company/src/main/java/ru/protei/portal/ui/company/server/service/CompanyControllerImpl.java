@@ -36,10 +36,8 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public SearchResult< Company > getCompanies(CompanyQuery companyQuery) throws RequestFailedException {
 
-        List< Long > categoryIds = companyQuery.getCategoryIds();
-
         log.info( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
-                companyQuery.getSearchString(), categoryIds,
+                companyQuery.getSearchString(), companyQuery.getCategoryIds(),
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -177,7 +175,7 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List< EntityOption > getCategoryOptionList() throws RequestFailedException {
+    public List< En_CompanyCategory > getCategoryOptionList() throws RequestFailedException {
 
         log.info( "getCategoryOptionList()" );
 
@@ -185,7 +183,7 @@ public class CompanyControllerImpl implements CompanyController {
         Set<UserRole> availableRoles = token.getRoles();
         boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
 
-        Result< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
+        Result< List< En_CompanyCategory > > result = companyService.categoryOptionList(hasOfficial);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 

@@ -50,8 +50,7 @@ public abstract class CompanyPreviewActivity
 
         String categoryImage = null;
         if ( value.getCategory() != null ) {
-            En_CompanyCategory enCategory = En_CompanyCategory.findById(value.getCategory().getId());
-            categoryImage = "./images/company_" + enCategory.name().toLowerCase() + ".svg";
+            categoryImage = "./images/company_" + value.getCategory().name().toLowerCase() + ".svg";
         }
         view.setCategory( categoryImage );
 

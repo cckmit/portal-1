@@ -241,11 +241,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public CompanyCategoryDAO getCompanyCategoryDao() {
-        return new CompanyCategoryDAO_Impl();
-    }
-
-    @Bean
     public CompanySubscriptionDAO getCompanySubscriptionDao() {
         return new CompanySubscriptionDAO_Impl();
     }

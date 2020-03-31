@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -19,7 +20,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     private Long id;
 
     @JdbcJoinedObject( localColumn = "category_id", table = "company_category" )
-    private CompanyCategory category;
+    @JdbcEnumerated( EnumType.ID )
+    private En_CompanyCategory category;
 
     @JdbcColumn(name = "groupId")
     private Long groupId;
@@ -97,15 +99,11 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         return this.created;
     }
 
-    public Long getCategoryId() {
-        return category == null ? null : category.getId();
-    }
-
-    public CompanyCategory getCategory() {
+    public En_CompanyCategory getCategory() {
         return category;
     }
 
-    public void setCategory( CompanyCategory category ) {
+    public void setCategory( En_CompanyCategory category ) {
         this.category = category;
     }
 

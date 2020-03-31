@@ -184,11 +184,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return new CompanyCategoryDAO_Impl();
-    }
-
-    @Bean
     public CaseAttachmentDAO getCaseAttachmentDAO() {
         return new CaseAttachmentDAO_Impl();
     }

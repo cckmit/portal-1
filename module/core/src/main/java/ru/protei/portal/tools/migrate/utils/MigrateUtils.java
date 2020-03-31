@@ -154,7 +154,7 @@ public class MigrateUtils {
         Company x = new Company();
         x.setId(imp.getId());
         x.setOldId(imp.getId());
-        x.setCategory(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        x.setCategory(En_CompanyCategory.CUSTOMER);
         x.setInfo(imp.getInfo());
         x.setCname(imp.getName());
         x.setCreated(imp.getCreated());

@@ -13,7 +13,7 @@ public class CompanyQuery extends BaseQuery {
     /**
      * list of company category (a partner, dealer, customer, etc)
      */
-    private List<Long> categoryIds;
+    private List<Integer> categoryIds;
 
     private boolean onlyHome;
 
@@ -48,11 +48,11 @@ public class CompanyQuery extends BaseQuery {
         this.isShowDeprecated = isShowDeprecated;
     }
 
-    public List<Long> getCategoryIds() {
+    public List<Integer> getCategoryIds() {
         return categoryIds;
     }
 
-    public void setCategoryIds(List<Long> categoryIds) {
+    public void setCategoryIds(List<Integer> categoryIds) {
         this.categoryIds = categoryIds;
     };
 

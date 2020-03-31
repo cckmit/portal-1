@@ -86,14 +86,14 @@ public class BaseServiceTest {
     }
 
     public static Company createNewCustomerCompany() {
-        return createNewCompany(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        return createNewCompany(En_CompanyCategory.CUSTOMER);
     }
 
-    public static Company createNewCompany( CompanyCategory category ) {
+    public static Company createNewCompany( En_CompanyCategory category ) {
         return createNewCompany( "Test_Company", category );
     }
 
-    public static Company createNewCompany( String companyName, CompanyCategory category ) {
+    public static Company createNewCompany( String companyName, En_CompanyCategory category ) {
         Company company = new Company();
         company.setCname( companyName );
         company.setCategory( category );
@@ -203,16 +203,16 @@ public class BaseServiceTest {
     }
 
     protected Company makeCustomerCompany() {
-        return makeCompany(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        return makeCompany( En_CompanyCategory.CUSTOMER );
     }
 
-    protected Company makeCompany( CompanyCategory category ) {
+    protected Company makeCompany( En_CompanyCategory category ) {
         Company company = createNewCompany( category );
         company.setId( companyDAO.persist( company ) );
         return company;
     }
 
-    protected Company makeCompany( String companyName,  CompanyCategory category ) {
+    protected Company makeCompany( String companyName,  En_CompanyCategory category ) {
         return makeCompany( createNewCompany( companyName, category ) );
     }
 

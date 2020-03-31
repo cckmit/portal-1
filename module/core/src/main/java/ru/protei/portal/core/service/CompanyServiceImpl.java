@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
@@ -24,7 +23,9 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CompanyCategory.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 /**
  * Реализация сервиса управления компаниями
@@ -38,9 +39,6 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     CompanyGroupDAO companyGroupDAO;
-
-    @Autowired
-    CompanyCategoryDAO companyCategoryDAO;
 
     @Autowired
     CompanySubscriptionDAO companySubscriptionDAO;
@@ -159,22 +157,17 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> categoryOptionList( boolean hasOfficial) {
+    public Result<List<En_CompanyCategory>> categoryOptionList( boolean hasOfficial) {
 
-        List<CompanyCategory> list;
+        List<En_CompanyCategory> list;
 
         if(!hasOfficial) {
-            list = companyCategoryDAO.getListByKeys(Arrays.asList(1l, 2l, 3l));
+            list = listOf( CUSTOMER, PARTNER, SUBCONTRACTOR );
         } else {
-            list = companyCategoryDAO.getAll();
+            list = listOf( En_CompanyCategory.values() );
         }
 
-        if (list == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        List<EntityOption> result = list.stream().map(CompanyCategory::toEntityOption).collect(Collectors.toList());
-
-        return ok(result);
+        return ok(list);
     }
 
     @Override
@@ -349,7 +342,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private int placeHomeCompaniesAtBegin( CompanyQuery query, Company o1,  Company o2 )  {
         if (!query.isSortHomeCompaniesAtBegin()) return 0;
-        return Objects.equals( En_CompanyCategory.HOME.getId(), o1.getCategoryId() ) ? -1 : Objects.equals( En_CompanyCategory.HOME.getId(), o2.getCategoryId() ) ? 1 : 0;
+        return Objects.equals( En_CompanyCategory.HOME, o1.getCategory() ) ? -1 : Objects.equals( En_CompanyCategory.HOME, o2.getCategory() ) ? 1 : 0;
     }
 
     private void applyFilterByScope( AuthToken token, CompanyQuery query ) {

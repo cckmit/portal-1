@@ -204,11 +204,6 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return mock( CompanyCategoryDAO.class );
-    }
-
-    @Bean
     public CaseAttachmentDAO getCaseAttachmentDAO() {
         return mock( CaseAttachmentDAO.class );
     }

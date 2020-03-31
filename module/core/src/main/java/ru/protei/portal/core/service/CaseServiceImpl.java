@@ -725,7 +725,7 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        return Objects.equals(En_CompanyCategory.HOME.getId(), company.getCategory().getId());
+        return (En_CompanyCategory.HOME == company.getCategory());
     }
 
     private void applyStateBasedOnManager(CaseObject caseObject) {
