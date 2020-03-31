@@ -64,8 +64,8 @@ public class CaseCommentUtils {
         }
     }
 
-    public static String addImageInMessage(String message, boolean addInPosition, Integer position, Attachment attach) {
-        if (addInPosition && position != null) {
+    public static String addImageInMessage(String message, Integer position, Attachment attach) {
+        if (position != null) {
             return message.substring(0, position) + NEW_LINE_SYMBOL + makeImageString(attach) + NEW_LINE_SYMBOL + message.substring(position);
         } else {
             return isEmpty(message)? makeImageString(attach) : message + NEW_LINE_SYMBOL + makeImageString(attach);

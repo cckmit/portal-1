@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -54,11 +55,10 @@ public abstract class IssueEditActivity implements
 
         AttachmentUploader.FileUploadHandler uploadHandler = new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess( Attachment attachment ) {
-                if (lastAttachedByPaste && attachment.getMimeType().startsWith("image/")) {
-                    addImageToMessage(true, lastAttachedByPasteStrPosition, attachment);
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(pasteInfo.strPosition, attachment);
                 }
-                lastAttachedByPaste = false;
                 addAttachmentsToCase( Collections.singleton( attachment ) );
             }
 
@@ -70,8 +70,7 @@ public abstract class IssueEditActivity implements
 
         issueInfoWidget.setFileUploadHandler( uploadHandler );
         issueNameDescriptionEditWidget.setPasteHandler((json, strPosition) -> {
-            issueInfoWidget.getFileUploader().uploadBase64File(json);
-            setLastAttachedByPasteStrPosition(strPosition);
+            issueInfoWidget.getFileUploader().uploadBase64File(json, new PasteInfo(strPosition));
         });
 
         setNotifyFunctionsForJavascript(this);
@@ -227,11 +226,6 @@ public abstract class IssueEditActivity implements
         fireEvent(new Back());
     }
 
-    public void setLastAttachedByPasteStrPosition(Integer value) {
-        lastAttachedByPaste = true;
-        lastAttachedByPasteStrPosition = value;
-    }
-
     public void fireSuccessCopyNotify() {
         fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
     }
@@ -240,8 +234,9 @@ public abstract class IssueEditActivity implements
         fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
     }
 
-    private void addImageToMessage(boolean addInPosition, Integer strPosition, Attachment attach) {
-        issueNameDescriptionEditWidget.description().setValue(addImageInMessage(issueNameDescriptionEditWidget.description().getValue(), addInPosition, strPosition, attach));
+    private void addImageToMessage(Integer strPosition, Attachment attach) {
+        issueNameDescriptionEditWidget.description().setValue(
+                addImageInMessage(issueNameDescriptionEditWidget.description().getValue(), strPosition, attach));
     }
 
     private void requestIssue(Long number, HasWidgets container) {
@@ -431,9 +426,6 @@ public abstract class IssueEditActivity implements
 
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
-
-    private boolean lastAttachedByPaste;
-    private Integer lastAttachedByPasteStrPosition;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

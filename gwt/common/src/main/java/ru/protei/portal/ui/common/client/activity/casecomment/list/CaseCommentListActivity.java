@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -55,12 +56,11 @@ public abstract class CaseCommentListActivity
         view.setActivity( this );
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
-                if (lastAttachedByPaste && attachment.getMimeType().startsWith("image/")) {
-                    addImageToMessage(true, lastAttachedByPasteStrPosition, attachment);
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(pasteInfo.strPosition, attachment);
                 }
                 addTempAttachment(attachment);
-                lastAttachedByPaste = false;
             }
             @Override
             public void onError(En_FileUploadStatus status, String details) {
@@ -284,12 +284,6 @@ public abstract class CaseCommentListActivity
         fireChangedPreview();
     }
 
-    @Override
-    public void setLastAttachedByPasteStrPosition(Integer value) {
-        lastAttachedByPaste = true;
-        lastAttachedByPasteStrPosition = value;
-    }
-
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -308,8 +302,9 @@ public abstract class CaseCommentListActivity
         });
     }
 
-    private void addImageToMessage(boolean addToPosition, Integer strPosition, Attachment attach) {
-        view.message().setValue(addImageInMessage(view.message().getValue(), addToPosition, strPosition, attach));
+    private void addImageToMessage(Integer strPosition, Attachment attach) {
+        view.message().setValue(
+                addImageInMessage(view.message().getValue(), strPosition, attach));
     }
 
     private void addTempAttachment(Attachment attach) {
@@ -720,7 +715,4 @@ public abstract class CaseCommentListActivity
 
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
-
-    private boolean lastAttachedByPaste;
-    private Integer lastAttachedByPasteStrPosition;
 }

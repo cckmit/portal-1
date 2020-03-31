@@ -18,6 +18,4 @@ public interface AbstractCaseCommentListActivity {
     void onCommentChanged(String text);
 
     void onDisplayPreviewChanged( Boolean isDisplayPreview );
-
-    void setLastAttachedByPasteStrPosition(Integer value);
 }

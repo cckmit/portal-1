@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -53,11 +54,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
-                if (lastAttachedByPaste && attachment.getMimeType().startsWith("image/")) {
-                    addImageToMessage(true, lastAttachedByPasteStrPosition, attachment);
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(pasteInfo.strPosition, attachment);
                 }
-                lastAttachedByPaste = false;
                 view.attachmentsContainer().add(attachment);
             }
 
@@ -249,14 +249,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
     }
 
-    @Override
-    public void setLastAttachedByPasteStrPosition(Integer value) {
-        lastAttachedByPaste = true;
-        lastAttachedByPasteStrPosition = value;
-    }
-
-    private void addImageToMessage(boolean addInPosition, Integer strPosition, Attachment attach) {
-        view.description().setValue(addImageInMessage(view.description().getValue(), addInPosition, strPosition, attach));
+    private void addImageToMessage(Integer strPosition, Attachment attach) {
+        view.description().setValue(addImageInMessage(view.description().getValue(), strPosition, attach));
     }
 
     private void fillView() {
@@ -471,7 +465,4 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
-
-    private boolean lastAttachedByPaste;
-    private Integer lastAttachedByPasteStrPosition;
 }

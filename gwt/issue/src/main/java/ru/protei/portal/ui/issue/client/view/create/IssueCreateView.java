@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateView;
@@ -32,8 +33,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
         description.setPasteHandler((json, strPosition) -> {
-            fileUploader.uploadBase64File(json);
-            activity.setLastAttachedByPasteStrPosition(strPosition);
+            fileUploader.uploadBase64File(json, new PasteInfo(strPosition));
         });
     }
 

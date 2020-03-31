@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -36,7 +37,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         view.setActivity(this);
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
                 addAttachmentsToCase(Collections.singleton(attachment));
             }
             @Override
