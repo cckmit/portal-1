@@ -58,6 +58,7 @@ public abstract class IssueEditActivity implements
             public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
                 if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
                     addImageToMessage(pasteInfo.strPosition, attachment);
+                    issueNameDescriptionEditWidget.addTempAttachment(attachment);
                 }
                 addAttachmentsToCase( Collections.singleton( attachment ) );
             }
@@ -199,7 +200,6 @@ public abstract class IssueEditActivity implements
     public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
         issue.setName(changeRequest.getName());
         issue.setInfo(changeRequest.getInfo());
-        issue.setAttachments(changeRequest.getAttachments());
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }

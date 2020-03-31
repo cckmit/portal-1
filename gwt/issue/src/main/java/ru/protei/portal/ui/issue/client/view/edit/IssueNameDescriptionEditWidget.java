@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.test.client.DebugIds;
@@ -26,6 +27,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueNameDescriptionEditWidgetActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -57,6 +60,12 @@ public class IssueNameDescriptionEditWidget extends Composite {
         setDescriptionPreviewAllowed( makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ) );
         name.setValue( changeRequest.getName() );
         description.setValue( changeRequest.getInfo() );
+
+        tempAttachment.clear();
+    }
+
+    public void addTempAttachment(Attachment attachment) {
+        tempAttachment.add(attachment);
     }
 
     @UiHandler("saveNameAndDescriptionButton")
@@ -79,6 +88,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
 
         changeRequest.setName( name.getValue() );
         changeRequest.setInfo( description.getValue() );
+        changeRequest.setAttachments( tempAttachment );
 
         issueService.saveIssueNameAndDescription( changeRequest, new FluentCallback<Void>()
                 .withError( t -> requested = false )
@@ -171,6 +181,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
     private AbstractIssueNameDescriptionEditWidgetActivity activity;
     private boolean requested;
     private CaseNameAndDescriptionChangeRequest changeRequest;
+    private List<Attachment> tempAttachment = new ArrayList<>();
 
     interface IssueNameWidgetUiBinder extends UiBinder<HTMLPanel, IssueNameDescriptionEditWidget> {
     }
