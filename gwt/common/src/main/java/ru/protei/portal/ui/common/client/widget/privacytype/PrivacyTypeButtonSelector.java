@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.widget.privacytype;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
-import ru.protei.portal.test.client.DebugIdsHelper;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.PrivacyTypeStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseCommentPrivacyTypeLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
@@ -29,10 +29,13 @@ public class PrivacyTypeButtonSelector extends ToggleBtnGroup<En_CaseCommentPriv
     private void fillOptions() {
         clear();
         addButton(En_CaseCommentPrivacyType.PUBLIC);
+        setEnsureDebugId(En_CaseCommentPrivacyType.PUBLIC, DebugIds.PRIVACY_TYPE_BUTTON.PUBLIC);
         if (extendedPrivacy) {
             addButton(En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS);
+            setEnsureDebugId(En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS, DebugIds.PRIVACY_TYPE_BUTTON.PRIVATE_CUSTOMER);
         }
         addButton(En_CaseCommentPrivacyType.PRIVATE);
+        setEnsureDebugId(En_CaseCommentPrivacyType.PRIVATE, DebugIds.PRIVACY_TYPE_BUTTON.PRIVATE);
     }
 
     private void addButton(En_CaseCommentPrivacyType value) {
@@ -41,8 +44,6 @@ public class PrivacyTypeButtonSelector extends ToggleBtnGroup<En_CaseCommentPriv
                 "btn btn-default",
                 privacyTypeLang.getName(value),
                 value);
-
-        setEnsureDebugId(value, DebugIdsHelper.PRIVACY_TYPE.byId(value.getId()));
     }
 
     private boolean extendedPrivacy;
