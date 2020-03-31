@@ -29,10 +29,10 @@ public class PrivacyTypeButtonSelector extends ToggleBtnGroup<En_CaseCommentPriv
     private void fillOptions() {
         clear();
         addButton(En_CaseCommentPrivacyType.PUBLIC);
-        addButton(En_CaseCommentPrivacyType.PRIVATE);
         if (extendedPrivacy) {
             addButton(En_CaseCommentPrivacyType.PRIVATE_CUSTOMERS);
         }
+        addButton(En_CaseCommentPrivacyType.PRIVATE);
     }
 
     private void addButton(En_CaseCommentPrivacyType value) {

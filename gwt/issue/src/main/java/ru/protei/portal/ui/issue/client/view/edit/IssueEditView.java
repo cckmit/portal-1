@@ -121,7 +121,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             privacyIcon.setClassName( "fas fa-lock text-danger m-l-10" );
             privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE );
         } else {
-            privacyIcon.setClassName( "fas fa-unlock text-success m-l-10" );
+            privacyIcon.setClassName( "fas fa-lock-open text-success m-l-10" );
             privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC );
         }
     }

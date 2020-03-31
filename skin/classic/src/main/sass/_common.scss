@@ -1575,10 +1575,11 @@ a {
 }
 
 .private-btn {
-  padding: 10px 7px;
-  min-width: 30px;
+  padding: 16px 7px;
+  min-width: 33px;
   border-left: 0;
   font-weight: 900;
+  text-align: center;
 
   &.input-group-addon-up {
     background-color: teal !important;
@@ -1595,7 +1596,7 @@ a {
   &.input-group-addon-up:after,
   &.input-group-addon-up-hovering:after {
     font-family: "Font Awesome 5 Free", serif;
-    content: "\f13e";
+    content: "\f3c1";
     font-size: 1.2em;
   }
   &.input-group-addon-up-hovering{
@@ -1892,31 +1893,7 @@ a {
 }
 
 .privacy-level {
-  width: 18px;
-  height: 18px;
   font-size: 13px;
-
-  &.center {
-    display: block;
-    margin: 0 auto;
-  }
-
-  &.selector {
-    position: relative;
-    float: left;
-    margin: 0 6px 0 0;
-  }
-
-  &.lg {
-    width: 22px;
-    height: 22px;
-    &:before {
-      width: 22px;
-      height: 22px;
-      line-height: 22px;
-      font-size: 12px;
-    }
-  }
 }
 
 .case-importance-cometic {
@@ -3489,11 +3466,6 @@ table {
 
 .no-outline {
   outline: none !important;
-}
-
-.input-group-addon {
-  padding-top: 16px;
-  padding-left: 8px;
 }
 
 .no-margin-bottom {
