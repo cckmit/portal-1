@@ -457,6 +457,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseStateId((long)state.getId());
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return commentDAO.persist(stateChangeMessage);
     }
 
@@ -466,6 +467,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseImpLevel(importance);
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return commentDAO.persist(stateChangeMessage);
     }
 

@@ -601,8 +601,8 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setTimeElapsed(timeElapsed);
         stateChangeMessage.setTimeElapsedType(timeElapsedType != null ? timeElapsedType : En_TimeElapsedType.NONE);
-        stateChangeMessage.setPrivateComment(true);
         stateChangeMessage.setText(CrmConstants.Comment.TIME_ELAPSED_DEFAULT_COMMENT);
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PRIVATE);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -612,6 +612,7 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseStateId((long)state.getId());
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -621,6 +622,7 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseImpLevel(importance);
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -630,6 +632,7 @@ public class CaseServiceImpl implements CaseService {
         managerChangeMessage.setCreated(new Date());
         managerChangeMessage.setCaseId(caseId);
         managerChangeMessage.setCaseManagerId(managerId);
+        managerChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseCommentDAO.persist(managerChangeMessage);
     }
 

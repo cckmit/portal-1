@@ -112,6 +112,7 @@ public class BaseServiceTest {
         comment.setText( text );
         if (caseStateId != null) comment.setCaseStateId( caseStateId );
         comment.setCaseAttachments( Collections.emptyList() );
+        comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return comment;
     }
 
@@ -190,6 +191,7 @@ public class BaseServiceTest {
     protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text, Long caseStateId) {
         CaseComment caseComment = createNewComment(person, caseObjectId, text, caseStateId);
         caseComment.setId(caseCommentDAO.persist(caseComment));
+        caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseComment;
     }
 
