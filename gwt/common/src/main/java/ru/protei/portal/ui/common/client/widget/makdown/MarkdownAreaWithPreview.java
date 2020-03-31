@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.makdown;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -17,11 +14,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ToggleButton;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
-import ru.protei.portal.ui.common.client.widget.imagepastetextarea.ImagePasteTextArea;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.HTMLRenderer;
-
-import java.util.function.BiConsumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
@@ -31,7 +29,10 @@ public class MarkdownAreaWithPreview
 
     public MarkdownAreaWithPreview() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        addPasteHandler(text.getElement(), this);
+
+        text.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
+        text.setOverlayText(lang.dropFilesHere());
+        text.setDropZonePanel(root);
     }
 
     private DisplayPreviewHandler displayPreviewHandler;
@@ -64,8 +65,8 @@ public class MarkdownAreaWithPreview
         return addHandler(valueChangeHandler, ValueChangeEvent.getType());
     }
 
-    public void setPasteHandler(BiConsumer<String, Integer> pasteHandler) {
-        this.pasteHandler = pasteHandler;
+    public void setFileUploader(AttachmentUploader fileUploader) {
+        this.fileUploader = fileUploader;
     }
 
     public void setDisplayPreview( boolean isDisplayPreview ) {
@@ -107,6 +108,15 @@ public class MarkdownAreaWithPreview
         }
     }
 
+    @UiHandler("text")
+    public void onBase64Pasted(PasteEvent event) {
+        if (event.getJsons() != null && !event.getJsons().isEmpty()) {
+            fileUploader.uploadBase64Files(event.getJsons(), new PasteInfo(event.getStrPos()));
+        } else {
+            fileUploader.uploadBase64File(event.getJson(), new PasteInfo(event.getStrPos()));
+        }
+    }
+
     public void setEnsureDebugId(String debugId) {
         text.ensureDebugId(debugId);
     }
@@ -137,58 +147,12 @@ public class MarkdownAreaWithPreview
         });
     }
 
-    public void onPastedObject(JavaScriptObject object, Integer strPos) {
-        if (pasteHandler != null) {
-            ImagePasteTextArea.Base64Image base64Image = object.cast();
-            String json = JsonUtils.stringify(base64Image);
-            pasteHandler.accept(json, strPos);
-        }
-    }
-
-    private native void addPasteHandler(Element element, MarkdownAreaWithPreview view) /*-{
-        element.addEventListener("paste", function(event) {
-            var matchType = new RegExp("image.*");
-            var clipboardData = event.clipboardData;
-
-            var strPos = 0;
-            var br = ((element.selectionStart || element.selectionStart == '0') ?
-                "ff" : (document.selection ? "ie" : false));
-            if (br == "ie") {
-                element.focus();
-                var range = document.selection.createRange();
-                range.moveStart('character', -element.value.length);
-                strPos = range.text.length;
-            } else if (br == "ff") {
-                strPos = element.selectionStart;
-            }
-
-            var found = false;
-            return Array.prototype.forEach.call(clipboardData.types, function (type, i) {
-                var file, reader;
-                if (found) {
-                    return;
-                }
-                if (type.match(matchType) || clipboardData.items[i].type.match(matchType)) {
-                    file = clipboardData.items[i].getAsFile();
-                    reader = new FileReader();
-                    reader.onload = function (evt) {
-                        var data = {
-                            base64: evt.target.result,
-                            name: file.name,
-                            type: file.type,
-                            size: file.size
-                        };
-                        view.@ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview::onPastedObject(*)(data, @java.lang.Integer::valueOf(I)(strPos));
-                    };
-                    reader.readAsDataURL(file);
-                    return (found = true);
-                };
-            });
-        });
-    }-*/;
-
     @UiField
-    AutoResizeTextArea text;
+    Lang lang;
+    @UiField
+    HTMLPanel root;
+    @UiField
+    DndAutoResizeTextArea text;
     @UiField
     HTMLPanel previewContainer;
     @UiField
@@ -206,7 +170,7 @@ public class MarkdownAreaWithPreview
     };
 
     private static final int PREVIEW_CHANGE_DELAY_MS = 200;
-    private BiConsumer<String, Integer> pasteHandler;
+    private AttachmentUploader fileUploader;
 
     interface MarkdownAreaWithPreviewUiBinder extends UiBinder<HTMLPanel, MarkdownAreaWithPreview> {}
     private static MarkdownAreaWithPreviewUiBinder ourUiBinder = GWT.create( MarkdownAreaWithPreviewUiBinder.class );

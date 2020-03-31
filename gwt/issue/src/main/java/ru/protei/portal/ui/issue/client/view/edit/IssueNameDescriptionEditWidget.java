@@ -20,12 +20,12 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueNameDescriptionEditWidgetActivity;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -39,8 +39,8 @@ public class IssueNameDescriptionEditWidget extends Composite {
         description.setDisplayPreviewHandler( isDisplay -> onDisplayPreviewChanged( AbstractIssueEditView.DESCRIPTION, isDisplay ) );
     }
 
-    public void setPasteHandler(BiConsumer<String, Integer> pasteHandler) {
-        description.setPasteHandler(pasteHandler);
+    public void setFileUploader(AttachmentUploader pasteHandler) {
+        description.setFileUploader(pasteHandler);
     }
 
     public HasValue<String> description(){

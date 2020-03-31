@@ -69,9 +69,7 @@ public abstract class IssueEditActivity implements
         };
 
         issueInfoWidget.setFileUploadHandler( uploadHandler );
-        issueNameDescriptionEditWidget.setPasteHandler((json, strPosition) -> {
-            issueInfoWidget.getFileUploader().uploadBase64File(json, new PasteInfo(strPosition));
-        });
+        issueNameDescriptionEditWidget.setFileUploader(issueInfoWidget.getFileUploader());
 
         setNotifyFunctionsForJavascript(this);
     }
