@@ -11,12 +11,9 @@ import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 public class EducationEntryDAO_Impl extends PortalBaseJdbcDAO<EducationEntry> implements EducationEntryDAO {
 
     @Override
-    public SearchResult<EducationEntry> getAll(int offset, int limit, Boolean approved, Date date) {
+    public SearchResult<EducationEntry> getResultForDate(int offset, int limit, Date date) {
         String sql = "1=1";
         List<Object> params = new ArrayList<>();
-        if (approved != null) {
-            sql += " AND approved is " + (approved ? "TRUE" : "FALSE");
-        }
         if (date != null) {
             sql += " AND (date_end IS NULL OR date_end >= ?)";
             params.add(date);
@@ -25,8 +22,8 @@ public class EducationEntryDAO_Impl extends PortalBaseJdbcDAO<EducationEntry> im
     }
 
     @Override
-    public List<EducationEntry> getApprovedForDate(Date date) {
-        return getListByCondition("approved IS TRUE AND (date_end IS NULL OR date_end >= ?)", date);
+    public List<EducationEntry> getAllForDate(Date date) {
+        return getListByCondition("(date_end IS NULL OR date_end >= ?)", date);
     }
 
     @Override
@@ -34,6 +31,6 @@ public class EducationEntryDAO_Impl extends PortalBaseJdbcDAO<EducationEntry> im
         return getListByCondition("id IN " +
                 "(SELECT DISTINCT education_entry_id FROM education_entry_attendance WHERE worker_entry_id IN " +
                     "(SELECT DISTINCT id FROM worker_entry WHERE dep_id IN " + makeInArg(depIds, String::valueOf) + ")" +
-                ") AND approved IS TRUE AND (date_end IS NULL OR date_end >= ?)", date);
+                ") AND (date_end IS NULL OR date_end >= ?)", date);
     }
 }

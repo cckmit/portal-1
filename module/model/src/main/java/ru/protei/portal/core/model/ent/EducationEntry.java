@@ -20,9 +20,6 @@ public class EducationEntry implements Serializable {
     @JdbcColumn(name="coins")
     private Integer coins;
 
-    @JdbcColumn(name="approved")
-    private boolean approved;
-
     @JdbcColumn(name = "title")
     private String title;
 
@@ -66,14 +63,6 @@ public class EducationEntry implements Serializable {
 
     public void setType(EducationEntryType type) {
         this.type = type;
-    }
-
-    public boolean isApproved() {
-        return approved;
-    }
-
-    public void setApproved(boolean approved) {
-        this.approved = approved;
     }
 
     public Integer getCoins() {
@@ -161,7 +150,6 @@ public class EducationEntry implements Serializable {
         return "EducationEntry{" +
                 "id=" + id +
                 ", type=" + type +
-                ", approved=" + approved +
                 ", coins=" + coins +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +

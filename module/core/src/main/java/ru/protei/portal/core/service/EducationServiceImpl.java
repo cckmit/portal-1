@@ -39,7 +39,7 @@ public class EducationServiceImpl implements EducationService {
 
     @Override
     public Result<List<EducationEntry>> getCurrentEntries(AuthToken token) {
-        List<EducationEntry> entries = emptyIfNull(educationEntryDAO.getApprovedForDate(new Date()));
+        List<EducationEntry> entries = emptyIfNull(educationEntryDAO.getAllForDate(new Date()));
         jdbcManyRelationsHelper.fillAll(entries);
         return ok(entries);
     }
@@ -74,7 +74,6 @@ public class EducationServiceImpl implements EducationService {
             }
         }
 
-        entry.setApproved(false);
         entry.setId(educationEntryDAO.persist(entry));
 
         educationEntryAttendanceDAO.persistBatch(stream(workerIds)
@@ -116,9 +115,6 @@ public class EducationServiceImpl implements EducationService {
         if (entry == null) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
-        if (!entry.isApproved()) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
 
         try {
             EducationEntryAttendance attendance = new EducationEntryAttendance();
@@ -144,10 +140,9 @@ public class EducationServiceImpl implements EducationService {
     @Override
     public Result<SearchResult<EducationEntry>> adminGetEntries(AuthToken token, int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated) {
 
-        SearchResult<EducationEntry> entries = educationEntryDAO.getAll(
+        SearchResult<EducationEntry> entries = educationEntryDAO.getResultForDate(
                 offset,
                 limit,
-                showOnlyNotApproved ? false : null,
                 showOutdated ? null : new Date()
         );
 
@@ -171,42 +166,12 @@ public class EducationServiceImpl implements EducationService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        boolean isDeclineApprovedAction = oldEntry.isApproved() && !entry.isApproved();
-        if (isDeclineApprovedAction) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
-
         if (!educationEntryDAO.merge(entry)) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        boolean isApproveAction = !oldEntry.isApproved() && entry.isApproved();
-        if (isApproveAction) {
-            List<EducationEntryAttendance> attendanceList = educationEntryAttendanceDAO.getAllForEntry(entry.getId());
-            for (EducationEntryAttendance attendance : attendanceList) {
-                if (attendance.isCharged()) {
-                    log.warn("Attendance was charged before entry approval! Charge for it again : {}", attendance);
-                }
-                EducationWallet wallet = selectWalletForWorker(attendance.getWorkerId()).getData();
-                if (wallet == null) {
-                    log.warn("Failed to find wallet for attendance : {}", attendance);
-                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-                }
-                wallet.setCoins(wallet.getCoins() - entry.getCoins());
-                if (!educationWalletDAO.partialMerge(wallet, "coins")) {
-                    log.warn("Failed to reduce wallet coins for attendance : {}", attendance);
-                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-                }
-                attendance.setCharged(true);
-                if (!educationEntryAttendanceDAO.partialMerge(attendance, "charged")) {
-                    log.warn("Failed to set charged for attendance : {}", attendance);
-                    throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
-                }
-            }
-        }
-
-        boolean isApprovedCostModifyAction = oldEntry.isApproved() && !Objects.equals(oldEntry.getCoins(), entry.getCoins());
-        if (isApprovedCostModifyAction) {
+        boolean isCostModifyAction = !Objects.equals(oldEntry.getCoins(), entry.getCoins());
+        if (isCostModifyAction) {
             List<EducationEntryAttendance> attendanceList = stream(educationEntryAttendanceDAO.getAllForEntry(entry.getId()))
                     .filter(EducationEntryAttendance::isCharged)
                     .collect(Collectors.toList());
@@ -276,7 +241,7 @@ public class EducationServiceImpl implements EducationService {
         }
 
         List<EducationWallet> wallets = educationWalletDAO.getByDepartments(departmentIdList);
-        if (CollectionUtils.isEmpty(departmentIdList)) {
+        if (CollectionUtils.isEmpty(wallets)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -308,8 +273,8 @@ public class EducationServiceImpl implements EducationService {
     private List<Long> getDepartmentGraph(Long depId) {
         // Список подразделений по уменьшению (родитель->сын)
         List<Long> departments = new ArrayList<>();
-        departments.add(depId);
         fillParentDepartments(departments, depId);
+        departments.add(depId);
         fillChildDepartments(departments, depId);
         return departments;
     }
@@ -327,8 +292,8 @@ public class EducationServiceImpl implements EducationService {
         List<Long> childDepIds = stream(companyDepartmentDAO.getPartialDepByParentDep(depId))
                 .map(CompanyDepartment::getId)
                 .collect(Collectors.toList());
+        departments.addAll(childDepIds);
         for (Long childDepId : childDepIds) {
-            departments.add(childDepId);
             fillChildDepartments(departments, childDepId);
         }
     }

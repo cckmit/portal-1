@@ -113,7 +113,8 @@ public class EducationAdminView extends Composite implements AbstractEducationAd
     private final ClickColumn<EducationEntry> approveColumn = new ClickColumn<EducationEntry>() {
         protected void fillColumnHeader(Element columnHeader) {}
         protected void fillColumnValue(Element cell, EducationEntry value) {
-            String icon = value.isApproved() ? "fas fa-thumbs-up" : "far fa-question-circle";
+//            String icon = value.isApproved() ? "fas fa-thumbs-up" : "far fa-question-circle"; // TODO will be changed to attendance entry
+            String icon = "fas fa-thumbs-up";
             cell.setInnerHTML("<i class='" + icon + "'></i>");
         }
     };

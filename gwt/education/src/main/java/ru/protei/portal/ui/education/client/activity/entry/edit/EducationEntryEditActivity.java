@@ -66,12 +66,12 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
     @Override
     public void onApproveClicked() {
         boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-        boolean isApproved = entry.isApproved();
-        if (!isAdmin || isApproved) {
+//        boolean isApproved = entry.isApproved(); // TODO will be changed to attendance entry
+        if (!isAdmin /*|| isApproved*/) {
             return;
         }
         fillDto(entry);
-        entry.setApproved(true);
+//        entry.setApproved(true);
         educationController.adminModifyEntry(entry, new FluentCallback<EducationEntry>()
                 .withSuccess(en -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -139,8 +139,8 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
         view.participantsVisibility().setVisible(isCreationMode);
         view.approveButtonVisibility().setVisible(isAdmin && !isCreationMode);
         view.declineButtonVisibility().setVisible(isAdmin && !isCreationMode);
-        view.saveButtonVisibility().setVisible(isCreationMode || entry.isApproved());
-        view.approveButtonEnabled().setEnabled(isAdmin && !entry.isApproved());
+        view.saveButtonVisibility().setVisible(isCreationMode/* || entry.isApproved()*/);
+        view.approveButtonEnabled().setEnabled(isAdmin/* && !entry.isApproved()*/);
         syncViewRequiredState(entry.getType());
     }
 
