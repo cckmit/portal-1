@@ -574,6 +574,8 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         tempAttachments.clear();
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
+        view.privacyType().setValue(En_CaseCommentPrivacyType.PUBLIC);
+
         updateTimeElapsedInIssue(itemViewToModel.values());
     }
 
