@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 /**
  * Реализация сервиса управления проектами
@@ -46,7 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
     LocationDAO locationDAO;
 
     @Autowired
-    JdbcManyRelationsHelper helper;
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     CaseMemberDAO caseMemberDAO;
@@ -74,9 +73,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     PlatformDAO platformDAO;
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     CaseLinkService caseLinkService;
@@ -121,7 +117,7 @@ public class ProjectServiceImpl implements ProjectService {
             project.setPlatformName(platform.getName());
         }
 
-        helper.fillAll( project );
+        jdbcManyRelationsHelper.fillAll( project );
         Contract contract = contractDAO.getByProjectId(id);
 
         if (contract != null) {
@@ -151,7 +147,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Result<Project> saveProject(AuthToken token, Project project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
-        helper.fillAll( caseObject );
+        jdbcManyRelationsHelper.fillAll( caseObject );
 
         if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
@@ -167,6 +163,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .findFirst()
                 .orElse(null)
         );
+
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
 
         caseObject.setManager(personDAO.get(caseObject.getManagerId()));
 
@@ -184,6 +182,10 @@ public class ProjectServiceImpl implements ProjectService {
         } else {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
+
+        caseObject.setProjectSlas(project.getProjectSlas());
+
+        jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
 
         try {
             updateTeam( caseObject, project.getTeam() );
@@ -211,6 +213,8 @@ public class ProjectServiceImpl implements ProjectService {
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
             return error(En_ResultStatus.NOT_CREATED);
+
+        jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
 
         try {
             updateTeam(caseObject, project.getTeam());
@@ -243,6 +247,8 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+        caseObject.setProjectSlas(project.getProjectSlas());
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());
@@ -281,8 +287,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
-        helper.fill(projects, "members");
-        helper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects, "members");
+        jdbcManyRelationsHelper.fill(projects, "products");
 
         List<Project> result = projects.stream()
                 .map(Project::fromCaseObject).collect(toList());
@@ -304,7 +310,7 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
-        helper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects, "products");
 
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
@@ -350,6 +356,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private void updateLocations( CaseObject caseObject, EntityOption location ) {
+        if ( location == null ) {
+            return;
+        }
+
         boolean locationFound = false;
 
         if ( caseObject.getLocations() != null ) {
@@ -364,10 +374,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if ( locationFound ) {
-            return;
-        }
-
-        if ( location == null ) {
             return;
         }
 
@@ -406,7 +412,7 @@ public class ProjectServiceImpl implements ProjectService {
             return;
         }
 
-        helper.fillAll( project );
+        jdbcManyRelationsHelper.fillAll( project );
 
         List< CaseLocation > locations = project.getLocations();
         if ( locations == null || locations.isEmpty() ) {

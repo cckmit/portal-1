@@ -81,4 +81,6 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setTimeElapsed(Long timeElapsed);
     Long getTimeElapsed();
+
+    void setJiraInfoLink(String link);
 }

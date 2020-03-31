@@ -1,8 +1,12 @@
 package ru.protei.portal.ui.project.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.ProjectSla;
+
+import java.util.List;
 
 /**
  * Абстракция вида проекта
@@ -33,11 +37,17 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setCustomerType( String value );
 
+    HasValue<List<ProjectSla>> slaInputReadOnly();
+
+    HasVisibility slaContainerVisibility();
+
     void setContract(String value, String link);
 
     void setPlatform(String value, String link);
 
     void isFullScreen(boolean isFullScreen);
+
+    void setTechnicalSupportValidity(String value);
 
     HasVisibility backButtonVisibility();
 

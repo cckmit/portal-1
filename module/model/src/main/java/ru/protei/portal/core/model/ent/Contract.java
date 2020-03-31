@@ -455,12 +455,18 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", modified=" + modified +
                 ", managerId=" + managerId +
                 ", managerShortName='" + managerShortName + '\'' +
+                ", caseManagerId=" + caseManagerId +
+                ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", curatorId=" + curatorId +
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", contragentId=" + contragentId +
                 ", contragentName='" + contragentName + '\'' +
+                ", caseContragentId=" + caseContragentId +
+                ", caseContragentName='" + caseContragentName + '\'' +
                 ", directionId=" + directionId +
                 ", directionName='" + directionName + '\'' +
+                ", caseDirectionId=" + caseDirectionId +
+                ", caseDirectionName='" + caseDirectionName + '\'' +
                 ", stateId=" + stateId +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +
@@ -476,7 +482,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", parentContractNumber='" + parentContractNumber + '\'' +
                 ", childContracts=" + childContracts +
                 ", projectId=" + projectId +
-                ", projectName=" + projectName +
+                ", projectName='" + projectName + '\'' +
                 '}';
     }
 

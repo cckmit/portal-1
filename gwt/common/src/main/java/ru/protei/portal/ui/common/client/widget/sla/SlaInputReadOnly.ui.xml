@@ -1,0 +1,38 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="form-group-attached">
+        <div class="row clearfix">
+            <div class="col-md-3">
+                <div class="form-group form-group-default">
+                    <label>
+                        <ui:text from="{lang.projectImportance}"/>
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group form-group-default">
+                    <label>
+                        <ui:text from="{lang.projectSlaReactionTime}"/>
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group form-group-default">
+                    <label>
+                        <ui:text from="{lang.projectSlaTemporaryTime}"/>
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group form-group-default">
+                    <label>
+                        <ui:text from="{lang.projectSlaFullTime}"/>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

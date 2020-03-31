@@ -99,7 +99,7 @@ public class MainConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigReloadable("portal.properties");
     }
 
     /**
@@ -526,6 +526,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProjectSlaDAO getProjectSlaDAO() {
+        return new ProjectSlaDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -705,6 +710,11 @@ public class MainConfiguration {
     @Bean
     public IssueFilterService getIssueFilterService() {
         return new IssueFilterServiceImpl();
+    }
+
+    @Bean
+    public JiraStatusService getJiraSlaService() {
+        return new JiraStatusServiceImpl();
     }
 
     @Bean

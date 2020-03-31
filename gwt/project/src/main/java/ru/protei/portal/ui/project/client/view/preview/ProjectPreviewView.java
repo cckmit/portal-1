@@ -13,11 +13,15 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.sla.SlaInputReadOnly;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
+
+import java.util.List;
 
 /**
  * Вид превью проекта
@@ -75,6 +79,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setTeam( String value ) { this.team.setInnerHTML( value ); }
 
     @Override
+    public void setTechnicalSupportValidity(String value) {
+        technicalSupportValidity.setInnerText(value);
+    }
+
+    @Override
     public HasVisibility backButtonVisibility() {
         return backButtonContainer;
     }
@@ -95,6 +104,16 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public HasValue<List<ProjectSla>> slaInputReadOnly() {
+        return slaInputReadOnly;
+    }
+
+    @Override
+    public HasVisibility slaContainerVisibility() {
+        return slaContainer;
+    }
+
+    @Override
     public void setContract(String value, String link) {
         contract.setText(value);
         contract.setHref(link);
@@ -109,10 +128,13 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public void isFullScreen(boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+        slaInputReadOnly.setStyleName("p-r-15 p-l-15", isFullScreen);
         if (isFullScreen) {
             metaTable.addClassName("p-r-15 p-l-15");
+            slaContainer.getElement().replaceClassName("col-md-10", "col-md-6");
         } else {
             metaTable.removeClassName("p-r-15 p-l-15");
+            slaContainer.getElement().replaceClassName("col-md-6", "col-md-10");
         }
     }
 
@@ -160,10 +182,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         commentsContainer.ensureDebugId(DebugIds.PROJECT_PREVIEW.COMMENTS_CONTAINER);
         contract.ensureDebugId(DebugIds.PROJECT_PREVIEW.CONTRACT_LABEL);
         platform.ensureDebugId(DebugIds.PROJECT_PREVIEW.PLATFORM_LABEL);
+        technicalSupportValidity.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
+        slaInputReadOnly.ensureDebugId(DebugIds.PROJECT_PREVIEW.SLA_INPUT);
     }
 
-    @UiField
-    HTMLPanel preview;
     @UiField
     Button backButton;
     @UiField
@@ -180,6 +202,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     SpanElement projectRegion;
     @UiField
     SpanElement projectDirection;
+    @UiField
+    DivElement technicalSupportValidity;
     @UiField
     SpanElement company;
     @UiField
@@ -202,6 +226,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel linksContainer;
     @UiField
     DivElement metaTable;
+    @Inject
+    @UiField(provided = true)
+    SlaInputReadOnly slaInputReadOnly;
+    @UiField
+    HTMLPanel slaContainer;
 
     @Inject
     @UiField

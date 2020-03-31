@@ -19,7 +19,7 @@
                     <label>
                         <ui:text from="{lang.equipmentManager}"/>
                     </label>
-                    <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}"/>
+                    <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}" hasNullValue="true" firedEmployeesVisible="true"/>
                 </div>
 
                 <div class="form-group col-md-12">

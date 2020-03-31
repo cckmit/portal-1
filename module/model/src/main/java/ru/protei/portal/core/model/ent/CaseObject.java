@@ -131,6 +131,12 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
+    @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
+    private List<ProjectSla> projectSlas;
+
+    @JdbcColumn(name = "technical_support_validity")
+    private Date technicalSupportValidity;
+
     // not db column
     private Long contractId;
 
@@ -523,6 +529,14 @@ public class CaseObject extends AuditableObject {
         this.jiraUrl = jiraUrl;
     }
 
+    public List<ProjectSla> getProjectSlas() {
+        return projectSlas;
+    }
+
+    public void setProjectSlas(List<ProjectSla> projectSlas) {
+        this.projectSlas = projectSlas;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -534,6 +548,14 @@ public class CaseObject extends AuditableObject {
 
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
+    }
+
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
     }
 
     @Override
@@ -574,11 +596,18 @@ public class CaseObject extends AuditableObject {
                 ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
-                ", timeElapsedType=" + timeElapsedType +
-                ", jiraMetaData=" + caseObjectMetaJira +
                 ", platformId=" + platformId +
-                ", platformName=" + platformName +
+                ", platformName='" + platformName + '\'' +
+                ", projectSlas=" + projectSlas +
+                ", contractId=" + contractId +
+                ", contractNumber='" + contractNumber + '\'' +
+                ", platformName='" + platformName + '\'' +
+                ", technicalSupportValidity=" + technicalSupportValidity +
+                ", contractId=" + contractId +
+                ", contractNumber='" + contractNumber + '\'' +
                 ", timeElapsedType=" + timeElapsedType +
+                ", caseObjectMetaJira=" + caseObjectMetaJira +
+                ", jiraUrl='" + jiraUrl + '\'' +
                 '}';
     }
 }

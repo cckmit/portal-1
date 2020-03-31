@@ -32,7 +32,7 @@ public class JdbcConfigDataAdapter implements JdbcBeforeContextInitializer {
     private void setPort(JdbcConfigData configData, int port) {
         for (JdbcConfigData.JdbcConnectionParam connection : CollectionUtils.emptyIfNull(configData.getConnections())) {
             connection.setUrl( connection.getUrl().replace( String.valueOf( TestConfig.EmbeddedDB.DB_PORT ), String.valueOf(port)));
-            log.info( "setPort(): Port replaced: {}", connection.getUrl() );
+            log.info( "setPort(): Default port {} replaced by {} : {}", TestConfig.EmbeddedDB.DB_PORT, port, connection.getUrl() );
         }
     }
 

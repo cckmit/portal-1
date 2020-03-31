@@ -1,22 +1,25 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.ReportContent;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import javax.annotation.PostConstruct;
@@ -25,12 +28,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
@@ -53,6 +55,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportCase reportCase;
     @Autowired
     ReportCaseTimeElapsed reportCaseTimeElapsed;
+    @Autowired
+    EventPublisherService publisherService;
 
     @PostConstruct
     public void init() {
@@ -197,7 +201,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     public Result processOldReports() {
         List<Report> reports = reportDAO.getReportsByStatuses(
                 Arrays.asList(En_ReportStatus.READY, En_ReportStatus.ERROR),
-                new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime())
+                new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime()),
+                Arrays.asList(En_ReportScheduledType.NONE)
         );
         if (CollectionUtils.isEmpty(reports)) {
             log.debug("old reports to process : 0");
@@ -226,7 +231,8 @@ public class ReportControlServiceImpl implements ReportControlService {
         synchronized (reportsInProcess) {
             List<Report> reports = reportDAO.getReportsByStatuses(
                     Collections.singletonList(En_ReportStatus.PROCESS),
-                    new Date(System.currentTimeMillis() - config.data().reportConfig().getHangInterval())
+                    new Date(System.currentTimeMillis() - config.data().reportConfig().getHangInterval()),
+                    Arrays.asList(En_ReportScheduledType.NONE)
             );
             if (CollectionUtils.isEmpty(reports)) {
                 log.debug("hang reports to process : 0");
@@ -248,5 +254,50 @@ public class ReportControlServiceImpl implements ReportControlService {
             reportDAO.mergeBatch(reports);
             return ok();
         }
+    }
+
+    @Override
+    public Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType) {
+        log.info("processScheduledMailReports start");
+        CompletableFuture[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream()
+                .map(report -> {
+                    log.info("Scheduled Mail Reports = {}", report);
+                    setRange(report, enReportScheduledType);
+                    return createScheduledMailReportsTask(report);
+                })
+                .map(f -> f.thenAccept(mailReportEvent -> publisherService.publishEvent(mailReportEvent)))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
+        log.info("processScheduledMailReports end");
+        return ok();
+    }
+
+    private CompletableFuture<MailReportEvent> createScheduledMailReportsTask(Report report) {
+        return CompletableFuture.supplyAsync(() -> {
+            processReport(report);
+            Report processedReport = reportDAO.get(report.getId());
+            if (!processedReport.getStatus().equals(En_ReportStatus.READY)) {
+                log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport, processedReport.getStatus());
+                return new MailReportEvent(this, processedReport, null);
+            }
+            Result<ReportContent> reportContentResult = reportStorageService.getContent(processedReport.getId());
+            if (reportContentResult.isOk()) {
+                return new MailReportEvent(this, processedReport, reportContentResult.getData().getContent());
+            } else {
+                log.error("Scheduled Mail Reports failed get content, report = {}, error = {}", processedReport, reportContentResult.getStatus());
+                return new MailReportEvent(this, processedReport, null);
+            }}, reportExecutorService);
+    }
+
+    private void setRange(Report report, En_ReportScheduledType enReportScheduledType) {
+        int days;
+        switch (enReportScheduledType) {
+            case WEEKLY: days = 7; break;
+            case DAILY:
+            default: days = 1;
+        }
+        Date now = new Date();
+        report.getCaseQuery().setCreatedFrom(new Date(now.getTime() - days * CrmConstants.Time.DAY));
+        report.getCaseQuery().setCreatedTo(now);
     }
 }

@@ -89,7 +89,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return Result.error( En_ResultStatus.GET_DATA_ERROR);
         }
 
-        List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map( Person::toFullNameShortView ).collect(Collectors.toList());
 
         return ok(result);
     }
@@ -103,7 +103,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Person person = personDAO.get(employeeId);
         if(person==null) return error(En_ResultStatus.NOT_FOUND);
-        return ok(person.toShortNameShortView());
+        return ok(person.toFullNameShortView());
     }
 
     @Override

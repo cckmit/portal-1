@@ -10,10 +10,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -22,18 +24,21 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateFormSelector;
+import ru.protei.portal.ui.common.client.widget.sla.SlaInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditActivity;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
+import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -69,7 +74,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Override
     public void setHideNullValue(boolean isHideNullValue) {
         productDirection.setHideNullValue(isHideNullValue);
-        projectRegion.setHideNullValue(isHideNullValue);
         customerType.setHideNullValue(isHideNullValue);
 //        company.setHideNullValue(isHideNullValue);
     }
@@ -147,8 +151,28 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     }
 
     @Override
+    public HasValue<List<ProjectSla>> slaInput() {
+        return slaInput;
+    }
+
+    @Override
+    public HasValue<Date> technicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    @Override
+    public HasValidable slaValidator() {
+        return slaInput;
+    }
+
+    @Override
     public void updateProductDirection(Long directionId) {
         product.setDirectionId(directionId);
+    }
+
+    @Override
+    public void setDateValid(boolean valid) {
+        technicalSupportValidity.markInputValid(valid);
     }
 
     @UiHandler("saveButton")
@@ -216,6 +240,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
         addLinkButton.ensureDebugId(DebugIds.PROJECT.LINKS_BUTTON);
+        slaInput.setEnsureDebugId(DebugIds.PROJECT.SLA_INPUT);
+        technicalSupportValidity.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
     }
 
     @UiField
@@ -233,27 +259,35 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Inject
     @UiField( provided = true )
-    ProductDirectionButtonSelector productDirection;
+    ProductDirectionFormSelector productDirection;
 
     @Inject
     @UiField( provided = true )
-    RegionStateButtonSelector projectState;
+    RegionStateFormSelector projectState;
 
     @Inject
     @UiField( provided = true )
-    RegionButtonSelector projectRegion;
+    RegionFormSelector projectRegion;
 
     @Inject
     @UiField(provided = true)
-    CompanySelector company;
+    CompanyFormSelector company;
 
     @Inject
     @UiField(provided = true)
-    DevUnitButtonSelector product;
+    DevUnitFormSelector product;
 
     @Inject
     @UiField(provided = true)
-    CustomerTypeSelector customerType;
+    CustomerFormSelector customerType;
+
+    @Inject
+    @UiField(provided = true)
+    SlaInput slaInput;
+
+    @Inject
+    @UiField(provided = true)
+    SinglePicker technicalSupportValidity;
 
     @UiField
     DivElement comments;

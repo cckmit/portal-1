@@ -1,15 +1,13 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Представление создания и редактирования компании
@@ -31,7 +29,7 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasValue<EntityOption> companyCategory();
 
-    HasValue<List<Subscription> > companySubscriptions();
+    HasValue<List<CompanySubscription> > companySubscriptions();
     HasValidable companySubscriptionsValidator();
 
     HasWidgets phonesContainer();
@@ -42,4 +40,5 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     void setParentCompanyFilter(Selector.SelectorFilter<EntityOption> companyFilter );
     void setParentCompanyEnabled( boolean isEnabled );
+    void setCompanyIdToSubscriptionsList(Long companyId);
 }

@@ -10,6 +10,10 @@ import static org.mockito.Mockito.mock;
 
 @Configuration
 public class DaoMockTestConfiguration {
+    @Bean
+    public JdbcManyRelationsHelper getJdbcManyRelationsHelper(){
+        return mock( JdbcManyRelationsHelper.class);
+    }
 
     @Bean
     public TransactionTemplate getTransactionTemplate() {
@@ -36,10 +40,6 @@ public class DaoMockTestConfiguration {
         return mock( CaseObjectMetaNotifiersDAO.class );
     }
 
-    @Bean
-    public JdbcManyRelationsHelper getJdbcManyRelationsHelper(){
-        return mock( JdbcManyRelationsHelper.class);
-    }
 
     /* DAO */
 
@@ -310,6 +310,11 @@ public class DaoMockTestConfiguration {
     @Bean
     public ContractDAO getContractDAO() {
         return  mock(ContractDAO.class);
+    }
+
+    @Bean
+    public ProjectSlaDAO getProjectSlaDAO() {
+        return mock(ProjectSlaDAO.class);
     }
 
     @Bean

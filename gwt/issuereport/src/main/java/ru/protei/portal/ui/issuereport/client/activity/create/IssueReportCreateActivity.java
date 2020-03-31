@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
@@ -47,6 +48,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         view.fillReportTypes(makeReportTypeList());
+        view.fillReportScheduledTypes(Arrays.asList(En_ReportScheduledType.values()));
     }
 
     @Event(Type.FILL_CONTENT)
@@ -74,6 +76,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();
+        En_ReportScheduledType scheduledType = view.reportScheduledType().getValue();
         CaseQuery query = view.getIssueFilter().getValue();
 
         if (!validateQuery(reportType, query)) {
@@ -82,6 +85,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         Report report = new Report();
         report.setReportType(reportType);
+        report.setScheduledType(scheduledType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
         report.setCaseQuery(query);

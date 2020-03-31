@@ -163,10 +163,14 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.showComments(false);
         view.showDocuments(false);
 
+        view.technicalSupportValidity().setValue(null);
+        view.setDateValid(true);
+
         view.numberVisibility().setVisible(false);
 
         view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
         view.saveEnabled().setEnabled(true);
+        view.slaInput().setValue(null);
 
         if (project == null || project.getId() == null) fillCaseLinks(null);
     }
@@ -186,10 +190,13 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.customerType().setValue(project.getCustomerType());
         view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
 
+        view.slaInput().setValue(project.getProjectSlas());
         view.numberVisibility().setVisible( true );
 
         view.showComments(true);
         view.showDocuments(true);
+
+        view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
 
         fillCaseLinks(project.getId());
 
@@ -208,9 +215,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
+        project.setTechnicalSupportValidity(view.technicalSupportValidity().getValue());
         project.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
         project.setRegion(view.region().getValue());
         project.setTeam(new ArrayList<>(view.team().getValue()));
+        project.setProjectSlas(view.slaInput().getValue());
         return project;
     }
 
@@ -234,10 +243,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if(view.region().getValue() == null){
-            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectRegion(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
         if(view.direction().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectDirection(), NotifyEvents.NotifyType.ERROR));
             return false;
@@ -248,6 +253,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         }
         if(view.company().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (!view.slaValidator().isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.projectSlaNotValid(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 

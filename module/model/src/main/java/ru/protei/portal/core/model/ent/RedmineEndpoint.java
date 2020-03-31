@@ -130,4 +130,21 @@ public final class RedmineEndpoint {
     public void setDefaultUserLocalId(Long defaultUserLocalId) {
         this.defaultUserLocalId = defaultUserLocalId;
     }
+
+    @Override
+    public String toString() {
+        return "RedmineEndpoint{" +
+                "id=" + id +
+                ", serverAddress='" + serverAddress + '\'' +
+                ", projectId='" + projectId + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                ", companyId=" + companyId +
+                ", lastCreatedOnDate=" + lastCreatedOnDate +
+                ", lastUpdatedOnDate=" + lastUpdatedOnDate +
+                ", statusMapId=" + statusMapId +
+                ", priorityMapId=" + priorityMapId +
+                ", defaultUserId=" + defaultUserId +
+                ", defaultUserLocalId=" + defaultUserLocalId +
+                '}';
+    }
 }

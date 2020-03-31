@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @JdbcEntity(table = "platform")
@@ -187,10 +187,12 @@ public class Platform extends AuditableObject {
                 ", params='" + params + '\'' +
                 ", comment='" + comment + '\'' +
                 ", manager=" + manager +
+                ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", company=" + company +
-                ", caseId=" + caseId +
-                ", serversCount=" + serversCount +
                 ", projectId=" + projectId +
+                ", caseId=" + caseId +
+                ", attachments=" + attachments +
+                ", serversCount=" + serversCount +
                 '}';
     }
 }

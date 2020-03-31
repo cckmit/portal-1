@@ -9,11 +9,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.IssueFilter;
+import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportScheduledTypeButtonSelector;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
 
 import java.util.List;
@@ -36,6 +38,11 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
+    public HasValue<En_ReportScheduledType> reportScheduledType() {
+        return scheduledType;
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }
@@ -48,6 +55,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Override
     public void reset() {
         reportType.setValue(En_ReportType.CASE_OBJECTS, true);
+        scheduledType.setValue(En_ReportScheduledType.NONE);
+        scheduledType.setVisible(false);
+        scheduledTypeLabel.setVisible(false);
         name.setValue(null);
     }
 
@@ -57,9 +67,18 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         reportType.setEnabled(options.size() > 1);
     }
 
+    @Override
+    public void fillReportScheduledTypes(List<En_ReportScheduledType> options) {
+        scheduledType.fillOptions(options);
+        scheduledType.setEnabled(options.size() > 1);
+    }
+
     @UiHandler("reportType")
     public void onReportTypeChanged(ValueChangeEvent<En_ReportType> event) {
         issueFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.getValue().name()));
+        scheduledType.setValue(En_ReportScheduledType.NONE);
+        scheduledType.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(event.getValue()));
+        scheduledTypeLabel.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(event.getValue()));
         if (activity != null) {
             activity.onReportTypeChanged();
         }
@@ -84,6 +103,11 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     ReportTypeButtonSelector reportType;
     @UiField
     TextBox name;
+    @UiField
+    Label scheduledTypeLabel;
+    @Inject
+    @UiField(provided = true)
+    ReportScheduledTypeButtonSelector scheduledType;
     @Inject
     @UiField(provided = true)
     IssueFilter issueFilter;

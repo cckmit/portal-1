@@ -4,18 +4,18 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.AsyncSearchSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 import java.util.Objects;
@@ -23,18 +23,17 @@ import java.util.Objects;
 /**
  * Модель контактных лиц
  */
-public abstract class PersonModel implements Activity, AsyncSelectorModel<PersonShortView> {
+public abstract class PersonModel implements AsyncSearchSelectorModel<PersonShortView>, Activity {
     @Event
     public void onInit(AuthEvents.Success event) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery()));
-        cache.setChunkSize(CHUNK_SIZE);
+        cache.setLoadHandler(makeLoadHandler(makeQuery(null)));
     }
 
     @Override
     public PersonShortView get(int elementIndex, LoadingHandler handler) {
-        if (currentPerson == null) {
+        if (currentPerson == null || StringUtils.isNotBlank(searchString)) {
             return cache.get(elementIndex, handler);
         }
         if (elementIndex == 0) return currentPerson;
@@ -45,25 +44,20 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
         return personShortView;
     }
 
-    public void clear() {
+    @Override
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
         cache.clearCache();
+        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString)));
     }
 
     private SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler(PersonQuery query) {
         return (offset, limit, handler) -> {
             query.setOffset(offset);
             query.setLimit(limit);
-            personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
-                        @Override
-                        public void onError(Throwable throwable) {
-                            fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                        }
-
-                        @Override
-                        public void onSuccess(List<PersonShortView> options) {
-                            handler.onSuccess(options);
-                        }
-                    }
+            personService.getPersonViewList(query, new FluentCallback<List<PersonShortView>>()
+                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                    .withSuccess(handler::onSuccess)
             );
         };
     }
@@ -83,12 +77,14 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
         currentPerson = person.toFullNameShortView();
     }
 
-    private PersonQuery makeQuery() {
+    private PersonQuery makeQuery(String searchString) {
         PersonQuery personQuery = new PersonQuery();
         personQuery.setDeleted(false);
+        personQuery.setSearchString(searchString);
 
         return personQuery;
     }
+
 
     @Inject
     PersonControllerAsync personService;
@@ -97,7 +93,7 @@ public abstract class PersonModel implements Activity, AsyncSelectorModel<Person
     Lang lang;
 
     private PersonShortView currentPerson;
+    private String searchString;
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
-    private static final Integer CHUNK_SIZE = 1000;
 }
 
