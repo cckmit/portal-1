@@ -94,11 +94,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return new CaseDocumentDAO_Impl();
-    }
-
-    @Bean
     public CaseStateMatrixDAO getStateMatrixDAO() {
         return new CaseStateMatrixDAO_Impl();
     }

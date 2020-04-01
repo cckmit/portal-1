@@ -105,11 +105,6 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return  mock(CaseDocumentDAO.class);
-    }
-
-    @Bean
     public CaseStateMatrixDAO getStateMatrixDAO() {
         return  mock(CaseStateMatrixDAO.class);
     }

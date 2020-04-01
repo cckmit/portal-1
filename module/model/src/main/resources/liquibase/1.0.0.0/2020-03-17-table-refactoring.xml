@@ -231,5 +231,33 @@
         <dropTable tableName="case_comment_reply"/>
     </changeSet>
 
+    <changeSet id="drop-case_document" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_document"/>
+        </preConditions>
+        <dropTable tableName="case_document"/>
+    </changeSet>
+
+    <changeSet id="drop-case_doc_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_doc_type"/>
+        </preConditions>
+        <dropTable tableName="case_doc_type"/>
+    </changeSet>
+
+    <changeSet id="drop-case_event" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_event"/>
+        </preConditions>
+        <dropTable tableName="case_event"/>
+    </changeSet>
+
+    <changeSet id="drop-case_event_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_event_type"/>
+        </preConditions>
+        <dropTable tableName="case_event_type"/>
+    </changeSet>
+
 
 </databaseChangeLog>

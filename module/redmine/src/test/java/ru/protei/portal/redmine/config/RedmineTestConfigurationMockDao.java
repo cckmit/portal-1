@@ -129,11 +129,6 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return mock( CaseDocumentDAO.class );
-    }
-
-    @Bean
     public CaseStateMatrixDAO getStateMatrixDAO() {
         return mock( CaseStateMatrixDAO.class );
     }

@@ -21,15 +21,6 @@ public class MigrateFreq implements MigrateAction {
     private CaseObjectDAO caseDAO;
 
     @Autowired
-    private CaseCommentDAO commentDAO;
-
-    @Autowired
-    private CaseTermDAO termDAO;
-
-    @Autowired
-    private CaseDocumentDAO documentDAO;
-
-    @Autowired
     private CaseStateMatrixDAO stateMatrixDAO;
 
 
