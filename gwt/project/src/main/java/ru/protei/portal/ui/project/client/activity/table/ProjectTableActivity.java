@@ -23,8 +23,10 @@ import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterA
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 /**
  * Активность таблицы проектов
@@ -172,8 +174,14 @@ public abstract class ProjectTableActivity
 
     private ProjectQuery getQuery() {
         ProjectQuery query = new ProjectQuery();
-        query.setSearchString(filterView.searchPattern().getValue());
-        query.setStates( filterView.states().getValue() );
+
+        String searchString = filterView.searchPattern().getValue();
+        query.setCaseNumbers(searchCaseNumber(searchString, false));
+        if (query.getCaseNumbers() == null) {
+            query.setSearchString(isBlank(searchString) ? null : searchString);
+        }
+
+        query.setStates(filterView.states().getValue());
         query.setDistrictIds(
                 filterView.districts().getValue().stream()
                         .map( (district)-> district.id )

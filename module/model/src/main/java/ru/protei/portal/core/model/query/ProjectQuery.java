@@ -1,18 +1,23 @@
 package ru.protei.portal.core.model.query;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
  * Запрос по регионам
  */
 public class ProjectQuery extends BaseQuery {
+    @JsonIgnore
+    private List<Long> caseNumbers;
 
     private Set<En_RegionState> states;
 
@@ -53,6 +58,19 @@ public class ProjectQuery extends BaseQuery {
         this.createdFrom = createdFrom;
         this.createdTo = createdTo;
         this.productIds = productIds;
+    }
+
+    public List<Long> getCaseNumbers() {
+        return caseNumbers;
+    }
+
+    public void setCaseNo( Long caseNo ) {
+        this.caseNumbers = new ArrayList<>();
+        this.caseNumbers.add(caseNo);
+    }
+
+    public void setCaseNumbers( List<Long> caseNumbers ) {
+        this.caseNumbers = caseNumbers;
     }
 
     public Set<En_RegionState> getStates() {
@@ -138,6 +156,7 @@ public class ProjectQuery extends BaseQuery {
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
+                CollectionUtils.isNotEmpty(caseNumbers) ||
                 CollectionUtils.isNotEmpty(states) ||
                 directionId != null ||
                 CollectionUtils.isNotEmpty(productIds) ||
@@ -152,6 +171,7 @@ public class ProjectQuery extends BaseQuery {
     public String toString() {
         return "ProjectQuery{" +
                 "states=" + states +
+                ", caseNumbers=" + caseNumbers +
                 ", districtIds=" + districtIds +
                 ", directionId=" + directionId +
                 ", onlyMineProjects=" + onlyMineProjects +
