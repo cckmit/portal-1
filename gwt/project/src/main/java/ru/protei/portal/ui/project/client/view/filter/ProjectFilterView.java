@@ -11,11 +11,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -63,11 +61,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
-    public HasValue<Set<DistrictInfo>> districts() {
-        return districts;
-    }
-
-    @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
     }
@@ -83,7 +76,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         sortDir.setValue( true );
         search.setValue( "" );
         direction.setValue( null );
-        districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
         onlyMineProjects.setValue( false );
     }
@@ -105,13 +97,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @UiHandler( "states" )
     public void onStateSelected( ValueChangeEvent<Set<En_RegionState>> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "districts" )
-    public void onDistrictSelected( ValueChangeEvent<Set<DistrictInfo>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -173,10 +158,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     @UiField( provided = true )
     RegionStateBtnGroupMulti states;
-
-    @Inject
-    @UiField( provided = true )
-    DistrictBtnGroupMulti districts;
 
     @Inject
     @UiField( provided = true )

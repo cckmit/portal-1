@@ -182,11 +182,6 @@ public abstract class ProjectTableActivity
         }
 
         query.setStates(filterView.states().getValue());
-        query.setDistrictIds(
-                filterView.districts().getValue().stream()
-                        .map( (district)-> district.id )
-                        .collect( Collectors.toSet() )
-        );
         query.setDirectionId(
                 filterView.direction().getValue() == null
                         ? null
