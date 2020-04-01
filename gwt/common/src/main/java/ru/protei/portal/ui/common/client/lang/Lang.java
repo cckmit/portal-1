@@ -2170,7 +2170,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companyCategoryHome();
 
-    String auditTypeissueModify();
+    String auditTypeIssueModify();
 
     String auditTypeIssueCreate();
 

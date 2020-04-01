@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_AuthType;
 
 /**
  * Тип аудита
@@ -10,7 +9,7 @@ import ru.protei.portal.core.model.dict.En_AuthType;
 public class En_AuditTypeLang {
     public String getName( En_AuditType value ) {
         switch (value) {
-            case ISSUE_MODIFY: return lang.auditTypeissueModify(); //Изменение обращения
+            case ISSUE_MODIFY: return lang.auditTypeIssueModify(); //Изменение обращения
             case ISSUE_CREATE: return lang.auditTypeIssueCreate(); //Создание обращения
             case ISSUE_REPORT: return lang.auditTypeIssueReport(); //Создание отчета по обращениям
             case ISSUE_EXPORT: return lang.auditTypeIssueExport(); //Экспорт обращений
