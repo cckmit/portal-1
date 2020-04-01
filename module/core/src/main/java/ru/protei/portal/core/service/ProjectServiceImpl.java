@@ -118,7 +118,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
-        List<Contract> contracts = contractDAO.getByProjectId(id);
+        List<Contract> contracts = contractDAO.getContractsByProjectId(id);
 
         if (CollectionUtils.isNotEmpty(contracts)) {
             project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
@@ -490,7 +490,6 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setContractIndependentProject(projectQuery.getContractIndependentProject());
         caseQuery.setPlatformIndependentProject(projectQuery.getPlatformIndependentProject());
         caseQuery.setDistrictIds(projectQuery.getDistrictIds());
 

@@ -34,7 +34,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
-    public List<Contract> getByProjectId(Long projectId) {
+    public List<Contract> getContractsByProjectId(Long projectId) {
         return getListByCondition("contract.project_id = ?", projectId);
     }
 
