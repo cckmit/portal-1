@@ -19,7 +19,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcJoinedObject( localColumn = "category_id", table = "company_category" )
+    @JdbcColumn( name = "category_id" )
     @JdbcEnumerated( EnumType.ID )
     private En_CompanyCategory category;
 

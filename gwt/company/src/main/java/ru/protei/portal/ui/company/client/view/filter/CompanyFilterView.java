@@ -78,7 +78,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     }
 
     @UiHandler( "categories" )
-    public void onCompanyCategorySelected( ValueChangeEvent< Set< EntityOption> > event ) {
+    public void onCompanyCategorySelected( ValueChangeEvent< Set< En_CompanyCategory> > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
