@@ -22,12 +22,6 @@ public class MigrateBugs implements MigrateAction {
     private CaseObjectDAO caseDAO;
 
     @Autowired
-    private CaseCommentDAO commentDAO;
-
-    @Autowired
-    private CaseTermDAO termDAO;
-
-    @Autowired
     private CaseStateMatrixDAO stateMatrixDAO;
 
     @Autowired

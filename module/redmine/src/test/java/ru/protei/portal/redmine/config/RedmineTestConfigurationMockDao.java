@@ -94,16 +94,6 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
-    public CaseTaskDAO getCaseTaskDAO() {
-        return mock( CaseTaskDAO.class );
-    }
-
-    @Bean
-    public CaseTermDAO getCaseTermDAO() {
-        return mock( CaseTermDAO.class );
-    }
-
-    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return mock( DevUnitDAO.class );
     }

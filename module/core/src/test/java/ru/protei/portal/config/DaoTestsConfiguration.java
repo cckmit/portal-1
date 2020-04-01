@@ -59,16 +59,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CaseTaskDAO getCaseTaskDAO() {
-        return new CaseTaskDAO_Impl();
-    }
-
-    @Bean
-    public CaseTermDAO getCaseTermDAO() {
-        return new CaseTermDAO_Impl();
-    }
-
-    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return new DevUnitDAO_Impl();
     }

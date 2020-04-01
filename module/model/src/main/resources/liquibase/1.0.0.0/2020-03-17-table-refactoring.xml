@@ -259,5 +259,20 @@
         <dropTable tableName="case_event_type"/>
     </changeSet>
 
+    <changeSet id="drop-case_task" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_task"/>
+        </preConditions>
+        <dropTable tableName="case_task"/>
+    </changeSet>
+
+    <changeSet id="drop-case_time_log" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_time_log"/>
+        </preConditions>
+        <dropTable tableName="case_time_log"/>
+    </changeSet>
+
+
 
 </databaseChangeLog>
