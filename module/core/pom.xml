@@ -405,7 +405,7 @@
             <groupId>ru.protei</groupId>
             <artifactId>portal4.embeddeddb</artifactId>
             <version>1.0.0.0</version>
-<!--            <scope>test</scope>-->
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
