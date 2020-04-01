@@ -99,16 +99,6 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
-    public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return mock( DevUnitVersionDAO.class );
-    }
-
-    @Bean
-    public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return mock( DevUnitBranchDAO.class );
-    }
-
-    @Bean
     public CaseCommentDAO getCaseCommentDAO() {
         return mock( CaseCommentDAO.class );
     }

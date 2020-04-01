@@ -64,16 +64,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return new DevUnitVersionDAO_Impl();
-    }
-
-    @Bean
-    public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return new DevUnitBranchDAO_Impl();
-    }
-
-    @Bean
     public CaseCommentDAO getCaseCommentDAO() {
         return new CaseCommentDAO_Impl();
     }

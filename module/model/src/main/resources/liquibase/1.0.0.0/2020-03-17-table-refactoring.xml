@@ -273,6 +273,42 @@
         <dropTable tableName="case_time_log"/>
     </changeSet>
 
+    <changeSet id="drop-dev_unit_att" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_att"/>
+        </preConditions>
+        <dropTable tableName="dev_unit_att"/>
+    </changeSet>
+    <changeSet id="drop-dev_unit_version" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_version"/>
+        </preConditions>
+        <dropTable tableName="dev_unit_version"/>
+    </changeSet>
+    <changeSet id="drop-dev_unit_branch" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_branch"/>
+        </preConditions>
+        <dropTable tableName="dev_unit_branch"/>
+    </changeSet>
+    <changeSet id="drop-dev_unit_event" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_event"/>
+        </preConditions>
+        <dropTable tableName="dev_unit_event"/>
+    </changeSet>
+    <changeSet id="drop-dev_unit_event_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_event_type"/>
+        </preConditions>
+        <dropTable tableName="dev_unit_event_type"/>
+    </changeSet>
+    <changeSet id="drop-dev_unit_member" author="eliseev">
+        <preConditions>
+            <tableExists tableName="dev_unit_member"/>
+        </preConditions>
+        <dropTable tableName="dev_unit_member"/>
+    </changeSet>
 
 
 </databaseChangeLog>
