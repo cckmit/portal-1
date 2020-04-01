@@ -85,7 +85,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         direction.setValue( null );
         districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
-        onlyMineProjects.setValue( true );
+        onlyMineProjects.setValue( false );
     }
 
     @UiHandler( "resetBtn" )
