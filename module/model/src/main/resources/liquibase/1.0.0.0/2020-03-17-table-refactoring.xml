@@ -224,5 +224,12 @@
         <dropTable tableName="auth_type"/>
     </changeSet>
 
+    <changeSet id="drop-case_comment_reply" author="eliseev">
+        <preConditions>
+            <tableExists tableName="case_comment_reply"/>
+        </preConditions>
+        <dropTable tableName="case_comment_reply"/>
+    </changeSet>
+
 
 </databaseChangeLog>
