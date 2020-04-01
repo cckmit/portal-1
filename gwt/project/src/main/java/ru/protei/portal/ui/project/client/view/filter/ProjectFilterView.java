@@ -15,6 +15,8 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
@@ -158,6 +160,10 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     @UiField( provided = true )
     RegionStateBtnGroupMulti states;
+
+    @Inject
+    @UiField(provided = true)
+    RegionMultiSelector region;
 
     @Inject
     @UiField( provided = true )

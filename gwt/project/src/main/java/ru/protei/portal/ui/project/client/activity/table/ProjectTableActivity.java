@@ -23,7 +23,6 @@ import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterA
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;

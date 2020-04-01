@@ -2,10 +2,10 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
+             xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:district="urn:import:ru.protei.portal.ui.common.client.widget.selector.district"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:item="urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item">
+>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
@@ -19,6 +19,10 @@
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.regionState}"/></label>
                     <state:RegionStateBtnGroupMulti ui:field="states" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.regions}"/></label>
+                    <region:RegionMultiSelector ui:field="region" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
