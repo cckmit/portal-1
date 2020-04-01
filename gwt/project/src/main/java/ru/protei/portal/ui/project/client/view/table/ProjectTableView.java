@@ -77,17 +77,8 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     }
 
     @Override
-    public void addRow( Project row ) {
-        table.addRow( row );
-    }
-
-    @Override
-    public void addSeparator( String text ) {
-        Element elem = DOM.createDiv();
-        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-        safeHtmlBuilder.appendHtmlConstant( "<b>" ).appendEscapedLines( text ).appendHtmlConstant( "</b>" );
-        elem.setInnerSafeHtml( safeHtmlBuilder.toSafeHtml() );
-        table.addCustomRow( elem, "region", null );
+    public void addRows( List<Project> rows ) {
+        rows.forEach(row -> table.addRow( row ));
     }
 
     @Override

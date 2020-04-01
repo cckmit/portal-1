@@ -128,32 +128,21 @@ public abstract class ProjectTableActivity
             animation.closeDetails();
         }
 
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<Project>>>() {
-                @Override
-                public void onError( Throwable throwable ) {
-                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                }
-
-                @Override
-                public void onSuccess( Map<String, List<Project>> result ) {
-                    fillRows( result );
-                    if ( rowToSelect != null ) {
-                        view.updateRow( rowToSelect );
-                    }
-                    restoreScrollTopPositionOrClearSelection();
-                }
-            } );
-    }
-
-    private void fillRows( Map<String, List<Project>> result ) {
-        view.clearRecords();
-        for ( Map.Entry<String, List<Project>> entry : result.entrySet() ) {
-            view.addSeparator( entry.getKey() );
-
-            for ( Project project : entry.getValue() ) {
-                view.addRow(project);
+        regionService.getProjectList( getQuery(), new RequestCallback<List<Project>> () {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
-        }
+
+            @Override
+            public void onSuccess( List<Project> result ) {
+                view.addRows( result );
+                if ( rowToSelect != null ) {
+                    view.updateRow( rowToSelect );
+                }
+                restoreScrollTopPositionOrClearSelection();
+            }
+        } );
     }
 
     private void showPreview ( Project value ) {
