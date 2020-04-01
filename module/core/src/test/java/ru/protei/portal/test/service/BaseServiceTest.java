@@ -26,7 +26,7 @@ public class BaseServiceTest {
         userLogin.setUlogin("user" + person.getId());
         userLogin.setCreated(new Date());
         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        userLogin.setAuthType(En_AuthType.LOCAL);
         userLogin.setPersonId(person.getId());
         return userLogin;
     }

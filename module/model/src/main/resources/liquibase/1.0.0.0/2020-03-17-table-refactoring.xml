@@ -211,5 +211,18 @@
         <dropTable tableName="audit_type"/>
     </changeSet>
 
+    <changeSet id="drop-fk_ulogin_authtype" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="user_login" foreignKeyName="fk_ulogin_authtype" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="user_login" constraintName="fk_ulogin_authtype" />
+    </changeSet>
+    <changeSet id="drop-auth_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="auth_type"/>
+        </preConditions>
+        <dropTable tableName="auth_type"/>
+    </changeSet>
+
 
 </databaseChangeLog>

@@ -19,6 +19,7 @@ import ru.protei.portal.api.config.APIConfigurationContext;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
@@ -767,7 +768,7 @@ public class TestWorkerController {
         userLogin.setUlogin(person.getFirstName());
         userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
         userLogin.setPersonId(person.getId());
-        userLogin.setAuthTypeId(1);
+        userLogin.setAuthType( En_AuthType.LOCAL );
         userLogin.setAdminStateId(2);
         userLogin.setRoles(Collections.singleton(userRole));
         logger.debug("userLogin = " + userLogin);

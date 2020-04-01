@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.parts.BaseBatchProcess;
 import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
@@ -110,7 +109,7 @@ public class MigrateUtils {
         UserLogin ulogin = new UserLogin();
         ulogin.setUlogin(extLogin.translatedLogin());
         ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        ulogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        ulogin.setAuthType(En_AuthType.LOCAL);
         ulogin.setCreated(new Date());
         ulogin.setInfo(extLogin.getInfo());
         ulogin.setPersonId(extLogin.getPersonId());
@@ -122,7 +121,7 @@ public class MigrateUtils {
     public static UserLogin externalEmployeeLogin (ExternalPersonInfo info) {
         UserLogin ulogin = new UserLogin();
         ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        ulogin.setAuthTypeId(En_AuthType.LDAP.getId());
+        ulogin.setAuthType(En_AuthType.LDAP);
         ulogin.setCreated(new Date());
         ulogin.setInfo(info.getDisplayName());
         ulogin.setPersonId(info.personData.getId());
