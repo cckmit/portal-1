@@ -184,7 +184,25 @@
         <dropTable tableName="dev_unit_type" />
     </changeSet>
 
-
+    <changeSet id="drop-FK_CSMATRIX_CTYPE" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="case_state_matrix" foreignKeyName="FK_CSMATRIX_CTYPE" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="case_state_matrix" constraintName="FK_CSMATRIX_CTYPE" />
+    </changeSet>
+    <changeSet id="drop-FK_CASE_TYPE" author="eliseev">
+        <preConditions>
+            <foreignKeyConstraintExists foreignKeyTableName="case_object" foreignKeyName="FK_CASE_TYPE" />
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="case_object" constraintName="FK_CASE_TYPE" />
+    </changeSet>
+<!--  case_type Используется для генерации Номеров  -->
+<!--    <changeSet id="drop-case_type" author="eliseev">-->
+<!--        <preConditions>-->
+<!--            <tableExists tableName="case_type" />-->
+<!--        </preConditions>-->
+<!--        <dropTable tableName="case_type" />-->
+<!--    </changeSet>-->
 
 
 </databaseChangeLog>

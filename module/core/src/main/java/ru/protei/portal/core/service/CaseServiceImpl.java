@@ -761,7 +761,7 @@ public class CaseServiceImpl implements CaseService {
         return caseObject != null
                 && caseObject.getName() != null
                 && !caseObject.getName().isEmpty()
-                && En_CaseType.find(caseObject.getTypeId()) != null;
+                && caseObject.getType() != null;
     }
 
     private boolean validateMetaFields(CaseObjectMeta caseMeta) {

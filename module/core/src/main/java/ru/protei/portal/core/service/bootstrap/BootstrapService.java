@@ -106,7 +106,7 @@ public class BootstrapService {
             SearchResult<Platform> result = platformDAO.getAll(offset, limit);
             for (Platform platform : result.getResults()) {
                 CaseObject caseObject = new CaseObject();
-                caseObject.setCaseType(En_CaseType.SF_PLATFORM);
+                caseObject.setType(En_CaseType.SF_PLATFORM);
                 caseObject.setCaseNumber(platform.getId());
                 caseObject.setCreated(new Date());
                 caseObject.setName(platform.getName());
@@ -241,7 +241,7 @@ public class BootstrapService {
                     CaseObject project = new CaseObject();
                     project.setName("Проект для договора №" + contract.getNumber());
                     project.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-                    project.setTypeId(En_CaseType.PROJECT.getId());
+                    project.setType(En_CaseType.PROJECT);
                     project.setCreated(new Date());
                     project.setStateId(En_RegionState.UNKNOWN.getId());
                     project.setLocal(En_CustomerType.COMMERCIAL_PROTEI.getId());

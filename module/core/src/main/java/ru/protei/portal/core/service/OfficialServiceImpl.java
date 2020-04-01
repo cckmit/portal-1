@@ -140,7 +140,7 @@ public class OfficialServiceImpl implements OfficialService {
 //        caseTypeDAO.merge( type );
 
         CaseObject caseObject = new CaseObject();
-        caseObject.setCaseType(En_CaseType.OFFICIAL);
+        caseObject.setType(En_CaseType.OFFICIAL);
         caseObject.setCaseNumber( caseTypeDAO.generateNextId(En_CaseType.OFFICIAL) );
         caseObject.setCreated( new Date() );
         caseObject.setName( "Новое должностное лицо" );

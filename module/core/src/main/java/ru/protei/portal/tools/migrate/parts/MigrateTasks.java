@@ -48,7 +48,7 @@ public class MigrateTasks implements MigrateAction {
                 row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
-                    obj.setTypeId(En_CaseType.TASK.getId());
+                    obj.setType(En_CaseType.TASK);
                     obj.setCreated((Date) row.get("dtCreation"));
                     obj.setCaseNumber((Long) row.get("nID"));
                     obj.setCreatorId((Long) row.get("nCreatorID"));

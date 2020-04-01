@@ -24,7 +24,8 @@ public class CaseObject extends AuditableObject {
     private Long id;
 
     @JdbcColumn(name = "case_type")
-    private int typeId;
+    @JdbcEnumerated( EnumType.ID )
+    private En_CaseType type;
 
     @JdbcColumn(name = "CASENO")
     private Long caseNumber;
@@ -161,7 +162,7 @@ public class CaseObject extends AuditableObject {
     }
 
     public String defGUID () {
-        En_CaseType t = En_CaseType.find(this.typeId);
+        En_CaseType t = type;
         return t != null ? t.makeGUID(this.caseNumber) : null;
     }
 
@@ -173,12 +174,12 @@ public class CaseObject extends AuditableObject {
         this.id = id;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public En_CaseType getType() {
+        return type;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setType(En_CaseType type) {
+        this.type = type;
     }
 
     public Long getCaseNumber() {
@@ -387,14 +388,6 @@ public class CaseObject extends AuditableObject {
         return initiatorCompany;
     }
 
-    public En_CaseType getCaseType () {
-        return En_CaseType.find(this.typeId);
-    }
-
-    public void setCaseType (En_CaseType type) {
-        this.typeId = type.getId();
-    }
-
     public List<Attachment> getAttachments() {
         return attachments == null? Collections.EMPTY_LIST: attachments;
     }
@@ -562,7 +555,7 @@ public class CaseObject extends AuditableObject {
     public String toString() {
         return "CaseObject{" +
                 "id=" + id +
-                ", typeId=" + typeId +
+                ", type=" + type +
                 ", caseNumber=" + caseNumber +
                 ", created=" + created +
                 ", modified=" + modified +
