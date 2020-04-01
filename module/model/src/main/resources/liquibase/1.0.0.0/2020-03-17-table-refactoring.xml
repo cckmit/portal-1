@@ -204,5 +204,12 @@
 <!--        <dropTable tableName="case_type" />-->
 <!--    </changeSet>-->
 
+    <changeSet id="drop-audit_type" author="eliseev">
+        <preConditions>
+            <tableExists tableName="audit_type"/>
+        </preConditions>
+        <dropTable tableName="audit_type"/>
+    </changeSet>
+
 
 </databaseChangeLog>

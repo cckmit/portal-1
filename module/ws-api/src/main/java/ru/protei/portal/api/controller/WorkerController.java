@@ -1037,7 +1037,7 @@ public class WorkerController {
     private void makeAudit(AuditableObject object, En_AuditType type) throws Exception {
         AuditObject auditObject = new AuditObject();
         auditObject.setCreated( new Date() );
-        auditObject.setTypeId(type.getId());
+        auditObject.setType(type);
         auditObject.setCreatorId( 0L );
         auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
         auditObject.setCreatorShortName("portal-api");
