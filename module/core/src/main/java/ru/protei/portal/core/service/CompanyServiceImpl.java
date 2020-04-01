@@ -276,8 +276,8 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<CompanyImportanceItem> importanceItems = new ArrayList<>();
 
-        for (En_ImportanceLevel value : En_ImportanceLevel.values(true)) {
-            importanceItems.add(new CompanyImportanceItem(companyId, value.getId(), value.getId()));
+        for (En_ImportanceLevel level : En_ImportanceLevel.values(true)) {
+            importanceItems.add(new CompanyImportanceItem(companyId, level.getId(), level.getId()));
         }
         companyImportanceItemDAO.persistBatch(importanceItems);
     }

@@ -22,6 +22,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
@@ -229,10 +230,19 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List<CompanyImportanceItem> getImportanceLevels(Long companyId) throws RequestFailedException {
-        log.info("getImportanceLevels()");
+    public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
+        log.info("getImportanceLevels() companyId={}", companyId);
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyService.getImportanceLevels(companyId));
+
+        List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
+        List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
+                .map(CompanyImportanceItem::getImportanceLevelId)
+                .map(En_ImportanceLevel::getById)
+                .collect(Collectors.toList());
+
+        log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
+
+        return importanceLevels;
     }
 
     @Autowired
