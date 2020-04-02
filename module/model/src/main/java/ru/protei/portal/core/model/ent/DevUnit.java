@@ -126,8 +126,8 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.id = id;
     }
 
-    public int getTypeId() {
-        return devUnitType.getId();
+    public En_DevUnitType getType () {
+        return devUnitType;
     }
 
     public void setType(En_DevUnitType devUnitType) {
@@ -200,10 +200,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     public boolean isDeprecatedUnit() {
         return getState() == En_DevUnitState.DEPRECATED;
-    }
-
-    public En_DevUnitType getType () {
-        return devUnitType;
     }
 
     public List<DevUnit> getParents() {
