@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -190,6 +191,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
         caseComment.setText(issueComment.text);
         caseComment.setDeleted(issueComment.deleted);
+        caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseComment;
     }
 

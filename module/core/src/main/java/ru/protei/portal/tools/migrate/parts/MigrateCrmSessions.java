@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -188,6 +189,7 @@ public class MigrateCrmSessions implements MigrateAction {
                     comment.setAuthorId((Long)from.get("nCreatorID"));
                     comment.setText((String)from.get("strComment"));
                     comment.setOldId((Long) from.get("nID"));
+                    comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
 
                     return comment;
                 })

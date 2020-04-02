@@ -531,7 +531,7 @@ public abstract class CaseCommentListActivity
         comment.setText(view.message().getValue());
         comment.setTimeElapsed(view.timeElapsed().getTime());
         comment.setTimeElapsedType(elapsedType != null ? elapsedType : En_TimeElapsedType.NONE);
-        if (isNew) {
+        if (isNew || comment.getPrivacyType() == null) {
             comment.setPrivacyType(isPrivateCase ? En_CaseCommentPrivacyType.PRIVATE : view.privacyType().getValue());
         }
         comment.setCaseAttachments(tempAttachments.stream()

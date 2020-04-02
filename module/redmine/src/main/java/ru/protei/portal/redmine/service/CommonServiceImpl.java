@@ -12,10 +12,7 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.util.DiffResult;
@@ -113,6 +110,7 @@ public final class CommonServiceImpl implements CommonService {
         comment.setAuthor(author);
         comment.setText(text);
         comment.setCaseId(caseId);
+        comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         caseCommentDAO.persist(comment);
         return comment;
     }
@@ -124,6 +122,7 @@ public final class CommonServiceImpl implements CommonService {
         statusComment.setAuthorId(authorId);
         statusComment.setCaseStateId(stateId);
         statusComment.setCaseId(caseId);
+        statusComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         Long id = caseCommentDAO.persist( statusComment );
         if(id == null) return error( En_ResultStatus.NOT_CREATED, "State comment do not created." );
         return ok(id);
@@ -136,6 +135,7 @@ public final class CommonServiceImpl implements CommonService {
         stateChangeMessage.setAuthorId(authorId);
         stateChangeMessage.setCaseImpLevel(importance);
         stateChangeMessage.setCaseId(caseId);
+        stateChangeMessage.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         Long id = caseCommentDAO.persist( stateChangeMessage );
         if(id == null) return error( En_ResultStatus.NOT_CREATED, "Importance comment do not created." );
         return ok(id);

@@ -115,6 +115,7 @@ public class MigrateBugs implements MigrateAction {
                  c.setText((String) row.get("strInfo"));
                  c.setVroomId(null);
                  c.setOldId((Long) row.get("nID"));
+                 c.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
                  return c;
               });
 

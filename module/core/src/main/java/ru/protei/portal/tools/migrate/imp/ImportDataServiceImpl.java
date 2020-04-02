@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
@@ -412,6 +413,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 
                 comment.setText(ext.getComment());
                 comment.setOldId(ext.getId());
+                comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
                 toInsert.add(comment);
             });
 
