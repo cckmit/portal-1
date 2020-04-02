@@ -1,3 +1,0 @@
-INSERT INTO portal_dev.case_doc_type (ID, DT_CODE, DT_INFO, DT_LABEL, DisplayOrder) VALUES (1, 'reqdoc', 'Requirement Doc', 'Requirement', 1);
-INSERT INTO portal_dev.case_doc_type (ID, DT_CODE, DT_INFO, DT_LABEL, DisplayOrder) VALUES (2, 'desdoc', 'Design Doc', 'Design', 2);
-INSERT INTO portal_dev.case_doc_type (ID, DT_CODE, DT_INFO, DT_LABEL, DisplayOrder) VALUES (3, 'reldoc', 'Release Doc', 'Release', 3);

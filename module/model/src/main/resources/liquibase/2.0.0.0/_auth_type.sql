@@ -1,2 +1,0 @@
-INSERT INTO portal_dev.auth_type (id, at_code, at_info) VALUES (1, 'local', 'Local login and password stored in db');
-INSERT INTO portal_dev.auth_type (id, at_code, at_info) VALUES (2, 'ldap', 'Local LDAP');

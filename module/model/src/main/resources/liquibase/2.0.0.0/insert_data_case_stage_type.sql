@@ -1,1 +1,0 @@
-INSERT INTO portal_dev.case_stage_type (ID, STAGE_TYPE) VALUES (1, 'general_stage');

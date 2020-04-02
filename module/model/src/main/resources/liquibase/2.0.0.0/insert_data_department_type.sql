@@ -1,1 +1,0 @@
-INSERT INTO portal_dev.department_type (id, name, info) VALUES (1, 'отдел', '');

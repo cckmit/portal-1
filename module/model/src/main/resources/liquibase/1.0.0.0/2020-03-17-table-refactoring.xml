@@ -318,8 +318,8 @@
 
     <changeSet id="insert-new-init-changesets" author="eliseev">
         <sql stripComments="true">
-            INSERT INTO databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, EXECTYPE, MD5SUM, DESCRIPTION, COMMENTS, TAG, LIQUIBASE, CONTEXTS, LABELS, DEPLOYMENT_ID) VALUES ('create-tables-2.0.0.0', 'eliseev', 'liquibase/2.0.0.0/01-init-database.xml', '2020-03-13 11:12:47', 1, 'EXECUTED', '7:ceeb40408df90b6422270afbe85549dd', 'sqlFile', '', null, '3.5.1', null, null, '4097937381');
-            INSERT INTO databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, EXECTYPE, MD5SUM, DESCRIPTION, COMMENTS, TAG, LIQUIBASE, CONTEXTS, LABELS, DEPLOYMENT_ID) VALUES ('insert-data-2.0.0.0', 'eliseev', 'liquibase/2.0.0.0/01-init-database.xml', '2020-03-13 11:12:47', 2, 'EXECUTED', '7:4f712b77ede89c765891a15071da2471', 'sqlFile', '', null, '3.5.1', null, null, '4097937381');
+            INSERT INTO databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, EXECTYPE, MD5SUM, DESCRIPTION, COMMENTS, TAG, LIQUIBASE, CONTEXTS, LABELS, DEPLOYMENT_ID) VALUES ('create-tables-2.0.0.0', 'eliseev', 'liquibase/2.0.0.0/01-init-database.xml', '2020-03-13 11:12:47', 1, 'EXECUTED', '7:339997c269db884f8246f9acf7782f98', 'sqlFile', '', null, '3.5.1', null, null, '4097937381');
+            INSERT INTO databasechangelog (ID, AUTHOR, FILENAME, DATEEXECUTED, ORDEREXECUTED, EXECTYPE, MD5SUM, DESCRIPTION, COMMENTS, TAG, LIQUIBASE, CONTEXTS, LABELS, DEPLOYMENT_ID) VALUES ('insert-data-2.0.0.0', 'eliseev', 'liquibase/2.0.0.0/01-init-database.xml', '2020-03-13 11:12:47', 2, 'EXECUTED', '7:94b67f9381dec5d8cac55eb1720a0481', 'sqlFile', '', null, '3.5.1', null, null, '4097937381');
         </sql>
     </changeSet>
 

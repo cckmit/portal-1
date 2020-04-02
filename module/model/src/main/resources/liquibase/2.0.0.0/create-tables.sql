@@ -1488,13 +1488,3 @@ create index ix_worker_pos
 
 create index uq_ext_worker
     on worker_entry (companyId, worker_extId);
-
-# create or replace definer = admin@`%` view view_equipments_decimal_number_sort as
-# select `equipment`.`id`                                         AS `Equipment_id`,
-#        concat(min(`decimal_number`.`classifier_code`),
-#               lpad(min(`decimal_number`.`reg_number`), 3, '0')) AS `sort_decimal`
-# from (`equipment`
-#          left join `decimal_number`
-#                    on ((`equipment`.`id` = `decimal_number`.`entity_id`)))
-# group by `Equipment_id`;
-
