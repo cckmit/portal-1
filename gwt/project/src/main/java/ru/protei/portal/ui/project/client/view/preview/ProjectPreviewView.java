@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.sla.SlaInputReadOnly;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -163,11 +164,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         linksContainer.getElement().removeAllChildren();
 
         for (Map.Entry<String, String> currEntry : nameToLink.entrySet()) {
-            AnchorElement parent = AnchorElement.as(DOM.createAnchor());
-            parent.setInnerText(currEntry.getKey());
-            parent.setHref(currEntry.getValue());
-            parent.setAttribute("target", "_blank");
-            linksContainer.getElement().appendChild(parent);
+            AnchorElement contract = AnchorElement.as(DOM.createAnchor());
+            contract.setInnerText(currEntry.getKey());
+            contract.setHref(currEntry.getValue());
+            contract.setAttribute("target", "_blank");
+            linksContainer.getElement().appendChild(contract);
         }
     }
 

@@ -118,7 +118,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
-        List<Contract> contracts = contractDAO.getContractsByProjectId(id);
+        List<Contract> contracts = contractDAO.getByProjectId(id);
 
         if (CollectionUtils.isNotEmpty(contracts)) {
             project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));

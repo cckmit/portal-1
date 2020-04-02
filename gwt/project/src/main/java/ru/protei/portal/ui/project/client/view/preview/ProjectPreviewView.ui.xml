@@ -110,7 +110,7 @@
                     <h5>
                         <ui:text from="{lang.contracts}"/>
                     </h5>
-                    <g:HTMLPanel styleName="links-list-formatter" ui:field="contracts"/>
+                    <g:HTMLPanel styleName="links-list-column-formatter" ui:field="contracts"/>
                 </div>
             </div>
 
