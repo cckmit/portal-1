@@ -643,11 +643,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public OfficialService getOfficialService() {
-        return new OfficialServiceImpl();
-    }
-
-    @Bean
     public BootstrapService getBootstrapService() {
         return new BootstrapService();
     }
