@@ -30,8 +30,6 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
-    private Boolean contractIndependentProject;
-
     private Boolean platformIndependentProject;
 
     public ProjectQuery() {
@@ -119,14 +117,6 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public Boolean getContractIndependentProject() {
-        return contractIndependentProject;
-    }
-
-    public void setContractIndependentProject(Boolean contractIndependentProject) {
-        this.contractIndependentProject = contractIndependentProject;
-    }
-
     public Boolean getPlatformIndependentProject() {
         return platformIndependentProject;
     }
@@ -144,7 +134,6 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                contractIndependentProject != null ||
                 platformIndependentProject != null;
     }
 
@@ -164,7 +153,6 @@ public class ProjectQuery extends BaseQuery {
                 ", sortDir=" + sortDir +
                 ", limit=" + limit +
                 ", offset=" + offset +
-                ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
                 '}';
     }

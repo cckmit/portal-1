@@ -378,7 +378,7 @@ public class DebugIds {
         String PRODUCTS_LABEL = "project-preview-products-label";
         String DOCUMENTS_CONTAINER = "project-preview-documents-container";
         String COMMENTS_CONTAINER = "project-preview-comments-container";
-        String CONTRACT_LABEL = "project-preview-contract-label";
+        String CONTRACTS_CONTAINER = "project-preview-contracts-container";
         String PLATFORM_LABEL = "project-preview-platform-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
         String SLA_INPUT = "project-preview-sla-input";
