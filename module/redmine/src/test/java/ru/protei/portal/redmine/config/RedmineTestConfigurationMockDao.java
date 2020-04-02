@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 @Configuration
 public class RedmineTestConfigurationMockDao {

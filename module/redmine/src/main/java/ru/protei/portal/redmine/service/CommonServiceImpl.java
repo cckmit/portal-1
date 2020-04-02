@@ -265,6 +265,12 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
+    public Result<String> getExternalAppId(long caseId) {
+        String extAppCaseId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
+        return (extAppCaseId != null) ? ok(extAppCaseId) : error(En_ResultStatus.NOT_FOUND);
+    }
+
+    @Override
     public Result<ExternalCaseAppData> getExternalCaseAppData( long caseId ) {
         ExternalCaseAppData appData = externalCaseAppDAO.get( caseId );
         return ok( appData );

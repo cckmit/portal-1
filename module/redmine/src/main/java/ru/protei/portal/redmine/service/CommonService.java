@@ -30,6 +30,7 @@ public interface CommonService {
 
     Result<Long> updateComment( Long objectId, Date creationDate, String text, Person author );
 
+    Result<String> getExternalAppId( long caseId );
     Result<ExternalCaseAppData> getExternalCaseAppData( long caseId );
 
     Result<RedmineEndpoint> getEndpoint( long companyId, String projectId );

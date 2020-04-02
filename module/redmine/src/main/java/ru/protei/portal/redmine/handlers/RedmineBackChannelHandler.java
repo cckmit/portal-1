@@ -51,8 +51,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
              * сообщения удаленной стороне
              **/
 
-            String extAppId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
-            if (extAppId == null) {
+            if (commonService.getExternalAppId(caseId).isError()) {
                 logger.debug("case {} has no ext-app-id", caseId);
                 return;
             }
@@ -172,8 +171,6 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
     private CommonService commonService;
     @Autowired
     private PortalConfig portalConfig;
-    @Autowired
-    private ExternalCaseAppDAO externalCaseAppDAO;
 
     private static class EndpointAndIssueId {
         public RedmineEndpoint endpoint;
