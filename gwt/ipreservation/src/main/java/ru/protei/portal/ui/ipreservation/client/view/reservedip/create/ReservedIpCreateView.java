@@ -64,7 +64,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
     @Override
-    public HasValue<DateIntervalWithType> useRange() { return useRange; }
+    public HasValue<DateIntervalWithType> useRange() { return null; }
 
     @Override
     public HasValidable ipAddressValidator() { return ipAddress; }
@@ -156,9 +156,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @UiField(provided = true)
     SubnetMultiSelector subnets;
 
-    @Inject
+/*    @Inject
     @UiField(provided = true)
-    TypedRangePicker useRange;
+    TypedRangePicker useRange;*/
 
     @UiField
     HTMLPanel exactIpContainer;

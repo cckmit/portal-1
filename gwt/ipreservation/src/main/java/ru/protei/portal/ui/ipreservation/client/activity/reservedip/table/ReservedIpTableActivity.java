@@ -211,8 +211,8 @@ public abstract class ReservedIpTableActivity
 
     private ReservedIpQuery makeQuery() {
         ReservedIpQuery query = new ReservedIpQuery();
-        query.searchString = filterView.search().getValue();
-        query.setOwnerId(filterView.owner().getValue().getId());
+        query.setSearchString(filterView.search().getValue());
+        query.setOwnerId(filterView.owner().getValue() == null ? null : filterView.owner().getValue().getId());
         query.setSubnetIds(filterView.subnets().getValue() == null
                 ? null
                 : filterView.subnets().getValue().stream()

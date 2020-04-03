@@ -103,9 +103,7 @@ public class ReservedIpQuery extends BaseQuery {
         this.activeTo = activeTo;
     }
 
-    public List<Long> getOwnerIds() {
-        return ownerIds;
-    }
+    public List<Long> getOwnerIds() { return ownerIds; }
 
     public void setOwnerIds(List<Long> ownerIds) {
         this.ownerIds = ownerIds;
@@ -113,7 +111,8 @@ public class ReservedIpQuery extends BaseQuery {
 
     public void setOwnerId(Long ownerId) {
         if (ownerId == null) {
-            this.ownerIds.clear();
+            if (ownerIds != null)
+                this.ownerIds.clear();
             return;
         }
         this.ownerIds = new ArrayList<>();

@@ -46,12 +46,12 @@ public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements
                 args.add(query.getReleasedTo());
             }
 
-            if (!CollectionUtils.isEmpty(query.getOwnerIds())) {
+            if (CollectionUtils.isNotEmpty(query.getOwnerIds())) {
                 condition.append(" and owner_id in ")
                         .append(JdbcHelper.makeSqlStringCollection(query.getOwnerIds(), args, null));
             }
 
-            if (!CollectionUtils.isEmpty(query.getSubnetIds())) {
+            if (CollectionUtils.isNotEmpty(query.getSubnetIds())) {
                 condition.append(" and subnet_id in ")
                         .append(JdbcHelper.makeSqlStringCollection(query.getSubnetIds(), args, null));
             }

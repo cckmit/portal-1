@@ -106,6 +106,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     }
 
     private void fillView() {
+        view.setAddress(reservedIp.getIpAddress());
         view.macAddress().setValue(reservedIp.getMacAddress());
         view.comment().setText(reservedIp.getComment());
         view.owner().setValue(reservedIp.getOwner().toFullNameShortView());

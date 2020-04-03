@@ -166,11 +166,11 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
 
         @Override
         public void fillColumnValue(Element cell, ReservedIp value) {
-            String reserved = value == null ? null : DateFormatter.formatDateTime(value.getReserveDate());
+            String reserved = value == null ? null : DateFormatter.formatDateOnly(value.getReserveDate());
             String released = value == null ? null :
                     ( value.getReleaseDate() == null ?
                             lang.reservedIpForever() :
-                            DateFormatter.formatDateTime(value.getReleaseDate()));
+                            DateFormatter.formatDateOnly(value.getReleaseDate()));
             cell.setInnerText(reserved + " - " + released);
         }
     };

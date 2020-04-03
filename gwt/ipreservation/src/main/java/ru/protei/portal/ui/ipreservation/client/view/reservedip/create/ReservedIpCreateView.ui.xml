@@ -5,15 +5,15 @@
              xmlns:subnet='urn:import:ru.protei.portal.ui.ipreservation.client.view.widget.selector'
              xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
              xmlns:mode='urn:import:ru.protei.portal.ui.ipreservation.client.view.widget.mode'
-             xmlns:picker='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
 >
+    <!--xmlns:picker='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'-->
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
         <div class="card-body">
             <div class="row">
-                <mode:ReservedModeBtnGroup ui:field="reservedMode" addStyleNames="btn-group col-md-12"/>
+                <mode:ReservedModeBtnGroup ui:field="reservedMode" addStyleNames="btn-group col-md-12" />
 
                 <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}" addStyleNames="form-group col-md-10"/>
             </div>
@@ -48,14 +48,16 @@
                     <person:EmployeeButtonSelector ui:field="ipOwner"
                                                    hasNullValue="false"
                                                    defaultValue="{lang.selectReservedIpOwner}"
-                                                   firedEmployeesVisible="true"/>
+                                                   firedEmployeesVisible="false"/>
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-12">
-                    <label class="col-md-2 control-label">
+                    <label class="col-md-12 control-label">
                         <ui:text from="{lang.reservedIpUsePeriod}"/>
                     </label>
-                    <div class="col-md-10">
-                        <picker:TypedRangePicker ui:field="useRange"/>
+                    <div class="col-md-12">
+<!--                        <picker:TypedRangePicker ui:field="useRange"/>-->
                     </div>
                 </div>
                 <div class="form-group col-md-12">

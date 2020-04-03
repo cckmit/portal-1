@@ -80,7 +80,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     }
 
     @UiField
-    Label address;
+    Anchor address;
     @UiField
     ValidableTextBox macAddress;
     @UiField

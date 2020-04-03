@@ -51,8 +51,6 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return;
         }
 
-/*        ReservedIpRequest request = fillReservedIpRequest();*/
-
         view.saveEnabled().setEnabled(false);
 
         ipReservationService.createReservedIp(fillReservedIpRequest(), new FluentCallback<List<ReservedIp>>()
@@ -77,6 +75,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     @Override
     public void onReservedModeChanged() {
         En_ReservedMode mode = view.reservedMode().getValue();
+
         view.exaсtIpVisibility().setVisible(En_ReservedMode.EXACT_IP.equals(mode));
         view.anyFreeIpsVisibility().setVisible(En_ReservedMode.ANY_FREE_IPS.equals(mode));
         view.subnetsVisibility().setVisible(En_ReservedMode.FROM_SELECTED_SUBNETS.equals(mode));
@@ -161,8 +160,6 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             fireEvent(new NotifyEvents.Show(lang.errMacAddress(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
-
-
         */
 
         if(view.owner().getValue() == null){
@@ -170,7 +167,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return false;
         }
 
-        if(view.useRange().getValue() == null ||
+        if(view.useRange() == null || view.useRange().getValue() == null ||
                 ( view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED) &&
                   ( view.useRange().getValue().getInterval().from == null ||
                     view.useRange().getValue().getInterval().to == null )
