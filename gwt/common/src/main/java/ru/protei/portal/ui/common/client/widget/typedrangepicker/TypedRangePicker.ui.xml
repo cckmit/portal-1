@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:range="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range"
+             xmlns:group="urn:import:ru.protei.portal.ui.common.client.widget.togglebtn.group">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.En_DateIntervalLang" />
+
+    <g:HTMLPanel>
+        <group:ToggleBtnGroup ui:field="btnGroup" styleName="btn-group m-b-10 col-md-12 p-l-0 p-r-0"/>
+        <range:RangePicker ui:field="range" styleName="" hasPredefinedPeriods="true" hasUnlimitedDateTo="true"/>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

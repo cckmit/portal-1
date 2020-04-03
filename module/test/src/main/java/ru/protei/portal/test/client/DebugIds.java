@@ -789,7 +789,7 @@ public class DebugIds {
     }
 
     public interface RESERVED_IP {
-        String MODE_SWITCHER = "reservedip-mode-switcher";
+/*        String MODE_SWITCHER = "reservedip-mode-switcher";*/
         String IP_ADDRESS_INPUT = "reservedip-address-input";
         String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
         String NUMBER_INPUT = "reservedip-number-input";

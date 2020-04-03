@@ -14,11 +14,14 @@ import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedRangePicker;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.create.AbstractReservedIpCreateActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.create.AbstractReservedIpCreateView;
+import ru.protei.portal.ui.ipreservation.client.view.widget.mode.En_ReservedMode;
+import ru.protei.portal.ui.ipreservation.client.view.widget.mode.ReservedModeBtnGroup;
 import ru.protei.portal.ui.ipreservation.client.view.widget.selector.SubnetMultiSelector;
 
 import java.util.Set;
@@ -40,7 +43,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     }
 
     @Override
-    public HasValue<Boolean> mode() { return mode; }
+    public HasValue<En_ReservedMode> reservedMode() { return reservedMode; }
 
     @Override
     public HasValue<String> ipAddress() { return ipAddress; }
@@ -60,19 +63,20 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @Override
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
-/*    @Override
-    public HasWidgets getExaсtIpContainer() { return exactIpContainer; }
-
     @Override
-    public HasWidgets getAnyFreeIpsContainer() {
-        return anyFreeIpsContainer;
-    }*/
+    public HasValue<DateIntervalWithType> useRange() { return useRange; }
 
     @Override
     public HasValidable ipAddressValidator() { return ipAddress; }
 
     @Override
     public HasValidable macAddressValidator() { return macAddress; }
+
+    @Override
+    public HasWidgets getExaсtIpContainer() { return exactIpContainer; }
+
+    @Override
+    public HasWidgets getAnyFreeIpsContainer() { return anyFreeIpsContainer; }
 
     @Override
     public HasVisibility saveVisibility() { return saveButton; }
@@ -82,6 +86,11 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
 
     @Override
     public HasVisibility anyFreeIpsVisibility() { return anyFreeIpsContainer; }
+
+    @Override
+    public HasVisibility subnetsVisibility() {
+        return null;
+    }
 
     @Override
     public HasEnabled ownerEnabled() { return ipOwner; }
@@ -103,12 +112,10 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         }
     }
 
-    @UiHandler("mode")
-    public void onChangeReserveMode(ValueChangeEvent<Boolean> event) {
-        if (event.getValue()) {
-            activity.onExactIpClicked();
-        } else {
-            activity.onAnyFreeIpsClicked();
+    @UiHandler( "reservedMode" )
+    public void onReservedModeChanged( ValueChangeEvent<En_ReservedMode> event ) {
+        if (activity != null) {
+            activity.onReservedModeChanged();
         }
     }
 
@@ -116,7 +123,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        mode.ensureDebugId(DebugIds.RESERVED_IP.MODE_SWITCHER);
+//        reservedMode.ensureDebugId(DebugIds.RESERVED_IP.MODE_SWITCHER);
         ipAddress.ensureDebugId(DebugIds.RESERVED_IP.IP_ADDRESS_INPUT);
         macAddress.ensureDebugId(DebugIds.RESERVED_IP.MAC_ADDRESS_INPUT);
         number.ensureDebugId(DebugIds.RESERVED_IP.NUMBER_INPUT);
@@ -129,8 +136,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }
 
-    @UiField
-    Switcher mode;
+    @Inject
+    @UiField(provided = true)
+    ReservedModeBtnGroup reservedMode;
     @UiField
     ValidableTextBox ipAddress;
     @UiField
@@ -147,6 +155,10 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @Inject
     @UiField(provided = true)
     SubnetMultiSelector subnets;
+
+    @Inject
+    @UiField(provided = true)
+    TypedRangePicker useRange;
 
     @UiField
     HTMLPanel exactIpContainer;

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.view.SubnetOption;
 
 import java.io.Serializable;
@@ -22,6 +23,8 @@ public class ReservedIpRequest implements Serializable{
     private String ipAddress;
 
     private String macAddress;
+
+    private En_DateIntervalType dateIntervalType;
 
     private Date reserveDate;
 
@@ -54,6 +57,12 @@ public class ReservedIpRequest implements Serializable{
     public String getMacAddress() { return macAddress; }
 
     public void setMacAddress(String macAddress) { this.macAddress = macAddress; }
+
+    public En_DateIntervalType getDateIntervalType() { return dateIntervalType; }
+
+    public void setDateIntervalType(En_DateIntervalType dateIntervalType) {
+        this.dateIntervalType = dateIntervalType;
+    }
 
     public Date getReserveDate() { return reserveDate; }
 

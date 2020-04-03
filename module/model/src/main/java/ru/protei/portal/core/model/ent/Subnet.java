@@ -34,6 +34,10 @@ public class Subnet extends AuditableObject {
     @JdbcColumn(name="comment")
     private String comment;
 
+    private Long registeredIPs;
+
+    private Long freeIps;
+
     public Subnet() {}
 
     @Override
@@ -64,6 +68,14 @@ public class Subnet extends AuditableObject {
     public String getComment() { return comment; }
 
     public void setComment(String comment) { this.comment = comment; }
+
+    public Long getRegisteredIPs() { return registeredIPs; }
+
+    public void setRegisteredIPs(Long registeredIPs) { this.registeredIPs = registeredIPs; }
+
+    public Long getFreeIps() { return freeIps; }
+
+    public void setFreeIps(Long freeIps) { this.freeIps = freeIps; }
 
     public EntityOption toEntityOption() {
         EntityOption entityOption = new EntityOption();

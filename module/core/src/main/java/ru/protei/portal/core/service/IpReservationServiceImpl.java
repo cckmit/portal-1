@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -187,8 +188,28 @@ public class IpReservationServiceImpl implements IpReservationService {
         reservedIp.setCreated(new Date());
         reservedIp.setCreatorId(token.getPersonId());
         reservedIp.setOwnerId(reservedIpRequest.getOwnerId());
-        reservedIp.setReserveDate(reservedIpRequest.getReserveDate() == null ? new Date() : reservedIpRequest.getReserveDate());
-        reservedIp.setReleaseDate(reservedIpRequest.getReleaseDate());
+
+        En_DateIntervalType intervalType = reservedIpRequest.getDateIntervalType();
+
+        Calendar calendar = Calendar.getInstance();
+        Date today = calendar.getTime();
+        calendar.add(Calendar.MONTH, 1);
+        Date throughMonth = calendar.getTime();
+
+        switch (intervalType) {
+            case UNLIMITED:
+                reservedIp.setReserveDate(today);
+                reservedIp.setReleaseDate(null);
+                break;
+            case MONTH:
+                reservedIp.setReserveDate(today);
+                reservedIp.setReleaseDate(throughMonth);
+                break;
+            case FIXED:
+                reservedIp.setReserveDate(reservedIpRequest.getReserveDate());
+                reservedIp.setReleaseDate(reservedIpRequest.getReserveDate());
+        }
+
         reservedIp.setComment(reservedIpRequest.getComment());
 
         if (reservedIpRequest.isExact()) {
@@ -336,12 +357,12 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         if (reservedIpRequest.isExact()) {
             if (StringUtils.isBlank(reservedIpRequest.getIpAddress()) ||
-                    !isValidIpAdress(reservedIpRequest.getIpAddress())) {
+                    !isValidIpAddress(reservedIpRequest.getIpAddress())) {
                 return false;
             }
 
             if (StringUtils.isNotBlank(reservedIpRequest.getMacAddress()) &&
-                    !isValidMacAdress(reservedIpRequest.getMacAddress())) {
+                    !isValidMacAddress(reservedIpRequest.getMacAddress())) {
                 return false;
             }
         } else {
@@ -353,6 +374,15 @@ public class IpReservationServiceImpl implements IpReservationService {
             if ((reservedIpRequest.getNumber() <= MIN_IPS_COUNT || reservedIpRequest.getNumber() >= MAX_IPS_COUNT)) {
                 return false;
             }
+        }
+
+        if(reservedIpRequest.getDateIntervalType() == null ||
+                ( En_DateIntervalType.FIXED.equals(reservedIpRequest.getDateIntervalType()) &&
+                ( reservedIpRequest.getReserveDate() == null ||
+                  reservedIpRequest.getReleaseDate() == null )
+                )
+        ) {
+            return false;
         }
 
         return true;
@@ -367,7 +397,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             return false;
         }
 
-        if (!StringUtils.isBlank(reservedIp.getIpAddress()) && isValidMacAdress(reservedIp.getMacAddress())) {
+        if (!StringUtils.isBlank(reservedIp.getIpAddress()) && isValidMacAddress(reservedIp.getMacAddress())) {
             return false;
         }
 
@@ -402,11 +432,11 @@ public class IpReservationServiceImpl implements IpReservationService {
         return ok(true );
     }
 
-    private boolean isValidIpAdress(String ipAddress) {
+    private boolean isValidIpAddress(String ipAddress) {
         return true;
     }
 
-    private boolean isValidMacAdress(String macAddress) {
+    private boolean isValidMacAddress(String macAddress) {
         return true;
     }
 

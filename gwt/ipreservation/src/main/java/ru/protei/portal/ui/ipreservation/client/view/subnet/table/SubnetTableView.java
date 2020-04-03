@@ -136,6 +136,19 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
         }
     };
 
+    private ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.reservedIpState());
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, Subnet value) {
+            cell.setInnerText("Registered : " + value.getRegisteredIPs() + "  "
+                    + " Free : " + value.getFreeIps());
+        }
+    };
+
     @UiField
     TableWidget<Subnet> table;
     @UiField

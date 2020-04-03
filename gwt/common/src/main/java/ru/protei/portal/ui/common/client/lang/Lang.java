@@ -2162,8 +2162,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpReleaseConfirmMessage();
 
-    String reservedIpOnlyLocal();
-
     String reservedIpUnableToRemove();
 
     String reservedIpSubnetUnableToRemove();
@@ -2174,5 +2172,21 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpNumber();
 
-    String reservedIpMode();
+    String reservedIpState();
+
+    String reservedIpExactIp();
+
+    String reservedIpAnyFreeIps();
+
+    String reservedIpSelectedSubnets();
+
+    String monthInterval();
+
+    String fixedInterval();
+
+    String unlimitedInterval();
+
+    String errSaveReservedIpUseInterval();
+
+    String errSaveReservedIpNeedSelectOwner();
 }
