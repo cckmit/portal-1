@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.test.client.DebugIds;
@@ -20,11 +21,14 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueNameDescriptionEditWidgetActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
@@ -36,18 +40,33 @@ public class IssueNameDescriptionEditWidget extends Composite {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         description.setDisplayPreviewHandler( isDisplay -> onDisplayPreviewChanged( AbstractIssueEditView.DESCRIPTION, isDisplay ) );
+        description.setDropZonePanel(dropPanel);
+    }
+
+    public void setFileUploader(AttachmentUploader pasteHandler) {
+        description.setFileUploader(pasteHandler);
+    }
+
+    public HasValue<String> description(){
+        return description;
     }
 
     public void setActivity( AbstractIssueNameDescriptionEditWidgetActivity activity ) {
         this.activity = activity;
     }
 
-    public void setIssueIdNameDescription( CaseNameAndDescriptionChangeRequest changeRequest, En_TextMarkup textMarkup ) {
+    public void setIssueIdNameDescription(CaseNameAndDescriptionChangeRequest changeRequest, En_TextMarkup textMarkup ) {
         this.changeRequest = changeRequest;
         description.setRenderer( ( text, consumer ) -> renderMarkupText( text, textMarkup, consumer ) );
         setDescriptionPreviewAllowed( makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ) );
         name.setValue( changeRequest.getName() );
         description.setValue( changeRequest.getInfo() );
+
+        tempAttachment.clear();
+    }
+
+    public void addTempAttachment(Attachment attachment) {
+        tempAttachment.add(attachment);
     }
 
     @UiHandler("saveNameAndDescriptionButton")
@@ -70,6 +89,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
 
         changeRequest.setName( name.getValue() );
         changeRequest.setInfo( description.getValue() );
+        changeRequest.setAttachments( tempAttachment );
 
         issueService.saveIssueNameAndDescription( changeRequest, new FluentCallback<Void>()
                 .withError( t -> requested = false )
@@ -139,6 +159,8 @@ public class IssueNameDescriptionEditWidget extends Composite {
     @UiField
     HTMLPanel descriptionContainer;
     @UiField
+    HTMLPanel dropPanel;
+    @UiField
     HTMLPanel nameContainer;
     @UiField
     LabelElement nameLabel;
@@ -162,6 +184,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
     private AbstractIssueNameDescriptionEditWidgetActivity activity;
     private boolean requested;
     private CaseNameAndDescriptionChangeRequest changeRequest;
+    private List<Attachment> tempAttachment = new ArrayList<>();
 
     interface IssueNameWidgetUiBinder extends UiBinder<HTMLPanel, IssueNameDescriptionEditWidget> {
     }

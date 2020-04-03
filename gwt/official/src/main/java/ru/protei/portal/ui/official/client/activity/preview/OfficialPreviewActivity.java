@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.OfficialControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.official.client.OfficialUtils;
 import ru.protei.portal.ui.official.client.activity.table.OfficialTableActivity;
@@ -36,7 +37,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.setActivity(this);
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) { addAttachments(Collections.singleton(attachment));
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) { addAttachments(Collections.singleton(attachment));
             }
             @Override
             public void onError(En_FileUploadStatus status, String details) {

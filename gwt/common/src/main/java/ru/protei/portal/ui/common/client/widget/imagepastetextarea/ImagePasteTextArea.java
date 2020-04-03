@@ -42,16 +42,29 @@ public class ImagePasteTextArea extends TextArea implements HasPasteHandlers {
         jsons.clear();
     }
 
-    protected void onPastedObject(JavaScriptObject object) {
+    protected void onPastedObject(JavaScriptObject object, Integer strPos) {
         Base64Image base64Image = object.cast();
         String json = JsonUtils.stringify(base64Image);
-        PasteEvent.fire(this, json);
+        PasteEvent.fire(this, json, strPos);
     }
 
     private native void addPasteHandler(Element element, ImagePasteTextArea view) /*-{
         element.addEventListener("paste", function(event) {
             var matchType = new RegExp("image.*");
             var clipboardData = event.clipboardData;
+
+            var strPos = 0;
+            var br = ((element.selectionStart || element.selectionStart == '0') ?
+                "ff" : (document.selection ? "ie" : false));
+            if (br == "ie") {
+                element.focus();
+                var range = document.selection.createRange();
+                range.moveStart('character', -element.value.length);
+                strPos = range.text.length;
+            } else if (br == "ff") {
+                strPos = element.selectionStart;
+            }
+
             var found = false;
             return Array.prototype.forEach.call(clipboardData.types, function(type, i) {
                 var file, reader;
@@ -68,7 +81,7 @@ public class ImagePasteTextArea extends TextArea implements HasPasteHandlers {
                             type: file.type,
                             size: file.size
                         };
-                        view.@ru.protei.portal.ui.common.client.widget.imagepastetextarea.ImagePasteTextArea::onPastedObject(*)(data);
+                        view.@ru.protei.portal.ui.common.client.widget.imagepastetextarea.ImagePasteTextArea::onPastedObject(*)(data, @java.lang.Integer::valueOf(I)(strPos));
                     };
                     reader.readAsDataURL(file);
                     return (found = true);

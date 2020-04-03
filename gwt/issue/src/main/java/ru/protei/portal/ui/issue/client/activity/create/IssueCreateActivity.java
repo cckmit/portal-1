@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -38,6 +39,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
+import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -53,7 +55,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(pasteInfo.strPosition, attachment);
+                }
                 view.attachmentsContainer().add(attachment);
             }
 
@@ -257,6 +262,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
         localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
+    }
+
+    private void addImageToMessage(Integer strPosition, Attachment attach) {
+        view.description().setValue(
+                addImageInMessage(view.description().getValue(), strPosition, attach));
     }
 
     private void fillView() {
