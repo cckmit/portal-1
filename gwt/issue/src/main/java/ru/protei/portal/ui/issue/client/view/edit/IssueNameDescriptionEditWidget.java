@@ -40,6 +40,7 @@ public class IssueNameDescriptionEditWidget extends Composite {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         description.setDisplayPreviewHandler( isDisplay -> onDisplayPreviewChanged( AbstractIssueEditView.DESCRIPTION, isDisplay ) );
+        description.setDropZonePanel(dropPanel);
     }
 
     public void setFileUploader(AttachmentUploader pasteHandler) {
@@ -157,6 +158,8 @@ public class IssueNameDescriptionEditWidget extends Composite {
     LabelElement descriptionLabel;
     @UiField
     HTMLPanel descriptionContainer;
+    @UiField
+    HTMLPanel dropPanel;
     @UiField
     HTMLPanel nameContainer;
     @UiField

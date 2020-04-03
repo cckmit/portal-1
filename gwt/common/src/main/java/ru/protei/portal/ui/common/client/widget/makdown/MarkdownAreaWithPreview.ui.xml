@@ -10,7 +10,7 @@
                 ui:field="text"
                 styleName="form-control form-group message-input resize-vertical"
                 enablePasteImage="true"
-                minRows="5" maxRows="20"/>
+                minRows="10" maxRows="20"/>
 
         <g:HTMLPanel ui:field="previewContainer" styleName="message-preview">
             <label class="message-preview-label">

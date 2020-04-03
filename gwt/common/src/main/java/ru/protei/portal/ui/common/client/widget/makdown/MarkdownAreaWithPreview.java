@@ -32,7 +32,6 @@ public class MarkdownAreaWithPreview
 
         text.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         text.setOverlayText(lang.dropFilesHere());
-        text.setDropZonePanel(root);
     }
 
     private DisplayPreviewHandler displayPreviewHandler;
@@ -115,6 +114,10 @@ public class MarkdownAreaWithPreview
         } else {
             fileUploader.uploadBase64File(event.getJson(), new PasteInfo(event.getStrPos()));
         }
+    }
+
+    public void setDropZonePanel(HTMLPanel panel){
+        text.setDropZonePanel(panel);
     }
 
     public void setEnsureDebugId(String debugId) {

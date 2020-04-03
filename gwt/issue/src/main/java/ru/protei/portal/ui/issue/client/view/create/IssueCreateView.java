@@ -33,6 +33,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
         description.setFileUploader(fileUploader);
+        description.setDropZonePanel(dropPanel);
     }
 
     @Override
@@ -173,7 +174,8 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
 
     @UiField
     TextBox name;
-
+    @UiField
+    HTMLPanel dropPanel;
     @UiField
     MarkdownAreaWithPreview description;
 

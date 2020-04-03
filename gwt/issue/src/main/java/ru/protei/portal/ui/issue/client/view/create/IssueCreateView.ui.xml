@@ -37,12 +37,12 @@
 
                     <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
                         <div class="col-md-12">
-                            <div class="form-group-default">
+                            <g:HTMLPanel ui:field="dropPanel" styleName="form-group-default" >
                                 <label class="fade" ui:field="descriptionLabel">
                                     <ui:text from="{lang.description}"/>
                                 </label>
-                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>
-                            </div>
+                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="10" maxRows="20"/>
+                            </g:HTMLPanel>
                         </div>
                     </g:HTMLPanel>
 
