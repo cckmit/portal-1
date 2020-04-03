@@ -4,8 +4,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <!--    //TODO after current release uncomment 2.0.0.0, remove 1.0.0.0-->
-<!--    <include file="1.0.0.0/changelog-1.0.0.0-cumulative.xml" relativeToChangelogFile="true"/>-->
-    <include file="2.0.0.0/changelog-2.0.0.0-cumulative.xml" relativeToChangelogFile="true"/>
+    <include file="1.0.0.0/changelog-1.0.0.0-cumulative.xml" relativeToChangelogFile="true"/>
+<!--    <include file="2.0.0.0/changelog-2.0.0.0-cumulative.xml" relativeToChangelogFile="true"/>-->
 
 
 </databaseChangeLog>
