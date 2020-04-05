@@ -44,10 +44,7 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class IssueMetaView extends Composite implements AbstractIssueMetaView {
@@ -74,6 +71,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public  HasValue<En_ImportanceLevel> importance( ) {
         return importance;
+    }
+
+    @Override
+    public void fillImportanceOptions(List<En_ImportanceLevel> options) {
+        importance.fillOptions(options);
     }
 
     @Override

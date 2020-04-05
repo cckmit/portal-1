@@ -388,6 +388,11 @@ public class RedmineTestConfigurationMockDao {
         return mock( JiraSLAMapEntryDAO.class );
     }
 
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return mock(CompanyImportanceItemDAO.class);
+    }
+
 
 
 }

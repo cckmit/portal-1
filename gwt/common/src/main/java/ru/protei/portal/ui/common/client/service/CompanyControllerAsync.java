@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -91,4 +92,6 @@ public interface CompanyControllerAsync {
     void updateState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
 
     void getAllHomeCompanyIds(AsyncCallback<List<Long>> async);
+
+    void getImportanceLevels(Long id, AsyncCallback<List<En_ImportanceLevel>> async);
 }

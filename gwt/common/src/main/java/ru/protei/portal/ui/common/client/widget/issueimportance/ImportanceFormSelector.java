@@ -19,21 +19,10 @@ public class ImportanceFormSelector extends FormSelector<En_ImportanceLevel> {
                 "importance-item",
                 value == null ? null : ImportanceStyleProvider.getImportanceIcon(value) + " selector"
         ));
-
-        fillOptions();
     }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
-    }
-
-    private void fillOptions() {
-        if ( defaultValue != null ) {
-            addOption( null );
-        }
-        for ( En_ImportanceLevel value : En_ImportanceLevel.values() ) {
-            addOption( value );
-        }
     }
 
     @Inject
