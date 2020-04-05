@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWit
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.ipreservation.client.view.widget.mode.En_ReservedMode;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,7 +79,6 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
         view.exaсtIpVisibility().setVisible(En_ReservedMode.EXACT_IP.equals(mode));
         view.anyFreeIpsVisibility().setVisible(En_ReservedMode.ANY_FREE_IPS.equals(mode));
-        view.subnetsVisibility().setVisible(En_ReservedMode.FROM_SELECTED_SUBNETS.equals(mode));
     }
 
     private void resetView () {
@@ -88,11 +88,11 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.number().setValue(null);
 
         if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)) {
-            view.reservedMode().setValue(En_ReservedMode.EXACT_IP);
+            view.reservedMode().setValue(En_ReservedMode.EXACT_IP, true);
             view.owner().setValue(null);
             view.ownerEnabled().setEnabled(true);
         } else {
-            view.reservedMode().setValue(En_ReservedMode.ANY_FREE_IPS);
+            view.reservedMode().setValue(En_ReservedMode.ANY_FREE_IPS, true);
             PersonShortView ipOwner = new PersonShortView(
                     policyService.getProfile().getFullName(),
                     policyService.getProfile().getId(),
@@ -100,11 +100,9 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             view.owner().setValue(ipOwner);
             view.ownerEnabled().setEnabled(false);
         }
-        view.comment().setText("");
-
         view.useRange().setValue(new DateIntervalWithType(
-                new DateInterval(),
-                En_DateIntervalType.MONTH));
+                new DateInterval(new Date(), null), En_DateIntervalType.MONTH));
+        view.comment().setText("");
 
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(true);
@@ -120,12 +118,10 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 reservedIpRequest.setIpAddress(view.ipAddress().getValue());
                 reservedIpRequest.setMacAddress(view.macAddress().getValue());
                 break;
-            case ANY_FREE_IPS : FROM_SELECTED_SUBNETS :
+            case ANY_FREE_IPS :
                 reservedIpRequest.setExact(false);
                 reservedIpRequest.setNumber(view.number().getValue());
-                if (En_ReservedMode.FROM_SELECTED_SUBNETS.equals(mode)) {
-                    reservedIpRequest.setSubnets(view.subnets().getValue());
-                }
+                reservedIpRequest.setSubnets(view.subnets().getValue());
                 break;
         }
 

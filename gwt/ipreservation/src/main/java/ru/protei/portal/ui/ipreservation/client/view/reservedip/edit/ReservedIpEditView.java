@@ -8,6 +8,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -38,6 +40,9 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
 
     @Override
     public HasValue<String> macAddress() { return macAddress; }
+
+    @Override
+    public HasValue<DateInterval> useRange() { return useRange; }
 
     @Override
     public HasText comment() { return comment; }
@@ -73,8 +78,10 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
             return;
         }
         macAddress.ensureDebugId(DebugIds.RESERVED_IP.MAC_ADDRESS_INPUT);
+        useRange.ensureDebugId(DebugIds.RESERVED_IP.USE_RANGE_INPUT);
+        useRange.getRelative().ensureDebugId(DebugIds.RESERVED_IP.USE_RANGE_BUTTON);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
-        ipOwner.setEnsureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
+        ipOwner.ensureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }
@@ -85,6 +92,10 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     ValidableTextBox macAddress;
     @UiField
     TextArea comment;
+
+    @Inject
+    @UiField(provided = true)
+    RangePicker useRange;
 
     @Inject
     @UiField(provided = true)

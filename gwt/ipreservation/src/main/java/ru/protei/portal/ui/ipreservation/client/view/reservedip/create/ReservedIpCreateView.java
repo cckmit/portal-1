@@ -64,7 +64,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
     @Override
-    public HasValue<DateIntervalWithType> useRange() { return null; }
+    public HasValue<DateIntervalWithType> useRange() { return useRange; }
 
     @Override
     public HasValidable ipAddressValidator() { return ipAddress; }
@@ -86,11 +86,6 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
 
     @Override
     public HasVisibility anyFreeIpsVisibility() { return anyFreeIpsContainer; }
-
-    @Override
-    public HasVisibility subnetsVisibility() {
-        return null;
-    }
 
     @Override
     public HasEnabled ownerEnabled() { return ipOwner; }
@@ -123,12 +118,12 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-//        reservedMode.ensureDebugId(DebugIds.RESERVED_IP.MODE_SWITCHER);
+        reservedMode.ensureDebugId(DebugIds.RESERVED_IP.MODE_TOGGLE);
         ipAddress.ensureDebugId(DebugIds.RESERVED_IP.IP_ADDRESS_INPUT);
         macAddress.ensureDebugId(DebugIds.RESERVED_IP.MAC_ADDRESS_INPUT);
         number.ensureDebugId(DebugIds.RESERVED_IP.NUMBER_INPUT);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
-        ipOwner.setEnsureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
+        ipOwner.ensureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
         /*
            @todo dates
          */
@@ -156,9 +151,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @UiField(provided = true)
     SubnetMultiSelector subnets;
 
-/*    @Inject
+    @Inject
     @UiField(provided = true)
-    TypedRangePicker useRange;*/
+    TypedRangePicker useRange;
 
     @UiField
     HTMLPanel exactIpContainer;

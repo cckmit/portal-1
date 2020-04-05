@@ -2,9 +2,9 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
 >
-
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
@@ -27,6 +27,14 @@
                                                    hasNullValue="false"
                                                    defaultValue="{lang.selectReservedIpOwner}"
                                                    firedEmployeesVisible="false"/>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="col-md-12 control-label">
+                        <ui:text from="{lang.reservedIpUsePeriod}"/>
+                    </label>
+                    <div class="col-md-12">
+                        <range:RangePicker ui:field="useRange" formatValue="yyyy.MM.dd"/>
+                    </div>
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.comment}"/></label>

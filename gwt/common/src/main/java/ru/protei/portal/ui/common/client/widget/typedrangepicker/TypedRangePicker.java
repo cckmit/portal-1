@@ -31,9 +31,9 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
     }
 
     private void initButtons() {
-        btnGroup.addBtn(lang.getDateIntervalName(En_DateIntervalType.MONTH), En_DateIntervalType.MONTH,"btn btn-default btn-sm col-md-3");
-        btnGroup.addBtn(lang.getDateIntervalName(En_DateIntervalType.FIXED), En_DateIntervalType.FIXED,"btn btn-default btn-sm col-md-3");
-        btnGroup.addBtn(lang.getDateIntervalName(En_DateIntervalType.UNLIMITED), En_DateIntervalType.UNLIMITED,"btn btn-default btn-sm col-md-3");
+        btnGroup.addBtn(lang.getName(En_DateIntervalType.MONTH), En_DateIntervalType.MONTH,"btn btn-default btn-sm col-md-4");
+        btnGroup.addBtn(lang.getName(En_DateIntervalType.FIXED), En_DateIntervalType.FIXED,"btn btn-default btn-sm col-md-4");
+        btnGroup.addBtn(lang.getName(En_DateIntervalType.UNLIMITED), En_DateIntervalType.UNLIMITED,"btn btn-default btn-sm col-md-4");
     }
 
     @Override
@@ -54,7 +54,7 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<DateIntervalWithType> valueChangeHandler) {
-        return null;
+        return addHandler( valueChangeHandler, ValueChangeEvent.getType() );
     }
 
     public void setRangeMandatory(boolean value) {
@@ -68,7 +68,7 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
     @UiField(provided = true)
     RangePicker range;
 
-    @UiField
+    @Inject
     En_DateIntervalLang lang;
 
     interface TypedRangePickerUiBinder extends UiBinder<Widget, TypedRangePicker> { }

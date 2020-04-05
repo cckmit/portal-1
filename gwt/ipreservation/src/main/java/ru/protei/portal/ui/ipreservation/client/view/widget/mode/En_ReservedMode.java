@@ -5,8 +5,7 @@ package ru.protei.portal.ui.ipreservation.client.view.widget.mode;
  */
 public enum En_ReservedMode {
     EXACT_IP,
-    ANY_FREE_IPS,
-    FROM_SELECTED_SUBNETS;
+    ANY_FREE_IPS;
 
     public static En_ReservedMode getButOrdinal(int ordinal) {
         for (En_ReservedMode value: values()) {

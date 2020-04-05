@@ -33,7 +33,6 @@ public interface AbstractReservedIpCreateView extends IsWidget {
 
     HasVisibility exaсtIpVisibility();
     HasVisibility anyFreeIpsVisibility();
-    HasVisibility subnetsVisibility();
 
     HasVisibility saveVisibility();
 

@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.edit;
 
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.ent.Subnet;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -14,6 +14,7 @@ public interface AbstractReservedIpEditView extends IsWidget {
 
     void setAddress(String value);
     HasValue<String> macAddress();
+    HasValue<DateInterval> useRange();
     HasText comment();
     HasValue<PersonShortView> owner();
 

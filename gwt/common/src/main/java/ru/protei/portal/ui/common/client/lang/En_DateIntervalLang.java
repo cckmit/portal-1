@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
  */
 public class En_DateIntervalLang {
 
-    public String getDateIntervalName(En_DateIntervalType type) {
+    public String getName(En_DateIntervalType type) {
         switch (type) {
             case MONTH: return lang.monthInterval();
             case FIXED: return lang.fixedInterval();

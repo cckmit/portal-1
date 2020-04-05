@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -32,7 +33,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
             return;
         }
 
-        if (!hasPrivileges(event.reservedIp.getId())) {
+        if (!hasPrivileges()) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -40,6 +41,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+/*        resetView();*/
         this.reservedIp = event.reservedIp;
 
         fillView();
@@ -47,11 +49,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
     @Override
     public void onSaveClicked() {
-        if (!hasPrivileges(reservedIp.getId())) {
-            return;
-        }
-
-        if (!validateView()) {
+        if (!hasPrivileges() || !validateView()) {
             return;
         }
 
@@ -78,10 +76,6 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         fireEvent(new IpReservationEvents.CloseEdit());
     }
 
-    private boolean isNew() {
-        return reservedIp.getId() == null;
-    }
-
     private void requestReservedIp(Long reservedIpId, Consumer<ReservedIp> successAction) {
         ipReservationService.getReservedIp( reservedIpId, new RequestCallback<ReservedIp>() {
             @Override
@@ -95,29 +89,32 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         });
     }
 
-    private void resetView () {
+/*    private void resetView () {
         view.macAddress().setValue("");
         view.owner().setValue(null);
+        view.useRange().setValue();
         // @todo dates
         view.comment().setText("");
 
-        view.saveVisibility().setVisible( hasPrivileges(reservedIp == null ? null : reservedIp.getId()) );
+        view.saveVisibility().setVisible( hasPrivileges() );
         view.saveEnabled().setEnabled(true);
-    }
+    }*/
 
     private void fillView() {
         view.setAddress(reservedIp.getIpAddress());
         view.macAddress().setValue(reservedIp.getMacAddress());
+        view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
-        view.owner().setValue(reservedIp.getOwner().toFullNameShortView());
+        view.owner().setValue(reservedIp.getOwner().toShortNameShortView());
     }
 
     private ReservedIp fillReservedIp() {
         reservedIp.setMacAddress(view.macAddress().getValue());
         reservedIp.setOwnerId(view.owner().getValue().getId());
         reservedIp.setComment(view.comment().getText());
-        //reservedIp.setReserveDate(view.reserveDate().getValue());
-        //reservedIp.setReleaseDate(view.releaseDate().getValue());
+        DateInterval reservedFor = view.useRange().getValue();
+        reservedIp.setReserveDate(reservedFor.from);
+        reservedIp.setReleaseDate(reservedFor.to);
         return reservedIp;
     }
 
@@ -126,27 +123,31 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
             fireEvent(new NotifyEvents.Show(lang.errMacAddress(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
-
-        if(view.reserveDate().getValue() != null && view.reserveDate().getValue() > view.releaseDate()){
-            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpWrongReserveDate(), NotifyEvents.NotifyType.ERROR));
+*/
+        if(view.useRange() == null || view.useRange().getValue() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if(view.releaseDate().getValue() != null && view.releaseDate().getValue() < view.reserveDate()){
-            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpWrongReleaseDate(), NotifyEvents.NotifyType.ERROR));
+        Date from = view.useRange().getValue().from;
+        Date to = view.useRange().getValue().to;
+
+        if ( from == null ||
+             (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE) && to == null) ||
+              from.after(to)) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
         if(view.owner().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpNeedSelectOwner(), NotifyEvents.NotifyType.ERROR));
             return false;
-        }*/
+        }
 
         return true;
     }
 
-    private boolean hasPrivileges(Long reservedIpId) {
-        // @todo проверка на принадлежность к сисадминству
+    private boolean hasPrivileges() {
         if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
                 || reservedIp.getOwnerId().equals(policyService.getProfile().getId())) {
             return true;

@@ -789,15 +789,18 @@ public class DebugIds {
     }
 
     public interface RESERVED_IP {
-/*        String MODE_SWITCHER = "reservedip-mode-switcher";*/
+        String MODE_TOGGLE = "reservedip-mode-toggle";
         String IP_ADDRESS_INPUT = "reservedip-address-input";
         String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
         String NUMBER_INPUT = "reservedip-number-input";
         String SUBNET_SELECTOR = "reservedip-subnet-selector";
         String OWNER_SELECTOR = "reservedip-owner-selector";
+        String USE_RANGE_TYPED_TOGGLE = "reservedip-use-range-typed-toggle";
+        String USE_RANGE_TYPED_INPUT = "reservedip-use-range-typed-input";
+        String USE_RANGE_TYPED_BUTTON = "reservedip-use-range-typed-button";
+        String USE_RANGE_INPUT = "reservedip-use-range-input";
+        String USE_RANGE_BUTTON = "reservedip-use-range-button";
         String COMMENT_INPUT = "reservedip-comment-input";
-        String RESERVE_DATE_RANGE_INPUT = "reservedip-reserve-date-range-input";
-        String RELEASE_DATE_RANGE_INPUT = "reservedip-release-date-date-created-range-input";
         String SAVE_BUTTON = "reservedip-save-button";
         String CANCEL_BUTTON = "reservedip-cancel-button";
     }
