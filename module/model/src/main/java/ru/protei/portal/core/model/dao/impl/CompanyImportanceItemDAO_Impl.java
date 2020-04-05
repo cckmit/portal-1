@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.CompanyImportanceItemDAO;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CompanyImportanceItem;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
