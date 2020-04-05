@@ -22,7 +22,9 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -87,10 +89,10 @@ public abstract class CompanyPreviewActivity
     }
 
     private void requestAndFillParentAndChildCompanies(Long companyId ) {
+        view.setCompanyLinksMessage(null);
+
         companyController.getCompany( companyId, new ShortRequestCallback<Company>()
                 .setOnSuccess( company-> {
-
-                    view.setCompanyLinksMessage(null);
 
                     if (StringUtils.isNotEmpty( company.getParentCompanyName()) ) {
                         view.setCompanyLinksMessage( lang.companyIsAPartOfCompany( company.getParentCompanyName() ));
@@ -101,7 +103,6 @@ public abstract class CompanyPreviewActivity
                         view.setCompanyLinksMessage( lang.companyIsAHeadOfCompany( companyNames ));
                     }
                 } ) );
-
     }
 
     private void requestAndFillSubscriptionEmails(Long companyId) {
@@ -113,13 +114,13 @@ public abstract class CompanyPreviewActivity
                         return;
                     }
 
-                    List<Pair<Pair<String, String>, List<CompanySubscription>>> groupsList = fillGroupList(subscriptions);
+                    Map<Pair<String, String>, List<CompanySubscription>> groupsMap = fillGroupMap(subscriptions);
 
                     String subscriptionsHTML = null;
 
-                    for (Pair<Pair<String, String>, List<CompanySubscription>> group : groupsList) {
-                        if (group.getA().equals(Pair.of(null,null))){
-                            subscriptionsHTML = generateCommonSubscriptionsGroupHTML(group);
+                    for (Map.Entry<Pair<String, String>, List<CompanySubscription>> group : groupsMap.entrySet()) {
+                        if (group.getKey().equals(Pair.of(null,null))){
+                            subscriptionsHTML = generateCommonSubscriptionsGroupHTML(group.getValue());
                         }
                         else {
                             subscriptionsHTML += generateSubscriptionsGroupHTML(group);
@@ -127,18 +128,17 @@ public abstract class CompanyPreviewActivity
                     }
 
                     view.setSubscriptionEmails(subscriptionsHTML);
-
                 }));
     }
 
-    private String generateSubscriptionsGroupHTML(Pair<Pair<String, String>, List<CompanySubscription>> group) {
-        String platformName = group.getA().getA() == null
+    private String generateSubscriptionsGroupHTML(Map.Entry<Pair<String, String>, List<CompanySubscription>> group) {
+        String platformName = group.getKey().getA() == null
                ? lang.companySubscriptionGroupAnyValuePlatform()
-               : group.getA().getA();
+               : group.getKey().getA();
 
-        String productName = group.getA().getB() == null
+        String productName = group.getKey().getB() == null
                 ? lang.companySubscriptionGroupAnyValueProduct()
-                : group.getA().getB();
+                : group.getKey().getB();
 
         StringBuilder subscriptionsGroupHTML = new StringBuilder();
 
@@ -152,51 +152,39 @@ public abstract class CompanyPreviewActivity
                 .append("</b> ")
                 .append(productName)
                 .append(": ")
-                .append(group.getB().stream()
+                .append(group.getValue().stream()
                 .map(CompanySubscription::getEmail)
                 .collect(Collectors.joining(", ")));
         return subscriptionsGroupHTML.toString();
     }
 
-    private String generateCommonSubscriptionsGroupHTML(Pair<Pair<String, String>, List<CompanySubscription>> group) {
-        return group.getB().stream()
+    private String generateCommonSubscriptionsGroupHTML(List<CompanySubscription> commonGroupList) {
+        return commonGroupList.stream()
                 .map(CompanySubscription::getEmail)
                 .collect(Collectors.joining(", "));
     }
 
-    private List<Pair<Pair<String, String>, List<CompanySubscription>>> fillGroupList (List<CompanySubscription> subscriptions){
+    private Map<Pair<String, String>, List<CompanySubscription>> fillGroupMap(List<CompanySubscription> subscriptions){
 
-        List<Pair<Pair<String, String>, List<CompanySubscription>>> groupsList = new ArrayList<>();
+        Map<Pair<String, String>, List<CompanySubscription>> groupsMap = new HashMap<>();
 
-        addCommonSubscriptionGroup(groupsList);
+        addCommonSubscriptionGroup(groupsMap);
 
         subscriptions.forEach(companySubscription -> {
-            boolean isGroupExisted = false;
-
-            for (Pair<Pair<String, String>, List<CompanySubscription>> pair : groupsList) {
-                if (Pair.of(companySubscription.getPlatformName(), companySubscription.getProductName()).equals(pair.getA())){
-                    pair.getB().add(companySubscription);
-                    isGroupExisted = true;
-                    break;
-                }
-            }
-
-            if (!isGroupExisted){
-                addNewSubscriptionsGroup(groupsList, companySubscription);
+            if (groupsMap.containsKey(Pair.of(companySubscription.getPlatformName(), companySubscription.getProductName()))){
+                groupsMap.get(Pair.of(companySubscription.getPlatformName(), companySubscription.getProductName())).add (companySubscription);
+            } else {
+                List<CompanySubscription> newGroup = new ArrayList<>();
+                newGroup.add(companySubscription);
+                groupsMap.put(Pair.of(companySubscription.getPlatformName(), companySubscription.getProductName()), newGroup);
             }
         });
 
-        return groupsList;
+        return groupsMap;
     }
 
-    private void addNewSubscriptionsGroup(List<Pair<Pair<String, String>, List<CompanySubscription>>> groupsList, CompanySubscription companySubscription) {
-        List<CompanySubscription> newGroup = new ArrayList<>();
-        newGroup.add(companySubscription);
-        groupsList.add(Pair.of(Pair.of(companySubscription.getPlatformName(), companySubscription.getProductName()), newGroup));
-    }
-
-    private void addCommonSubscriptionGroup(List<Pair<Pair<String, String>, List<CompanySubscription>>> groupsList) {
-        groupsList.add(Pair.of(Pair.of(null, null), new ArrayList<>()));
+    private void addCommonSubscriptionGroup(Map<Pair<String, String>, List<CompanySubscription>> groupsMap) {
+        groupsMap.put(Pair.of(null, null), new ArrayList<>());
     }
 
     @Inject

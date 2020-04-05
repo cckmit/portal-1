@@ -120,7 +120,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
             return;
         }
         subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.SUBSCRIPTION);
-        subscription.setId(DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
+        subscription.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
         contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.CONTACT_INFO);
     }
 
