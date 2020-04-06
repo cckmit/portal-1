@@ -15,38 +15,38 @@ public class EmployeeSqlBuilder {
             condition.append("person.company_id in (select companyId from company_group_home)");
 
             if (CollectionUtils.isNotEmpty(query.getIds())) {
-                condition.append(" and Person.id in " + HelperFunc.makeInArg(query.getIds()));
+                condition.append(" and person.id in " + HelperFunc.makeInArg(query.getIds()));
             }
 
             if (query.getFired() != null) {
-                condition.append(" and Person.isfired=?");
+                condition.append(" and person.isfired=?");
                 args.add(query.getFired() ? 1 : 0);
             }
 
             if (query.getDeleted() != null) {
-                condition.append(" and Person.isdeleted=?");
+                condition.append(" and person.isdeleted=?");
                 args.add(query.getDeleted() ? 1 : 0);
             }
 
             if (query.getOnlyPeople() != null) {
-                condition.append(" and Person.sex != ?");
+                condition.append(" and person.sex != ?");
                 args.add(En_Gender.UNDEFINED.getCode());
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 if (query.getSearchString().trim().contains(" ")) {
-                    condition.append(" and Person.displayname like ?");
+                    condition.append(" and person.displayname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
                 } else {
-                    condition.append(" and (Person.lastname like ?");
+                    condition.append(" and (person.lastname like ?");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
-                    condition.append(" or Person.firstname like ?)");
+                    condition.append(" or person.firstname like ?)");
                     args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
                 }
             }
 
             if (HelperFunc.isLikeRequired(query.getIpAddress())) {
-                condition.append(" and Person.ipaddress like ?");
+                condition.append(" and person.ipaddress like ?");
                 args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
             }
 
@@ -78,7 +78,7 @@ public class EmployeeSqlBuilder {
                 String helper = HelperFunc.makeLikeArg(query.getDepartment().trim(), true);
 
                 condition
-                        .append(" and Person.id in (")
+                        .append(" and person.id in (")
                         .append("select personId from company_dep cd " +
                                 "left join company_dep cd2 on cd.parent_dep = cd2.id " +
                                 "inner join worker_entry we on cd.id = we.dep_id")
