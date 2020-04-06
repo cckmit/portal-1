@@ -524,10 +524,14 @@ public abstract class CaseCommentListActivity
     }
 
     private CaseComment buildCaseComment() {
-        CaseComment comment = this.comment;
-        if (comment == null) {
+        boolean isNew = this.comment == null;
+
+        CaseComment comment;
+        if (isNew) {
             comment = new CaseComment();
             comment.setAuthorId(profile.getId());
+        } else {
+            comment = this.comment;
         }
         Long commentId = comment.getId();
         En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
@@ -535,7 +539,9 @@ public abstract class CaseCommentListActivity
         comment.setText(view.message().getValue());
         comment.setTimeElapsed(view.timeElapsed().getTime());
         comment.setTimeElapsedType(elapsedType != null ? elapsedType : En_TimeElapsedType.NONE);
-        comment.setPrivateComment(isPrivateCase || view.privateComment().getValue());
+        if (isNew) {
+            comment.setPrivateComment(isPrivateCase || view.privateComment().getValue());
+        }
         comment.setCaseAttachments(tempAttachments.stream()
                 .map(a -> new CaseAttachment(caseId, a.getId(), commentId))
                 .collect(Collectors.toList())
