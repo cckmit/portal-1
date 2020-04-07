@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.widget.sla.SlaInputReadOnly;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
