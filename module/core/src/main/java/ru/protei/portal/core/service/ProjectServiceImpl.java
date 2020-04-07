@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -148,6 +149,8 @@ public class ProjectServiceImpl implements ProjectService {
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         jdbcManyRelationsHelper.fillAll( caseObject );
 
+        Project oldStateProject = Project.fromCaseObject(caseObject);
+
         if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
         }
@@ -197,7 +200,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return ok(Project.fromCaseObject( caseObject ));
+        project.setCreator(caseObject.getCreator());
+
+        return ok(project).publishEvent(new AssembledProjectEvent(this, oldStateProject, project, personDAO.get(token.getPersonId())));
     }
 
     @Override
@@ -212,6 +217,8 @@ public class ProjectServiceImpl implements ProjectService {
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
             return error(En_ResultStatus.NOT_CREATED);
+
+        project.setId(id);
 
         jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
 
@@ -233,7 +240,9 @@ public class ProjectServiceImpl implements ProjectService {
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
-        return addLinksResult.isOk() ? ok(Project.fromCaseObject(caseObject)) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
+        project.setCreator(personDAO.get(project.getCreatorId()));
+
+        return addLinksResult.isOk() ? ok(project).publishEvent(new AssembledProjectEvent(this, null, project, personDAO.get(token.getPersonId()))) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {

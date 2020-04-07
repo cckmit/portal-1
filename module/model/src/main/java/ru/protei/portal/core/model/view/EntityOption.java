@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by michael on 08.11.16.
@@ -60,7 +61,7 @@ public class EntityOption implements Serializable {
     public boolean equals(Object obj) {
         if (obj instanceof EntityOption) {
             Long oid = ((EntityOption)obj).getId();
-            return this.id == null ? oid == null : oid != null && this.id.equals(oid);
+            return Objects.equals(this.id, oid);
         }
 
         return false;

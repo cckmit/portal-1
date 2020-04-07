@@ -2,10 +2,13 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.utils.LinkData;
+import ru.protei.portal.core.utils.RoleTypeLangUtil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -60,4 +63,7 @@ public interface TemplateService {
 
     String getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject() throws IOException, TemplateException;
 
+    PreparedTemplate getMailProjectSubject(Project project, Person initiator);
+
+    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, RoleTypeLangUtil roleTypeLang);
 }

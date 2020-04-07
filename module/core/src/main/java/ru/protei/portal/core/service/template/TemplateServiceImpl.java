@@ -5,8 +5,16 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
+import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
@@ -18,6 +26,7 @@ import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.utils.LinkData;
+import ru.protei.portal.core.utils.RoleTypeLangUtil;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 
@@ -27,6 +36,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -391,6 +403,84 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
+    }
+
+    @Override
+    public PreparedTemplate getMailProjectSubject(Project project, Person initiator) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("projectNumber", String.valueOf(project.getId()));
+        templateModel.put("initiator", initiator.getDisplayName());
+        templateModel.put("TransliterationUtils", new TransliterationUtils());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/project.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, RoleTypeLangUtil roleTypeLang) {
+        Project oldProjectState = event.getOldProjectState();
+        Project newProjectState = event.getNewProjectState();
+
+        Map<String, Object> templateModel = new HashMap<>();
+
+        templateModel.put("TransliterationUtils", new TransliterationUtils());
+        templateModel.put("RoleTypeLangUtil", roleTypeLang);
+
+        templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
+        templateModel.put("isCreated", !event.isEditEvent());
+        templateModel.put("recipients", recipients);
+
+        templateModel.put("nameChanged", event.isNameChanged());
+        templateModel.put("oldName", getObjectOrNull(oldProjectState, Project::getName));
+        templateModel.put("newName", newProjectState.getName());
+
+        templateModel.put("descriptionChanged", event.isDescriptionChanged());
+        templateModel.put("oldDescription", getObjectOrNull(oldProjectState, Project::getDescription));
+        templateModel.put("newDescription", newProjectState.getDescription());
+
+        templateModel.put("stateChanged", event.isStateChanged());
+        templateModel.put("oldState", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getState), Enum::name));
+        templateModel.put("newState", newProjectState.getState().name());
+
+        templateModel.put("regionChanged", event.isRegionChanged());
+        templateModel.put("oldRegion", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getRegion), EntityOption::getDisplayText));
+        templateModel.put("newRegion", getObjectOrNull(newProjectState.getRegion(), EntityOption::getDisplayText));
+
+        templateModel.put("companyChanged", event.isCompanyChanged());
+        templateModel.put("oldCompany", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getCustomer), Company::getCname));
+        templateModel.put("newCompany", newProjectState.getCustomer().getCname());
+
+        templateModel.put("customerTypeChanged", event.isCustomerTypeChanged());
+        templateModel.put("oldCustomerType", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getCustomerType), Enum::name));
+        templateModel.put("newCustomerType", newProjectState.getCustomerType().name());
+
+        templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
+        templateModel.put("oldProductDirection", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getProductDirection), EntityOption::getDisplayText));
+        templateModel.put("newProductDirection", newProjectState.getProductDirection().getDisplayText());
+
+        templateModel.put("productChanged", event.isProductChanged());
+        templateModel.put("oldProduct", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
+        templateModel.put("newProduct", getObjectOrNull(newProjectState.getSingleProduct(), ProductShortView::getName));
+
+        templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
+        templateModel.put("oldSupportValidity", getObjectOrNull(oldProjectState, Project::getTechnicalSupportValidity));
+        templateModel.put("newSupportValidity", newProjectState.getTechnicalSupportValidity());
+
+        templateModel.put("team", event.getTeamDiffs());
+        templateModel.put("sla", event.getSlaDiffs());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/project.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+
+        return template;
+    }
+
+    private <T, R> R getObjectOrNull(T value, Function<T, R> projectToObjectFunction) {
+        return value == null ? null : projectToObjectFunction.apply(value);
     }
 
     private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){

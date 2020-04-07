@@ -30,7 +30,7 @@ public class PersonProjectMemberView extends PersonShortView {
         if (person == null) {
             return null;
         }
-        return new PersonProjectMemberView(person.getDisplayShortName(), person.getId(), person.isFired(), role);
+        return new PersonProjectMemberView(person.getDisplayName(), person.getId(), person.isFired(), role);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
@@ -20,6 +21,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EmployeeService;
@@ -27,6 +29,7 @@ import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.utils.LinkData;
+import ru.protei.portal.core.utils.RoleTypeLangUtil;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
@@ -41,6 +44,7 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.filterToList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
@@ -79,6 +83,9 @@ public class MailNotificationProcessor {
 
     @Autowired
     PortalConfig config;
+
+    @Autowired
+    Lang lang;
 
     // ------------------------
     // CaseObject notifications
@@ -617,6 +624,58 @@ public class MailNotificationProcessor {
 
     }
 
+    // -----------------------
+    // Project notifications
+    // -----------------------
+
+    @EventListener
+    public void onMailProjectEvent(AssembledProjectEvent event) {
+        if (!isSendProjectNotification(event)) {
+            return;
+        }
+
+        Set<NotificationEntry> recipients = subscriptionService
+                .subscribers(
+                        CollectionUtils.emptyIfNull(event.getNewProjectState().getTeam())
+                                .stream()
+                                .map(PersonShortView::getId)
+                                .collect(Collectors.toList())
+                );
+
+        /* TODO: Затычка на отправку только одного письма. Убрать после окончания разработки */
+
+        recipients = recipients
+                .stream()
+                .filter(recipient -> recipient.getAddress().equals("fomin_e@protei.ru"))
+                .collect(Collectors.toSet());
+
+        if (recipients.isEmpty()) {
+            return;
+        }
+
+        /* TODO: Затычка на отправку только одного письма. Убрать после окончания разработки */
+
+        Set<String> collect = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
+        PreparedTemplate bodyTemplate = templateService.getMailProjectBody(
+                event,
+                collect,
+                new RoleTypeLangUtil(lang)
+        );
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for project | project.id={}", event.getNewProjectState().getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getMailProjectSubject(event.getNewProjectState(), event.getInitiator());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for project | project.id={}", event.getNewProjectState().getId());
+            return;
+        }
+
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+    }
+
     // -----
     // Utils
     // -----
@@ -724,6 +783,32 @@ public class MailNotificationProcessor {
                 || assembledCaseEvent.getInfo().hasDifferences()
                 || assembledCaseEvent.isProductChanged()
                 || assembledCaseEvent.isPublicLinksChanged();
+    }
+
+
+    private boolean isSendProjectNotification(AssembledProjectEvent event) {
+        if (isEmpty(event.getNewProjectState().getTeam())) {
+            return false;
+        }
+
+        if (event.isEditEvent() && !isProjectChanged(event)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isProjectChanged(AssembledProjectEvent event) {
+        return event.isNameChanged()
+                || event.isDescriptionChanged()
+                || event.isStateChanged()
+                || event.isRegionChanged()
+                || event.isCompanyChanged()
+                || event.isCustomerTypeChanged()
+                || event.isProductDirectionChanged()
+                || event.isProductChanged()
+                || event.isSupportValidityChanged()
+                || event.isTeamChanged();
     }
 
     private class MimeMessageHeadersFacade {
