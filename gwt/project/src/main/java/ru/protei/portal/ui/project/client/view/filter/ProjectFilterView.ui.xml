@@ -3,6 +3,7 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
+             xmlns:headmanager="urn:import:ru.protei.portal.ui.common.client.widget.selector.casemember"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
 >
@@ -23,6 +24,10 @@
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.regions}"/></label>
                     <region:RegionMultiSelector ui:field="regions" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.projectHeadManager}"/></label>
+                    <headmanager:HeadManagersSelector ui:field="headManagers" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

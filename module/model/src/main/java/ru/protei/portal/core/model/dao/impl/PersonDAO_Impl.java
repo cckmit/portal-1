@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CompanyHomeGroupItem;
@@ -155,6 +156,16 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     public List<Person> getPersons(PersonQuery query) {
 
         return listByQuery( query );
+    }
+
+    @Override
+    public List<Person> getCaseMembers(En_DevUnitPersonRoleType role) {
+        SqlCondition sql = new SqlCondition().build((condition, args) -> {
+            condition.append("Person.id in (select MEMBER_ID from case_member where MEMBER_ROLE_ID = ?)");
+            args.add(role.getId());
+        });
+
+        return getListByCondition(sql.condition, sql.args);
     }
 
     /**

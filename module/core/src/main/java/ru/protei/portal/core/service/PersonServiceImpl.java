@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -58,6 +59,11 @@ public class PersonServiceImpl implements PersonService {
         Map<Long, String> names = new HashMap<>(list.size());
         list.forEach(a -> names.put(a.getId(), a.getDisplayName()));
         return ok(names );
+    }
+
+    @Override
+    public Result<List<PersonShortView>> getCaseMembers(AuthToken authToken, En_DevUnitPersonRoleType role) {
+        return makeListPersonShortView(personDAO.getCaseMembers(role));
     }
 
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {

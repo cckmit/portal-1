@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -42,6 +43,7 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
 
     Person findContactByName(long companyId, String displayName);
 
+    List<Person> getCaseMembers(En_DevUnitPersonRoleType role);
 
     SearchResult<Person> getPersonsSearchResult(PersonQuery query);
 

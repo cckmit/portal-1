@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
@@ -71,6 +72,23 @@ public class PersonControllerImpl implements PersonController {
         Result<Person> result = personService.getPerson(authToken, id);
 
         log.info( "result status: {}, data: {}", result.getStatus(), result.getData() );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List<PersonShortView> getCaseMembersList(En_DevUnitPersonRoleType role) throws RequestFailedException {
+
+        log.info( "getCaseMembersList(): En_DevUnitPersonRoleType={}", role );
+
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result< List< PersonShortView > > result = personService.getCaseMembers( authToken, role );
+
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

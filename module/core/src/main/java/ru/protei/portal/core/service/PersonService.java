@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
@@ -18,4 +19,5 @@ public interface PersonService {
     Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query);
     Result< List< PersonShortView > > shortViewListByIds( List<Long> ids );
     Result<Map<Long, String>> getPersonNames( Collection<Long> ids);
+    Result< List< PersonShortView > > getCaseMembers(AuthToken authToken, En_DevUnitPersonRoleType role );
 }
