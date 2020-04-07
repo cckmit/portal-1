@@ -8,7 +8,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -150,7 +149,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.legalAddress().setValue(infoFacade.getLegalAddress());
 
         view.comment().setText(company.getInfo());
-        view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
+        view.companyCategory().setValue(company.getCategory());
         view.parentCompany().setValue(makeCompanyOption(company));
         view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
@@ -189,7 +188,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
-        company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
+        company.setCategory(view.companyCategory().getValue());
         company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
         company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
         infoFacade.setWebSite(view.webSite().getText());

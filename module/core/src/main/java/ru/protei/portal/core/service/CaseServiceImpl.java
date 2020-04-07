@@ -737,7 +737,7 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        return Objects.equals(En_CompanyCategory.HOME.getId(), company.getCategory().getId());
+        return (En_CompanyCategory.HOME == company.getCategory());
     }
 
     private void applyStateBasedOnManager(CaseObject caseObject) {
@@ -773,7 +773,7 @@ public class CaseServiceImpl implements CaseService {
         return caseObject != null
                 && caseObject.getName() != null
                 && !caseObject.getName().isEmpty()
-                && En_CaseType.find(caseObject.getTypeId()) != null;
+                && caseObject.getType() != null;
     }
 
     private boolean validateMetaFields(CaseObjectMeta caseMeta) {

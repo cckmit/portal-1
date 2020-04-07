@@ -10,5 +10,4 @@
             COLUMNS (a VARCHAR(32) PATH '$.a', t VARCHAR(64) PATH '$.t', v VARCHAR(128) PATH '$.v')) info
         </createView>
     </changeSet>
-
 </databaseChangeLog>

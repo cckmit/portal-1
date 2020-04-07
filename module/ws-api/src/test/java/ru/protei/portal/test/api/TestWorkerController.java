@@ -1,7 +1,5 @@
 package ru.protei.portal.test.api;
 
-import org.apache.commons.io.IOUtils;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,6 +19,7 @@ import ru.protei.portal.api.config.APIConfigurationContext;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
@@ -34,7 +33,6 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.Photo;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -770,7 +768,7 @@ public class TestWorkerController {
         userLogin.setUlogin(person.getFirstName());
         userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
         userLogin.setPersonId(person.getId());
-        userLogin.setAuthTypeId(1);
+        userLogin.setAuthType( En_AuthType.LOCAL );
         userLogin.setAdminStateId(2);
         userLogin.setRoles(Collections.singleton(userRole));
         logger.debug("userLogin = " + userLogin);
