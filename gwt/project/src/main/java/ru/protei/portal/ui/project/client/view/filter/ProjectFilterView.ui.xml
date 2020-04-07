@@ -22,7 +22,7 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.regions}"/></label>
-                    <region:RegionMultiSelector ui:field="region" />
+                    <region:RegionMultiSelector ui:field="regions" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

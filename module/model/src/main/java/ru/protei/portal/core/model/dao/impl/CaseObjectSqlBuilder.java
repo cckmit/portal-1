@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
 public class CaseObjectSqlBuilder {
@@ -26,7 +26,7 @@ public class CaseObjectSqlBuilder {
             } else if (query.getMemberId() != null) {
                 condition.append(" and (case_object.id in (select case_id from case_member where member_id = ").append(query.getMemberId()).append(")");
                 condition.append(" or case_object.creator = ").append(query.getMemberId()).append(")");
-            } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
+            } else if (isNotEmpty(query.getCaseTagsIds())) {
                 if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
                     if (query.isCustomerSearch()) {
                         condition.append(" and (case_object.id not in (select case_id from case_object_tag where case_object_tag.tag_id in")
@@ -70,7 +70,7 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
             }
 
-            if (CollectionUtils.isNotEmpty(query.getProductIds())) {
+            if (isNotEmpty(query.getProductIds())) {
                 if (query.getType() != null && query.getType().equals(En_CaseType.PROJECT)) {
                     if (!query.getProductIds().remove(CrmConstants.Product.UNDEFINED) || !query.getProductIds().isEmpty()) {
                         condition.append(" and case_object.id in")
@@ -197,10 +197,26 @@ public class CaseObjectSqlBuilder {
                         .append(query.getProductDirectionId());
             }
 
-            if (CollectionUtils.isNotEmpty(query.getCreatorIds())) {
+            if (isNotEmpty(query.getCreatorIds())) {
                 condition
                         .append(" and case_object.CREATOR in ")
                         .append(makeInArg(query.getCreatorIds(), false));
+            }
+
+            if ( isNotEmpty(query.getRegions()) ) {
+                if (query.getRegions().remove(null)) {
+                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_location)");
+                    if (!query.getRegions().isEmpty()) {
+                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
+                                .append(makeInArg(query.getRegions(), false))
+                                .append(")");
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
+                            .append(makeInArg(query.getRegions(), false))
+                            .append(")");
+                }
             }
         });
     }

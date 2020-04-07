@@ -465,6 +465,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regionDistrict();
 
+    String regionNotSpecified();
+
     String productDirection();
 
     String projectDirection();

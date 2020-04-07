@@ -40,6 +40,8 @@ public class CaseQuery extends BaseQuery {
     private List<Integer> stateIds;
 
     private List<Integer> importanceIds;
+
+    private List<Integer> regions;
     /**
      * if true then both states otherwise only non-private state
      */
@@ -128,6 +130,7 @@ public class CaseQuery extends BaseQuery {
         setPlatformIndependentProject(query.getPlatformIndependentProject());
         setProductDirectionId(query.getProductDirectionId());
         setCreatorIds(query.getCreatorIds());
+        setRegions(query.getRegions());
     }
 
     public Long getId() {
@@ -340,6 +343,14 @@ public class CaseQuery extends BaseQuery {
         this.creatorIds = creatorIds;
     }
 
+    public List<Integer> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(List<Integer> regions) {
+        this.regions = regions;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -354,6 +365,7 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(stateIds) ||
                 CollectionUtils.isNotEmpty(importanceIds) ||
                 CollectionUtils.isNotEmpty(creatorIds) ||
+                CollectionUtils.isNotEmpty(regions) ||
                 createdFrom != null ||
                 createdTo != null ||
                 modifiedFrom != null ||
@@ -379,6 +391,7 @@ public class CaseQuery extends BaseQuery {
                 ", locationIds=" + locationIds +
                 ", districtIds=" + districtIds +
                 ", managerIds=" + managerIds +
+                ", regions=" + regions +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +

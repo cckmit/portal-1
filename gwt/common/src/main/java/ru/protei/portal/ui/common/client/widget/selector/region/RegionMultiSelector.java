@@ -16,6 +16,15 @@ public class RegionMultiSelector extends InputPopupMultiSelector<EntityOption> {
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
 
-        setItemRenderer(option -> option == null ? "?" : option.getDisplayText());
+        setHasNullValue(true);
+        setItemRenderer(option -> {
+            if (option == null) {
+                if (hasNullValue()) {
+                    return lang.regionNotSpecified();
+                }
+                return null;
+            }
+            return option.getDisplayText();
+        });
     }
 }

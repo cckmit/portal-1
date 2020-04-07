@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Set;
 
@@ -25,4 +26,6 @@ public interface AbstractProjectFilterView extends IsWidget {
     HasValue<ProductDirectionInfo> direction();
 
     HasValue<Boolean> onlyMineProjects();
+
+    HasValue< Set<EntityOption> > regions();
 }

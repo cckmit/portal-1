@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +21,8 @@ public class ProjectQuery extends BaseQuery {
     private List<Long> caseNumbers;
 
     private Set<En_RegionState> states;
+
+    private Set<EntityOption> regions;
 
     private Set<Long> districtIds;
 
@@ -153,11 +156,20 @@ public class ProjectQuery extends BaseQuery {
         this.platformIndependentProject = platformIndependentProject;
     }
 
+    public Set<EntityOption> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(Set<EntityOption> regions) {
+        this.regions = regions;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 CollectionUtils.isNotEmpty(caseNumbers) ||
                 CollectionUtils.isNotEmpty(states) ||
+                CollectionUtils.isNotEmpty(regions) ||
                 directionId != null ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 customerType != null ||
@@ -171,6 +183,7 @@ public class ProjectQuery extends BaseQuery {
     public String toString() {
         return "ProjectQuery{" +
                 "states=" + states +
+                ", regions=" + regions +
                 ", caseNumbers=" + caseNumbers +
                 ", districtIds=" + districtIds +
                 ", directionId=" + directionId +
