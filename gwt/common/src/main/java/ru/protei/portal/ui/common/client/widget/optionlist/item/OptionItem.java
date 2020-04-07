@@ -29,6 +29,11 @@ public class OptionItem
         this.name.setText( name == null ? "" : name );
     }
 
+    public void setTitle( String title ) {
+        if (title == null) return;
+        this.name.setTitle( title );
+    }
+
     public void setInfo( String info ) {
         if (info == null) return;
         this.info.setVisible( true );

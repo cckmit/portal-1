@@ -9,7 +9,7 @@
             <g:Label styleName="small hint-text pre-formatted-info" ui:field="description"/>
             <p class="small m-t-5">
                 <b><ui:text from="{lang.rolePrivileges}:"/></b>
-                <g:Label ui:field="privileges"/>
+                <g:Label ui:field="privileges" styleName="m-b-5"/>
                 <i><ui:text from="{lang.rolePrivilegesNote}"/></i>
             </p>
         </div>

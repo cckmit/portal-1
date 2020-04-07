@@ -27,6 +27,7 @@ public class RoleOptionList extends OptionList< UserRole > implements ModelList<
         userRoles.forEach( option -> {
             addOption(
                     option.getCode(),
+                    option.getInfo(),
                     option.getPrivileges().stream()
                             .filter( privilege -> privilege.getAction() != null )
                             .sorted( Comparator.comparingInt( En_Privilege::getOrder ) )
