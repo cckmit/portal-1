@@ -5,15 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.ent.Application;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.service.ProjectSlaService;
 import ru.protei.portal.core.service.SiteFolderService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.SiteFolderController;
@@ -216,8 +214,33 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         return response.getData();
     }
 
+    @Override
+    public List<ProjectSla> getSlaByPlatformId(Long platformId) throws RequestFailedException {
+        log.info("getSlaByPlatformId: platformId={}", platformId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<Platform> platformResponse = siteFolderService.getPlatform(token, platformId);
+
+        if (platformResponse.isError()) {
+            log.info("getSlaByPlatformId: status={}", platformResponse.getStatus());
+            throw new RequestFailedException(platformResponse.getStatus());
+        }
+
+        Result<List<ProjectSla>> slaResponse = projectSlaService.getSlaByProjectId(token, platformResponse.getData().getProjectId());
+
+        if (slaResponse.isError()) {
+            log.info("getSlaByPlatformId: status={}", slaResponse.getStatus());
+            throw new RequestFailedException(slaResponse.getStatus());
+        }
+
+        return slaResponse.getData();
+    }
+
     @Autowired
     SiteFolderService siteFolderService;
+
+    @Autowired
+    ProjectSlaService projectSlaService;
 
     @Autowired
     SessionService sessionService;

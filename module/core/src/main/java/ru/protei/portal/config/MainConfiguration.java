@@ -858,6 +858,11 @@ public class MainConfiguration {
         return new JiraWikiMarkupRendererImpl();
     }
 
+    @Bean
+    public ProjectSlaService getProjectSlaService() {
+        return new ProjectSlaServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
@@ -50,4 +51,6 @@ public interface SiteFolderController extends RemoteService {
     boolean removeServer(long id) throws RequestFailedException;
 
     boolean removeApplication(long id) throws RequestFailedException;
+
+    List<ProjectSla> getSlaByPlatformId(Long platformId) throws RequestFailedException;
 }

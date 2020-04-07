@@ -84,6 +84,40 @@
 
         <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="jira-sla-selector form-group"/>
 
+        <g:HTMLPanel ui:field="projectSlaContainer" styleName="row form-group m-t-10">
+            <div class="col-md-12">
+                <label>
+                    <ui:text from="{lang.projectSla}"/>
+                </label>
+
+                <div class="form-group-attached">
+                    <g:HTMLPanel ui:field="slaTimesContainer" styleName="row clearfix form-group-default">
+                        <div class="col-md-12">
+                            <label class="inline fade">
+                                <ui:text from="{lang.projectSlaReactionTime}"/>
+                            </label>
+                            <timefield:TimeLabel ui:field="slaReactionTime"
+                                                 styleName="inline m-l-10 small hint-text"/>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="inline fade">
+                                <ui:text from="{lang.projectSlaTemporaryTime}"/>
+                            </label>
+                            <timefield:TimeLabel ui:field="slaTemporarySolutionTime"
+                                                 styleName="inline m-l-10 small hint-text"/>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="inline fade">
+                                <ui:text from="{lang.projectSlaFullTime}"/>
+                            </label>
+                            <timefield:TimeLabel ui:field="slaFullSolutionTime"
+                                                 styleName="inline m-l-10 small hint-text"/>
+                        </div>
+                    </g:HTMLPanel>
+                </div>
+            </div>
+        </g:HTMLPanel>
+
         <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group m-b-0">
             <g:HTMLPanel ui:field="timeElapsedHeader" styleName="col-md-12">
                 <label ui:field="timeElapsedLabel">

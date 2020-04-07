@@ -31,10 +31,7 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -185,12 +182,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
-    public void onProductChanged(){
+    public void onProductChanged() {
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
     @Override
-    public void onPlatformChanged(){
+    public void onPlatformChanged() {
+        requestAndSetSla(
+                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                slaList -> fillSla(getSlaByImportanceLevelId(slaList, issueMetaView.importance().getValue().getId()))
+        );
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
@@ -237,6 +238,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             issueMetaView.setInitiator(initiator);
         }
 
+        requestAndSetSla(
+                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                slaList -> fillSla(getSlaByImportanceLevelId(slaList, issueMetaView.importance().getValue().getId()))
+        );
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
@@ -264,6 +269,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
         localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
+    }
+
+    @Override
+    public void onImportanceChanged() {
+        fillSla(getSlaByImportanceLevelId(slaList, issueMetaView.importance().getValue().getId()));
     }
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
@@ -320,7 +330,74 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setManager(caseObjectMeta.getManager());
         issueMetaView.setProduct(caseObjectMeta.getProduct());
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
+        issueMetaView.projectSlaContainerVisibility().setVisible(true);
+
+        requestAndSetSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevelId(slaList, caseObjectMeta.getImpLevel())));
     }
+
+    private void requestAndSetSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+        if (platformId == null) {
+            slaList = makeDefaultSlaValues();
+            issueMetaView.setValuesContainerWarning(true);
+            slaConsumer.accept(slaList);
+            return;
+        }
+
+        platformService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+                .withSuccess(result -> {
+                    slaList = result.isEmpty() ? makeDefaultSlaValues() : result;
+                    issueMetaView.setValuesContainerWarning(result.isEmpty());
+                    slaConsumer.accept(slaList);
+                })
+        );
+    }
+
+    private ProjectSla getSlaByImportanceLevelId(List<ProjectSla> slaList, final int importanceLevel) {
+        return slaList
+                .stream()
+                .filter(sla -> Objects.equals(importanceLevel, sla.getImportanceLevelId()))
+                .findAny()
+                .orElse(new ProjectSla());
+    }
+
+    private List<ProjectSla> makeDefaultSlaValues() {
+        ProjectSla criticalSla = new ProjectSla(
+                En_ImportanceLevel.CRITICAL.getId(),
+                En_SlaDefaultValues.CRITICAL.getReactionTime(),
+                En_SlaDefaultValues.CRITICAL.getTemporarySolutionTime(),
+                En_SlaDefaultValues.CRITICAL.getFullSolutionTime()
+        );
+
+        ProjectSla importantSla = new ProjectSla(
+                En_ImportanceLevel.IMPORTANT.getId(),
+                En_SlaDefaultValues.IMPORTANT.getReactionTime(),
+                En_SlaDefaultValues.IMPORTANT.getTemporarySolutionTime(),
+                En_SlaDefaultValues.IMPORTANT.getFullSolutionTime()
+        );
+
+        ProjectSla basicSla = new ProjectSla(
+                En_ImportanceLevel.BASIC.getId(),
+                En_SlaDefaultValues.BASIC.getReactionTime(),
+                En_SlaDefaultValues.BASIC.getTemporarySolutionTime(),
+                En_SlaDefaultValues.BASIC.getFullSolutionTime()
+        );
+
+        ProjectSla cosmeticSla = new ProjectSla(
+                En_ImportanceLevel.COSMETIC.getId(),
+                En_SlaDefaultValues.COSMETIC.getReactionTime(),
+                En_SlaDefaultValues.COSMETIC.getTemporarySolutionTime(),
+                En_SlaDefaultValues.COSMETIC.getFullSolutionTime()
+        );
+
+        return Arrays.asList(criticalSla, importantSla, basicSla, cosmeticSla);
+    }
+
+    private void fillSla(ProjectSla sla) {
+        issueMetaView.slaReactionTime().setTime(sla.getReactionTime());
+        issueMetaView.slaTemporarySolutionTime().setTime(sla.getTemporarySolutionTime());
+        issueMetaView.slaFullSolutionTime().setTime(sla.getFullSolutionTime());
+    }
+
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
@@ -489,6 +566,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     AbstractIssueCreateView view;
     @Inject
     IssueMetaView issueMetaView;
+    @Inject
+    SiteFolderControllerAsync platformService;
 
     @Inject
     PolicyService policyService;
@@ -508,4 +587,5 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
+    private List<ProjectSla> slaList = new ArrayList<>();
 }

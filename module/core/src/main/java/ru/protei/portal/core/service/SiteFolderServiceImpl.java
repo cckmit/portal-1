@@ -373,6 +373,30 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         return ok(result);
     }
 
+    @Override
+    public Result<List<ProjectSla>> getSlaByPlatformId(AuthToken token, Long platformId) {
+        if (platformId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Platform platform = platformDAO.get(platformId);
+
+        if (platform == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (platform.getProjectId() == null) {
+            return ok(Collections.emptyList());
+        }
+
+        List<ProjectSla> result = projectSlaDAO.getSlaByProjectId(platform.getProjectId());
+
+        if (CollectionUtils.isEmpty(result)) {
+            return ok(Collections.emptyList());
+        }
+
+        return ok(result);
+    }
 
     private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {
         if (serverIdOfAppsToBeCloned == null || serverId == null) {
@@ -407,6 +431,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PlatformDAO platformDAO;
+    @Autowired
+    ProjectSlaDAO projectSlaDAO;
     @Autowired
     ServerDAO serverDAO;
     @Autowired

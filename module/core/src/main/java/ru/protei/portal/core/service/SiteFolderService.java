@@ -83,4 +83,6 @@ public interface SiteFolderService {
     @Privileged(En_Privilege.SITE_FOLDER_REMOVE)
     @Auditable(En_AuditType.APPLICATION_REMOVE)
     Result<Boolean> removeApplication( AuthToken token, long id);
+
+    Result<List<ProjectSla>> getSlaByPlatformId(AuthToken token, Long platformId);
 }
