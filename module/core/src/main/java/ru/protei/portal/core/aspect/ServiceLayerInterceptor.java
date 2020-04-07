@@ -170,7 +170,7 @@ public class ServiceLayerInterceptor {
 
     private void makeAudit(AuthToken token, En_AuditType auditType, AuditableObject auditableObject) {
         AuditObject auditObject = new AuditObject(
-                auditType.getId(),
+                auditType,
                 auditableObject,
                 token.getPersonId(),
                 token.getIp(),

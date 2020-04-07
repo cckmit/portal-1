@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -296,7 +297,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private QueryModel initCaseObjectsQueryTestModel( QueryModel model) {
         CaseObjectFactory factory = new CaseObjectFactory( model );
 
-        model.companyCategory = new CompanyCategory( 2L );
+        model.companyCategory = En_CompanyCategory.PARTNER;
         Company company = factory.makeCompany( "some_company" );
         Person person = factory.makePerson( company );
         model.person = person;
@@ -516,7 +517,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         public String prefix;
         public int numberOfDays;
-        public CompanyCategory companyCategory;
+        public En_CompanyCategory companyCategory;
         public En_CaseType caseTagType;
 
         List<Long> caseObjectIncludedIds = new ArrayList<>();

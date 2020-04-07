@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  * Created by michael on 16.06.16.
  */
-public enum En_AuthType {
+public enum En_AuthType implements HasId {
 
     LOCAL(1),
     LDAP(2);

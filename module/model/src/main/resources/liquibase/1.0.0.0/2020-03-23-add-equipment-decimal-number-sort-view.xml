@@ -12,5 +12,4 @@
             GROUP BY Equipment_id;
         </createView>
     </changeSet>
-
 </databaseChangeLog>
