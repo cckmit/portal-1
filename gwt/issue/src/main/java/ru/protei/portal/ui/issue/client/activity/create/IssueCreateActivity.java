@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -38,6 +39,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
+import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -53,7 +55,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(pasteInfo.strPosition, attachment);
+                }
                 view.attachmentsContainer().add(attachment);
             }
 
@@ -194,6 +199,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
 
+        fillImportanceSelector(companyOption.getId());
+
         issueMetaView.initiatorUpdateCompany(companyOption);
 
         initiatorSelectorAllowAddNew(companyOption.getId());
@@ -259,6 +266,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
     }
 
+    private void addImageToMessage(Integer strPosition, Attachment attach) {
+        view.description().setValue(
+                addImageInMessage(view.description().getValue(), strPosition, attach));
+    }
+
     private void fillView() {
         view.privacyVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
         view.isPrivate().setValue(true);
@@ -300,6 +312,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
+        fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
@@ -316,6 +329,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 
         return caseObjectMeta;
+    }
+    private void fillImportanceSelector(Long id) {
+        issueMetaView.fillImportanceOptions(new ArrayList<>());
+        companyService.getImportanceLevels(id, new FluentCallback<List<En_ImportanceLevel>>()
+                .withSuccess(importanceLevelList -> {
+                    issueMetaView.fillImportanceOptions(importanceLevelList);
+                    checkImportanceSelectedValue(importanceLevelList);
+                }));
+    }
+
+    private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
+        if (!importanceLevels.contains(issueMetaView.importance().getValue())){
+            issueMetaView.importance().setValue(null);
+        }
     }
 
     private CaseObject fillCaseCreateRequest(CaseObject caseObject) {

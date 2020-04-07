@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -38,6 +39,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -53,7 +55,11 @@ public abstract class IssueEditActivity implements
 
         AttachmentUploader.FileUploadHandler uploadHandler = new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess( Attachment attachment ) {
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(pasteInfo.strPosition, attachment);
+                    issueNameDescriptionEditWidget.addTempAttachment(attachment);
+                }
                 addAttachmentsToCase( Collections.singleton( attachment ) );
             }
 
@@ -64,6 +70,7 @@ public abstract class IssueEditActivity implements
         };
 
         issueInfoWidget.setFileUploadHandler( uploadHandler );
+        issueNameDescriptionEditWidget.setFileUploader(issueInfoWidget.getFileUploader());
 
         setNotifyFunctionsForJavascript(this);
     }
@@ -181,9 +188,12 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
+        issueInfoWidget.getDescriptionRO().setClassName("HIDE");
+        view.getInfoContainer().add(issueInfoWidget);
+
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
-                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup);
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo(), issue.getAttachments()), textMarkup);
     }
 
     @Override
@@ -220,6 +230,11 @@ public abstract class IssueEditActivity implements
 
     public void fireErrorCopyNotify() {
         fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
+    }
+
+    private void addImageToMessage(Integer strPosition, Attachment attach) {
+        issueNameDescriptionEditWidget.description().setValue(
+                addImageInMessage(issueNameDescriptionEditWidget.description().getValue(), strPosition, attach));
     }
 
     private void requestIssue(Long number, HasWidgets container) {

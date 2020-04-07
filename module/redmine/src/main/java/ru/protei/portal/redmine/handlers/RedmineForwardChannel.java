@@ -229,6 +229,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
         //Synchronize comments, status, priority, name, info
         for (Journal journal : latestJournals) {
+            logger.trace( "updateCaseObject(): {}", journal );
 
             List<JournalDetail> details = journal.getDetails();
 

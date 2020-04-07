@@ -92,4 +92,6 @@ public interface CompanyControllerAsync {
     void updateState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
 
     void getAllHomeCompanyIds(AsyncCallback<List<Long>> async);
+
+    void getImportanceLevels(Long id, AsyncCallback<List<En_ImportanceLevel>> async);
 }

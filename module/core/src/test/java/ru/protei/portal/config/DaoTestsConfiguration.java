@@ -331,5 +331,11 @@ public class DaoTestsConfiguration {
         return new JiraSLAMapEntryDAO_Impl();
     }
 
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
+    }
+
+
 
 }

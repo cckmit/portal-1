@@ -56,7 +56,7 @@ public class SlaInputReadOnly extends Composite implements HasValue<List<Project
     }
 
     private void initView() {
-        for (En_ImportanceLevel importance : En_ImportanceLevel.values()) {
+        for (En_ImportanceLevel importance : En_ImportanceLevel.values(true)) {
             SlaRowItemReadOnly item = slaRowItemReadOnlyProvider.get();
             item.setImportance(importanceLang.getImportanceName(importance));
             importanceToItemMap.put(importance, item);

@@ -344,4 +344,9 @@ public class JiraTestConfiguration {
     public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
         return new JiraCompanyGroupDAO_Impl();
     }
+
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
+    }
 }

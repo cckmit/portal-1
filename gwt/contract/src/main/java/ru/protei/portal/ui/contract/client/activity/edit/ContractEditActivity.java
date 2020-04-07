@@ -122,8 +122,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void fillView(Contract value) {
         this.contract = value;
 
-        view.setContractIndependentProjects(true);
-
         view.type().setValue(contract.getContractType());
         if ( contract.getState() == null ) {
             contract.setState(En_ContractState.AGREEMENT);

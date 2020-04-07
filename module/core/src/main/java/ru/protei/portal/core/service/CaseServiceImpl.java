@@ -242,6 +242,18 @@ public class CaseServiceImpl implements CaseService {
                 return error(En_ResultStatus.NOT_UPDATED);
             }
 
+            if(isNotEmpty(changeRequest.getAttachments())){
+                caseObject.setAttachmentExists(true);
+                caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+
+                caseAttachmentDAO.persistBatch(
+                        changeRequest.getAttachments()
+                                .stream()
+                                .map(a -> new CaseAttachment(changeRequest.getId(), a.getId()))
+                                .collect(Collectors.toList())
+                );
+            }
+
             return ok(changeRequest)
                     .publishEvent( new CaseNameAndDescriptionEvent(
                     this,

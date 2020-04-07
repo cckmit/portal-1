@@ -108,9 +108,9 @@
             <div class="row form-group">
                 <div class="col-md-12">
                     <h5>
-                        <ui:text from="{lang.contract}"/>
+                        <ui:text from="{lang.contracts}"/>
                     </h5>
-                    <g:Anchor ui:field="contract" href="#" target="_blank"/>
+                    <g:HTMLPanel styleName="links-list-column-formatter" ui:field="contracts"/>
                 </div>
             </div>
 

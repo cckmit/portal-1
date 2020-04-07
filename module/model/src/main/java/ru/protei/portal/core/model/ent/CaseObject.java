@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -139,10 +136,7 @@ public class CaseObject extends AuditableObject {
     private Date technicalSupportValidity;
 
     // not db column
-    private Long contractId;
-
-    // not db column
-    private String contractNumber;
+    private List<EntityOption> contracts;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -498,20 +492,12 @@ public class CaseObject extends AuditableObject {
         this.platformName = platformName;
     }
 
-    public Long getContractId() {
-        return contractId;
+    public List<EntityOption> getContracts() {
+        return contracts;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
-    }
-
-    public String getContractNumber() {
-        return contractNumber;
-    }
-
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
+    public void setContracts(List<EntityOption> contracts) {
+        this.contracts = contracts;
     }
 
     public String getJiraUrl() {
@@ -592,12 +578,8 @@ public class CaseObject extends AuditableObject {
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
-                ", contractId=" + contractId +
-                ", contractNumber='" + contractNumber + '\'' +
-                ", platformName='" + platformName + '\'' +
                 ", technicalSupportValidity=" + technicalSupportValidity +
-                ", contractId=" + contractId +
-                ", contractNumber='" + contractNumber + '\'' +
+                ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
