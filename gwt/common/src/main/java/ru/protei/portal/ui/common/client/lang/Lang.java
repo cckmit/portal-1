@@ -2303,4 +2303,6 @@ public interface Lang extends Messages, ContactItemLang {
     String auditTypeApplicationModify();
 
     String auditTypeApplicationRemove();
+
+    String rolePrivilegesNote();
 }
