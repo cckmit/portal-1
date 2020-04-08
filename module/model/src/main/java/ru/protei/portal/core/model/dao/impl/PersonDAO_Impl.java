@@ -169,7 +169,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             }
         });
 
-        return getListByCondition(sql.condition, sql.args);
+        return getListByCondition(sql.condition, new JdbcSort(JdbcSort.Direction.ASC, "displayname"),sql.args);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -14,7 +15,10 @@ import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Модель регионов
@@ -24,6 +28,7 @@ public abstract class CaseMemberModelAsync extends BaseSelectorModel<PersonShort
 
     @Event
     public void onInit(AuthEvents.Success event) {
+        requestCurrentPerson(event.profile.getId());
         clean();
     }
 
@@ -42,8 +47,29 @@ public abstract class CaseMemberModelAsync extends BaseSelectorModel<PersonShort
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess( result -> updateElements( result, selector ) ));
+                .withSuccess( result -> updateElements( setCurrentPersonFirst(result), selector ) ));
     }
+
+    private Collection<PersonShortView> setCurrentPersonFirst(Collection<PersonShortView> result) {
+        if (result.remove(currentPerson)) {
+            List<PersonShortView> temp = new ArrayList<>();
+            temp.add(currentPerson);
+            temp.addAll(result);
+            return temp;
+        } else {
+            return result;
+        }
+    }
+
+    private void requestCurrentPerson(Long myId) {
+        if (currentPerson != null && Objects.equals(currentPerson.getId(), myId)) {
+            return;
+        }
+        currentPerson = null;
+        personController.getPerson(myId, new FluentCallback<Person>().withSuccess(r -> currentPerson = r.toFullNameShortView()));
+    }
+
+    PersonShortView currentPerson;
 
     @Inject
     PersonControllerAsync personController;
