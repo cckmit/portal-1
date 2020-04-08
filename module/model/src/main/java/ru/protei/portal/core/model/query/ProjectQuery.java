@@ -27,6 +27,8 @@ public class ProjectQuery extends BaseQuery {
 
     private Set<PersonShortView> headManagers;
 
+    private Set<PersonShortView> caseMembers;
+
     private Set<Long> districtIds;
 
     private Long directionId;
@@ -175,6 +177,14 @@ public class ProjectQuery extends BaseQuery {
         this.headManagers = headManagers;
     }
 
+    public Set<PersonShortView> getCaseMembers() {
+        return caseMembers;
+    }
+
+    public void setCaseMembers(Set<PersonShortView> caseMembers) {
+        this.caseMembers = caseMembers;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -182,6 +192,7 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(states) ||
                 CollectionUtils.isNotEmpty(regions) ||
                 CollectionUtils.isNotEmpty(headManagers) ||
+                CollectionUtils.isNotEmpty(caseMembers) ||
                 directionId != null ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 customerType != null ||
@@ -197,6 +208,7 @@ public class ProjectQuery extends BaseQuery {
                 "states=" + states +
                 ", regions=" + regions +
                 ", headManagers=" + headManagers +
+                ", caseMembers=" + caseMembers +
                 ", caseNumbers=" + caseNumbers +
                 ", districtIds=" + districtIds +
                 ", directionId=" + directionId +

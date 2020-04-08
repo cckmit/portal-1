@@ -86,6 +86,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
+    public HasValue<Set<PersonShortView>> caseMembers() {
+        return caseMembers;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
@@ -94,6 +99,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         states.setValue( new HashSet<>() );
         regions.setValue(new HashSet<>());
         headManagers.setValue(new HashSet<>());
+        caseMembers.setValue(new HashSet<>());
         onlyMineProjects.setValue( false );
     }
 
@@ -154,12 +160,18 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @UiHandler( "headManagers" )
-    public void onHeadManagersSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
+    public void onHeadManagerSelected(ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
 
+    @UiHandler( "caseMembers" )
+    public void onCaseMemberSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
 
     Timer timer = new Timer() {
         @Override
@@ -201,7 +213,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @Inject
     @UiField(provided = true)
-    CaseMemberSelector caseMember;
+    CaseMemberSelector caseMembers;
 
     @Inject
     @UiField( provided = true )

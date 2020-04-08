@@ -31,7 +31,7 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.projectTeam}"/></label>
-                    <casemember:CaseMemberSelector ui:field="caseMember" />
+                    <casemember:CaseMemberSelector ui:field="caseMembers" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

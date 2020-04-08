@@ -183,6 +183,7 @@ public abstract class ProjectTableActivity
         query.setStates(filterView.states().getValue());
         query.setRegions(filterView.regions().getValue());
         query.setHeadManagers(filterView.headManagers().getValue());
+        query.setCaseMembers(filterView.caseMembers().getValue());
         query.setDirectionId(
                 filterView.direction().getValue() == null
                         ? null

@@ -31,4 +31,6 @@ public interface AbstractProjectFilterView extends IsWidget {
     HasValue< Set<EntityOption> > regions();
 
     HasValue< Set<PersonShortView> > headManagers();
+
+    HasValue< Set<PersonShortView> > caseMembers();
 }
