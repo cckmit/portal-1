@@ -5,7 +5,8 @@
         <g:CheckBox ui:field="checkbox" styleName="checkbox"/>
         <common:ClickHTMLPanel ui:field="panel" styleName="d-inline">
             <g:Label ui:field="name" styleName="option-name"/>
-            <g:Label ui:field="info" styleName="option-info small font-italic"/>
+            <g:Label ui:field="info" styleName="option-info small hint-text" visible="false"/>
+            <g:Label ui:field="text" styleName="option-info small" visible="false"/>
         </common:ClickHTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

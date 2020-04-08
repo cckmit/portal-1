@@ -59,7 +59,9 @@
                                     <ui:text from="{lang.accountRoles}"/>
                                 </label>
                                 <rolelist:RoleOptionList ui:field="roles"/>
-                                <div class="m-t-10 font-italic"><ui:text from="{lang.rolePrivilegesNote}"/></div>
+                                <div class="m-t-10 small">
+                                    <i class="fa fa-info-circle m-r-5"/><ui:text from="{lang.rolePrivilegesNote}"/>
+                                </div>
                             </div>
                         </div>
                     </div>

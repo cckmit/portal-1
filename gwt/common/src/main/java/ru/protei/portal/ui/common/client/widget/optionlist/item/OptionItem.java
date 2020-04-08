@@ -29,16 +29,18 @@ public class OptionItem
         this.name.setText( name == null ? "" : name );
     }
 
-    public void setTitle( String title ) {
-        if (title == null) return;
-        this.name.setTitle( title );
-    }
-
     public void setInfo( String info ) {
         if (info == null) return;
         this.info.setVisible( true );
         this.info.setTitle( info );
         this.info.setText( info );
+    }
+
+    public void setText( String text ) {
+        if (text == null) return;
+        this.text.setVisible( true );
+        this.text.setTitle( text );
+        this.text.setText( text );
     }
 
     @Override
@@ -97,6 +99,8 @@ public class OptionItem
     Label name;
     @UiField
     Label info;
+    @UiField
+    Label text;
 
 
     private static OptionItemUiBinder ourUiBinder = GWT.create( OptionItemUiBinder.class );

@@ -9,8 +9,8 @@
             <g:Label styleName="small hint-text pre-formatted-info" ui:field="description"/>
             <p class="small m-t-5">
                 <b><ui:text from="{lang.rolePrivileges}:"/></b>
-                <g:Label ui:field="privileges" styleName="m-b-5"/>
-                <i><ui:text from="{lang.rolePrivilegesNote}"/></i>
+                <g:Label ui:field="privileges" styleName="pre-formatted-info"/>
+                <i class="fa fa-info-circle m-t-5 m-r-5"/><ui:text from="{lang.rolePrivilegesNote}"/>
             </p>
         </div>
     </g:HTMLPanel>

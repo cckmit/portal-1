@@ -64,15 +64,15 @@ public class OptionList<T>
     }
 
 
-    public void addOption( String name, String title, String info, T value, String styleName ) {
+    public void addOption( String name, String info, String text, T value, String styleName ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
 
         OptionItem itemView = itemFactory.get();
         itemView.setName( name );
-        itemView.setTitle( title );
-        itemView.setInfo(info);
+        itemView.setInfo( info );
+        itemView.setText( text );
         itemView.addValueChangeHandler( this );
         itemView.setValue( selected.contains( value ) );
         itemView.setEnabled( isEnabled );
