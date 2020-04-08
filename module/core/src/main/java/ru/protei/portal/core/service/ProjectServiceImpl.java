@@ -474,8 +474,15 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if (CollectionUtils.isNotEmpty(projectQuery.getRegions())) {
-            caseQuery.setRegions(projectQuery.getRegions().stream()
-                    .map(region -> region == null ? null : region.getId().intValue())
+            caseQuery.setRegionsIds(projectQuery.getRegions().stream()
+                    .map(region -> region == null ? null : region.getId())
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(projectQuery.getHeadManagers())) {
+            caseQuery.setHeadManagersIds(projectQuery.getHeadManagers().stream()
+                    .map(headManager -> headManager == null ? null : headManager.getId())
                     .collect(toList())
             );
         }

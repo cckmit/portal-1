@@ -41,7 +41,9 @@ public class CaseQuery extends BaseQuery {
 
     private List<Integer> importanceIds;
 
-    private List<Integer> regions;
+    private List<Long> regionsIds;
+
+    private List<Long> headManagersIds;
     /**
      * if true then both states otherwise only non-private state
      */
@@ -130,7 +132,8 @@ public class CaseQuery extends BaseQuery {
         setPlatformIndependentProject(query.getPlatformIndependentProject());
         setProductDirectionId(query.getProductDirectionId());
         setCreatorIds(query.getCreatorIds());
-        setRegions(query.getRegions());
+        setRegionsIds(query.getRegionsIds());
+        setHeadManagersIds(query.getHeadManagersIds());
     }
 
     public Long getId() {
@@ -343,12 +346,20 @@ public class CaseQuery extends BaseQuery {
         this.creatorIds = creatorIds;
     }
 
-    public List<Integer> getRegions() {
-        return regions;
+    public List<Long> getRegionsIds() {
+        return regionsIds;
     }
 
-    public void setRegions(List<Integer> regions) {
-        this.regions = regions;
+    public void setRegionsIds(List<Long> regionsIds) {
+        this.regionsIds = regionsIds;
+    }
+
+    public List<Long> getHeadManagersIds() {
+        return headManagersIds;
+    }
+
+    public void setHeadManagersIds(List<Long> headManagersIds) {
+        this.headManagersIds = headManagersIds;
     }
 
     @Override
@@ -365,7 +376,8 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(stateIds) ||
                 CollectionUtils.isNotEmpty(importanceIds) ||
                 CollectionUtils.isNotEmpty(creatorIds) ||
-                CollectionUtils.isNotEmpty(regions) ||
+                CollectionUtils.isNotEmpty(regionsIds) ||
+                CollectionUtils.isNotEmpty(headManagersIds) ||
                 createdFrom != null ||
                 createdTo != null ||
                 modifiedFrom != null ||
@@ -391,7 +403,8 @@ public class CaseQuery extends BaseQuery {
                 ", locationIds=" + locationIds +
                 ", districtIds=" + districtIds +
                 ", managerIds=" + managerIds +
-                ", regions=" + regions +
+                ", regionsIds=" + regionsIds +
+                ", headManagersIds=" + headManagersIds +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
@@ -433,6 +446,8 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(locationIds, caseQuery.locationIds) &&
                 Objects.equals(districtIds, caseQuery.districtIds) &&
                 Objects.equals(managerIds, caseQuery.managerIds) &&
+                Objects.equals(regionsIds, caseQuery.regionsIds) &&
+                Objects.equals(headManagersIds, caseQuery.headManagersIds) &&
                 type == caseQuery.type &&
                 Objects.equals(stateIds, caseQuery.stateIds) &&
                 Objects.equals(importanceIds, caseQuery.importanceIds) &&
@@ -458,6 +473,6 @@ public class CaseQuery extends BaseQuery {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
                 modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject,
-                productDirectionId, creatorIds);
+                productDirectionId, creatorIds, regionsIds, headManagersIds);
     }
 }

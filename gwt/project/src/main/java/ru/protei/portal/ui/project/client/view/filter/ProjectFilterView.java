@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.casemember.HeadManagersSelector;
@@ -79,13 +80,19 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
+    public HasValue<Set<PersonShortView>> headManagers() {
+        return headManagers;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
         search.setValue( "" );
         direction.setValue( null );
         states.setValue( new HashSet<>() );
-        regions.clearSelector();
+        regions.setValue(new HashSet<>());
+        headManagers.setValue(new HashSet<>());
         onlyMineProjects.setValue( false );
     }
 
@@ -140,6 +147,13 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @UiHandler( "regions" )
     public void onRegionSelected( ValueChangeEvent<Set<EntityOption>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "headManagers" )
+    public void onHeadManagersSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }

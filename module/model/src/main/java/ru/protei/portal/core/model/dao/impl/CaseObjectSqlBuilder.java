@@ -203,18 +203,34 @@ public class CaseObjectSqlBuilder {
                         .append(makeInArg(query.getCreatorIds(), false));
             }
 
-            if ( isNotEmpty(query.getRegions()) ) {
-                if (query.getRegions().remove(null)) {
+            if ( isNotEmpty(query.getRegionsIds()) ) {
+                if (query.getRegionsIds().remove(null)) {
                     condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_location)");
-                    if (!query.getRegions().isEmpty()) {
+                    if (!query.getRegionsIds().isEmpty()) {
                         condition.append(" or case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
-                                .append(makeInArg(query.getRegions(), false))
+                                .append(makeInArg(query.getRegionsIds(), false))
                                 .append(")");
                     }
                     condition.append(")");
                 } else {
                     condition.append(" and case_object.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
-                            .append(makeInArg(query.getRegions(), false))
+                            .append(makeInArg(query.getRegionsIds(), false))
+                            .append(")");
+                }
+            }
+
+            if ( isNotEmpty(query.getHeadManagersIds()) ) {
+                if (query.getHeadManagersIds().remove(null)) {
+                    condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_member)");
+                    if (!query.getHeadManagersIds().isEmpty()) {
+                        condition.append(" or case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ID IN ")
+                                .append(makeInArg(query.getHeadManagersIds(), false))
+                                .append(")");
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and case_object.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ID IN ")
+                            .append(makeInArg(query.getHeadManagersIds(), false))
                             .append(")");
                 }
             }

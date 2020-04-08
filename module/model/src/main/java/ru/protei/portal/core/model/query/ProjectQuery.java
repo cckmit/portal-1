@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,8 @@ public class ProjectQuery extends BaseQuery {
     private Set<En_RegionState> states;
 
     private Set<EntityOption> regions;
+
+    private Set<PersonShortView> headManagers;
 
     private Set<Long> districtIds;
 
@@ -164,12 +167,21 @@ public class ProjectQuery extends BaseQuery {
         this.regions = regions;
     }
 
+    public Set<PersonShortView> getHeadManagers() {
+        return headManagers;
+    }
+
+    public void setHeadManagers(Set<PersonShortView> headManagers) {
+        this.headManagers = headManagers;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 CollectionUtils.isNotEmpty(caseNumbers) ||
                 CollectionUtils.isNotEmpty(states) ||
                 CollectionUtils.isNotEmpty(regions) ||
+                CollectionUtils.isNotEmpty(headManagers) ||
                 directionId != null ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 customerType != null ||
@@ -184,6 +196,7 @@ public class ProjectQuery extends BaseQuery {
         return "ProjectQuery{" +
                 "states=" + states +
                 ", regions=" + regions +
+                ", headManagers=" + headManagers +
                 ", caseNumbers=" + caseNumbers +
                 ", districtIds=" + districtIds +
                 ", directionId=" + directionId +
