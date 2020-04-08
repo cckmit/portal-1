@@ -1,19 +1,14 @@
-package ru.protei.portal.ui.common.client.widget.selector.casemember;
+package ru.protei.portal.ui.common.client.widget.selector.productdirection;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-/**
- * Мультиселектор регионов
- */
-public class CaseMemberSelector extends InputPopupMultiSelector<PersonShortView> {
+public class ProductDirectionMultiSelector extends InputPopupMultiSelector<ProductDirectionInfo> {
 
     @Inject
-    public void init(CaseMemberModelAsync model, Lang lang) {
-        model.setRole(null);
-
+    public void init(ProductDirectionModelAsync model, Lang lang) {
         setAsyncModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
@@ -22,11 +17,11 @@ public class CaseMemberSelector extends InputPopupMultiSelector<PersonShortView>
         setItemRenderer(option -> {
             if (option == null) {
                 if (hasNullValue()) {
-                    return lang.membersNotSpecified();
+                    return lang.productDirectionNotSpecified();
                 }
                 return null;
             }
-            return option.getName();
+            return option.name;
         });
     }
 }

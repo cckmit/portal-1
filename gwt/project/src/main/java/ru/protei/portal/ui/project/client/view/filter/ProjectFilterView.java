@@ -16,9 +16,9 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.selector.casemember.CaseMemberSelector;
-import ru.protei.portal.ui.common.client.widget.selector.casemember.HeadManagerSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.casemember.CaseMemberMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.casemember.HeadManagerMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -36,7 +36,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        direction.setDefaultValue(lang.contractSelectDirection());
         sortField.setType( ModuleType.PROJECT );
     }
 
@@ -66,7 +65,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() {
+    public HasValue<Set<ProductDirectionInfo>> direction() {
         return direction;
     }
 
@@ -95,7 +94,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
         search.setValue( "" );
-        direction.setValue( null );
+        direction.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
         regions.setValue(new HashSet<>());
         headManagers.setValue(new HashSet<>());
@@ -126,7 +125,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @UiHandler( "direction" )
-    public void onDirectionSelected( ValueChangeEvent<ProductDirectionInfo> event ) {
+    public void onDirectionSelected( ValueChangeEvent<Set<ProductDirectionInfo>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -209,15 +208,15 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @Inject
     @UiField(provided = true)
-    HeadManagerSelector headManagers;
+    HeadManagerMultiSelector headManagers;
 
     @Inject
     @UiField(provided = true)
-    CaseMemberSelector caseMembers;
+    CaseMemberMultiSelector caseMembers;
 
     @Inject
     @UiField( provided = true )
-    ProductDirectionButtonSelector direction;
+    ProductDirectionMultiSelector direction;
 
     @UiField
     CheckBox onlyMineProjects;

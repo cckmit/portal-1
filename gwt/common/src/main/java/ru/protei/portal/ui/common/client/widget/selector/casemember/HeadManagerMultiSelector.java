@@ -6,10 +6,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-/**
- * Мультиселектор регионов
- */
-public class HeadManagerSelector extends InputPopupMultiSelector<PersonShortView> {
+public class HeadManagerMultiSelector extends InputPopupMultiSelector<PersonShortView> {
 
     @Inject
     public void init(CaseMemberModelAsync model, Lang lang) {

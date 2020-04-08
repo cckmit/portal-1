@@ -15,7 +15,7 @@
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.productDirection}"/></label>
-                    <productdirection:ProductDirectionButtonSelector ui:field="direction" />
+                    <productdirection:ProductDirectionMultiSelector ui:field="direction" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.regionState}"/></label>
@@ -27,11 +27,11 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.projectHeadManager}"/></label>
-                    <casemember:HeadManagerSelector ui:field="headManagers" />
+                    <casemember:HeadManagerMultiSelector ui:field="headManagers" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.projectTeam}"/></label>
-                    <casemember:CaseMemberSelector ui:field="caseMembers" />
+                    <casemember:CaseMemberMultiSelector ui:field="caseMembers" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

@@ -1942,6 +1942,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectSiteFolder();
 
+    String productDirectionNotSpecified();
+
     String issueInitiatorInfo();
 
     String errNotAllowedChangeIssueNameOrDescription();
