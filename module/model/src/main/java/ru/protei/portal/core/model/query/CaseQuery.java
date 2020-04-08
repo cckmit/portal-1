@@ -23,6 +23,8 @@ public class CaseQuery extends BaseQuery {
     @JsonIgnore
     private List<Long> caseNumbers;
 
+    private List<Long> caseIds;
+
     private List<Long> companyIds;
 
     private List<Long> initiatorIds;
@@ -108,6 +110,7 @@ public class CaseQuery extends BaseQuery {
 
         setId(query.getId());
         setCaseNumbers(query.getCaseNumbers());
+        setCaseIds(query.getCaseIds());
         setCompanyIds(query.getCompanyIds());
         setInitiatorIds(query.getInitiatorIds());
         setProductIds(query.getProductIds());
@@ -159,6 +162,14 @@ public class CaseQuery extends BaseQuery {
 
     public void setCaseNumbers( List<Long> caseNumbers ) {
         this.caseNumbers = caseNumbers;
+    }
+
+    public List<Long> getCaseIds() {
+        return caseIds;
+    }
+
+    public void setCaseIds(List<Long> caseIds) {
+        this.caseIds = caseIds;
     }
 
     public List<Long> getCompanyIds() {
@@ -379,6 +390,7 @@ public class CaseQuery extends BaseQuery {
         return super.isParamsPresent() ||
                 id != null ||
                 CollectionUtils.isNotEmpty(caseNumbers) ||
+                CollectionUtils.isNotEmpty(caseIds) ||
                 CollectionUtils.isNotEmpty(companyIds) ||
                 CollectionUtils.isNotEmpty(initiatorIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
@@ -410,6 +422,7 @@ public class CaseQuery extends BaseQuery {
         return "CaseQuery{" +
                 "id=" + id +
                 ", caseNumbers=" + caseNumbers +
+                ", caseIds=" + caseIds +
                 ", companyIds=" + companyIds +
                 ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
@@ -454,6 +467,7 @@ public class CaseQuery extends BaseQuery {
                 findRecordByCaseComments == caseQuery.findRecordByCaseComments &&
                 Objects.equals(id, caseQuery.id) &&
                 Objects.equals(caseNumbers, caseQuery.caseNumbers) &&
+                Objects.equals(caseIds, caseQuery.caseIds) &&
                 Objects.equals(companyIds, caseQuery.companyIds) &&
                 Objects.equals(initiatorIds, caseQuery.initiatorIds) &&
                 Objects.equals(productIds, caseQuery.productIds) &&
@@ -484,7 +498,7 @@ public class CaseQuery extends BaseQuery {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, caseNumbers, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
+        return Objects.hash(id, caseNumbers, caseIds, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
                 modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject,

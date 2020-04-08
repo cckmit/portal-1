@@ -204,6 +204,12 @@ public class CaseObjectSqlBuilder {
                         .append(makeInArg(query.getCreatorIds(), false));
             }
 
+            if (isNotEmpty(query.getCaseIds())) {
+                condition
+                        .append(" and case_object.id in ")
+                        .append(makeInArg(query.getCaseIds(), false));
+            }
+
             if ( isNotEmpty(query.getRegionIds()) ) {
                 if (query.getRegionIds().remove(null)) {
                     condition.append(" and (case_object.id not in (SELECT CASE_ID FROM case_location)");

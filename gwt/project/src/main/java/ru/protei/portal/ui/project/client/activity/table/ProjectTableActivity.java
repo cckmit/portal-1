@@ -175,8 +175,8 @@ public abstract class ProjectTableActivity
         ProjectQuery query = new ProjectQuery();
 
         String searchString = filterView.searchPattern().getValue();
-        query.setCaseNumbers(searchCaseNumber(searchString, false));
-        if (query.getCaseNumbers() == null) {
+        query.setCaseIds(searchCaseNumber(searchString, false));
+        if (query.getCaseIds() == null) {
             query.setSearchString(isBlank(searchString) ? null : searchString);
         }
 

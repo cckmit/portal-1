@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class ProjectQuery extends BaseQuery {
     @JsonIgnore
-    private List<Long> caseNumbers;
+    private List<Long> caseIds;
 
     private Set<En_RegionState> states;
 
@@ -68,17 +68,17 @@ public class ProjectQuery extends BaseQuery {
         this.productIds = productIds;
     }
 
-    public List<Long> getCaseNumbers() {
-        return caseNumbers;
+    public List<Long> getCaseIds() {
+        return caseIds;
     }
 
-    public void setCaseNo( Long caseNo ) {
-        this.caseNumbers = new ArrayList<>();
-        this.caseNumbers.add(caseNo);
+    public void setCaseId( Long caseId ) {
+        this.caseIds = new ArrayList<>();
+        this.caseIds.add(caseId);
     }
 
-    public void setCaseNumbers( List<Long> caseNumbers ) {
-        this.caseNumbers = caseNumbers;
+    public void setCaseIds(List<Long> caseIds) {
+        this.caseIds = caseIds;
     }
 
     public Set<En_RegionState> getStates() {
@@ -188,7 +188,7 @@ public class ProjectQuery extends BaseQuery {
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
-                CollectionUtils.isNotEmpty(caseNumbers) ||
+                CollectionUtils.isNotEmpty(caseIds) ||
                 CollectionUtils.isNotEmpty(states) ||
                 CollectionUtils.isNotEmpty(regions) ||
                 CollectionUtils.isNotEmpty(headManagers) ||
@@ -209,7 +209,7 @@ public class ProjectQuery extends BaseQuery {
                 ", regions=" + regions +
                 ", headManagers=" + headManagers +
                 ", caseMembers=" + caseMembers +
-                ", caseNumbers=" + caseNumbers +
+                ", caseIds=" + caseIds +
                 ", districtIds=" + districtIds +
                 ", directionId=" + directionId +
                 ", onlyMineProjects=" + onlyMineProjects +

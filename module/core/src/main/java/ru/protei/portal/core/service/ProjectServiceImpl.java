@@ -464,7 +464,7 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType(En_CaseType.PROJECT);
 
-        caseQuery.setCaseNumbers(projectQuery.getCaseNumbers());
+        caseQuery.setCaseIds(projectQuery.getCaseIds());
 
         if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
             caseQuery.setStateIds(projectQuery.getStates().stream()
