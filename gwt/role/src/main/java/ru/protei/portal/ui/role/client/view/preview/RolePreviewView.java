@@ -44,8 +44,8 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
     }
 
     @Override
-    public void setPrivileges( Map< En_PrivilegeEntity, String > privileges ) {
-        this.privileges.setText( privileges.entrySet().stream().map( entry -> entityLang.getName( entry.getKey() ) + ":" + entry.getValue() ).collect( Collectors.joining(", ") ) );
+    public void setPrivileges( String privileges ) {
+        this.privileges.setText( privileges );
 
     }
 
@@ -58,9 +58,6 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
     Label description;
     @UiField
     Label privileges;
-
-    @Inject
-    En_PrivilegeEntityLang entityLang;
 
     AbstractRolePreviewActivity activity;
 

@@ -134,7 +134,8 @@ p {
   }
 }
 
-.inherit-color-checkbox-group .checkbox >*, .inherit-color, .inherit-color.toggle >* {
+.inherit-color-checkbox-group .checkbox >*, .inherit-color, .inherit-color.toggle >*,
+.inherit-color-checkbox-group .checkbox > div >* {
   color: inherit;
 }
 

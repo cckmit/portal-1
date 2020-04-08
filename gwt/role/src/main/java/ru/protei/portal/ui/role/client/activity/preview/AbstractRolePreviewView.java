@@ -17,5 +17,5 @@ public interface AbstractRolePreviewView extends IsWidget {
 
     void setDescription( String value );
 
-    void setPrivileges( Map< En_PrivilegeEntity, String > privileges );
+    void setPrivileges( String privileges );
 }

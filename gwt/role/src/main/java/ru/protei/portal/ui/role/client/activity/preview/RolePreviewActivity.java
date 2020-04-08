@@ -5,11 +5,10 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_PrivilegeAction;
-import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.RoleEvents;
+import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.*;
@@ -47,11 +46,16 @@ public abstract class RolePreviewActivity
         view.setPrivileges( value.getPrivileges().stream()
                 .filter( privilege -> privilege.getAction() != null )
                 .sorted( Comparator.comparingInt( En_Privilege::getOrder ) )
-                .collect( Collectors.groupingBy( En_Privilege::getEntity, Collectors.mapping( En_Privilege::getActionShortName, Collectors.joining() ) ) ) );
+                .collect( Collectors.groupingBy( En_Privilege::getEntity, Collectors.mapping( En_Privilege::getActionShortName, Collectors.joining() ) ) )
+                .entrySet().stream().map( entry -> entityLang.getName( entry.getKey() ) + ":" + entry.getValue() ).collect( Collectors.joining(", ") ) );
     }
 
     @Inject
     Lang lang;
+
+    @Inject
+    En_PrivilegeEntityLang entityLang;
+
     @Inject
     AbstractRolePreviewView view;
 
