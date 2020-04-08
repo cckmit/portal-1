@@ -161,8 +161,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     public List<Person> getCaseMembers(En_DevUnitPersonRoleType role) {
         SqlCondition sql = new SqlCondition().build((condition, args) -> {
-            condition.append("Person.id in (select MEMBER_ID from case_member where MEMBER_ROLE_ID = ?)");
-            args.add(role.getId());
+            if (role == null) {
+                condition.append("Person.id in (select MEMBER_ID from case_member)");
+            } else {
+                condition.append("Person.id in (select MEMBER_ID from case_member where MEMBER_ROLE_ID = ?)");
+                args.add(role.getId());
+            }
         });
 
         return getListByCondition(sql.condition, sql.args);

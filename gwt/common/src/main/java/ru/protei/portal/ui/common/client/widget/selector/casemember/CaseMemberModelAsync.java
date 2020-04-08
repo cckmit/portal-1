@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Модель регионов
  */
-public abstract class HeadManagersModelAsync extends BaseSelectorModel<PersonShortView>
+public abstract class CaseMemberModelAsync extends BaseSelectorModel<PersonShortView>
         implements Activity {
 
     @Event
@@ -32,9 +32,13 @@ public abstract class HeadManagersModelAsync extends BaseSelectorModel<PersonSho
         clean();
     }
 
+    public void setRole(En_DevUnitPersonRoleType role) {
+        this.role = role;
+    }
+
     @Override
     protected void requestData(LoadingHandler selector, String searchText ) {
-        personController.getCaseMembersList(En_DevUnitPersonRoleType.HEAD_MANAGER, new FluentCallback<List<PersonShortView>>()
+        personController.getCaseMembersList(role, new FluentCallback<List<PersonShortView>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
@@ -46,4 +50,6 @@ public abstract class HeadManagersModelAsync extends BaseSelectorModel<PersonSho
 
     @Inject
     Lang lang;
+
+    private En_DevUnitPersonRoleType role;
 }

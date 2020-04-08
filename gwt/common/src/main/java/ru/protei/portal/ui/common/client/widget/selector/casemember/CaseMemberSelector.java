@@ -8,10 +8,12 @@ import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSe
 /**
  * Мультиселектор регионов
  */
-public class HeadManagersSelector extends InputPopupMultiSelector<PersonShortView> {
+public class CaseMemberSelector extends InputPopupMultiSelector<PersonShortView> {
 
     @Inject
-    public void init(HeadManagersModelAsync model, Lang lang) {
+    public void init(CaseMemberModelAsync model, Lang lang) {
+        model.setRole(null);
+
         setAsyncModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());

@@ -16,7 +16,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.selector.casemember.HeadManagersSelector;
+import ru.protei.portal.ui.common.client.widget.selector.casemember.CaseMemberSelector;
+import ru.protei.portal.ui.common.client.widget.selector.casemember.HeadManagerSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -196,7 +197,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @Inject
     @UiField(provided = true)
-    HeadManagersSelector headManagers;
+    HeadManagerSelector headManagers;
+
+    @Inject
+    @UiField(provided = true)
+    CaseMemberSelector caseMember;
 
     @Inject
     @UiField( provided = true )
