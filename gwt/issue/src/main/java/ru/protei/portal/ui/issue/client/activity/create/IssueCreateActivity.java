@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -337,15 +336,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void requestAndSetSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
         if (platformId == null) {
-            slaList = makeDefaultSlaValues();
+            slaList = En_ImportanceLevel.DEFAULT_SLA_VALUES;
             issueMetaView.setValuesContainerWarning(true);
             slaConsumer.accept(slaList);
             return;
         }
 
-        platformService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+        slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
                 .withSuccess(result -> {
-                    slaList = result.isEmpty() ? makeDefaultSlaValues() : result;
+                    slaList = result.isEmpty() ? En_ImportanceLevel.DEFAULT_SLA_VALUES : result;
                     issueMetaView.setValuesContainerWarning(result.isEmpty());
                     slaConsumer.accept(slaList);
                 })
@@ -358,38 +357,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .filter(sla -> Objects.equals(importanceLevel, sla.getImportanceLevelId()))
                 .findAny()
                 .orElse(new ProjectSla());
-    }
-
-    private List<ProjectSla> makeDefaultSlaValues() {
-        ProjectSla criticalSla = new ProjectSla(
-                En_ImportanceLevel.CRITICAL.getId(),
-                En_SlaDefaultValues.CRITICAL.getReactionTime(),
-                En_SlaDefaultValues.CRITICAL.getTemporarySolutionTime(),
-                En_SlaDefaultValues.CRITICAL.getFullSolutionTime()
-        );
-
-        ProjectSla importantSla = new ProjectSla(
-                En_ImportanceLevel.IMPORTANT.getId(),
-                En_SlaDefaultValues.IMPORTANT.getReactionTime(),
-                En_SlaDefaultValues.IMPORTANT.getTemporarySolutionTime(),
-                En_SlaDefaultValues.IMPORTANT.getFullSolutionTime()
-        );
-
-        ProjectSla basicSla = new ProjectSla(
-                En_ImportanceLevel.BASIC.getId(),
-                En_SlaDefaultValues.BASIC.getReactionTime(),
-                En_SlaDefaultValues.BASIC.getTemporarySolutionTime(),
-                En_SlaDefaultValues.BASIC.getFullSolutionTime()
-        );
-
-        ProjectSla cosmeticSla = new ProjectSla(
-                En_ImportanceLevel.COSMETIC.getId(),
-                En_SlaDefaultValues.COSMETIC.getReactionTime(),
-                En_SlaDefaultValues.COSMETIC.getTemporarySolutionTime(),
-                En_SlaDefaultValues.COSMETIC.getFullSolutionTime()
-        );
-
-        return Arrays.asList(criticalSla, importantSla, basicSla, cosmeticSla);
     }
 
     private void fillSla(ProjectSla sla) {
@@ -567,7 +534,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Inject
     IssueMetaView issueMetaView;
     @Inject
-    SiteFolderControllerAsync platformService;
+    SLAControllerAsync slaService;
 
     @Inject
     PolicyService policyService;

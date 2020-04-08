@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.client.service.SLAControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -367,15 +367,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         if (platformId == null) {
-            slaList = makeDefaultSlaValues();
+            slaList = En_ImportanceLevel.DEFAULT_SLA_VALUES;
             metaView.setValuesContainerWarning(true);
             slaConsumer.accept(slaList);
             return;
         }
 
-        platformService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+        slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
                 .withSuccess(result -> {
-                    slaList = result.isEmpty() ? makeDefaultSlaValues() : result;
+                    slaList = result.isEmpty() ? En_ImportanceLevel.DEFAULT_SLA_VALUES : result;
                     metaView.setValuesContainerWarning(result.isEmpty());
                     slaConsumer.accept(slaList);
                 })
@@ -388,38 +388,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 .filter(sla -> Objects.equals(importanceLevel, sla.getImportanceLevelId()))
                 .findAny()
                 .orElse(new ProjectSla());
-    }
-
-    private List<ProjectSla> makeDefaultSlaValues() {
-        ProjectSla criticalSla = new ProjectSla(
-                En_ImportanceLevel.CRITICAL.getId(),
-                En_SlaDefaultValues.CRITICAL.getReactionTime(),
-                En_SlaDefaultValues.CRITICAL.getTemporarySolutionTime(),
-                En_SlaDefaultValues.CRITICAL.getFullSolutionTime()
-        );
-
-        ProjectSla importantSla = new ProjectSla(
-                En_ImportanceLevel.IMPORTANT.getId(),
-                En_SlaDefaultValues.IMPORTANT.getReactionTime(),
-                En_SlaDefaultValues.IMPORTANT.getTemporarySolutionTime(),
-                En_SlaDefaultValues.IMPORTANT.getFullSolutionTime()
-        );
-
-        ProjectSla basicSla = new ProjectSla(
-                En_ImportanceLevel.BASIC.getId(),
-                En_SlaDefaultValues.BASIC.getReactionTime(),
-                En_SlaDefaultValues.BASIC.getTemporarySolutionTime(),
-                En_SlaDefaultValues.BASIC.getFullSolutionTime()
-        );
-
-        ProjectSla cosmeticSla = new ProjectSla(
-                En_ImportanceLevel.COSMETIC.getId(),
-                En_SlaDefaultValues.COSMETIC.getReactionTime(),
-                En_SlaDefaultValues.COSMETIC.getTemporarySolutionTime(),
-                En_SlaDefaultValues.COSMETIC.getFullSolutionTime()
-        );
-
-        return Arrays.asList(criticalSla, importantSla, basicSla, cosmeticSla);
     }
 
     private void fillSla(ProjectSla sla) {
@@ -519,7 +487,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Inject
     CaseStateFilterProvider caseStateFilter;
     @Inject
-    SiteFolderControllerAsync platformService;
+    SLAControllerAsync slaService;
 
     @ContextAware
     CaseObjectMeta meta;

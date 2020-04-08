@@ -48,6 +48,4 @@ public interface SiteFolderControllerAsync {
     void removeServer(long id, AsyncCallback<Boolean> async);
 
     void removeApplication(long id, AsyncCallback<Boolean> async);
-
-    void getSlaByPlatformId(Long platformId, AsyncCallback<List<ProjectSla>> async);
 }
