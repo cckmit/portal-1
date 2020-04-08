@@ -184,11 +184,7 @@ public abstract class ProjectTableActivity
         query.setRegions(filterView.regions().getValue());
         query.setHeadManagers(filterView.headManagers().getValue());
         query.setCaseMembers(filterView.caseMembers().getValue());
-//        query.setDirectionId(
-//                filterView.direction().getValue() == null
-//                        ? null
-//                        : filterView.direction().getValue().id
-//        );
+        query.setDirections(filterView.direction().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());

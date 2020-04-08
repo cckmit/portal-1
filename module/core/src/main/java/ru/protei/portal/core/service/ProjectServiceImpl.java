@@ -494,9 +494,13 @@ public class ProjectServiceImpl implements ProjectService {
             );
         }
 
-        if (projectQuery.getDirectionId() != null) {
-            caseQuery.setProductDirectionId(projectQuery.getDirectionId());
+        if (CollectionUtils.isNotEmpty(projectQuery.getDirections())) {
+            caseQuery.setProductDirectionIds(projectQuery.getDirections().stream()
+                    .map(directionInfo -> directionInfo == null ? null : directionInfo.id)
+                    .collect(toList())
+            );
         }
+
         if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
             caseQuery.setProductIds(projectQuery.getProductIds());
         }

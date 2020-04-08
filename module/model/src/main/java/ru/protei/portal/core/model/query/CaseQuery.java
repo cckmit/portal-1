@@ -49,6 +49,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> caseMemberIds;
 
+    private List<Long> productDirectionIds;
+
     /**
      * if true then both states otherwise only non-private state
      */
@@ -85,8 +87,6 @@ public class CaseQuery extends BaseQuery {
     private Boolean contractIndependentProject;
 
     private Boolean platformIndependentProject;
-
-    private Long productDirectionId;
 
     private List<Long> creatorIds;
 
@@ -136,7 +136,7 @@ public class CaseQuery extends BaseQuery {
         setLocal(query.getLocal());
         setContractIndependentProject(query.getContractIndependentProject());
         setPlatformIndependentProject(query.getPlatformIndependentProject());
-        setProductDirectionId(query.getProductDirectionId());
+        setProductDirectionIds(query.getProductDirectionIds());
         setCreatorIds(query.getCreatorIds());
         setRegionIds(query.getRegionIds());
         setHeadManagerIds(query.getHeadManagerIds());
@@ -345,12 +345,12 @@ public class CaseQuery extends BaseQuery {
         this.local = local;
     }
 
-    public Long getProductDirectionId() {
-        return productDirectionId;
+    public List<Long> getProductDirectionIds() {
+        return productDirectionIds;
     }
 
-    public void setProductDirectionId(Long productDirectionId) {
-        this.productDirectionId = productDirectionId;
+    public void setProductDirectionIds(List<Long> productDirectionIds) {
+        this.productDirectionIds = productDirectionIds;
     }
 
     public List<Long> getCreatorIds() {
@@ -403,6 +403,7 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(regionIds) ||
                 CollectionUtils.isNotEmpty(headManagerIds) ||
                 CollectionUtils.isNotEmpty(caseMemberIds) ||
+                CollectionUtils.isNotEmpty(productDirectionIds) ||
                 createdFrom != null ||
                 createdTo != null ||
                 modifiedFrom != null ||
@@ -413,8 +414,7 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
                 contractIndependentProject != null ||
-                platformIndependentProject != null ||
-                productDirectionId != null;
+                platformIndependentProject != null;
     }
 
     @Override
@@ -432,6 +432,7 @@ public class CaseQuery extends BaseQuery {
                 ", regionsIds=" + regionIds +
                 ", headManagersIds=" + headManagerIds +
                 ", caseMemberIds=" + caseMemberIds +
+                ", productDirectionId=" + productDirectionIds +
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
@@ -451,7 +452,6 @@ public class CaseQuery extends BaseQuery {
                 ", local=" + local +
                 ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
-                ", productDirectionId=" + productDirectionId +
                 ", creatorIds=" + creatorIds +
                 '}';
     }
@@ -492,7 +492,7 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(local, caseQuery.local) &&
                 Objects.equals(contractIndependentProject, caseQuery.contractIndependentProject) &&
                 Objects.equals(platformIndependentProject, caseQuery.platformIndependentProject) &&
-                Objects.equals(productDirectionId, caseQuery.productDirectionId) &&
+                Objects.equals(productDirectionIds, caseQuery.productDirectionIds) &&
                 Objects.equals(creatorIds, caseQuery.creatorIds);
     }
 
@@ -502,6 +502,6 @@ public class CaseQuery extends BaseQuery {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
                 modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject,
-                productDirectionId, creatorIds, regionIds, headManagerIds, caseMemberIds);
+                productDirectionIds, creatorIds, regionIds, headManagerIds, caseMemberIds);
     }
 }

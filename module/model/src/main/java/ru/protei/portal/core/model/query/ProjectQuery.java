@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -29,9 +30,9 @@ public class ProjectQuery extends BaseQuery {
 
     private Set<PersonShortView> caseMembers;
 
-    private Set<Long> districtIds;
+    private Set<ProductDirectionInfo> directions;
 
-    private Long directionId;
+    private Set<Long> districtIds;
 
     private Boolean onlyMineProjects;
 
@@ -97,12 +98,12 @@ public class ProjectQuery extends BaseQuery {
         this.districtIds = districtIds;
     }
 
-    public Long getDirectionId() {
-        return directionId;
+    public Set<ProductDirectionInfo> getDirections() {
+        return directions;
     }
 
-    public void setDirectionId( Long directionId ) {
-        this.directionId = directionId;
+    public void setDirections(Set<ProductDirectionInfo> directions) {
+        this.directions = directions;
     }
 
     public Boolean isOnlyMineProjects() {
@@ -193,7 +194,7 @@ public class ProjectQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(regions) ||
                 CollectionUtils.isNotEmpty(headManagers) ||
                 CollectionUtils.isNotEmpty(caseMembers) ||
-                directionId != null ||
+                CollectionUtils.isNotEmpty(directions) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 customerType != null ||
                 createdFrom != null ||
@@ -211,7 +212,7 @@ public class ProjectQuery extends BaseQuery {
                 ", caseMembers=" + caseMembers +
                 ", caseIds=" + caseIds +
                 ", districtIds=" + districtIds +
-                ", directionId=" + directionId +
+                ", directions=" + directions +
                 ", onlyMineProjects=" + onlyMineProjects +
                 ", productIds=" + productIds +
                 ", customerType=" + customerType +

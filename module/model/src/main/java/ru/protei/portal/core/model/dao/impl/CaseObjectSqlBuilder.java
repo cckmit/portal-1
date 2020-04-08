@@ -192,10 +192,18 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and case_object.id NOT IN (SELECT platform.project_id FROM platform WHERE platform.project_id IS NOT NULL)");
             }
 
-            if (query.getProductDirectionId() != null) {
-                condition
-                        .append(" and product_id = ")
-                        .append(query.getProductDirectionId());
+            if ( isNotEmpty(query.getProductDirectionIds()) ) {
+                if (query.getProductDirectionIds().remove(null)) {
+                    condition.append(" and (product_id is null");
+                    if (!query.getProductDirectionIds().isEmpty()) {
+                        condition.append(" or product_id in ")
+                                .append(makeInArg(query.getProductDirectionIds(), false));
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and product_id in ")
+                            .append(makeInArg(query.getProductDirectionIds(), false));
+                }
             }
 
             if (isNotEmpty(query.getCreatorIds())) {
