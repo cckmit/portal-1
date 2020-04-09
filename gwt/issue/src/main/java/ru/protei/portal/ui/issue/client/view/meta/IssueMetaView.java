@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -37,6 +36,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -315,6 +315,36 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         jiraSlaSelector.setJiraInfoLink(link);
     }
 
+    @Override
+    public HasTime slaReactionTime() {
+        return slaReactionTime;
+    }
+
+    @Override
+    public HasTime slaTemporarySolutionTime() {
+        return slaTemporarySolutionTime;
+    }
+
+    @Override
+    public HasTime slaFullSolutionTime() {
+        return slaFullSolutionTime;
+    }
+
+    @Override
+    public HasVisibility slaContainerVisibility() {
+        return slaContainer;
+    }
+
+    @Override
+    public void setValuesContainerWarning(boolean isWarning) {
+        slaTimesContainer.setStyleName("b-warning-light", isWarning);
+    }
+
+    @Override
+    public void setSlaTimesContainerTitle(String title) {
+        slaTimesContainer.setTitle(title);
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
@@ -476,6 +506,19 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     LabelElement subscriptionsLabel;
     @UiField
     Element subscriptions;
+    @UiField
+    HTMLPanel slaContainer;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaReactionTime;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaTemporarySolutionTime;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaFullSolutionTime;
+    @UiField
+    HTMLPanel slaTimesContainer;
     @UiField
     HTMLPanel caseSubscriptionContainers;
     @UiField

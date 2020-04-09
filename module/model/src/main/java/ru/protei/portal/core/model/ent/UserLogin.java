@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_AdminState;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -31,8 +33,9 @@ public class UserLogin extends AuditableObject {
     @JdbcColumn(name = "pwdExpired")
     private Date pwdExpired;
 
+    @JdbcEnumerated(EnumType.ID)
     @JdbcColumn(name = "astate")
-    private int adminStateId;
+    private En_AdminState adminStateId;
 
     @JdbcColumn(name = "personId")
     private Long personId;
@@ -64,7 +67,8 @@ public class UserLogin extends AuditableObject {
     private String companyName;
 
     @JdbcColumn(name = "authType")
-    private int authTypeId;
+    @JdbcEnumerated(EnumType.ID)
+    private En_AuthType authType;
 
     @JdbcColumn(name = "info")
     private String info;
@@ -123,11 +127,11 @@ public class UserLogin extends AuditableObject {
     }
 
     public int getAdminStateId() {
-        return adminStateId;
+        return adminStateId.getId();
     }
 
     public void setAdminStateId(int adminStateId) {
-        this.adminStateId = adminStateId;
+        this.adminStateId = En_AdminState.find( adminStateId );
     }
 
     public Long getPersonId() {
@@ -158,12 +162,12 @@ public class UserLogin extends AuditableObject {
 
     public void setCompanyName ( String companyName ) { this.companyName = companyName; }
 
-    public int getAuthTypeId() {
-        return authTypeId;
+    public En_AuthType getAuthType() {
+        return authType;
     }
 
-    public void setAuthTypeId(int authTypeId) {
-        this.authTypeId = authTypeId;
+    public void setAuthType( En_AuthType authType) {
+        this.authType = authType;
     }
 
     public String getInfo() {
@@ -175,7 +179,7 @@ public class UserLogin extends AuditableObject {
     }
 
     public boolean isLDAP_Auth () {
-        return this.authTypeId == En_AuthType.LDAP.getId();
+        return this.authType == En_AuthType.LDAP;
     }
 
     public Set< UserRole > getRoles() {
@@ -232,7 +236,7 @@ public class UserLogin extends AuditableObject {
                 ", isFired=" + isFired +
                 ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +
-                ", authTypeId=" + authTypeId +
+                ", authType=" + authType +
                 ", info='" + info + '\'' +
                 ", roles=" + roles +
                 '}';

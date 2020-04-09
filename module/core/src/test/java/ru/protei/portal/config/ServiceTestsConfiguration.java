@@ -168,9 +168,6 @@ public class ServiceTestsConfiguration {
     public PolicyService getPolicyService() { return new PolicyServiceImpl(); }
 
     @Bean
-    public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
-
-    @Bean
     public EventAssemblerService getEventAssemblerService() {
         return new EventAssemblerServiceImpl();
     }

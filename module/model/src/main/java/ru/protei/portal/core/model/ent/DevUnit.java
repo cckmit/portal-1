@@ -23,7 +23,8 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     private Long id;
 
     @JdbcColumn(name="UTYPE_ID")
-    private int typeId;
+    @JdbcEnumerated( EnumType.ID )
+    private En_DevUnitType devUnitType;
 
     @JdbcColumn(name="CREATED")
     private Date created;
@@ -46,7 +47,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name = "old_id")
     private Long oldId;
 
-    @JdbcOneToMany(table = "DevUnitSubscription", localColumn = "id", remoteColumn = "dev_unit_id" )
+    @JdbcOneToMany(table = "dev_unit_subscription", localColumn = "id", remoteColumn = "dev_unit_id" )
     private List<DevUnitSubscription> subscriptions;
 
     @JdbcColumn(name = "wiki_link")
@@ -110,11 +111,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     }
 
     public DevUnit (En_DevUnitType type, String name, String info) {
-        this (type.getId(), name, info);
-    }
-
-    public DevUnit(int typeId, String name, String info) {
-        this.typeId = typeId;
+        this.devUnitType = type;
         this.name = name;
         this.info = info;
         this.created = new Date();
@@ -129,12 +126,12 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.id = id;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public En_DevUnitType getType () {
+        return devUnitType;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setType(En_DevUnitType devUnitType) {
+        this.devUnitType = devUnitType;
     }
 
     public Date getCreated() {
@@ -203,10 +200,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     public boolean isDeprecatedUnit() {
         return getState() == En_DevUnitState.DEPRECATED;
-    }
-
-    public En_DevUnitType getType () {
-        return En_DevUnitType.forId(this.typeId);
     }
 
     public List<DevUnit> getParents() {
@@ -315,7 +308,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     public String toString() {
         return "DevUnit{" +
                 "id=" + id +
-                ", typeId=" + typeId +
+                ", devUnitType=" + devUnitType +
                 ", created=" + created +
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +

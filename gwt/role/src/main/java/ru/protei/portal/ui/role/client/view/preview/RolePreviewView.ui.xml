@@ -7,6 +7,11 @@
         <div class="card-body">
             <h4 class="col-md-12 no-margin no-padding" ui:field="name"/>
             <g:Label styleName="small hint-text pre-formatted-info" ui:field="description"/>
+            <p class="small m-t-5">
+                <b><ui:text from="{lang.rolePrivileges}:"/></b>
+                <g:Label ui:field="privileges" styleName="pre-formatted-info m-b-5"/>
+                <i class="fa fa-info-circle m-r-5"/><ui:text from="{lang.rolePrivilegesNote}"/>
+            </p>
         </div>
     </g:HTMLPanel>
 

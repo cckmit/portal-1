@@ -70,7 +70,7 @@ public class CaseObjectCreateEvent extends ApplicationEvent implements AbstractC
         return "CaseObject{" +
                 "id=" + caseObject.getId() +
                 ", caseNumber=" + caseObject.getCaseNumber() +
-                ", typeId=" + caseObject.getTypeId() +
+                ", type=" + caseObject.getType() +
                 ", extId='" + caseObject.getExtId() + '\'' +
                 '}';
     }

@@ -21,15 +21,6 @@ public class MigrateFreq implements MigrateAction {
     private CaseObjectDAO caseDAO;
 
     @Autowired
-    private CaseCommentDAO commentDAO;
-
-    @Autowired
-    private CaseTermDAO termDAO;
-
-    @Autowired
-    private CaseDocumentDAO documentDAO;
-
-    @Autowired
     private CaseStateMatrixDAO stateMatrixDAO;
 
 
@@ -52,7 +43,7 @@ public class MigrateFreq implements MigrateAction {
                 row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
-                    obj.setTypeId(En_CaseType.FREQ.getId());
+                    obj.setType(En_CaseType.FREQ);
                     obj.setCreated((Date) row.get("dtCreation"));
                     obj.setCaseNumber((Long) row.get("nID"));
                     obj.setCreatorId((Long) row.get("nCreatorID"));

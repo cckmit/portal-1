@@ -73,18 +73,6 @@ public class EntityOption implements Serializable {
         return new EntityOption(company.getCname(), company.getId());
     }
 
-    public static EntityOption fromCompanyGroup(CompanyGroup group){
-        if(group == null)
-            return null;
-        return new EntityOption(group.getName(), group.getId());
-    }
-
-    public static EntityOption fromCompanyCategory(CompanyCategory category){
-        if(category == null)
-            return null;
-        return new EntityOption(category.getName(), category.getId());
-    }
-
     public static EntityOption fromProductDirectionInfo( ProductDirectionInfo info ) {
         if ( info == null ) {
             return null;

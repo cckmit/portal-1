@@ -248,7 +248,7 @@ public class ProjectServiceImpl implements ProjectService {
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setType(En_CaseType.PROJECT);
         caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
         caseObject.setStateId(project.getState().getId());
         caseObject.setCreatorId(project.getCreatorId());

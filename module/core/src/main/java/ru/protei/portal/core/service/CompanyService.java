@@ -4,6 +4,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
@@ -29,7 +30,7 @@ public interface CompanyService {
 
     Result<List<EntityOption>> groupOptionList();
     Result<List<CompanyGroup>> groupList( CompanyGroupQuery query);
-    Result<List<EntityOption>> categoryOptionList( boolean hasOfficial);
+    Result<List<En_CompanyCategory>> categoryOptionList( boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     Result<Company> getCompany( AuthToken token, Long id );

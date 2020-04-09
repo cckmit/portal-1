@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Created by michael on 05.07.16.
  */
-@JdbcEntity(table = "MigrationEntry")
+@JdbcEntity(table = "migrationentry")
 public class MigrationEntry {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
