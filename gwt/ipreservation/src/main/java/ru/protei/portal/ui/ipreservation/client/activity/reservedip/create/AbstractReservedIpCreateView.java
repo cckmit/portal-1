@@ -34,6 +34,7 @@ public interface AbstractReservedIpCreateView extends IsWidget {
     HasVisibility exaсtIpVisibility();
     HasVisibility anyFreeIpsVisibility();
 
+    HasVisibility reserveModeVisibility();
     HasVisibility saveVisibility();
 
     HasEnabled ownerEnabled();

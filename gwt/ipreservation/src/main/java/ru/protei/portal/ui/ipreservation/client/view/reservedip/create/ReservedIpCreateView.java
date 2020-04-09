@@ -88,6 +88,11 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasVisibility anyFreeIpsVisibility() { return anyFreeIpsContainer; }
 
     @Override
+    public HasVisibility reserveModeVisibility() {
+        return reservedMode;
+    }
+
+    @Override
     public HasEnabled ownerEnabled() { return ipOwner; }
 
     @Override

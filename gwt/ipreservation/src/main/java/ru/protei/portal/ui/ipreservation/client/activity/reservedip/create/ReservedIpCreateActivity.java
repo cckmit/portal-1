@@ -89,10 +89,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
         if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)) {
             view.reservedMode().setValue(En_ReservedMode.EXACT_IP, true);
+            view.reserveModeVisibility().setVisible(true);
             view.owner().setValue(null);
             view.ownerEnabled().setEnabled(true);
         } else {
             view.reservedMode().setValue(En_ReservedMode.ANY_FREE_IPS, true);
+            view.reserveModeVisibility().setVisible(false);
             PersonShortView ipOwner = new PersonShortView(
                     policyService.getProfile().getFullName(),
                     policyService.getProfile().getId(),
