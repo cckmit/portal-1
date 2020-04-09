@@ -2,7 +2,6 @@ package ru.protei.portal.ui.issue.client.view.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -332,8 +331,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public HasVisibility projectSlaContainerVisibility() {
-        return projectSlaContainer;
+    public HasVisibility slaContainerVisibility() {
+        return slaContainer;
     }
 
     @Override
@@ -503,7 +502,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiField
     Element subscriptions;
     @UiField
-    HTMLPanel projectSlaContainer;
+    HTMLPanel slaContainer;
     @Inject
     @UiField(provided = true)
     TimeLabel slaReactionTime;

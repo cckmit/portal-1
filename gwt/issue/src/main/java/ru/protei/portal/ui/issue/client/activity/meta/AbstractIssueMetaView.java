@@ -93,7 +93,7 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     HasTime slaFullSolutionTime();
 
-    HasVisibility projectSlaContainerVisibility();
+    HasVisibility slaContainerVisibility();
 
     void setValuesContainerWarning(boolean isWarning);
 }

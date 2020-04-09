@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -187,9 +188,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPlatformChanged() {
-        requestAndSetSla(
+        requestSla(
                 issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevelId(slaList, issueMetaView.importance().getValue().getId()))
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
         );
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
@@ -237,9 +238,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             issueMetaView.setInitiator(initiator);
         }
 
-        requestAndSetSla(
+        requestSla(
                 issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevelId(slaList, issueMetaView.importance().getValue().getId()))
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
         );
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
@@ -272,7 +273,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onImportanceChanged() {
-        fillSla(getSlaByImportanceLevelId(slaList, issueMetaView.importance().getValue().getId()));
+        fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
     }
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
@@ -329,14 +330,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setManager(caseObjectMeta.getManager());
         issueMetaView.setProduct(caseObjectMeta.getProduct());
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
-        issueMetaView.projectSlaContainerVisibility().setVisible(true);
 
-        requestAndSetSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevelId(slaList, caseObjectMeta.getImpLevel())));
+        issueMetaView.slaContainerVisibility().setVisible(true);
+        requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
     }
 
-    private void requestAndSetSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+    private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
         if (platformId == null) {
-            slaList = En_ImportanceLevel.DEFAULT_SLA_VALUES;
+            slaList = DefaultSlaValues.getList();
             issueMetaView.setValuesContainerWarning(true);
             slaConsumer.accept(slaList);
             return;
@@ -344,17 +345,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
                 .withSuccess(result -> {
-                    slaList = result.isEmpty() ? En_ImportanceLevel.DEFAULT_SLA_VALUES : result;
+                    slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
                     issueMetaView.setValuesContainerWarning(result.isEmpty());
                     slaConsumer.accept(slaList);
                 })
         );
     }
 
-    private ProjectSla getSlaByImportanceLevelId(List<ProjectSla> slaList, final int importanceLevel) {
+    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final int importanceLevelId) {
         return slaList
                 .stream()
-                .filter(sla -> Objects.equals(importanceLevel, sla.getImportanceLevelId()))
+                .filter(sla -> Objects.equals(importanceLevelId, sla.getImportanceLevelId()))
                 .findAny()
                 .orElse(new ProjectSla());
     }
