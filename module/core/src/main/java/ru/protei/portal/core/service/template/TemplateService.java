@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.utils.LinkData;
-import ru.protei.portal.core.utils.RoleTypeLangUtil;
+import ru.protei.portal.core.utils.EnumLangUtil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -65,5 +65,5 @@ public interface TemplateService {
 
     PreparedTemplate getMailProjectSubject(Project project, Person initiator);
 
-    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, RoleTypeLangUtil roleTypeLang);
+    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, EnumLangUtil roleTypeLang);
 }

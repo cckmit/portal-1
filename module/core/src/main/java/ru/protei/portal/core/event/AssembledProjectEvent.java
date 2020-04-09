@@ -85,6 +85,23 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return false;
     }
 
+    public boolean isSlaChanged() {
+        if (!isEditEvent()) {
+            return false;
+        }
+
+        if (Arrays.stream(En_ImportanceLevel.values()).allMatch(
+                importanceLevel -> isSameSla(
+                        getSlaByImportance(oldProjectState.getProjectSlas(), importanceLevel.getId()),
+                        getSlaByImportance(newProjectState.getProjectSlas(), importanceLevel.getId())
+                ))
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
     public Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> getTeamDiffs() {
         Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> teamDiffs = new HashMap<>();
 
@@ -125,7 +142,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
         if (!isEditEvent()) {
             CollectionUtils.emptyIfNull(newProjectState.getProjectSlas()).forEach(sla -> slaDiffs.put(
                     En_ImportanceLevel.find(sla.getImportanceLevelId()),
-                    new DiffResult<>(null, sla))
+                    new DiffResult<>(sla, sla))
             );
 
             return slaDiffs;
@@ -148,11 +165,6 @@ public class AssembledProjectEvent extends ApplicationEvent {
                     .orElse(null);
 
             if (oldSla == null || newSla == null) {
-                break;
-            }
-
-            if (isSameSla(oldSla, newSla)) {
-                slaDiffs.put(level, new DiffResult<>(null, newSla));
                 continue;
             }
 
@@ -160,6 +172,14 @@ public class AssembledProjectEvent extends ApplicationEvent {
         }
 
         return slaDiffs;
+    }
+
+    private ProjectSla getSlaByImportance(List<ProjectSla> slaList, int importanceLevelId) {
+        return slaList
+                .stream()
+                .filter(sla -> sla.getImportanceLevelId() == importanceLevelId)
+                .findAny()
+                .orElse(new ProjectSla());
     }
 
     private boolean isSameSla(ProjectSla sla1, ProjectSla sla2) {

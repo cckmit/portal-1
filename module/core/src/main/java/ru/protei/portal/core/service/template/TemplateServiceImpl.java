@@ -6,14 +6,10 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import ru.protei.portal.core.event.AssembledProjectEvent;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
@@ -26,7 +22,7 @@ import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.utils.LinkData;
-import ru.protei.portal.core.utils.RoleTypeLangUtil;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 
@@ -37,8 +33,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -420,14 +414,14 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, RoleTypeLangUtil roleTypeLang) {
+    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, EnumLangUtil enumLangUtil) {
         Project oldProjectState = event.getOldProjectState();
         Project newProjectState = event.getNewProjectState();
 
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put("TransliterationUtils", new TransliterationUtils());
-        templateModel.put("RoleTypeLangUtil", roleTypeLang);
+        templateModel.put("EnumLangUtil", enumLangUtil);
 
         templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
         templateModel.put("isCreated", !event.isEditEvent());
@@ -471,6 +465,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("team", event.getTeamDiffs());
         templateModel.put("sla", event.getSlaDiffs());
+        templateModel.put("TimeFormatter", new WorkTimeFormatter());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/project.body.%s.ftl");
         template.setModel(templateModel);

@@ -5,6 +5,23 @@
 <@set name="_createdBy" value="${created_by}"/>
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
+<@set name="_timeDayLiteral" value="${timeDayLiteral}"/>
+<@set name="_timeHourLiteral" value="${timeHourLiteral}"/>
+<@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
+<@set name="_projectName" value="${projectName}"/>
+<@set name="_projectDescription" value="${projectDescription}"/>
+<@set name="_projectState" value="${projectState}"/>
+<@set name="_projectRegion" value="${projectRegion}"/>
+<@set name="_projectCompany" value="${projectCompany}"/>
+<@set name="_projectCustomerType" value="${projectCustomerType}"/>
+<@set name="_projectProductDirection" value="${projectProductDirection}"/>
+<@set name="_projectProduct" value="${projectProduct}"/>
+<@set name="_projectTechnicalSupportValidity" value="${projectTechnicalSupportValidity}"/>
+<@set name="_projectImportance" value="${projectImportance}"/>
+<@set name="_projectSlaReactionTime" value="${projectSlaReactionTime}"/>
+<@set name="_projectSlaTemporaryTime" value="${projectSlaTemporaryTime}"/>
+<@set name="_projectSlaFullTime" value="${projectSlaFullTime}"/>
+<@set name="_projectSla" value="${projectSla}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -36,7 +53,7 @@
         <tbody>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Название
+                ${_projectName}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if nameChanged>
@@ -51,7 +68,7 @@
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Описание
+                ${_projectDescription}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if descriptionChanged>
@@ -66,22 +83,22 @@
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Состояние
+                ${_projectState}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if stateChanged>
                     <@changeTo
-                    old="${oldState!'?'}"
-                    new="${newState}"
+                    old="${EnumLangUtil.getRegionState(oldState, lang)!'?'}"
+                    new="${EnumLangUtil.getRegionState(newState, lang)}"
                     />
                 <#else>
-                    ${newState}
+                    ${EnumLangUtil.getRegionState(newState, lang)}
                 </#if>
             </td>
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Регион
+                ${_projectRegion}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if regionChanged>
@@ -96,7 +113,7 @@
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Компания
+                ${_projectCompany}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if companyChanged>
@@ -111,22 +128,22 @@
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Тип заказчика
+                ${_projectCustomerType}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if customerTypeChanged>
                     <@changeTo
-                    old="${oldCustomerType!'?'}"
-                    new="${newCustomerType}"
+                    old="${EnumLangUtil.getCustomerType(oldCustomerType, lang)!'?'}"
+                    new="${EnumLangUtil.getCustomerType(newCustomerType, lang)}"
                     />
                 <#else>
-                    ${newCustomerType}
+                    ${EnumLangUtil.getCustomerType(newCustomerType, lang)}
                 </#if>
             </td>
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Продуктовое направление
+                ${_projectProductDirection}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if productDirectionChanged>
@@ -141,7 +158,7 @@
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Продукт
+                ${_projectProduct}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if productChanged>
@@ -156,7 +173,7 @@
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                Срок действия технической поддержки
+                ${_projectTechnicalSupportValidity}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 <#if supportValidityChanged>
@@ -176,17 +193,19 @@
         <#if importanceLevels?has_content>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    SLA
+                    ${_projectSla}
                 </td>
             </tr>
             <#list importanceLevels as importanceLevel>
                 <#assign importanceLevel_index=importanceLevels?seq_index_of(importanceLevel)/>
                 <#assign slaDiff=slaDiffs[importanceLevel_index]/>
+
+                <#assign oldSla=slaDiff.getInitialState()/>
                 <#assign newSla=slaDiff.getNewState()/>
 
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        Критичность
+                        ${_projectImportance}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         ${importanceLevel.getCode()}
@@ -194,46 +213,35 @@
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        Время реагирования
+                        ${_projectReactionTime}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#if slaDiff.getInitialState()??>
-                            <#assign oldSla=slaDiff.getInitialState()/>
-                            <@changeToIfDiff
-                            old="${oldSla.getReactionTime()!'?'}"
-                            new="${newSla.getReactionTime()!'?'}"
-                            />
-                        <#else>
-
-                        </#if>
+                        <@changeToIfDiff
+                        old="${(oldSla.getReactionTime()??)?then(TimeFormatter.format(oldSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                        new="${(newSla.getReactionTime()??)?then(TimeFormatter.format(newSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                        />
                     </td>
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        Временное решение
+                        ${_projectTemporaryTime}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#if slaDiff.getInitialState()??>
-                            <#assign oldSla=slaDiff.getInitialState()/>
-                            <@changeToIfDiff
-                            old="${oldSla.getReactionTime()!'?'}"
-                            new="${newSla.getReactionTime()!'?'}"
-                            />
-                        </#if>
+                        <@changeToIfDiff
+                        old="${(oldSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(oldSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                        new="${(newSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(newSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                        />
                     </td>
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        Постоянное решение
+                        ${_projectFullTime}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#if slaDiff.getInitialState()??>
-                            <#assign oldSla=slaDiff.getInitialState()/>
-                            <@changeToIfDiff
-                            old="${oldSla.getReactionTime()!'?'}"
-                            new="${newSla.getReactionTime()!'?'}"
-                            />
-                        </#if>
+                        <@changeToIfDiff
+                        old="${(oldSla.getFullSolutionTime()??)?then(TimeFormatter.format(oldSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                        new="${(newSla.getFullSolutionTime()??)?then(TimeFormatter.format(newSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                        />
                     </td>
                 </tr>
             </#list>
@@ -248,12 +256,12 @@
 
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${RoleTypeLangUtil.getName(roleType, lang)}
+                    ${EnumLangUtil.getPersonRoleType(roleType, lang)}
                 </td>
                 <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                     <#if memberDiff.getSameEntries()??>
                         <#list memberDiff.getSameEntries() as same>
-                            <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none;color:#0062ff">
+                            <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none">
                                 ${TransliterationUtils.transliterate(same.name, lang)}
                             </span>
                         </#list>

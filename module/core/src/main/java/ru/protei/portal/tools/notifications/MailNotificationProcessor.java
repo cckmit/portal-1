@@ -29,7 +29,7 @@ import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.utils.LinkData;
-import ru.protei.portal.core.utils.RoleTypeLangUtil;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
@@ -659,7 +659,7 @@ public class MailNotificationProcessor {
         PreparedTemplate bodyTemplate = templateService.getMailProjectBody(
                 event,
                 collect,
-                new RoleTypeLangUtil(lang)
+                new EnumLangUtil(lang)
         );
 
         if (bodyTemplate == null) {
@@ -808,7 +808,8 @@ public class MailNotificationProcessor {
                 || event.isProductDirectionChanged()
                 || event.isProductChanged()
                 || event.isSupportValidityChanged()
-                || event.isTeamChanged();
+                || event.isTeamChanged()
+                || event.isSlaChanged();
     }
 
     private class MimeMessageHeadersFacade {
