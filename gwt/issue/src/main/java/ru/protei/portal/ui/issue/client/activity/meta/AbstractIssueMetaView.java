@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractIssueMetaView extends IsWidget {
@@ -32,6 +33,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void initiatorUpdateCompany(Company company);
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
+    void fillImportanceOptions(List<En_ImportanceLevel> options);
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
     void setProductTypes(En_DevUnitType... enDevUnitTypes);
@@ -81,4 +83,6 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setTimeElapsed(Long timeElapsed);
     Long getTimeElapsed();
+
+    void setJiraInfoLink(String link);
 }

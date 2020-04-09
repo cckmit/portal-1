@@ -132,7 +132,7 @@ public enum En_Privilege {
             ISSUE_FILTER_PRODUCT_VIEW
     };
 
-    private En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
+    En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
         this.entity = entity;
         this.action = action;
     }
@@ -143,6 +143,14 @@ public enum En_Privilege {
 
     public En_PrivilegeAction getAction() {
         return action;
+    }
+
+    public String getActionShortName() {
+        return action == null ? "" : action.getShortName();
+    }
+
+    public Integer getOrder() {
+        return entity.getOrder() + (action == null ? 0 : action.getOrder());
     }
 
     public static En_Privilege findPrivilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
@@ -158,5 +166,4 @@ public enum En_Privilege {
 
         return null;
     }
-
 }

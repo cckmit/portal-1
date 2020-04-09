@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  * Тип операции в системе
  */
-public enum En_AuditType {
+public enum En_AuditType implements HasId {
     ISSUE_MODIFY( 1 ),
     ISSUE_CREATE( 2 ),
     ISSUE_REPORT( 3 ),
@@ -101,12 +103,12 @@ public enum En_AuditType {
     APPLICATION_MODIFY(65),
     APPLICATION_REMOVE(66),
 
-    SUBNET_MODIFY(51),
-    SUBNET_CREATE(52),
-    SUBNET_REMOVE(53),
-    RESERVED_IP_MODIFY(54),
-    RESERVED_IP_CREATE(55),
-    RESERVED_IP_REMOVE(56),
+    SUBNET_MODIFY(67),
+    SUBNET_CREATE(68),
+    SUBNET_REMOVE(69),
+    RESERVED_IP_MODIFY(70),
+    RESERVED_IP_CREATE(71),
+    RESERVED_IP_REMOVE(72),
     ;
 
     En_AuditType(int id ) {

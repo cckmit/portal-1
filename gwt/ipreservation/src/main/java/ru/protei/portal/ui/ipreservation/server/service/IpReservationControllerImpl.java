@@ -180,6 +180,13 @@ public class IpReservationControllerImpl implements IpReservationController {
     @Override
     public Long removeSubnet(Subnet subnet) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> result = ipReservationService.isSubnetAvailableToRemove(token, subnet.getId());
+
+        if (result.isError() || !result.getData()) {
+            throw new RequestFailedException(En_ResultStatus.NOT_REMOVED);
+        }
+
         Result<Long> response = ipReservationService.removeSubnet(token, subnet);
 
         if (response.isOk()) {
@@ -219,25 +226,6 @@ public class IpReservationControllerImpl implements IpReservationController {
 
         return response.getData();
     }
-
-/*    @Override
-    public boolean isReservedIpUnique(String ip_address, Long excludeId ) throws RequestFailedException {
-
-        log.info( "isReservedIpUnique(): address={}", ip_address );
-
-        if ( ip_address == null || ip_address.isEmpty() )
-            throw new RequestFailedException ();
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result< Boolean > response = ipReservationService.checkUniqueReservedIp( token, ip_address, excludeId );
-
-        if ( response.isError() )
-            throw new RequestFailedException( response.getStatus() );
-
-        log.info( "isNameUnique(): response={}", response.getData() );
-
-        return response.getData();
-    }*/
 
     @Autowired
     private IpReservationService ipReservationService;

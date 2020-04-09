@@ -188,7 +188,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
                 .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
                 .andExpect( jsonPath( "$.data.wikiLink", is( product.getWikiLink() ) ) )
-                .andExpect( jsonPath( "$.data.typeId", is( product.getTypeId() ) ) )
+                .andExpect( jsonPath( "$.data.type", is( product.getType().name() ) ) )
         ;
     }
 
@@ -207,7 +207,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data.configuration", is(product.getConfiguration())))
                 .andExpect(jsonPath("$.data.description", is(product.getInfo())))
                 .andExpect(jsonPath("$.data.wikiLink", is(product.getWikiLink())))
-                .andExpect(jsonPath("$.data.typeId", is(product.getTypeId())));
+                .andExpect(jsonPath("$.data.type", is(product.getType().name())));
     }
 
     @Test

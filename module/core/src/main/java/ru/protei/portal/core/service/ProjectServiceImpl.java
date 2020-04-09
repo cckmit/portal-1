@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
@@ -45,7 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
     LocationDAO locationDAO;
 
     @Autowired
-    JdbcManyRelationsHelper helper;
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     CaseMemberDAO caseMemberDAO;
@@ -73,9 +73,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     PlatformDAO platformDAO;
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     CaseLinkService caseLinkService;
@@ -120,12 +117,11 @@ public class ProjectServiceImpl implements ProjectService {
             project.setPlatformName(platform.getName());
         }
 
-        helper.fillAll( project );
-        Contract contract = contractDAO.getByProjectId(id);
+        jdbcManyRelationsHelper.fillAll( project );
+        List<Contract> contracts = contractDAO.getByProjectId(id);
 
-        if (contract != null) {
-            project.setContractId(contract.getId());
-            project.setContractNumber(contract.getNumber());
+        if (CollectionUtils.isNotEmpty(contracts)) {
+            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
 
         return ok(Project.fromCaseObject(project));
@@ -150,7 +146,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Result<Project> saveProject(AuthToken token, Project project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
-        helper.fillAll( caseObject );
+        jdbcManyRelationsHelper.fillAll( caseObject );
 
         if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
@@ -186,6 +182,10 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
 
+        caseObject.setProjectSlas(project.getProjectSlas());
+
+        jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
+
         try {
             updateTeam( caseObject, project.getTeam() );
             updateLocations( caseObject, project.getRegion() );
@@ -213,6 +213,8 @@ public class ProjectServiceImpl implements ProjectService {
         if (id == null)
             return error(En_ResultStatus.NOT_CREATED);
 
+        jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
+
         try {
             updateTeam(caseObject, project.getTeam());
             updateLocations(caseObject, project.getRegion());
@@ -237,7 +239,7 @@ public class ProjectServiceImpl implements ProjectService {
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setType(En_CaseType.PROJECT);
         caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
         caseObject.setStateId(project.getState().getId());
         caseObject.setCreatorId(project.getCreatorId());
@@ -245,6 +247,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setInfo(project.getDescription());
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
         caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+        caseObject.setProjectSlas(project.getProjectSlas());
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());
@@ -283,8 +286,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
-        helper.fill(projects, "members");
-        helper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects, "members");
+        jdbcManyRelationsHelper.fill(projects, "products");
 
         List<Project> result = projects.stream()
                 .map(Project::fromCaseObject).collect(toList());
@@ -306,7 +309,7 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
-        helper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects, "products");
 
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
@@ -352,6 +355,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private void updateLocations( CaseObject caseObject, EntityOption location ) {
+        if ( location == null ) {
+            return;
+        }
+
         boolean locationFound = false;
 
         if ( caseObject.getLocations() != null ) {
@@ -366,10 +373,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if ( locationFound ) {
-            return;
-        }
-
-        if ( location == null ) {
             return;
         }
 
@@ -408,7 +411,7 @@ public class ProjectServiceImpl implements ProjectService {
             return;
         }
 
-        helper.fillAll( project );
+        jdbcManyRelationsHelper.fillAll( project );
 
         List< CaseLocation > locations = project.getLocations();
         if ( locations == null || locations.isEmpty() ) {
@@ -487,7 +490,6 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setContractIndependentProject(projectQuery.getContractIndependentProject());
         caseQuery.setPlatformIndependentProject(projectQuery.getPlatformIndependentProject());
         caseQuery.setDistrictIds(projectQuery.getDistrictIds());
 

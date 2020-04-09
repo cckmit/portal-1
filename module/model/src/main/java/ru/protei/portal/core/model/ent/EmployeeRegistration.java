@@ -79,7 +79,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "CREATOR", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "CREATOR", remoteColumn = "id", table = "person")
     }, mappedColumn = "displayShortName")
     private String creatorShortName;
 
@@ -91,7 +91,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "INITIATOR", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "INITIATOR", remoteColumn = "id", table = "person")
     }, mappedColumn = "displayShortName")
     private String headOfDepartmentShortName;
 
@@ -152,7 +152,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     private Collection<Person> curators;
 
-    @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "PersonEmployee" )
+    @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "personemployee" )
     private Person person;
 
     public Person getPerson() {

@@ -18,6 +18,7 @@ public class En_CaseImportanceLang {
             case IMPORTANT: return lang.importantImportance();
             case CRITICAL: return lang.criticalImportance();
             case COSMETIC: return lang.cosmeticImportance();
+            case MEDIUM: return lang.mediumImportance();
             default:
                 return lang.errUnknownResult();
         }

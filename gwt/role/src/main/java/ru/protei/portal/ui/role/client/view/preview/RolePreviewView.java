@@ -36,6 +36,12 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
         this.description.setText( value );
     }
 
+    @Override
+    public void setPrivileges( String privileges ) {
+        this.privileges.setText( privileges );
+
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -43,6 +49,8 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
     HeadingElement name;
     @UiField
     Label description;
+    @UiField
+    Label privileges;
 
     AbstractRolePreviewActivity activity;
 

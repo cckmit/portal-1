@@ -14,8 +14,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ToggleButton;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.HTMLRenderer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -26,6 +29,9 @@ public class MarkdownAreaWithPreview
 
     public MarkdownAreaWithPreview() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+
+        text.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
+        text.setOverlayText(lang.dropFilesHere());
     }
 
     private DisplayPreviewHandler displayPreviewHandler;
@@ -56,6 +62,10 @@ public class MarkdownAreaWithPreview
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> valueChangeHandler) {
         return addHandler(valueChangeHandler, ValueChangeEvent.getType());
+    }
+
+    public void setFileUploader(AttachmentUploader fileUploader) {
+        this.fileUploader = fileUploader;
     }
 
     public void setDisplayPreview( boolean isDisplayPreview ) {
@@ -97,6 +107,19 @@ public class MarkdownAreaWithPreview
         }
     }
 
+    @UiHandler("text")
+    public void onBase64Pasted(PasteEvent event) {
+        if (event.getJsons() != null && !event.getJsons().isEmpty()) {
+            fileUploader.uploadBase64Files(event.getJsons(), new PasteInfo(event.getStrPos()));
+        } else {
+            fileUploader.uploadBase64File(event.getJson(), new PasteInfo(event.getStrPos()));
+        }
+    }
+
+    public void setDropZonePanel(HTMLPanel panel){
+        text.setDropZonePanel(panel);
+    }
+
     public void setEnsureDebugId(String debugId) {
         text.ensureDebugId(debugId);
     }
@@ -128,7 +151,9 @@ public class MarkdownAreaWithPreview
     }
 
     @UiField
-    AutoResizeTextArea text;
+    Lang lang;
+    @UiField
+    DndAutoResizeTextArea text;
     @UiField
     HTMLPanel previewContainer;
     @UiField
@@ -146,9 +171,8 @@ public class MarkdownAreaWithPreview
     };
 
     private static final int PREVIEW_CHANGE_DELAY_MS = 200;
+    private AttachmentUploader fileUploader;
 
     interface MarkdownAreaWithPreviewUiBinder extends UiBinder<HTMLPanel, MarkdownAreaWithPreview> {}
     private static MarkdownAreaWithPreviewUiBinder ourUiBinder = GWT.create( MarkdownAreaWithPreviewUiBinder.class );
-
-
 }

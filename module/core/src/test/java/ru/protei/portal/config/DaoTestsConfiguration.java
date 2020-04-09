@@ -44,11 +44,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return new AbsenceReasonDAO_Impl();
-    }
-
-    @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {
         return new PersonAbsenceDAO_Impl();
     }
@@ -64,28 +59,8 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CaseTaskDAO getCaseTaskDAO() {
-        return new CaseTaskDAO_Impl();
-    }
-
-    @Bean
-    public CaseTermDAO getCaseTermDAO() {
-        return new CaseTermDAO_Impl();
-    }
-
-    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return new DevUnitDAO_Impl();
-    }
-
-    @Bean
-    public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return new DevUnitVersionDAO_Impl();
-    }
-
-    @Bean
-    public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return new DevUnitBranchDAO_Impl();
     }
 
     @Bean
@@ -96,11 +71,6 @@ public class DaoTestsConfiguration {
     @Bean
     public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
         return new CaseCommentShortViewDAO_Impl();
-    }
-
-    @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return new CaseDocumentDAO_Impl();
     }
 
     @Bean
@@ -186,11 +156,6 @@ public class DaoTestsConfiguration {
     @Bean
     public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
         return new PersonCompanyEntryDAO_Impl();
-    }
-
-    @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return new CompanyCategoryDAO_Impl();
     }
 
     @Bean
@@ -322,6 +287,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ProjectSlaDAO getProjectSlaDAO() {
+        return new ProjectSlaDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -360,6 +330,12 @@ public class DaoTestsConfiguration {
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
         return new JiraSLAMapEntryDAO_Impl();
     }
+
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
+    }
+
 
 
 }

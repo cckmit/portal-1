@@ -26,7 +26,7 @@ public interface IpReservationControllerAsync {
 
     void isSubnetUnique(String address, Long exceptId, AsyncCallback<Boolean> async);
 
-    void getReservedIpsBySubnets(ReservedIpQuery query, AsyncCallback<Map<Subnet, List<ReservedIp>>> async);
+     void getReservedIpsBySubnets(ReservedIpQuery query, AsyncCallback<Map<Subnet, List<ReservedIp>>> async);
 
     void getReservedIpList(ReservedIpQuery query, AsyncCallback<SearchResult<ReservedIp>> async);
 

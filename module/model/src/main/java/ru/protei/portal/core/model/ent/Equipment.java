@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Оборудование
  */
-@JdbcEntity(table = "Equipment")
+@JdbcEntity(table = "equipment")
 public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -54,7 +54,7 @@ public class Equipment extends AuditableObject {
     @JdbcColumn( name = "author_id" )
     private Long authorId;
 
-    @JdbcJoinedColumn( localColumn = "author_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( localColumn = "author_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName")
     private String authorShortName;
 
     /**
@@ -63,7 +63,7 @@ public class Equipment extends AuditableObject {
     @JdbcColumn( name = "manager_id" )
     private Long managerId;
 
-    @JdbcJoinedColumn( localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( localColumn = "manager_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName")
     private String managerShortName;
 
     /**
@@ -80,6 +80,12 @@ public class Equipment extends AuditableObject {
      */
     @JdbcOneToMany(table = "decimal_number", localColumn = "id", remoteColumn = "entity_id")
     private List<DecimalNumber> decimalNumbers;
+
+    // специальная вью со обработанным номером для сортировки (classifierCode + registerNumber)
+    @JdbcJoinedColumn(mappedColumn = "sort_decimal",
+            table = "view_equipments_decimal_number_sort", sqlTableAlias = "decimal_view" ,
+            localColumn = "id",remoteColumn = "Equipment_id")
+    private String sortDecimal;
 
     /**
      * Первичное применение
@@ -233,6 +239,14 @@ public class Equipment extends AuditableObject {
 
     public String getAuthorShortName() {
         return authorShortName;
+    }
+
+    public String getSortDecimal() {
+        return sortDecimal;
+    }
+
+    public void setSortDecimal(String sortDecimal) {
+        this.sortDecimal = sortDecimal;
     }
 
     @Override

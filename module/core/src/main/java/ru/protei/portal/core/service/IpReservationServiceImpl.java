@@ -48,15 +48,6 @@ public class IpReservationServiceImpl implements IpReservationService {
         return ok(checkUniqueSubnet( address, excludeId));
     }
 
-/*    @Override
-    public Result<Boolean> checkUniqueReservedIp( AuthToken token, String address, Long excludeId) {
-
-        if( address == null || address.isEmpty() )
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-
-        return ok(checkUniqueReservedIp( address, excludeId));
-    }*/
-
     @Override
     public Result<SearchResult<ReservedIp>> getReservedIps(AuthToken token, ReservedIpQuery query) {
         SearchResult<ReservedIp> sr = reservedIpDAO.getSearchResultByQuery(query);
@@ -155,6 +146,20 @@ public class IpReservationServiceImpl implements IpReservationService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
         return ok(subnet);
+    }
+
+    @Override
+    public Result<Boolean> isSubnetAvailableToRemove(AuthToken token, Long subnetId) {
+        if( subnetId == null )
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+
+        ReservedIpQuery query = new ReservedIpQuery();
+        query.setSubnetId(subnetId);
+        Long result = reservedIpDAO.count(query);
+        if (result == null || result == 0)
+            return ok(true);
+
+        return ok(false);
     }
 
     @Override

@@ -36,7 +36,7 @@ public abstract class AccountPreviewActivity implements AbstractAccountPreviewAc
         }
         view.setRoles(roles);
 
-        En_AuthType type = En_AuthType.find(value.getAuthTypeId());
+        En_AuthType type = value.getAuthType();
         view.setTypeImage( type == null ? null : type.getImageSrc() );
     }
 

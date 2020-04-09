@@ -1,5 +1,9 @@
 package ru.protei.portal.core.model.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class CrmConstants {
 
     public static final int DEFAULT_SELECTOR_PAGE_SIZE = 20;
@@ -78,5 +82,14 @@ public class CrmConstants {
 
     public interface RegistrationNumber {
         int MAX_SIZE = 3;
+    }
+
+    public interface Jira {
+        String INFO_LINK = "jiraInfo";
+        String WORKFLOW_IMAGE = "./images/jira-workflow.jpg";
+    }
+
+    public interface ImportanceLevel {
+        List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
     }
 }

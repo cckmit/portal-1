@@ -3,7 +3,6 @@ package ru.protei.portal.tools.migrate.parts;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
-import ru.protei.portal.core.model.dao.CaseTaskDAO;
 import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -22,9 +21,6 @@ public class MigrateTasks implements MigrateAction {
 
     @Autowired
     private CaseObjectDAO caseDAO;
-
-    @Autowired
-    private CaseTaskDAO taskDAO;
 
     @Autowired
     private CaseStateMatrixDAO stateMatrixDAO;
@@ -48,7 +44,7 @@ public class MigrateTasks implements MigrateAction {
                 row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
-                    obj.setTypeId(En_CaseType.TASK.getId());
+                    obj.setType(En_CaseType.TASK);
                     obj.setCreated((Date) row.get("dtCreation"));
                     obj.setCaseNumber((Long) row.get("nID"));
                     obj.setCreatorId((Long) row.get("nCreatorID"));

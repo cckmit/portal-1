@@ -10,7 +10,13 @@ public enum En_CaseState implements HasId {
     OPENED(2, "opened", false),
     CLOSED(3, "closed", true),
     PAUSED(4, "paused", false),
-    VERIFIED(5, "verified", true),
+    VERIFIED(5, "verified", true) {
+        @Override
+        public String getComment() {
+            return "Поскольку статус является терминальным, то в него переводим только после получения подтверждения от Заказчика, что тикет можно закрыть.\n" +
+                    "В противном случае ставим Request to customer или Request to NX.";
+        }
+    },
     REOPENED(6, "reopened", false),
     SOLVED_NOAP(7, "solved: not a problem", true),
     SOLVED_FIX(8, "solved: fixed", true),
@@ -30,8 +36,18 @@ public enum En_CaseState implements HasId {
     INFO_REQUEST(31, "info request", false),
     CANCELED(33, "canceled", true),
     CUST_PENDING(34, "customer pending", false),
-    NX_REQUEST(35, "request to NX", false),
-    CUST_REQUEST(36, "request to customer", false);
+    NX_REQUEST(35, "request to NX", false) {
+        @Override
+        public String getComment() {
+            return "Не забывать переводить в этот статус, в противном случае Заказчик ждёт реакции от нас";
+        }
+    },
+    CUST_REQUEST(36, "request to customer", false) {
+        @Override
+        public String getComment() {
+            return "Не забывать переводить в этот статус, в противном случае Заказчик ждёт реакции от нас";
+        }
+    };
 
     public static En_CaseState getById(Long id) {
         if(id == null)
@@ -53,6 +69,10 @@ public enum En_CaseState implements HasId {
     @Override
     public int getId() {
         return id;
+    }
+
+    public String getComment() {
+        return "";
     }
 
     public String getName() {

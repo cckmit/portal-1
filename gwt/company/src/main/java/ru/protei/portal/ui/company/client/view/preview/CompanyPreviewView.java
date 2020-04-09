@@ -111,15 +111,16 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
 
     @Override
     public void setSubscriptionEmails(String value) {
-        subscription.setText(value);
+        subscription.setInnerHTML(value);
     }
+
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         subscriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.SUBSCRIPTION);
-        subscription.ensureDebugId(DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
+        subscription.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.SUBSCRIPTION);
         contactsHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.COMPANY_PREVIEW.LABEL.CONTACT_INFO);
     }
 
@@ -144,7 +145,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     HTMLPanel contactsContainer;
     @UiField
-    InlineLabel subscription;
+    SpanElement subscription;
     @UiField
     ImageElement categoryImage;
     @UiField

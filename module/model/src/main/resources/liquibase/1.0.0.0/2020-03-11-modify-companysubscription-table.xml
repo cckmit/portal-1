@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="modify-companysubscription-table" author="vologzhanin">
+        <addColumn tableName="companysubscription">
+            <column name="dev_unit_id" type="BIGINT"/>
+        </addColumn>
+        <addColumn tableName="companysubscription">
+            <column name="platform_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-fk-on-companysubscription-table" author="vologzhanin">
+        <addForeignKeyConstraint constraintName="fk_companysubscription_dev_unit_id_to_dev_unit"
+                                 baseTableName="companysubscription" baseColumnNames="dev_unit_id"
+                                 referencedTableName="dev_unit" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="fk_companysubscription_platform_id_to_platform"
+                                 baseTableName="companysubscription" baseColumnNames="platform_id"
+                                 referencedTableName="platform" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

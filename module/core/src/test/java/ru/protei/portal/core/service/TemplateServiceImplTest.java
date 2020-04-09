@@ -16,10 +16,7 @@ import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -71,7 +68,7 @@ public class TemplateServiceImplTest {
     @Test
     public void getCrmEmailNotificationBodyTest() {
         assertNotNull( templateService );
-        Company company = CaseCommentServiceTest.createNewCompany( new CompanyCategory( 2L ) );
+        Company company = CaseCommentServiceTest.createNewCompany( En_CompanyCategory.PARTNER );
         Person person = CaseCommentServiceTest.createNewPerson( company );
         CaseObject initState = createNewCaseObject( person, 2 * DAY + 3 * HOUR + 21 * MINUTE );
         CaseObject lastState = createNewCaseObject( person, 4 * DAY + 15 * HOUR + 48 * MINUTE );
@@ -110,7 +107,7 @@ public class TemplateServiceImplTest {
     @Test
     public void crmLinksToTasks() {
 
-        Company company = CaseCommentServiceTest.createNewCompany( new CompanyCategory( 2L ) );
+        Company company = CaseCommentServiceTest.createNewCompany(En_CompanyCategory.PARTNER );
         Person person = CaseCommentServiceTest.createNewPerson( company );
         CaseObject initState = BaseServiceTest.createNewCaseObject( person );
         CaseObject lastState = BaseServiceTest.createNewCaseObject( person );
@@ -172,7 +169,7 @@ public class TemplateServiceImplTest {
 
     @Test
     public void comments() throws Exception {
-        Company company = CaseCommentServiceTest.createNewCompany( new CompanyCategory( 2L ) );
+        Company company = CaseCommentServiceTest.createNewCompany( En_CompanyCategory.PARTNER );
         Person person = CaseCommentServiceTest.createNewPerson( company );
         CaseObject lastState = BaseServiceTest.createNewCaseObject( person );
 

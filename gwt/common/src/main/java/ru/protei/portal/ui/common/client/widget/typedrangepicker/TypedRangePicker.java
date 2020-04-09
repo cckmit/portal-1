@@ -31,9 +31,9 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
     }
 
     private void initButtons() {
-        btnGroup.addBtn(lang.getName(En_DateIntervalType.MONTH), En_DateIntervalType.MONTH,"btn btn-default btn-sm col-md-4");
-        btnGroup.addBtn(lang.getName(En_DateIntervalType.FIXED), En_DateIntervalType.FIXED,"btn btn-default btn-sm col-md-4");
-        btnGroup.addBtn(lang.getName(En_DateIntervalType.UNLIMITED), En_DateIntervalType.UNLIMITED,"btn btn-default btn-sm col-md-4");
+        btnGroup.addBtn(lang.getName(En_DateIntervalType.MONTH), En_DateIntervalType.MONTH,"btn btn-default col-md-4");
+        btnGroup.addBtn(lang.getName(En_DateIntervalType.FIXED), En_DateIntervalType.FIXED,"btn btn-default col-md-4");
+        btnGroup.addBtn(lang.getName(En_DateIntervalType.UNLIMITED), En_DateIntervalType.UNLIMITED,"btn btn-default col-md-4");
     }
 
     @Override

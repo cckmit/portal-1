@@ -91,6 +91,11 @@ public enum En_SortField {
     equipment_project("case_object.case_name"),
 
     /**
+     * equipment_decimal_number
+     */
+    equipment_decimal_number("decimal_view_sort_decimal"),
+
+    /**
      * project
      */
     project("project"),

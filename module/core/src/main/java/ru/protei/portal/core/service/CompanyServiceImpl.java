@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.CompanyGroupDAO;
-import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
@@ -24,7 +21,9 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CompanyCategory.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 
 /**
  * Реализация сервиса управления компаниями
@@ -37,10 +36,10 @@ public class CompanyServiceImpl implements CompanyService {
     CompanyDAO companyDAO;
 
     @Autowired
-    CompanyGroupDAO companyGroupDAO;
+    CompanyImportanceItemDAO companyImportanceItemDAO;
 
     @Autowired
-    CompanyCategoryDAO companyCategoryDAO;
+    CompanyGroupDAO companyGroupDAO;
 
     @Autowired
     CompanySubscriptionDAO companySubscriptionDAO;
@@ -159,22 +158,17 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> categoryOptionList( boolean hasOfficial) {
+    public Result<List<En_CompanyCategory>> categoryOptionList( boolean hasOfficial) {
 
-        List<CompanyCategory> list;
+        List<En_CompanyCategory> list;
 
         if(!hasOfficial) {
-            list = companyCategoryDAO.getListByKeys(Arrays.asList(1l, 2l, 3l));
+            list = listOf( CUSTOMER, PARTNER, SUBCONTRACTOR );
         } else {
-            list = companyCategoryDAO.getAll();
+            list = listOf( En_CompanyCategory.values() );
         }
 
-        if (list == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        List<EntityOption> result = list.stream().map(CompanyCategory::toEntityOption).collect(Collectors.toList());
-
-        return ok(result);
+        return ok(list);
     }
 
     @Override
@@ -221,6 +215,8 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
+        addCommonImportanceLevels(companyId);
+
         return ok(company);
     }
 
@@ -261,6 +257,23 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Result<List<Long>> getAllHomeCompanyIds(AuthToken token) {
         return ok(companyDAO.getAllHomeCompanyIds());
+    }
+
+    @Override
+    public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
+        List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
+        return ok(result);
+    }
+
+    private void addCommonImportanceLevels(Long companyId) {
+        log.info( "adding common importance levels for companyId = {}", companyId );
+
+        List<CompanyImportanceItem> importanceItems = new ArrayList<>();
+
+        for (En_ImportanceLevel level : En_ImportanceLevel.values(true)) {
+            importanceItems.add(new CompanyImportanceItem(companyId, level.getId(), level.getId()));
+        }
+        companyImportanceItemDAO.persistBatch(importanceItems);
     }
 
     private boolean updateCompanySubscription(Long companyId, List<CompanySubscription> companySubscriptions ) {
@@ -349,7 +362,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private int placeHomeCompaniesAtBegin( CompanyQuery query, Company o1,  Company o2 )  {
         if (!query.isSortHomeCompaniesAtBegin()) return 0;
-        return Objects.equals( En_CompanyCategory.HOME.getId(), o1.getCategoryId() ) ? -1 : Objects.equals( En_CompanyCategory.HOME.getId(), o2.getCategoryId() ) ? 1 : 0;
+        return Objects.equals( En_CompanyCategory.HOME, o1.getCategory() ) ? -1 : Objects.equals( En_CompanyCategory.HOME, o2.getCategory() ) ? 1 : 0;
     }
 
     private void applyFilterByScope( AuthToken token, CompanyQuery query ) {

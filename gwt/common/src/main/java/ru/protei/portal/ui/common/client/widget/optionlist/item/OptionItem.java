@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.common.ClickHTMLPanel;
 
 /**
  * Один элемент списка чекбоксов
@@ -23,6 +24,20 @@ public class OptionItem
 
     public void setName( String name ) {
         this.name.setText( name == null ? "" : name );
+    }
+
+    public void setInfo( String info ) {
+        if (info == null) return;
+        this.info.setVisible( true );
+        this.info.setTitle( info );
+        this.info.setText( info );
+    }
+
+    public void setText( String text ) {
+        if (text == null) return;
+        this.text.setVisible( true );
+        this.text.setTitle( text );
+        this.text.setText( text );
     }
 
     @Override
@@ -62,7 +77,7 @@ public class OptionItem
         checkbox.setFormValue( event.getValue().toString());
     }
 
-    @UiHandler( "name" )
+    @UiHandler( "panel" )
     public void onNameClicked( ClickEvent event ) {
         if ( checkbox.isEnabled() ) {
             checkbox.setValue( !checkbox.getValue(), true );
@@ -76,7 +91,14 @@ public class OptionItem
     @UiField
     CheckBox checkbox;
     @UiField
+    ClickHTMLPanel panel;
+    @UiField
     Label name;
+    @UiField
+    Label info;
+    @UiField
+    Label text;
+
 
     private static OptionItemUiBinder ourUiBinder = GWT.create( OptionItemUiBinder.class );
     interface OptionItemUiBinder extends UiBinder< HTMLPanel, OptionItem > {}

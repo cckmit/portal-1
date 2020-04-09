@@ -84,6 +84,8 @@
                         <argument>notification/email/document.member.added.body.ftl</argument>
                         <argument>notification/email/document.doc.file.updated.by.member.subject.ftl</argument>
                         <argument>notification/email/document.doc.file.updated.by.member.body.ftl</argument>
+                        <argument>notification/email/report.subject.ftl</argument>
+                        <argument>notification/email/report.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -403,7 +405,7 @@
             <groupId>ru.protei</groupId>
             <artifactId>portal4.embeddeddb</artifactId>
             <version>1.0.0.0</version>
-<!--            <scope>test</scope>-->
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

@@ -106,6 +106,8 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
         view.owner().setValue(reservedIp.getOwner().toShortNameShortView());
+
+        view.saveVisibility().setVisible(hasPrivileges());
     }
 
     private ReservedIp fillReservedIp() {
