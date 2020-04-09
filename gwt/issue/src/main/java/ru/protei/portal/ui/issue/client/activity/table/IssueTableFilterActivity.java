@@ -40,6 +40,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -293,6 +295,7 @@ public abstract class IssueTableFilterActivity
 
     private void updateImportanceLevelButtons() {
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
+            filterView.getIssueFilterParams().fillImportanceButtons(Collections.emptyList());
             companyService.getImportanceLevels(policyService.getUserCompany().getId(), new FluentCallback<List<En_ImportanceLevel>>()
                     .withSuccess(importanceLevelList -> {
                         filterView.getIssueFilterParams().fillImportanceButtons(importanceLevelList);
