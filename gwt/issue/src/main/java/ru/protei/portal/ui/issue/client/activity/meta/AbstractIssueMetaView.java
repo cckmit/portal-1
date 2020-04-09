@@ -96,4 +96,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility slaContainerVisibility();
 
     void setValuesContainerWarning(boolean isWarning);
+
+    void setSlaTimesContainerTitle(String title);
 }

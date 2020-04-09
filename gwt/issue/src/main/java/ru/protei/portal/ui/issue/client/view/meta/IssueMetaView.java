@@ -340,6 +340,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         slaTimesContainer.setStyleName("b-warning-light", isWarning);
     }
 
+    @Override
+    public void setSlaTimesContainerTitle(String title) {
+        slaTimesContainer.setTitle(title);
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());

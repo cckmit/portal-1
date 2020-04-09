@@ -2161,4 +2161,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSlaNotValid();
 
     String projectTeamRole();
+
+    String projectSlaSetValuesByManager();
+
+    String projectSlaDefaultValues();
 }

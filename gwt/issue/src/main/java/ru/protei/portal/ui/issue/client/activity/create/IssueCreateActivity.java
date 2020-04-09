@@ -339,6 +339,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         if (platformId == null) {
             slaList = DefaultSlaValues.getList();
             issueMetaView.setValuesContainerWarning(true);
+            issueMetaView.setSlaTimesContainerTitle(lang.projectSlaDefaultValues());
             slaConsumer.accept(slaList);
             return;
         }
@@ -347,6 +348,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withSuccess(result -> {
                     slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
                     issueMetaView.setValuesContainerWarning(result.isEmpty());
+                    issueMetaView.setSlaTimesContainerTitle(result.isEmpty() ? lang.projectSlaDefaultValues() : lang.projectSlaSetValuesByManager());
                     slaConsumer.accept(slaList);
                 })
         );
