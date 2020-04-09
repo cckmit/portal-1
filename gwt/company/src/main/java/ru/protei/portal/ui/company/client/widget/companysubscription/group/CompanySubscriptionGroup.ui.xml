@@ -12,7 +12,7 @@
                                                  validation="false"
                                                  header="{lang.siteFolderPlatform}"
                                                  hasNullValue="true"
-                                                 defaultValue="{lang.companySubscriptionGroupAnyValuePlatformSelector}"/>
+                                                 defaultValue="{lang.companySubscriptionGroupAnyValuePlatform}"/>
             </div>
 
             <div class="col-md-4">
@@ -20,7 +20,7 @@
                                                validation="false"
                                                header="{lang.issueProduct}"
                                                hasNullValue="true"
-                                               defaultValue="{lang.companySubscriptionGroupAnyValueProductSelector}"/>
+                                               defaultValue="{lang.companySubscriptionGroupAnyValueProduct}"/>
             </div>
 
             <div class="col-md-4 align-self-end">

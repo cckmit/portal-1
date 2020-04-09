@@ -77,10 +77,6 @@ public class RedmineTestConfigurationMockDao {
         return mock( CompanyGroupHomeDAO.class );
     }
 
-    @Bean
-    public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return mock( AbsenceReasonDAO.class );
-    }
 
     @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {
@@ -98,28 +94,8 @@ public class RedmineTestConfigurationMockDao {
     }
 
     @Bean
-    public CaseTaskDAO getCaseTaskDAO() {
-        return mock( CaseTaskDAO.class );
-    }
-
-    @Bean
-    public CaseTermDAO getCaseTermDAO() {
-        return mock( CaseTermDAO.class );
-    }
-
-    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return mock( DevUnitDAO.class );
-    }
-
-    @Bean
-    public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return mock( DevUnitVersionDAO.class );
-    }
-
-    @Bean
-    public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return mock( DevUnitBranchDAO.class );
     }
 
     @Bean
@@ -130,11 +106,6 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
         return mock( CaseCommentShortViewDAO.class );
-    }
-
-    @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return mock( CaseDocumentDAO.class );
     }
 
     @Bean
@@ -205,11 +176,6 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
         return mock( PersonCompanyEntryDAO.class );
-    }
-
-    @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return mock( CompanyCategoryDAO.class );
     }
 
     @Bean
@@ -386,6 +352,11 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
         return mock( JiraSLAMapEntryDAO.class );
+    }
+
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return mock(CompanyImportanceItemDAO.class);
     }
 
 

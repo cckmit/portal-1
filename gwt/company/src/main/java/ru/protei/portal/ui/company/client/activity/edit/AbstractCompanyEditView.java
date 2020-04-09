@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -27,7 +28,7 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasText comment();
     HasValue<EntityOption> parentCompany();
 
-    HasValue<EntityOption> companyCategory();
+    HasValue<En_CompanyCategory> companyCategory();
 
     HasValue<List<CompanySubscription> > companySubscriptions();
     HasValidable companySubscriptionsValidator();

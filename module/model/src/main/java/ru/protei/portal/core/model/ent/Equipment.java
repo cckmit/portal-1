@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Оборудование
  */
-@JdbcEntity(table = "Equipment")
+@JdbcEntity(table = "equipment")
 public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -54,7 +54,7 @@ public class Equipment extends AuditableObject {
     @JdbcColumn( name = "author_id" )
     private Long authorId;
 
-    @JdbcJoinedColumn( localColumn = "author_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( localColumn = "author_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName")
     private String authorShortName;
 
     /**
@@ -63,7 +63,7 @@ public class Equipment extends AuditableObject {
     @JdbcColumn( name = "manager_id" )
     private Long managerId;
 
-    @JdbcJoinedColumn( localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( localColumn = "manager_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName")
     private String managerShortName;
 
     /**

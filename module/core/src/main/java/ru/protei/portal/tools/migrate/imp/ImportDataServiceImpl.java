@@ -354,7 +354,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 //        if (((Number)MigrateUtils.nvl(row.get("nCategoryID"), 8)).intValue() == 8) {
 
             obj.setExtId(En_CaseType.CRM_SUPPORT.makeGUID(obj.getCaseNumber()));
-            obj.setTypeId(En_CaseType.CRM_SUPPORT.getId());
+            obj.setType(En_CaseType.CRM_SUPPORT);
 
             Long stateId = supportStatusMap.get(ext.getStatusId());
             if (stateId == null) {

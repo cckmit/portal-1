@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
@@ -118,11 +118,10 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
-        Contract contract = contractDAO.getByProjectId(id);
+        List<Contract> contracts = contractDAO.getByProjectId(id);
 
-        if (contract != null) {
-            project.setContractId(contract.getId());
-            project.setContractNumber(contract.getNumber());
+        if (CollectionUtils.isNotEmpty(contracts)) {
+            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
 
         return ok(Project.fromCaseObject(project));
@@ -240,7 +239,7 @@ public class ProjectServiceImpl implements ProjectService {
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setType(En_CaseType.PROJECT);
         caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
         caseObject.setStateId(project.getState().getId());
         caseObject.setCreatorId(project.getCreatorId());
@@ -518,7 +517,6 @@ public class ProjectServiceImpl implements ProjectService {
         caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setContractIndependentProject(projectQuery.getContractIndependentProject());
         caseQuery.setPlatformIndependentProject(projectQuery.getPlatformIndependentProject());
         caseQuery.setDistrictIds(projectQuery.getDistrictIds());
 

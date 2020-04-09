@@ -22,12 +22,6 @@ public class MigrateBugs implements MigrateAction {
     private CaseObjectDAO caseDAO;
 
     @Autowired
-    private CaseCommentDAO commentDAO;
-
-    @Autowired
-    private CaseTermDAO termDAO;
-
-    @Autowired
     private CaseStateMatrixDAO stateMatrixDAO;
 
     @Autowired
@@ -47,7 +41,7 @@ public class MigrateBugs implements MigrateAction {
                 migrationEntryDAO,caseDAO, row -> {
                     CaseObject obj = new CaseObject();
                     obj.setId(null);
-                    obj.setTypeId(En_CaseType.BUG.getId());
+                    obj.setType(En_CaseType.BUG);
                     obj.setCreated((Date) row.get("dtCreation"));
                     obj.setCaseNumber((Long) row.get("nID"));
                     obj.setCreatorId((Long) row.get("nSubmitterID"));

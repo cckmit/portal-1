@@ -84,8 +84,6 @@ public class CaseQuery extends BaseQuery {
 
     private Integer local;
 
-    private Boolean contractIndependentProject;
-
     private Boolean platformIndependentProject;
 
     private List<Long> creatorIds;
@@ -134,7 +132,6 @@ public class CaseQuery extends BaseQuery {
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
         setCustomerSearch(query.isCustomerSearch());
         setLocal(query.getLocal());
-        setContractIndependentProject(query.getContractIndependentProject());
         setPlatformIndependentProject(query.getPlatformIndependentProject());
         setProductDirectionIds(query.getProductDirectionIds());
         setCreatorIds(query.getCreatorIds());
@@ -321,14 +318,6 @@ public class CaseQuery extends BaseQuery {
         this.customerSearch = customerSearch;
     }
 
-    public Boolean getContractIndependentProject() {
-        return contractIndependentProject;
-    }
-
-    public void setContractIndependentProject(Boolean contractIndependentProject) {
-        this.contractIndependentProject = contractIndependentProject;
-    }
-
     public Boolean getPlatformIndependentProject() {
         return platformIndependentProject;
     }
@@ -413,7 +402,6 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
-                contractIndependentProject != null ||
                 platformIndependentProject != null;
     }
 
@@ -450,7 +438,6 @@ public class CaseQuery extends BaseQuery {
                 ", customerSearch=" + customerSearch +
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
                 ", local=" + local +
-                ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
                 ", creatorIds=" + creatorIds +
                 '}';
@@ -490,7 +477,6 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(commentAuthorIds, caseQuery.commentAuthorIds) &&
                 Objects.equals(caseTagsIds, caseQuery.caseTagsIds) &&
                 Objects.equals(local, caseQuery.local) &&
-                Objects.equals(contractIndependentProject, caseQuery.contractIndependentProject) &&
                 Objects.equals(platformIndependentProject, caseQuery.platformIndependentProject) &&
                 Objects.equals(productDirectionIds, caseQuery.productDirectionIds) &&
                 Objects.equals(creatorIds, caseQuery.creatorIds);
@@ -501,7 +487,7 @@ public class CaseQuery extends BaseQuery {
         return Objects.hash(id, caseNumbers, caseIds, companyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
                 modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
-                customerSearch, findRecordByCaseComments, local, contractIndependentProject, platformIndependentProject,
+                customerSearch, findRecordByCaseComments, local, platformIndependentProject,
                 productDirectionIds, creatorIds, regionIds, headManagerIds, caseMemberIds);
     }
 }

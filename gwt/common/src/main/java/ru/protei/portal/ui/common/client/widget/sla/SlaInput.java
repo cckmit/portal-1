@@ -76,7 +76,7 @@ public class SlaInput extends Composite implements HasValue<List<ProjectSla>>, H
     }
 
     private void initView() {
-        for (En_ImportanceLevel importance : En_ImportanceLevel.values()) {
+        for (En_ImportanceLevel importance : En_ImportanceLevel.values(true)) {
             SlaRowItem item = slaRowItemProvider.get();
             item.setImportance(importance);
             importanceToItemMap.put(importance, item);

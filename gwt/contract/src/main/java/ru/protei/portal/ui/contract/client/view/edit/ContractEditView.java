@@ -45,12 +45,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        project.setRequestByOnLoad(false);
-    }
-
-    @Override
-    public void setContractIndependentProjects(Boolean contractIndependentProject) {
-        project.setContractIndependentProject(contractIndependentProject);
     }
 
     @Override

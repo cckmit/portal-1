@@ -1,7 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:common="urn:import:ru.protei.portal.ui.common.client.common">
     <g:HTMLPanel styleName="checkbox">
         <g:CheckBox ui:field="checkbox" styleName="checkbox"/>
-        <g:Label ui:field="name" styleName="option-name"/>
+        <common:ClickHTMLPanel ui:field="panel" styleName="d-inline">
+            <g:Label ui:field="name" styleName="option-name"/>
+            <g:Label ui:field="info" styleName="option-info small hint-text" visible="false"/>
+            <g:Label ui:field="text" styleName="option-info small" visible="false"/>
+        </common:ClickHTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

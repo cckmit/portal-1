@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.EmailRender;
+import ru.protei.portal.ui.common.client.lang.En_CompanyCategoryLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.company.client.activity.table.AbstractCompanyTableActivity;
 import ru.protei.portal.ui.company.client.activity.table.AbstractCompanyTableView;
@@ -122,9 +123,9 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         name = new DynamicColumn<>(lang.companyName(), null, this::getCompanyInfoBlock);
 
         category = new DynamicColumn<>(null, "column-img", value -> {
-            if (value.getCategory() == null || value.getCategory().getId() == null) return "";
-            En_CompanyCategory category = En_CompanyCategory.findById(value.getCategory().getId());
-            return "<img src='" + "./images/company_" + category.name().toLowerCase() + ".svg" + "' title='" + value.getCategory().getName() + "'></img>";
+            if (value.getCategory() == null) return "";
+            En_CompanyCategory category = value.getCategory();
+            return "<img src='" + "./images/company_" + category.name().toLowerCase() + ".svg" + "' title='" + companyCategoryLang.getName( category ) + "'></img>";
         });
 
         table.addColumn( category.header, category.values );
@@ -214,6 +215,9 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     @Inject
     Lang lang;
+
+    @Inject
+    En_CompanyCategoryLang companyCategoryLang;
 
     @Inject
     PolicyService policyService;

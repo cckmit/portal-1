@@ -22,6 +22,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
@@ -36,10 +37,8 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public SearchResult< Company > getCompanies(CompanyQuery companyQuery) throws RequestFailedException {
 
-        List< Long > categoryIds = companyQuery.getCategoryIds();
-
         log.info( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
-                companyQuery.getSearchString(), categoryIds,
+                companyQuery.getSearchString(), companyQuery.getCategoryIds(),
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -177,7 +176,7 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List< EntityOption > getCategoryOptionList() throws RequestFailedException {
+    public List< En_CompanyCategory > getCategoryOptionList() throws RequestFailedException {
 
         log.info( "getCategoryOptionList()" );
 
@@ -185,7 +184,7 @@ public class CompanyControllerImpl implements CompanyController {
         Set<UserRole> availableRoles = token.getRoles();
         boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
 
-        Result< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
+        Result< List< En_CompanyCategory > > result = companyService.categoryOptionList(hasOfficial);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -226,6 +225,22 @@ public class CompanyControllerImpl implements CompanyController {
         log.info("getAllHomeCompanyIds()");
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
+    }
+
+    @Override
+    public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
+        log.info("getImportanceLevels() companyId={}", companyId);
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+
+        List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
+        List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
+                .map(CompanyImportanceItem::getImportanceLevelId)
+                .map(En_ImportanceLevel::getById)
+                .collect(Collectors.toList());
+
+        log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
+
+        return importanceLevels;
     }
 
     @Autowired

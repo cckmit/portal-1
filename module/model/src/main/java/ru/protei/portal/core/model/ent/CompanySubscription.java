@@ -1,16 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
 /**
  * Created by michael on 26.05.17.
  */
-@JdbcEntity(table = "CompanySubscription")
+@JdbcEntity(table = "company_subscription")
 public class CompanySubscription implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -29,6 +26,12 @@ public class CompanySubscription implements Serializable {
 
     @JdbcColumn(name = "dev_unit_id")
     private Long productId;
+
+    @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
+    private String platformName;
+
+    @JdbcJoinedColumn(localColumn = "dev_unit_id", table = "dev_unit", remoteColumn = "id", mappedColumn = "unit_name")
+    private String productName;
 
 
     public CompanySubscription() {
@@ -80,6 +83,22 @@ public class CompanySubscription implements Serializable {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     private String uniqueKey () {

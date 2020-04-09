@@ -1,0 +1,38 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-company_importance_item-table" author="vologzhanin">
+        <createTable tableName="company_importance_item">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="company_id" type="BIGINT" />
+            <column name="importance_level_id" type="INT" />
+            <column name="order_number" type="INT" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-company_importance_item-importance_level-fk" author="vologzhanin">
+        <addForeignKeyConstraint
+                baseTableName="company_importance_item"
+                baseColumnNames="importance_level_id"
+                constraintName="company_importance_item-importance_level-id-fk"
+                referencedTableName="importance_level"
+                referencedColumnNames="id"
+                onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-company_importance_item-company-fk" author="vologzhanin">
+        <addForeignKeyConstraint
+                baseTableName="company_importance_item"
+                baseColumnNames="company_id"
+                constraintName="company_importance_item-company-id-fk"
+                referencedTableName="company"
+                referencedColumnNames="id"
+                onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
