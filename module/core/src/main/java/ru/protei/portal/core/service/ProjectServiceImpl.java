@@ -289,6 +289,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         jdbcManyRelationsHelper.fill(projects.getResults(), "members");
         jdbcManyRelationsHelper.fill(projects.getResults(), "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
 
         SearchResult<Project> result = new SearchResult<>(
                 projects.getResults().isEmpty() ?

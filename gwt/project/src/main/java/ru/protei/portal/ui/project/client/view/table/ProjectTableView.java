@@ -131,6 +131,9 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     if (value.getCustomerType() != null) {
                         content.append("<br/><i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>");
                     }
+                    if ( value.getRegion() != null && value.getRegion().getDisplayText() != null) {
+                        content.append("<br/>").append(value.getRegion().getDisplayText());
+                    }
                     return content.toString();
                 });
         columns.add(numberColumn);
