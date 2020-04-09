@@ -26,6 +26,13 @@ public class ProjectSla implements Serializable {
 
     public ProjectSla() {}
 
+    public ProjectSla(Integer importanceLevelId, Long reactionTime, Long temporarySolutionTime, Long fullSolutionTime) {
+        this.importanceLevelId = importanceLevelId;
+        this.reactionTime = reactionTime;
+        this.temporarySolutionTime = temporarySolutionTime;
+        this.fullSolutionTime = fullSolutionTime;
+    }
+
     public Long getId() {
         return id;
     }

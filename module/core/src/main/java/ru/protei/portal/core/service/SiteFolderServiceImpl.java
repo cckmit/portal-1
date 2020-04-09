@@ -373,7 +373,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         return ok(result);
     }
 
-
     private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {
         if (serverIdOfAppsToBeCloned == null || serverId == null) {
             return;

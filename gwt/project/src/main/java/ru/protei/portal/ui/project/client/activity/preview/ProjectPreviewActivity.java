@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+
 /**
  * Активность превью проекта
  */
@@ -117,7 +119,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContracts(value.getContracts() == null ? null : value.getContracts().stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makeLink(Contract.class, contract.getId()))));
+        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makeLink(Contract.class, contract.getId()))));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makeLink(Platform.class, value.getPlatformId()));
 
         if( value.getTeam() != null ) {
@@ -164,7 +166,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             return false;
         }
 
-        if (project.getProjectSlas().stream().allMatch(ProjectSla::isEmpty)) {
+        if (projectSlas.stream().allMatch(ProjectSla::isEmpty)) {
             return false;
         }
 
