@@ -17,6 +17,9 @@ public class DebugIdsHelper {
             if (id == 4) {
                 return DebugIds.IMPORTANCE_BUTTON.COSMETIC;
             }
+            if (id == 5) {
+                return DebugIds.IMPORTANCE_BUTTON.MEDIUM;
+            }
             return DebugIds.IMPORTANCE_BUTTON.DEFAULT + id;
         }
     }

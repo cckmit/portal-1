@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -82,6 +83,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     CaseQuery getFilterFields(En_CaseFilterType filterType);
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter);
+
+    void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList);
 
     void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
 
