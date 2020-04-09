@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -281,16 +282,19 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<Project>> listProjects(AuthToken authToken, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+    public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(token, query);
 
-        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+        SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
 
-        jdbcManyRelationsHelper.fill(projects, "members");
-        jdbcManyRelationsHelper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "members");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
 
-        List<Project> result = projects.stream()
-                .map(Project::fromCaseObject).collect(toList());
+        SearchResult<Project> result = new SearchResult<>(
+                projects.getResults().isEmpty() ?
+                        new ArrayList<>()
+                        : projects.getResults().stream().map(Project::fromCaseObject).collect(toList()),
+                projects.getTotalCount());
         return ok(result);
     }
 

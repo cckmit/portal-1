@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Запрос по регионам
@@ -214,5 +211,32 @@ public class ProjectQuery extends BaseQuery {
                 ", offset=" + offset +
                 ", platformIndependentProject=" + platformIndependentProject +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProjectQuery)) return false;
+        ProjectQuery that = (ProjectQuery) o;
+        return Objects.equals(caseIds, that.caseIds) &&
+                Objects.equals(states, that.states) &&
+                Objects.equals(regions, that.regions) &&
+                Objects.equals(headManagers, that.headManagers) &&
+                Objects.equals(caseMembers, that.caseMembers) &&
+                Objects.equals(directions, that.directions) &&
+                Objects.equals(districtIds, that.districtIds) &&
+                Objects.equals(onlyMineProjects, that.onlyMineProjects) &&
+                Objects.equals(productIds, that.productIds) &&
+                customerType == that.customerType &&
+                Objects.equals(createdFrom, that.createdFrom) &&
+                Objects.equals(createdTo, that.createdTo) &&
+                Objects.equals(platformIndependentProject, that.platformIndependentProject);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
+                districtIds, onlyMineProjects, productIds, customerType, createdFrom, createdTo,
+                platformIndependentProject);
     }
 }

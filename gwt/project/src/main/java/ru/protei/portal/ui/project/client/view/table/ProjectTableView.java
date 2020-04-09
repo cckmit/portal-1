@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.Project;
@@ -50,6 +50,9 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
+
+        table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
     
     @Override
@@ -69,18 +72,41 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public void clearRecords() {
+        table.clearCache();
         table.clearRows();
     }
 
     @Override
-    public void addRows( List<Project> rows ) {
-        rows.forEach(row -> table.addRow( row ));
+    public void updateRow( Project project ) {
+        if(project != null) {
+            table.updateRow(project);
+        }
     }
 
     @Override
-    public void updateRow( Project project ) {
-        table.updateRow( project );
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
     }
 
     private void initTable () {
@@ -146,13 +172,15 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @UiField
     Lang lang;
     @UiField
-    TableWidget<Project> table;
+    InfiniteTableWidget<Project> table;
     @UiField
     HTMLPanel tableContainer;
     @UiField
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     En_RegionStateLang regionStateLang;

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.table;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -11,6 +12,8 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -21,6 +24,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -31,7 +35,8 @@ import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCase
  * Активность таблицы проектов
  */
 public abstract class ProjectTableActivity
-        implements AbstractProjectTableActivity, AbstractProjectFilterActivity, Activity
+        implements AbstractProjectTableActivity, AbstractProjectFilterActivity,
+            AbstractPagerActivity, Activity
 {
 
     @PostConstruct
@@ -43,6 +48,8 @@ public abstract class ProjectTableActivity
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+
+        pagerView.setActivity( this );
     }
 
     @Event
@@ -59,6 +66,7 @@ public abstract class ProjectTableActivity
 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE ) ?
             new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.PROJECT ) :
@@ -67,7 +75,7 @@ public abstract class ProjectTableActivity
 
         clearScroll(event);
 
-        requestProjects( null );
+        loadTable();
     }
 
     @Event
@@ -120,30 +128,51 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onFilterChanged() {
-        requestProjects( null );
+        loadTable();
     }
 
-    private void requestProjects( Project rowToSelect ) {
-        if ( rowToSelect == null ) {
-            view.clearRecords();
-            animation.closeDetails();
-        }
+    @Override
+    public void loadData(int offset, int limit,
+                          final AsyncCallback<List<Project>> asyncCallback ) {
+        boolean isFirstChunk = offset == 0;
 
-        regionService.getProjectList( getQuery(), new RequestCallback<List<Project>> () {
+        query = getQuery();
+        query.setOffset(offset);
+        query.setLimit(limit);
+
+        regionService.getProjects(query, new RequestCallback<SearchResult<Project>> () {
             @Override
             public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                asyncCallback.onFailure(throwable);
             }
 
             @Override
-            public void onSuccess( List<Project> result ) {
-                view.addRows( result );
-                if ( rowToSelect != null ) {
-                    view.updateRow( rowToSelect );
+            public void onSuccess( SearchResult<Project> sr ) {
+                if (!query.equals(getQuery())) {
+                    loadData( offset, limit, asyncCallback );
+                } else {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
+                    }
                 }
-                restoreScrollTopPositionOrClearSelection();
             }
         } );
+    }
+
+
+    @Override
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
+    }
+
+    @Override
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
     }
 
     private void showPreview ( Project value ) {
@@ -208,6 +237,12 @@ public abstract class ProjectTableActivity
         );
     }
 
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -215,11 +250,15 @@ public abstract class ProjectTableActivity
     @Inject
     AbstractProjectFilterView filterView;
     @Inject
+    AbstractPagerView pagerView;
+    @Inject
     RegionControllerAsync regionService;
     @Inject
     TableAnimation animation;
     @Inject
     PolicyService policyService;
+
+    private ProjectQuery query = null;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
