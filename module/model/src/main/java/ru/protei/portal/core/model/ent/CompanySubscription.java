@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * Created by michael on 26.05.17.
  */
-@JdbcEntity(table = "CompanySubscription")
+@JdbcEntity(table = "Company_Subscription")
 public class CompanySubscription implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

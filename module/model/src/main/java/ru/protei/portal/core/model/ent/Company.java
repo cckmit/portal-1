@@ -54,7 +54,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "is_hidden")
     private Boolean isHidden;
 
-    @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
+    @JdbcOneToMany(table = "Company_Subscription", localColumn = "id", remoteColumn = "company_id" )
     private List<CompanySubscription> subscriptions;
 
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")

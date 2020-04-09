@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -14,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Запрос по регионам
@@ -226,5 +225,70 @@ public class ProjectQuery extends BaseQuery {
                 ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
                 '}';
+    }
+
+    public CaseQuery toCaseQuery(Long myPersonId) {
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+
+        caseQuery.setCaseIds(this.getCaseIds());
+
+        if (CollectionUtils.isNotEmpty(this.getStates())) {
+            caseQuery.setStateIds(this.getStates().stream()
+                    .map((state) -> new Long(state.getId()).intValue())
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(this.getRegions())) {
+            caseQuery.setRegionIds(this.getRegions().stream()
+                    .map(region -> region == null ? null : region.getId())
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(this.getHeadManagers())) {
+            caseQuery.setHeadManagerIds(this.getHeadManagers().stream()
+                    .map(headManager -> headManager == null ? null : headManager.getId())
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(this.getCaseMembers())) {
+            caseQuery.setCaseMemberIds(this.getCaseMembers().stream()
+                    .map(member -> member == null ? null : member.getId())
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(this.getDirections())) {
+            caseQuery.setProductDirectionIds(this.getDirections().stream()
+                    .map(directionInfo -> directionInfo == null ? null : directionInfo.id)
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(this.getProductIds())) {
+            caseQuery.setProductIds(this.getProductIds());
+        }
+
+        if (this.isOnlyMineProjects() != null && this.isOnlyMineProjects()) {
+            caseQuery.setMemberId(myPersonId);
+        }
+
+        if (this.getCustomerType() != null) {
+            caseQuery.setLocal(this.getCustomerType().getId());
+        }
+
+        caseQuery.setCreatedFrom(this.getCreatedFrom());
+        caseQuery.setCreatedTo(this.getCreatedTo());
+        caseQuery.setSearchString(this.getSearchString());
+        caseQuery.setSortDir(this.getSortDir());
+        caseQuery.setSortField(this.getSortField());
+        caseQuery.setContractIndependentProject(this.getContractIndependentProject());
+        caseQuery.setPlatformIndependentProject(this.getPlatformIndependentProject());
+        caseQuery.setDistrictIds(this.getDistrictIds());
+
+        return caseQuery;
     }
 }

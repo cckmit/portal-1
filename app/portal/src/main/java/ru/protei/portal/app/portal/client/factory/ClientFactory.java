@@ -18,7 +18,6 @@ import ru.protei.portal.ui.equipment.client.factory.EquipmentClientModule;
 import ru.protei.portal.ui.issue.client.factory.IssueClientModule;
 import ru.protei.portal.ui.issueassignment.client.factory.IssueAssignmentClientModule;
 import ru.protei.portal.ui.issuereport.client.factory.IssueReportClientModule;
-import ru.protei.portal.ui.official.client.factory.OfficialClientModule;
 import ru.protei.portal.ui.product.client.factory.ProductClientModule;
 import ru.protei.portal.ui.project.client.factory.ProjectClientModule;
 import ru.protei.portal.ui.region.client.factory.RegionClientModule;
