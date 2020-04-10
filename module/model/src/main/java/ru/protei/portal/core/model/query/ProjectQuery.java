@@ -1,5 +1,9 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -7,10 +11,7 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -18,7 +19,6 @@ import static java.util.stream.Collectors.toList;
  * Запрос по регионам
  */
 public class ProjectQuery extends BaseQuery {
-    @JsonIgnore
     private List<Long> caseIds;
 
     private Set<En_RegionState> states;
@@ -42,8 +42,6 @@ public class ProjectQuery extends BaseQuery {
     private Date createdFrom;
 
     private Date createdTo;
-
-    private Boolean contractIndependentProject;
 
     private Boolean platformIndependentProject;
 
@@ -145,14 +143,6 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public Boolean getContractIndependentProject() {
-        return contractIndependentProject;
-    }
-
-    public void setContractIndependentProject(Boolean contractIndependentProject) {
-        this.contractIndependentProject = contractIndependentProject;
-    }
-
     public Boolean getPlatformIndependentProject() {
         return platformIndependentProject;
     }
@@ -198,7 +188,6 @@ public class ProjectQuery extends BaseQuery {
                 customerType != null ||
                 createdFrom != null ||
                 createdTo != null ||
-                contractIndependentProject != null ||
                 platformIndependentProject != null;
     }
 
@@ -222,9 +211,35 @@ public class ProjectQuery extends BaseQuery {
                 ", sortDir=" + sortDir +
                 ", limit=" + limit +
                 ", offset=" + offset +
-                ", contractIndependentProject=" + contractIndependentProject +
                 ", platformIndependentProject=" + platformIndependentProject +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProjectQuery)) return false;
+        ProjectQuery that = (ProjectQuery) o;
+        return Objects.equals(caseIds, that.caseIds) &&
+                Objects.equals(states, that.states) &&
+                Objects.equals(regions, that.regions) &&
+                Objects.equals(headManagers, that.headManagers) &&
+                Objects.equals(caseMembers, that.caseMembers) &&
+                Objects.equals(directions, that.directions) &&
+                Objects.equals(districtIds, that.districtIds) &&
+                Objects.equals(onlyMineProjects, that.onlyMineProjects) &&
+                Objects.equals(productIds, that.productIds) &&
+                customerType == that.customerType &&
+                Objects.equals(createdFrom, that.createdFrom) &&
+                Objects.equals(createdTo, that.createdTo) &&
+                Objects.equals(platformIndependentProject, that.platformIndependentProject);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
+                districtIds, onlyMineProjects, productIds, customerType, createdFrom, createdTo,
+                platformIndependentProject);
     }
 
     public CaseQuery toCaseQuery(Long myPersonId) {
@@ -285,7 +300,6 @@ public class ProjectQuery extends BaseQuery {
         caseQuery.setSearchString(this.getSearchString());
         caseQuery.setSortDir(this.getSortDir());
         caseQuery.setSortField(this.getSortField());
-        caseQuery.setContractIndependentProject(this.getContractIndependentProject());
         caseQuery.setPlatformIndependentProject(this.getPlatformIndependentProject());
         caseQuery.setDistrictIds(this.getDistrictIds());
 

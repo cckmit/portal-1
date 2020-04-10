@@ -61,11 +61,6 @@ public class PersonServiceImpl implements PersonService {
         return ok(names );
     }
 
-    @Override
-    public Result<List<PersonShortView>> getCaseMembers(AuthToken authToken, En_DevUnitPersonRoleType role) {
-        return makeListPersonShortView(personDAO.getCaseMembers(role));
-    }
-
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {

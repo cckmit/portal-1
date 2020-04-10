@@ -5,8 +5,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
-import java.util.List;
-
 /**
  * Представление таблицы проектов
  */
@@ -18,9 +16,17 @@ public interface AbstractProjectTableView extends IsWidget {
     HasWidgets getPreviewContainer();
     HasWidgets getFilterContainer();
 
-    void addRows(List<Project> rows);
-
     void updateRow( Project project );
 
     void clearSelection();
+
+    HasWidgets getPagerContainer();
+
+    void triggerTableLoad();
+
+    void setTotalRecords(int totalRecords);
+
+    int getPageCount();
+
+    void scrollTo( int page );
 }

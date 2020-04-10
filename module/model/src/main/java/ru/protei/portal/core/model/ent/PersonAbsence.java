@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * Created by michael on 05.07.16.
  */
-@JdbcEntity(table = "Person_Absence")
+@JdbcEntity(table = "person_absence")
 public class PersonAbsence {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)

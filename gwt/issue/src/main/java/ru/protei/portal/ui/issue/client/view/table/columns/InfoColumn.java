@@ -71,7 +71,7 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
 
         Element infoElement = DOM.createElement( "p" );
         infoElement.addClassName( "issue-description" );
-        infoElement.setInnerText( value == null ? "" : value.getInfo() );
+        infoElement.setInnerText( value == null ? "" : value.getInfo() == null? "" : value.getInfo().replaceAll("!\\[.+\\](.+)", "[pic]") );
         infoElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.ISSUE.DESCRIPTION );
         divElement.appendChild( infoElement );
 

@@ -8,9 +8,16 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_PrivilegeAction;
+import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
+import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.role.client.activity.preview.AbstractRolePreviewActivity;
 import ru.protei.portal.ui.role.client.activity.preview.AbstractRolePreviewView;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Вид превью роли
@@ -36,6 +43,12 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
         this.description.setText( value );
     }
 
+    @Override
+    public void setPrivileges( String privileges ) {
+        this.privileges.setText( privileges );
+
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -43,6 +56,8 @@ public class RolePreviewView extends Composite implements AbstractRolePreviewVie
     HeadingElement name;
     @UiField
     Label description;
+    @UiField
+    Label privileges;
 
     AbstractRolePreviewActivity activity;
 

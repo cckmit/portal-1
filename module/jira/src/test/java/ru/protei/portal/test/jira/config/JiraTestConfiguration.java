@@ -241,11 +241,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public CompanyCategoryDAO getCompanyCategoryDao() {
-        return new CompanyCategoryDAO_Impl();
-    }
-
-    @Bean
     public CompanySubscriptionDAO getCompanySubscriptionDao() {
         return new CompanySubscriptionDAO_Impl();
     }
@@ -348,5 +343,10 @@ public class JiraTestConfiguration {
     @Bean
     public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
         return new JiraCompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
     }
 }

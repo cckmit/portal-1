@@ -2,12 +2,14 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 /**
  * @author michael
  */
 
+@JdbcEntity(table = "importance_level")
 public class ImportanceLevel {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -20,6 +22,12 @@ public class ImportanceLevel {
     private String info;
 
     public ImportanceLevel() {
+    }
+
+    public ImportanceLevel(Long id, String code, String info) {
+        this.id = id;
+        this.code = code;
+        this.info = info;
     }
 
     public String getCode() {

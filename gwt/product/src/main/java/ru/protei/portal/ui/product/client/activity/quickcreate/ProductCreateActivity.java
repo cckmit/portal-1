@@ -94,7 +94,7 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
     }
 
     private void fillProduct() {
-        product.setTypeId(En_DevUnitType.PRODUCT.getId());
+        product.setType(En_DevUnitType.PRODUCT);
         product.setName(view.name().getValue().trim());
         product.setInfo(view.info().getValue().trim());
     }

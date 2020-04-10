@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.winter.jdbc.annotations.*;
 
 /**
@@ -12,7 +13,8 @@ public class CaseStateMatrix {
     private Long id;
 
     @JdbcColumn(name="CASE_TYPE")
-    private Long caseTypeId;
+    @JdbcEnumerated( EnumType.ID )
+    private En_CaseType type;
 
     @JdbcColumn(name="CASE_STATE")
     private Long caseStateId;
@@ -45,12 +47,12 @@ public class CaseStateMatrix {
         this.id = id;
     }
 
-    public Long getCaseTypeId() {
-        return caseTypeId;
+    public En_CaseType getType() {
+        return type;
     }
 
-    public void setCaseTypeId(Long caseTypeId) {
-        this.caseTypeId = caseTypeId;
+    public void setType( En_CaseType type ) {
+        this.type = type;
     }
 
     public Long getCaseStateId() {

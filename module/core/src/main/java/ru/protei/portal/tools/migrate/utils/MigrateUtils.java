@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dao.MigrationEntryDAO;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.parts.BaseBatchProcess;
 import ru.protei.portal.tools.migrate.parts.BatchInsertTask;
@@ -110,7 +109,7 @@ public class MigrateUtils {
         UserLogin ulogin = new UserLogin();
         ulogin.setUlogin(extLogin.translatedLogin());
         ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        ulogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        ulogin.setAuthType(En_AuthType.LOCAL);
         ulogin.setCreated(new Date());
         ulogin.setInfo(extLogin.getInfo());
         ulogin.setPersonId(extLogin.getPersonId());
@@ -122,7 +121,7 @@ public class MigrateUtils {
     public static UserLogin externalEmployeeLogin (ExternalPersonInfo info) {
         UserLogin ulogin = new UserLogin();
         ulogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        ulogin.setAuthTypeId(En_AuthType.LDAP.getId());
+        ulogin.setAuthType(En_AuthType.LDAP);
         ulogin.setCreated(new Date());
         ulogin.setInfo(info.getDisplayName());
         ulogin.setPersonId(info.personData.getId());
@@ -131,7 +130,7 @@ public class MigrateUtils {
     }
 
     public static DevUnit fromExternalProject (ExternalDevProject project) {
-        DevUnit u = new DevUnit(En_DevUnitType.COMPONENT.getId(), project.getName(), project.getInfo());
+        DevUnit u = new DevUnit(En_DevUnitType.COMPONENT, project.getName(), project.getInfo());
         u.setCreated(project.getCreated());
         u.setCreatorId(null);
         u.setLastUpdate(project.getLastUpdate());
@@ -141,7 +140,7 @@ public class MigrateUtils {
     }
 
     public static DevUnit fromExternalProduct (ExternalProduct product) {
-        DevUnit u = new DevUnit(En_DevUnitType.PRODUCT.getId(), product.getName(), product.getInfo());
+        DevUnit u = new DevUnit(En_DevUnitType.PRODUCT, product.getName(), product.getInfo());
         u.setCreated(product.getCreated());
         u.setCreatorId(null);
         u.setLastUpdate(product.getLastUpdate());
@@ -154,7 +153,7 @@ public class MigrateUtils {
         Company x = new Company();
         x.setId(imp.getId());
         x.setOldId(imp.getId());
-        x.setCategory(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        x.setCategory(En_CompanyCategory.CUSTOMER);
         x.setInfo(imp.getInfo());
         x.setCname(imp.getName());
         x.setCreated(imp.getCreated());

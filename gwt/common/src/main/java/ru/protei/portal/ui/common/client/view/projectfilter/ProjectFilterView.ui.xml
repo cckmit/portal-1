@@ -3,7 +3,7 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
-             xmlns:casemember="urn:import:ru.protei.portal.ui.common.client.widget.selector.casemember"
+             xmlns:employee="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
 >
@@ -27,11 +27,11 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.projectHeadManager}"/></label>
-                    <casemember:HeadManagerMultiSelector ui:field="headManagers" />
+                    <employee:EmployeeMultiSelector ui:field="headManagers" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.projectTeam}"/></label>
-                    <casemember:CaseMemberMultiSelector ui:field="caseMembers" />
+                    <employee:EmployeeMultiSelector ui:field="caseMembers" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

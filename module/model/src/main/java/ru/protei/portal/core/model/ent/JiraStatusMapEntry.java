@@ -7,7 +7,7 @@ import ru.protei.winter.jdbc.annotations.JdbcJoinedColumn;
 
 import java.io.Serializable;
 
-@JdbcEntity(table = "JIRA_status_map_entry")
+@JdbcEntity(table = "jira_status_map_entry")
 public final class JiraStatusMapEntry implements Serializable {
 
     @JdbcColumn(name = "id")

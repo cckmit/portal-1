@@ -229,6 +229,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
         //Synchronize comments, status, priority, name, info
         for (Journal journal : latestJournals) {
+            logger.trace( "updateCaseObject(): {}", journal );
 
             List<JournalDetail> details = journal.getDetails();
 
@@ -336,7 +337,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         obj.setModified(issue.getUpdatedOn());
         obj.setCreator(contactPerson);
         obj.setInitiator(contactPerson);
-        obj.setCaseType(En_CaseType.CRM_SUPPORT);
+        obj.setType(En_CaseType.CRM_SUPPORT);
         obj.setExtAppType(En_ExtAppType.REDMINE.getCode());
 
         logger.debug("Trying to get portal priority level id matching with redmine {}", issue.getPriorityId());

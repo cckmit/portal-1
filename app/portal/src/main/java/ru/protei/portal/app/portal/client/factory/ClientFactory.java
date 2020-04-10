@@ -32,7 +32,7 @@ import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
         EmployeeClientModule.class, CompanyClientModule.class, ContactClientModule.class,
         ProductClientModule.class, ProjectClientModule.class, RegionClientModule.class, EmployeeRegistrationClientModule.class,
         IssueClientModule.class, IssueReportClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
-        /*OfficialClientModule.class,*/ DocumentClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class, SiteFolderClientModule.class,
+        DocumentClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class, SiteFolderClientModule.class,
         ContractClientModule.class
 })
 public interface ClientFactory

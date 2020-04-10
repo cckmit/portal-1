@@ -68,7 +68,7 @@ public class IssueControllerImpl implements IssueController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        caseObjectCreateRequest.getCaseObject().setTypeId(En_CaseType.CRM_SUPPORT.getId());
+        caseObjectCreateRequest.getCaseObject().setType(En_CaseType.CRM_SUPPORT);
         caseObjectCreateRequest.getCaseObject().setCreatorId(token.getPersonId());
 
         Result<CaseObject> response = caseService.createCaseObject(token, caseObjectCreateRequest);

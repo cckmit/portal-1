@@ -1,14 +1,16 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+             xmlns:dndautoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.dndautoresizetextarea"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <autoresizetextarea:AutoResizeTextArea
+        <dndautoresizetextarea:DndAutoResizeTextArea
                 ui:field="text"
                 styleName="form-control form-group message-input resize-vertical"
-                maxRows="20"/>
+                enablePasteImage="true"
+                minRows="10" maxRows="20"/>
 
         <g:HTMLPanel ui:field="previewContainer" styleName="message-preview">
             <label class="message-preview-label">

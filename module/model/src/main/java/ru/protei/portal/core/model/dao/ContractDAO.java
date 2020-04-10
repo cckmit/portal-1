@@ -4,6 +4,8 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
+
 public interface ContractDAO extends PortalBaseDAO<Contract> {
 
     SearchResult<Contract> getSearchResult(ContractQuery query);
@@ -12,5 +14,5 @@ public interface ContractDAO extends PortalBaseDAO<Contract> {
 
     int countByQuery(ContractQuery query);
 
-    Contract getByProjectId(Long projectId);
+    List<Contract> getByProjectId(Long projectId);
 }

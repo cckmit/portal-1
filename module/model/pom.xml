@@ -38,6 +38,9 @@
 
                     <include>*.xml</include>
                     <include>**/*.xml</include>
+
+                    <include>*.sql</include>
+                    <include>**/*.sql</include>
                 </includes>
             </resource>
         </resources>
@@ -57,6 +60,9 @@
 
                     <include>*.xml</include>
                     <include>**/*.xml</include>
+
+                    <include>*.sql</include>
+                    <include>**/*.sql</include>
                 </includes>
             </testResource>
         </testResources>

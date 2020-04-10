@@ -9,10 +9,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -24,7 +21,8 @@ public class CaseObject extends AuditableObject {
     private Long id;
 
     @JdbcColumn(name = "case_type")
-    private int typeId;
+    @JdbcEnumerated( EnumType.ID )
+    private En_CaseType type;
 
     @JdbcColumn(name = "CASENO")
     private Long caseNumber;
@@ -144,10 +142,7 @@ public class CaseObject extends AuditableObject {
     private String regionName;
 
     // not db column
-    private Long contractId;
-
-    // not db column
-    private String contractNumber;
+    private List<EntityOption> contracts;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -167,7 +162,7 @@ public class CaseObject extends AuditableObject {
     }
 
     public String defGUID () {
-        En_CaseType t = En_CaseType.find(this.typeId);
+        En_CaseType t = type;
         return t != null ? t.makeGUID(this.caseNumber) : null;
     }
 
@@ -179,12 +174,12 @@ public class CaseObject extends AuditableObject {
         this.id = id;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public En_CaseType getType() {
+        return type;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setType(En_CaseType type) {
+        this.type = type;
     }
 
     public Long getCaseNumber() {
@@ -393,14 +388,6 @@ public class CaseObject extends AuditableObject {
         return initiatorCompany;
     }
 
-    public En_CaseType getCaseType () {
-        return En_CaseType.find(this.typeId);
-    }
-
-    public void setCaseType (En_CaseType type) {
-        this.typeId = type.getId();
-    }
-
     public List<Attachment> getAttachments() {
         return attachments == null? Collections.EMPTY_LIST: attachments;
     }
@@ -511,20 +498,12 @@ public class CaseObject extends AuditableObject {
         this.platformName = platformName;
     }
 
-    public Long getContractId() {
-        return contractId;
+    public List<EntityOption> getContracts() {
+        return contracts;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
-    }
-
-    public String getContractNumber() {
-        return contractNumber;
-    }
-
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
+    public void setContracts(List<EntityOption> contracts) {
+        this.contracts = contracts;
     }
 
     public String getJiraUrl() {
@@ -568,7 +547,7 @@ public class CaseObject extends AuditableObject {
     public String toString() {
         return "CaseObject{" +
                 "id=" + id +
-                ", typeId=" + typeId +
+                ", type=" + type +
                 ", caseNumber=" + caseNumber +
                 ", created=" + created +
                 ", modified=" + modified +
@@ -605,12 +584,8 @@ public class CaseObject extends AuditableObject {
                 ", platformId=" + platformId +
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
-                ", contractId=" + contractId +
-                ", contractNumber='" + contractNumber + '\'' +
-                ", platformName='" + platformName + '\'' +
                 ", technicalSupportValidity=" + technicalSupportValidity +
-                ", contractId=" + contractId +
-                ", contractNumber='" + contractNumber + '\'' +
+                ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +

@@ -21,13 +21,14 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
@@ -118,11 +119,10 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         jdbcManyRelationsHelper.fillAll( project );
-        Contract contract = contractDAO.getByProjectId(id);
+        List<Contract> contracts = contractDAO.getByProjectId(id);
 
-        if (contract != null) {
-            project.setContractId(contract.getId());
-            project.setContractNumber(contract.getNumber());
+        if (CollectionUtils.isNotEmpty(contracts)) {
+            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
 
         return ok(Project.fromCaseObject(project));
@@ -240,7 +240,7 @@ public class ProjectServiceImpl implements ProjectService {
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setType(En_CaseType.PROJECT);
         caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
         caseObject.setStateId(project.getState().getId());
         caseObject.setCreatorId(project.getCreatorId());
@@ -282,16 +282,20 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<Project>> listProjects(AuthToken token, ProjectQuery query) {
+    public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
         CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
 
-        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+        SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
 
-        jdbcManyRelationsHelper.fill(projects, "members");
-        jdbcManyRelationsHelper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "members");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
 
-        List<Project> result = projects.stream()
-                .map(Project::fromCaseObject).collect(toList());
+        SearchResult<Project> result = new SearchResult<>(
+                projects.getResults().isEmpty() ?
+                        new ArrayList<>()
+                        : projects.getResults().stream().map(Project::fromCaseObject).collect(toList()),
+                projects.getTotalCount());
         return ok(result);
     }
 
