@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
@@ -634,13 +635,12 @@ public class MailNotificationProcessor {
             return;
         }
 
-        Set<NotificationEntry> recipients = subscriptionService
-                .subscribers(
-                        CollectionUtils.emptyIfNull(event.getNewProjectState().getTeam())
-                                .stream()
-                                .map(PersonShortView::getId)
-                                .collect(Collectors.toList())
-                );
+        List<PersonProjectMemberView> team = event.getNewProjectState().getTeam();
+
+        List<Long> recipientsIds = CollectionUtils.emptyIfNull(team).stream().map(PersonShortView::getId).collect(toList());
+        recipientsIds.add(event.getInitiatorId());
+
+        Set<NotificationEntry> recipients = subscriptionService.subscribers(recipientsIds);
 
         /* TODO: Затычка на отправку только одного письма. Убрать после окончания разработки */
 
@@ -655,10 +655,13 @@ public class MailNotificationProcessor {
 
         /* TODO: Затычка на отправку только одного письма. Убрать после окончания разработки */
 
-        Set<String> collect = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
+        DiffCollectionResult<LinkData> links = convertToLinkData(event.getLinks(), getCrmCaseUrl(true));
+
+        Set<String> addresses = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
         PreparedTemplate bodyTemplate = templateService.getMailProjectBody(
                 event,
-                collect,
+                addresses,
+                links,
                 new EnumLangUtil(lang)
         );
 
@@ -809,7 +812,9 @@ public class MailNotificationProcessor {
                 || event.isProductChanged()
                 || event.isSupportValidityChanged()
                 || event.isTeamChanged()
-                || event.isSlaChanged();
+                || event.isSlaChanged()
+                || event.isCommentsChanged()
+                || event.isLinksChanged();
     }
 
     private class MimeMessageHeadersFacade {

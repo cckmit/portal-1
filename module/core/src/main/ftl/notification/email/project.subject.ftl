@@ -1,1 +1,1 @@
-<#noparse>Проект#${projectNumber} [${TransliterationUtils.transliterate(initiator, lang)}]</#noparse>
+<#noparse>${project}#${projectNumber} [${TransliterationUtils.transliterate(initiator, lang)}]</#noparse>

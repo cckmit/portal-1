@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.event.ProjectSaveEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -202,7 +203,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.setCreator(caseObject.getCreator());
 
-        return ok(project).publishEvent(new AssembledProjectEvent(this, oldStateProject, project, personDAO.get(token.getPersonId())));
+        return ok(project).publishEvent(new ProjectSaveEvent(oldStateProject, token.getPersonId(), this));
     }
 
     @Override

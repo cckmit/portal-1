@@ -1,8 +1,12 @@
 package ru.protei.portal.core.event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -13,22 +17,68 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.lang.System.currentTimeMillis;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class AssembledProjectEvent extends ApplicationEvent {
     private Project oldProjectState;
     private Project newProjectState;
+    private Long projectId;
     private Person initiator;
+    private Long initiatorId;
+    private DiffCollectionResult<CaseComment> comments = new DiffCollectionResult<>();
+    private DiffCollectionResult<CaseLink> links = new DiffCollectionResult<>();
+    private Long lastUpdated;
 
-    /**
-     * Create a new ApplicationEvent.
-     *
-     * @param source the object on which the event initially occurred (never {@code null})
-     */
+    public AssembledProjectEvent(AbstractProjectEvent event) {
+        super(event.getSource());
+        this.initiatorId = event.getPersonId();
+        this.projectId = event.getProjectId();
+    }
+
     public AssembledProjectEvent(Object source, Project oldProjectState, Project newProjectState, Person initiator) {
         super(source);
         this.oldProjectState = oldProjectState;
         this.newProjectState = newProjectState;
         this.initiator = initiator;
+        this.projectId = oldProjectState == null ? newProjectState.getId() : oldProjectState.getId();
+    }
+
+    public void attachSaveEvent(ProjectSaveEvent event) {
+        this.oldProjectState = event.getProject();
+        this.projectId = event.getProjectId();
+        this.initiatorId = event.getPersonId();
+    }
+
+    public void attachCommentEvent(ProjectCommentEvent event) {
+        this.lastUpdated = currentTimeMillis();
+        if (event.getOldComment() != null) {
+            comments.putChangedEntry(event.getOldComment(), event.getNewComment());
+        } else if (event.getNewComment() != null) {
+            comments.putAddedEntry(event.getNewComment());
+        }
+        if (event.getRemovedComment() != null) {
+            comments.putRemovedEntry(event.getRemovedComment());
+        }
+    }
+
+    public void attachLinkEvent(ProjectLinkEvent event) {
+        this.lastUpdated = currentTimeMillis();
+        if (event.getAddedLink() != null) {
+            // check if link is removed and added once more
+            if (links.getRemovedEntries() == null || !links.getRemovedEntries().remove(event.getAddedLink())) {
+                links.putAddedEntry(event.getAddedLink());
+            }
+        }
+        if (event.getRemovedLink() != null) {
+            // check if link is added and removed once more
+            if (links.getAddedEntries() == null || !links.getAddedEntries().remove(event.getRemovedLink())) {
+                links.putRemovedEntry(event.getRemovedLink());
+            }
+        }
     }
 
     public boolean isNameChanged() {
@@ -102,6 +152,38 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return true;
     }
 
+    public boolean isCommentsChanged() {
+        if (CollectionUtils.isNotEmpty(comments.getAddedEntries())) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(comments.getChangedEntries())) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(comments.getRemovedEntries())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isLinksChanged() {
+        if (CollectionUtils.isNotEmpty(links.getAddedEntries())) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(links.getChangedEntries())) {
+            return true;
+        }
+
+        if (CollectionUtils.isNotEmpty(links.getRemovedEntries())) {
+            return true;
+        }
+
+        return false;
+    }
+
     public Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> getTeamDiffs() {
         Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> teamDiffs = new HashMap<>();
 
@@ -165,6 +247,19 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return slaDiffs;
     }
 
+    // Убрать из существующих элементов добавленные и удаленные
+    private <T> DiffCollectionResult<T> synchronizeExists(DiffCollectionResult<T> diff, Function<T, Object> getId) {
+        log.info("synchronizeExists(): before +{} -{} {} ", toList(diff.getAddedEntries(), getId), toList(diff.getRemovedEntries(), getId), toList(diff.getSameEntries(), getId));
+        if (diff.hasSameEntries()) {
+            synchronized (diff) {
+                diff.getSameEntries().removeAll(emptyIfNull(diff.getAddedEntries()));
+                diff.getSameEntries().removeAll(emptyIfNull(diff.getRemovedEntries()));
+            }
+        }
+        log.info("synchronizeExists(): after +{} -{} {} ", toList(diff.getAddedEntries(), getId), toList(diff.getRemovedEntries(), getId), toList(diff.getSameEntries(), getId));
+        return diff;
+    }
+
     private ProjectSla getSlaByImportance(List<ProjectSla> slaList, int importanceLevelId, ProjectSla orElseSla) {
         return slaList
                 .stream()
@@ -213,7 +308,86 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return initiator;
     }
 
+    public void setInitiator(Person initiator) {
+        this.initiator = initiator;
+    }
+
+    public Long getInitiatorId() {
+        return initiator == null ? initiatorId : initiator.getId();
+    }
+
+    public void setInitiatorId(Long initiatorId) {
+        this.initiatorId = initiatorId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public boolean isCaseCommentsFilled() {
+        return comments.getSameEntries() != null;
+    }
+
+    public boolean isLinksFilled() {
+        synchronized (links){
+            return links.hasSameEntries();
+        }
+    }
+
+    public void setExistingLinks(List<CaseLink> sameLinks) {
+        links.putSameEntries(sameLinks);
+    }
+
+    public List<CaseComment> getAddedComments() {
+        return CollectionUtils.emptyIfNull(comments.getAddedEntries());
+    }
+
+    public List<CaseComment> getChangedComments() {
+        if (CollectionUtils.isEmpty(comments.getChangedEntries())) {
+            return Collections.emptyList();
+        }
+
+        return comments.getChangedEntries().stream().map(DiffResult::getInitialState).collect(Collectors.toList());
+    }
+
+    public List<CaseComment> getRemovedComments() {
+        return CollectionUtils.emptyIfNull(comments.getRemovedEntries());
+    }
+
+    public List<CaseComment> getAllComments() {
+        Set<CaseComment> allComments = new HashSet<>();
+
+        allComments.addAll(emptyIfNull(comments.getSameEntries()));
+        allComments.addAll(emptyIfNull(comments.getAddedEntries()));
+        allComments.addAll(emptyIfNull(comments.getRemovedEntries()));
+
+        return listOf( allComments ).stream()
+                .sorted( Comparator.comparing( CaseComment::getId ) ).collect( Collectors.toList());
+    }
+
+    public void setExistingComments(List<CaseComment> existingComments) {
+        comments.putSameEntries(existingComments);
+    }
+
+    public DiffCollectionResult<CaseLink> getLinks() {
+        if (isEditEvent()) {
+            synchronizeExists(links, CaseLink::getId);
+            return links;
+        }
+
+        DiffCollectionResult<CaseLink> caseLinkDiffCollectionResult = new DiffCollectionResult<>();
+        caseLinkDiffCollectionResult.putAddedEntries(CollectionUtils.emptyIfNull(newProjectState.getLinks()));
+
+        return caseLinkDiffCollectionResult;
+    }
+
+    public Long getLastUpdated() {
+        return lastUpdated;
+    }
+
     public boolean isEditEvent() {
         return oldProjectState != null;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(AssembledProjectEvent.class);
 }

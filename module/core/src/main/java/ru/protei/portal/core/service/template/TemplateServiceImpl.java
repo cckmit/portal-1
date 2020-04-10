@@ -414,7 +414,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, EnumLangUtil enumLangUtil) {
+    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, EnumLangUtil enumLangUtil) {
         Project oldProjectState = event.getOldProjectState();
         Project newProjectState = event.getNewProjectState();
 
@@ -422,6 +422,8 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("TransliterationUtils", new TransliterationUtils());
         templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("TimeFormatter", new WorkTimeFormatter());
+        templateModel.put("TextUtils", new TextUtils());
 
         templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
         templateModel.put("created", newProjectState.getCreated());
@@ -466,7 +468,13 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("team", event.getTeamDiffs());
         templateModel.put("sla", event.getSlaDiffs());
-        templateModel.put("TimeFormatter", new WorkTimeFormatter());
+
+        templateModel.put( "caseComments",  getProjectCommentsModelKeys(event.getAllComments(), event.getAddedComments(), event.getChangedComments(), event.getRemovedComments(), En_TextMarkup.MARKDOWN));
+
+        templateModel.put("hasLinks", hasLinks(links));
+        templateModel.put("existingLinks", links == null ? null : links.getSameEntries());
+        templateModel.put("addedLinks", links == null ? null : links.getAddedEntries());
+        templateModel.put("removedLinks", links == null ? null : links.getRemovedEntries());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/project.body.%s.ftl");
         template.setModel(templateModel);
@@ -504,6 +512,29 @@ public class TemplateServiceImpl implements TemplateService {
                     return mailComment;
                 } )
                 .collect( toList() );
+    }
+
+    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
+        return comments.stream()
+                .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
+                .map(comment -> {
+
+                    boolean isNew = contains(added, comment);
+                    boolean isChanged = contains(changed, comment);
+
+                    Map<String, Object> mailComment = new HashMap<>();
+                    mailComment.put("created", comment.getCreated());
+                    mailComment.put("author", comment.getAuthor());
+                    mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
+                    mailComment.put("added", isNew);
+                    if (isChanged) {
+                        CaseComment oldComment = changed.get(changed.indexOf(comment));
+                        mailComment.put("oldText", escapeTextAndRenderHTML(oldComment.getText(), textMarkup));
+                    }
+                    mailComment.put("removed", contains(removed, comment));
+                    return mailComment;
+                })
+                .collect(toList());
     }
 
     String escapeTextAndRenderHTML(String text, En_TextMarkup textMarkup) {

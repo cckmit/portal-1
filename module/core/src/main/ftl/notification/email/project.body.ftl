@@ -22,6 +22,8 @@
 <@set name="_projectSlaTemporaryTime" value="${projectSlaTemporaryTime}"/>
 <@set name="_projectSlaFullTime" value="${projectSlaFullTime}"/>
 <@set name="_projectSla" value="${projectSla}"/>
+<@set name="_updated" value="${updated_just_now}"/>
+<@set name="_linkedTasks" value="${linkedTasks}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -31,13 +33,17 @@
 </#macro>
 
 <#macro changeToIfDiff old, new>
-    <#if old != new>
+    <#if old == new>
+        ${new}
+    <#else>
         <span style="color:#bd1313;text-decoration:line-through;">${old}</span>
         <span style="margin:0 5px;">&rarr;</span>
         <span style="color:#11731d;background:#dff7e2;padding:2px 4px">${new}</span>
-    <#else>
-        ${new}
     </#if>
+</#macro>
+
+<#macro diffHTML old, new>
+    ${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}
 </#macro>
 
 <html>
@@ -46,6 +52,20 @@
     <style>
         .markdown * {
             box-sizing: border-box;
+        }
+
+        .markdown p,
+        .markdown blockquote,
+        .markdown ul,
+        .markdown ol,
+        .markdown dl,
+        .markdown pre {
+            font-size: 14px !important;
+        }
+
+        .markdown p {
+            margin-bottom: 0;
+            margin-top: 0;
         }
 
         .markdown table {
@@ -62,6 +82,10 @@
         .markdown table tr {
             background-color: #fff;
             border-top: 1px solid #c6cbd1;
+        }
+
+        .markdown table th {
+            font-weight: normal;
         }
 
         .markdown table th, .markdown table td {
@@ -213,58 +237,33 @@
             </td>
         </tr>
 
-        <#assign importanceLevels=sla?keys/>
-        <#assign slaDiffs=sla?values/>
-
-        <#if importanceLevels?has_content>
-            <tr>
+        <#if hasLinks>
+            <tr id="test-linkedTasks">
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_projectSla}
+                    ${_linkedTasks}
                 </td>
-                <td class="markdown">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>${_projectImportance}</th>
-                                <th>${_projectSlaReactionTime}</th>
-                                <th>${_projectSlaTemporaryTime}</th>
-                                <th>${_projectSlaFullTime}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <#list importanceLevels as importanceLevel>
-                            <#assign importanceLevel_index=importanceLevels?seq_index_of(importanceLevel)/>
-                            <#assign slaDiff=slaDiffs[importanceLevel_index]/>
-
-                            <#assign oldSla=slaDiff.getInitialState()/>
-                            <#assign newSla=slaDiff.getNewState()/>
-
-                            <tr>
-                                <td>
-                                    ${importanceLevel.getCode()}
-                                </td>
-                                <td>
-                                    <@changeToIfDiff
-                                    old="${(oldSla.getReactionTime()??)?then(TimeFormatter.format(oldSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                                    new="${(newSla.getReactionTime()??)?then(TimeFormatter.format(newSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                                    />
-                                </td>
-                                <td>
-                                    <@changeToIfDiff
-                                    old="${(oldSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(oldSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                                    new="${(newSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(newSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                                    />
-                                </td>
-                                <td>
-                                    <@changeToIfDiff
-                                    old="${(oldSla.getFullSolutionTime()??)?then(TimeFormatter.format(oldSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                                    new="${(newSla.getFullSolutionTime()??)?then(TimeFormatter.format(newSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                                    />
-                                </td>
-                            </tr>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    <#if existingLinks??>
+                        <#list existingLinks as link>
+                            <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none;color:#0062ff">
+                                    <a href="${link.url}">${link.linkName}</a>
+                                </span>
                         </#list>
-                        </tbody>
-                    </table>
+                    </#if>
+                    <#if addedLinks??>
+                        <#list addedLinks as link>
+                            <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
+                                    <a href="${link.url}" >${link.linkName}</a>
+                                </span>
+                        </#list>
+                    </#if>
+                    <#if removedLinks??>
+                        <#list removedLinks as link>
+                            <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through">
+                                    <a href="${link.url}" style="color:#bd1313;">${link.linkName}</a>
+                                </span>
+                        </#list>
+                    </#if>
                 </td>
             </tr>
         </#if>
@@ -305,8 +304,83 @@
                 </td>
             </tr>
         </#list>
+
+        <#assign importanceLevels=sla?keys/>
+        <#assign slaDiffs=sla?values/>
+
+        <#if importanceLevels?has_content>
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_projectSla}
+                </td>
+                <td class="markdown">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>${_projectImportance}</th>
+                            <th>${_projectSlaReactionTime}</th>
+                            <th>${_projectSlaTemporaryTime}</th>
+                            <th>${_projectSlaFullTime}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list importanceLevels as importanceLevel>
+                            <#assign importanceLevel_index=importanceLevels?seq_index_of(importanceLevel)/>
+                            <#assign slaDiff=slaDiffs[importanceLevel_index]/>
+
+                            <#assign oldSla=slaDiff.getInitialState()/>
+                            <#assign newSla=slaDiff.getNewState()/>
+
+                            <tr>
+                                <td>
+                                    ${importanceLevel.getCode()}
+                                </td>
+                                <td>
+                                    <@changeToIfDiff
+                                    old="${(oldSla.getReactionTime()??)?then(TimeFormatter.format(oldSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    new="${(newSla.getReactionTime()??)?then(TimeFormatter.format(newSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    />
+                                </td>
+                                <td>
+                                    <@changeToIfDiff
+                                    old="${(oldSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(oldSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    new="${(newSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(newSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    />
+                                </td>
+                                <td>
+                                    <@changeToIfDiff
+                                    old="${(oldSla.getFullSolutionTime()??)?then(TimeFormatter.format(oldSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    new="${(newSla.getFullSolutionTime()??)?then(TimeFormatter.format(newSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    />
+                                </td>
+                            </tr>
+                        </#list>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </#if>
         </tbody>
     </table>
+    <div id="test-case-comments" style="font-size:14px;margin-top:15px">
+        <#list caseComments?reverse as caseComment>
+            <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
+                <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
+                <span style="font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
+                        <#if caseComment.author??>
+                            ${TransliterationUtils.transliterate(caseComment.author.displayName, lang)!''}
+                        </#if>
+                </span>
+                <#if caseComment.oldText??>
+                    <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
+                    <div class="markdown"
+                         style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                <#else>
+                    <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
+                </#if>
+            </div>
+        </#list>
+    </div>
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
             ${_you} (<b>${TransliterationUtils.transliterate(userName, lang)!'?'}</b>) ${_notification_footer}
