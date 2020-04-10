@@ -39,14 +39,7 @@ public class SLAControllerImpl implements SLAController {
         log.info("getSlaByPlatformId: platformId={}", platformId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Platform> platformResponse = siteFolderService.getPlatform(token, platformId);
-
-        if (platformResponse.isError()) {
-            log.info("getSlaByPlatformId: status={}", platformResponse.getStatus());
-            throw new RequestFailedException(platformResponse.getStatus());
-        }
-
-        Result<List<ProjectSla>> slaResponse = slaService.getProjectSlaByProjectId(token, platformResponse.getData().getProjectId());
+        Result<List<ProjectSla>> slaResponse = slaService.getProjectSlaByPlatformId(token, platformId);
 
         if (slaResponse.isError()) {
             log.info("getSlaByPlatformId: status={}", slaResponse.getStatus());

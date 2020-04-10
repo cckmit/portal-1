@@ -13,5 +13,5 @@ public interface SLAService {
 
     Result<JiraSLAMapEntry> getJiraSLAEntry(AuthToken token, long mapId, String issueType, String severity);
 
-    Result<List<ProjectSla>> getProjectSlaByProjectId(AuthToken token, Long projectId);
+    Result<List<ProjectSla>> getProjectSlaByPlatformId(AuthToken token, Long platformId);
 }
