@@ -43,10 +43,36 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style>
+        .markdown * {
+            box-sizing: border-box;
+        }
+
+        .markdown table {
+            display: block;
+            width: 100%;
+            overflow: auto;
+            border-spacing: 0;
+            border-collapse: collapse;
+            padding: 2px;
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+
+        .markdown table tr {
+            background-color: #fff;
+            border-top: 1px solid #c6cbd1;
+        }
+
+        .markdown table th, .markdown table td {
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+    </style>
 </head>
 <body>
 <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
-    ${_createdBy} ${(TransliterationUtils.transliterate(creator, lang))!'?'}
+    ${_createdBy} ${(TransliterationUtils.transliterate(creator, lang))!'?'} ${(created??)?then(created?datetime, '?')}
 </div>
 <div style="margin-top: 12px">
     <table>
@@ -195,56 +221,52 @@
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                     ${_projectSla}
                 </td>
+                <td class="markdown">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>${_projectImportance}</th>
+                                <th>${_projectSlaReactionTime}</th>
+                                <th>${_projectSlaTemporaryTime}</th>
+                                <th>${_projectSlaFullTime}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <#list importanceLevels as importanceLevel>
+                            <#assign importanceLevel_index=importanceLevels?seq_index_of(importanceLevel)/>
+                            <#assign slaDiff=slaDiffs[importanceLevel_index]/>
+
+                            <#assign oldSla=slaDiff.getInitialState()/>
+                            <#assign newSla=slaDiff.getNewState()/>
+
+                            <tr>
+                                <td>
+                                    ${importanceLevel.getCode()}
+                                </td>
+                                <td>
+                                    <@changeToIfDiff
+                                    old="${(oldSla.getReactionTime()??)?then(TimeFormatter.format(oldSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    new="${(newSla.getReactionTime()??)?then(TimeFormatter.format(newSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    />
+                                </td>
+                                <td>
+                                    <@changeToIfDiff
+                                    old="${(oldSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(oldSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    new="${(newSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(newSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    />
+                                </td>
+                                <td>
+                                    <@changeToIfDiff
+                                    old="${(oldSla.getFullSolutionTime()??)?then(TimeFormatter.format(oldSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    new="${(newSla.getFullSolutionTime()??)?then(TimeFormatter.format(newSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
+                                    />
+                                </td>
+                            </tr>
+                        </#list>
+                        </tbody>
+                    </table>
+                </td>
             </tr>
-            <#list importanceLevels as importanceLevel>
-                <#assign importanceLevel_index=importanceLevels?seq_index_of(importanceLevel)/>
-                <#assign slaDiff=slaDiffs[importanceLevel_index]/>
-
-                <#assign oldSla=slaDiff.getInitialState()/>
-                <#assign newSla=slaDiff.getNewState()/>
-
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        ${_projectImportance}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        ${importanceLevel.getCode()}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        ${_projectReactionTime}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <@changeToIfDiff
-                        old="${(oldSla.getReactionTime()??)?then(TimeFormatter.format(oldSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                        new="${(newSla.getReactionTime()??)?then(TimeFormatter.format(newSla.getReactionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        ${_projectTemporaryTime}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <@changeToIfDiff
-                        old="${(oldSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(oldSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                        new="${(newSla.getTemporarySolutionTime()??)?then(TimeFormatter.format(newSla.getTemporarySolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        ${_projectFullTime}
-                    </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <@changeToIfDiff
-                        old="${(oldSla.getFullSolutionTime()??)?then(TimeFormatter.format(oldSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                        new="${(newSla.getFullSolutionTime()??)?then(TimeFormatter.format(newSla.getFullSolutionTime(),_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral), '?')}"
-                        />
-                    </td>
-                </tr>
-            </#list>
         </#if>
 
         <#assign roleTypes=team?keys/>

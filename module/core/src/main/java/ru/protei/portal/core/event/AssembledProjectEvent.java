@@ -92,8 +92,8 @@ public class AssembledProjectEvent extends ApplicationEvent {
 
         if (Arrays.stream(En_ImportanceLevel.values()).allMatch(
                 importanceLevel -> isSameSla(
-                        getSlaByImportance(oldProjectState.getProjectSlas(), importanceLevel.getId()),
-                        getSlaByImportance(newProjectState.getProjectSlas(), importanceLevel.getId())
+                        getSlaByImportance(oldProjectState.getProjectSlas(), importanceLevel.getId(), new ProjectSla()),
+                        getSlaByImportance(newProjectState.getProjectSlas(), importanceLevel.getId(), new ProjectSla())
                 ))
         ) {
             return false;
@@ -137,7 +137,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
     }
 
     public Map<En_ImportanceLevel, DiffResult<ProjectSla>> getSlaDiffs() {
-        Map<En_ImportanceLevel, DiffResult<ProjectSla>> slaDiffs = new HashMap<>();
+        Map<En_ImportanceLevel, DiffResult<ProjectSla>> slaDiffs = new LinkedHashMap<>();
 
         if (!isEditEvent()) {
             CollectionUtils.emptyIfNull(newProjectState.getProjectSlas()).forEach(sla -> slaDiffs.put(
@@ -152,50 +152,41 @@ public class AssembledProjectEvent extends ApplicationEvent {
         List<ProjectSla> newSlaList = CollectionUtils.emptyIfNull(newProjectState.getProjectSlas());
 
         for (En_ImportanceLevel level : En_ImportanceLevel.values()) {
-            ProjectSla oldSla = oldSlaList
-                    .stream()
-                    .filter(sla -> sla.getImportanceLevelId() == level.getId())
-                    .findAny()
-                    .orElse(null);
+            ProjectSla oldSla = getSlaByImportance(oldSlaList, level.getId(), null);
+            ProjectSla newSla = getSlaByImportance(newSlaList, level.getId(), null);
 
-            ProjectSla newSla = newSlaList
-                    .stream()
-                    .filter(sla -> sla.getImportanceLevelId() == level.getId())
-                    .findAny()
-                    .orElse(null);
-
-            if (oldSla == null || newSla == null) {
+            if (oldSla == null && newSla == null) {
                 continue;
             }
 
-            slaDiffs.put(level, new DiffResult<>(oldSla, newSla));
+            slaDiffs.put(level, new DiffResult<>(oldSla == null ? new ProjectSla() : oldSla, newSla == null ? new ProjectSla() : newSla));
         }
 
         return slaDiffs;
     }
 
-    private ProjectSla getSlaByImportance(List<ProjectSla> slaList, int importanceLevelId) {
+    private ProjectSla getSlaByImportance(List<ProjectSla> slaList, int importanceLevelId, ProjectSla orElseSla) {
         return slaList
                 .stream()
                 .filter(sla -> sla.getImportanceLevelId() == importanceLevelId)
                 .findAny()
-                .orElse(new ProjectSla());
+                .orElse(orElseSla);
     }
 
-    private boolean isSameSla(ProjectSla sla1, ProjectSla sla2) {
-        if (!Objects.equals(sla1.getImportanceLevelId(), sla1.getImportanceLevelId())) {
+    private boolean isSameSla(ProjectSla oldSla, ProjectSla newSla) {
+        if (!Objects.equals(oldSla.getImportanceLevelId(), newSla.getImportanceLevelId())) {
             return false;
         }
 
-        if (!Objects.equals(sla1.getReactionTime(), sla2.getReactionTime())) {
+        if (!Objects.equals(oldSla.getReactionTime(), newSla.getReactionTime())) {
             return false;
         }
 
-        if (!Objects.equals(sla1.getTemporarySolutionTime(), sla2.getTemporarySolutionTime())) {
+        if (!Objects.equals(oldSla.getTemporarySolutionTime(), newSla.getTemporarySolutionTime())) {
             return false;
         }
 
-        if (!Objects.equals(sla1.getFullSolutionTime(), sla2.getFullSolutionTime())) {
+        if (!Objects.equals(oldSla.getFullSolutionTime(), newSla.getFullSolutionTime())) {
             return false;
         }
 

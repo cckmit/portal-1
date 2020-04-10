@@ -424,6 +424,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("EnumLangUtil", enumLangUtil);
 
         templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
+        templateModel.put("created", newProjectState.getCreated());
         templateModel.put("isCreated", !event.isEditEvent());
         templateModel.put("recipients", recipients);
 
@@ -436,8 +437,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newDescription", newProjectState.getDescription());
 
         templateModel.put("stateChanged", event.isStateChanged());
-        templateModel.put("oldState", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getState), Enum::name));
-        templateModel.put("newState", newProjectState.getState().name());
+        templateModel.put("oldState", getObjectOrNull(oldProjectState, Project::getState));
+        templateModel.put("newState", newProjectState.getState());
 
         templateModel.put("regionChanged", event.isRegionChanged());
         templateModel.put("oldRegion", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getRegion), EntityOption::getDisplayText));
@@ -448,8 +449,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newCompany", newProjectState.getCustomer().getCname());
 
         templateModel.put("customerTypeChanged", event.isCustomerTypeChanged());
-        templateModel.put("oldCustomerType", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getCustomerType), Enum::name));
-        templateModel.put("newCustomerType", newProjectState.getCustomerType().name());
+        templateModel.put("oldCustomerType", getObjectOrNull(oldProjectState, Project::getCustomerType));
+        templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
         templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
         templateModel.put("oldProductDirection", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getProductDirection), EntityOption::getDisplayText));
