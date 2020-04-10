@@ -11,6 +11,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.SelectorsParams;
@@ -29,6 +30,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
@@ -38,6 +40,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -70,6 +74,7 @@ public abstract class IssueTableFilterActivity
         filterView.resetFilter();
         filterView.presetFilterType();
         updateCaseStatesFilter();
+        updateImportanceLevelButtons();
     }
 
     @Event(Type.FILL_CONTENT)
@@ -288,6 +293,16 @@ public abstract class IssueTableFilterActivity
         }
     }
 
+    private void updateImportanceLevelButtons() {
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
+            filterView.getIssueFilterParams().fillImportanceButtons(Collections.emptyList());
+            companyService.getImportanceLevels(policyService.getUserCompany().getId(), new FluentCallback<List<En_ImportanceLevel>>()
+                    .withSuccess(importanceLevelList -> {
+                        filterView.getIssueFilterParams().fillImportanceButtons(importanceLevelList);
+                    }));
+        }
+    }
+
     private void toggleFilterCollapseState() {
         Boolean isCollapsed = issueFilterService.isFilterCollapsed();
         if (isCollapsed == null) {
@@ -333,6 +348,9 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     IssueFilterControllerAsync filterService;
+
+    @Inject
+    CompanyControllerAsync companyService;
 
     @Inject
     PolicyService policyService;
