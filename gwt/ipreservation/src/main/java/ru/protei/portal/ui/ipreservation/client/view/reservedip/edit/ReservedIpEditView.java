@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -27,6 +28,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        macAddress.setRegexp( CrmConstants.IpReservation.MAC_ADDRESS );
         ensureDebugIds();
     }
 

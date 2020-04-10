@@ -27,7 +27,7 @@ public abstract class IpReservationPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.RESERVED_IP_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.RESERVED_IP, ТAB, DebugIds.SIDEBAR_MENU.RESERVED_IP ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.IP_RESERVATION, ТAB, DebugIds.SIDEBAR_MENU.RESERVED_IP ) );
             fireEvent( new AppEvents.InitPage(showReservedIp) );
         }
     }

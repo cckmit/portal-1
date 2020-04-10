@@ -135,6 +135,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
+            resetFilter();
             activity.onFilterChanged();
         }
     }

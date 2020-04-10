@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.test.client.DebugIds;
@@ -34,6 +35,8 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ipAddress.setRegexp( CrmConstants.IpReservation.IP_ADDRESS );
+        macAddress.setRegexp( CrmConstants.IpReservation.MAC_ADDRESS );
         ensureDebugIds();
     }
 

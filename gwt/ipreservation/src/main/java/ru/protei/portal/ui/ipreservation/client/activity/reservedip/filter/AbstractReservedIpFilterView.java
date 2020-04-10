@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter;
 
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_SortField;

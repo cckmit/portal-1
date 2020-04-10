@@ -178,9 +178,6 @@ public class IpReservationServiceImpl implements IpReservationService {
     public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
         /*
            @todo если задан "конкретный IP"
-                - проверка IP по маске
-                - проверка уникальности IP
-                - создание
                 - проверка IP через NRPE
                 - update IP с ответом от NRPE
          */
@@ -248,7 +245,6 @@ public class IpReservationServiceImpl implements IpReservationService {
         } else {
          /*
            @todo если задано "любая свободная подсеть"
-                - проверка валидности кол-ва на null и 0
                 - проверка подсетей на наличие требуемого кол-ва свободных IP
                 - пройти по всем подходящим подсетям, резервируя IP, попутно проверяя их через NRPE
          */
@@ -269,7 +265,8 @@ public class IpReservationServiceImpl implements IpReservationService {
                 subnets = result.stream().collect(Collectors.toSet());
             }
 
-            while (reservedIps.size() < reservedIpRequest.getNumber()) {
+            int created = 0;
+            while (created < reservedIpRequest.getNumber()) {
                 ReservedIp ip = reservedIp;
                 subnets.forEach( s -> {
                             if (hasSubnetFreeIps(s.getId())) {
@@ -277,18 +274,17 @@ public class IpReservationServiceImpl implements IpReservationService {
                                 if (freeIp != null) {
                                     ip.setSubnetId(s.getId());
                                     ip.setIpAddress(freeIp);
-
-                                    Long reservedIpId = reservedIpDAO.persist(ip);
-
-                                    if (reservedIpId != null) {
-                                        ip.setId(reservedIpId);
-                                        reservedIps.add(ip);
-                                        return;
-                                    }
+                                    return;
                                 }
                             }
                         }
                 );
+
+                Long reservedIpId = reservedIpDAO.persist(ip);
+
+                if (reservedIpId != null) {
+                    created ++;
+                }
                 /*
                   @todo запрос на NRPE,
                     ответ внести в reservedIp и merge в БД

@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -15,6 +14,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -31,10 +31,7 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -185,12 +182,16 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
-    public void onProductChanged(){
+    public void onProductChanged() {
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
     @Override
-    public void onPlatformChanged(){
+    public void onPlatformChanged() {
+        requestSla(
+                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+        );
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
@@ -237,6 +238,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             issueMetaView.setInitiator(initiator);
         }
 
+        requestSla(
+                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+        );
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
@@ -264,6 +269,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
         localStorageService.set( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, String.valueOf( isDisplay ) );
+    }
+
+    @Override
+    public void onImportanceChanged() {
+        fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
     }
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
@@ -320,7 +330,44 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setManager(caseObjectMeta.getManager());
         issueMetaView.setProduct(caseObjectMeta.getProduct());
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
+
+        issueMetaView.slaContainerVisibility().setVisible(true);
+        requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
     }
+
+    private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+        if (platformId == null) {
+            slaList = DefaultSlaValues.getList();
+            issueMetaView.setValuesContainerWarning(true);
+            issueMetaView.setSlaTimesContainerTitle(lang.projectSlaDefaultValues());
+            slaConsumer.accept(slaList);
+            return;
+        }
+
+        slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+                .withSuccess(result -> {
+                    slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
+                    issueMetaView.setValuesContainerWarning(result.isEmpty());
+                    issueMetaView.setSlaTimesContainerTitle(result.isEmpty() ? lang.projectSlaDefaultValues() : lang.projectSlaSetValuesByManager());
+                    slaConsumer.accept(slaList);
+                })
+        );
+    }
+
+    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final int importanceLevelId) {
+        return slaList
+                .stream()
+                .filter(sla -> Objects.equals(importanceLevelId, sla.getImportanceLevelId()))
+                .findAny()
+                .orElse(new ProjectSla());
+    }
+
+    private void fillSla(ProjectSla sla) {
+        issueMetaView.slaReactionTime().setTime(sla.getReactionTime());
+        issueMetaView.slaTemporarySolutionTime().setTime(sla.getTemporarySolutionTime());
+        issueMetaView.slaFullSolutionTime().setTime(sla.getFullSolutionTime());
+    }
+
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
@@ -489,6 +536,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     AbstractIssueCreateView view;
     @Inject
     IssueMetaView issueMetaView;
+    @Inject
+    SLAControllerAsync slaService;
 
     @Inject
     PolicyService policyService;
@@ -508,4 +557,5 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
+    private List<ProjectSla> slaList = new ArrayList<>();
 }

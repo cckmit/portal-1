@@ -92,4 +92,10 @@ public class CrmConstants {
     public interface ImportanceLevel {
         List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
     }
+
+    public interface IpReservation {
+        String SUBNET_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$" /*"^([0-9]+(\\.|$)){3}"*/;
+        String IP_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$" /*"^([0-9]+(\\.|$)){4}"*/;
+        String MAC_ADDRESS = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
+    }
 }
