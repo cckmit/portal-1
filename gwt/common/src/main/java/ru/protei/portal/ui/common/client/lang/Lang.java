@@ -1299,8 +1299,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String membersCount();
 
-    String membersNotSpecified();
-
     String version();
 
     String siteFolderClone();

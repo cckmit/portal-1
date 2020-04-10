@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -25,6 +24,4 @@ public interface PersonControllerAsync {
     void getPersonNames(Collection<Long> ids, AsyncCallback<Map<Long, String>> async);
 
     void getPerson(Long id, AsyncCallback<Person> async);
-
-    void getCaseMembersList( En_DevUnitPersonRoleType role, AsyncCallback< List< PersonShortView > > callback );
 }

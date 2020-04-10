@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.query;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -16,7 +15,6 @@ import java.util.*;
  * Запрос по регионам
  */
 public class ProjectQuery extends BaseQuery {
-    @JsonIgnore
     private List<Long> caseIds;
 
     private Set<En_RegionState> states;

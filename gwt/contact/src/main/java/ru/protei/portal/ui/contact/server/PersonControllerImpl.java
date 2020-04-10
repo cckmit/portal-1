@@ -79,23 +79,6 @@ public class PersonControllerImpl implements PersonController {
         return result.getData();
     }
 
-    @Override
-    public List<PersonShortView> getCaseMembersList(En_DevUnitPersonRoleType role) throws RequestFailedException {
-
-        log.info( "getCaseMembersList(): En_DevUnitPersonRoleType={}", role );
-
-        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result< List< PersonShortView > > result = personService.getCaseMembers( authToken, role );
-
-        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
-
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
-
-        return result.getData();
-    }
-
     @Autowired
     private PersonService personService;
     @Autowired
