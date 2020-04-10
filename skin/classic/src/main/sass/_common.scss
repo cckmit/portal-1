@@ -2651,6 +2651,21 @@ div.select2-container {
   }
 }
 
+.project-filter {
+  padding-top: 0px !important;
+
+  .user-filter {
+    background: #f5f5f51a;
+    border-bottom: 2px solid #dee4e5;
+    padding: 15px;
+  }
+
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 .user-filter-name {
   text-align: left;
   a {

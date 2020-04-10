@@ -53,18 +53,18 @@ public class ExcelReportWriter implements
     @Override
     public int[] getColumnsWidth() {
         return new int[] {
-                3650, 5800, 4200,
-                4200, 5800, 5800,
-                5800, 8570,
+                2350, 12570, 4200,
+                5200, 5800, 5800,
+                3800, 18570,
         };
     }
 
     @Override
     public String[] getColumnNames() {
         return new String[] {
-                        "ir_id", "ir_name", "ir_state",
-                        "ir_customerType", "ir_customer", "ir_region",
-                        "ir_direction", "ir_last_comment_text",
+                "ir_id", "ir_name", "ir_state",
+                "ir_customerType", "ir_customer", "ir_region",
+                "ir_direction", "ir_last_comment_text",
         };
     }
 
@@ -74,16 +74,17 @@ public class ExcelReportWriter implements
         CaseComment comment = object.getLastComment();
 
         List<Object> values = new ArrayList<>();
+
         values.add(project.getId());
         values.add(HelperFunc.isNotEmpty(project.getName()) ? project.getName() : "");
-        values.add(project.getState() != null ? project.getState() : "");
-        values.add(project.getCustomerType() != null ? project.getCustomerType() : "");
-        values.add(project.getCustomer() != null ? project.getCustomer() : "");
+        values.add(project.getState() != null ? lang.get("regionState_" + project.getState()) : "");
+        values.add(project.getCustomerType() != null ? lang.get("customerType_" + project.getCustomerType()) : "");
+        values.add(project.getCustomer() != null ? project.getCustomer().getCname() : "");
         values.add(project.getRegion() != null && project.getRegion().getDisplayText() != null ?
                 project.getRegion().getDisplayText() : "");
         values.add(project.getProductDirection() != null && project.getProductDirection().getDisplayText() != null ?
                 project.getProductDirection().getDisplayText() : "");
-        values.add(comment != null && comment.getText() != null?
+        values.add(comment != null && comment.getText() != null ?
                 comment.getText() : "");
 
         return values.toArray();

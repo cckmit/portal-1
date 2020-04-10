@@ -8,18 +8,22 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ReportProjectImpl implements ReportProject {
 
@@ -33,6 +37,8 @@ public class ReportProjectImpl implements ReportProject {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report) throws IOException {
@@ -49,7 +55,7 @@ public class ReportProjectImpl implements ReportProject {
             return true;
         }
 
-        log.debug("writeReport : reportId={} has {} case objects to procees", report.getId(), count);
+        log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
 
         ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang);
 
@@ -76,7 +82,7 @@ public class ReportProjectImpl implements ReportProject {
                 CaseQuery query = report.getCaseQuery();
                 query.setOffset(offset);
                 query.setLimit(amount);
-                writeReportChunk(writer, sheetNumber, query);
+                writer.write(sheetNumber, createData(query));
                 offset += step;
             } catch (Throwable th) {
                 log.warn("writeReport : fail to process chunk [{} - {}] : reportId={} {}", offset, amount, report.getId(), th);
@@ -87,19 +93,23 @@ public class ReportProjectImpl implements ReportProject {
         return true;
     }
 
-    private void writeReportChunk(ReportWriter<ReportProjectWithLastComment> writer, int sheetNumber, CaseQuery query) {
-        List<ReportProjectWithLastComment> data = new ArrayList<>();
-        caseObjectDAO.getCases(query).forEach(caseObject -> {
-            CaseCommentQuery commentQuery = new CaseCommentQuery();
-            commentQuery.addCaseObjectId(caseObject.getId());
-            commentQuery.setCaseStateNotNull(false);
-            List<CaseComment> caseComments = caseCommentDAO.getCaseComments(commentQuery);
-            data.add(new ReportProjectWithLastComment(
-                    Project.fromCaseObject(caseObject),
-                    caseComments.isEmpty() ?
-                            null :
-                            caseComments.get(caseComments.size()-1)));
-        });
-        writer.write(sheetNumber, data);
+    private List<ReportProjectWithLastComment> createData(CaseQuery query) {
+        List<CaseObject> cases = caseObjectDAO.getCases(query);
+
+        jdbcManyRelationsHelper.fill(cases, "locations");
+
+        CaseCommentQuery commentQuery = new CaseCommentQuery();
+        commentQuery.setCaseObjectIds(cases.stream().map(CaseObject::getId).collect(Collectors.toList()));
+        commentQuery.setTextNotNull(true);
+        Map<Long, List<CaseComment>> CaseIdToCaseComments = caseCommentDAO.getCaseComments(commentQuery).stream()
+                .collect(Collectors.groupingBy(CaseComment::getCaseId));
+
+        return cases.stream().map(caseObject -> {
+            List<CaseComment> caseComments = CaseIdToCaseComments.get(caseObject.getId());
+            CaseComment lastComment = caseComments == null ? null
+                    : caseComments.stream().max(Comparator.comparing(CaseComment::getCreated))
+                        .orElse(null);
+            return new ReportProjectWithLastComment(Project.fromCaseObject(caseObject), lastComment);
+        }).collect(Collectors.toList());
     }
 }
