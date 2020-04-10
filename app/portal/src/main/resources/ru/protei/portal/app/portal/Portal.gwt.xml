@@ -14,7 +14,6 @@
     <inherits name="ru.protei.portal.ui.project.Project" />
     <inherits name="ru.protei.portal.ui.account.Account" />
     <inherits name="ru.protei.portal.ui.role.Role" />
-    <inherits name="ru.protei.portal.ui.official.Official"/>
     <inherits name="ru.protei.portal.ui.document.Document"/>
     <inherits name="ru.protei.portal.ui.documenttype.DocumentType"/>
     <inherits name="ru.protei.portal.ui.casestate.CaseState"/>

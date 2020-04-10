@@ -2,26 +2,6 @@ package ru.protei.portal.test.client;
 
 public class DebugIdsHelper {
 
-    public static final class COMPANY_CATEGORY_BUTTON {
-        public static String byId(Long id) {
-            if (id == 1) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.CUSTOMER;
-            }
-            if (id == 2) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.PARTNER;
-            }
-            if (id == 3) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.SUBCONTRACTOR;
-            }
-            if (id == 4) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.OFFICIAL;
-            }
-            if (id == 5) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.HOME_COMPANY;
-            }
-            return DebugIds.COMPANY_CATEGORY_BUTTON.DEFAULT + id;
-        }
-    }
 
     public static final class IMPORTANCE_BUTTON {
         public static String byId(int id) {

@@ -41,7 +41,7 @@ public class AuditServiceTest {
         auditObject.setCreated( new Date() );
         auditObject.setCreatorId( 1L );
         auditObject.setCreatorIp( "test IP" );
-        auditObject.setTypeId( En_AuditType.PRODUCT_CREATE.getId() );
+        auditObject.setType( En_AuditType.PRODUCT_CREATE );
 
         DevUnit product = new DevUnit();
 
@@ -50,7 +50,7 @@ public class AuditServiceTest {
         product.setCreatorId( 1L );
         product.setInfo( "Unit-test" );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
-        product.setTypeId( En_DevUnitType.PRODUCT.getId() );
+        product.setType( En_DevUnitType.PRODUCT );
 
         auditObject.setEntryInfo( product );
 

@@ -12,15 +12,15 @@ import java.util.Objects;
 public class AvatarUtils {
 
     public static String getAvatarUrl(Profile profile) {
-        return getAvatarUrl(profile.getId(), profile.getCompany().getCategoryId(), profile.getGender());
+        return getAvatarUrl(profile.getId(), profile.getCompany().getCategory(), profile.getGender());
     }
 
     public static String getAvatarUrl(Person person) {
-        return getAvatarUrl(person.getId(), person.getCompany().getCategoryId(), person.getGender());
+        return getAvatarUrl(person.getId(), person.getCompany().getCategory(), person.getGender());
     }
 
-    public static String getAvatarUrl(Long accountId, Long categoryId, En_Gender gender) {
-        if (Objects.equals(categoryId, En_CompanyCategory.HOME.getId())) {
+    public static String getAvatarUrl(Long accountId, En_CompanyCategory category, En_Gender gender) {
+        if (En_CompanyCategory.HOME == category) {
             return LOAD_AVATAR_URL + gender.getCode() + "/" + accountId + ".jpg";
         }
 

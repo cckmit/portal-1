@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
@@ -63,16 +64,18 @@ public class OptionList<T>
     }
 
 
-    public void addOption( String name, T value, String styleName ) {
+    public void addOption( String name, String info, String text, T value, String styleName ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
 
         OptionItem itemView = itemFactory.get();
         itemView.setName( name );
+        itemView.setInfo( info );
+        itemView.setText( text );
         itemView.addValueChangeHandler( this );
-        itemView.setValue(selected.contains(value));
-        itemView.setEnabled(isEnabled);
+        itemView.setValue( selected.contains( value ) );
+        itemView.setEnabled( isEnabled );
 
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
@@ -85,12 +88,14 @@ public class OptionList<T>
             itemView.setStyleName( styleName );
         }
         container.add( itemView.asWidget() );
-
-
     }
 
     public void addOption( String name, T value ) {
         addOption( name, value, null );
+    }
+
+    public void addOption( String name, T value, String styleName ) {
+        addOption( name, null, null, value, styleName );
     }
 
     @Override

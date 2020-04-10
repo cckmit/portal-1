@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  * Created by michael on 23.05.16.
  */
-public enum En_DevUnitType {
+public enum En_DevUnitType implements HasId {
     COMPONENT(1),
     PRODUCT(2),
     DIRECTION(3),

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
@@ -28,7 +27,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -676,7 +674,6 @@ public class WorkerController {
             if (department.getId() == null) {
                 department.setCreated(new Date());
                 department.setCompanyId(operationData.homeItem().getCompanyId());
-                department.setTypeId(1);
                 department.setExternalId(rec.getDepartmentId().trim());
                 persistDepartment(department);
             } else {
@@ -941,7 +938,7 @@ public class WorkerController {
 
             UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
             userLogin.setUlogin(login.trim());
-            userLogin.setAuthTypeId(En_AuthType.LDAP.getId());
+            userLogin.setAuthType(En_AuthType.LDAP);
             userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
             return userLogin;
         }
@@ -1037,7 +1034,7 @@ public class WorkerController {
     private void makeAudit(AuditableObject object, En_AuditType type) throws Exception {
         AuditObject auditObject = new AuditObject();
         auditObject.setCreated( new Date() );
-        auditObject.setTypeId(type.getId());
+        auditObject.setType(type);
         auditObject.setCreatorId( 0L );
         auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
         auditObject.setCreatorShortName("portal-api");
