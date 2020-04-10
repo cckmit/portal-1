@@ -78,6 +78,19 @@ public class DevUnitInfo extends AuditableObject {
         this.type = type;
     }
 
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
+    public int getTypeId() {
+        return type!=null?type.getId():0;
+    }
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
+    public void setTypeId(int typeId) {
+        type = En_DevUnitType.forId( typeId );
+    }
+
     public String getName() {
         return name;
     }
