@@ -31,6 +31,8 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     boolean checkExistsByRemoteIdAndRemoteLinkId(String remoteId, Long remoteLinkId);
 
+    List<CaseComment> getLastNotNullTextCommentsForReport(List<Long> caseId);
+
     List<CaseResolutionTimeReportDto> reportCaseResolutionTime(Date from, Date to, List<Integer> terminatedStates,
                                                                List<Long> companiesIds, Set<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
                                                                List<Long> tagsIds);

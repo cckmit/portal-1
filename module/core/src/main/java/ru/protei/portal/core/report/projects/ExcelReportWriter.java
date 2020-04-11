@@ -84,8 +84,7 @@ public class ExcelReportWriter implements
                 project.getRegion().getDisplayText() : "");
         values.add(project.getProductDirection() != null && project.getProductDirection().getDisplayText() != null ?
                 project.getProductDirection().getDisplayText() : "");
-        values.add(comment != null && comment.getText() != null ?
-                comment.getText() : "");
+        values.add(comment != null ? comment.getText() : "");
 
         return values.toArray();
     }

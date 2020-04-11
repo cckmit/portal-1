@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
@@ -19,10 +18,10 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ReportProjectImpl implements ReportProject {
@@ -98,18 +97,15 @@ public class ReportProjectImpl implements ReportProject {
 
         jdbcManyRelationsHelper.fill(cases, "locations");
 
-        CaseCommentQuery commentQuery = new CaseCommentQuery();
-        commentQuery.setCaseObjectIds(cases.stream().map(CaseObject::getId).collect(Collectors.toList()));
-        commentQuery.setTextNotNull(true);
-        Map<Long, List<CaseComment>> CaseIdToCaseComments = caseCommentDAO.getCaseComments(commentQuery).stream()
-                .collect(Collectors.groupingBy(CaseComment::getCaseId));
+        Map<Long, CaseComment> CaseIdToCaseComment = caseCommentDAO
+                .getLastNotNullTextCommentsForReport(
+                        cases.stream().map(CaseObject::getId).collect(Collectors.toList()))
+                .stream().collect(Collectors.toMap(CaseComment::getCaseId, Function.identity()));
 
-        return cases.stream().map(caseObject -> {
-            List<CaseComment> caseComments = CaseIdToCaseComments.get(caseObject.getId());
-            CaseComment lastComment = caseComments == null ? null
-                    : caseComments.stream().max(Comparator.comparing(CaseComment::getCreated))
-                        .orElse(null);
-            return new ReportProjectWithLastComment(Project.fromCaseObject(caseObject), lastComment);
-        }).collect(Collectors.toList());
+        return cases.stream().map(caseObject ->
+                new ReportProjectWithLastComment(
+                        Project.fromCaseObject(caseObject),
+                        CaseIdToCaseComment.get(caseObject.getId())))
+                .collect(Collectors.toList());
     }
 }
