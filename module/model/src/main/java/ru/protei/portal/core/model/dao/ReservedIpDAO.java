@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 
 public interface ReservedIpDAO extends PortalBaseDAO<ReservedIp> {
 
-    ReservedIp checkExistsByAddress(String address);
+    ReservedIp getReservedIpByAddress(String address);
 
     @SqlConditionBuilder
     SqlCondition createReservedIpSqlCondition(ReservedIpQuery query);

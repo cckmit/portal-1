@@ -10,9 +10,7 @@ import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
-import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
-import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.core.service.IpReservationService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -77,8 +75,8 @@ public class IpReservationControllerImpl implements IpReservationController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        if ( subnet == null || !isSubnetUnique( subnet.getAddress(), subnet.getId() ) )
-            throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
+        if (isSubnetAddressExists(subnet.getAddress(), subnet.getId()))
+            throw new RequestFailedException(En_ResultStatus.ALREADY_EXIST);
 
         Result<Subnet> response = subnet.getId() == null
                 ? ipReservationService.createSubnet( token, subnet )
@@ -209,20 +207,29 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public boolean isSubnetUnique(String address, Long excludeId ) throws RequestFailedException {
+    public Boolean isSubnetAddressExists( String address, Long excludeId ) throws RequestFailedException {
 
-        log.info( "isSubnetUnique(): address={}", address );
+        log.info( "isSubnetAddressExists(): address={} | excludeId={}", address, excludeId );
 
-        if ( address == null || address.isEmpty() )
-            throw new RequestFailedException ();
+        Result<Boolean> response = ipReservationService.isSubnetAddressExists( address, excludeId );
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result< Boolean > response = ipReservationService.checkUniqueSubnet( token, address, excludeId );
+        log.info( "isSubnetAddressExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
-        if ( response.isError() )
-            throw new RequestFailedException( response.getStatus() );
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
-        log.info( "isNameUnique(): response={}", response.getData() );
+        return response.getData();
+    }
+
+    @Override
+    public Boolean isReservedIpAddressExists( String address, Long excludeId ) throws RequestFailedException {
+
+        log.info( "isReservedIpAddressExists(): address={} | excludeId={}", address, excludeId );
+
+        Result<Boolean> response = ipReservationService.isReservedIpAddressExists( address, excludeId );
+
+        log.info( "isReservedIpAddressExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
+
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
         return response.getData();
     }

@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 public class SubnetDAO_Impl extends PortalBaseJdbcDAO<Subnet> implements SubnetDAO {
 
     @Override
-    public Subnet checkExistsByAddress(String address) {
+    public Subnet getSubnetByAddress(String address) {
         return getByCondition("address=?", address);
     }
 

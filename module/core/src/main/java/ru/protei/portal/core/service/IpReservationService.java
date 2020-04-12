@@ -21,7 +21,9 @@ import java.util.Map;
  */
 public interface IpReservationService {
 
-    Result<Boolean> checkUniqueSubnet(AuthToken token, String address, Long excludeId);
+    Result<Boolean> isSubnetAddressExists(String address, Long excludeId);
+
+    Result<Boolean> isReservedIpAddressExists(String address, Long excludeId);
 
     @Privileged(En_Privilege.RESERVED_IP_VIEW)
     Result<SearchResult<ReservedIp>> getReservedIps(AuthToken token, ReservedIpQuery query);
@@ -76,7 +78,6 @@ public interface IpReservationService {
     @Privileged(En_Privilege.SUBNET_REMOVE)
     @Auditable(En_AuditType.SUBNET_REMOVE)
     Result<Long> removeSubnet(AuthToken token, Subnet subnet);
-
 
     /**
      *

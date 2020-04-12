@@ -12,7 +12,7 @@ import ru.protei.winter.jdbc.JdbcHelper;
 public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements ReservedIpDAO {
 
     @Override
-    public ReservedIp checkExistsByAddress(String address) { return getByCondition("ip_address=?", address); }
+    public ReservedIp getReservedIpByAddress(String address) { return getByCondition("ip_address=?", address); }
 
     @SqlConditionBuilder
     public SqlCondition createReservedIpSqlCondition(ReservedIpQuery query) {

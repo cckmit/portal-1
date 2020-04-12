@@ -14,12 +14,12 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -40,12 +40,21 @@ public class IpReservationServiceImpl implements IpReservationService {
     JdbcManyRelationsHelper helper;
 
     @Override
-    public Result<Boolean> checkUniqueSubnet( AuthToken token, String address, Long excludeId) {
+    public Result<Boolean> isSubnetAddressExists( String address, Long excludeId) {
 
         if( address == null || address.isEmpty() )
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        return ok(checkUniqueSubnet( address, excludeId));
+        return ok(checkSubnetExists(address, excludeId));
+    }
+
+    @Override
+    public Result<Boolean> isReservedIpAddressExists( String address, Long excludeId) {
+
+        if( address == null || address.isEmpty() )
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+
+        return ok(checkReservedIpExists(address, excludeId));
     }
 
     @Override
@@ -106,11 +115,11 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<Subnet> createSubnet( AuthToken token, Subnet subnet) {
 
-        if (!validateFields(subnet)) {
+        if (!isValidSubnet(subnet)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!checkUniqueSubnet(subnet.getAddress(), subnet.getId()))
+        if (checkSubnetExists(subnet.getAddress(), subnet.getId()))
             return error(En_ResultStatus.ALREADY_EXIST);
 
         subnet.setCreated(new Date());
@@ -127,19 +136,16 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<Subnet> updateSubnet( AuthToken token, Subnet subnet ) {
 
-        if (!validateFields(subnet) || subnet.getId() == null) {
+        if (subnet.getId() == null || !isValidSubnet(subnet)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Subnet oldSubnet = subnetDAO.get(subnet.getId());
 
-        /*
-           @todo временно открыть редактирование адреса и маски
-         */
-/*        if (!Objects.equals(oldSubnet.getAddress(), subnet.getAddress()) ||
+        if (!Objects.equals(oldSubnet.getAddress(), subnet.getAddress()) ||
             !Objects.equals(oldSubnet.getMask(), subnet.getMask())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
-        }*/
+        }
 
         Boolean result = subnetDAO.merge(subnet);
         if ( !result ) {
@@ -176,12 +182,8 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     /* @todo задача резервирования долна выполняться в фоне? */
     public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
-        /*
-           @todo если задан "конкретный IP"
-                - проверка IP через NRPE
-                - update IP с ответом от NRPE
-         */
-        if (!validateFields(reservedIpRequest)) {
+
+        if (!isValidRequest(reservedIpRequest)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -216,14 +218,14 @@ public class IpReservationServiceImpl implements IpReservationService {
         reservedIp.setComment(reservedIpRequest.getComment());
 
         if (reservedIpRequest.isExact()) {
-            if (!checkUniqueReservedIp(reservedIpRequest.getIpAddress(), null)) {
+            if (checkReservedIpExists(reservedIpRequest.getIpAddress(), null)) {
                 return error(En_ResultStatus.ALREADY_EXIST);
             }
 
             reservedIp.setIpAddress(reservedIpRequest.getIpAddress());
             reservedIp.setMacAddress(reservedIpRequest.getMacAddress());
             String subnetAddress = reservedIpRequest.getIpAddress().substring(0, reservedIpRequest.getIpAddress().lastIndexOf("."));
-            Subnet subnet = subnetDAO.checkExistsByAddress(subnetAddress);
+            Subnet subnet = subnetDAO.getSubnetByAddress(subnetAddress);
             if (subnet == null) {
                 return error(En_ResultStatus.UNDEFINED_OBJECT);
             }
@@ -235,13 +237,8 @@ public class IpReservationServiceImpl implements IpReservationService {
                 return error(En_ResultStatus.NOT_CREATED);
 
             reservedIp.setId(reservedIpId);
-
-            /*
-               @todo запрос на NRPE,
-               ответ внести в reservedIp и merge в БД
-             */
-
             reservedIps.add(reservedIp);
+
         } else {
          /*
            @todo если задано "любая свободная подсеть"
@@ -265,8 +262,12 @@ public class IpReservationServiceImpl implements IpReservationService {
                 subnets = result.stream().collect(Collectors.toSet());
             }
 
-            int created = 0;
-            while (created < reservedIpRequest.getNumber()) {
+            /*
+               @todo
+                 что делать, если в выбранных подсетях не хватает свободных IPшников
+             */
+
+            while (reservedIps.size() < reservedIpRequest.getNumber()) {
                 ReservedIp ip = reservedIp;
                 subnets.forEach( s -> {
                             if (hasSubnetFreeIps(s.getId())) {
@@ -279,18 +280,24 @@ public class IpReservationServiceImpl implements IpReservationService {
                             }
                         }
                 );
+                if (ip.getIpAddress() == null || ip.getSubnetId() == null) {
+                    break;
+                }
 
                 Long reservedIpId = reservedIpDAO.persist(ip);
 
                 if (reservedIpId != null) {
-                    created ++;
+                    reservedIps.add(ip);
                 }
-                /*
-                  @todo запрос на NRPE,
-                    ответ внести в reservedIp и merge в БД
-                */
             }
         }
+
+        /*
+           @todo
+             - проверка IP через NRPE
+             - update IP с ответом от NRPE
+             -  ответ внести в reservedIp и merge в БД
+        */
 
         return ok(reservedIps);
     }
@@ -298,7 +305,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<ReservedIp> updateReservedIp( AuthToken token, ReservedIp reservedIp ) {
 
-        if (!validateFields(reservedIp) || reservedIp.getId() == null) {
+        if (reservedIp.getId() == null || !isValidReservedIp(reservedIp)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -314,7 +321,6 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
         return ok(reservedIp);
     }
-
 
     @Override
     public Result<Long> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
@@ -332,99 +338,49 @@ public class IpReservationServiceImpl implements IpReservationService {
         return ok(reservedIp.getId());
     }
 
-    private boolean checkUniqueSubnet (String address, Long excludeId) {
-        Subnet subnet = subnetDAO.checkExistsByAddress(address);
-        return subnet == null || subnet.getId().equals(excludeId);
+    private boolean isValidSubnet(Subnet subnet) {
+        return subnet != null
+                && StringUtils.isNotBlank(subnet.getAddress())
+                && subnet.getAddress().matches(CrmConstants.IpReservation.SUBNET_ADDRESS)
+                && StringUtils.isNotBlank(subnet.getMask());
     }
 
-    private boolean checkUniqueReservedIp (String address, Long excludeId) {
-        ReservedIp reservedIp = reservedIpDAO.checkExistsByAddress(address);
-        return reservedIp == null || reservedIp.getId().equals(excludeId);
-    }
-
-    private boolean validateFields(Subnet subnet) {
-        if (subnet == null) {
+    private boolean isValidRequest(ReservedIpRequest reservedIpRequest) {
+        if (reservedIpRequest == null || reservedIpRequest.getOwnerId() == null) {
             return false;
         }
-
-        if (StringUtils.isBlank(subnet.getAddress()) || StringUtils.isBlank(subnet.getMask())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean validateFields(ReservedIpRequest reservedIpRequest) {
-        if (reservedIpRequest == null) {
-            return false;
-        }
-
-        /* @todo
-             - если флаг=конкретный адрес, проверить уникальность заданного адреса
-             - если флаг=любая свободная, проверить заданное кол-во на null и 0
-             - проверить задан ли owner
-             - проверить дату освобождения на null, если пользователь неадмин
-        */
-
-        if (reservedIpRequest.getOwnerId() == null) {
-            return false;
-        }
-
-        // @todo проверка дат
 
         if (reservedIpRequest.isExact()) {
-            if (StringUtils.isBlank(reservedIpRequest.getIpAddress()) ||
-                    !isValidIpAddress(reservedIpRequest.getIpAddress())) {
-                return false;
-            }
-
-            if (StringUtils.isNotBlank(reservedIpRequest.getMacAddress()) &&
-                    !isValidMacAddress(reservedIpRequest.getMacAddress())) {
+            if (!isValidIpAddress(reservedIpRequest.getIpAddress()) ||
+                !isValidMacAddress(reservedIpRequest.getMacAddress())) {
                 return false;
             }
         } else {
-/*            // @todo если списка нет, берем из любой подсети
-            if (reservedIpRequest.getSubnets() == null || reservedIpRequest.getSubnets().isEmpty()) {
-                return false;
-            }*/
-
-            if ((reservedIpRequest.getNumber() < MIN_IPS_COUNT || reservedIpRequest.getNumber() >= MAX_IPS_COUNT)) {
+            if (reservedIpRequest.getNumber() < CrmConstants.IpReservation.MIN_IPS_COUNT ||
+                reservedIpRequest.getNumber() > CrmConstants.IpReservation.MAX_IPS_COUNT) {
                 return false;
             }
         }
 
-        if(reservedIpRequest.getDateIntervalType() == null ||
-                ( En_DateIntervalType.FIXED.equals(reservedIpRequest.getDateIntervalType()) &&
-                ( reservedIpRequest.getReserveDate() == null ||
-                  reservedIpRequest.getReleaseDate() == null )
-                )
-        ) {
+        if(reservedIpRequest.getDateIntervalType() == null
+          || ( En_DateIntervalType.FIXED.equals(reservedIpRequest.getDateIntervalType())
+                && !isValidUseRange( reservedIpRequest.getReserveDate(),
+                                     reservedIpRequest.getReleaseDate())
+              ))
+        {
             return false;
         }
 
         return true;
     }
 
-    private boolean validateFields(ReservedIp reservedIp) {
-        if (reservedIp == null) {
-            return false;
-        }
-
-        if (reservedIp.getOwnerId() == null) {
-            return false;
-        }
-
-        if (StringUtils.isBlank(reservedIp.getIpAddress()) ||
-                (StringUtils.isNotBlank(reservedIp.getIpAddress()) && !isValidMacAddress(reservedIp.getMacAddress())
-            )) {
-            return false;
-        }
-
-        /* @todo
-             - проверить дату освобождения на null, если пользователь неадмин
-        */
-
-        return true;
+    private boolean isValidReservedIp(ReservedIp reservedIp) {
+        return reservedIp != null
+               && reservedIp.getOwnerId() != null
+               && isValidIpAddress(reservedIp.getIpAddress())
+               && isValidMacAddress(reservedIp.getMacAddress())
+               && isValidUseRange(reservedIp.getReserveDate(),
+                                  reservedIp.getReleaseDate());
     }
 
     @Override
@@ -452,16 +408,23 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private boolean isValidIpAddress(String ipAddress) {
-        return true;
+        return ipAddress.matches(CrmConstants.IpReservation.IP_ADDRESS);
     }
 
     private boolean isValidMacAddress(String macAddress) {
-        return true;
+        return StringUtils.isEmpty(macAddress)
+                || macAddress.matches(CrmConstants.IpReservation.MAC_ADDRESS);
+    }
+
+    private boolean isValidUseRange(Date from, Date to) {
+        return from != null
+                && to != null
+                && from.before(to);
     }
 
     private boolean hasSubnetFreeIps(Long subnetId) {
         Long count = reservedIpDAO.countByExpression("subnet_id=?", subnetId);
-        return count < MAX_IPS_COUNT;
+        return count < CrmConstants.IpReservation.MAX_IPS_COUNT;
     }
 
     private String getAnyFreeIpInSubnet(Long subnetId) {
@@ -471,8 +434,8 @@ public class IpReservationServiceImpl implements IpReservationService {
         query.setSubnetId(subnetId);
         SearchResult<ReservedIp> sr = reservedIpDAO.getSearchResultByQuery(query);
 
-        if (CollectionUtils.isNotEmpty(sr.getResults()) && sr.getResults().size() < MAX_IPS_COUNT) {
-            for (int i=MIN_IPS_COUNT; i < MAX_IPS_COUNT; i++) {
+        if (CollectionUtils.isNotEmpty(sr.getResults()) && sr.getResults().size() < CrmConstants.IpReservation.MAX_IPS_COUNT) {
+            for (int i=CrmConstants.IpReservation.MIN_IPS_COUNT; i < CrmConstants.IpReservation.MAX_IPS_COUNT; i++) {
                 String checkedIp = subnet.getAddress()+"."+i;
                 if (!sr.getResults()
                         .stream()
@@ -488,9 +451,31 @@ public class IpReservationServiceImpl implements IpReservationService {
         return null;
     }
 
+    private boolean checkSubnetExists (String address, Long excludeId) {
+        Subnet subnet = subnetDAO.getSubnetByAddress(address);
+
+        if (subnet == null)
+            return false;
+
+        if (excludeId != null && subnet.getId().equals(excludeId))
+            return false;
+
+        return true;
+    }
+
+    private boolean checkReservedIpExists (String address, Long excludeId) {
+        ReservedIp reservedIp = reservedIpDAO.getReservedIpByAddress(address);
+
+        if (reservedIp == null)
+            return false;
+
+        if (excludeId != null && reservedIp.getId().equals(excludeId))
+            return false;
+
+        return true;
+    }
+
     public static final int SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS = 3;
-    public static final int MIN_IPS_COUNT = 1;
-    public static final int MAX_IPS_COUNT = 256;
 
     private final static Logger log = LoggerFactory.getLogger( IpReservationService.class );
 }

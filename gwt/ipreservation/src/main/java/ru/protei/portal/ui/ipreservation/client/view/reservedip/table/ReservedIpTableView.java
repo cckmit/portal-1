@@ -94,15 +94,6 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     @Override
     public HTMLPanel getPreviewContainer () { return previewContainer; }
 
-/*    @Override
-    public void addSeparator( String text ) {
-        Element elem = DOM.createDiv();
-        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-        safeHtmlBuilder.appendHtmlConstant( "<b>" ).appendEscapedLines( text ).appendHtmlConstant( "</b>" );
-        elem.setInnerSafeHtml( safeHtmlBuilder.toSafeHtml() );
-        table.addCustomRow( elem, "subnet", null );
-    }*/
-
     @Override
     public void hideElements() {
         hideComment.setVisibility( false );
@@ -185,16 +176,16 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         public void fillColumnValue(Element cell, ReservedIp value) {
             if ( value == null ) { return; }
 
-            com.google.gwt.dom.client.Element divElement = DOM.createDiv();
+            Element divElement = DOM.createDiv();
+            divElement.addClassName("reserved-ip-info");
 
             if (value.getLastCheckDate() != null) {
-                com.google.gwt.dom.client.Element checkDateElement = DOM.createElement("p");
+                Element checkDateElement = DOM.createElement("p");
                 checkDateElement.setInnerText(DateFormatter.formatDateTime(value.getLastCheckDate()));
                 divElement.appendChild(checkDateElement);
             }
             if (value.getLastCheckInfo() != null) {
-
-                com.google.gwt.dom.client.Element checkInfoElement = DOM.createElement("p");
+                Element checkInfoElement = DOM.createElement("p");
                 checkInfoElement.setInnerText( value.getLastCheckInfo() );
                 divElement.appendChild(checkInfoElement);
             }
@@ -210,7 +201,10 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         }
 
         @Override
-        public void fillColumnValue(Element cell, ReservedIp value) { cell.setInnerText(value.getOwner().getDisplayName()); }
+        public void fillColumnValue(Element cell, ReservedIp value) {
+            cell.addClassName( "reseved-ip-owner" );
+            cell.setInnerText(value.getOwner().getDisplayName());
+        }
     };
 
     private ClickColumn<ReservedIp> comment = new ClickColumn<ReservedIp>() {
@@ -221,7 +215,10 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
 
         @Override
         public void fillColumnValue(Element cell, ReservedIp value) {
-            cell.setInnerText(value.getComment());
+            cell.addClassName( "reserved-ip-info" );
+            cell.setInnerText( value == null ? "" :
+                    value.getComment() == null? "" :
+                    value.getComment() );
         }
     };
 

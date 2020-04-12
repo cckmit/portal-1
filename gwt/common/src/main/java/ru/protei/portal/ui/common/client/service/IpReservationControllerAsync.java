@@ -24,9 +24,9 @@ public interface IpReservationControllerAsync {
 
     void getSubnetsOptionList(ReservedIpQuery query, AsyncCallback<List<SubnetOption>> async);
 
-    void isSubnetUnique(String address, Long exceptId, AsyncCallback<Boolean> async);
+    void isSubnetAddressExists(String address, Long id, AsyncCallback<Boolean> async);
 
-     void getReservedIpsBySubnets(ReservedIpQuery query, AsyncCallback<Map<Subnet, List<ReservedIp>>> async);
+    void getReservedIpsBySubnets(ReservedIpQuery query, AsyncCallback<Map<Subnet, List<ReservedIp>>> async);
 
     void getReservedIpList(ReservedIpQuery query, AsyncCallback<SearchResult<ReservedIp>> async);
 
@@ -39,4 +39,6 @@ public interface IpReservationControllerAsync {
     void removeSubnet(Subnet subnet, AsyncCallback<Long> async);
 
     void removeReservedIp(ReservedIp reservedIp, AsyncCallback<Long> async);
+
+    void isReservedIpAddressExists(String address, Long id, AsyncCallback<Boolean> async);
 }

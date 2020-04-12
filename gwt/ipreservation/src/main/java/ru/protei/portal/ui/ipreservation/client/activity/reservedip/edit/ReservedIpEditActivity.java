@@ -89,31 +89,22 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         });
     }
 
-/*    private void resetView () {
-        view.macAddress().setValue("");
-        view.owner().setValue(null);
-        view.useRange().setValue();
-        // @todo dates
-        view.comment().setText("");
-
-        view.saveVisibility().setVisible( hasPrivileges() );
-        view.saveEnabled().setEnabled(true);
-    }*/
-
     private void fillView() {
         view.setAddress(reservedIp.getIpAddress());
         view.macAddress().setValue(reservedIp.getMacAddress());
         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
-        view.owner().setValue(reservedIp.getOwner().toShortNameShortView());
+        view.owner().setValue(reservedIp.getOwner().toFullNameShortView());
 
         view.saveVisibility().setVisible(hasPrivileges());
     }
 
     private ReservedIp fillReservedIp() {
-        reservedIp.setMacAddress(view.macAddress().getValue());
+        String macAddress = view.macAddress().getValue() == null || view.macAddress().getValue().trim().isEmpty() ?
+                null : view.macAddress().getValue().trim();
+        reservedIp.setMacAddress(macAddress);
         reservedIp.setOwnerId(view.owner().getValue().getId());
-        reservedIp.setComment(view.comment().getText());
+        reservedIp.setComment(view.comment().getText().trim());
         DateInterval reservedFor = view.useRange().getValue();
         reservedIp.setReserveDate(reservedFor.from);
         reservedIp.setReleaseDate(reservedFor.to);

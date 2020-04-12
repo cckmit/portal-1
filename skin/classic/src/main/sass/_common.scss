@@ -4019,3 +4019,10 @@ table {
 .max-z-index {
   z-index: 9999 !important;
 }
+
+.reserved-ip-info {
+  max-height: 4.26em;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

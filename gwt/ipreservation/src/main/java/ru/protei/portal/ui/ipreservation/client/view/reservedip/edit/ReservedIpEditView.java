@@ -2,6 +2,7 @@ package ru.protei.portal.ui.ipreservation.client.view.reservedip.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -38,7 +39,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     }
 
     @Override
-    public void setAddress(String address) { this.address.setText(String.valueOf(address)); }
+    public void setAddress(String address) { this.address.setInnerText(String.valueOf(address)); }
 
     @Override
     public HasValue<String> macAddress() { return macAddress; }
@@ -89,7 +90,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     }
 
     @UiField
-    Anchor address;
+    HeadingElement address;
     @UiField
     ValidableTextBox macAddress;
     @UiField

@@ -6,4 +6,5 @@ package ru.protei.portal.ui.ipreservation.client.activity.subnet.edit;
 public interface AbstractSubnetEditActivity{
     void onSaveClicked();
     void onCancelClicked();
+    void onChangeAddress();
 }

@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 
 public interface SubnetDAO extends PortalBaseDAO<Subnet> {
 
-    Subnet checkExistsByAddress(String address);
+    Subnet getSubnetByAddress(String address);
 
     @SqlConditionBuilder
     SqlCondition createSubnetSqlCondition(ReservedIpQuery query);

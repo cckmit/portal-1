@@ -9,8 +9,10 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.IpReservationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -18,6 +20,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.ipreservation.client.view.widget.mode.En_ReservedMode;
 
 import java.util.Date;
@@ -81,6 +84,29 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.anyFreeIpsVisibility().setVisible(En_ReservedMode.ANY_FREE_IPS.equals(mode));
     }
 
+    @Override
+    public void onChangeIpAddress() {
+        String value = view.ipAddress().getValue().trim();
+
+        if (value.isEmpty()) {
+            view.setIpAddressStatus(NameStatus.NONE);
+            return;
+        }
+        ipReservationService.isReservedIpAddressExists(
+                value,
+                null,
+                new RequestCallback<Boolean>() {
+                    @Override
+                    public void onError(Throwable throwable) { }
+
+                    @Override
+                    public void onSuccess(Boolean isExists) {
+                        view.setIpAddressStatus(isExists ? NameStatus.ERROR : NameStatus.SUCCESS);
+                    }
+                }
+        );
+    }
+
     private void resetView () {
         view.ipAddress().setValue("");
         view.macAddress().setValue("");
@@ -108,6 +134,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(true);
+
+        resetValidationStatus();
     }
 
     private ReservedIpRequest fillReservedIpRequest() {
@@ -122,13 +150,13 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 break;
             case ANY_FREE_IPS :
                 reservedIpRequest.setExact(false);
-                reservedIpRequest.setNumber(view.number().getValue());
+                reservedIpRequest.setNumber(new Long(view.number().getValue()));
                 reservedIpRequest.setSubnets(view.subnets().getValue());
                 break;
         }
 
         reservedIpRequest.setOwnerId(view.owner().getValue().getId());
-        reservedIpRequest.setComment(view.comment().getText());
+        reservedIpRequest.setComment(view.comment().getText().trim());
 
         En_DateIntervalType dateIntervalType = view.useRange().getValue().getIntervalType();
         reservedIpRequest.setDateIntervalType(dateIntervalType);
@@ -143,22 +171,32 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     }
 
     private boolean validateView() {
-/*
-        if(!view.ipAddress().isValid()){
-            fireEvent(new NotifyEvents.Show(lang.errIpAddress(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
 
-        if(view.number() != null && !view.number().isValid()){
-            fireEvent(new NotifyEvents.Show(lang.errIpAddress(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
+        if (En_ReservedMode.EXACT_IP.equals(view.reservedMode().getValue())) {
 
-        if(!view.macAddress().isValid()){
-            fireEvent(new NotifyEvents.Show(lang.errMacAddress(), NotifyEvents.NotifyType.ERROR));
-            return false;
+            if(!view.ipAddressValidator().isValid()){
+                fireEvent(new NotifyEvents.Show(lang.reservedIpWrongIpAddress(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
+
+            if(view.macAddress().getValue() != null && !view.macAddressValidator().isValid()){
+                fireEvent(new NotifyEvents.Show(lang.reservedIpWrongMacAddress(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
+        } else {
+            Long number = view.number().getValue() == null || view.number().getValue().trim().isEmpty() ?
+                    null : new Long(view.number().getValue());
+
+            if(number == null
+               || number < CrmConstants.IpReservation.MIN_IPS_COUNT
+               || number > CrmConstants.IpReservation.MAX_IPS_COUNT ){
+                fireEvent(new NotifyEvents.Show(lang.reservedIpWrongNumber(
+                        CrmConstants.IpReservation.MIN_IPS_COUNT,
+                        CrmConstants.IpReservation.MAX_IPS_COUNT
+                ), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
         }
-        */
 
         if(view.owner().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpNeedSelectOwner(), NotifyEvents.NotifyType.ERROR));
@@ -176,6 +214,10 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         }
 
         return true;
+    }
+
+    private void resetValidationStatus() {
+        view.setIpAddressStatus(NameStatus.NONE);
     }
 
     private boolean hasPrivileges() {

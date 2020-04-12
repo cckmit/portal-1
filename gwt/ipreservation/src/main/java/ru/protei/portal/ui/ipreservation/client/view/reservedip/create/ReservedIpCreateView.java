@@ -2,17 +2,21 @@ package ru.protei.portal.ui.ipreservation.client.view.reservedip.create;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
@@ -37,6 +41,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         initWidget(ourUiBinder.createAndBindUi(this));
         ipAddress.setRegexp( CrmConstants.IpReservation.IP_ADDRESS );
         macAddress.setRegexp( CrmConstants.IpReservation.MAC_ADDRESS );
+        number.setRegexp( CrmConstants.IpReservation.NUMBER );
         ensureDebugIds();
     }
 
@@ -52,10 +57,24 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasValue<String> ipAddress() { return ipAddress; }
 
     @Override
-    public HasValue<Long> number() { return number; }
+    public HasValidable ipAddressValidator() { return ipAddress; }
+
+    @Override
+    public void setIpAddressStatus(NameStatus status) {
+        verifiableIcon.setClassName(status.getStyle());
+    }
 
     @Override
     public HasValue<String> macAddress() { return macAddress; }
+
+    @Override
+    public HasValidable macAddressValidator() { return macAddress; }
+
+    @Override
+    public HasValue<String> number() { return number; }
+
+    @Override
+    public HasValidable numberValidator() { return number; }
 
     @Override
     public HasText comment() { return comment; }
@@ -68,12 +87,6 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
 
     @Override
     public HasValue<DateIntervalWithType> useRange() { return useRange; }
-
-    @Override
-    public HasValidable ipAddressValidator() { return ipAddress; }
-
-    @Override
-    public HasValidable macAddressValidator() { return macAddress; }
 
     @Override
     public HasWidgets getExaсtIpContainer() { return exactIpContainer; }
@@ -91,9 +104,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasVisibility anyFreeIpsVisibility() { return anyFreeIpsContainer; }
 
     @Override
-    public HasVisibility reserveModeVisibility() {
-        return reservedMode;
-    }
+    public HasVisibility reserveModeVisibility() { return reservedMode; }
 
     @Override
     public HasEnabled ownerEnabled() { return ipOwner; }
@@ -122,6 +133,13 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         }
     }
 
+    @UiHandler("ipAddress")
+    public void onChangeIpAddress( KeyUpEvent event ) {
+        verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
+        timer.cancel();
+        timer.schedule( 300 );
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -139,13 +157,24 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }
 
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if ( activity != null ) {
+                activity.onChangeIpAddress();
+            }
+        }
+    };
+
     @Inject
     @UiField(provided = true)
     ReservedModeBtnGroup reservedMode;
     @UiField
     ValidableTextBox ipAddress;
     @UiField
-    LongBox number;
+    Element verifiableIcon;
+    @UiField
+    ValidableTextBox number;
     @UiField
     ValidableTextBox macAddress;
     @UiField

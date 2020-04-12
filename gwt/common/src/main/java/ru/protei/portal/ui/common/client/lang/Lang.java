@@ -2393,4 +2393,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveReservedIpUseInterval();
 
     String errSaveReservedIpNeedSelectOwner();
+
+    String reservedIpWrongNumber(int minCount, int maxCount);
 }

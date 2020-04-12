@@ -27,7 +27,7 @@ public interface IpReservationController extends RemoteService {
 
     List<SubnetOption> getSubnetsOptionList(ReservedIpQuery query) throws RequestFailedException;
 
-    boolean isSubnetUnique(String address, Long exceptId) throws RequestFailedException;
+    Boolean isSubnetAddressExists(String address, Long exceptId) throws RequestFailedException;
 
     Map<Subnet, List<ReservedIp>> getReservedIpsBySubnets(ReservedIpQuery query) throws RequestFailedException;
 
@@ -42,4 +42,6 @@ public interface IpReservationController extends RemoteService {
     Long removeSubnet(Subnet subnet) throws RequestFailedException;
 
     Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException;
+
+    Boolean isReservedIpAddressExists(String address, Long exceptId) throws RequestFailedException;
 }
