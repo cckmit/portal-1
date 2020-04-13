@@ -58,12 +58,19 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
     @Override
     public List<CaseComment> getLastNotNullTextCommentsForReport(List<Long> caseId) {
-        return jdbcTemplate.query("SELECT cs.ID, cs.CASE_ID, cs.CREATED, cs.COMMENT_TEXT " +
-                        "FROM case_comment cs inner join (SELECT Case_id, max(CREATED) created " +
-                        "                                 FROM case_comment " +
-                        "                                 WHERE CASE_ID in " + makeInArg(caseId) + " AND COMMENT_TEXT is not NULL " +
-                        "                                   group by CASE_ID) " +
-                        "cs_max on cs.CASE_ID = cs_max.CASE_ID and cs.CREATED = cs_max.created;",
+        return jdbcTemplate.query( "SELECT ID, CASE_ID, CREATED, COMMENT_TEXT " +
+                        "FROM case_comment " +
+                        "WHERE id in " +
+                            "(SELECT id " +
+                            "From (SELECT max(cs.id) id, cs.CASE_ID " + // "created" field is not unique, select last comment by id
+                                "FROM case_comment cs " +
+                                    "inner join (SELECT Case_id, max(CREATED) created " +     // select last created date
+                                                "FROM case_comment " +
+                                                "WHERE CASE_ID in " + makeInArg(caseId) + " AND COMMENT_TEXT is not NULL " +
+                                                    "AND COMMENT_TEXT is not NULL " +
+                                                "group by CASE_ID) last_created_table " +
+                                            "on cs.CASE_ID = last_created_table.CASE_ID and cs.CREATED = last_created_table.created " +
+                            "group by cs.CASE_ID) last_id_table);",
                 (ResultSet rs, int rowNum) -> {
                     CaseComment caseComment = new CaseComment();
                     caseComment.setId(rs.getLong("ID"));

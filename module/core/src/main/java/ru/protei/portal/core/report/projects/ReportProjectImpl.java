@@ -97,9 +97,10 @@ public class ReportProjectImpl implements ReportProject {
 
         jdbcManyRelationsHelper.fill(cases, "locations");
 
-        Map<Long, CaseComment> CaseIdToCaseComment = caseCommentDAO
+        List<CaseComment> lastNotNullTextCommentsForReport = caseCommentDAO
                 .getLastNotNullTextCommentsForReport(
-                        cases.stream().map(CaseObject::getId).collect(Collectors.toList()))
+                        cases.stream().map(CaseObject::getId).collect(Collectors.toList()));
+        Map<Long, CaseComment> CaseIdToCaseComment = lastNotNullTextCommentsForReport
                 .stream().collect(Collectors.toMap(CaseComment::getCaseId, Function.identity()));
 
         return cases.stream().map(caseObject ->
