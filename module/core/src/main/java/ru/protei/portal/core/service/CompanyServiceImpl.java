@@ -7,6 +7,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -52,6 +53,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    YoutrackService youtrackService;
 
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
@@ -217,6 +221,10 @@ public class CompanyServiceImpl implements CompanyService {
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
 
+        String newId = youtrackService.createCompany(company.getCname()).getData();
+
+        log.info( "added new company to youtrack = {}", newId );
+
         return ok(company);
     }
 
@@ -227,10 +235,23 @@ public class CompanyServiceImpl implements CompanyService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        Company oldCompany = companyDAO.get(company.getId());
+
+        if (oldCompany == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        String oldName = oldCompany.getCname();
+
         Boolean result = companyDAO.merge(company);
 
         if ( !result )
             return error(En_ResultStatus.NOT_UPDATED);
+
+        if (StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)){
+            String newId = youtrackService.updateCompany(oldName, company.getCname()).getData();
+            log.info( "updated company to youtrack = {}", newId );
+        }
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         return ok(company);

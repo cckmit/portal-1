@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtBundleElement;
+import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.filterfield.YtFilterField;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
@@ -32,6 +33,28 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 public class YoutrackApiImpl implements YoutrackApi {
+
+    @Override
+    public Result<YtStateBundleElement> createCompany(YtStateBundleElement company) {
+        return create(new YoutrackRequest<>(YtStateBundleElement.class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle("34-199"))
+                .save(company));
+    }
+
+    @Override
+    public Result<YtStateBundleElement> updateCompanyName(String companyId, YtStateBundleElement company) {
+        return update(new YoutrackRequest<>(YtStateBundleElement.class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsValue("34-199", companyId))
+                .save(company));
+    }
+
+    @Override
+    public Result<List<YtStateBundleElement>> getCompanyByName(String companyName) {
+        return read(new YoutrackRequest<>(YtStateBundleElement[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle("34-199"))
+                .query(companyName))
+                .map(Arrays::asList);
+    }
 
     @Override
     public Result<YtIssue> createIssueAndReturnId(YtIssue issue) {

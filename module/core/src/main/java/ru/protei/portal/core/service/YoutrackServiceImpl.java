@@ -78,6 +78,31 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
+    public Result<String> createCompany(String companyName) {
+        YtStateBundleElement company = makeBundleElement(companyName);
+        return api.createCompany(company)
+                .map(stateBundleElement -> stateBundleElement.id);
+    }
+
+    @Override
+    public Result<String> updateCompany(String companyOldName, String companyNewName) {
+        Result<String> companyResult = api.getCompanyByName(companyOldName)
+                .flatMap(companies -> {
+                    if (companies.size() == 1) return ok(companies.get(0));
+                    return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one company: " + companies.size());
+                })
+                .map(company -> company.id);
+        if (companyResult.isError()) {
+            log.info("updateCompany(): companyOldName={}, companyNewName={} | failed to get company", companyOldName, companyNewName);
+            return error(companyResult.getStatus(), companyResult.getMessage());
+        }
+
+        YtStateBundleElement companyToUpdate = makeBundleElement(companyNewName);
+        return api.updateCompanyName(companyResult.getData(), companyToUpdate)
+                .map(stateBundleElement -> stateBundleElement.id);
+    }
+
+    @Override
     public Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter(String projectName, Date updatedAfter) {
         String query = String.format("project: %s updated: %s .. *", projectName, dateToYtString(updatedAfter));
         return api.getIssueIdsByQuery(query).map(issues -> CollectionUtils.stream(issues)
@@ -219,6 +244,12 @@ public class YoutrackServiceImpl implements YoutrackService {
         issueStateChange.setAuthorLogin(activityItem.author != null ? activityItem.author.login : null);
         issueStateChange.setAuthorFullName(activityItem.author != null ? activityItem.author.fullName : null);
         return issueStateChange;
+    }
+
+    private YtStateBundleElement makeBundleElement(String elementName) {
+        YtStateBundleElement element = new YtStateBundleElement();
+        element.name = elementName;
+        return element;
     }
 
     private YtIssue makeNewBasicIssue(String projectId /* id, not name! */, String summary, String description) {

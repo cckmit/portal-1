@@ -17,6 +17,10 @@ public interface YoutrackService {
 
     Result<String> createIssue( String projectName, String summary, String description);
 
+    Result<String> createCompany(String companyName);
+
+    Result<String> updateCompany(String companyOldName, String companyNewName);
+
     Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectName, Date updatedAfter);
 
     Result<YouTrackIssueInfo> getIssueInfo( String issueId );
