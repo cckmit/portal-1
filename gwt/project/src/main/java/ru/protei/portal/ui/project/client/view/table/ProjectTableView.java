@@ -123,20 +123,27 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
                 value -> {
                     StringBuilder content = new StringBuilder();
-                    content.append("<b>").append(value.getId()).append("</b>");
+                    content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
 
                     if (value.getProductDirection() != null) {
-                        content.append("<br/>").append(value.getProductDirection().getDisplayText());
-                    }
-                    if (value.getCustomerType() != null) {
-                        content.append("<br/><i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>");
-                    }
-                    if ( value.getRegion() != null && value.getRegion().getDisplayText() != null) {
-                        content.append("<br/>").append(value.getRegion().getDisplayText());
+                        content.append(value.getProductDirection().getDisplayText());
                     }
                     return content.toString();
                 });
         columns.add(numberColumn);
+
+        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomerType(), "customers",
+                value -> {
+                    StringBuilder content = new StringBuilder();
+                    if (value.getCustomerType() != null) {
+                        content.append("<i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>").append("<br/>");
+                    }
+                    if ( value.getRegion() != null && value.getRegion().getDisplayText() != null) {
+                        content.append(value.getRegion().getDisplayText());
+                    }
+                    return content.toString();
+                });
+        columns.add(customerColumn);
 
         DynamicColumn<Project> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
                 value -> "<b>" + value.getName() + "</b>" + (value.getDescription() == null ? "" : "<br/><small>" + value.getDescription() + "</small>"));
@@ -166,6 +173,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
         table.addColumn( statusColumn.header, statusColumn.values );
         table.addColumn( numberColumn.header, numberColumn.values );
+        table.addColumn( customerColumn.header, customerColumn.values );
         table.addColumn( infoColumn.header, infoColumn.values );
         table.addColumn( managerColumn.header, managerColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );

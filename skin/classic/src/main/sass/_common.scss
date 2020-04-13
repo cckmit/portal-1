@@ -2126,6 +2126,59 @@ a {
 }
 
 /**** PROJECTS ****/
+.projects {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .status {
+      width: 45px;
+    }
+
+    .number {
+      width: 8%;
+    }
+    .customers {
+      width: 12%;
+    }
+    .managers {
+      width: 15%;
+    }
+    .info {
+    }
+  }
+}
+
 
 .project-main-info {
   display: flex;
