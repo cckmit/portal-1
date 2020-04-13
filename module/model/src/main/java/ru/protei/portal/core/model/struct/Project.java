@@ -315,7 +315,7 @@ public class Project extends AuditableObject {
             List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
             project.getMembers().stream()
                     .filter(member -> projectRoles.contains(member.getRole()))
-                    .map(member -> PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()))
+                    .map(member -> PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()))
                     .forEach(projectInfo::addTeamMember);
         }
 

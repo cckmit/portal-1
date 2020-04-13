@@ -65,25 +65,28 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
 
     private Result<AssembledProjectEvent> fillLinks(AssembledProjectEvent event) {
         if (event.isLinksFilled()) {
-            log.info("fillLinks(): CaseObjectID={} Links are already filled.", event.getProjectId());
+            log.info("fillLinks(): projectId={} Links are already filled.", event.getProjectId());
             return ok(event);
         }
 
-        log.info("fillLinks(): CaseObjectID={} Try to fill links.", event.getProjectId());
+        log.info("fillLinks(): projectId={} Try to fill links.", event.getProjectId());
         event.setExistingLinks(caseLinkDAO.getListByQuery(new CaseLinkQuery(event.getProjectId(), false)));
-        log.info("fillLinks(): CaseObjectID={} Links are successfully filled.", event.getProjectId());
+        log.info("fillLinks(): projectId={} Links are successfully filled.", event.getProjectId());
 
         return ok(event);
     }
 
     private Result<AssembledProjectEvent> fillComments(AssembledProjectEvent event) {
         if (event.isCaseCommentsFilled()) {
+            log.info("fillComments(): projectId={} Comments are already filled.", event.getProjectId());
             return ok(event);
         }
 
         Date upperBoundDate = addSeconds(new Date(), 1);
 
+        log.info("fillComments(): projectId={} Try to fill comments.", event.getProjectId());
         event.setExistingComments(caseCommentDAO.getCaseComments(new CaseCommentQuery(event.getProjectId(), upperBoundDate)));
+        log.info("fillComments(): projectId={} Comments are successfully filled.", event.getProjectId());
 
         return ok(event);
     }

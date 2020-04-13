@@ -4,7 +4,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 
 import java.io.StringWriter;
 import java.io.Writer;

@@ -8,7 +8,7 @@ public class ProjectSaveEvent extends ApplicationEvent implements AbstractProjec
     private Long personId;
     private Object source;
 
-    public ProjectSaveEvent(Project project, Long personId, Object source) {
+    public ProjectSaveEvent(Object source, Project project, Long personId) {
         super(source);
         this.project = project;
         this.personId = personId;

@@ -9,7 +9,7 @@ public class ProjectLinkEvent extends ApplicationEvent implements AbstractProjec
     private CaseLink addedLink;
     private CaseLink removedLink;
 
-    public ProjectLinkEvent(Long projectId, Long personId, CaseLink addedLink, CaseLink removedLink, Object source) {
+    public ProjectLinkEvent(Object source, Long projectId, Long personId, CaseLink addedLink, CaseLink removedLink) {
         super(source);
         this.projectId = projectId;
         this.personId = personId;

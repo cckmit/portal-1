@@ -12,7 +12,7 @@ public class ProjectCommentEvent extends ApplicationEvent implements AbstractPro
     private Long projectId;
     private Object source;
 
-    public ProjectCommentEvent(CaseComment oldComment, CaseComment newComment, CaseComment removedComment, Long personId, Long projectId, Object source) {
+    public ProjectCommentEvent(Object source, CaseComment oldComment, CaseComment newComment, CaseComment removedComment, Long personId, Long projectId) {
         super(source);
         this.oldComment = oldComment;
         this.newComment = newComment;

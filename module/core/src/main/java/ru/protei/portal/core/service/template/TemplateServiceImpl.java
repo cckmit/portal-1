@@ -431,39 +431,39 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("recipients", recipients);
 
         templateModel.put("nameChanged", event.isNameChanged());
-        templateModel.put("oldName", getObjectOrNull(oldProjectState, Project::getName));
+        templateModel.put("oldName", getNullOrElse(oldProjectState, Project::getName));
         templateModel.put("newName", newProjectState.getName());
 
         templateModel.put("descriptionChanged", event.isDescriptionChanged());
-        templateModel.put("oldDescription", getObjectOrNull(oldProjectState, Project::getDescription));
+        templateModel.put("oldDescription", getNullOrElse(oldProjectState, Project::getDescription));
         templateModel.put("newDescription", newProjectState.getDescription());
 
         templateModel.put("stateChanged", event.isStateChanged());
-        templateModel.put("oldState", getObjectOrNull(oldProjectState, Project::getState));
+        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
         templateModel.put("newState", newProjectState.getState());
 
         templateModel.put("regionChanged", event.isRegionChanged());
-        templateModel.put("oldRegion", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getRegion), EntityOption::getDisplayText));
-        templateModel.put("newRegion", getObjectOrNull(newProjectState.getRegion(), EntityOption::getDisplayText));
+        templateModel.put("oldRegion", getNullOrElse(getNullOrElse(oldProjectState, Project::getRegion), EntityOption::getDisplayText));
+        templateModel.put("newRegion", getNullOrElse(newProjectState.getRegion(), EntityOption::getDisplayText));
 
         templateModel.put("companyChanged", event.isCompanyChanged());
-        templateModel.put("oldCompany", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getCustomer), Company::getCname));
+        templateModel.put("oldCompany", getNullOrElse(getNullOrElse(oldProjectState, Project::getCustomer), Company::getCname));
         templateModel.put("newCompany", newProjectState.getCustomer().getCname());
 
         templateModel.put("customerTypeChanged", event.isCustomerTypeChanged());
-        templateModel.put("oldCustomerType", getObjectOrNull(oldProjectState, Project::getCustomerType));
+        templateModel.put("oldCustomerType", getNullOrElse(oldProjectState, Project::getCustomerType));
         templateModel.put("newCustomerType", newProjectState.getCustomerType());
 
         templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
-        templateModel.put("oldProductDirection", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getProductDirection), EntityOption::getDisplayText));
+        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirection), EntityOption::getDisplayText));
         templateModel.put("newProductDirection", newProjectState.getProductDirection().getDisplayText());
 
         templateModel.put("productChanged", event.isProductChanged());
-        templateModel.put("oldProduct", getObjectOrNull(getObjectOrNull(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
-        templateModel.put("newProduct", getObjectOrNull(newProjectState.getSingleProduct(), ProductShortView::getName));
+        templateModel.put("oldProduct", getNullOrElse(getNullOrElse(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
+        templateModel.put("newProduct", getNullOrElse(newProjectState.getSingleProduct(), ProductShortView::getName));
 
         templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
-        templateModel.put("oldSupportValidity", getObjectOrNull(oldProjectState, Project::getTechnicalSupportValidity));
+        templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));
         templateModel.put("newSupportValidity", newProjectState.getTechnicalSupportValidity());
 
         templateModel.put("team", event.getTeamDiffs());
@@ -483,8 +483,8 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private <T, R> R getObjectOrNull(T value, Function<T, R> projectToObjectFunction) {
-        return value == null ? null : projectToObjectFunction.apply(value);
+    private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
+        return value == null ? null : orElseFunction.apply(value);
     }
 
     private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){

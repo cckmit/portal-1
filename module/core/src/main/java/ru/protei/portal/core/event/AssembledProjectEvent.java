@@ -39,12 +39,11 @@ public class AssembledProjectEvent extends ApplicationEvent {
         this.projectId = event.getProjectId();
     }
 
-    public AssembledProjectEvent(Object source, Project oldProjectState, Project newProjectState, Person initiator) {
+    public AssembledProjectEvent(Object source, Project newProjectState, Person initiator) {
         super(source);
-        this.oldProjectState = oldProjectState;
         this.newProjectState = newProjectState;
         this.initiator = initiator;
-        this.projectId = oldProjectState == null ? newProjectState.getId() : oldProjectState.getId();
+        this.projectId = newProjectState.getId();
     }
 
     public void attachSaveEvent(ProjectSaveEvent event) {
@@ -140,12 +139,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
             return false;
         }
 
-        if (Arrays.stream(En_ImportanceLevel.values()).allMatch(
-                importanceLevel -> isSameSla(
-                        getSlaByImportance(oldProjectState.getProjectSlas(), importanceLevel.getId(), new ProjectSla()),
-                        getSlaByImportance(newProjectState.getProjectSlas(), importanceLevel.getId(), new ProjectSla())
-                ))
-        ) {
+        if (isSameSlaLists(oldProjectState.getProjectSlas(), newProjectState.getProjectSlas())) {
             return false;
         }
 
@@ -170,10 +164,6 @@ public class AssembledProjectEvent extends ApplicationEvent {
 
     public boolean isLinksChanged() {
         if (CollectionUtils.isNotEmpty(links.getAddedEntries())) {
-            return true;
-        }
-
-        if (CollectionUtils.isNotEmpty(links.getChangedEntries())) {
             return true;
         }
 
@@ -220,9 +210,16 @@ public class AssembledProjectEvent extends ApplicationEvent {
 
     public Map<En_ImportanceLevel, DiffResult<ProjectSla>> getSlaDiffs() {
         Map<En_ImportanceLevel, DiffResult<ProjectSla>> slaDiffs = new LinkedHashMap<>();
+        List<ProjectSla> newSlaList = emptyIfNull(newProjectState.getProjectSlas());
+
+        boolean isNewSlaListEmpty = isSlaListEmpty(newSlaList);
 
         if (!isEditEvent()) {
-            CollectionUtils.emptyIfNull(newProjectState.getProjectSlas()).forEach(sla -> slaDiffs.put(
+            if (isNewSlaListEmpty) {
+                return slaDiffs;
+            }
+
+            newSlaList.forEach(sla -> slaDiffs.put(
                     En_ImportanceLevel.find(sla.getImportanceLevelId()),
                     new DiffResult<>(sla, sla))
             );
@@ -230,12 +227,17 @@ public class AssembledProjectEvent extends ApplicationEvent {
             return slaDiffs;
         }
 
-        List<ProjectSla> oldSlaList = CollectionUtils.emptyIfNull(oldProjectState.getProjectSlas());
-        List<ProjectSla> newSlaList = CollectionUtils.emptyIfNull(newProjectState.getProjectSlas());
+        List<ProjectSla> oldSlaList = emptyIfNull(oldProjectState.getProjectSlas());
+
+        boolean isOldSlaListEmpty = isSlaListEmpty(oldSlaList);
+
+        if (isOldSlaListEmpty && isNewSlaListEmpty) {
+            return slaDiffs;
+        }
 
         for (En_ImportanceLevel level : En_ImportanceLevel.values()) {
-            ProjectSla oldSla = getSlaByImportance(oldSlaList, level.getId(), null);
-            ProjectSla newSla = getSlaByImportance(newSlaList, level.getId(), null);
+            ProjectSla oldSla = getSlaByImportance(oldSlaList, level.getId());
+            ProjectSla newSla = getSlaByImportance(newSlaList, level.getId());
 
             if (oldSla == null && newSla == null) {
                 continue;
@@ -250,25 +252,40 @@ public class AssembledProjectEvent extends ApplicationEvent {
     // Убрать из существующих элементов добавленные и удаленные
     private <T> DiffCollectionResult<T> synchronizeExists(DiffCollectionResult<T> diff, Function<T, Object> getId) {
         log.info("synchronizeExists(): before +{} -{} {} ", toList(diff.getAddedEntries(), getId), toList(diff.getRemovedEntries(), getId), toList(diff.getSameEntries(), getId));
+
         if (diff.hasSameEntries()) {
-            synchronized (diff) {
-                diff.getSameEntries().removeAll(emptyIfNull(diff.getAddedEntries()));
-                diff.getSameEntries().removeAll(emptyIfNull(diff.getRemovedEntries()));
-            }
+            diff.getSameEntries().removeAll(emptyIfNull(diff.getAddedEntries()));
+            diff.getSameEntries().removeAll(emptyIfNull(diff.getRemovedEntries()));
         }
+
         log.info("synchronizeExists(): after +{} -{} {} ", toList(diff.getAddedEntries(), getId), toList(diff.getRemovedEntries(), getId), toList(diff.getSameEntries(), getId));
         return diff;
     }
 
-    private ProjectSla getSlaByImportance(List<ProjectSla> slaList, int importanceLevelId, ProjectSla orElseSla) {
+    private ProjectSla getSlaByImportance(List<ProjectSla> slaList, int importanceLevelId) {
         return slaList
                 .stream()
                 .filter(sla -> sla.getImportanceLevelId() == importanceLevelId)
                 .findAny()
-                .orElse(orElseSla);
+                .orElse(null);
+    }
+
+    private boolean isSameSlaLists(List<ProjectSla> oldSlaList, List<ProjectSla> newSlaList) {
+        return Arrays
+                .stream(En_ImportanceLevel.values())
+                .allMatch(
+                    importanceLevel -> isSameSla(
+                            getSlaByImportance(oldSlaList, importanceLevel.getId()),
+                            getSlaByImportance(newSlaList, importanceLevel.getId())
+                    )
+                );
     }
 
     private boolean isSameSla(ProjectSla oldSla, ProjectSla newSla) {
+        if (oldSla == null || newSla == null) {
+            return oldSla == null && newSla == null;
+        }
+
         if (!Objects.equals(oldSla.getImportanceLevelId(), newSla.getImportanceLevelId())) {
             return false;
         }
@@ -286,6 +303,10 @@ public class AssembledProjectEvent extends ApplicationEvent {
         }
 
         return true;
+    }
+
+    private boolean isSlaListEmpty(List<ProjectSla> slaList) {
+        return emptyIfNull(slaList).stream().allMatch(ProjectSla::isEmpty);
     }
 
     public Project getOldProjectState() {
@@ -316,10 +337,6 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return initiator == null ? initiatorId : initiator.getId();
     }
 
-    public void setInitiatorId(Long initiatorId) {
-        this.initiatorId = initiatorId;
-    }
-
     public Long getProjectId() {
         return projectId;
     }
@@ -329,9 +346,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
     }
 
     public boolean isLinksFilled() {
-        synchronized (links){
-            return links.hasSameEntries();
-        }
+        return links.hasSameEntries();
     }
 
     public void setExistingLinks(List<CaseLink> sameLinks) {

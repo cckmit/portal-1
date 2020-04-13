@@ -201,9 +201,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        project.setCreator(caseObject.getCreator());
-
-        return ok(project).publishEvent(new ProjectSaveEvent(oldStateProject, token.getPersonId(), this));
+        return ok(project).publishEvent(new ProjectSaveEvent(this, oldStateProject, token.getPersonId()));
     }
 
     @Override
@@ -243,7 +241,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.setCreator(personDAO.get(project.getCreatorId()));
 
-        return addLinksResult.isOk() ? ok(project).publishEvent(new AssembledProjectEvent(this, null, project, personDAO.get(token.getPersonId()))) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
+        return addLinksResult.isOk() ?
+                ok(project).publishEvent(new AssembledProjectEvent(this, project, personDAO.get(token.getPersonId()))) :
+                error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
@@ -337,7 +337,7 @@ public class ProjectServiceImpl implements ProjectService {
                 if (!projectRoles.contains(member.getRole())) {
                     continue;
                 }
-                int nPos = toAdd.indexOf(PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()));
+                int nPos = toAdd.indexOf(PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()));
                 if (nPos == -1) {
                     toRemove.add(member.getId());
                 } else {

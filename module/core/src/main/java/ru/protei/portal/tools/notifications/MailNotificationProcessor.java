@@ -642,19 +642,6 @@ public class MailNotificationProcessor {
 
         Set<NotificationEntry> recipients = subscriptionService.subscribers(recipientsIds);
 
-        /* TODO: Затычка на отправку только одного письма. Убрать после окончания разработки */
-
-        recipients = recipients
-                .stream()
-                .filter(recipient -> recipient.getAddress().equals("fomin_e@protei.ru"))
-                .collect(Collectors.toSet());
-
-        if (recipients.isEmpty()) {
-            return;
-        }
-
-        /* TODO: Затычка на отправку только одного письма. Убрать после окончания разработки */
-
         DiffCollectionResult<LinkData> links = convertToLinkData(event.getLinks(), getCrmCaseUrl(true));
 
         Set<String> addresses = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
@@ -790,15 +777,15 @@ public class MailNotificationProcessor {
 
 
     private boolean isSendProjectNotification(AssembledProjectEvent event) {
-        if (isEmpty(event.getNewProjectState().getTeam())) {
-            return false;
+        if (!event.isEditEvent()) {
+            return true;
         }
 
-        if (event.isEditEvent() && !isProjectChanged(event)) {
-            return false;
+        if (isProjectChanged(event)) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     private boolean isProjectChanged(AssembledProjectEvent event) {

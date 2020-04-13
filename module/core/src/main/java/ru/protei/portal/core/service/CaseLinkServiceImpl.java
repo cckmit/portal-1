@@ -140,7 +140,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
-            completeResult.publishEvent(new ProjectLinkEvent(link.getCaseId(), authToken.getPersonId(), link, null, this));
+            completeResult.publishEvent(new ProjectLinkEvent(this, link.getCaseId(), authToken.getPersonId(), link, null));
         }
 
         return completeResult;
@@ -176,7 +176,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
-            result.publishEvent(new ProjectLinkEvent(existedLink.getCaseId(), authToken.getPersonId(), null, existedLink, this));
+            result.publishEvent(new ProjectLinkEvent(this, existedLink.getCaseId(), authToken.getPersonId(), null, existedLink));
         }
 
         return result;

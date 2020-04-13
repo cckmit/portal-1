@@ -83,7 +83,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
-            okResult.publishEvent(new ProjectCommentEvent(null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId(), this));
+            okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
         }
 
         return okResult;
@@ -170,8 +170,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
-            okResult.publishEvent(new ProjectCommentEvent(
-                    resultData.getOldCaseComment(), resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId(), this)
+            okResult.publishEvent(new ProjectCommentEvent(this,
+                    resultData.getOldCaseComment(), resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId())
             );
         }
 
@@ -304,8 +304,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         Result<Boolean> okResult = ok(isRemoved);
 
         if (En_CaseType.PROJECT.equals(caseType)) {
-            okResult.publishEvent(new ProjectCommentEvent(
-                    null, null, removedComment, token.getPersonId(), caseId, this)
+            okResult.publishEvent(new ProjectCommentEvent(this,
+                    null, null, removedComment, token.getPersonId(), caseId)
             );
         }
 
