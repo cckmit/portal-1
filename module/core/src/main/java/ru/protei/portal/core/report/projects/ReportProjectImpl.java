@@ -18,6 +18,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,12 +96,15 @@ public class ReportProjectImpl implements ReportProject {
 
     public List<ReportProjectWithLastComment> createData(CaseQuery query) {
         List<CaseObject> cases = caseObjectDAO.getCases(query);
+        if (cases.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         jdbcManyRelationsHelper.fill(cases, "locations");
 
+        List<Long> ids = cases.stream().map(CaseObject::getId).collect(Collectors.toList());
         List<CaseComment> lastNotNullTextCommentsForReport = caseCommentDAO
-                .getLastNotNullTextCommentsForReport(
-                        cases.stream().map(CaseObject::getId).collect(Collectors.toList()));
+                .getLastNotNullTextCommentsForReport(ids);
         Map<Long, CaseComment> CaseIdToCaseComment = lastNotNullTextCommentsForReport
                 .stream().collect(Collectors.toMap(CaseComment::getCaseId, Function.identity()));
 
