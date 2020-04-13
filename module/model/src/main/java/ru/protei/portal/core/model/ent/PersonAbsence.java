@@ -16,18 +16,11 @@ public class PersonAbsence {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "old_id")
-    private Long old_id;
-
     @JdbcColumn(name = "created")
     private Date created;
 
-    @JdbcColumn(name = "updated")
-    private Date updated;
-
     @JdbcColumn(name = "creator_id")
     private Long creatorId;
-
 
     @JdbcColumn(name = "person_id")
     private Long personId;
@@ -44,10 +37,7 @@ public class PersonAbsence {
     @JdbcColumn(name = "user_comment")
     private String userComment;
 
-    private String creator;
-
-    public PersonAbsence() {
-    }
+    public PersonAbsence() {}
 
     public Long getId() {
         return id;
@@ -111,29 +101,5 @@ public class PersonAbsence {
 
     public void setUserComment(String userComment) {
         this.userComment = userComment;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Long getOldId() {
-        return old_id;
-    }
-
-    public void setOldId(Long old_id) {
-        this.old_id = old_id;
     }
 }

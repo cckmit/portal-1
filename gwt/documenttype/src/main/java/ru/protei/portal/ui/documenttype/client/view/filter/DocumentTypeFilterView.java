@@ -65,9 +65,7 @@ public class DocumentTypeFilterView extends Composite implements AbstractDocumen
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
             resetFilter();
-            if (activity != null) {
-                activity.onFilterChanged();
-            }
+            activity.onFilterChanged();
         }
     }
 

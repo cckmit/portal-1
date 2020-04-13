@@ -79,9 +79,7 @@ public class EmployeeRegistrationFilterView extends Composite implements Abstrac
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
             resetFilter();
-            if (activity != null) {
-                activity.onFilterChanged();
-            }
+            activity.onFilterChanged();
         }
     }
 

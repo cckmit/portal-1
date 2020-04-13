@@ -5,10 +5,8 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.WorkerView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -18,19 +16,13 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    Result<List<PersonShortView>> shortViewList(EmployeeQuery query);
-    Result<List<WorkerView>> list(String param);
-
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
 
-    Result<PersonShortView> getEmployee(AuthToken token, Long employeeId);
-
-    EmployeeDetailView getEmployeeProfile(Long id);
-    EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull);
-
-    Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId);
+    Result<List<PersonShortView>> shortViewList(EmployeeQuery query);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employee);
+    Result<EmployeeShortView> getEmployee(AuthToken token, Long employee);
+
+    Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId);
 }

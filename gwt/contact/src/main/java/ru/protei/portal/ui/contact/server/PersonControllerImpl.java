@@ -64,16 +64,16 @@ public class PersonControllerImpl implements PersonController {
 
     @Override
     public Person getPerson(Long id) throws RequestFailedException {
-        log.info( "getPerson: id={}", id );
+        log.info("getPersonShortView: id={}", id);
 
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Person> result = personService.getPerson(authToken, id);
 
-        log.info( "result status: {}, data: {}", result.getStatus(), result.getData() );
+        log.info("result status: {}, data: {}", result.getStatus(), result.getData());
 
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
 
         return result.getData();
     }

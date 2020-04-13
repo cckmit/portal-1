@@ -13,8 +13,6 @@ import java.util.List;
  */
 public interface EmployeeControllerAsync {
 
-    void getEmployee(Long emploeeId, AsyncCallback<PersonShortView> async);
-
     /**
      * Получение списка сотрудников
      * @return список контактов
@@ -28,12 +26,12 @@ public interface EmployeeControllerAsync {
      */
     void getEmployeeViewList(EmployeeQuery query, AsyncCallback<List<PersonShortView>> callback);
 
+    void getEmployee(Long employeeId, AsyncCallback<EmployeeShortView> async);
+
     /**
      * Получение руководителя подразделения
      * @param departmentId айди подразделения
      * @return сокращенное представление руководителя
      */
     void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
-
-    void getEmployeeShortView(Long employeeId, AsyncCallback<EmployeeShortView> async);
 }

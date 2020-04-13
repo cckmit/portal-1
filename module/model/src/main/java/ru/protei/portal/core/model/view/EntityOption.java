@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 
 import java.io.Serializable;
 
