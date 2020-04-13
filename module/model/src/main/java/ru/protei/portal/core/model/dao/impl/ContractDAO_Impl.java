@@ -12,6 +12,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
+import java.util.List;
+
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
 
     @Override
@@ -32,8 +34,8 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
-    public Contract getByProjectId(Long projectId) {
-        return getByCondition("contract.project_id = ?", projectId);
+    public List<Contract> getByProjectId(Long projectId) {
+        return getListByCondition("contract.project_id = ?", projectId);
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {

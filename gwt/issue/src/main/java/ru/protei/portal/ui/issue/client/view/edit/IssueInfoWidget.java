@@ -45,7 +45,15 @@ public class IssueInfoWidget extends Composite {
         return attachmentContainer;
     }
 
-    public void setFileUploadHandler( AttachmentUploader.FileUploadHandler handler ) {
+    public AttachmentUploader getFileUploader(){
+        return fileUploader;
+    }
+
+    public DivElement getDescriptionRO() {
+        return descriptionRO;
+    }
+
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler ) {
         fileUploader.setUploadHandler( handler );
     }
 

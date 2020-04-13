@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
@@ -57,6 +58,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setName( String issueName ) {
         nameWidget.setName( issueName );
+    }
+
+    @Override
+    public void setCopyNameAndNumberText( String copyText ) {
+        nameWidget.setCopyText( copyText );
+    }
+
+    @Override
+    public void setCopyNameText ( String copyText ) {
+        copyNumber.getElement().setAttribute("onclick", ClipboardUtils.generateOnclickText(copyText));
     }
 
     @Override
@@ -123,14 +134,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
-    }
-
-    @UiHandler("copyNumber")
-    public void onCopyNumberClick(ClickEvent event) {
-        event.preventDefault();
-        if (activity != null) {
-            activity.onCopyNumberClicked();
-        }
     }
 
     @UiHandler("nameAndDescriptionEditButton")

@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
+
+    <changeSet id="create-tables-2.0.0.0" author="eliseev">
+        <sqlFile path="create-tables.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="insert-data-2.0.0.0" author="eliseev">
+        <sqlFile path="insert_data.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="drop-equipment-decimal-number-sort-view" author="eliseev">
+        <preConditions onFail="MARK_RAN">
+            <viewExists viewName="view_equipments_decimal_number_sort"/>
+        </preConditions>
+        <dropView viewName="view_equipments_decimal_number_sort"/>
+    </changeSet>
+
+    <changeSet id="add-equipment-decimal-number-sort-view" author="porubov">
+        <preConditions onFail="HALT">
+            <and>
+                <tableExists tableName="equipment"/>
+                <tableExists tableName="decimal_number"/>
+                <not>
+                    <viewExists viewName="view_equipments_decimal_number_sort"/>
+                </not>
+            </and>
+        </preConditions>
+        <createView viewName="view_equipments_decimal_number_sort">
+            SELECT equipment.id Equipment_id,
+            CONCAT(MIN(decimal_number.classifier_code), LPAD(MIN(decimal_number.reg_number), 3, '0')) sort_decimal
+            FROM equipment LEFT OUTER JOIN decimal_number ON equipment.id = decimal_number.entity_id
+            GROUP BY Equipment_id;
+        </createView>
+    </changeSet>
+
+</databaseChangeLog>

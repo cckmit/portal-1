@@ -13,8 +13,6 @@ import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.IssueFilter;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportScheduledTypeButtonSelector;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
 
@@ -48,8 +46,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public AbstractIssueFilter getIssueFilter() {
-        return issueFilter;
+    public void fillReportTypes(List<En_ReportType> options) {
+        reportType.fillOptions(options);
+        reportType.setEnabled(options.size() > 1);
     }
 
     @Override
@@ -62,9 +61,8 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public void fillReportTypes(List<En_ReportType> options) {
-        reportType.fillOptions(options);
-        reportType.setEnabled(options.size() > 1);
+    public HasWidgets getIssueFilterContainer() {
+        return issueFilterWidgetContainer;
     }
 
     @Override
@@ -75,12 +73,11 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @UiHandler("reportType")
     public void onReportTypeChanged(ValueChangeEvent<En_ReportType> event) {
-        issueFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.getValue().name()));
         scheduledType.setValue(En_ReportScheduledType.NONE);
         scheduledType.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(event.getValue()));
         scheduledTypeLabel.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(event.getValue()));
         if (activity != null) {
-            activity.onReportTypeChanged();
+            activity.onReportTypeChanged(En_CaseFilterType.valueOf(reportType.getValue().name()));
         }
     }
 
@@ -108,9 +105,8 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     @UiField(provided = true)
     ReportScheduledTypeButtonSelector scheduledType;
-    @Inject
-    @UiField(provided = true)
-    IssueFilter issueFilter;
+    @UiField
+    HTMLPanel issueFilterWidgetContainer;
     @UiField
     Button createButton;
     @UiField

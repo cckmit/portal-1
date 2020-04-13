@@ -4,11 +4,9 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -32,7 +30,7 @@ public interface CompanyService {
 
     Result<List<EntityOption>> groupOptionList();
     Result<List<CompanyGroup>> groupList( CompanyGroupQuery query);
-    Result<List<EntityOption>> categoryOptionList( boolean hasOfficial);
+    Result<List<En_CompanyCategory>> categoryOptionList( boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
     Result<Company> getCompany( AuthToken token, Long id );
@@ -53,4 +51,6 @@ public interface CompanyService {
     Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
 
     Result<List<Long>> getAllHomeCompanyIds(AuthToken token);
+
+    Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId);
 }

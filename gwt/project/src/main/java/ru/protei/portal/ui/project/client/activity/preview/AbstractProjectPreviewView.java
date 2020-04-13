@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.ProjectSla;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Абстракция вида проекта
@@ -41,7 +42,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     HasVisibility slaContainerVisibility();
 
-    void setContract(String value, String link);
+    void setContracts(Map<String, String> contractNumberToLink);
 
     void setPlatform(String value, String link);
 

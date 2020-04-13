@@ -31,7 +31,7 @@ public class Platform extends AuditableObject {
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "person")
     }, mappedColumn = "displayShortName")
     private String caseManagerShortName;
 

@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  * Тип операции в системе
  */
-public enum En_AuditType {
+public enum En_AuditType implements HasId {
     ISSUE_MODIFY( 1 ),
     ISSUE_CREATE( 2 ),
     ISSUE_REPORT( 3 ),

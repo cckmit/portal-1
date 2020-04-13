@@ -81,7 +81,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @Override
     public Long insertCase(CaseObject object) {
 
-        En_CaseType type = object.getCaseType();
+        En_CaseType type = object.getType();
 
         Long caseNumber = caseTypeDAO.generateNextId(type);//HelperFunc.nvlt(getMaxValue("CASENO", Long.class, "case_type=?", type.getId()),0L) + 1;
 

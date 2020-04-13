@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.struct;
 
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
@@ -15,7 +16,8 @@ public class AuditObject implements Serializable {
     private Long id;
 
     @JdbcColumn( name = "type" )
-    private int typeId;
+    @JdbcEnumerated(EnumType.ID)
+    private En_AuditType type;
 
     @JdbcColumn( name = "created" )
     private Date created;
@@ -37,9 +39,9 @@ public class AuditObject implements Serializable {
 
     public AuditObject() {}
 
-    public AuditObject(int auditTypeId, AuditableObject auditableObject, Long creatorId, String creatorIp, String creatorShortName) {
+    public AuditObject(En_AuditType auditType, AuditableObject auditableObject, Long creatorId, String creatorIp, String creatorShortName) {
         setCreated(new Date());
-        setTypeId(auditTypeId);
+        setType(auditType);
         setCreatorId(creatorId);
         setCreatorIp(creatorIp);
         setCreatorShortName(creatorShortName);
@@ -54,12 +56,12 @@ public class AuditObject implements Serializable {
         this.id = id;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public En_AuditType getType() {
+        return type;
     }
 
-    public void setTypeId( int typeId ) {
-        this.typeId = typeId;
+    public void setType( En_AuditType type ) {
+        this.type = type;
     }
 
     public Date getCreated() {
