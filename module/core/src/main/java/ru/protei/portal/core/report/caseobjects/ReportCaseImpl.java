@@ -44,7 +44,7 @@ public class ReportCaseImpl implements ReportCase {
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted());
+            ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted(), report.getLocale());
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -57,7 +57,7 @@ public class ReportCaseImpl implements ReportCase {
 
         log.debug("writeReport : reportId={} has {} case objects to procees", report.getId(), count);
 
-        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted());
+        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted(), report.getLocale());
 
         int sheetNumber = writer.createSheet();
 

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+
 public class ExcelReportWriter implements
         ReportWriter<CaseObjectComments>,
         JXLSHelper.ReportBook.Writer<CaseObjectComments> {
@@ -26,13 +28,15 @@ public class ExcelReportWriter implements
     private final DateFormat dateFormat;
     private final TimeFormatter timeFormatter;
     private final boolean isNotRestricted;
+    private final String locale;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter, boolean isRestricted) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter, boolean isRestricted, String locale) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
         this.timeFormatter = timeFormatter;
         this.isNotRestricted = !isRestricted;
+        this.locale = locale;
     }
 
     @Override
@@ -135,9 +139,9 @@ public class ExcelReportWriter implements
         values.add("CRM-" + issue.getCaseNumber());
         if (isNotRestricted) values.add(lang.get(issue.isPrivateCase() ? "yes" : "no"));
         values.add(HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "");
-        values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? issue.getInitiatorCompany().getCname() : "");
-        values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? issue.getInitiator().getDisplayShortName() : "");
-        values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? issue.getManager().getDisplayShortName() : "");
+        values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? transliterate(issue.getInitiatorCompany().getCname(), locale) : "");
+        values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
+        values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
         values.add(issue.getImpLevel() != null ? lang.get("importance_" + issue.getImpLevel()) : "");
         values.add(issue.getState() != null ? issue.getState().getName() : "");

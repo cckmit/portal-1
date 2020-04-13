@@ -46,7 +46,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         }
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
+        ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.getLocale());
 
         caseQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
 
