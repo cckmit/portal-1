@@ -77,22 +77,23 @@ public class ReportProjectImpl implements ReportProject {
 
         while (offset < limit) {
             int amount = offset + step < limit ? step : limit - offset;
+            CaseQuery query = report.getCaseQuery();
+            query.setOffset(offset);
+            query.setLimit(amount);
+            List<ReportProjectWithLastComment> data = createData(query);
             try {
-                CaseQuery query = report.getCaseQuery();
-                query.setOffset(offset);
-                query.setLimit(amount);
-                writer.write(sheetNumber, createData(query));
-                offset += step;
+                writer.write(sheetNumber, data);
             } catch (Throwable th) {
                 log.warn("writeReport : fail to process chunk [{} - {}] : reportId={} {}", offset, amount, report.getId(), th);
                 return false;
             }
+            offset += step;
         }
 
         return true;
     }
 
-    private List<ReportProjectWithLastComment> createData(CaseQuery query) {
+    public List<ReportProjectWithLastComment> createData(CaseQuery query) {
         List<CaseObject> cases = caseObjectDAO.getCases(query);
 
         jdbcManyRelationsHelper.fill(cases, "locations");

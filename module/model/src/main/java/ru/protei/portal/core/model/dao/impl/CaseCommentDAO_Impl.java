@@ -61,8 +61,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         return jdbcTemplate.query( "SELECT ID, CASE_ID, CREATED, COMMENT_TEXT " +
                         "FROM case_comment " +
                         "WHERE id in " +
-                            "(SELECT id " +
-                            "From (SELECT max(cs.id) id, cs.CASE_ID " + // "created" field is not unique, select last comment by id
+                            "(SELECT max(cs.id) id " + // "created" field is not unique, select last comment by id
                                 "FROM case_comment cs " +
                                     "inner join (SELECT Case_id, max(CREATED) created " +     // select last created date
                                                 "FROM case_comment " +
@@ -70,7 +69,8 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                                                     "AND COMMENT_TEXT is not NULL " +
                                                 "group by CASE_ID) last_created_table " +
                                             "on cs.CASE_ID = last_created_table.CASE_ID and cs.CREATED = last_created_table.created " +
-                            "group by cs.CASE_ID) last_id_table);",
+                            "WHERE cs.COMMENT_TEXT is not NUll " +
+                            "group by cs.CASE_ID);",
                 (ResultSet rs, int rowNum) -> {
                     CaseComment caseComment = new CaseComment();
                     caseComment.setId(rs.getLong("ID"));
