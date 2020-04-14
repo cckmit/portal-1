@@ -1,17 +1,22 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.table;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.SubnetOption;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -21,19 +26,19 @@ import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Активность таблицы зарезервированных IP
  */
 public abstract class ReservedIpTableActivity
-        implements AbstractReservedIpTableActivity, AbstractReservedIpFilterActivity, Activity
-{
+        implements AbstractReservedIpTableActivity, AbstractReservedIpFilterActivity,
+        AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -42,6 +47,7 @@ public abstract class ReservedIpTableActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
+        pagerView.setActivity(this);
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
     }
@@ -49,6 +55,11 @@ public abstract class ReservedIpTableActivity
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
+    }
+
+    @Event
+    public void onInitDetails( AppEvents.InitDetails initDetails ) {
+        this.initDetails = initDetails;
     }
 
     @Event
@@ -60,6 +71,7 @@ public abstract class ReservedIpTableActivity
 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
+        view.getPagerContainer().add(pagerView.asWidget());
         view.getFilterContainer().clear();
         view.getFilterContainer().add( filterView.asWidget() );
 
@@ -73,10 +85,12 @@ public abstract class ReservedIpTableActivity
             fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.RESERVED_IP_CREATE ));
         }
 
-        requestReservedIps();
+        clearScroll(event);
+
+        loadTable();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onCloseEdit(IpReservationEvents.CloseEdit event) {
         animation.closeDetails();
     }
@@ -109,35 +123,23 @@ public abstract class ReservedIpTableActivity
         fireEvent(new IpReservationEvents.CreateReservedIp(view.getPreviewContainer()));
     }
 
-    @Event
-    public void onInitDetails( AppEvents.InitDetails initDetails ) {
-        this.initDetails = initDetails;
-    }
-
-    @Event
-    public void onChanged(IpReservationEvents.ChangedReservedIp event) {
-        if ( event.needRefreshList ) {
-            if (!CollectionUtils.isEmpty(event.reservedIpList)) {
-                event.reservedIpList.forEach( ip -> updateListAndSelect(ip));
-            } else {
-                updateListAndSelect(event.reservedIp);
-            }
-            return;
-        }
-
-        view.updateRow(event.reservedIp);
-    }
-
     @Override
     public void onFilterChanged() {
-        requestReservedIps();
+        loadTable();
     }
 
     @Override
     public void onItemClicked(ReservedIp value) {
+        onEditClicked(value);
+    }
+
+    @Override
+    public void onEditClicked( ReservedIp value ) {
         if ( !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
             return;
         }
+
+        persistScrollTopPosition();
 
         if ( value == null ) {
             animation.closeDetails();
@@ -145,11 +147,6 @@ public abstract class ReservedIpTableActivity
             animation.showDetails();
             fireEvent( new IpReservationEvents.EditReservedIp( view.getPreviewContainer(), value ) );
         }
-    }
-
-    @Override
-    public void onEditClicked( ReservedIp value ) {
-        onItemClicked(value);
     }
 
     @Override
@@ -186,27 +183,43 @@ public abstract class ReservedIpTableActivity
         );
     }
 
-    private void updateListAndSelect(ReservedIp reservedIp ) {
-        requestReservedIps();
-        onItemClicked( reservedIp );
+    @Override
+    public void loadData(int offset, int limit, AsyncCallback<List<ReservedIp>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
+        ReservedIpQuery query = makeQuery();
+        query.setOffset(offset);
+        query.setLimit(limit);
+
+        ipReservationService.getReservedIpList(query, new FluentCallback<SearchResult<ReservedIp>>()
+                .withError(throwable -> {
+                    errorHandler.accept(throwable);
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
+                    }
+                }));
     }
 
-    private void requestReservedIps() {
-        view.clearRecords();
+    @Override
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
+    }
+
+    @Override
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
+    }
+
+    private void loadTable() {
         animation.closeDetails();
-
-        ipReservationService.getReservedIpList( makeQuery(), new RequestCallback<SearchResult<ReservedIp>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess(SearchResult<ReservedIp> result) {
-                view.clearRecords();
-                result.getResults().forEach(view::addRow);
-            }
-        });
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private ReservedIpQuery makeQuery() {
@@ -233,6 +246,29 @@ public abstract class ReservedIpTableActivity
         Window.alert("Refresh IP " + reservedIp.getIpAddress());
     }
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
+    private void clearScroll(IpReservationEvents.ShowReservedIp event) {
+        if (event.clearScroll) {
+            event.clearScroll = false;
+            this.scrollTop = null;
+        }
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -247,7 +283,10 @@ public abstract class ReservedIpTableActivity
     PolicyService policyService;
     @Inject
     DefaultErrorHandler errorHandler;
+    @Inject
+    AbstractPagerView pagerView;
 
     private static String CREATE_ACTION;
+    private Integer scrollTop;
     private AppEvents.InitDetails initDetails;
 }

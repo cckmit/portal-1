@@ -4,6 +4,7 @@ import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -72,7 +73,7 @@ public abstract class SubnetTableActivity
         requestSubnets();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onCloseEdit(IpReservationEvents.CloseEdit event) {
         animation.closeDetails();
     }

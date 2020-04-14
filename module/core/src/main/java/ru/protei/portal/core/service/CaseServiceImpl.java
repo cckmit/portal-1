@@ -765,15 +765,18 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateFieldsOfNew(CaseObject caseObject) {
-        return validateFields(caseObject)
-            && validateMetaFields(new CaseObjectMeta(caseObject));
+        if (!validateFields( caseObject )) return false;
+        CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
+        if (!validateMetaFields( caseObjectMeta )) return false;
+        return true;
     }
 
     private boolean validateFields(CaseObject caseObject) {
-        return caseObject != null
-                && caseObject.getName() != null
-                && !caseObject.getName().isEmpty()
-                && caseObject.getType() != null;
+        if(caseObject == null) return false;
+        if(caseObject.getName() == null) return false;
+        if(caseObject.getName().isEmpty()) return false;
+        if(caseObject.getType() == null) return false;
+        return true;
     }
 
     private boolean validateMetaFields(CaseObjectMeta caseMeta) {

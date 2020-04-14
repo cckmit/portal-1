@@ -128,12 +128,12 @@ public enum En_SortField {
     /**
      * ip address
      */
-    ip_address("ip_address"),
+    ip_address("INET_ATON(ip_address)"),
 
     /**
      * subnet address
      */
-    address("address"),
+    address("INET_ATON(address)"),
 
     /**
      * last active IP-address date

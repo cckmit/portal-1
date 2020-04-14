@@ -331,6 +331,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList) {
+        importance.fillButtons(importanceLevelList);
+    }
+
+    @Override
     public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
         initiators.setCompaniesSupplier(collectionSupplier);
     }

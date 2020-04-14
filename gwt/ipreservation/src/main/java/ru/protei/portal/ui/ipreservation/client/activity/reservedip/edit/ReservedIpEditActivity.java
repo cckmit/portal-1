@@ -7,6 +7,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -29,19 +31,18 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
     @Event
     public void onShow (IpReservationEvents.EditReservedIp event) {
-        if (event.reservedIp == null || event.reservedIp.getId() == null) {
+        if (!hasPrivileges()) {
+            fireEvent(new IpReservationEvents.CloseEdit());
             return;
         }
 
-        if (!hasPrivileges()) {
-            fireEvent(new ForbiddenEvents.Show());
+        if (event.reservedIp == null || event.reservedIp.getId() == null ) {
             return;
         }
 
         event.parent.clear();
         event.parent.add(view.asWidget());
 
-/*        resetView();*/
         this.reservedIp = event.reservedIp;
 
         fillView();
@@ -65,7 +66,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
                 .withSuccess(aVoid -> {
                     view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IpReservationEvents.ChangedReservedIp(reservedIp, true));
+                    fireEvent(new IpReservationEvents.ShowReservedIp());
                     fireEvent(new IpReservationEvents.CloseEdit());
                 })
         );
@@ -94,7 +95,10 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.macAddress().setValue(reservedIp.getMacAddress());
         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
-        view.owner().setValue(reservedIp.getOwner().toFullNameShortView());
+        PersonShortView ipOwner = new PersonShortView(
+                reservedIp.getOwnerShortName(),
+                reservedIp.getOwnerId());
+        view.owner().setValue(ipOwner);
 
         view.saveVisibility().setVisible(hasPrivileges());
     }
@@ -112,12 +116,13 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     }
 
     private boolean validateView() {
-/*        if(!view.macAddress().isValid()){
-            fireEvent(new NotifyEvents.Show(lang.errMacAddress(), NotifyEvents.NotifyType.ERROR));
+        if(StringUtils.isNotBlank(view.macAddress().getValue())
+           && !view.macAddressValidator().isValid()){
+            fireEvent(new NotifyEvents.Show(lang.reservedIpWrongMacAddress(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
-*/
-        if(view.useRange() == null || view.useRange().getValue() == null) {
+
+        if(view.useRange().getValue() == null) {
             fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -125,9 +130,8 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         Date from = view.useRange().getValue().from;
         Date to = view.useRange().getValue().to;
 
-        if ( from == null ||
-             (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE) && to == null) ||
-              from.after(to)) {
+        if ( from == null
+             || (to == null && !policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE))) {
             fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -141,8 +145,10 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     }
 
     private boolean hasPrivileges() {
-        if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
-                || reservedIp.getOwnerId().equals(policyService.getProfile().getId())) {
+        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
+            || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
+                 && reservedIp.getOwnerId().equals(policyService.getProfile().getId()))
+        ) {
             return true;
         }
 

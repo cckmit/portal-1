@@ -49,7 +49,7 @@ public class En_SortFieldLang {
             case address:
                 return lang.reservedIpSubnetAddress();
             case ip_address:
-                return lang.reservedIpAddress();
+                return lang.reservedIpIpAddress();
             case check_date:
                 return lang.reservedIpCheckDate();
 

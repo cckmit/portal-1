@@ -1899,6 +1899,14 @@ a {
   }
 }
 
+.importance-btn-group {
+  width: 200px;
+
+  .btn {
+    padding: .375rem .75rem;
+  }
+}
+
 .case-importance-cometic {
   color: #7b7b7b;
   font-weight: bold;
@@ -3201,6 +3209,91 @@ label {
     }
 
     .cost-column {
+      display: none;
+    }
+  }
+}
+
+.subnet {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 22px;
+    }
+  }
+}
+
+.reserved-ip {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .ip-address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 22px;
+    }
+  }
+  .ip-use-range {
+    width: 15%;
+  }
+  .ip-owner {
+  }
+  .ip-comment {
+  }
+  .ip-last-check {
+  }
+}
+
+.short-table-view {
+  .reserved-ip {
+    .ip-owner {
+      display: none;
+    }
+
+    .ip-comment {
+      display: none;
+    }
+
+    .ip-last-check {
       display: none;
     }
   }

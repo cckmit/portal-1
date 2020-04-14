@@ -4,11 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -16,6 +14,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.SubnetOption;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -36,8 +35,11 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Autowired
     ReservedIpDAO reservedIpDAO;
 
+/*    @Autowired
+    JdbcManyRelationsHelper helper;*/
+
     @Autowired
-    JdbcManyRelationsHelper helper;
+    PolicyService policyService;
 
     @Override
     public Result<Boolean> isSubnetAddressExists( String address, Long excludeId) {
@@ -115,6 +117,10 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<Subnet> createSubnet( AuthToken token, Subnet subnet) {
 
+        if (token == null || !hasAccessForSubnet(token, En_Privilege.SUBNET_CREATE)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         if (!isValidSubnet(subnet)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -136,7 +142,15 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<Subnet> updateSubnet( AuthToken token, Subnet subnet ) {
 
-        if (subnet.getId() == null || !isValidSubnet(subnet)) {
+        if (subnet == null || subnet.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (token == null || !hasAccessForSubnet(token, En_Privilege.SUBNET_EDIT)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (!isValidSubnet(subnet)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -173,6 +187,11 @@ public class IpReservationServiceImpl implements IpReservationService {
         if (subnet == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
+
+        if (token == null || !hasAccessForSubnet(token, En_Privilege.SUBNET_REMOVE)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         if (!subnetDAO.removeByKey(subnet.getId()))
             return error(En_ResultStatus.INTERNAL_ERROR);
 
@@ -180,8 +199,12 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    /* @todo задача резервирования долна выполняться в фоне? */
+    /* @todo задача резервирования должна выполняться в фоне? */
     public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
+
+        if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_CREATE, null)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
 
         if (!isValidRequest(reservedIpRequest)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -189,10 +212,11 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         ArrayList<ReservedIp> reservedIps = new ArrayList<>();
 
-        ReservedIp reservedIp = new ReservedIp();
-        reservedIp.setCreated(new Date());
-        reservedIp.setCreatorId(token.getPersonId());
-        reservedIp.setOwnerId(reservedIpRequest.getOwnerId());
+        ReservedIp templateIp = new ReservedIp();
+        templateIp.setCreated(new Date());
+        templateIp.setCreatorId(token.getPersonId());
+        templateIp.setOwnerId(reservedIpRequest.getOwnerId());
+        templateIp.setComment(reservedIpRequest.getComment());
 
         En_DateIntervalType intervalType = reservedIpRequest.getDateIntervalType();
 
@@ -203,63 +227,52 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         switch (intervalType) {
             case UNLIMITED:
-                reservedIp.setReserveDate(today);
-                reservedIp.setReleaseDate(null);
+                templateIp.setReserveDate(today);
+                templateIp.setReleaseDate(null);
                 break;
             case MONTH:
-                reservedIp.setReserveDate(today);
-                reservedIp.setReleaseDate(throughMonth);
+                templateIp.setReserveDate(today);
+                templateIp.setReleaseDate(throughMonth);
                 break;
             case FIXED:
-                reservedIp.setReserveDate(reservedIpRequest.getReserveDate());
-                reservedIp.setReleaseDate(reservedIpRequest.getReserveDate());
+                templateIp.setReserveDate(reservedIpRequest.getReserveDate());
+                templateIp.setReleaseDate(reservedIpRequest.getReserveDate());
         }
-
-        reservedIp.setComment(reservedIpRequest.getComment());
 
         if (reservedIpRequest.isExact()) {
             if (checkReservedIpExists(reservedIpRequest.getIpAddress(), null)) {
                 return error(En_ResultStatus.ALREADY_EXIST);
             }
 
-            reservedIp.setIpAddress(reservedIpRequest.getIpAddress());
-            reservedIp.setMacAddress(reservedIpRequest.getMacAddress());
-            String subnetAddress = reservedIpRequest.getIpAddress().substring(0, reservedIpRequest.getIpAddress().lastIndexOf("."));
-            Subnet subnet = subnetDAO.getSubnetByAddress(subnetAddress);
+            templateIp.setIpAddress(reservedIpRequest.getIpAddress());
+            templateIp.setMacAddress(StringUtils.isBlank(reservedIpRequest.getMacAddress()) ?
+                            null : reservedIpRequest.getMacAddress().trim());
+
+            Subnet subnet = subnetDAO.getSubnetByAddress(reservedIpRequest.getSubnetAddress());
             if (subnet == null) {
                 return error(En_ResultStatus.UNDEFINED_OBJECT);
             }
-            reservedIp.setSubnetId(subnet.getId());
+            templateIp.setSubnetId(subnet.getId());
 
-            Long reservedIpId = reservedIpDAO.persist(reservedIp);
+            Long reservedIpId = reservedIpDAO.persist(templateIp);
 
             if (reservedIpId == null)
                 return error(En_ResultStatus.NOT_CREATED);
 
-            reservedIp.setId(reservedIpId);
-            reservedIps.add(reservedIp);
+            templateIp.setId(reservedIpId);
+            reservedIps.add(templateIp);
 
         } else {
          /*
            @todo если задано "любая свободная подсеть"
+                Для начала необходиом определить список подсетей, в которых достаточно свободных IP адресов
                 - проверка подсетей на наличие требуемого кол-ва свободных IP
                 - пройти по всем подходящим подсетям, резервируя IP, попутно проверяя их через NRPE
          */
-            //@todo number?
-            //int reserved = 0;
-            Set<SubnetOption> subnets;
-            if (CollectionUtils.isNotEmpty(reservedIpRequest.getSubnets())) {
-                subnets = reservedIpRequest.getSubnets();
-            } else {
-                List<SubnetOption> result = getSubnetsOptionList(token,
-                        new ReservedIpQuery("", En_SortField.address, En_SortDir.ASC))
-                        .getData();
 
-                if (CollectionUtils.isEmpty(result)) {
-                    return error(En_ResultStatus.INTERNAL_ERROR);
-                }
-
-                subnets = result.stream().collect(Collectors.toSet());
+            Set<SubnetOption> subnets = getAvailableSubnets(token, reservedIpRequest.getSubnets());
+            if (CollectionUtils.isEmpty(subnets)) {
+                return error(En_ResultStatus.NOT_CREATED);
             }
 
             /*
@@ -268,26 +281,27 @@ public class IpReservationServiceImpl implements IpReservationService {
              */
 
             while (reservedIps.size() < reservedIpRequest.getNumber()) {
-                ReservedIp ip = reservedIp;
+                ReservedIp reservedIp = ReservedIp.createByTemplate(templateIp);
+
                 subnets.forEach( s -> {
                             if (hasSubnetFreeIps(s.getId())) {
                                 String freeIp = getAnyFreeIpInSubnet(s.getId());
                                 if (freeIp != null) {
-                                    ip.setSubnetId(s.getId());
-                                    ip.setIpAddress(freeIp);
+                                    reservedIp.setSubnetId(s.getId());
+                                    reservedIp.setIpAddress(freeIp);
                                     return;
                                 }
                             }
                         }
                 );
-                if (ip.getIpAddress() == null || ip.getSubnetId() == null) {
+                if (reservedIp.getIpAddress() == null || reservedIp.getSubnetId() == null) {
                     break;
                 }
 
-                Long reservedIpId = reservedIpDAO.persist(ip);
+                Long reservedIpId = reservedIpDAO.persist(reservedIp);
 
                 if (reservedIpId != null) {
-                    reservedIps.add(ip);
+                    reservedIps.add(reservedIp);
                 }
             }
         }
@@ -305,7 +319,15 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<ReservedIp> updateReservedIp( AuthToken token, ReservedIp reservedIp ) {
 
-        if (reservedIp.getId() == null || !isValidReservedIp(reservedIp)) {
+        if (reservedIp == null || reservedIp.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, reservedIp)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (!isValidReservedIp(token, reservedIp)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -327,6 +349,11 @@ public class IpReservationServiceImpl implements IpReservationService {
         if (reservedIp == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
+
+        if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_REMOVE, reservedIp)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         if (!reservedIpDAO.removeByKey(reservedIp.getId())) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -338,9 +365,32 @@ public class IpReservationServiceImpl implements IpReservationService {
         return ok(reservedIp.getId());
     }
 
+    @Override
+    public Result<Boolean> notifyOwnerAboutReleaseIp() {
+        /*
+        @todo
+            - найти все IP с подходящими под критерий SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS датами освобождения
+            - сгруппировать по owner_id
+            - сформировать по одному уведомлению каждому owner'у со списком IP-адресов,
+              которые он должен освободить/продлить в течение SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS дней
+         */
+        return ok(true );
+    }
+
+    @Override
+    public Result<Boolean> notifyAdminsAboutExpiredReleaseDates() {
+        /*
+         @todo
+            - найти все IP с наступившей датой освобождения
+            - сгруппировать по owner_id
+            - сформировать одно уведомление со списокм owner'ов и принадлежащих им IP
+            возможно группировать следует по подсетям, а owner'а указывать как доп.инфо
+         */
+        return ok(true );
+    }
+
     private boolean isValidSubnet(Subnet subnet) {
-        return subnet != null
-                && StringUtils.isNotBlank(subnet.getAddress())
+        return StringUtils.isNotBlank(subnet.getAddress())
                 && subnet.getAddress().matches(CrmConstants.IpReservation.SUBNET_ADDRESS)
                 && StringUtils.isNotBlank(subnet.getMask());
     }
@@ -374,37 +424,11 @@ public class IpReservationServiceImpl implements IpReservationService {
         return true;
     }
 
-    private boolean isValidReservedIp(ReservedIp reservedIp) {
-        return reservedIp != null
-               && reservedIp.getOwnerId() != null
-               && isValidIpAddress(reservedIp.getIpAddress())
-               && isValidMacAddress(reservedIp.getMacAddress())
-               && isValidUseRange(reservedIp.getReserveDate(),
-                                  reservedIp.getReleaseDate());
-    }
-
-    @Override
-    public Result<Boolean> notifyOwnerAboutReleaseIp() {
-        /*
-        @todo
-            - найти все IP с подходящими под критерий SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS датами освобождения
-            - сгруппировать по owner_id
-            - сформировать по одному уведомлению каждому owner'у со списком IP-адресов,
-              которые он должен освободить/продлить в течение SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS дней
-         */
-        return ok(true );
-    }
-
-    @Override
-    public Result<Boolean> notifyAdminsAboutExpiredReleaseDates() {
-        /*
-         @todo
-            - найти все IP с наступившей датой освобождения
-            - сгруппировать по owner_id
-            - сформировать одно уведомление со списокм owner'ов и принадлежащих им IP
-            возможно группировать следует по подсетям, а owner'а указывать как доп.инфо
-         */
-        return ok(true );
+    private boolean isValidReservedIp(AuthToken token, ReservedIp reservedIp) {
+        return reservedIp.getOwnerId() != null
+                && isValidIpAddress(reservedIp.getIpAddress())
+                && isValidMacAddress(reservedIp.getMacAddress())
+                && isValidUseRange(token, reservedIp.getReserveDate(), reservedIp.getReleaseDate());
     }
 
     private boolean isValidIpAddress(String ipAddress) {
@@ -412,14 +436,41 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private boolean isValidMacAddress(String macAddress) {
-        return StringUtils.isEmpty(macAddress)
+        return StringUtils.isBlank(macAddress)
                 || macAddress.matches(CrmConstants.IpReservation.MAC_ADDRESS);
     }
 
     private boolean isValidUseRange(Date from, Date to) {
         return from != null
                 && to != null
+
                 && from.before(to);
+    }
+
+    private boolean isValidUseRange(AuthToken token, Date from, Date to) {
+        return from != null
+                && (to != null || isSystemAdministrator(token) && to == null)
+                && from.before(to);
+    }
+
+    private Set<SubnetOption> getAvailableSubnets(AuthToken token, Set<SubnetOption> selectedSubnets) {
+
+        Set<SubnetOption> subnets;
+        if (CollectionUtils.isNotEmpty(selectedSubnets)) {
+            subnets = selectedSubnets;
+        } else {
+            List<SubnetOption> result = getSubnetsOptionList(token,
+                    new ReservedIpQuery("", En_SortField.address, En_SortDir.ASC))
+                    .getData();
+
+            if (CollectionUtils.isEmpty(result)) {
+                return null;
+            }
+
+            subnets = result.stream().collect(Collectors.toSet());
+        }
+
+        return subnets;
     }
 
     private boolean hasSubnetFreeIps(Long subnetId) {
@@ -434,18 +485,22 @@ public class IpReservationServiceImpl implements IpReservationService {
         query.setSubnetId(subnetId);
         SearchResult<ReservedIp> sr = reservedIpDAO.getSearchResultByQuery(query);
 
-        if (CollectionUtils.isNotEmpty(sr.getResults()) && sr.getResults().size() < CrmConstants.IpReservation.MAX_IPS_COUNT) {
-            for (int i=CrmConstants.IpReservation.MIN_IPS_COUNT; i < CrmConstants.IpReservation.MAX_IPS_COUNT; i++) {
-                String checkedIp = subnet.getAddress()+"."+i;
-                if (!sr.getResults()
-                        .stream()
-                        .filter(r -> r.getIpAddress().equals(checkedIp))
-                        .findFirst().isPresent()) {
-                    return checkedIp;
-                }
+        if (CollectionUtils.isEmpty(sr.getResults())) {
+            return subnet.getAddress()+"." + CrmConstants.IpReservation.MIN_IPS_COUNT;
+        }
+
+        if (sr.getResults().size() == CrmConstants.IpReservation.MAX_IPS_COUNT) {
+            return null;
+        }
+
+        for (int i=CrmConstants.IpReservation.MIN_IPS_COUNT; i < CrmConstants.IpReservation.MAX_IPS_COUNT; i++) {
+            String checkedIp = subnet.getAddress()+"."+i;
+            if (!sr.getResults()
+                    .stream()
+                    .filter(r -> r.getIpAddress().equals(checkedIp))
+                    .findFirst().isPresent()) {
+                return checkedIp;
             }
-        } else {
-            return subnet.getAddress()+".1";
         }
 
         return null;
@@ -473,6 +528,22 @@ public class IpReservationServiceImpl implements IpReservationService {
             return false;
 
         return true;
+    }
+
+    private boolean hasAccessForSubnet(AuthToken token, En_Privilege privilege) {
+        return policyService.hasPrivilegeFor(privilege, token.getRoles());
+    }
+
+    private boolean hasAccessForReservedIp(AuthToken token, En_Privilege privilege, ReservedIp reservedIp) {
+        return isSystemAdministrator(token)
+                || reservedIp == null
+                || (policyService.hasPrivilegeFor(privilege, token.getRoles())
+                    && token.getPersonId().equals(reservedIp.getOwnerId())
+        );
+    }
+
+    private boolean isSystemAdministrator (AuthToken token) {
+        return policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE, token.getRoles());
     }
 
     public static final int SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS = 3;

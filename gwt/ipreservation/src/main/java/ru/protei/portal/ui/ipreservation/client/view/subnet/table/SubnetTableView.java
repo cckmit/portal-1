@@ -3,7 +3,6 @@ package ru.protei.portal.ui.ipreservation.client.view.subnet.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -17,6 +16,7 @@ import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.ipreservation.client.activity.subnet.table.AbstractSubnetTableActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.subnet.table.AbstractSubnetTableView;
+import ru.protei.portal.ui.ipreservation.client.view.subnet.table.columns.AddressColumn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +27,13 @@ import java.util.List;
 public class SubnetTableView extends Composite implements AbstractSubnetTableView {
 
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn<Subnet> editClickColumn,
+                       RefreshClickColumn<Subnet> refreshClickColumn,
+                       RemoveClickColumn<Subnet> removeClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        this.editClickColumn = editClickColumn;
+        this.refreshClickColumn = refreshClickColumn;
+        this.removeClickColumn = removeClickColumn;
         initTable();
     }
 
@@ -36,22 +41,14 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
     public void setActivity( AbstractSubnetTableActivity activity ) {
         this.activity = activity;
 
-        editClickColumn.setHandler( activity );
-        editClickColumn.setColumnProvider( columnProvider );
         editClickColumn.setEditHandler( activity );
-
-        removeClickColumn.setHandler( activity );
-        removeClickColumn.setColumnProvider( columnProvider );
         removeClickColumn.setRemoveHandler( activity );
-
-        refreshClickColumn.setHandler( activity );
-        refreshClickColumn.setColumnProvider( columnProvider );
         refreshClickColumn.setRefreshHandler( activity );
 
-        address.setHandler( activity );
-        address.setColumnProvider( columnProvider );
-        comment.setHandler( activity );
-        comment.setColumnProvider( columnProvider );
+        columns.forEach(clickColumn -> {
+            clickColumn.setHandler( activity );
+            clickColumn.setColumnProvider( columnProvider );
+        });
     }
 
     @Override
@@ -91,63 +88,49 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
         refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW) );
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE) );
 
-        table.addColumn(address.header, address.values);
-        table.addColumn(comment.header, comment.values);
-        table.addColumn(editClickColumn.header, editClickColumn.values);
-        table.addColumn(refreshClickColumn.header, refreshClickColumn.values);
-        table.addColumn(removeClickColumn.header, removeClickColumn.values);
-    }
+        address = new AddressColumn( lang );
 
-    private ClickColumn<Subnet> address = new ClickColumn<Subnet>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.address());
-        }
+        ClickColumn<Subnet> creator = new ClickColumn<Subnet>() {
+            @Override
+            protected void fillColumnHeader(Element columnHeader) { columnHeader.setInnerText(lang.reservedIpCreateBy()); }
+            @Override
+            public void fillColumnValue(Element cell, Subnet value) { cell.setInnerText(value.getCreator()); }
+        };
 
-        @Override
-        public void fillColumnValue(Element cell, Subnet value) {
-            if ( value == null ) { return; }
-
-            cell.addClassName( "number" );
-            com.google.gwt.dom.client.Element divElement = DOM.createDiv();
-
-            com.google.gwt.dom.client.Element addrElement = DOM.createElement( "p" );
-            addrElement.addClassName( "number-size" );
-	        String address = value.getAddress();
-
-            if (value.getMask() != null) {
-                address += "." + value.getMask();
+        ClickColumn<Subnet> comment = new ClickColumn<Subnet>() {
+            @Override
+            protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.setInnerText(lang.comment());
             }
-            addrElement.setInnerText( address );
-            divElement.appendChild( addrElement );
-            cell.appendChild( divElement );
-        }
-    };
+            @Override
+            public void fillColumnValue(Element cell, Subnet value) {
+                cell.setInnerText(value.getComment());
+            }
+        };
 
-    private ClickColumn<Subnet> comment = new ClickColumn<Subnet>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.comment());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Subnet value) {
-            cell.setInnerText(value.getComment());
-        }
-    };
-
-    private ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
+/*    ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
             columnHeader.setInnerText(lang.reservedIpState());
         }
-
         @Override
         public void fillColumnValue(Element cell, Subnet value) {
             cell.setInnerText("Registered : " + value.getRegisteredIPs() + "  "
                     + " Free : " + value.getFreeIps());
         }
-    };
+    };*/
+
+        columns.add(address);
+        columns.add(creator);
+        columns.add(comment);
+        columns.add(editClickColumn);
+        columns.add(refreshClickColumn);
+        columns.add(removeClickColumn);
+
+        columns.forEach(clickColumn -> {
+            table.addColumn(clickColumn.header, clickColumn.values);
+        });
+    }
 
     @UiField
     TableWidget<Subnet> table;
@@ -169,6 +152,8 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
     RefreshClickColumn<Subnet> refreshClickColumn;
     @Inject
     RemoveClickColumn<Subnet> removeClickColumn;
+
+    AddressColumn address;
 
     private AbstractSubnetTableActivity activity;
 

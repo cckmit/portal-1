@@ -24,6 +24,12 @@ public class IpReservationEvents {
      */
     @Url( value = "reserved_ips", primary = true )
     public static class ShowReservedIp {
+        @Omit
+        public Boolean clearScroll = false;
+        public ShowReservedIp () {}
+        public ShowReservedIp (Boolean clearScroll) {
+            this.clearScroll = clearScroll;
+        }
     }
 
     /**
@@ -54,10 +60,10 @@ public class IpReservationEvents {
             this.needRefreshList = needRefreshList;
         }
 
-        public ChangedReservedIp(List<ReservedIp> reservedIps) {
+/*        public ChangedReservedIp(List<ReservedIp> reservedIps) {
             this.reservedIpList = new ArrayList<>(reservedIps);
             this.needRefreshList = true;
-        }
+        }*/
 
         public List<ReservedIp> reservedIpList;
         public ReservedIp reservedIp;
@@ -97,7 +103,7 @@ public class IpReservationEvents {
         public boolean needRefreshList = false;
     }
 
-    public static class CloseEdit {  }
+    public static class CloseEdit {}
 
     public static class ChangeModel {}
 

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.create;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -9,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -65,7 +67,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 .withSuccess(reservedIpList -> {
                     view.saveEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IpReservationEvents.ChangedReservedIp(reservedIpList));
+                    fireEvent(new IpReservationEvents.ShowReservedIp(true));
                     fireEvent(new IpReservationEvents.CloseEdit());
                 })
         );
@@ -179,7 +181,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 return false;
             }
 
-            if(view.macAddress().getValue() != null && !view.macAddressValidator().isValid()){
+            if(StringUtils.isNotBlank(view.macAddress().getValue()) && !view.macAddressValidator().isValid()){
+                Window.alert(view.macAddress().getValue());
                 fireEvent(new NotifyEvents.Show(lang.reservedIpWrongMacAddress(), NotifyEvents.NotifyType.ERROR));
                 return false;
             }
@@ -205,9 +208,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
         if(view.useRange() == null || view.useRange().getValue() == null ||
                 ( view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED) &&
-                  ( view.useRange().getValue().getInterval().from == null ||
-                    view.useRange().getValue().getInterval().to == null )
-                )
+                   !view.useRange().getValue().getInterval().isValid() )
         ) {
             fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
             return false;

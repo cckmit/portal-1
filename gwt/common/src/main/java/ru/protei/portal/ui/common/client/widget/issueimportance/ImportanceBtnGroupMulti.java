@@ -7,6 +7,9 @@ import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Селектор критичности обращения
  */
@@ -18,16 +21,28 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_ImportanceLe
     }
 
     public void fillButtons() {
+
+        List<En_ImportanceLevel> orderedImportanceLevelList = new ArrayList<>();
+        orderedImportanceLevelList.add(En_ImportanceLevel.CRITICAL);
+        orderedImportanceLevelList.add(En_ImportanceLevel.IMPORTANT);
+        orderedImportanceLevelList.add(En_ImportanceLevel.MEDIUM);
+        orderedImportanceLevelList.add(En_ImportanceLevel.BASIC);
+        orderedImportanceLevelList.add(En_ImportanceLevel.COSMETIC);
+
+        fillButtons(orderedImportanceLevelList);
+    }
+
+    public void fillButtons(List<En_ImportanceLevel> importanceLevelList) {
         clear();
 
-        for (En_ImportanceLevel type : En_ImportanceLevel.values(true)) {
+        for (En_ImportanceLevel level : importanceLevelList) {
             addBtnWithIcon(
-                    ImportanceStyleProvider.getImportanceIcon(type) + " center",
-                    "btn btn-default no-border " + type.toString().toLowerCase(),
+                    ImportanceStyleProvider.getImportanceIcon(level) + " center",
+                    "btn btn-default no-border " + level.toString().toLowerCase(),
                     null,
-                    type
+                    level
             );
-            setEnsureDebugId(type, DebugIdsHelper.IMPORTANCE_BUTTON.byId(type.getId()));
+            setEnsureDebugId(level, DebugIdsHelper.IMPORTANCE_BUTTON.byId(level.getId()));
         }
     }
 

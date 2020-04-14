@@ -12,15 +12,20 @@ public interface AbstractReservedIpTableView extends IsWidget {
     void setActivity(AbstractReservedIpTableActivity activity);
     void setAnimation(TableAnimation animation);
 
-    void addRow( ReservedIp reservedIps );
-    void updateRow(ReservedIp reservedIp);
     void clearRecords();
+    void triggerTableLoad();
+    void setTotalRecords(int totalRecords);
+    int getPageCount();
+    void scrollTo(int page);
+
+    void updateRow(ReservedIp item);
 
     void hideElements();
     void showElements();
 
     HasWidgets getPreviewContainer();
     HasWidgets getFilterContainer();
+    HasWidgets getPagerContainer();
 
     void clearSelection();
 }

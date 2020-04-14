@@ -33,8 +33,8 @@ public class ReservedIp extends AuditableObject {
     @JdbcColumn(name="owner_id")
     private Long ownerId;
 
-    @JdbcJoinedObject( localColumn = "owner_id", remoteColumn = "id", table = "person", updateLocalColumn = false )
-    private Person owner;
+    @JdbcJoinedColumn( localColumn = "owner_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName")
+    private String ownerShortName;
 
     @JdbcColumn(name="ip_address")
     private String ipAddress;
@@ -88,9 +88,9 @@ public class ReservedIp extends AuditableObject {
 
     public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
 
-    public Person getOwner() { return owner; }
+    public String getOwnerShortName() { return ownerShortName; }
 
-    public void setOwner(Person owner) { this.owner = owner; }
+    public void setOwnerShortName(String ownerShortName) { this.ownerShortName = ownerShortName; }
 
     public String getIpAddress() { return ipAddress; }
 
@@ -125,6 +125,17 @@ public class ReservedIp extends AuditableObject {
         entityOption.setId(getId());
         entityOption.setDisplayText(getIpAddress());
         return entityOption;
+    }
+
+    public static ReservedIp createByTemplate(ReservedIp templ) {
+        ReservedIp reservedIp = new ReservedIp();
+        reservedIp.setCreated(templ.created);
+        reservedIp.setCreatorId(templ.creatorId);
+        reservedIp.setOwnerId(templ.getOwnerId());
+        reservedIp.setReserveDate(templ.reserveDate);
+        reservedIp.setReleaseDate(templ.releaseDate);
+        reservedIp.setComment(templ.comment);
+        return reservedIp;
     }
 
     @Override

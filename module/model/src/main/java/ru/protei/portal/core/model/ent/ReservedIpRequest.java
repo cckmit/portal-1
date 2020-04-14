@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.SubnetOption;
 
 import java.io.Serializable;
@@ -75,4 +76,11 @@ public class ReservedIpRequest implements Serializable{
     public String getComment() { return comment; }
 
     public void setComment(String comment) { this.comment = comment; }
+
+    public String getSubnetAddress () {
+        if (StringUtils.isEmpty(ipAddress))
+            return null;
+
+        return ipAddress.substring(0, ipAddress.lastIndexOf("."));
+    }
 }
