@@ -58,6 +58,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @Scheduled(cron = "0 0 6 * * ?") // at 06:00:00 am every day
     public void processScheduledMailReportsDaily() {
+        if (!config.data().isTaskSchedulerEnabled()) {
+            log.info("portal task's scheduler is not started because disabled in configuration");
+            return;
+        }
         reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
@@ -65,6 +69,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @Scheduled(cron = "0 0 5 * * MON") // at 05:00:00 am every MONDAY
     public void processScheduledMailReportsWeekly() {
+        if (!config.data().isTaskSchedulerEnabled()) {
+            log.info("portal task's scheduler is not started because disabled in configuration");
+            return;
+        }
         reportControlService.processScheduledMailReports(En_ReportScheduledType.WEEKLY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
