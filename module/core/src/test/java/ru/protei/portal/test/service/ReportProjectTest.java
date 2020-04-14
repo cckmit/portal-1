@@ -4,8 +4,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListener;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
@@ -23,80 +27,116 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
+class BeforeListener implements TestExecutionListener, Ordered {
+    boolean prepared = false;
+    @Override
+    public void prepareTestInstance(TestContext testContext) throws Exception {
+        if (!prepared) {
+            Method init = testContext.getTestClass().getDeclaredMethod("init");
+            init.invoke(testContext.getTestInstance());
+            prepared = true;
+        }
+    }
+    @Override
+    public int getOrder() {
+        return Integer.MAX_VALUE;
+    }
+    @Override
+    public void beforeTestClass(TestContext testContext) throws Exception {
+        Boolean a = Boolean.TRUE;
+    }
+    @Override
+    public void beforeTestMethod(TestContext testContext) throws Exception {}
+    @Override
+    public void afterTestMethod(TestContext testContext) throws Exception {}
+    @Override
+    public void afterTestClass(TestContext testContext) throws Exception {}
+}
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class, DatabaseConfiguration.class,
         IntegrationTestsConfiguration.class})
-@DirtiesContext(classMode = BEFORE_CLASS)
+@TestExecutionListeners(
+        value = { BeforeListener.class },
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class ReportProjectTest extends BaseServiceTest {
+    Integer i = 0;
 
     @Autowired
-    private void init() {
-        if (caseObjectDAO.getAll().size() == 0) {
-            Company company1 = createNewCompany("Test_Company 1", En_CompanyCategory.CUSTOMER);
-            companyDAO.persist(company1);
-            Company company2 = createNewCompany("Test_Company 2", En_CompanyCategory.CUSTOMER);
-            companyDAO.persist(company2);
+    public void auto(){
+        i++;
+    }
 
-            Person person1 = createNewPerson(company1);
-            personDAO.persist(person1);
-            Person person2 = createNewPerson(company2);
-            personDAO.persist(person2);
+    public void init() {
+        Company company1 = createNewCompany("Test_Company 1", En_CompanyCategory.CUSTOMER);
+        companyDAO.persist(company1);
+        Company company2 = createNewCompany("Test_Company 2", En_CompanyCategory.CUSTOMER);
+        companyDAO.persist(company2);
 
-            Project project1 = new Project();
+        Person person1 = createNewPerson(company1);
+        personDAO.persist(person1);
+        Person person2 = createNewPerson(company2);
+        personDAO.persist(person2);
 
-            project1.setName("Test_Project 1");
-            project1.setDescription("ReportProjectTest");
-            project1.setState(En_RegionState.PRESALE);
-            project1.setCustomerType(En_CustomerType.STATE_BUDGET);
-            project1.setCustomer(company1);
-            project1.setTeam(new ArrayList<>());
+        Project project1 = new Project();
 
-            project1.setId(projectService.createProject(null, project1).getData().getId());
+        project1.setName(REPORT_PROJECT_TEST + " : Test_Project 1");
+        project1.setDescription(REPORT_PROJECT_TEST);
+        project1.setState(En_RegionState.PRESALE);
+        project1.setCustomerType(En_CustomerType.STATE_BUDGET);
+        project1.setCustomer(company1);
+        project1.setTeam(new ArrayList<>());
 
-            caseCommentDAO.persist(createNewComment(person1, project1.getId(), "Comment 1"));
-            caseCommentDAO.persist(createNewComment(person1, project1.getId(), "Last Comment 1"));
-            caseCommentDAO.persist(createNewComment(person1, project1.getId(), null));
+        project1.setId(projectService.createProject(null, project1).getData().getId());
 
-            Project project2 = new Project();
+        caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Comment 1"));
+        caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Last Comment 1"));
+        caseCommentDAO.persist(createNewComment(person1, project1.getId(), null));
 
-            project2.setName("Test_Project 2");
-            project2.setDescription("ReportProjectTest");
-            project2.setState(En_RegionState.FINISHED);
-            project2.setCustomerType(En_CustomerType.STATE_BUDGET);
-            project2.setCustomer(company1);
-            project2.setTeam(new ArrayList<>());
+        Project project2 = new Project();
 
-            project2.setId(projectService.createProject(null, project2).getData().getId());
+        project2.setName(REPORT_PROJECT_TEST + " : Test_Project 2");
+        project2.setDescription(REPORT_PROJECT_TEST);
+        project2.setState(En_RegionState.FINISHED);
+        project2.setCustomerType(En_CustomerType.STATE_BUDGET);
+        project2.setCustomer(company1);
+        project2.setTeam(new ArrayList<>());
 
-            caseCommentDAO.persist(createNewComment(person1, project2.getId(), "Comment 2"));
-            caseCommentDAO.persist(createNewComment(person1, project2.getId(), "Last Comment 2"));
-            caseCommentDAO.persist(createNewComment(person1, project2.getId(), null));
+        project2.setId(projectService.createProject(null, project2).getData().getId());
 
-            Project project3 = new Project();
+        caseCommentDAO.persist(createNewComment(person1, project2.getId(), REPORT_PROJECT_TEST + " : Comment 2"));
+        caseCommentDAO.persist(createNewComment(person1, project2.getId(), REPORT_PROJECT_TEST + " : Last Comment 2"));
+        caseCommentDAO.persist(createNewComment(person1, project2.getId(), null));
 
-            project3.setName("Test_Project 3");
-            project3.setDescription("ReportProjectTest");
-            project3.setState(En_RegionState.PRESALE);
-            project3.setCustomerType(En_CustomerType.STATE_BUDGET);
-            project3.setCustomer(company2);
-            project3.setTeam(new ArrayList<>());
+        Project project3 = new Project();
 
-            project3.setId(projectService.createProject(null, project3).getData().getId());
-            // no comments in project
-        }
+        project3.setName(REPORT_PROJECT_TEST + " : Test_Project 3");
+        project3.setDescription(REPORT_PROJECT_TEST);
+        project3.setState(En_RegionState.PRESALE);
+        project3.setCustomerType(En_CustomerType.STATE_BUDGET);
+        project3.setCustomer(company2);
+        project3.setTeam(new ArrayList<>());
+
+        project3.setId(projectService.createProject(null, project3).getData().getId());
+        // no comments in project
+    }
+
+    @Test
+    public void report2() {
+        i = i;
     }
 
     @Test
     public void report() {
         ProjectQuery query = new ProjectQuery();
+        query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
         Report report = new Report();
         report.setCaseQuery(query.toCaseQuery(1L));
@@ -115,6 +155,7 @@ public class ReportProjectTest extends BaseServiceTest {
     @Test
     public void data() {
         ProjectQuery query = new ProjectQuery();
+        query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
         Report report = new Report();
         report.setCaseQuery(query.toCaseQuery(1L));
@@ -123,13 +164,15 @@ public class ReportProjectTest extends BaseServiceTest {
         List<ReportProjectWithLastComment> data = reportProject.createData(report.getCaseQuery());
 
         Assert.assertEquals("Select 2 cases", 2, data.size());
-        Assert.assertEquals("name case #1", "Test_Project 1", data.get(0).getProject().getName());
-        Assert.assertEquals("name case #2", "Test_Project 3", data.get(1).getProject().getName());
+        Assert.assertEquals("name case #1", REPORT_PROJECT_TEST + " : Test_Project 1", data.get(0).getProject().getName());
+        Assert.assertEquals("name case #2", REPORT_PROJECT_TEST + " : Test_Project 3", data.get(1).getProject().getName());
 
-        Assert.assertEquals("comment text case #1", "Last Comment 1", data.get(0).getLastComment().getText());
+        Assert.assertEquals("comment text case #1", REPORT_PROJECT_TEST + " : Last Comment 1", data.get(0).getLastComment().getText());
         Assert.assertNull("comment case #2 is null", data.get(1).getLastComment());
     }
 
     @Autowired
     ReportProject reportProject;
+
+    static private final String REPORT_PROJECT_TEST = "ReportProjectTest";
 }

@@ -63,7 +63,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "WHERE id in " +
                             "(SELECT max(cs.id) id " + // "created" field is not unique, select last comment by id
                                 "FROM case_comment cs " +
-                                    "inner join (SELECT Case_id, max(CREATED) created " +     // select last created date
+                                    "inner join (SELECT CASE_ID, max(CREATED) created " +     // select last created date
                                                 "FROM case_comment " +
                                                 "WHERE CASE_ID in " + makeInArg(caseId) +
                                                     " AND COMMENT_TEXT is not NULL " +

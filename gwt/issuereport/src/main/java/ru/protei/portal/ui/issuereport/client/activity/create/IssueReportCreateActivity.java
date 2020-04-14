@@ -47,8 +47,6 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        me = event.profile;
-
         view.fillReportTypes(makeReportTypeList());
         view.fillReportScheduledTypes(Arrays.asList(En_ReportScheduledType.values()));
 
@@ -81,7 +79,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         CaseQuery query;
         if (reportType == En_ReportType.PROJECT) {
-            query = getProjectQuery().toCaseQuery(me.getId());
+            query = getProjectQuery().toCaseQuery(policyService.getProfile().getId());
         } else {
             query = issueFilterWidget.getFilterFieldsByFilterType();
         }
@@ -220,6 +218,5 @@ public abstract class IssueReportCreateActivity implements Activity,
     ProjectFilterView projectFilterView;
 
     private boolean isSaving;
-    private Profile me;
     private AppEvents.InitDetails initDetails;
 }
