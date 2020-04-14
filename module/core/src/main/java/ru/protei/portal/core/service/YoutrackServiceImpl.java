@@ -79,6 +79,8 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public Result<String> createCompany(String companyName) {
+        log.info("createCompany(): companyName={}", companyName);
+
         YtStateBundleElement company = makeBundleElement(companyName);
         return api.createCompany(company)
                 .map(stateBundleElement -> stateBundleElement.id);
@@ -86,9 +88,12 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public Result<String> updateCompany(String companyOldName, String companyNewName) {
+        log.info("updateCompany(): companyOldName={}, companyNewName={}", companyOldName, companyNewName);
+
         Result<String> companyResult = api.getCompanyByName(companyOldName)
                 .flatMap(companies -> {
-                    if (companies.size() == 1) return ok(companies.get(0));
+                    if (companies.size() == 1)
+                        if (companyOldName.equals(companies.get(0).name)) return ok(companies.get(0));
                     return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one company: " + companies.size());
                 })
                 .map(company -> company.id);

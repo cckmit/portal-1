@@ -37,21 +37,23 @@ public class YoutrackApiImpl implements YoutrackApi {
     @Override
     public Result<YtStateBundleElement> createCompany(YtStateBundleElement company) {
         return create(new YoutrackRequest<>(YtStateBundleElement.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle("34-199"))
+                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle(config.data().youtrack().getYoutrackCustomFieldCompanyId()))
                 .save(company));
     }
 
     @Override
     public Result<YtStateBundleElement> updateCompanyName(String companyId, YtStateBundleElement company) {
         return update(new YoutrackRequest<>(YtStateBundleElement.class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsValue("34-199", companyId))
+                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsValue(config.data().youtrack().getYoutrackCustomFieldCompanyId(), companyId))
                 .save(company));
     }
 
     @Override
     public Result<List<YtStateBundleElement>> getCompanyByName(String companyName) {
         return read(new YoutrackRequest<>(YtStateBundleElement[].class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle("34-199"))
+                .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle(config.data().youtrack().getYoutrackCustomFieldCompanyId()))
+                .fillSimpleFields()
+                .fillYtFields(YtBundleElement.class)
                 .query(companyName))
                 .map(Arrays::asList);
     }

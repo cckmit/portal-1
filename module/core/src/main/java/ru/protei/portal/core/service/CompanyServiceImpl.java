@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -17,6 +18,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 public class CompanyServiceImpl implements CompanyService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
+    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyDAO companyDAO;
@@ -56,6 +59,14 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @PostConstruct
+    public void setYoutrackIntergationEnabled () {
+        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled2();
+    }
 
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
@@ -221,9 +232,14 @@ public class CompanyServiceImpl implements CompanyService {
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
 
-        String newId = youtrackService.createCompany(company.getCname()).getData();
-
-        log.info( "added new company to youtrack = {}", newId );
+        if(YOUTRACK_INTEGRATION_ENABLED) {
+            youtrackService.createCompany(company.getCname())
+                    .ifOk(newCompanyId ->
+                            log.info("createCompany(): added new company to youtrack. CompanyId = {}", newCompanyId))
+                    .ifError(errorResult ->
+                            log.info("createCompany(): Can't create company in youtrack. {}", errorResult)
+                    );
+        }
 
         return ok(company);
     }
@@ -235,22 +251,27 @@ public class CompanyServiceImpl implements CompanyService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Company oldCompany = companyDAO.get(company.getId());
-
-        if (oldCompany == null) {
-            return error(En_ResultStatus.NOT_FOUND);
+        String oldName = null;
+        if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname())) {
+            Company oldCompany = companyDAO.get(company.getId());
+            if (oldCompany == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            }
+            oldName = oldCompany.getCname();
         }
-
-        String oldName = oldCompany.getCname();
 
         Boolean result = companyDAO.merge(company);
 
         if ( !result )
             return error(En_ResultStatus.NOT_UPDATED);
 
-        if (StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)){
-            String newId = youtrackService.updateCompany(oldName, company.getCname()).getData();
-            log.info( "updated company to youtrack = {}", newId );
+        if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
+            youtrackService.updateCompany(oldName, company.getCname())
+                    .ifOk(companyId ->
+                            log.info("updateCompany(): updated company in youtrack. YoutrackCompanyId = {}", companyId))
+                    .ifError(errorResult ->
+                            log.info("updateCompany(): Can't update company in youtrack. {}", errorResult)
+            );
         }
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
