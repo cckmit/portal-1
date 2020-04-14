@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.customfield.YtCustomFieldActivityItem;
+import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSimpleIssueCustomField;
@@ -81,9 +82,9 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createCompany(String companyName) {
         log.info("createCompany(): companyName={}", companyName);
 
-        YtStateBundleElement company = makeBundleElement(companyName);
+        YtEnumBundleElement company = makeBundleElement(companyName);
         return api.createCompany(company)
-                .map(stateBundleElement -> stateBundleElement.id);
+                .map(enumBundleElement -> enumBundleElement.id);
     }
 
     @Override
@@ -102,9 +103,9 @@ public class YoutrackServiceImpl implements YoutrackService {
             return error(companyResult.getStatus(), companyResult.getMessage());
         }
 
-        YtStateBundleElement companyToUpdate = makeBundleElement(companyNewName);
+        YtEnumBundleElement companyToUpdate = makeBundleElement(companyNewName);
         return api.updateCompanyName(companyResult.getData(), companyToUpdate)
-                .map(stateBundleElement -> stateBundleElement.id);
+                .map(enumBundleElement -> enumBundleElement.id);
     }
 
     @Override
@@ -251,8 +252,8 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issueStateChange;
     }
 
-    private YtStateBundleElement makeBundleElement(String elementName) {
-        YtStateBundleElement element = new YtStateBundleElement();
+    private YtEnumBundleElement makeBundleElement(String elementName) {
+        YtEnumBundleElement element = new YtEnumBundleElement();
         element.name = elementName;
         return element;
     }

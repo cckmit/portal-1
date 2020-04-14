@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtBundleElement;
+import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.filterfield.YtFilterField;
@@ -35,22 +36,22 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class YoutrackApiImpl implements YoutrackApi {
 
     @Override
-    public Result<YtStateBundleElement> createCompany(YtStateBundleElement company) {
-        return create(new YoutrackRequest<>(YtStateBundleElement.class)
+    public Result<YtEnumBundleElement> createCompany(YtEnumBundleElement company) {
+        return create(new YoutrackRequest<>(YtEnumBundleElement.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle(config.data().youtrack().getYoutrackCustomFieldCompanyId()))
                 .save(company));
     }
 
     @Override
-    public Result<YtStateBundleElement> updateCompanyName(String companyId, YtStateBundleElement company) {
-        return update(new YoutrackRequest<>(YtStateBundleElement.class)
+    public Result<YtEnumBundleElement> updateCompanyName(String companyId, YtEnumBundleElement company) {
+        return update(new YoutrackRequest<>(YtEnumBundleElement.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsValue(config.data().youtrack().getYoutrackCustomFieldCompanyId(), companyId))
                 .save(company));
     }
 
     @Override
-    public Result<List<YtStateBundleElement>> getCompanyByName(String companyName) {
-        return read(new YoutrackRequest<>(YtStateBundleElement[].class)
+    public Result<List<YtEnumBundleElement>> getCompanyByName(String companyName) {
+        return read(new YoutrackRequest<>(YtEnumBundleElement[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsBundle(config.data().youtrack().getYoutrackCustomFieldCompanyId()))
                 .fillSimpleFields()
                 .fillYtFields(YtBundleElement.class)
