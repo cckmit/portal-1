@@ -370,26 +370,20 @@ public abstract class CaseCommentListActivity
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
-        boolean isManagerChangeComment = value.getCaseManagerId() != null;
+        boolean isManagerChangeComment = value.getCaseManagerId() != null || value.getText() == null;
         boolean isChangeComment = isStateChangeComment || isImportanceChangeComment || isManagerChangeComment;
 
         if (HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
             itemView.hideOptions();
         }
 
-        itemView.enabledEdit(isModifyEnabled && isModifyEnabled);
-
         if ( isStateChangeComment ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
             itemView.setStatus( caseState );
-        }
-
-        if ( isImportanceChangeComment ) {
+        } else if ( isImportanceChangeComment ) {
             En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
             itemView.setImportanceLevel(importance);
-        }
-
-        if ( isManagerChangeComment ) {
+        } else if ( isManagerChangeComment ) {
             itemView.setManager(transliteration(value.getCaseManagerShortName()));
         }
 

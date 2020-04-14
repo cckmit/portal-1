@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
@@ -129,12 +130,12 @@ public class CaseCommentItemView
             owner.addClassName("status");
             owner.addClassName("name");
             owner.setInnerText(managerShortName);
-            info.setInnerText(lang.issueCommentChangeManagerTo());
+            info.setInnerText(StringUtils.isEmpty(managerShortName) ? lang.issueCommentResetManager() : lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         } else {
             status.addClassName("name");
             status.setInnerText(managerShortName);
-            info.setInnerText(lang.issueCommentChangeManagerTo());
+            info.setInnerText(StringUtils.isEmpty(managerShortName) ? lang.issueCommentResetManager() : lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         }
     }
