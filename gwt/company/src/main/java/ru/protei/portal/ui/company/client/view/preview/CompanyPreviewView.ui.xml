@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:casemeta='urn:import:ru.protei.portal.ui.common.client.widget.casetag'
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -21,7 +20,7 @@
 
             <p class="small">
                 <span class="bold" ui:field="subscriptionLabel"><ui:text from="{lang.companySubscription}: "/></span>
-                <g:InlineLabel ui:field="subscription"/>
+                <span ui:field="subscription"/>
             </p>
 
             <h5 ui:field="contactsHeader"><ui:text from="{lang.companyContactsHeader}"/></h5>

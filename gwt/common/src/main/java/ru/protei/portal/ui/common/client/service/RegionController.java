@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public interface RegionController extends RemoteService {
 
     Project saveProject(Project project) throws RequestFailedException;
 
-    List<Project> getProjectList(ProjectQuery query) throws RequestFailedException;
+    SearchResult<Project> getProjects(ProjectQuery query) throws RequestFailedException;
 
     List<EntityOption> getProjectOptionList(ProjectQuery query) throws RequestFailedException;
 

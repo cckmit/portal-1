@@ -83,12 +83,17 @@ public enum En_SortField {
     /**
      * region name
      */
-    region_name("region_name"),
+    region_name("location_region_name"),
 
     /**
      * equipment project
      */
     equipment_project("case_object.case_name"),
+
+    /**
+     * equipment_decimal_number
+     */
+    equipment_decimal_number("decimal_view_sort_decimal"),
 
     /**
      * project

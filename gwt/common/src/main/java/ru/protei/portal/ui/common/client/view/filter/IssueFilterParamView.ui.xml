@@ -83,7 +83,7 @@
         <div class="row">
             <div ui:field="importanceContainer" class="form-group col-md-4 resize-md-12">
                 <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
-                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
             </div>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">

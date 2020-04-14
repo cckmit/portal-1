@@ -135,7 +135,7 @@ public class ContractServiceImpl implements ContractService {
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
         if (caseObject == null) {
             caseObject = new CaseObject();
-            caseObject.setCaseType(En_CaseType.CONTRACT);
+            caseObject.setType(En_CaseType.CONTRACT);
             caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CONTRACT));
             caseObject.setCreated(new Date());
         } else {

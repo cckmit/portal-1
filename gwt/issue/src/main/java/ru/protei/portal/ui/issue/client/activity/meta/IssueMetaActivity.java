@@ -6,9 +6,7 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -17,21 +15,22 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.service.SLAControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
@@ -55,6 +54,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta = event.meta;
         caseMetaJira = event.metaJira;
         metaNotifiers = event.metaNotifiers;
+        slaList = new ArrayList<>();
 
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
@@ -85,13 +85,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
         meta.setStateId(metaView.state().getValue().getId());
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueStateChanged( meta.getId() ) ) );
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
     }
 
     @Override
     public void onImportanceChanged() {
         meta.setImpLevel(metaView.importance().getValue().getId());
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueImportanceChanged( meta.getId() ) ) );
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId())));
+
+        if (!isJiraIssue()) {
+            fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel()));
+        }
     }
 
     @Override
@@ -115,18 +119,14 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onPlatformChanged() {
         meta.setPlatform(metaView.platform().getValue());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged(meta);
+        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
     }
 
     @Override
     public void onTimeElapsedChanged() {
         meta.setTimeElapsed(metaView.getTimeElapsed());
         onCaseMetaChanged( meta );
-    }
-
-    @Override
-    public void onJiraInfoClicked() {
-        fireEvent(new JiraInfoEvents.Show());
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
@@ -201,6 +201,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
+        fillImportanceSelector(company.getId());
+
         meta.setInitiatorCompany(company);
 
         metaView.initiatorUpdateCompany(company);
@@ -215,13 +217,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         companyService.getCompanyWithParentCompanySubscriptions(
                 selectedCompanyId,
                 new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                subscriptions,
-                                CollectionUtils.isEmpty(subscriptions) ?
-                                        lang.issueCompanySubscriptionNotDefined() :
-                                        lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                )
-                        ))
+                        .setOnSuccess(subscriptions -> {
+                            subscriptions = filterByPlatformAndProduct(subscriptions);
+                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    CollectionUtils.isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            );
+                        })
         );
 
         companyService.getCompanyCaseStates(
@@ -245,14 +250,30 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setInitiator(initiator);
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
 
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
     }
 
     @Override
     public void onCreateContactClicked() {
         if (metaView.getCompany() != null) {
             fireEvent(new ContactEvents.Edit(null, metaView.getCompany(), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
+        }
+    }
+
+    private void fillImportanceSelector(Long id) {
+        metaView.fillImportanceOptions(new ArrayList<>());
+        companyService.getImportanceLevels(id, new FluentCallback<List<En_ImportanceLevel>>()
+                .withSuccess(importanceLevelList -> {
+                    metaView.fillImportanceOptions(importanceLevelList);
+                    checkImportanceSelectedValue(importanceLevelList);
+                }));
+    }
+
+    private void checkImportanceSelectedValue(List<En_ImportanceLevel> importanceLevels) {
+        if (!importanceLevels.contains(metaView.importance().getValue())){
+            metaView.importance().setValue(null);
         }
     }
 
@@ -309,13 +330,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         companyService.getCompanyWithParentCompanySubscriptions(
                 meta.getInitiatorCompanyId(),
                 new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                subscriptions,
-                                CollectionUtils.isEmpty(subscriptions) ?
-                                        lang.issueCompanySubscriptionNotDefined() :
-                                        lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                )
-                        ))
+                        .setOnSuccess(subscriptions -> {
+                            subscriptions = filterByPlatformAndProduct(subscriptions);
+                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    CollectionUtils.isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            );
+                        })
         );
 
         companyService.getCompanyCaseStates(
@@ -326,12 +350,54 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                             fireEvent(new CaseStateEvents.UpdateSelectorOptions());
                         })
         );
+        fillImportanceSelector(meta.getInitiatorCompanyId());
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
         metaView.setProduct( meta.getProduct() );
         metaView.setManager( meta.getManager() );
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
+        metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
+
+        metaView.slaContainerVisibility().setVisible(!isJiraIssue());
+        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+    }
+
+    private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+        if (isJiraIssue()) {
+            return;
+        }
+
+        if (platformId == null) {
+            slaList = DefaultSlaValues.getList();
+            metaView.setValuesContainerWarning(true);
+            metaView.setSlaTimesContainerTitle(lang.projectSlaDefaultValues());
+            slaConsumer.accept(slaList);
+            return;
+        }
+
+        slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+                .withSuccess(result -> {
+                    slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
+                    metaView.setValuesContainerWarning(result.isEmpty());
+                    metaView.setSlaTimesContainerTitle(result.isEmpty() ? lang.projectSlaDefaultValues() : lang.projectSlaSetValuesByManager());
+                    slaConsumer.accept(slaList);
+                })
+        );
+    }
+
+    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final int importanceLevelId) {
+        return slaList
+                .stream()
+                .filter(sla -> Objects.equals(importanceLevelId, sla.getImportanceLevelId()))
+                .findAny()
+                .orElse(new ProjectSla());
+    }
+
+    private void fillSla(ProjectSla sla) {
+        metaView.slaReactionTime().setTime(sla.getReactionTime());
+        metaView.slaTemporarySolutionTime().setTime(sla.getTemporarySolutionTime());
+        metaView.slaFullSolutionTime().setTime(sla.getFullSolutionTime());
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
@@ -354,17 +420,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
-        this.subscriptionsList = subscriptionsList;
         this.subscriptionsListEmptyMessage = emptyMessage;
 
         if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
 
-        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = subscriptionsList.stream()
-                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(meta.getProductId(), companySubscription.getProductId()))
-                        && (companySubscription.getPlatformId() == null || Objects.equals(meta.getPlatformId(), companySubscription.getPlatformId())))
-                .collect( Collectors.toList());
-
-        List<String> subscriptionsBasedOnPrivacyList = subscriptionsBasedOnPlatformAndProduct.stream()
+        List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .filter(mail -> !meta.isPrivateCase() || CompanySubscription.isProteiRecipient(mail))
                 .distinct()
@@ -373,6 +433,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
                 ? subscriptionsListEmptyMessage
                 : String.join(", ", subscriptionsBasedOnPrivacyList);
+    }
+
+    private List<CompanySubscription> filterByPlatformAndProduct(List<CompanySubscription> subscriptionsList) {
+        this.subscriptionsList = subscriptionsList;
+
+        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsList;
+
+        return subscriptionsList.stream()
+                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(meta.getProductId(), companySubscription.getProductId()))
+                        && (companySubscription.getPlatformId() == null || Objects.equals(meta.getPlatformId(), companySubscription.getPlatformId())))
+                .collect( Collectors.toList());
     }
 
     private boolean isCompanyChangeAllowed(boolean isPrivateCase) {
@@ -401,6 +472,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
+    private boolean isJiraIssue() {
+        return caseMetaJira != null;
+    }
 
     @Inject
     AbstractIssueMetaView metaView;
@@ -416,6 +490,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     CompanyControllerAsync companyService;
     @Inject
     CaseStateFilterProvider caseStateFilter;
+    @Inject
+    SLAControllerAsync slaService;
 
     @ContextAware
     CaseObjectMeta meta;
@@ -427,6 +503,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private boolean readOnly;
+    private List<ProjectSla> slaList;
 
     private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
 

@@ -47,7 +47,7 @@ public abstract class JiraInfoActivity implements AbstractJiraInfoActivity, Acti
                 })
         );
 
-        view.setImage(CrmConstants.Image.JIRA_WORKFLOW);
+        view.setImage(CrmConstants.Jira.WORKFLOW_IMAGE);
     }
 
     public static class JiraStatusInfo {

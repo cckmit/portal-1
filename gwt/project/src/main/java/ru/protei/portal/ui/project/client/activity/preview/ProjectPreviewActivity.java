@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -23,8 +24,12 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
  * Активность превью проекта
@@ -114,7 +119,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContract(value.getContractNumber() == null ? "" : lang.contractNum(value.getContractNumber()), LinkUtils.makeLink(Contract.class, value.getContractId()));
+        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makeLink(Contract.class, contract.getId()))));
         view.setPlatform(value.getPlatformName() == null ? "" : value.getPlatformName(), LinkUtils.makeLink(Platform.class, value.getPlatformId()));
 
         if( value.getTeam() != null ) {
@@ -161,7 +166,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             return false;
         }
 
-        if (project.getProjectSlas().stream().allMatch(ProjectSla::isEmpty)) {
+        if (projectSlas.stream().allMatch(ProjectSla::isEmpty)) {
             return false;
         }
 

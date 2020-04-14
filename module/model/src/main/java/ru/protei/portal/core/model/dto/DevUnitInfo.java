@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dto;
 
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.struct.AuditableObject;
 
@@ -9,7 +10,7 @@ public class DevUnitInfo extends AuditableObject {
 
     private Long id;
 
-    private int typeId;
+    private En_DevUnitType type;
 
     private String name;
 
@@ -69,12 +70,25 @@ public class DevUnitInfo extends AuditableObject {
         this.description = description;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public En_DevUnitType getType() {
+        return type;
     }
 
+    public void setType( En_DevUnitType type) {
+        this.type = type;
+    }
+
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
+    public int getTypeId() {
+        return type!=null?type.getId():0;
+    }
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
     public void setTypeId(int typeId) {
-        this.typeId = typeId;
+        type = En_DevUnitType.forId( typeId );
     }
 
     public String getName() {
@@ -105,7 +119,7 @@ public class DevUnitInfo extends AuditableObject {
         info.setHistoryVersion( devUnit.getHistoryVersion() );
         info.setDescription( devUnit.getInfo() );
         info.setName( devUnit.getName() );
-        info.setTypeId( devUnit.getTypeId() );
+        info.setType( devUnit.getType() );
         info.setWikiLink( devUnit.getWikiLink() );
         return info;
     }
@@ -119,7 +133,7 @@ public class DevUnitInfo extends AuditableObject {
         devUnit.setId(info.getId());
         devUnit.setName(info.getName());
         devUnit.setInfo(info.getDescription());
-        devUnit.setTypeId(info.getTypeId());
+        devUnit.setType( info.getType() );
         devUnit.setCdrDescription(info.getCdrDescription());
         devUnit.setConfiguration(info.getConfiguration());
         devUnit.setHistoryVersion(info.getHistoryVersion());

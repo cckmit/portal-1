@@ -33,7 +33,7 @@ public class ImportanceButtonSelector extends ButtonSelector<En_ImportanceLevel>
         if ( defaultValue != null ) {
             addOption( null );
         }
-        for ( En_ImportanceLevel value : En_ImportanceLevel.values() ) {
+        for ( En_ImportanceLevel value : En_ImportanceLevel.values(true) ) {
             addOption( value );
         }
     }

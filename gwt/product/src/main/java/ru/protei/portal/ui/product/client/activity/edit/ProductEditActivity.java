@@ -232,7 +232,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         boolean isCreate = product.getId() == null;
         if (isCreate) {
-            product.setTypeId(view.type().getValue().getId());
+            product.setType(view.type().getValue());
         }
 
         product.setSubscriptions(view.productSubscriptions().getValue().stream()

@@ -242,6 +242,18 @@ public class CaseServiceImpl implements CaseService {
                 return error(En_ResultStatus.NOT_UPDATED);
             }
 
+            if(isNotEmpty(changeRequest.getAttachments())){
+                caseObject.setAttachmentExists(true);
+                caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+
+                caseAttachmentDAO.persistBatch(
+                        changeRequest.getAttachments()
+                                .stream()
+                                .map(a -> new CaseAttachment(changeRequest.getId(), a.getId()))
+                                .collect(Collectors.toList())
+                );
+            }
+
             return ok(changeRequest)
                     .publishEvent( new CaseNameAndDescriptionEvent(
                     this,
@@ -728,7 +740,7 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        return Objects.equals(En_CompanyCategory.HOME.getId(), company.getCategory().getId());
+        return (En_CompanyCategory.HOME == company.getCategory());
     }
 
     private void applyStateBasedOnManager(CaseObject caseObject) {
@@ -756,15 +768,18 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateFieldsOfNew(CaseObject caseObject) {
-        return validateFields(caseObject)
-            && validateMetaFields(new CaseObjectMeta(caseObject));
+        if (!validateFields( caseObject )) return false;
+        CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
+        if (!validateMetaFields( caseObjectMeta )) return false;
+        return true;
     }
 
     private boolean validateFields(CaseObject caseObject) {
-        return caseObject != null
-                && caseObject.getName() != null
-                && !caseObject.getName().isEmpty()
-                && En_CaseType.find(caseObject.getTypeId()) != null;
+        if(caseObject == null) return false;
+        if(caseObject.getName() == null) return false;
+        if(caseObject.getName().isEmpty()) return false;
+        if(caseObject.getType() == null) return false;
+        return true;
     }
 
     private boolean validateMetaFields(CaseObjectMeta caseMeta) {

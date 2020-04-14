@@ -229,7 +229,7 @@ public class JiraIntegrationServiceTest {
     private Company makeCompany() {
         Company company = new Company();
         company.setCname("Jira_test_company");
-        company.setCategory(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        company.setCategory(En_CompanyCategory.CUSTOMER);
         company.setId(companyDAO.persist(company));
         return company;
     }

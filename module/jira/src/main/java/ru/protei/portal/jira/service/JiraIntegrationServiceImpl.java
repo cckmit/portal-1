@@ -249,7 +249,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     private CaseObject makeCaseObject( Issue issue, Person initiator ) {
         final CaseObject caseObj = new CaseObject();
 
-        caseObj.setCaseType(En_CaseType.CRM_SUPPORT);
+        caseObj.setType(En_CaseType.CRM_SUPPORT);
         caseObj.setCreated(issue.getCreationDate().toDate());
         caseObj.setModified(issue.getUpdateDate().toDate());
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());

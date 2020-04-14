@@ -139,12 +139,12 @@ public class MigrateCrmSessions implements MigrateAction {
 
                     if (((Number)MigrateUtils.nvl(row.get("nCategoryID"), 8)).intValue() == 8) {
                         obj.setExtId(En_CaseType.CRM_SUPPORT.makeGUID(obj.getCaseNumber()));
-                        obj.setTypeId(En_CaseType.CRM_SUPPORT.getId());
+                        obj.setType(En_CaseType.CRM_SUPPORT);
                         obj.setStateId(supportStatusMap.get(row.get("nStatusID")));
                     }
                     else {
                         obj.setExtId(En_CaseType.CRM_MARKET.makeGUID(obj.getCaseNumber()));
-                        obj.setTypeId(En_CaseType.CRM_MARKET.getId());
+                        obj.setType(En_CaseType.CRM_MARKET);
                         obj.setStateId(marketStatusMap.get(row.get("nStatusID")));
                     }
 

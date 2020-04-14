@@ -13,8 +13,7 @@ import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.util.JsonUtils;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by bondarenko on 03.07.17.
@@ -22,14 +21,14 @@ import java.util.List;
 public class AttachmentUploader extends FileUploader{
 
     public interface FileUploadHandler{
-        void onSuccess(Attachment attachment);
+        void onSuccess(Attachment attachment, PasteInfo pasteInfo);
         void onError(En_FileUploadStatus status, String details);
     }
 
     @Override
     public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
         resetForm();
-        onUploaded(event.getResults());
+        onUploaded(event.getResults(), null);
     }
 
     @Override
@@ -46,15 +45,15 @@ public class AttachmentUploader extends FileUploader{
         }
     }
 
-    public void uploadBase64File(String json) {
-        sendJsonRequest(json, UPLOAD_BASE_64_FILE_URL);
+    public void uploadBase64File(String json, PasteInfo pasteInfo) {
+        sendJsonRequest(json, UPLOAD_BASE_64_FILE_URL, pasteInfo);
     }
 
-    public void uploadBase64Files(List<String> jsons) {
-        sendJsonRequest(JsonUtils.wrapJsonsToJsonList(jsons), UPLOAD_BASE_64_FILES_URL);
+    public void uploadBase64Files(List<String> jsons, PasteInfo pasteInfo) {
+        sendJsonRequest(JsonUtils.wrapJsonsToJsonList(jsons), UPLOAD_BASE_64_FILES_URL, pasteInfo);
     }
 
-    private void sendJsonRequest(String json, String url) {
+    private void sendJsonRequest(String json, String url, PasteInfo pasteInfo) {
         try {
             if (!fileUpload.isEnabled()) {
                 return;
@@ -67,7 +66,7 @@ public class AttachmentUploader extends FileUploader{
                 @Override
                 public void onResponseReceived(Request request, Response response) {
                     resetForm();
-                    onUploaded(response.getText());
+                    onUploaded(response.getText(), pasteInfo);
                 }
                 @Override
                 public void onError(Request request, Throwable exception) {
@@ -98,7 +97,7 @@ public class AttachmentUploader extends FileUploader{
         fileUpload.setEnabled(true);
     }
 
-    private void onUploaded(String response) {
+    private void onUploaded(String response, PasteInfo pasteInfo) {
         if (uploadHandler == null) {
             return;
         }
@@ -108,7 +107,9 @@ public class AttachmentUploader extends FileUploader{
         if (!En_FileUploadStatus.OK.equals(result.getStatus())) {
             uploadHandler.onError(result.getStatus(), result.getDetails());
         } else {
-            parseAttachmentDispatcher(result.getDetails());
+            parseAttachmentDispatcher(result.getDetails())
+                    .forEach(attachment -> uploadHandler.onSuccess(attachment, pasteInfo)
+            );
         }
     }
 
@@ -132,17 +133,17 @@ public class AttachmentUploader extends FileUploader{
         return result;
     }
 
-    private void parseAttachmentDispatcher(String json) {
+    private List<Attachment> parseAttachmentDispatcher(String json) {
         JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
 
         if (jsonObj != null) {
-            parseAttachment(jsonObj);
+            return Collections.singletonList(parseAttachment(jsonObj));
         } else {
-            parseAttachments(JSONParser.parseStrict(json).isArray());
+            return parseAttachments(JSONParser.parseStrict(json).isArray());
         }
     }
 
-    private void parseAttachment(JSONObject jsonObj){
+    private Attachment parseAttachment(JSONObject jsonObj){
         Attachment attachment = new Attachment();
         attachment.setId(Long.valueOf(jsonObj.get("id").toString()));
         attachment.setFileName(jsonObj.get("fileName").isString().stringValue());
@@ -151,14 +152,15 @@ public class AttachmentUploader extends FileUploader{
         attachment.setDataSize(Long.valueOf(jsonObj.get("dataSize").toString()));
         attachment.setMimeType(jsonObj.get("mimeType").isString().stringValue());
         attachment.setCreated(new Date((long)jsonObj.get("created").isNumber().doubleValue()));
-
-        uploadHandler.onSuccess(attachment);
+        return attachment;
     }
 
-    private void parseAttachments(JSONArray array) {
+    private List<Attachment> parseAttachments(JSONArray array) {
+        List<Attachment> list = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
-            parseAttachment(array.get(i).isObject());
+            list.add(parseAttachment(array.get(i).isObject()));
         }
+        return list;
     }
 
 

@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
@@ -81,7 +82,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @Override
     public Long insertCase(CaseObject object) {
 
-        En_CaseType type = object.getCaseType();
+        En_CaseType type = object.getType();
 
         Long caseNumber = caseTypeDAO.generateNextId(type);//HelperFunc.nvlt(getMaxValue("CASENO", Long.class, "case_type=?", type.getId()),0L) + 1;
 
@@ -95,6 +96,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     public List< CaseObject > getCases(CaseQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return getList(parameters);
+    }
+
+    @Override
+    public SearchResult<CaseObject> getSearchResult(CaseQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
     }
 
     @Override

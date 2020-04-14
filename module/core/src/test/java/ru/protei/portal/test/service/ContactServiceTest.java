@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.service.ContactService;
@@ -49,7 +49,7 @@ public class ContactServiceTest extends BaseServiceTest {
     @Test
     public void testGetByFilter() {
 
-        Company company = createNewCompany(new CompanyCategory(2L));
+        Company company = createNewCompany( En_CompanyCategory.PARTNER );
         company.setId(companyDAO.persist(company));
         Person person = createNewPerson(company);
         person.setId(personDAO.persist(person));

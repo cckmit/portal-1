@@ -187,6 +187,7 @@ public class DebugIds {
         String IMPORTANT = "importance-button-important";
         String BASIC = "importance-button-basic";
         String COSMETIC = "importance-button-cosmetic";
+        String MEDIUM = "importance-button-medium";
     }
 
     public interface PRIVACY_TYPE_BUTTON {
@@ -385,7 +386,7 @@ public class DebugIds {
         String PRODUCTS_LABEL = "project-preview-products-label";
         String DOCUMENTS_CONTAINER = "project-preview-documents-container";
         String COMMENTS_CONTAINER = "project-preview-comments-container";
-        String CONTRACT_LABEL = "project-preview-contract-label";
+        String CONTRACTS_CONTAINER = "project-preview-contracts-container";
         String PLATFORM_LABEL = "project-preview-platform-label";
         String TECHNICAL_SUPPORT_VALIDITY_CONTAINER = "project-preview-technical-support-validity-container";
         String SLA_INPUT = "project-preview-sla-input";

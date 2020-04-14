@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.impl.CompanyImportanceItemDAO_Impl;
+import ru.protei.portal.core.model.dao.impl.ImportanceLevelDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -53,10 +55,6 @@ public class DaoMockTestConfiguration {
         return  mock(CompanyGroupHomeDAO.class);
     }
 
-    @Bean
-    public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return  mock(AbsenceReasonDAO.class);
-    }
 
     @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {
@@ -74,28 +72,8 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
-    public CaseTaskDAO getCaseTaskDAO() {
-        return  mock(CaseTaskDAO.class);
-    }
-
-    @Bean
-    public CaseTermDAO getCaseTermDAO() {
-        return  mock(CaseTermDAO.class);
-    }
-
-    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return  mock(DevUnitDAO.class);
-    }
-
-    @Bean
-    public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return  mock(DevUnitVersionDAO.class);
-    }
-
-    @Bean
-    public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return  mock(DevUnitBranchDAO.class);
     }
 
     @Bean
@@ -106,11 +84,6 @@ public class DaoMockTestConfiguration {
     @Bean
     public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
         return mock(CaseCommentShortViewDAO.class);
-    }
-
-    @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return  mock(CaseDocumentDAO.class);
     }
 
     @Bean
@@ -181,11 +154,6 @@ public class DaoMockTestConfiguration {
     @Bean
     public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
         return  mock(PersonCompanyEntryDAO.class);
-    }
-
-    @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return  mock(CompanyCategoryDAO.class);
     }
 
     @Bean
@@ -355,6 +323,11 @@ public class DaoMockTestConfiguration {
     @Bean
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
         return  mock(JiraSLAMapEntryDAO.class);
+    }
+
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return mock(CompanyImportanceItemDAO.class);
     }
 
 

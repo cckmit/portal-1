@@ -23,6 +23,7 @@ public class AttachmentPreview extends PopupPanel implements ClickHandler{
 
         root.sinkEvents(Event.ONCLICK);
         root.addHandler(this, ClickEvent.getType());
+        addStyleName("max-z-index");
     }
 
     public void show(Image attachment){

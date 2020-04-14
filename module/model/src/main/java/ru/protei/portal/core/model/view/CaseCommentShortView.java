@@ -26,23 +26,23 @@ public class CaseCommentShortView {
     @JdbcColumn(name="author_id")
     private Long authorId;
 
-    @JdbcJoinedColumn( mappedColumn = "displayShortName", table = "Person", localColumn = "author_id", remoteColumn = "ID" )
+    @JdbcJoinedColumn( mappedColumn = "displayShortName", table = "person", localColumn = "author_id", remoteColumn = "ID" )
     private String authorName;
 
     @JdbcJoinedColumn( mappedColumn = "company_id", joinPath = {
-            @JdbcJoinPath( table = "Person", localColumn = "author_id", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "person", localColumn = "author_id", remoteColumn = "id" ),
     })
     private Long companyId;
 
     @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
-            @JdbcJoinPath( table = "Person", localColumn = "author_id", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" )
+            @JdbcJoinPath( table = "person", localColumn = "author_id", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id" )
     })
     private String companyName;
 
     @JdbcJoinedColumn( mappedColumn = "category_id", joinPath = {
-            @JdbcJoinPath( table = "Person", localColumn = "author_id", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "person", localColumn = "author_id", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id" ),
     })
     private Integer companyCategoryId;
 

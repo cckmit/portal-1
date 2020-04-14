@@ -251,9 +251,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companySubscriptionGroupAddButton();
 
-    String companySubscriptionGroupAnyValuePlatformSelector();
+    String companySubscriptionGroupAnyValuePlatform();
 
-    String companySubscriptionGroupAnyValueProductSelector();
+    String companySubscriptionGroupAnyValueProduct();
 
     String companySubscriptionGroupQuantity();
 
@@ -377,6 +377,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privacyTypePrivate();
 
+    String mediumImportance();
+
     String comments();
 
     String product();
@@ -470,6 +472,8 @@ public interface Lang extends Messages, ContactItemLang {
     String regionState();
 
     String regionDistrict();
+
+    String regionNotSpecified();
 
     String productDirection();
 
@@ -1944,6 +1948,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectSiteFolder();
 
+    String productDirectionNotSpecified();
+
     String issueInitiatorInfo();
 
     String errNotAllowedChangeIssueNameOrDescription();
@@ -2165,4 +2171,152 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSlaNotValid();
 
     String projectTeamRole();
+
+    String projectSlaSetValuesByManager();
+
+    String projectSlaDefaultValues();
+
+    String companyCategoryCustomer();
+
+    String companyCategoryPartner();
+
+    String companyCategorySubcontractor();
+
+    String companyCategoryOfficial();
+
+    String companyCategoryHome();
+
+    String auditTypeIssueModify();
+
+    String auditTypeIssueCreate();
+
+    String auditTypeIssueReport();
+
+    String auditTypeIssueExport();
+
+    String auditTypeRegionModify();
+
+    String auditTypeRegionReport();
+
+    String auditTypeRegionExport();
+
+    String auditTypeProjectModify();
+
+    String auditTypeProjectCreate();
+
+    String auditTypeCompanyModify();
+
+    String auditTypeCompanyCreate();
+
+    String auditTypeProductModify();
+
+    String auditTypeProductCreate();
+
+    String auditTypeContactModify();
+
+    String auditTypeContactCreate();
+
+    String auditTypeAccountModify();
+
+    String auditTypeAccountCreate();
+
+    String auditTypeAccountRemove();
+
+    String auditTypeEquipmentModify();
+
+    String auditTypeEquipmentCreate();
+
+    String auditTypeEquipmentRemove();
+
+    String auditTypeRoleModify();
+
+    String auditTypeRoleCreate();
+
+    String auditTypeIssueCommentCreate();
+
+    String auditTypeIssueCommentModify();
+
+    String auditTypeIssueCommentRemove();
+
+    String auditTypeAttachmentRemove();
+
+    String auditTypeEquipmentCopy();
+
+    String auditTypeOfficialModify();
+
+    String auditTypeOfficialCreate();
+
+    String auditTypeRoleRemove();
+
+    String auditTypeEmployeeModify();
+
+    String auditTypeEmployeeCreate();
+
+    String auditTypeDepartmentModify();
+
+    String auditTypeDepartmentCreate();
+
+    String auditTypeDepartmentRemove();
+
+    String auditTypeWorkerModify();
+
+    String auditTypeWorkerCreate();
+
+    String auditTypeWorkerRemove();
+
+    String auditTypePositionModify();
+
+    String auditTypePositionCreate();
+
+    String auditTypePositionRemove();
+
+    String auditTypePhotoUpload();
+
+    String auditTypeDocumentModify();
+
+    String auditTypeDocumentRemove();
+
+    String auditTypeEmployeeRegistrationCreate();
+
+    String auditTypeProjectRemove();
+
+    String auditTypeEmployeeRegistrationModify();
+
+    String auditTypeContractModify();
+
+    String auditTypeContractCreate();
+
+    String auditTypeContactFire();
+
+    String auditTypeContactDelete();
+
+    String auditTypeLinkCreate();
+
+    String auditTypeLinkRemove();
+
+    String auditTypeDocumentCreate();
+
+    String auditTypeDocumentTypeCreate();
+
+    String auditTypeDocumentTypeRemove();
+
+    String auditTypePlatformCreate();
+
+    String auditTypePlatformModify();
+
+    String auditTypePlatformRemove();
+
+    String auditTypeServerCreate();
+
+    String auditTypeServerModify();
+
+    String auditTypeServerRemove();
+
+    String auditTypeApplicationCreate();
+
+    String auditTypeApplicationModify();
+
+    String auditTypeApplicationRemove();
+
+    String rolePrivilegesNote();
 }

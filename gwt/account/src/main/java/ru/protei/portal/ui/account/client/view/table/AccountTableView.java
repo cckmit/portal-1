@@ -115,8 +115,8 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
                 cell.appendChild( root );
 
                 ImageElement imageElement = DOM.createImg().cast();
-                imageElement.setSrc( "./images/auth_" + En_AuthType.find( value.getAuthTypeId() ).toString().toLowerCase() + ".png" );
-                imageElement.setTitle( value.getAuthTypeId() == En_AuthType.LDAP.getId() ? lang.accountLDAP() : lang.accountLocal() );
+                imageElement.setSrc( "./images/auth_" + value.getAuthType().toString().toLowerCase() + ".png" );
+                imageElement.setTitle( value.getAuthType() == En_AuthType.LDAP ? lang.accountLDAP() : lang.accountLocal() );
                 root.appendChild( imageElement );
             }
         };

@@ -17,7 +17,8 @@ public abstract class LifecycleSelectorModel<T> implements Activity, SelectorMod
             return;
         }
         subscribers.add(selector);
-        if (!selector.requestByOnLoad() || CollectionUtils.isNotEmpty(selector.getValues())) {
+        boolean b = !selector.requestByOnLoad();
+        if (b || CollectionUtils.isNotEmpty(selector.getValues())) {
             return;
         }
         refreshFromCache(selector);

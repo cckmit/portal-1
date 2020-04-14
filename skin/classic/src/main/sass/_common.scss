@@ -1575,11 +1575,10 @@ a {
 }
 
 .private-btn {
-  padding: 16px 7px;
-  min-width: 33px;
+  padding: 10px 7px;
+  min-width: 30px;
   border-left: 0;
   font-weight: 900;
-  text-align: center;
 
   &.input-group-addon-up {
     background-color: teal !important;
@@ -1596,7 +1595,7 @@ a {
   &.input-group-addon-up:after,
   &.input-group-addon-up-hovering:after {
     font-family: "Font Awesome 5 Free", serif;
-    content: "\f3c1";
+    content: "\f13e";
     font-size: 1.2em;
   }
   &.input-group-addon-up-hovering{
@@ -1842,7 +1841,7 @@ a {
       content: "C";
       color: #333333;
     }
-    background-color: #e6e6e6 !important;
+    background-color: #e6e6e6;
   }
 
   &.basic {
@@ -1850,7 +1849,7 @@ a {
       content: "B";
       color: #333333;
     }
-    background-color: #b7e281 !important;
+    background-color: #b7e281;
   }
 
   &.important {
@@ -1858,7 +1857,7 @@ a {
       content: "I";
       color: #333333;
     }
-    background-color: #fed74a !important;
+    background-color: #fed74a;
   }
 
   &.critical {
@@ -1866,7 +1865,15 @@ a {
       content: "C";
       color: #ffffff;
     }
-    background-color: #e30000 !important;
+    background-color: #e30000;
+  }
+
+  &.medium {
+    &:before {
+      content: "M";
+      color: #333333;
+    }
+    background-color: #eeff00 !important;
   }
 
   &.center {
@@ -1896,6 +1903,14 @@ a {
   font-size: 13px;
 }
 
+.importance-btn-group {
+  width: 200px;
+
+  .btn {
+    padding: .375rem .75rem;
+  }
+}
+
 .case-importance-cometic {
   color: #7b7b7b;
   font-weight: bold;
@@ -1913,6 +1928,11 @@ a {
 
 .case-importance-critical {
   color: #e30000;
+  font-weight: bold;
+}
+
+.case-importance-medium {
+  color: #c9d600;
   font-weight: bold;
 }
 
@@ -2118,6 +2138,59 @@ a {
 }
 
 /**** PROJECTS ****/
+.projects {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .status {
+      width: 45px;
+    }
+
+    .number {
+      width: 8%;
+    }
+    .customers {
+      width: 12%;
+    }
+    .managers {
+      width: 15%;
+    }
+    .info {
+    }
+  }
+}
+
 
 .project-main-info {
   display: flex;
@@ -2425,6 +2498,13 @@ ul.privileges {
     color: #686868;
     font-size: 100%;
     font-weight: normal;
+    padding-bottom: 0;
+  }
+  .option-info {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 .6em .3em 3.2em;
   }
 }
 
@@ -3468,6 +3548,11 @@ table {
   outline: none !important;
 }
 
+.input-group-addon {
+  padding-top: 16px;
+  padding-left: 8px;
+}
+
 .no-margin-bottom {
   margin-bottom: 0px !important;
 }
@@ -3868,11 +3953,17 @@ table {
   width: 0;
 }
 
-.product-links-formatter {
+.links-list-formatter {
   display: flex;
   flex-flow: row wrap;
   a {
     margin-right: 15px;
+  }
+}
+
+.links-list-column-formatter {
+  a {
+    display: block;
   }
 }
 
@@ -3988,4 +4079,8 @@ table {
 
 .technical-validity {
   height: 56px;
+}
+
+.max-z-index {
+  z-index: 9999 !important;
 }
