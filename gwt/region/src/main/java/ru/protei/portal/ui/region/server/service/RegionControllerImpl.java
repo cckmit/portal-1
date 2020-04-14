@@ -19,12 +19,12 @@ import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.RegionController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса управления регионами
@@ -136,11 +136,11 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public List<Project> getProjectList(ProjectQuery query) throws RequestFailedException {
-        log.info("getProjectsList(): query={}", query);
+    public SearchResult<Project> getProjects(ProjectQuery query) throws RequestFailedException {
+        log.info("getProjects(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(projectService.listProjects(token, query));
+        return ServiceUtils.checkResultAndGetData(projectService.projects(token, query));
     }
 
     @Override

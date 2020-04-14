@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -281,16 +282,20 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<Project>> listProjects(AuthToken authToken, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+    public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(token, query);
 
-        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+        SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
 
-        jdbcManyRelationsHelper.fill(projects, "members");
-        jdbcManyRelationsHelper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "members");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
 
-        List<Project> result = projects.stream()
-                .map(Project::fromCaseObject).collect(toList());
+        SearchResult<Project> result = new SearchResult<>(
+                projects.getResults().isEmpty() ?
+                        new ArrayList<>()
+                        : projects.getResults().stream().map(Project::fromCaseObject).collect(toList()),
+                projects.getTotalCount());
         return ok(result);
     }
 
@@ -463,6 +468,8 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType(En_CaseType.PROJECT);
 
+        caseQuery.setCaseIds(projectQuery.getCaseIds());
+
         if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
             caseQuery.setStateIds(projectQuery.getStates().stream()
                     .map((state) -> new Long(state.getId()).intValue())
@@ -470,9 +477,34 @@ public class ProjectServiceImpl implements ProjectService {
             );
         }
 
-        if (projectQuery.getDirectionId() != null) {
-            caseQuery.setProductDirectionId(projectQuery.getDirectionId());
+        if (CollectionUtils.isNotEmpty(projectQuery.getRegions())) {
+            caseQuery.setRegionIds(projectQuery.getRegions().stream()
+                    .map(region -> region == null ? null : region.getId())
+                    .collect(toList())
+            );
         }
+
+        if (CollectionUtils.isNotEmpty(projectQuery.getHeadManagers())) {
+            caseQuery.setHeadManagerIds(projectQuery.getHeadManagers().stream()
+                    .map(headManager -> headManager == null ? null : headManager.getId())
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(projectQuery.getCaseMembers())) {
+            caseQuery.setCaseMemberIds(projectQuery.getCaseMembers().stream()
+                    .map(member -> member == null ? null : member.getId())
+                    .collect(toList())
+            );
+        }
+
+        if (CollectionUtils.isNotEmpty(projectQuery.getDirections())) {
+            caseQuery.setProductDirectionIds(projectQuery.getDirections().stream()
+                    .map(directionInfo -> directionInfo == null ? null : directionInfo.id)
+                    .collect(toList())
+            );
+        }
+
         if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
             caseQuery.setProductIds(projectQuery.getProductIds());
         }

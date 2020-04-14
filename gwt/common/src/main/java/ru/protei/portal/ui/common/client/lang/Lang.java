@@ -467,6 +467,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regionDistrict();
 
+    String regionNotSpecified();
+
     String productDirection();
 
     String projectDirection();
@@ -1939,6 +1941,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectCreate();
 
     String projectSiteFolder();
+
+    String productDirectionNotSpecified();
 
     String issueInitiatorInfo();
 

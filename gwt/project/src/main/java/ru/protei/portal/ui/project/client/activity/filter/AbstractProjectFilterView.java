@@ -4,8 +4,9 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Set;
 
@@ -23,9 +24,13 @@ public interface AbstractProjectFilterView extends IsWidget {
 
     HasValue< Set< En_RegionState > > states();
 
-    HasValue< Set<DistrictInfo>> districts();
-
-    HasValue<ProductDirectionInfo> direction();
+    HasValue<Set<ProductDirectionInfo>> direction();
 
     HasValue<Boolean> onlyMineProjects();
+
+    HasValue< Set<EntityOption> > regions();
+
+    HasValue< Set<PersonShortView> > headManagers();
+
+    HasValue< Set<PersonShortView> > caseMembers();
 }

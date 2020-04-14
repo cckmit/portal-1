@@ -5,20 +5,29 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Запрос по регионам
  */
 public class ProjectQuery extends BaseQuery {
+    private List<Long> caseIds;
 
     private Set<En_RegionState> states;
 
-    private Set<Long> districtIds;
+    private Set<EntityOption> regions;
 
-    private Long directionId;
+    private Set<PersonShortView> headManagers;
+
+    private Set<PersonShortView> caseMembers;
+
+    private Set<ProductDirectionInfo> directions;
+
+    private Set<Long> districtIds;
 
     private Boolean onlyMineProjects;
 
@@ -53,6 +62,19 @@ public class ProjectQuery extends BaseQuery {
         this.productIds = productIds;
     }
 
+    public List<Long> getCaseIds() {
+        return caseIds;
+    }
+
+    public void setCaseId( Long caseId ) {
+        this.caseIds = new ArrayList<>();
+        this.caseIds.add(caseId);
+    }
+
+    public void setCaseIds(List<Long> caseIds) {
+        this.caseIds = caseIds;
+    }
+
     public Set<En_RegionState> getStates() {
         return states;
     }
@@ -69,12 +91,12 @@ public class ProjectQuery extends BaseQuery {
         this.districtIds = districtIds;
     }
 
-    public Long getDirectionId() {
-        return directionId;
+    public Set<ProductDirectionInfo> getDirections() {
+        return directions;
     }
 
-    public void setDirectionId( Long directionId ) {
-        this.directionId = directionId;
+    public void setDirections(Set<ProductDirectionInfo> directions) {
+        this.directions = directions;
     }
 
     public Boolean isOnlyMineProjects() {
@@ -125,11 +147,39 @@ public class ProjectQuery extends BaseQuery {
         this.platformIndependentProject = platformIndependentProject;
     }
 
+    public Set<EntityOption> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(Set<EntityOption> regions) {
+        this.regions = regions;
+    }
+
+    public Set<PersonShortView> getHeadManagers() {
+        return headManagers;
+    }
+
+    public void setHeadManagers(Set<PersonShortView> headManagers) {
+        this.headManagers = headManagers;
+    }
+
+    public Set<PersonShortView> getCaseMembers() {
+        return caseMembers;
+    }
+
+    public void setCaseMembers(Set<PersonShortView> caseMembers) {
+        this.caseMembers = caseMembers;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
+                CollectionUtils.isNotEmpty(caseIds) ||
                 CollectionUtils.isNotEmpty(states) ||
-                directionId != null ||
+                CollectionUtils.isNotEmpty(regions) ||
+                CollectionUtils.isNotEmpty(headManagers) ||
+                CollectionUtils.isNotEmpty(caseMembers) ||
+                CollectionUtils.isNotEmpty(directions) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 customerType != null ||
                 createdFrom != null ||
@@ -141,8 +191,12 @@ public class ProjectQuery extends BaseQuery {
     public String toString() {
         return "ProjectQuery{" +
                 "states=" + states +
+                ", regions=" + regions +
+                ", headManagers=" + headManagers +
+                ", caseMembers=" + caseMembers +
+                ", caseIds=" + caseIds +
                 ", districtIds=" + districtIds +
-                ", directionId=" + directionId +
+                ", directions=" + directions +
                 ", onlyMineProjects=" + onlyMineProjects +
                 ", productIds=" + productIds +
                 ", customerType=" + customerType +
@@ -155,5 +209,32 @@ public class ProjectQuery extends BaseQuery {
                 ", offset=" + offset +
                 ", platformIndependentProject=" + platformIndependentProject +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProjectQuery)) return false;
+        ProjectQuery that = (ProjectQuery) o;
+        return Objects.equals(caseIds, that.caseIds) &&
+                Objects.equals(states, that.states) &&
+                Objects.equals(regions, that.regions) &&
+                Objects.equals(headManagers, that.headManagers) &&
+                Objects.equals(caseMembers, that.caseMembers) &&
+                Objects.equals(directions, that.directions) &&
+                Objects.equals(districtIds, that.districtIds) &&
+                Objects.equals(onlyMineProjects, that.onlyMineProjects) &&
+                Objects.equals(productIds, that.productIds) &&
+                customerType == that.customerType &&
+                Objects.equals(createdFrom, that.createdFrom) &&
+                Objects.equals(createdTo, that.createdTo) &&
+                Objects.equals(platformIndependentProject, that.platformIndependentProject);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
+                districtIds, onlyMineProjects, productIds, customerType, createdFrom, createdTo,
+                platformIndependentProject);
     }
 }

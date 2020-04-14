@@ -11,12 +11,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
@@ -33,7 +35,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        direction.setDefaultValue(lang.contractSelectDirection());
         sortField.setType( ModuleType.PROJECT );
     }
 
@@ -63,12 +64,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
-    public HasValue<Set<DistrictInfo>> districts() {
-        return districts;
-    }
-
-    @Override
-    public HasValue<ProductDirectionInfo> direction() {
+    public HasValue<Set<ProductDirectionInfo>> direction() {
         return direction;
     }
 
@@ -78,14 +74,31 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
+    public HasValue< Set<EntityOption> > regions() {
+        return regions;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> headManagers() {
+        return headManagers;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> caseMembers() {
+        return caseMembers;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
         search.setValue( "" );
-        direction.setValue( null );
-        districts.setValue( new HashSet<>() );
+        direction.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
-        onlyMineProjects.setValue( true );
+        regions.setValue(new HashSet<>());
+        headManagers.setValue(new HashSet<>());
+        caseMembers.setValue(new HashSet<>());
+        onlyMineProjects.setValue( false );
     }
 
     @UiHandler( "resetBtn" )
@@ -110,15 +123,8 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         }
     }
 
-    @UiHandler( "districts" )
-    public void onDistrictSelected( ValueChangeEvent<Set<DistrictInfo>> event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
     @UiHandler( "direction" )
-    public void onDirectionSelected( ValueChangeEvent<ProductDirectionInfo> event ) {
+    public void onDirectionSelected( ValueChangeEvent<Set<ProductDirectionInfo>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -140,6 +146,27 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @UiHandler( "onlyMineProjects" )
     public void onOnlyMineProjectsChanged( ValueChangeEvent<Boolean> event ) {
         if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "regions" )
+    public void onRegionSelected( ValueChangeEvent<Set<EntityOption>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "headManagers" )
+    public void onHeadManagerSelected(ValueChangeEvent<Set<PersonShortView>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "caseMembers" )
+    public void onCaseMemberSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
+        if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
@@ -175,12 +202,20 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     RegionStateBtnGroupMulti states;
 
     @Inject
-    @UiField( provided = true )
-    DistrictBtnGroupMulti districts;
+    @UiField(provided = true)
+    RegionMultiSelector regions;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector headManagers;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector caseMembers;
 
     @Inject
     @UiField( provided = true )
-    ProductDirectionButtonSelector direction;
+    ProductDirectionMultiSelector direction;
 
     @UiField
     CheckBox onlyMineProjects;

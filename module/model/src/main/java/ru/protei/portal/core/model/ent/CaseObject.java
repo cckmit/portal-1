@@ -135,6 +135,12 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "technical_support_validity")
     private Date technicalSupportValidity;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
+            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
+    }, mappedColumn = "name")
+    private String regionName;
+
     // not db column
     private List<EntityOption> contracts;
 
