@@ -35,8 +35,8 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Autowired
     ReservedIpDAO reservedIpDAO;
 
-/*    @Autowired
-    JdbcManyRelationsHelper helper;*/
+    @Autowired
+    JdbcManyRelationsHelper helper;
 
     @Autowired
     PolicyService policyService;
@@ -449,8 +449,8 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     private boolean isValidUseRange(AuthToken token, Date from, Date to) {
         return from != null
-                && (to != null || isSystemAdministrator(token) && to == null)
-                && from.before(to);
+                && ((to != null && from.before(to))
+                     || isSystemAdministrator(token));
     }
 
     private Set<SubnetOption> getAvailableSubnets(AuthToken token, Set<SubnetOption> selectedSubnets) {

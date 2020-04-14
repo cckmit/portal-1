@@ -24,17 +24,20 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpReserveDate}"/></label>
-                    <range:RangePicker ui:field="reserveDate" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
+                    <range:RangePicker ui:field="reservedRange" type="DATE" formatValue="dd.MM.yyyy"
+                                       hasUnlimitedDateTo="true" styleName=""/>
                 </div>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpReleaseDate}"/></label>
-                    <range:RangePicker ui:field="releaseDate" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
+                    <range:RangePicker ui:field="releasedRange" type="DATE" formatValue="dd.MM.yyyy"
+                                       hasUnlimitedDateTo="true" styleName=""/>
                 </div>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpCheckDate}"/></label>
-                    <range:RangePicker ui:field="lastActiveDate" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
+                    <range:RangePicker ui:field="lastActiveRange" type="DATE" formatValue="dd.MM.yyyy"
+                                       hasUnlimitedDateTo="true" styleName=""/>
                 </div>
 
                 <div class="form-group col-md-12">

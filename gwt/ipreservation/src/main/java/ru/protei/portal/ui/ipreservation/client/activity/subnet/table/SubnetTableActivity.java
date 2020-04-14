@@ -73,7 +73,7 @@ public abstract class SubnetTableActivity
         requestSubnets();
     }
 
-    @Event(Type.FILL_CONTENT)
+    @Event
     public void onCloseEdit(IpReservationEvents.CloseEdit event) {
         animation.closeDetails();
     }
@@ -88,7 +88,6 @@ public abstract class SubnetTableActivity
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
-
 
         fireEvent(new ActionBarEvents.Clear());
         fireEvent(new IpReservationEvents.ShowReservedIp());

@@ -31,7 +31,8 @@
                         <ui:text from="{lang.reservedIpUsePeriod}"/>
                     </label>
 
-                    <range:RangePicker ui:field="useRange" formatValue="dd.MM.yyyy" title="{lang.reservedIpUsePeriod}" />
+                    <range:RangePicker ui:field="useRange" formatValue="dd.MM.yyyy" hasUnlimitedDateTo="true"
+                                       title="{lang.reservedIpUsePeriod}" />
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.comment}"/></label>

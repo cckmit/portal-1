@@ -39,7 +39,7 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     }
 
     @Override
-    public void setAddress(String address) { this.address.setInnerText(String.valueOf(address)); }
+    public void setAddress(String address) { this.address.setInnerText(address); }
 
     @Override
     public HasValue<String> macAddress() { return macAddress; }

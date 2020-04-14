@@ -124,7 +124,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             view.reservedMode().setValue(En_ReservedMode.ANY_FREE_IPS, true);
             view.reserveModeVisibility().setVisible(false);
             PersonShortView ipOwner = new PersonShortView(
-                    policyService.getProfile().getFullName(),
+                    policyService.getProfile().getShortName(),
                     policyService.getProfile().getId(),
                     policyService.getProfile().isFired());
             view.owner().setValue(ipOwner);
@@ -182,12 +182,11 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             }
 
             if(StringUtils.isNotBlank(view.macAddress().getValue()) && !view.macAddressValidator().isValid()){
-                Window.alert(view.macAddress().getValue());
                 fireEvent(new NotifyEvents.Show(lang.reservedIpWrongMacAddress(), NotifyEvents.NotifyType.ERROR));
                 return false;
             }
         } else {
-            Long number = view.number().getValue() == null || view.number().getValue().trim().isEmpty() ?
+            Long number = StringUtils.isBlank(view.number().getValue()) ?
                     null : new Long(view.number().getValue());
 
             if(number == null
@@ -206,10 +205,10 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return false;
         }
 
-        if(view.useRange() == null || view.useRange().getValue() == null ||
-                ( view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED) &&
-                   !view.useRange().getValue().getInterval().isValid() )
-        ) {
+        if(view.useRange().getValue() == null
+           || ( view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED)
+                && !view.useRange().getValue().getInterval().isValid() ))
+        {
             fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
             return false;
         }

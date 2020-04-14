@@ -31,12 +31,12 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
     @Event
     public void onShow (IpReservationEvents.EditReservedIp event) {
-        if (!hasPrivileges()) {
-            fireEvent(new IpReservationEvents.CloseEdit());
+        if (event.reservedIp == null || event.reservedIp.getId() == null ) {
             return;
         }
 
-        if (event.reservedIp == null || event.reservedIp.getId() == null ) {
+        if (!hasPrivileges(event.reservedIp)) {
+            fireEvent(new IpReservationEvents.CloseEdit());
             return;
         }
 
@@ -50,7 +50,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
     @Override
     public void onSaveClicked() {
-        if (!hasPrivileges() || !validateView()) {
+        if (!hasPrivileges(reservedIp) || !validateView()) {
             return;
         }
 
@@ -77,19 +77,6 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         fireEvent(new IpReservationEvents.CloseEdit());
     }
 
-    private void requestReservedIp(Long reservedIpId, Consumer<ReservedIp> successAction) {
-        ipReservationService.getReservedIp( reservedIpId, new RequestCallback<ReservedIp>() {
-            @Override
-            public void onError(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(ReservedIp reservedIp) {
-                ReservedIpEditActivity.this.reservedIp = reservedIp;
-                successAction.accept(reservedIp);
-            }
-        });
-    }
-
     private void fillView() {
         view.setAddress(reservedIp.getIpAddress());
         view.macAddress().setValue(reservedIp.getMacAddress());
@@ -100,7 +87,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
                 reservedIp.getOwnerId());
         view.owner().setValue(ipOwner);
 
-        view.saveVisibility().setVisible(hasPrivileges());
+        view.saveVisibility().setVisible(hasPrivileges(reservedIp));
     }
 
     private ReservedIp fillReservedIp() {
@@ -144,14 +131,13 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         return true;
     }
 
-    private boolean hasPrivileges() {
+    private boolean hasPrivileges(ReservedIp value) {
         if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
             || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
-                 && reservedIp.getOwnerId().equals(policyService.getProfile().getId()))
+                 && value.getOwnerId().equals(policyService.getProfile().getId()))
         ) {
             return true;
         }
-
         return false;
     }
 

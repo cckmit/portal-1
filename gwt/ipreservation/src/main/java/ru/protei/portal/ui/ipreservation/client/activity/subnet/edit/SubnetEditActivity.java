@@ -41,7 +41,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
 
     @Override
     public void onSaveClicked() {
-        if (!hasPrivileges() && !validateView()) {
+        if (!hasPrivileges() || !validateView()) {
             return;
         }
 
@@ -116,7 +116,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     }
 
     private boolean validateView() {
-        if(!view.addressValidator().isValid()){
+        if(view.address().getValue() == null || !view.addressValidator().isValid()){
             fireEvent(new NotifyEvents.Show(lang.reservedIpWrongSubnetAddress(), NotifyEvents.NotifyType.ERROR));
             return false;
         }

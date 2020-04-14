@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Запрос по IP адресам
@@ -25,9 +24,9 @@ public class ReservedIpQuery extends BaseQuery {
 
     private Date releasedTo;
 
-    private Date activeFrom;
+    private Date lastActiveFrom;
 
-    private Date activeTo;
+    private Date lastActiveTo;
 
     public ReservedIpQuery() {
         sortField = En_SortField.ip_address;
@@ -50,8 +49,8 @@ public class ReservedIpQuery extends BaseQuery {
         this.reservedTo = reservedTo;
         this.releasedFrom = releasedFrom;
         this.releasedTo = releasedTo;
-        this.activeFrom = activeFrom;
-        this.activeTo = activeTo;
+        this.lastActiveFrom = activeFrom;
+        this.lastActiveTo = activeTo;
         this.ownerIds = ownerIds;
         this.subnetIds = subnetIds;
     }
@@ -88,18 +87,18 @@ public class ReservedIpQuery extends BaseQuery {
         this.releasedTo = releasedTo;
     }
 
-    public Date getActiveFrom() {
-        return activeFrom;
+    public Date getLastActiveFrom() {
+        return lastActiveFrom;
     }
 
-    public void setActiveFrom(Date activeFrom) {
-        this.activeFrom = activeFrom;
+    public void setLastActiveFrom(Date lastActiveFrom) {
+        this.lastActiveFrom = lastActiveFrom;
     }
 
-    public Date getActiveTo() { return activeTo; }
+    public Date getLastActiveTo() { return lastActiveTo; }
 
-    public void setActiveTo(Date activeTo) {
-        this.activeTo = activeTo;
+    public void setLastActiveTo(Date lastActiveTo) {
+        this.lastActiveTo = lastActiveTo;
     }
 
     public List<Long> getOwnerIds() { return ownerIds; }
@@ -137,19 +136,6 @@ public class ReservedIpQuery extends BaseQuery {
         this.subnetIds.add(subnetId);
     }
 
-/*    @Override
-    public boolean isParamsPresent() {
-        return super.isParamsPresent() ||
-                CollectionUtils.isNotEmpty(ownerIds) ||
-                CollectionUtils.isNotEmpty(subnetIds) ||
-                reservedFrom != null ||
-                reservedTo != null ||
-                releasedFrom != null ||
-                releasedTo != null ||
-                activeFrom != null ||
-                activeTo != null;
-    }*/
-
     @Override
     public String toString() {
         return "ReservedIpQuery{" +
@@ -159,11 +145,8 @@ public class ReservedIpQuery extends BaseQuery {
                 ", reservedTo=" + reservedTo +
                 ", releasedFrom=" + releasedFrom +
                 ", releasedTo=" + releasedTo +
-                ", activeFrom=" + activeFrom +
-                ", activeTo=" + activeTo +
-                ", searchString='" + searchString + '\'' +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
+                ", lastActiveFrom=" + lastActiveFrom +
+                ", lastActiveTo=" + lastActiveTo +
                 '}';
     }
 }

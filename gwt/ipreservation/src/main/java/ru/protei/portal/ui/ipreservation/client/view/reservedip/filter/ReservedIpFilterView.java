@@ -31,6 +31,9 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        reservedRange.setPlaceholder(lang.selectDate());
+        releasedRange.setPlaceholder(lang.selectDate());
+        lastActiveRange.setPlaceholder(lang.selectDate());
         resetFilter();
     }
 
@@ -57,13 +60,13 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
     public HasValue<PersonShortView> owner() { return ipOwner; }
 
     @Override
-    public HasValue<DateInterval> reserveDate() { return reserveDate; }
+    public HasValue<DateInterval> reserveRange() { return reservedRange; }
 
     @Override
-    public HasValue<DateInterval> releaseDate() { return releaseDate; }
+    public HasValue<DateInterval> releaseRange() { return releasedRange; }
 
     @Override
-    public HasValue<DateInterval> lastActiveDate() { return lastActiveDate; }
+    public HasValue<DateInterval> lastActiveRange() { return lastActiveRange; }
 
     @Override
     public void resetFilter() {
@@ -72,9 +75,9 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
         search.setValue( "" );
         ipOwner.setValue(null);
         subnets.setValue(null);
-        reserveDate.setValue(null);
-        releaseDate.setValue(null);
-        lastActiveDate.setValue(null);
+        reservedRange.setValue(null);
+        releasedRange.setValue(null);
+        lastActiveRange.setValue(null);
     }
 
     @UiHandler( "resetBtn" )
@@ -110,6 +113,11 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
         fireChangeTimer();
     }
 
+    @UiHandler({"reservedRange", "releasedRange", "lastActiveRange"})
+    public void onReserveDateChanged(ValueChangeEvent<DateInterval> event) {
+        fireChangeTimer();
+    }
+
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule(300);
@@ -137,15 +145,15 @@ public class ReservedIpFilterView extends Composite implements AbstractReservedI
 
     @Inject
     @UiField(provided = true)
-    RangePicker reserveDate;
+    RangePicker reservedRange;
 
     @Inject
     @UiField(provided = true)
-    RangePicker releaseDate;
+    RangePicker releasedRange;
 
     @Inject
     @UiField(provided = true)
-    RangePicker lastActiveDate;
+    RangePicker lastActiveRange;
 
     @Inject
     @UiField( provided = true )

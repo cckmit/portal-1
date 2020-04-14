@@ -586,7 +586,7 @@ label.bordered:after {
     color: black;
     vertical-align: bottom;
   }
-  .edit, .remove, .copy {
+  .edit, .remove, .copy, .refresh {
     width: 45px;
   }
 }
@@ -3239,7 +3239,7 @@ label {
     width: 15%;
     text-align: center;
     .address-size {
-      font-size: 22px;
+      font-size: 16px;
     }
   }
 }
@@ -3269,7 +3269,7 @@ label {
     width: 15%;
     text-align: center;
     .address-size {
-      font-size: 22px;
+      font-size: 16px;
     }
   }
   .ip-use-range {

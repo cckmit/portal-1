@@ -109,14 +109,12 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     @Override
     public void hideElements() {
         hideComment.setVisibility( false );
-        //hideOwner.setVisibility( false );
         hideLastCheck.setVisibility(false);
     }
 
     @Override
     public void showElements() {
         hideComment.setVisibility( true );
-        //hideOwner.setVisibility( true );
         hideLastCheck.setVisibility( true );
     }
 
@@ -150,13 +148,11 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         ClickColumn<ReservedIp> ipOwner = new ClickColumn<ReservedIp>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
-//                columnHeader.addClassName( "ip-owner" );
                 columnHeader.setInnerText(lang.reservedIpOwner());
             }
 
             @Override
             public void fillColumnValue(Element cell, ReservedIp value) {
-//                cell.addClassName( "ip-owner" );
                 cell.setInnerText(value.getOwnerShortName());
             }
         };
@@ -191,7 +187,6 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         table.addColumn(address.header, address.values);
         table.addColumn(usePeriod.header, usePeriod.values);
         table.addColumn(ipOwner.header, ipOwner.values);
-        //hideOwner = table.addColumn( ipOwner.header, ipOwner.values );
         hideComment = table.addColumn( comment.header, comment.values );
         hideLastCheck = table.addColumn( lastCheck.header, lastCheck.values );
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -210,6 +205,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     @UiField
     HTMLPanel pagerContainer;
 
+    @Inject
     @UiField
     Lang lang;
 
@@ -226,7 +222,6 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     AddressColumn address;
     LastCheckColumn lastCheck;
 
-    //AbstractColumn hideOwner;
     AbstractColumn hideComment;
     AbstractColumn hideLastCheck;
 

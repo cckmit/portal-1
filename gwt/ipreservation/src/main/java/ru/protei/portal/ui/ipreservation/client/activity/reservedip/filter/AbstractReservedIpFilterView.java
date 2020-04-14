@@ -18,9 +18,9 @@ public interface AbstractReservedIpFilterView extends IsWidget {
     HasValue<String> search();
     HasValue<Set<SubnetOption>> subnets();
     HasValue<PersonShortView> owner();
-    HasValue<DateInterval> reserveDate();
-    HasValue<DateInterval> releaseDate();
-    HasValue<DateInterval> lastActiveDate();
+    HasValue<DateInterval> reserveRange();
+    HasValue<DateInterval> releaseRange();
+    HasValue<DateInterval> lastActiveRange();
 
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();

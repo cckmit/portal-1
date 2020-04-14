@@ -32,7 +32,7 @@ public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements
             }
 
             if (query.getReservedTo() != null) {
-                condition.append(" and reserve_date >= ?");
+                condition.append(" and reserve_date <= ?");
                 args.add(query.getReservedTo());
             }
 
@@ -42,8 +42,24 @@ public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements
             }
 
             if (query.getReleasedTo() != null) {
-                condition.append(" and release_date >= ?");
+                condition.append(" and release_date <= ?");
                 args.add(query.getReleasedTo());
+            }
+
+            if (query.getLastActiveFrom() != null) {
+                condition.append(" and last_check_date >= ?");
+                args.add(query.getLastActiveFrom());
+                /*
+                   @todo условие успешной проверки по полю lastCheckInfo
+                 */
+            }
+
+            if (query.getLastActiveTo() != null) {
+                condition.append(" and last_check_date <= ?");
+                args.add(query.getLastActiveTo());
+                /*
+                   @todo условие успешной проверки по полю lastCheckInfo
+                 */
             }
 
             if (CollectionUtils.isNotEmpty(query.getOwnerIds())) {

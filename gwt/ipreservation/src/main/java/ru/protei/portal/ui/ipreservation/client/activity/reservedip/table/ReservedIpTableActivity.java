@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -72,7 +71,6 @@ public abstract class ReservedIpTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add(pagerView.asWidget());
-        view.getFilterContainer().clear();
         view.getFilterContainer().add( filterView.asWidget() );
 
         fireEvent(new ActionBarEvents.Clear());
@@ -90,7 +88,7 @@ public abstract class ReservedIpTableActivity
         loadTable();
     }
 
-    @Event(Type.FILL_CONTENT)
+    @Event
     public void onCloseEdit(IpReservationEvents.CloseEdit event) {
         animation.closeDetails();
     }
@@ -135,7 +133,7 @@ public abstract class ReservedIpTableActivity
 
     @Override
     public void onEditClicked( ReservedIp value ) {
-        if ( !policyService.hasPrivilegeFor( En_Privilege.RESERVED_IP_EDIT ) ) {
+        if ( !hasEditPrivileges(value.getOwnerId())) {
             return;
         }
 
@@ -151,20 +149,16 @@ public abstract class ReservedIpTableActivity
 
     @Override
     public void onRemoveClicked(ReservedIp value) {
-        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)) {
-            return;
+        if (value != null && hasRemovePrivileges(value.getOwnerId())) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpReleaseConfirmMessage(), lang.reservedIpIpRelease(), onConfirmRemoveClicked(value)));
         }
-
-        fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpReleaseConfirmMessage(), lang.reservedIpIpRelease(), onConfirmRemoveClicked(value)));
     }
 
     @Override
     public void onRefreshClicked(ReservedIp value) {
-        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            return;
+        if (value != null && policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
+            refreshAction(value);
         }
-
-        refreshAction(value);
     }
 
     private Runnable onConfirmRemoveClicked(ReservedIp value) {
@@ -232,6 +226,12 @@ public abstract class ReservedIpTableActivity
                 .map(SubnetOption::getId)
                 .collect(Collectors.toList())
         );
+        query.setReservedFrom(filterView.reserveRange().getValue().from);
+        query.setReservedTo(filterView.reserveRange().getValue().to);
+        query.setReleasedFrom(filterView.releaseRange().getValue().from);
+        query.setReleasedTo(filterView.releaseRange().getValue().to);
+        query.setLastActiveFrom(filterView.lastActiveRange().getValue().from);
+        query.setLastActiveTo(filterView.lastActiveRange().getValue().to);
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;
@@ -267,6 +267,26 @@ public abstract class ReservedIpTableActivity
             event.clearScroll = false;
             this.scrollTop = null;
         }
+    }
+
+    private boolean hasEditPrivileges(Long ownerId) {
+        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
+            || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
+                && ownerId.equals(policyService.getProfile().getId()))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean hasRemovePrivileges(Long ownerId) {
+        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
+                || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)
+                && ownerId.equals(policyService.getProfile().getId()))) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject
