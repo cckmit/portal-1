@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.dict;
 
-public enum En_AbsenceReason {
+import ru.protei.winter.core.utils.enums.HasId;
+
+public enum En_AbsenceReason implements HasId {
     PERSONAL_AFFAIR(1),
     BUSINESS_TRIP(2),
     LOCAL_BUSINESS_TRIP(3),
@@ -17,5 +19,10 @@ public enum En_AbsenceReason {
 
     En_AbsenceReason(int id) {
         this.id = id;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 }

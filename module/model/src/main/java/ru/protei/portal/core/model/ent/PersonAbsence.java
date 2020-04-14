@@ -1,9 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
@@ -26,7 +24,8 @@ public class PersonAbsence {
     private Long personId;
 
     @JdbcColumn(name = "reason_id")
-    private int reasonId;
+    @JdbcEnumerated(EnumType.ID)
+    private En_AbsenceReason reason;
 
     @JdbcColumn(name = "from_time")
     private Date fromTime;
@@ -71,12 +70,12 @@ public class PersonAbsence {
         this.personId = personId;
     }
 
-    public int getReasonId() {
-        return reasonId;
+    public En_AbsenceReason getReason() {
+        return reason;
     }
 
-    public void setReasonId(int reasonId) {
-        this.reasonId = reasonId;
+    public void setReason(En_AbsenceReason reason) {
+        this.reason = reason;
     }
 
     public Date getFromTime() {

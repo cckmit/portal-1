@@ -24,7 +24,8 @@ public enum En_PrivilegeEntity {
     SITE_FOLDER(18),
     EMPLOYEE(4),
     EMPLOYEE_REGISTRATION(10),
-    CONTRACT(19);
+    CONTRACT(19),
+    ABSENCE(20);
 
     private final Integer order;
 

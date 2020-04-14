@@ -4,21 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="create-absence_reason-table" author="turik">
-        <createTable tableName="absence_reason">
-            <column autoIncrement="true" name="id" type="INT">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="ar_code" type="VARCHAR(32)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ar_info" type="VARCHAR(1000)"/>
-            <column name="display_order" type="INT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
     <changeSet id="create-person_absence-table" author="turik">
         <createTable tableName="person_absence">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -60,10 +45,4 @@
                                  onDelete="NO ACTION"/>
     </changeSet>
 
-    <changeSet id="add-person_absence_reason_fk" author="turik">
-        <addForeignKeyConstraint constraintName="person_absence_reason_fk"
-                                 baseTableName="person_absence" baseColumnNames="reason_id"
-                                 referencedTableName="absence_reason" referencedColumnNames="id"
-                                 onDelete="NO ACTION"/>
-    </changeSet>
 </databaseChangeLog>

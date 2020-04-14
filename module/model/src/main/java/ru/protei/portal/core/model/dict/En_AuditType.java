@@ -102,6 +102,8 @@ public enum En_AuditType implements HasId {
     APPLICATION_CREATE(64),
     APPLICATION_MODIFY(65),
     APPLICATION_REMOVE(66),
+
+    ABSENCE_CREATE(67),
     ;
 
     En_AuditType(int id ) {
