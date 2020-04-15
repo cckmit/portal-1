@@ -95,7 +95,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
-        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
+        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.FINISHED)));
         Report report = new Report();
         report.setCaseQuery(query.toCaseQuery(1L));
         report.setLocale("ru");
@@ -111,6 +111,30 @@ public class ReportProjectTest extends BaseServiceTest {
         Assert.assertTrue("writeReport success", result);
         Assert.assertTrue("report file is not empty", buffer.size() > 0);
     }
+
+    @Test
+    public void emptyReport() {
+        init();
+
+        ProjectQuery query = new ProjectQuery();
+        query.setSearchString(REPORT_PROJECT_TEST);
+        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
+        Report report = new Report();
+        report.setCaseQuery(query.toCaseQuery(1L));
+        report.setLocale("ru");
+
+        boolean result = false;
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try {
+            result = reportProject.writeReport(buffer, report);
+        } catch (Exception exception) {
+            Assert.fail();
+        }
+
+        Assert.assertTrue("writeReport success", result);
+        Assert.assertTrue("report file is not empty", buffer.size() > 0);
+    }
+
 
     @Test
     public void data() {
@@ -131,6 +155,22 @@ public class ReportProjectTest extends BaseServiceTest {
 
         Assert.assertEquals("comment text case #1", REPORT_PROJECT_TEST + " : Last Comment 1", data.get(0).getLastComment().getText());
         Assert.assertNull("comment case #2 is null", data.get(1).getLastComment());
+    }
+
+    @Test
+    public void emptyData() {
+        init();
+
+        ProjectQuery query = new ProjectQuery();
+        query.setSearchString(REPORT_PROJECT_TEST);
+        query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.UNKNOWN)));
+        Report report = new Report();
+        report.setCaseQuery(query.toCaseQuery(1L));
+        report.setLocale("ru");
+
+        List<ReportProjectWithLastComment> data = reportProject.createData(report.getCaseQuery());
+
+        Assert.assertEquals("no cases", 0, data.size());
     }
 
     @Autowired
