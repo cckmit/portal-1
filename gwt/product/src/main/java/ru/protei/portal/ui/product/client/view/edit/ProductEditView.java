@@ -354,7 +354,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     private Timer changeTimer = new Timer() {
         @Override
         public void run() {
-            activity.checkName();
+            activity.onNameChanged();
         }
     };
 

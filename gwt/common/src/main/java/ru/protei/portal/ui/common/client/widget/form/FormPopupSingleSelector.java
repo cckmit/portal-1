@@ -47,7 +47,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setEmptySearchText( lang.searchNoMatchesFound() );
     }
 
-    public interface StringRenderer<T> {
+    public interface SelectedValueRenderer<T> {
         String render(T value);
     }
 
@@ -99,8 +99,8 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         setAddButtonVisibility( isVisible );
     }
 
-    public void setValueRenderer(StringRenderer<T> renderer) {
-        this.renderer = renderer;
+    public void setValueRenderer(SelectedValueRenderer<T> renderer) {
+        this.selectedValueRenderer = renderer;
     }
 
     @Override
@@ -178,7 +178,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
 
     protected void showValue( T value) {
-        this.text.setInnerHTML(renderer.render(value));
+        this.text.setInnerHTML(selectedValueRenderer.render(value));
     }
 
     @Override
@@ -218,7 +218,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     }
     private SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<T>();
     private boolean isValidable;
-    private StringRenderer<T> renderer = selector::makeElementHtml;
+    private SelectedValueRenderer<T> selectedValueRenderer = selector::makeElementHtml;
 
     private static final String ERROR_STYLENAME ="has-error";
     private static final String REQUIRED_STYLENAME ="required";

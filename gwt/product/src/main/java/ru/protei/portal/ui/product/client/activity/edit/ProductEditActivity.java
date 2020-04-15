@@ -70,31 +70,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     @Override
-    public void checkName() {
-        String value = view.name().getValue().trim();
-
-        //isNameUnique не принимает пустые строки!
-        if ( value.isEmpty()) {
-            view.setNameStatus(NameStatus.NONE);
-            return;
-        }
-
-        productService.isNameUnique(
-                value,
-                currType,
-                productId,
-                new RequestCallback<Boolean>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        view.setNameStatus(NameStatus.ERROR);
-                    }
-
-                    @Override
-                    public void onSuccess(Boolean isUnique) {
-                        view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
-                        isNameUnique = isUnique;
-                    }
-                });
+    public void onNameChanged() {
+        String name = view.name().getValue().trim();
+        checkName(name);
     }
 
     @Override
@@ -152,7 +130,33 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.directionVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
 
         view.setMutableState(type);
-        checkName();
+        String trim = view.name().getValue().trim();
+        checkName(trim);
+    }
+
+    private void checkName(String name) {
+        //isNameUnique не принимает пустые строки!
+        if ( name.isEmpty()) {
+            view.setNameStatus(NameStatus.NONE);
+            return;
+        }
+
+        productService.isNameUnique(
+                name,
+                currType,
+                productId,
+                new RequestCallback<Boolean>() {
+                    @Override
+                    public void onError(Throwable throwable) {
+                        view.setNameStatus(NameStatus.ERROR);
+                    }
+
+                    @Override
+                    public void onSuccess(Boolean isUnique) {
+                        view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
+                        isNameUnique = isUnique;
+                    }
+                });
     }
 
     private boolean isNew(DevUnit product) {
@@ -189,7 +193,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
         view.setTypeImageVisibility(!isNew);
         view.setMutableState(currType);
-        checkName();
 
         view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()
                 .map(Subscription::fromProductSubscription)
@@ -210,10 +213,10 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         view.wikiLink().setValue(devUnit.getWikiLink());
 
-        view.setHistoryVersionPreviewAllowing( makePreviewDisplaying(HISTORY_VERSION) );
-        view.setConfigurationPreviewAllowing( makePreviewDisplaying(CONFIGURATION) );
-        view.setCdrDescriptionPreviewAllowed( makePreviewDisplaying(CDR_DESCRIPTION) );
-        view.setInfoPreviewAllowed(makePreviewDisplaying(INFO));
+        view.setHistoryVersionPreviewAllowing( isPreviewDisplayed(HISTORY_VERSION) );
+        view.setConfigurationPreviewAllowing( isPreviewDisplayed(CONFIGURATION) );
+        view.setCdrDescriptionPreviewAllowed( isPreviewDisplayed(CDR_DESCRIPTION) );
+        view.setInfoPreviewAllowed(isPreviewDisplayed(INFO));
 
         view.cdrDescription().setValue(devUnit.getCdrDescription());
         view.configuration().setValue(devUnit.getConfiguration());
@@ -223,7 +226,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.aliasesVisibility().setVisible(currType.equals(En_DevUnitType.PRODUCT));
     }
 
-    private boolean makePreviewDisplaying( String key ) {
+    private boolean isPreviewDisplayed(String key) {
         return localStorageService.getBooleanOrDefault(PRODUCT + "_" + key, false);
     }
 
