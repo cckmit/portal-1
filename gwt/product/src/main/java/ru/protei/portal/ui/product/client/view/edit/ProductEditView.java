@@ -47,31 +47,15 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-//        parents.setRequestByOnLoad(false);
-//        children.setRequestByOnLoad(false);
-
         historyVersion.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         configuration.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         cdrDescription.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
+        info.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
 
-        historyVersion.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
-            @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( HISTORY_VERSION, isDisplay );
-            }
-        } );
-        configuration.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
-            @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay );
-            }
-        } );
-        cdrDescription.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
-            @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay );
-            }
-        } );
+        historyVersion.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( HISTORY_VERSION, isDisplay ));
+        configuration.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay ));
+        cdrDescription.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay ));
+        info.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(INFO, isDisplay));
 
         ensureDebugIds();
     }
@@ -119,11 +103,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasValidable productSubscriptionsValidator() {
-        return subscriptions;
-    }
-
-    @Override
     public HasVisibility directionVisibility() {
         return directionContainer;
     }
@@ -141,6 +120,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
        cdrDescription.setDisplayPreview( isPreviewAllowed );
+    }
+
+    @Override
+    public void setInfoPreviewAllowed(boolean isPreviewAllowed) {
+        info.setDisplayPreview(isPreviewAllowed);
     }
 
     @Override
@@ -215,9 +199,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public HasValue<String> cdrDescription() {
         return cdrDescription;
     }
-
-    @Override
-    public HasEnabled saveEnabled() { return saveBtn; }
 
     @Override
     public void setNameStatus (NameStatus status)
@@ -306,17 +287,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         cancelBtn.ensureDebugId(DebugIds.PRODUCT.CANCEL_BUTTON);
     }
 
-    Timer changeTimer = new Timer() {
-        @Override
-        public void run() {
-            changeTimer.cancel();
-            if ( activity != null ) {
-                activity.onNameChanged();
-            }
-        }
-    };
-
-
     @UiField
     LabelElement nameLabel;
     @UiField
@@ -346,7 +316,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     Element verifiableIcon;
     @UiField
-    TextArea info;
+    MarkdownAreaWithPreview info;
     @UiField
     Button saveBtn;
     @UiField
@@ -382,7 +352,17 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     ImageElement typeImage;
 
-    AbstractProductEditActivity activity;
+    private Timer changeTimer = new Timer() {
+        @Override
+        public void run() {
+            changeTimer.cancel();
+            if ( activity != null ) {
+                activity.onNameChanged();
+            }
+        }
+    };
+
+    private AbstractProductEditActivity activity;
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);
     interface ProductViewUiBinder extends UiBinder<HTMLPanel, ProductEditView > {}

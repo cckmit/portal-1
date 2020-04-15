@@ -200,7 +200,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     @UiField
     LabelElement label;
     @UiField
-    SpanElement text;
+    protected SpanElement text;
     @UiField
     Lang lang;
 

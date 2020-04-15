@@ -45,7 +45,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setInfo( String value ) {
-        this.info.setInnerText(value);
+        this.info.setInnerHTML(value);
     }
 
     @Override

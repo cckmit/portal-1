@@ -29,8 +29,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CDR_DESCRIPTION;
-import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CONFIGURATION;
+import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.*;
 import static ru.protei.portal.ui.product.client.view.edit.ProductEditView.HISTORY_VERSION;
 
 /**
@@ -212,6 +211,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setHistoryVersionPreviewAllowing( makePreviewDisplaying(HISTORY_VERSION) );
         view.setConfigurationPreviewAllowing( makePreviewDisplaying(CONFIGURATION) );
         view.setCdrDescriptionPreviewAllowed( makePreviewDisplaying(CDR_DESCRIPTION) );
+        view.setInfoPreviewAllowed(makePreviewDisplaying(INFO));
 
         view.cdrDescription().setValue(devUnit.getCdrDescription());
         view.configuration().setValue(devUnit.getConfiguration());
