@@ -87,15 +87,7 @@ public class TransliterationUtils {
     }
 
     public static String transliterate(String input) {
-        return transliterate(input, Locale.ENGLISH);
-    }
-
-    public static String transliterate(String input, Locale locale) {
-        if (locale == null) {
-            return input;
-        }
-
-        return transliterate(input, Objects.equals(locale, Locale.ENGLISH) ? CrmConstants.LocaleTags.EN : CrmConstants.LocaleTags.RU);
+        return transliterate(input, CrmConstants.LocaleTags.EN);
     }
 
     public static String transliterate(String input, String localeTag) {
@@ -137,9 +129,4 @@ public class TransliterationUtils {
 
         return result;
     }
-
-//      for tests
-//    public static void main(String[] args) {
-//        System.out.println(transliterate("Артемьев", "en"));
-//    }
 }

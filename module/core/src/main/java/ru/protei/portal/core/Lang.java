@@ -41,8 +41,8 @@ public class Lang{
         public String get(String key, Object[] args){
             return messageSource.getMessage(key, args, locale);
         }
-        public Locale getLocale() {
-            return locale;
+        public String getLanguageTag() {
+            return locale.toLanguageTag();
         }
     }
 }
