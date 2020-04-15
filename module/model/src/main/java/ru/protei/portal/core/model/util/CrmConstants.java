@@ -92,4 +92,9 @@ public class CrmConstants {
     public interface ImportanceLevel {
         List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
     }
+
+    public interface LocaleTags {
+        String RU = "ru";
+        String EN = "en";
+    }
 }
