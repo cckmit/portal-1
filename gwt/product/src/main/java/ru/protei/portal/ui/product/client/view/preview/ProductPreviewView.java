@@ -58,7 +58,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         String href = value == null ? "#" : value;
         wikiLink.setInnerText(value);
 
-        if ( !href.startsWith("http://") && !href.startsWith("htts://") ) {
+        if ( !href.startsWith("http://") && !href.startsWith("https://") ) {
             href = "http://" + href;
         }
         wikiLink.setHref(href);

@@ -193,6 +193,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
         view.setTypeImageVisibility(!isNew);
         view.setMutableState(currType);
+        isNameUnique = true;
 
         view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()
                 .map(Subscription::fromProductSubscription)
