@@ -3,9 +3,12 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
 public class EmployeeEvents {
@@ -74,5 +77,34 @@ public class EmployeeEvents {
 
         public ViewType viewType;
         public EmployeeQuery query;
+    }
+
+    @Url( value = "employee", primary = false )
+    public static class Edit {
+
+        public Long id;
+        public Long companyId;
+        @Omit
+        public Company company;
+        public String origin;
+
+        public Edit() { this.id = null; }
+        public Edit (Long id, Long companyId) {
+            this.id = id;
+            this.companyId = companyId;
+        }
+        public Edit (Long id, Company company, String origin) {
+            this.id = id;
+            this.company = company;
+            this.origin = origin;
+        }
+
+        public static ContactEvents.Edit byId (Long id) {
+            return new ContactEvents.Edit(id, null);
+        }
+
+        public static ContactEvents.Edit newItem (EntityOption option) {
+            return new ContactEvents.Edit(null, option != null ? option.getId() : null);
+        }
     }
 }

@@ -48,6 +48,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
         ));
 
+        fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
+
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
@@ -76,6 +78,21 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
         fireEvent(new ActionBarEvents.Clear());
         fireEvent(new EmployeeEvents.ShowTopBrass());
+    }
+
+    @Event
+    public void onEmployeeCreateClicked(ActionBarEvents.Clicked event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
+        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_CREATE.equals(event.identity))) {
+            return;
+        }
+
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new EmployeeEvents.Edit());
     }
 
     @Override
