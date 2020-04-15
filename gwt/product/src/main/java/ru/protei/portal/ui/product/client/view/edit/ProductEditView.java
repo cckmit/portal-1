@@ -130,7 +130,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setMutableState(En_DevUnitType type) {
         parentsContainerLabel.setInnerText(lang.belongsTo());
-        checkName();
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
@@ -355,10 +354,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     private Timer changeTimer = new Timer() {
         @Override
         public void run() {
-            changeTimer.cancel();
-            if ( activity != null ) {
-                activity.onNameChanged();
-            }
+            activity.checkName();
         }
     };
 

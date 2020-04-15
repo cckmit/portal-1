@@ -70,7 +70,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     @Override
-    public void onNameChanged() {
+    public void checkName() {
         String value = view.name().getValue().trim();
 
         //isNameUnique не принимает пустые строки!
@@ -152,6 +152,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.directionVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
 
         view.setMutableState(type);
+        checkName();
     }
 
     private boolean isNew(DevUnit product) {
@@ -188,6 +189,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
         view.setTypeImageVisibility(!isNew);
         view.setMutableState(currType);
+        checkName();
 
         view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()
                 .map(Subscription::fromProductSubscription)
@@ -222,7 +224,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     private boolean makePreviewDisplaying( String key ) {
-        return Boolean.parseBoolean( localStorageService.getOrDefault( PRODUCT + "_" + key, "false" ) );
+        return localStorageService.getBooleanOrDefault(PRODUCT + "_" + key, false);
     }
 
     private void fillDto(DevUnit product) {

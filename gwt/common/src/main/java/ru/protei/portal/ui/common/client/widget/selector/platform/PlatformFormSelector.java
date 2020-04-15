@@ -15,18 +15,18 @@ public class PlatformFormSelector extends FormPopupSingleSelector<PlatformOption
     void init(PlatformModel model) {
         setAsyncModel( model );
         setHasNullValue( true );
+        setValueRenderer(this::makeStringFromValue);
 
         setItemRenderer(platformOption -> platformOption == null ? defaultValue : platformOption.getDisplayText());
     }
 
-    @Override
-    protected void showValue(PlatformOption value) {
+    private String makeStringFromValue(PlatformOption value) {
         String name = value == null ? defaultValue : value.getDisplayText();
         if (value != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW)) {
             name = name + " <a class=\"fa fa-share m-l-5\" href=\"" + LinkUtils.makeLink(Platform.class, value.getId()) + "\" target=\"_blank\" id=\"" + DebugIds.SITE_FOLDER.LINK.PLATFORM + "\"></a>";
         }
 
-        super.text.setInnerHTML(name);
+        return name;
     }
 
     @Inject

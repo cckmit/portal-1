@@ -189,7 +189,7 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
-        issueInfoWidget.getDescriptionRO().addClassName(UiConstants.Styles.HIDE);
+        issueInfoWidget.descriptionReadOnlyVisibility().setVisible(false);
         view.getInfoContainer().add(issueInfoWidget);
 
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
@@ -201,7 +201,7 @@ public abstract class IssueEditActivity implements
     public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
         issue.setName(changeRequest.getName());
         issue.setInfo(changeRequest.getInfo());
-        issueInfoWidget.getDescriptionRO().removeClassName(UiConstants.Styles.HIDE);
+        issueInfoWidget.descriptionReadOnlyVisibility().setVisible(true);
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
