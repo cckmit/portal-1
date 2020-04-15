@@ -4,13 +4,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestContext;
-import org.springframework.test.context.TestExecutionListener;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_CustomerType;
@@ -27,57 +23,22 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-class BeforeListener implements TestExecutionListener, Ordered {
-    boolean prepared = false;
-    @Override
-    public void prepareTestInstance(TestContext testContext) throws Exception {
-        if (!prepared) {
-            Method init = testContext.getTestClass().getDeclaredMethod("init");
-            init.invoke(testContext.getTestInstance());
-            prepared = true;
-        }
-    }
-    @Override
-    public int getOrder() {
-        return Integer.MAX_VALUE;
-    }
-    @Override
-    public void beforeTestClass(TestContext testContext) throws Exception {
-        Boolean a = Boolean.TRUE;
-    }
-    @Override
-    public void beforeTestMethod(TestContext testContext) throws Exception {}
-    @Override
-    public void afterTestMethod(TestContext testContext) throws Exception {}
-    @Override
-    public void afterTestClass(TestContext testContext) throws Exception {}
-}
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class, DatabaseConfiguration.class,
         IntegrationTestsConfiguration.class})
-@TestExecutionListeners(
-        value = { BeforeListener.class },
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
+@Transactional
 public class ReportProjectTest extends BaseServiceTest {
-    Integer i = 0;
 
-    @Autowired
-    public void auto(){
-        i++;
-    }
-
-    public void init() {
-        Company company1 = createNewCompany("Test_Company 1", En_CompanyCategory.CUSTOMER);
+    private void init() {
+        Company company1 = createNewCompany(REPORT_PROJECT_TEST + " : Test_Company 1", En_CompanyCategory.CUSTOMER);
         companyDAO.persist(company1);
-        Company company2 = createNewCompany("Test_Company 2", En_CompanyCategory.CUSTOMER);
+        Company company2 = createNewCompany(REPORT_PROJECT_TEST + " : Test_Company 2", En_CompanyCategory.CUSTOMER);
         companyDAO.persist(company2);
 
         Person person1 = createNewPerson(company1);
@@ -129,12 +90,9 @@ public class ReportProjectTest extends BaseServiceTest {
     }
 
     @Test
-    public void report2() {
-        i = i;
-    }
-
-    @Test
     public void report() {
+        init();
+
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
@@ -142,18 +100,22 @@ public class ReportProjectTest extends BaseServiceTest {
         report.setCaseQuery(query.toCaseQuery(1L));
         report.setLocale("ru");
 
+        boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            reportProject.writeReport(buffer, report);
+            result = reportProject.writeReport(buffer, report);
         } catch (Exception exception) {
             Assert.fail();
         }
 
+        Assert.assertTrue("writeReport success", result);
         Assert.assertTrue("report file is not empty", buffer.size() > 0);
     }
 
     @Test
     public void data() {
+        init();
+
         ProjectQuery query = new ProjectQuery();
         query.setSearchString(REPORT_PROJECT_TEST);
         query.setStates(new HashSet<>(Collections.singletonList(En_RegionState.PRESALE)));
@@ -163,7 +125,7 @@ public class ReportProjectTest extends BaseServiceTest {
 
         List<ReportProjectWithLastComment> data = reportProject.createData(report.getCaseQuery());
 
-        Assert.assertEquals("Select 2 cases", 2, data.size());
+        Assert.assertEquals("Selected 2 cases", 2, data.size());
         Assert.assertEquals("name case #1", REPORT_PROJECT_TEST + " : Test_Project 1", data.get(0).getProject().getName());
         Assert.assertEquals("name case #2", REPORT_PROJECT_TEST + " : Test_Project 3", data.get(1).getProject().getName());
 
