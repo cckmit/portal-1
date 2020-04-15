@@ -27,6 +27,8 @@ import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
+import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.*;
@@ -280,7 +282,6 @@ public class ServiceTestsConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
-
     @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
@@ -289,6 +290,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportProject getReportProject() {
+        return new ReportProjectImpl();
     }
 
     @Bean

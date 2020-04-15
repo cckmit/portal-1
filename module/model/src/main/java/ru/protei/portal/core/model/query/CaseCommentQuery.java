@@ -16,6 +16,7 @@ public class CaseCommentQuery extends BaseQuery {
     private Long caseNumber;
     private List<Long> authorIds;
     private Boolean viewPrivate = null;
+    private Boolean textNotNull;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -109,5 +110,13 @@ public class CaseCommentQuery extends BaseQuery {
 
     public void setCaseNumber(Long caseNumber) {
         this.caseNumber = caseNumber;
+    }
+
+    public Boolean isTextNotNull() {
+        return textNotNull;
+    }
+
+    public void setTextNotNull(Boolean textNotNull) {
+        this.textNotNull = textNotNull;
     }
 }

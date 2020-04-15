@@ -88,7 +88,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Result< Map< String, List<Project> > > listProjectsByRegions(AuthToken token, ProjectQuery query ) {
 
         Map< String, List<Project> > regionToProjectMap = new HashMap<>();
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery( token, query );
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         caseQuery.setSortField(query.getSortField());
         caseQuery.setSortDir(query.getSortDir());
 
@@ -283,7 +283,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(token, query);
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
 
         SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
 
@@ -300,8 +300,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<EntityOption>> listOptionProjects(AuthToken authToken, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+    public Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query) {
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
         List<EntityOption> result = projects.stream()
@@ -310,8 +310,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<ProjectInfo>> listInfoProjects(AuthToken authToken, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+    public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
         jdbcManyRelationsHelper.fill(projects, "products");
@@ -462,70 +462,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project projectInfo = Project.fromCaseObject( project );
         projectInfos.add( projectInfo );
-    }
-
-    private CaseQuery applyProjectQueryToCaseQuery(AuthToken authToken, ProjectQuery projectQuery) {
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-
-        caseQuery.setCaseIds(projectQuery.getCaseIds());
-
-        if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
-            caseQuery.setStateIds(projectQuery.getStates().stream()
-                    .map((state) -> new Long(state.getId()).intValue())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(projectQuery.getRegions())) {
-            caseQuery.setRegionIds(projectQuery.getRegions().stream()
-                    .map(region -> region == null ? null : region.getId())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(projectQuery.getHeadManagers())) {
-            caseQuery.setHeadManagerIds(projectQuery.getHeadManagers().stream()
-                    .map(headManager -> headManager == null ? null : headManager.getId())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(projectQuery.getCaseMembers())) {
-            caseQuery.setCaseMemberIds(projectQuery.getCaseMembers().stream()
-                    .map(member -> member == null ? null : member.getId())
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(projectQuery.getDirections())) {
-            caseQuery.setProductDirectionIds(projectQuery.getDirections().stream()
-                    .map(directionInfo -> directionInfo == null ? null : directionInfo.id)
-                    .collect(toList())
-            );
-        }
-
-        if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
-            caseQuery.setProductIds(projectQuery.getProductIds());
-        }
-
-        if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
-            caseQuery.setMemberId(authToken.getPersonId());
-        }
-
-        if (projectQuery.getCustomerType() != null) {
-            caseQuery.setLocal(projectQuery.getCustomerType().getId());
-        }
-
-        caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
-        caseQuery.setCreatedTo(projectQuery.getCreatedTo());
-        caseQuery.setSearchString(projectQuery.getSearchString());
-        caseQuery.setSortDir(projectQuery.getSortDir());
-        caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setPlatformIndependentProject(projectQuery.getPlatformIndependentProject());
-        caseQuery.setDistrictIds(projectQuery.getDistrictIds());
-
-        return caseQuery;
     }
 
     private LocationQuery makeLocationQuery( ProjectQuery query, boolean isSortByFilter ) {

@@ -1694,6 +1694,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
+    String reportTypeProject();
+
     String reportScheduledType();
 
     String reportScheduledTypeNone();

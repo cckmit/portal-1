@@ -31,6 +31,10 @@ public class CaseCommentSqlBuilder {
                 condition.append(" and case_comment.cstate_id is not null");
             }
 
+            if (query.isTextNotNull() != null && query.isTextNotNull()) {
+                condition.append(" and case_comment.COMMENT_TEXT is not null");
+            }
+
             if (CollectionUtils.isNotEmpty(query.getCaseObjectIds())) {
                 condition.append(" and case_comment.case_id in (")
                         .append(query.getCaseObjectIds().stream()

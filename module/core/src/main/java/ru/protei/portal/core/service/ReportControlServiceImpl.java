@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
 
@@ -53,6 +54,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportStorageService reportStorageService;
     @Autowired
     ReportCase reportCase;
+    @Autowired
+    ReportProject reportProject;
     @Autowired
     ReportCaseTimeElapsed reportCaseTimeElapsed;
     @Autowired
@@ -189,6 +192,8 @@ public class ReportControlServiceImpl implements ReportControlService {
                 caseCompletionTimeReport.run();
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
+            case PROJECT:
+                return reportProject.writeReport(buffer, report);
         }
         return false;
     }
@@ -259,7 +264,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     public Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType) {
         log.info("processScheduledMailReports start");
-        CompletableFuture[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream()
+        CompletableFuture<?>[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream()
                 .map(report -> {
                     log.info("Scheduled Mail Reports = {}", report);
                     setRange(report, enReportScheduledType);

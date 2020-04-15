@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.activity.filter;
+package ru.protei.portal.ui.common.client.activity.projectfilter;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;

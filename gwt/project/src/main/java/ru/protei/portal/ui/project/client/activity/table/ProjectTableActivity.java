@@ -22,9 +22,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
-import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 
 import java.util.List;
 
@@ -127,7 +127,7 @@ public abstract class ProjectTableActivity
     }
 
     @Override
-    public void onFilterChanged() {
+    public void onProjectFilterChanged() {
         loadTable();
     }
 

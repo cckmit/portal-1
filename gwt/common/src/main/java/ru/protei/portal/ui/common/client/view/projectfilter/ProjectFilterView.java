@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.view.filter;
+package ru.protei.portal.ui.common.client.view.projectfilter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,6 +14,8 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
@@ -22,8 +24,6 @@ import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelec
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
-import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
-import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -105,35 +105,35 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
             resetFilter();
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
     @UiHandler( "sortField" )
     public void onSortFieldSelected( ValueChangeEvent<En_SortField> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
     @UiHandler( "states" )
     public void onStateSelected( ValueChangeEvent<Set<En_RegionState>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
     @UiHandler( "direction" )
     public void onDirectionSelected( ValueChangeEvent<Set<ProductDirectionInfo>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
     @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
@@ -146,28 +146,28 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @UiHandler( "onlyMineProjects" )
     public void onOnlyMineProjectsChanged( ValueChangeEvent<Boolean> event ) {
         if (activity != null) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
     @UiHandler( "regions" )
     public void onRegionSelected( ValueChangeEvent<Set<EntityOption>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
     @UiHandler( "headManagers" )
     public void onHeadManagerSelected(ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
     @UiHandler( "caseMembers" )
     public void onCaseMemberSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onProjectFilterChanged();
         }
     }
 
@@ -175,7 +175,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         @Override
         public void run() {
             if ( activity != null ) {
-                activity.onFilterChanged();
+                activity.onProjectFilterChanged();
             }
         }
     };

@@ -13,27 +13,27 @@
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.productDirection}"/></label>
                     <productdirection:ProductDirectionMultiSelector ui:field="direction" />
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.regionState}"/></label>
                     <state:RegionStateBtnGroupMulti ui:field="states" />
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.regions}"/></label>
                     <region:RegionMultiSelector ui:field="regions" />
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.projectHeadManager}"/></label>
                     <employee:EmployeeMultiSelector ui:field="headManagers" />
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.projectTeam}"/></label>
                     <employee:EmployeeMultiSelector ui:field="caseMembers" />
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
                         <sortfieldselector:SortFieldSelector ui:field="sortField" type="PRODUCT"/>

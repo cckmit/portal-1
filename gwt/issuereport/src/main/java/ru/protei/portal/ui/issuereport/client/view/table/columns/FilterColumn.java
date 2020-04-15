@@ -5,6 +5,8 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -20,12 +22,13 @@ public class FilterColumn extends StaticColumn<Report> {
 
     @Inject
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
-                        En_CaseImportanceLang caseImportanceLang, En_CaseStateLang caseStateLang ) {
+                        En_CaseImportanceLang caseImportanceLang, En_CaseStateLang caseStateLang, En_RegionStateLang regionStateLang) {
         this.lang = lang;
         this.sortFieldLang = sortFieldLang;
         this.sortDirLang = sortDirLang;
         this.caseImportanceLang = caseImportanceLang;
         this.caseStateLang = caseStateLang;
+        this.regionStateLang = regionStateLang;
     }
 
     @Override
@@ -46,13 +49,13 @@ public class FilterColumn extends StaticColumn<Report> {
         }
 
         if (value.getCaseQuery() != null) {
-            appendCaseQueryInfo(divElement, value.getCaseQuery());
+            appendCaseQueryInfo(divElement, value.getCaseQuery(), value.getReportType());
         }
 
         cell.appendChild(divElement);
     }
 
-    private void appendCaseQueryInfo(Element element, CaseQuery caseQuery) {
+    private void appendCaseQueryInfo(Element element, CaseQuery caseQuery, En_ReportType en_reportType) {
 
         // search string
         if (StringUtils.isNotBlank(caseQuery.getSearchString())) {
@@ -116,16 +119,30 @@ public class FilterColumn extends StaticColumn<Report> {
         }
 
         // states
-        if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
-            Element managerElement = DOM.createElement("p");
-            managerElement.setInnerText(lang.issueState() + ": " +
-                    caseQuery.getStateIds()
-                            .stream()
-                            .map(id -> En_CaseState.getById(Long.valueOf(id)))
-                            .map(caseStateLang::getStateName)
-                            .collect(Collectors.joining(", "))
-            );
-            element.appendChild(managerElement);
+        if (en_reportType == En_ReportType.PROJECT) {
+            if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
+                Element managerElement = DOM.createElement("p");
+                managerElement.setInnerText(lang.issueState() + ": " +
+                        caseQuery.getStateIds()
+                                .stream()
+                                .map(id -> En_RegionState.forId(Long.valueOf(id)))
+                                .map(regionStateLang::getStateName)
+                                .collect(Collectors.joining(", "))
+                );
+                element.appendChild(managerElement);
+            }
+        } else {
+            if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
+                Element managerElement = DOM.createElement("p");
+                managerElement.setInnerText(lang.issueState() + ": " +
+                        caseQuery.getStateIds()
+                                .stream()
+                                .map(id -> En_CaseState.getById(Long.valueOf(id)))
+                                .map(caseStateLang::getStateName)
+                                .collect(Collectors.joining(", "))
+                );
+                element.appendChild(managerElement);
+            }
         }
 
         // companies
@@ -152,6 +169,25 @@ public class FilterColumn extends StaticColumn<Report> {
         if (CollectionUtils.isNotEmpty(caseQuery.getCommentAuthorIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueCommentAuthor(), caseQuery.getCommentAuthorIds()));
         }
+
+        // project directions
+        if (CollectionUtils.isNotEmpty(caseQuery.getProductDirectionIds())) {
+            element.appendChild(makeArraySelectedElement(lang.productDirection(), caseQuery.getProductDirectionIds()));
+        }
+        // project region
+        if (CollectionUtils.isNotEmpty(caseQuery.getRegionIds())) {
+            element.appendChild(makeArraySelectedElement(lang.projectRegion(), caseQuery.getRegionIds()));
+        }
+
+        // project head manager
+        if (CollectionUtils.isNotEmpty(caseQuery.getHeadManagerIds())) {
+            element.appendChild(makeArraySelectedElement(lang.projectHeadManager(), caseQuery.getHeadManagerIds()));
+        }
+
+        // project team
+        if (CollectionUtils.isNotEmpty(caseQuery.getCaseMemberIds())) {
+            element.appendChild(makeArraySelectedElement(lang.projectTeam(), caseQuery.getCaseMemberIds()));
+        }
     }
 
     private Element makeArraySelectedElement(String prefix, Collection<?> collection) {
@@ -165,4 +201,5 @@ public class FilterColumn extends StaticColumn<Report> {
     private En_SortDirLang sortDirLang;
     private En_CaseImportanceLang caseImportanceLang;
     private En_CaseStateLang caseStateLang;
+    private En_RegionStateLang regionStateLang;
 }
