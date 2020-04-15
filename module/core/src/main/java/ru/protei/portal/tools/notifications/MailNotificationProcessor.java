@@ -608,7 +608,7 @@ public class MailNotificationProcessor {
                     fetchNotificationEntryFromPerson(report.getCreator()),
                     bodyTemplate, subjectTemplate,
                     true,
-                    event.getContent(), report.getName() + ".xls");
+                    event.getContent(), report.getName() + ".xlsx");
         } else {
             sendMailToRecipients(Collections.singletonList(fetchNotificationEntryFromPerson(report.getCreator())),
                     bodyTemplate, subjectTemplate,

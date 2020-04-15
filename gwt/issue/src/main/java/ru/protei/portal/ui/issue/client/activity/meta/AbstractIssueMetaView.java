@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
@@ -85,4 +86,16 @@ public interface AbstractIssueMetaView extends IsWidget {
     Long getTimeElapsed();
 
     void setJiraInfoLink(String link);
+
+    HasTime slaReactionTime();
+
+    HasTime slaTemporarySolutionTime();
+
+    HasTime slaFullSolutionTime();
+
+    HasVisibility slaContainerVisibility();
+
+    void setValuesContainerWarning(boolean isWarning);
+
+    void setSlaTimesContainerTitle(String title);
 }
