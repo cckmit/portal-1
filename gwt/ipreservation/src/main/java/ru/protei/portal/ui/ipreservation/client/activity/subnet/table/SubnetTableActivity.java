@@ -4,7 +4,6 @@ import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -57,7 +56,6 @@ public abstract class SubnetTableActivity
 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-        view.getFilterContainer().clear();
         view.getFilterContainer().add( filterView.asWidget() );
 
         fireEvent(new ActionBarEvents.Clear());
@@ -127,6 +125,11 @@ public abstract class SubnetTableActivity
 
     @Override
     public void onItemClicked(Subnet value) {
+        onEditClicked(value);
+    }
+
+    @Override
+    public void onEditClicked( Subnet value ) {
         if ( !policyService.hasPrivilegeFor( En_Privilege.SUBNET_EDIT ) ) {
             return;
         }
@@ -140,26 +143,17 @@ public abstract class SubnetTableActivity
     }
 
     @Override
-    public void onEditClicked( Subnet value ) {
-        onItemClicked(value);
-    }
-
-    @Override
     public void onRemoveClicked(Subnet value) {
-        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE)) {
-            return;
+        if (value != null && !policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE)) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpSubnetRemoveConfirmMessage(), lang.reservedIpSubnetRemove(), onConfirmRemoveClicked(value)));
         }
-
-        fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpSubnetRemoveConfirmMessage(), lang.reservedIpSubnetRemove(), onConfirmRemoveClicked(value)));
     }
 
     @Override
     public void onRefreshClicked(Subnet value) {
-        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
-            return;
+        if (value != null && policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
+            refreshAction(value);
         }
-
-        refreshAction(value);
     }
 
     private Runnable onConfirmRemoveClicked(Subnet value) {

@@ -98,7 +98,6 @@ public abstract class ReservedIpTableActivity
         if (!(UiConstants.ActionBarIdentity.SUBNET.equals(event.identity))) {
             return;
         }
-        fireEvent(new ActionBarEvents.Clear());
 
         if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -133,7 +132,7 @@ public abstract class ReservedIpTableActivity
 
     @Override
     public void onEditClicked( ReservedIp value ) {
-        if ( !hasEditPrivileges(value.getOwnerId())) {
+        if ( !hasEditPrivileges(value == null ? null : value.getOwnerId())) {
             return;
         }
 
@@ -272,7 +271,7 @@ public abstract class ReservedIpTableActivity
     private boolean hasEditPrivileges(Long ownerId) {
         if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
             || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
-                && ownerId.equals(policyService.getProfile().getId()))) {
+                && policyService.getProfile().getId().equals(ownerId))) {
             return true;
         }
 
