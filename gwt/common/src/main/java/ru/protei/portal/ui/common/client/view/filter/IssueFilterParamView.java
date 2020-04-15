@@ -302,7 +302,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCreatorIds(toList(creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId()));
 
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
-                query = fillModifiedInterval(query, dateCreatedRange.getValue());
+                query = fillModifiedInterval(query, dateModifiedRange.getValue());
                 break;
             }
             case CASE_TIME_ELAPSED: {
