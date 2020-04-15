@@ -60,7 +60,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         wikiLink.setInnerText(value);
 
         if ( !href.startsWith(CrmConstants.LinkStart.HTTP) && !href.startsWith(CrmConstants.LinkStart.HTTPS) ) {
-            href = "http://" + href;
+            href = CrmConstants.LinkStart.HTTP + href;
         }
         wikiLink.setHref(href);
     }
