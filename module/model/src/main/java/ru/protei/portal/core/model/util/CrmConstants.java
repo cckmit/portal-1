@@ -97,4 +97,9 @@ public class CrmConstants {
         String RU = "ru";
         String EN = "en";
     }
+
+    public interface LinkStart {
+        String HTTP = "http://";
+        String HTTPS = "https://";
+    }
 }
