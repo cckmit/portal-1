@@ -16,6 +16,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 
@@ -28,15 +29,15 @@ public class ExcelReportWriter implements
     private final DateFormat dateFormat;
     private final TimeFormatter timeFormatter;
     private final boolean isNotRestricted;
-    private final String locale;
+    private final Locale locale;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter, boolean isRestricted, String locale) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter, boolean isRestricted) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
         this.timeFormatter = timeFormatter;
         this.isNotRestricted = !isRestricted;
-        this.locale = locale;
+        this.locale = localizedLang.getLocale();
     }
 
     @Override

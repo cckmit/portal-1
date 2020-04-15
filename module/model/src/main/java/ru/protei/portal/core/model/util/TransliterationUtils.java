@@ -87,15 +87,23 @@ public class TransliterationUtils {
     }
 
     public static String transliterate(String input) {
-        return transliterate(input, "en");
+        return transliterate(input, Locale.ENGLISH);
     }
 
-    public static String transliterate(String input, String locale) {
+    public static String transliterate(String input, Locale locale) {
+        if (locale == null) {
+            return input;
+        }
+
+        return transliterate(input, Objects.equals(locale, Locale.ENGLISH) ? CrmConstants.LocaleTags.EN : CrmConstants.LocaleTags.RU);
+    }
+
+    public static String transliterate(String input, String localeTag) {
         if (StringUtils.isBlank(input)) {
             return "";
         }
 
-        if (Objects.equals(locale, "ru")) {
+        if (Objects.equals(localeTag, CrmConstants.LocaleTags.RU)) {
             return input;
         }
 
