@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
@@ -58,8 +59,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         String href = value == null ? "#" : value;
         wikiLink.setInnerText(value);
 
-        if ( !href.startsWith("http://") && !href.startsWith("htts://") ) {
-            href = "http://" + href;
+        if ( !href.startsWith(CrmConstants.LinkStart.HTTP) && !href.startsWith(CrmConstants.LinkStart.HTTPS) ) {
+            href = CrmConstants.LinkStart.HTTP + href;
         }
         wikiLink.setHref(href);
     }
