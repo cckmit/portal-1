@@ -45,6 +45,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasEnabled companyDepartmentEnabled();
 
+    HasEnabled workerPositionEnabled();
+
     HasText personInfo ();
 
     HasText login();
@@ -72,6 +74,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
     void showInfo( boolean isShow );
 
     void setDepartmentCompanyId (Long companyId);
+
+    void setPositionCompanyId (Long companyId);
 
     HasVisibility saveVisibility();
 

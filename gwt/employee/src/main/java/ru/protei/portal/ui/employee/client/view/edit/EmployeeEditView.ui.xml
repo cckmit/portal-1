@@ -104,7 +104,7 @@
                                 <label>
                                     <ui:text from="{lang.contactPosition}"/>
                                 </label>
-                                <g:TextBox ui:field="workerPosition" styleName="form-control"/>
+                                <g:Button ui:field="workerPosition" styleName="form-control"/>
                             </div>
 
                             <div class="form-group col-md-4">

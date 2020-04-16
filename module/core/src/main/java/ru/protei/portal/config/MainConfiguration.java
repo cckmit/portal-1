@@ -578,6 +578,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public WorkerPositionService getWorkerPositionService() {
+        return new WorkerPositionServiceImpl();
+    }
+
+    @Bean
     public ProductService getProductService() {
         return new ProductServiceImpl();
     }

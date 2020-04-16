@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
 import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.ent.WorkerPosition;
 
 public interface AbstractEmployeeEditActivity {
     void onSaveClicked();
@@ -14,5 +15,7 @@ public interface AbstractEmployeeEditActivity {
 
     void onAddCompanyDepartmentClicked();
     void onEditCompanyDepartmentClicked(CompanyDepartment companyDepartment);
-    void onSelectCompanyDepartment(CompanyDepartment companyDepartment);
+
+    void onAddWorkerPositionClicked();
+    void onEditWorkerPositionClicked(WorkerPosition workerPosition);
 }

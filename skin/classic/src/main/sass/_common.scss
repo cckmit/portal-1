@@ -1934,6 +1934,151 @@ a {
   }
 }
 
+/**** worker position ****/
+.worker-positions-container {
+  padding-left: 0;
+}
+
+.worker-position {
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 4px;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 4px;
+  line-height: 1em;
+
+  .worker-position-close {
+    color: inherit;
+    opacity: 0.4;
+    margin-left: 5px;
+    margin-right: -2px;
+    cursor: pointer;
+    font-size: 12px;
+    &:hover{
+      opacity: 1;
+    }
+  }
+
+  .worker-position-text {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-font-smoothing: initial;
+    line-height: 1em;
+  }
+}
+
+
+.worker-position-popup {
+  z-index: 1000;
+  float: left;
+  width: 300px;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  -webkit-box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  border: 1px solid #ced2d7;
+
+  .worker-position-popup-header {
+    display: flex;
+    border-bottom: 1px solid #ced2d7;
+
+    > .search-input {
+      flex: 1;
+
+      input {
+        border-color: transparent;
+      }
+    }
+
+    > .btn {
+      margin: 0;
+      border-color: transparent;
+      border-left: 1px solid #ced2d7;
+    }
+  }
+
+  .worker-position-list {
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 2px 0 6px 0;
+    max-height: 60vh;
+    overflow: auto;
+
+    .worker-position {
+      text-align: center;
+      line-height: 22px;
+      display: flex;
+      cursor: pointer;
+
+      &:hover{
+        background-color: $bg_light_gray;
+      }
+
+      .worker-position-edit,
+      .worker-position-icon {
+        min-width: 16px;
+      }
+
+      .worker-position-icon {
+        margin: 3px 2px 2px 3px;
+      }
+
+      .worker-position-edit {
+        padding: 4px 2px 2px 3px;
+
+        &:hover{
+          color: black;
+        }
+      }
+
+      .worker-position-text {
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-negative: 1;
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+        line-height: 21px;
+        padding-left: 3px;
+      }
+
+      .worker-position-company-name {
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-negative: 1;
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 50%;
+        text-align: right;
+        padding-right: 6px;
+      }
+
+      .worker-position-icon {
+        height: 16px;
+        width: 16px;
+        line-height: 16px;
+        border-radius: 2px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 0.8em;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
 /**** Importance level icons ****/
 .importance-btn {
   padding: 5px 10px 5px 5px !important;

@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup
 import ru.protei.portal.ui.common.client.widget.departmentselector.popup.DepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox;
+import ru.protei.portal.ui.common.client.widget.positionselector.popup.PositionSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -50,6 +51,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         departmentSelector.addAddHandler(addEvent -> activity.onAddCompanyDepartmentClicked());
         departmentSelector.addEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.companyDepartment));
         companyDepartmentEnabled().setEnabled(false);
+
+        positionSelector.addValueChangeHandler(event -> workerPosition.setText(event.getValue().getName()));
+        positionSelector.addAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
+        positionSelector.addEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.workerPosition));
+        workerPositionEnabled().setEnabled(false);
     }
 
     @Override
@@ -148,6 +154,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public HasEnabled workerPositionEnabled() {
+        return workerPosition;
+    }
+
+    @Override
     public HasValue<EntityOption> company() {
         return company;
     }
@@ -226,6 +237,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public void setDepartmentCompanyId (Long companyId){
         departmentSelector.setCompanyId(companyId);
+    }
+
+    @Override
+    public void setPositionCompanyId (Long companyId){
+        positionSelector.setCompanyId(companyId);
     }
 
     @Override
@@ -427,6 +443,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         departmentSelector.showUnderLeft( (UIObject) companyDepartment, companyDepartment.getOffsetWidth() );
     }
 
+    @UiHandler("workerPosition")
+    public void onDisplayPositionClicked(ClickEvent event){
+        positionSelector.showUnderLeft( (UIObject) workerPosition, workerPosition.getOffsetWidth() );
+    }
+
     private void showGenPasswordPopupIfNeeded() {
         boolean isNeededShowPasswordGenPopup = StringUtils.isBlank(password().getValue());
         if (isNeededShowPasswordGenPopup) {
@@ -533,7 +554,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     LabelElement loginLabel;
 
     @UiField
-    TextBox workerPosition;
+    Button workerPosition;
 
     @UiField
     Button companyDepartment;
@@ -581,6 +602,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Inject
     private DepartmentSelector departmentSelector;
+
+    @Inject
+    private PositionSelector positionSelector;
 
     private Timer changeEmployeeLoginTimer = new Timer() {
         @Override

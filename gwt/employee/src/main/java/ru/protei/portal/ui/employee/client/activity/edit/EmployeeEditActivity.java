@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -77,6 +78,21 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.setDepartmentCompanyId(view.company().getValue().getId());
     }
 
+    @Event
+    public void onCreatePosition(WorkerPositionEvents.Created event){
+        view.setPositionCompanyId(view.company().getValue().getId());
+    }
+
+    @Event
+    public void onChangePosition(WorkerPositionEvents.Changed event){
+        view.setPositionCompanyId(view.company().getValue().getId());
+    }
+
+    @Event
+    public void onRemovedPosition(WorkerPositionEvents.Removed event){
+        view.setPositionCompanyId(view.company().getValue().getId());
+    }
+
     @Override
     public void onAddCompanyDepartmentClicked() {
         CompanyDepartment companyDepartment = new CompanyDepartment();
@@ -90,8 +106,15 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     @Override
-    public void onSelectCompanyDepartment(CompanyDepartment companyDepartment) {
+    public void onAddWorkerPositionClicked() {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setCompanyId(view.company().getValue().getId());
+        fireEvent(new WorkerPositionEvents.Edit(workerPosition));
+    }
 
+    @Override
+    public void onEditWorkerPositionClicked(WorkerPosition workerPosition) {
+        fireEvent(new WorkerPositionEvents.Edit(workerPosition));
     }
 
     @Override
@@ -220,9 +243,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         boolean isValid = view.company().getValue() != null;
         view.companyValidator().setValid(isValid);
         view.companyDepartmentEnabled().setEnabled(isValid);
+        view.workerPositionEnabled().setEnabled(isValid);
 
         if (isValid) {
             view.setDepartmentCompanyId(view.company().getValue().getId());
+            view.setPositionCompanyId(view.company().getValue().getId());
         }
     }
 

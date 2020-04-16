@@ -38,6 +38,8 @@ import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
 import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
+import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPositionEditActivity;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -63,6 +65,7 @@ import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
+import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
@@ -134,8 +137,10 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractCaseTagListView.class ).to( CaseTagListView.class ).in( Singleton.class );
         bind( CaseTagEditActivity.class ).asEagerSingleton();
         bind( CompanyDepartmentEditActivity.class ).asEagerSingleton();
+        bind( WorkerPositionEditActivity.class ).asEagerSingleton();
         bind( AbstractCaseTagEditView.class ).to( CaseTagEditView.class ).in( Singleton.class );
         bind( AbstractCompanyDepartmentEditView.class ).to( CompanyDepartmentEditView.class ).in( Singleton.class );
+        bind( AbstractWorkerPositionEditView.class ).to( WorkerPositionEditView.class ).in( Singleton.class );
 
         bind( CustomerTypeModel.class ).asEagerSingleton();
 

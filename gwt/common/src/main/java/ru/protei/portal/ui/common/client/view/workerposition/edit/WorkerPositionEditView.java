@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.view.companydepartment.edit;
+package ru.protei.portal.ui.common.client.view.workerposition.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
@@ -7,13 +7,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditActivity;
-import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditView;
+import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditActivity;
+import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 
-public class CompanyDepartmentEditView extends Composite implements AbstractCompanyDepartmentEditView {
+public class WorkerPositionEditView extends Composite implements AbstractWorkerPositionEditView {
 
     @Inject
     public void onInit() {
@@ -23,7 +22,7 @@ public class CompanyDepartmentEditView extends Composite implements AbstractComp
     }
 
     @Override
-    public void setActivity(AbstractCompanyDepartmentEditActivity activity) {}
+    public void setActivity(AbstractWorkerPositionEditActivity activity) {}
 
     @Override
     public HasValue<String> name() {
@@ -46,8 +45,8 @@ public class CompanyDepartmentEditView extends Composite implements AbstractComp
     }
 
     private void ensureDebugIds() {
-        /*departmentNameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.NAME_LABEL);
-        departmentCompanyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COMPANY_LABEL);
+        /*positionNameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.NAME_LABEL);
+        positionCompanyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COMPANY_LABEL);
         name.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.NAME_INPUT);
         company.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.COMPANY_SELECTOR);*/
     }
@@ -60,15 +59,15 @@ public class CompanyDepartmentEditView extends Composite implements AbstractComp
     TextBox name;
 
     @UiField
-    LabelElement departmentNameLabel;
+    LabelElement positionNameLabel;
 
     @UiField
-    LabelElement departmentCompanyLabel;
+    LabelElement positionCompanyLabel;
 
     @Inject
     @UiField(provided = true)
     HomeCompanyButtonSelector company;
 
-    interface CaseTagEditViewUiBinder extends UiBinder<Widget, CompanyDepartmentEditView> {}
+    interface CaseTagEditViewUiBinder extends UiBinder<Widget, WorkerPositionEditView> {}
     private static CaseTagEditViewUiBinder ourUiBinder = GWT.create(CaseTagEditViewUiBinder.class);
 }
