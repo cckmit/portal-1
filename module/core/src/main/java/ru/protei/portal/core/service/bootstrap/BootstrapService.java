@@ -49,7 +49,7 @@ public class BootstrapService {
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
         //patchNormalizeWorkersPhoneNumbers(); // remove once executed
-        uniteSeveralProductsInProjectToComplex();
+//        uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
     }

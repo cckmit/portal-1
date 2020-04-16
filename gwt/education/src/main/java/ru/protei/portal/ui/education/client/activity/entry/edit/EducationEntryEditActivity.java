@@ -17,11 +17,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.EducationEntryType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
@@ -32,6 +31,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.education.client.model.Approve;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.ui.education.client.util.EducationUtils.*;
 
 public abstract class EducationEntryEditActivity implements Activity, AbstractEducationEntryEditActivity {
 
@@ -48,19 +48,16 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
     @Event(Type.FILL_CONTENT)
     public void onShow(EducationEvents.EditEducationEntry event) {
         HasWidgets container = event.parent != null ? event.parent : initDetails.parent;
-        EducationEntry entry = event.entry;
-        boolean isCreationMode = entry == null;
-        boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        boolean isWorkerCanRequest = isWorker && policyService.hasPrivilegeFor(En_Privilege.EDUCATION_EDIT);
-        boolean isWorkerCreationMode = isWorkerCanRequest && isCreationMode;
-        boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-        if (!isWorkerCreationMode && !isAdmin) {
+        entry = event.entry == null ? new EducationEntry() : event.entry;
+
+        if (!isWorkerCanRequest() && !isAdmin()) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
+
         container.clear();
         container.add(view.asWidget());
-        fillView(entry == null ? new EducationEntry() : entry, isAdmin, isCreationMode);
+        fillView(entry, isAdmin(), isCreationMode());
     }
 
     @Override
@@ -70,14 +67,8 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
 
     @Override
     public void onSaveClicked() {
-        boolean isCreationMode = entry.getId() == null;
-        boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-        boolean isAdminCreationMode = isAdmin && isCreationMode;
-        boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        boolean isWorkerCanRequest = isWorker && policyService.hasPrivilegeFor(En_Privilege.EDUCATION_EDIT);
-        boolean isWorkerCanRequestCreationMode = isWorkerCanRequest && isCreationMode;
         fillDto(entry);
-        if (isWorkerCanRequestCreationMode || isAdminCreationMode) {
+        if (isCreationMode() && (isAdmin() || isWorkerCanRequest())) {
             List<Long> workers = stream(view.participants().getValue())
                     .map(WorkerEntryShortView::getId)
                     .collect(Collectors.toList());
@@ -86,7 +77,7 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         fireEvent(new Back());
                     }));
-        } else if (isAdmin) {
+        } else if (isAdmin()) {
             Map<Long, Boolean> worker2approve = stream(view.attendance().getValue().entrySet())
                     .filter(entry -> entry.getValue() == Approve.APPROVED
                                     || entry.getValue() == Approve.DECLINED
@@ -109,7 +100,6 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
     }
 
     private void fillView(EducationEntry entry, boolean isAdmin, boolean isCreationMode) {
-        this.entry = entry;
         view.title().setValue(entry.getTitle());
         view.type().setValue(entry.getType());
         view.typeEnabled().setEnabled(isCreationMode);
@@ -181,7 +171,7 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
     private void fillDto(EducationEntry entry) {
         entry.setTitle(view.title().getValue());
         entry.setType(view.type().getValue());
-        entry.setCoins(parseIntOrNull(view.coins().getValue()));
+        entry.setCoins(NumberUtils.parseInteger(view.coins().getValue()));
         entry.setLink(view.link().getValue());
         entry.setLocation(view.location().getValue());
         entry.setDateStart(view.dates().getValue() == null ? null : view.dates().getValue().from);
@@ -190,18 +180,12 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
         entry.setImage(view.image().getValue());
     }
 
-    private Integer parseIntOrNull(String value) {
-        try {
-            return Integer.parseInt(value);
-        } catch (Exception e) {
-            return null;
-        }
+    private boolean isCreationMode() {
+        return entry.getId() == null;
     }
 
     @Inject
     Lang lang;
-    @Inject
-    PolicyService policyService;
     @Inject
     EducationControllerAsync educationController;
     @Inject

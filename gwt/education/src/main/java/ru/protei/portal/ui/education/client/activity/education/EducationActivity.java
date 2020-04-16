@@ -5,11 +5,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+
+import static ru.protei.portal.ui.education.client.util.EducationUtils.isAdmin;
+import static ru.protei.portal.ui.education.client.util.EducationUtils.isWorker;
 
 public abstract class EducationActivity implements Activity, AbstractEducationActivity {
 
@@ -25,15 +26,13 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
 
     @Event(Type.FILL_CONTENT)
     public void onShow(EducationEvents.Show event) {
-        boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-        boolean hasAccess = isWorker || isAdmin;
+        boolean hasAccess = isWorker() || isAdmin();
         if (!hasAccess) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
         showView();
-        if (isAdmin) {
+        if (isAdmin()) {
             view.toggleButtonVisibility().setVisible(true);
             showAdminView();
         } else {
@@ -77,8 +76,6 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
 
     @Inject
     AbstractEducationView view;
-    @Inject
-    PolicyService policyService;
 
     private boolean isAdminShowed = false;
     private AppEvents.InitDetails initDetails;

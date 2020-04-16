@@ -8,10 +8,8 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.EducationEntryType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.EducationWallet;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -20,6 +18,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.education.client.activity.wallet.AbstractEducationWalletActivity;
 import ru.protei.portal.ui.education.client.activity.wallet.AbstractEducationWalletView;
+import ru.protei.portal.ui.education.client.util.EducationUtils;
 
 import java.util.List;
 
@@ -34,8 +33,7 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
 
     @Event
     public void onShow(EducationEvents.ShowWorker event) {
-        boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        if (!isWorker) {
+        if (!EducationUtils.isWorker()) {
             fireEvent(new ForbiddenEvents.Show(event.parent));
             return;
         }
@@ -98,8 +96,6 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
 
     @Inject
     En_ResultStatusLang resultStatusLang;
-    @Inject
-    PolicyService policyService;
     @Inject
     EducationControllerAsync educationController;
     @Inject

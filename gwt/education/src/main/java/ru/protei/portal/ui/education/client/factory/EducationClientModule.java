@@ -15,6 +15,7 @@ import ru.protei.portal.ui.education.client.activity.tableworker.EducationTableW
 import ru.protei.portal.ui.education.client.activity.wallet.AbstractEducationWalletView;
 import ru.protei.portal.ui.education.client.activity.worker.AbstractEducationWorkerView;
 import ru.protei.portal.ui.education.client.activity.worker.EducationWorkerActivity;
+import ru.protei.portal.ui.education.client.util.EducationUtils;
 import ru.protei.portal.ui.education.client.view.admin.EducationAdminView;
 import ru.protei.portal.ui.education.client.view.admin.filter.EducationAdminFilterView;
 import ru.protei.portal.ui.education.client.view.education.EducationView;
@@ -42,5 +43,7 @@ public class EducationClientModule extends AbstractGinModule {
         bind(EducationAdminActivity.class).asEagerSingleton();
         bind(AbstractEducationAdminView.class).to(EducationAdminView.class).in(Singleton.class);
         bind(AbstractEducationAdminFilterView.class).to(EducationAdminFilterView.class).in(Singleton.class);
+
+        requestStaticInjection(EducationUtils.class);
     }
 }

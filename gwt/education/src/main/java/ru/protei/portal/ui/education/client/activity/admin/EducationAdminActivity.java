@@ -5,11 +5,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
@@ -19,6 +17,7 @@ import ru.protei.portal.ui.common.client.service.EducationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.education.client.activity.admin.filter.AbstractEducationAdminFilterActivity;
 import ru.protei.portal.ui.education.client.activity.admin.filter.AbstractEducationAdminFilterView;
+import ru.protei.portal.ui.education.client.util.EducationUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -41,8 +40,7 @@ public abstract class EducationAdminActivity implements Activity,
 
     @Event
     public void onShow(EducationEvents.ShowAdmin event) {
-        boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-        if (!isAdmin) {
+        if (!EducationUtils.isAdmin()) {
             fireEvent(new ForbiddenEvents.Show(event.parent));
             return;
         }
@@ -110,8 +108,6 @@ public abstract class EducationAdminActivity implements Activity,
     AbstractEducationAdminFilterView filterView;
     @Inject
     AbstractPagerView pagerView;
-    @Inject
-    PolicyService policyService;
     @Inject
     EducationControllerAsync educationController;
 }

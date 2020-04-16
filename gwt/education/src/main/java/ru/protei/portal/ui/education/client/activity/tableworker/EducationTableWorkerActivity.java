@@ -5,11 +5,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -17,10 +14,11 @@ import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EducationControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+
+import static ru.protei.portal.ui.education.client.util.EducationUtils.*;
 
 public abstract class EducationTableWorkerActivity implements Activity, AbstractEducationTableWorkerActivity {
 
@@ -32,26 +30,21 @@ public abstract class EducationTableWorkerActivity implements Activity, Abstract
     @Event
     public void onShow(EducationEvents.ShowWorkerTable event) {
         HasWidgets container = event.parent;
-        boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        boolean isWorkerCanRequest = isWorker && policyService.hasPrivilegeFor(En_Privilege.EDUCATION_EDIT);
-        boolean isAdmin = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_CREATE);
-        boolean hasAccess = isWorker || isAdmin;
+        boolean hasAccess = isWorker() || isAdmin();
         if (!hasAccess) {
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
         container.clear();
         container.add(view.asWidget());
-        view.showRequestAttendanceAction(isWorker);
-        view.showRequestEntryAction(isWorkerCanRequest);
+        view.showRequestAttendanceAction(isWorker());
+        view.showRequestEntryAction(isWorkerCanRequest());
         loadTable();
     }
 
     @Override
     public void requestEntry() {
-        boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        boolean isWorkerCanRequest = isWorker && policyService.hasPrivilegeFor(En_Privilege.EDUCATION_EDIT);
-        if (!isWorkerCanRequest) {
+        if (!isWorkerCanRequest()) {
             return;
         }
         fireEvent(new EducationEvents.EditEducationEntry());
@@ -59,8 +52,7 @@ public abstract class EducationTableWorkerActivity implements Activity, Abstract
 
     @Override
     public void requestAttendance(EducationEntry entry) {
-        boolean isWorker = policyService.hasPrivilegeFor(En_Privilege.EDUCATION_VIEW);
-        if (!isWorker || entry == null) {
+        if (!isWorker() || entry == null) {
             return;
         }
         educationController.requestNewAttendance(entry.getId(), new FluentCallback<EducationEntryAttendance>()
@@ -94,8 +86,6 @@ public abstract class EducationTableWorkerActivity implements Activity, Abstract
     Lang lang;
     @Inject
     En_ResultStatusLang resultStatusLang;
-    @Inject
-    PolicyService policyService;
     @Inject
     EducationControllerAsync educationController;
     @Inject
