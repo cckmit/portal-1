@@ -103,10 +103,10 @@ public class DepartmentSelector extends BasePopupView implements HasValueChangeH
     }
 
     private void displayDepartments() {
-        boolean isGranted = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+       // boolean isGranted = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         clearDepartmentsListView();
         companyDepartments.stream()
-                .filter(companyDepartment -> containsIgnoreCase(companyDepartment.getName(), searchNameFilter) || (isGranted ? containsIgnoreCase(companyDepartment.getCompanyId().toString(), searchNameFilter) : false))
+                .filter(companyDepartment -> containsIgnoreCase(companyDepartment.getName(), searchNameFilter))
                 .forEach(this::addDepartmentsToListView);
     }
 

@@ -62,10 +62,25 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         }
     }
 
+    @Event
+    public void onCreateDepartment(CompanyDepartmentEvents.Created event){
+        view.setDepartmentCompanyId(view.company().getValue().getId());
+    }
+
+    @Event
+    public void onChangeDepartment(CompanyDepartmentEvents.Changed event){
+        view.setDepartmentCompanyId(view.company().getValue().getId());
+    }
+
+    @Event
+    public void onRemovedDepartment(CompanyDepartmentEvents.Removed event){
+        view.setDepartmentCompanyId(view.company().getValue().getId());
+    }
+
     @Override
     public void onAddCompanyDepartmentClicked() {
         CompanyDepartment companyDepartment = new CompanyDepartment();
-
+        companyDepartment.setCompanyId(view.company().getValue().getId());
         fireEvent(new CompanyDepartmentEvents.Edit(companyDepartment));
     }
 

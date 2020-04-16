@@ -37,6 +37,7 @@ public abstract class CompanyDepartmentEditActivity implements Activity, Abstrac
 
         this.companyDepartment = event.companyDepartment;
         view.nameEnabled().setEnabled(true);
+        view.name().setValue(companyDepartment.getName());
         setCompanyEntityOption(companyDepartment.getCompanyId());
 
         view.companyEnabled().setEnabled(true);
