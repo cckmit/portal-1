@@ -53,6 +53,7 @@ public class BootstrapService {
         //createProjectsForContracts();
         documentBuildFullIndex();
         fillImportanceLevels();
+        migrateIpReservation();
     }
 
     private void fillImportanceLevels() {
@@ -326,6 +327,17 @@ if(true) return; //TODO remove
         }
 
         log.info("Document index full build has ended");
+    }
+
+    private void migrateIpReservation() {
+        log.info("Migrate subnets and reservedIps started");
+
+        /*
+          @todo
+            get from old_portal
+            save to new_portal
+         */
+        log.info("Migrate subnets and reservedIps ended");
     }
 
     @Inject

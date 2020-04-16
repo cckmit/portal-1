@@ -63,7 +63,9 @@ public class LegacyDAO_Test {
                 ExtCrmComment.class,
                 ExtCrmSession.class,
                 ExtCompanyEmailSubs.class,
-                ExtContactLogin.class
+                ExtContactLogin.class,
+                ExternalSubnet.class,
+                ExternalReservedIp.class
         );
 
         dao.runAction(transaction -> {
