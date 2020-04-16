@@ -50,15 +50,15 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     }
 
     private Result<AssembledProjectEvent> fillProject(AssembledProjectEvent event) {
+        if (event.isProjectFilled()) {
+            return ok(event);
+        }
+
         CaseObject caseObject = caseObjectDAO.get(event.getProjectId());
         jdbcManyRelationsHelper.fillAll(caseObject);
 
         Project project = Project.fromCaseObject(caseObject);
         event.setNewProjectState(project);
-
-        if (event.getOldProjectState() == null) {
-            event.setOldProjectState(project);
-        }
 
         return ok(event);
     }

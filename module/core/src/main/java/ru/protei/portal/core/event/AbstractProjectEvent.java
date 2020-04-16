@@ -6,4 +6,8 @@ public interface AbstractProjectEvent {
     Long getProjectId();
 
     Object getSource();
+
+    default boolean isCreateEvent() {
+        return false;
+    }
 }

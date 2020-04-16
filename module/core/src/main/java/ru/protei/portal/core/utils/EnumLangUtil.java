@@ -11,8 +11,8 @@ public class EnumLangUtil {
     private final Lang lang;
     private Lang.LocalizedLang localizedLang;
 
-    public EnumLangUtil(Lang localizedLang) {
-        this.lang = localizedLang;
+    public EnumLangUtil(Lang lang) {
+        this.lang = lang;
     }
 
     public String getPersonRoleType(En_DevUnitPersonRoleType type, String langCode) {

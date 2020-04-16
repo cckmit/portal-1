@@ -21,7 +21,13 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 public class EventProjectAssemblerServiceImpl implements EventProjectAssemblerService {
     @Override
     @EventListener
-    public void onProjectSaveEvent(ProjectSaveEvent event) {
+    public void onProjectCreateEvent(ProjectCreateEvent event) {
+        publishCreateEvent(new AssembledProjectEvent(event));
+    }
+
+    @Override
+    @EventListener
+    public void onProjectSaveEvent(ProjectUpdateEvent event) {
         AssembledProjectEvent assembledProjectEvent = getAssembledProjectEvent(event);
         assembledProjectEvent.attachSaveEvent(event);
         publishAndClear(makeEventKey(event));
@@ -54,6 +60,11 @@ public class EventProjectAssemblerServiceImpl implements EventProjectAssemblerSe
             log.debug("publish set of events, initiators : {}", eventKeys.size());
             eventKeys.forEach(this::publishAndClear);
         }
+    }
+
+    private void publishCreateEvent(AssembledProjectEvent event) {
+        assemblerService.proceed(event);
+        log.info("publishCreate event, projectId:{}", event.getProjectId());
     }
 
     private void publishAndClear(Tuple<Long, Long> key) {

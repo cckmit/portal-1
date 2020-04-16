@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.AssembledProjectEvent;
-import ru.protei.portal.core.event.ProjectSaveEvent;
+import ru.protei.portal.core.event.ProjectCreateEvent;
+import ru.protei.portal.core.event.ProjectUpdateEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -201,7 +201,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return ok(project).publishEvent(new ProjectSaveEvent(this, oldStateProject, token.getPersonId()));
+        CaseObject updatedCaseObject = caseObjectDAO.get(project.getId());
+        jdbcManyRelationsHelper.fillAll(updatedCaseObject);
+
+        Project newStateProject = Project.fromCaseObject(updatedCaseObject);
+
+        return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
 
     @Override
@@ -242,7 +247,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCreator(personDAO.get(project.getCreatorId()));
 
         return addLinksResult.isOk() ?
-                ok(project).publishEvent(new AssembledProjectEvent(this, project, personDAO.get(token.getPersonId()))) :
+                ok(project).publishEvent(new ProjectCreateEvent(this, token.getPersonId(), project.getId())) :
                 error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
     }
 

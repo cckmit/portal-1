@@ -639,6 +639,7 @@ public class MailNotificationProcessor {
 
         List<Long> recipientsIds = CollectionUtils.emptyIfNull(team).stream().map(PersonShortView::getId).collect(toList());
         recipientsIds.add(event.getInitiatorId());
+        recipientsIds.add(event.getCreator().getId());
 
         Set<NotificationEntry> recipients = subscriptionService.subscribers(recipientsIds);
 
@@ -649,6 +650,7 @@ public class MailNotificationProcessor {
                 event,
                 addresses,
                 links,
+                getCrmProjectUrl(),
                 new EnumLangUtil(lang)
         );
 
@@ -802,6 +804,10 @@ public class MailNotificationProcessor {
                 || event.isSlaChanged()
                 || event.isCommentsChanged()
                 || event.isLinksChanged();
+    }
+
+    private String getCrmProjectUrl() {
+        return config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmProjectUrl();
     }
 
     private class MimeMessageHeadersFacade {

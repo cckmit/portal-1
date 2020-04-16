@@ -8,6 +8,7 @@
 <@set name="_timeDayLiteral" value="${timeDayLiteral}"/>
 <@set name="_timeHourLiteral" value="${timeHourLiteral}"/>
 <@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
+<@set name="_projectNumber" value="${projectNumber}"/>
 <@set name="_projectName" value="${projectName}"/>
 <@set name="_projectDescription" value="${projectDescription}"/>
 <@set name="_projectState" value="${projectState}"/>
@@ -101,6 +102,12 @@
 <div style="margin-top: 12px">
     <table>
         <tbody>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_projectNumber}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToProject}">${projectNumber}</a></b></td>
+        </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_projectName}

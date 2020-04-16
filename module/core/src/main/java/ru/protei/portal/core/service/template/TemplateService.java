@@ -65,5 +65,5 @@ public interface TemplateService {
 
     PreparedTemplate getMailProjectSubject(Project project, Person initiator);
 
-    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, EnumLangUtil roleTypeLang);
+    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil roleTypeLang);
 }

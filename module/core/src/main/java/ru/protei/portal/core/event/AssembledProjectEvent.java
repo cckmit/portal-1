@@ -29,6 +29,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
     private Long projectId;
     private Person initiator;
     private Long initiatorId;
+    private boolean isCreateEvent;
     private DiffCollectionResult<CaseComment> comments = new DiffCollectionResult<>();
     private DiffCollectionResult<CaseLink> links = new DiffCollectionResult<>();
     private Long lastUpdated;
@@ -37,17 +38,12 @@ public class AssembledProjectEvent extends ApplicationEvent {
         super(event.getSource());
         this.initiatorId = event.getPersonId();
         this.projectId = event.getProjectId();
+        this.isCreateEvent = event.isCreateEvent();
     }
 
-    public AssembledProjectEvent(Object source, Project newProjectState, Person initiator) {
-        super(source);
-        this.newProjectState = newProjectState;
-        this.initiator = initiator;
-        this.projectId = newProjectState.getId();
-    }
-
-    public void attachSaveEvent(ProjectSaveEvent event) {
-        this.oldProjectState = event.getProject();
+    public void attachSaveEvent(ProjectUpdateEvent event) {
+        this.oldProjectState = event.getOldProjectState();
+        this.newProjectState = event.getNewProjectState();
         this.projectId = event.getProjectId();
         this.initiatorId = event.getPersonId();
     }
@@ -175,14 +171,14 @@ public class AssembledProjectEvent extends ApplicationEvent {
     }
 
     public Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> getTeamDiffs() {
-        Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> teamDiffs = new HashMap<>();
+        Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> teamDiffs = new TreeMap<>(Comparator.comparingInt(En_DevUnitPersonRoleType::getId));
 
         if (!isEditEvent()) {
             DiffCollectionResult<PersonProjectMemberView> diffResult = CollectionUtils.diffCollection(null, newProjectState.getTeam());
 
             for (PersonProjectMemberView currentPerson : CollectionUtils.emptyIfNull(diffResult.getAddedEntries())) {
                 DiffCollectionResult<PersonShortView> roleDiffs = teamDiffs.computeIfAbsent(currentPerson.getRole(), k -> new DiffCollectionResult<>());
-                roleDiffs.putAddedEntry(currentPerson);
+                roleDiffs.putSameEntry(currentPerson);
             }
 
             return teamDiffs;
@@ -337,6 +333,10 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return initiator == null ? initiatorId : initiator.getId();
     }
 
+    public Person getCreator() {
+        return newProjectState.getCreator();
+    }
+
     public Long getProjectId() {
         return projectId;
     }
@@ -347,6 +347,10 @@ public class AssembledProjectEvent extends ApplicationEvent {
 
     public boolean isLinksFilled() {
         return links.hasSameEntries();
+    }
+
+    public boolean isProjectFilled() {
+        return newProjectState != null;
     }
 
     public void setExistingLinks(List<CaseLink> sameLinks) {
@@ -385,15 +389,8 @@ public class AssembledProjectEvent extends ApplicationEvent {
     }
 
     public DiffCollectionResult<CaseLink> getLinks() {
-        if (isEditEvent()) {
-            synchronizeExists(links, CaseLink::getId);
-            return links;
-        }
-
-        DiffCollectionResult<CaseLink> caseLinkDiffCollectionResult = new DiffCollectionResult<>();
-        caseLinkDiffCollectionResult.putAddedEntries(CollectionUtils.emptyIfNull(newProjectState.getLinks()));
-
-        return caseLinkDiffCollectionResult;
+        synchronizeExists(links, CaseLink::getId);
+        return links;
     }
 
     public Long getLastUpdated() {
@@ -402,6 +399,10 @@ public class AssembledProjectEvent extends ApplicationEvent {
 
     public boolean isEditEvent() {
         return oldProjectState != null;
+    }
+
+    public boolean isCreateEvent() {
+        return isCreateEvent;
     }
 
     private static final Logger log = LoggerFactory.getLogger(AssembledProjectEvent.class);

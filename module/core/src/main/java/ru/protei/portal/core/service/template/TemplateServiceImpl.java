@@ -414,7 +414,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, EnumLangUtil enumLangUtil) {
+    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil enumLangUtil) {
         Project oldProjectState = event.getOldProjectState();
         Project newProjectState = event.getNewProjectState();
 
@@ -427,9 +427,11 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
         templateModel.put("created", newProjectState.getCreated());
-        templateModel.put("isCreated", !event.isEditEvent());
+        templateModel.put("isCreated", event.isCreateEvent());
         templateModel.put("recipients", recipients);
 
+        templateModel.put("linkToProject", String.format(crmProjectUrl, event.getProjectId()));
+        templateModel.put("projectNumber", String.valueOf(event.getProjectId()));
         templateModel.put("nameChanged", event.isNameChanged());
         templateModel.put("oldName", getNullOrElse(oldProjectState, Project::getName));
         templateModel.put("newName", newProjectState.getName());

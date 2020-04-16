@@ -10,7 +10,6 @@ public class ProjectCommentEvent extends ApplicationEvent implements AbstractPro
 
     private Long personId;
     private Long projectId;
-    private Object source;
 
     public ProjectCommentEvent(Object source, CaseComment oldComment, CaseComment newComment, CaseComment removedComment, Long personId, Long projectId) {
         super(source);
@@ -30,11 +29,6 @@ public class ProjectCommentEvent extends ApplicationEvent implements AbstractPro
     @Override
     public Long getProjectId() {
         return projectId;
-    }
-
-    @Override
-    public Object getSource() {
-        return source;
     }
 
     public CaseComment getOldComment() {
