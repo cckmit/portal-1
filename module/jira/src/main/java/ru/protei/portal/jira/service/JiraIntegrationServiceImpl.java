@@ -193,24 +193,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
-        logger.info("issue : " + issue);
-        logger.info("issue.getAttachments() : " + issue.getAttachments());
-        logger.info("issue.getComments() : " + issue.getComments());
-
-        Map<String, ru.protei.portal.core.model.ent.Attachment> JiraAttachmentsFileNameToOurAttachment
-                = processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
-
-        logger.info("JiraAttachmentsFileNameToOurAttachment : " + JiraAttachmentsFileNameToOurAttachment);
-
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
-
-        List<CaseComment> commentList = processComments(endpoint.getServerLogin(),
-                issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, caseAttachments);
-
-        logger.info("commentList : " + commentList);
-        
-        caseEvent.putAddedComments(commentList);
-        caseEvent.putAddedAttachments(new ArrayList<>(JiraAttachmentsFileNameToOurAttachment.values()));
+        caseEvent.putAddedComments(processComments(endpoint.getServerLogin(),
+                issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, caseAttachments));
+        caseEvent.putAddedAttachments(processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper));
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
@@ -243,8 +229,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
 
-//        List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData );
-//        List<ru.protei.portal.core.model.ent.Attachment> attachments = processAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
+        List<ru.protei.portal.core.model.ent.Attachment> attachments = processAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
+        List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, attachments );
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
@@ -260,8 +246,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( this, ServiceModule.JIRA, authorId, caseObj );
         final AssembledCaseEvent caseEvent = new AssembledCaseEvent( caseObjectCreateEvent );
         caseEvent.attachCaseObjectCreateEvent( caseObjectCreateEvent );
-//        caseEvent.putAddedComments(caseComments);
-//        caseEvent.putAddedAttachments(attachments);
+        caseEvent.putAddedComments(caseComments);
+        caseEvent.putAddedAttachments(attachments);
 
         return caseEvent;
     }
@@ -318,14 +304,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return ourCaseComments;
     }
 
-    private Map<String, ru.protei.portal.core.model.ent.Attachment> processAttachments (JiraEndpoint endpoint,
-                                                                                            Iterable<Attachment> attachments,
-                                                                                            Long caseObjectId,
-                                                                                            JiraExtAppData state,
-                                                                                            PersonMapper personMapper) {
+    private List<ru.protei.portal.core.model.ent.Attachment> processAttachments (JiraEndpoint endpoint,
+                                                    Iterable<Attachment> attachments,
+                                                    Long caseObjectId,
+                                                    JiraExtAppData state,
+                                                    PersonMapper personMapper) {
         if (attachments == null) {
             logger.debug("issue caseObjectId={} has no attachments", caseObjectId);
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
 
         List<Attachment> jiraAttachments = new ArrayList<>();
@@ -346,10 +332,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
 
         if (jiraAttachments.isEmpty()) {
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
 
-        Map<String, ru.protei.portal.core.model.ent.Attachment> addedAttachments = new HashMap<>();
+        List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = new ArrayList<>();
 
         logger.debug("load attachments for caseObjectId {}, size={}", caseObjectId, jiraAttachments.size());
 
@@ -361,7 +347,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
                 storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObjectId);
 
-                addedAttachments.put(jiraAttachment.getFilename(), a);
+                addedAttachments.add(a);
             }
             catch (Throwable e) {
                 logger.error("unable to store attachment {}", jiraAttachment.getContentUri(), e);
@@ -441,31 +427,35 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
 
-        String text = comment.getBody();
         if (attachments != null) {
-            text = replaceImageLink(text, our.getAuthorId(), attachments);
+            replaceImageLink(our, attachments);
         }
-        our.setText(text);
+
         return our;
     }
 
-    private String replaceImageLink(String text, Long authorId,
+    private void replaceImageLink(CaseComment caseComment,
                                     List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        String text = caseComment.getText();
         Matcher matcher = jiraImagePattern.matcher(text);
         while (matcher.find()) {
             String group = matcher.group();
             String jiraFileName = group.substring(1, group.length() - 1);
-            ru.protei.portal.core.model.ent.Attachment attachment =
-                    attachments.stream()
-                            .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(authorId))
-                            .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
-                            .orElse(null);
-            if (attachment != null) {
-                String imageString = MarkDownUtils.makeImageString(attachment.getFileName(), attachment.getExtLink());
-                text = text.replace(group, imageString);
-            }
+            attachments.stream()
+                    .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(caseComment.getAuthorId()))
+                    .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
+                    .ifPresent(attachment -> {
+                        String imageString = MarkDownUtils.makeImageString(attachment.getFileName(), attachment.getExtLink());
+                        caseComment.setText(text.replace(group, imageString));
+
+                        List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
+                        if (caseAttachments == null) {
+                            caseAttachments = new ArrayList<>();
+                        }
+                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId(), caseComment.getId()));
+                        caseComment.setCaseAttachments(caseAttachments);
+                    });
         }
-        return text;
     }
 
     private En_CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
