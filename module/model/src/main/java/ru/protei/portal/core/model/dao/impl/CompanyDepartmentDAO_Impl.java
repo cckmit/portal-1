@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.CompanyDepartmentDAO;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
 
+import java.util.List;
+
 /**
  * Created by turik on 18.08.16.
  */
@@ -21,4 +23,10 @@ public class CompanyDepartmentDAO_Impl extends PortalBaseJdbcDAO<CompanyDepartme
     public CompanyDepartment getByExternalId(String extId, Long companyId) {
         return getByCondition ("company_dep.dep_extId=? and company_dep.company_id=?", extId, companyId);
     }
+
+    @Override
+    public List<CompanyDepartment> getListByCompanyId(Long companyId) {
+        return getListByCondition ("company_dep.company_id=?", companyId);
+    }
+
 }

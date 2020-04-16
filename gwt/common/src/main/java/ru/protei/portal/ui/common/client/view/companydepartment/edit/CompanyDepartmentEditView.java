@@ -1,0 +1,74 @@
+package ru.protei.portal.ui.common.client.view.companydepartment.edit;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditActivity;
+import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditView;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
+
+public class CompanyDepartmentEditView extends Composite implements AbstractCompanyDepartmentEditView {
+
+    @Inject
+    public void onInit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+        company.setDefaultValue(lang.selectIssueCompany());
+        ensureDebugIds();
+    }
+
+    @Override
+    public void setActivity(AbstractCompanyDepartmentEditActivity activity) {}
+
+    @Override
+    public HasValue<String> name() {
+        return name;
+    }
+
+    @Override
+    public HasValue<EntityOption> company() {
+        return company;
+    }
+
+    @Override
+    public HasEnabled nameEnabled() {
+        return name;
+    }
+
+    @Override
+    public HasEnabled companyEnabled() {
+        return company;
+    }
+
+    private void ensureDebugIds() {
+        tagNameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.NAME_LABEL);
+        tagCompanyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COMPANY_LABEL);
+        name.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.NAME_INPUT);
+        company.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.COMPANY_SELECTOR);
+    }
+
+    @Inject
+    @UiField
+    Lang lang;
+
+    @UiField
+    TextBox name;
+
+    @UiField
+    LabelElement tagNameLabel;
+
+    @UiField
+    LabelElement tagCompanyLabel;
+
+    @Inject
+    @UiField(provided = true)
+    HomeCompanyButtonSelector company;
+
+    interface CaseTagEditViewUiBinder extends UiBinder<Widget, CompanyDepartmentEditView> {}
+    private static CaseTagEditViewUiBinder ourUiBinder = GWT.create(CaseTagEditViewUiBinder.class);
+}

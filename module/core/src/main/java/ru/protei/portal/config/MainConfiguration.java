@@ -573,6 +573,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CompanyDepartmentService getCompanyDepartmentService() {
+        return new CompanyDepartmentServiceImpl();
+    }
+
+    @Bean
     public ProductService getProductService() {
         return new ProductServiceImpl();
     }

@@ -1,15 +1,16 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.GenerationPasswordUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -25,7 +26,6 @@ import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
-import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.LOGIN_SIZE;
 
 /**
  * Активность создания и редактирования сотрудников
@@ -60,6 +60,23 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                     .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<UserLogin>()
                             .withSuccess(userLogin -> initialView(person, userLogin == null ? new UserLogin() : userLogin)))));
         }
+    }
+
+    @Override
+    public void onAddCompanyDepartmentClicked() {
+        CompanyDepartment companyDepartment = new CompanyDepartment();
+
+        fireEvent(new CompanyDepartmentEvents.Edit(companyDepartment));
+    }
+
+    @Override
+    public void onEditCompanyDepartmentClicked(CompanyDepartment companyDepartment) {
+        fireEvent(new CompanyDepartmentEvents.Edit(companyDepartment));
+    }
+
+    @Override
+    public void onSelectCompanyDepartment(CompanyDepartment companyDepartment) {
+
     }
 
     @Override
@@ -185,7 +202,13 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onCompanySelected() {
-        view.companyValidator().setValid(view.company().getValue() != null);
+        boolean isValid = view.company().getValue() != null;
+        view.companyValidator().setValid(isValid);
+        view.companyDepartmentEnabled().setEnabled(isValid);
+
+        if (isValid) {
+            view.setDepartmentCompanyId(view.company().getValue().getId());
+        }
     }
 
     @Override
@@ -256,8 +279,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         infoFacade.setHomeAddress(view.homeAddress().getText());
         infoFacade.setFax(view.workFax().getText());
         infoFacade.setFaxHome(view.homeFax().getText());
-        contact.setPosition(view.displayPosition().getText());
-        contact.setDepartment(view.displayDepartment().getText());
+        contact.setPosition(view.workerPosition().getText());
+        contact.setDepartment(view.companyDepartment().getText());
 
         return contact;
     }
@@ -323,7 +346,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     private void fillView(Person person, UserLogin userLogin){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
-        // lock company field if provided person already contains defined company. Added with CRM-103 task.
         view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
         view.companyValidator().setValid(person.getCompany() != null);
         view.gender().setValue(person.getGender());
@@ -350,8 +372,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         view.workFax().setText(infoFacade.getFax());
         view.homeFax().setText(infoFacade.getFaxHome());
-        view.displayPosition().setText(person.getPosition());
-        view.displayDepartment().setText(person.getDepartment());
+        view.workerPosition().setText(StringUtils.isEmpty(person.getPosition()) ? "Выберите Бла-бла" : person.getPosition());
+        view.companyDepartment().setText(StringUtils.isEmpty(person.getDepartment()) ? "Выберите Бла-бла" : person.getDepartment());
 
         view.login().setText(userLogin.getUlogin());
         view.password().setValue(null);
@@ -446,6 +468,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     AccountControllerAsync accountService;
     @Inject
     PolicyService policyService;
+
 
     private Person contact;
     private UserLogin account;

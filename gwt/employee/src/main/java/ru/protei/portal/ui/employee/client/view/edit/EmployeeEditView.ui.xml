@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
-             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:homecompanyselector='urn:import:ru.protei.portal.ui.common.client.widget.homecompany'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:locale='urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
@@ -97,21 +97,23 @@
                                 <label>
                                     <ui:text from="{lang.company}"/>
                                 </label>
-                                <companyselector:CompanySelector ui:field="company" validation="true"/>
+                                <homecompanyselector:HomeCompanyButtonSelector ui:field="company" validation="true"/>
                             </div>
 
                             <div class="form-group col-md-4">
                                 <label>
                                     <ui:text from="{lang.contactPosition}"/>
                                 </label>
-                                <g:TextBox ui:field="displayPosition" styleName="form-control"/>
+                                <g:TextBox ui:field="workerPosition" styleName="form-control"/>
                             </div>
 
                             <div class="form-group col-md-4">
                                 <label class="">
                                     <ui:text from="{lang.department}"/>
                                 </label>
-                                <g:TextBox ui:field="displayDepartment" styleName="form-control"/>
+                                <div class="dropdown-selector">
+                                    <g:Button ui:field="companyDepartment" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>
+                                </div>
                             </div>
 
                             <div class="form-group col-md-12">

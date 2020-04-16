@@ -12,8 +12,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -21,9 +21,9 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
+import ru.protei.portal.ui.common.client.widget.departmentselector.popup.DepartmentSelector;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -31,8 +31,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditActivity;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditView;
 
-import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Date;
 
 public class EmployeeEditView extends Composite implements AbstractEmployeeEditView {
@@ -40,9 +38,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        companyModel.setCategories( Arrays.asList(
-                En_CompanyCategory.HOME ) );
-        company.setAsyncModel( companyModel );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
         workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
@@ -50,6 +45,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
         passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
         passwordGenPopup.addRejectHandler(event -> password.setFocus(true));
+
+        departmentSelector.addValueChangeHandler(event -> companyDepartment.setText(event.getValue().getName()));
+        departmentSelector.addAddHandler(addEvent -> activity.onAddCompanyDepartmentClicked());
+        departmentSelector.addEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.companyDepartment));
+        companyDepartmentEnabled().setEnabled(false);
     }
 
     @Override
@@ -133,13 +133,18 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText displayPosition() {
-        return displayPosition;
+    public HasText workerPosition() {
+        return workerPosition;
     }
 
     @Override
-    public HasText displayDepartment() {
-        return displayDepartment;
+    public HasText companyDepartment() {
+        return companyDepartment;
+    }
+
+    @Override
+    public HasEnabled companyDepartmentEnabled() {
+        return companyDepartment;
     }
 
     @Override
@@ -216,6 +221,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public void showInfo( boolean isShow ) {
         infoPanel.setVisible( isShow );
+    }
+
+    @Override
+    public void setDepartmentCompanyId (Long companyId){
+        departmentSelector.setCompanyId(companyId);
     }
 
     @Override
@@ -412,6 +422,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         showGenPasswordPopupIfNeeded();
     }
 
+    @UiHandler("companyDepartment")
+    public void onDisplayDepartmentClicked(ClickEvent event){
+        departmentSelector.showUnderLeft( (UIObject) companyDepartment, companyDepartment.getOffsetWidth() );
+    }
+
     private void showGenPasswordPopupIfNeeded() {
         boolean isNeededShowPasswordGenPopup = StringUtils.isBlank(password().getValue());
         if (isNeededShowPasswordGenPopup) {
@@ -518,19 +533,19 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     LabelElement loginLabel;
 
     @UiField
-    TextBox displayPosition;
+    TextBox workerPosition;
 
     @UiField
-    TextBox displayDepartment;
+    Button companyDepartment;
 
     @UiField
     TextArea personInfo;
 
-    @com.google.inject.Inject
+    @Inject
     @UiField ( provided = true )
-    CompanySelector company;
+    HomeCompanyButtonSelector company;
 
-    @com.google.inject.Inject
+    @Inject
     @UiField(provided = true)
     GenderButtonSelector gender;
 
@@ -555,7 +570,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     HTMLPanel employeeDeleted;
 
-    @com.google.inject.Inject
+    @Inject
     @UiField(provided = true)
     LocaleButtonSelector locale;
 
@@ -564,8 +579,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     Label sendWelcomeEmailWarning;
 
-    @com.google.inject.Inject
-    CompanyModel companyModel;
+    @Inject
+    private DepartmentSelector departmentSelector;
 
     private Timer changeEmployeeLoginTimer = new Timer() {
         @Override
