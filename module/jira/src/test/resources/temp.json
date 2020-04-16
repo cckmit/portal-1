@@ -1,0 +1,28 @@
+[{Comment:
+{self=https://jira.billing.ru/rest/api/2/issue/1657951/comment/6340448, id=6340448,
+body=одиночная уточка
+  !single_duck.jpeg! ,
+  author=BasicUser{self=https://jira.billing.ru/rest/api/2/user?username=protei_tech_user1, name=protei_tech_user1, displayName=protei_tech_user1},
+updateAuthor=BasicUser{self=https://jira.billing.ru/rest/api/2/user?username=protei_tech_user1, name=protei_tech_user1, displayName=protei_tech_user1},
+creationDate=2020-04-16T12:32:36.953+03:00, visibility=null, updateDate=2020-04-16T12:32:36.953+03:00}}}},
+
+  {
+    "Comment":
+{self=https://jira.billing.ru/rest/api/2/issue/1657951/comment/6340457, id=6340457,
+body=уточка с товарищем  !single_duck.jpeg!
+и !friend_duck.jpg! ,
+  author=BasicUser{self=https://jira.billing.ru/rest/api/2/user?username=protei_tech_user1, name=protei_tech_user1, displayName=protei_tech_user1},
+updateAuthor=BasicUser{self=https://jira.billing.ru/rest/api/2/user?username=protei_tech_user1, name=protei_tech_user1, displayName=protei_tech_user1},
+creationDate=2020-04-16T12:33:22.320+03:00, visibility=null, updateDate=2020-04-16T12:33:22.320+03:00}}}}]
+
+Attachment{self=https://jira.billing.ru/rest/api/2/attachment/885137, filename=friend_duck.jpg,
+  author=BasicUser{self=https://jira.billing.ru/rest/api/2/user?username=protei_tech_user1, name=protei_tech_user1, displayName=protei_tech_user1},
+  creationDate=2020-04-16T12:33:18.293+03:00, size=76015, mimeType=image/jpeg, contentUri=https://jira.billing.ru/secure/attachment/885137/friend_duck.jpg, thumbnailUri=null},
+Attachment{self=https://jira.billing.ru/rest/api/2/attachment/885136, filename=single_duck.jpeg,
+  author=BasicUser{self=https://jira.billing.ru/rest/api/2/user?username=protei_tech_user1, name=protei_tech_user1, displayName=protei_tech_user1},
+  creationDate=2020-04-16T12:32:53.470+03:00, size=4262, mimeType=image/jpeg,
+  contentUri=https://jira.billing.ru/secure/attachment/885136/single_duck.jpeg, thumbnailUri=null},
+Attachment{self=https://jira.billing.ru/rest/api/2/attachment/885135, filename=single_duck.jpeg,
+  author=BasicUser{self=https://jira.billing.ru/rest/api/2/user?username=protei_tech_user1, name=protei_tech_user1, displayName=protei_tech_user1},
+  creationDate=2020-04-16T12:32:32.613+03:00, size=4262, mimeType=image/jpeg, contentUri=https://jira.billing.ru/secure/attachment/885135/single_duck.jpeg,
+thumbnailUri=null},

@@ -191,6 +191,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
+        logger.info("issue : " + issue);
         logger.info("issue.getAttachments() : " + issue.getAttachments());
         logger.info("issue.getComments() : " + issue.getComments());
 
@@ -315,6 +316,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private String replaceAttachmentLink(String text, 
                  Map<String, ru.protei.portal.core.model.ent.Attachment> JiraAttachmentsFileNameToOurAttachment) {
+        logger.info("replaceAttachmentLink text : " + text);
         Matcher matcher = jiraImagePattern.matcher(text);
         while (matcher.find()) {
             String group = matcher.group();
