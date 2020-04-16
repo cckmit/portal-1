@@ -104,7 +104,9 @@
                                 <label>
                                     <ui:text from="{lang.contactPosition}"/>
                                 </label>
-                                <g:Button ui:field="workerPosition" styleName="form-control"/>
+                                <div class="dropdown-selector">
+                                    <g:Button ui:field="workerPosition" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>
+                                </div>
                             </div>
 
                             <div class="form-group col-md-4">
