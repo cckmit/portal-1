@@ -1,7 +1,11 @@
 package ru.protei.portal.core.renderer.impl;
 
 import com.atlassian.renderer.*;
+import com.atlassian.renderer.attachments.RendererAttachment;
+import com.atlassian.renderer.attachments.RendererAttachmentManager;
 import com.atlassian.renderer.embedded.DefaultEmbeddedResourceRenderer;
+import com.atlassian.renderer.embedded.EmbeddedImage;
+import com.atlassian.renderer.embedded.EmbeddedResource;
 import com.atlassian.renderer.links.GenericLinkParser;
 import com.atlassian.renderer.links.Link;
 import com.atlassian.renderer.links.LinkResolver;
@@ -15,7 +19,9 @@ import com.atlassian.renderer.v2.components.phrase.ForceNewLineRendererComponent
 import com.atlassian.renderer.v2.components.phrase.PhraseRendererComponent;
 import com.atlassian.renderer.v2.components.table.TableBlockRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
@@ -24,8 +30,10 @@ import ru.protei.portal.core.renderer.impl.markup.jira.link.LinkRendererComponen
 import ru.protei.portal.core.renderer.impl.markup.jira.macro.CustomMacroManager;
 import ru.protei.portal.core.renderer.impl.markup.jira.macro.MacroRendererComponent;
 import ru.protei.portal.core.renderer.impl.markup.jira.phrase.NewLineRendererComponent;
+import ru.protei.portal.core.service.AttachmentService;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -151,10 +159,39 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         renderContext.setSiteRoot(config.data().getCommonConfig().getCrmUrlCurrent());
         renderContext.setImagePath(renderContext.getSiteRoot() + "images");
         renderContext.setLinkRenderer(new V2LinkRenderer(getSubRenderer(), makeIconManager(renderIcons), makeRendererConfiguration()));
-        renderContext.setEmbeddedResourceRenderer(new DefaultEmbeddedResourceRenderer());
+        renderContext.setEmbeddedResourceRenderer(new DefaultEmbeddedResourceRenderer(makeRendererAttachmentManager()));
         renderContext.setCharacterEncoding(CHARACTER_ENCODING);
         renderContext.setRenderingForWysiwyg(false);
         return renderContext;
+    }
+
+    private RendererAttachmentManager makeRendererAttachmentManager() {
+
+        return new RendererAttachmentManager() {
+            private final String DOWNLOAD_PATH = config.data().getCommonConfig().getCrmUrlFiles() + "springApi/files/";
+            @Override
+            public RendererAttachment getAttachment(RenderContext renderContext, EmbeddedResource embeddedResource) {
+                Result<Attachment> result = attachmentService.getAttachmentByExtLink(embeddedResource.getFilename());
+                if (result.isOk()) {
+                    Attachment attachment = result.getData();
+                    return new RendererAttachment(
+                            attachment.getId(),
+                            attachment.getFileName(),
+                            attachment.getMimeType(),
+                            attachment.getCreatorId().toString(),
+                            attachment.getLabelText(),
+                            DOWNLOAD_PATH + attachment.getExtLink(),
+                            null,
+                            null,
+                            new Timestamp(attachment.getCreated().getTime()));
+                }
+                return null;
+            }
+            @Override
+            public RendererAttachment getThumbnail(RendererAttachment rendererAttachment, RenderContext renderContext, EmbeddedImage embeddedImage) { return null; }
+            @Override
+            public boolean systemSupportsThumbnailing() { return false; }
+        };
     }
 
     private LinkResolver makeLinkResolver() {
@@ -207,6 +244,8 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         };
     }
 
+    @Autowired
+    private AttachmentService attachmentService;
     @Autowired
     private PortalConfig config;
     private List<RendererComponent> components;

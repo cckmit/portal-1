@@ -223,6 +223,24 @@ public class JiraWikiMarkupRendererTest {
         doTest(input, expected);
     }
 
+    @Test
+    public void testImage() {
+        String input =
+                "!2020-049455.png!";
+        String expected =
+                "<ul>\n" +
+                        "\t<li>some<br/></li>\n" +
+                        "\t<li>bullet<br/>\n" +
+                        "\t<ul>\n" +
+                        "\t\t<li>indented<br/></li>\n" +
+                        "\t\t<li>bullets<br/></li>\n" +
+                        "\t</ul>\n" +
+                        "\t</li>\n" +
+                        "\t<li>points</li>\n" +
+                        "</ul>";
+        doTest(input, expected);
+    }
+
     private void doTest(String input, String expected) {
         String actual = htmlRenderer.plain2html(input, En_TextMarkup.JIRA_WIKI_MARKUP).trim();
         Assert.assertEquals("Not matched", expected, actual);

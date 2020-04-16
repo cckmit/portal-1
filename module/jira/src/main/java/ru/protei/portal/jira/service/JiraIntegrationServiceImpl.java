@@ -427,6 +427,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setCreated(comment.getCreationDate().toDate());
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
+        our.setText(comment.getBody());
 
         if (attachments != null) {
             replaceImageLink(our, attachments);
@@ -447,7 +448,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                     .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
                     .ifPresent(attachment -> {
                         String imageString = "!" + attachment.getExtLink() + "!";
-                        caseComment.setText(text.replace(group, imageString));
+                        caseComment.setText(caseComment.getText().replace(group, imageString));
 
                         List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
                         if (caseAttachments == null) {

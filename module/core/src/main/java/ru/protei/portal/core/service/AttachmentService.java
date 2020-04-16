@@ -79,4 +79,6 @@ public interface AttachmentService {
     Result<Long> saveAttachment(Attachment attachment);
 
     Result<String> getAttachmentNameByExtLink( String extLink);
+
+    Result<Attachment> getAttachmentByExtLink( String extLink);
 }
