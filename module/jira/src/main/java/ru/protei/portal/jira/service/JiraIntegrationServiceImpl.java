@@ -78,6 +78,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     FileStorage fileStorage;
     @Autowired
     AttachmentService attachmentService;
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
     private EntityCache<JiraEndpoint> jiraEndpointCache;
     private EntityCache<JiraEndpoint> jiraEndpointCache() {
@@ -200,7 +202,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         logger.info("JiraAttachmentsFileNameToOurAttachment : " + JiraAttachmentsFileNameToOurAttachment);
 
-        List<CaseComment> commentList = processComments(endpoint.getServerLogin(), issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, JiraAttachmentsFileNameToOurAttachment);
+        List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
+
+        List<CaseComment> commentList = processComments(endpoint.getServerLogin(),
+                issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, caseAttachments);
 
         logger.info("commentList : " + commentList);
         
@@ -276,7 +281,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private List<CaseComment> processComments(String serverLogin, Iterable<Comment> comments, Long caseObjectId, PersonMapper personMapper, JiraExtAppData state,
-                                              Map<String, ru.protei.portal.core.model.ent.Attachment> JiraAttachmentsFileNameToOurAttachment) {
+                                              List<ru.protei.portal.core.model.ent.Attachment> attachments) {
         logger.debug("process comments on caseObjectId={}", caseObjectId);
 
         if (comments == null) {
@@ -297,8 +302,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 continue;
             }
 
-            CaseComment caseComment = convertComment(caseObjectId, personMapper, comment);
-            caseComment.setText(replaceAttachmentLink(caseComment.getText(), JiraAttachmentsFileNameToOurAttachment));
+            CaseComment caseComment = convertComment(caseObjectId, personMapper, comment, attachments);
 
             logger.debug("add new comment, id = {}", comment.getId());
             state.appendComment(comment.getId());
@@ -312,23 +316,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
 
         return ourCaseComments;
-    }
-
-    private String replaceAttachmentLink(String text, 
-                 Map<String, ru.protei.portal.core.model.ent.Attachment> JiraAttachmentsFileNameToOurAttachment) {
-        logger.info("replaceAttachmentLink text : " + text);
-        Matcher matcher = jiraImagePattern.matcher(text);
-        while (matcher.find()) {
-            String group = matcher.group();
-            String jiraFileName = group.substring(1, group.length() - 1);
-            ru.protei.portal.core.model.ent.Attachment attachment = 
-                    JiraAttachmentsFileNameToOurAttachment.get(jiraFileName);
-            if (attachment != null) {
-                String imageString = MarkDownUtils.makeImageString(attachment.getFileName(), attachment.getExtLink());
-                text = text.replace(group, imageString);
-            }
-        }
-        return text;
     }
 
     private Map<String, ru.protei.portal.core.model.ent.Attachment> processAttachments (JiraEndpoint endpoint,
@@ -445,15 +432,40 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
     }
 
-    private CaseComment convertComment(Long caseObjectId, PersonMapper personMapper, Comment comment) {
+    private CaseComment convertComment(Long caseObjectId, PersonMapper personMapper, Comment comment,
+                                       List<ru.protei.portal.core.model.ent.Attachment> attachments) {
         CaseComment our = new CaseComment();
         our.setCaseId(caseObjectId);
         our.setAuthor(personMapper.toProteiPerson(fromBasicUserInfo(comment.getAuthor())));
         our.setCreated(comment.getCreationDate().toDate());
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
-        our.setText(comment.getBody());
+
+        String text = comment.getBody();
+        if (attachments != null) {
+            text = replaceImageLink(text, our.getAuthorId(), attachments);
+        }
+        our.setText(text);
         return our;
+    }
+
+    private String replaceImageLink(String text, Long authorId,
+                                    List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        Matcher matcher = jiraImagePattern.matcher(text);
+        while (matcher.find()) {
+            String group = matcher.group();
+            String jiraFileName = group.substring(1, group.length() - 1);
+            ru.protei.portal.core.model.ent.Attachment attachment =
+                    attachments.stream()
+                            .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(authorId))
+                            .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
+                            .orElse(null);
+            if (attachment != null) {
+                String imageString = MarkDownUtils.makeImageString(attachment.getFileName(), attachment.getExtLink());
+                text = text.replace(group, imageString);
+            }
+        }
+        return text;
     }
 
     private En_CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
