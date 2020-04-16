@@ -193,10 +193,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
+        caseEvent.putAddedAttachments(processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper));
+
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
         caseEvent.putAddedComments(processComments(endpoint.getServerLogin(),
                 issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, caseAttachments));
-        caseEvent.putAddedAttachments(processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper));
 
         jiraExtAppData = addIssueTypeAndSeverity(jiraExtAppData, issue.getIssueType().getName(), getIssueSeverity(issue));
 
@@ -445,7 +446,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                     .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(caseComment.getAuthorId()))
                     .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
                     .ifPresent(attachment -> {
-                        String imageString = MarkDownUtils.makeImageString(attachment.getFileName(), attachment.getExtLink());
+                        String imageString = "!" + attachment.getExtLink() + "!";
                         caseComment.setText(text.replace(group, imageString));
 
                         List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
