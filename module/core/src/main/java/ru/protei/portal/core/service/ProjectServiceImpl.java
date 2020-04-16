@@ -203,7 +203,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseObject updatedCaseObject = caseObjectDAO.get(project.getId());
         jdbcManyRelationsHelper.fillAll(updatedCaseObject);
-
         Project newStateProject = Project.fromCaseObject(updatedCaseObject);
 
         return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));

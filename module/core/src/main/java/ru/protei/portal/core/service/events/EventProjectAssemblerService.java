@@ -11,7 +11,7 @@ public interface EventProjectAssemblerService {
     void onProjectCreateEvent(ProjectCreateEvent event);
 
     @EventListener
-    void onProjectSaveEvent(ProjectUpdateEvent event);
+    void onProjectUpdateEvent(ProjectUpdateEvent event);
 
     @EventListener
     void onProjectCommentEvent(ProjectCommentEvent event);

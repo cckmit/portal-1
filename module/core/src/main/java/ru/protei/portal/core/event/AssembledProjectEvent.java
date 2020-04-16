@@ -41,7 +41,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
         this.isCreateEvent = event.isCreateEvent();
     }
 
-    public void attachSaveEvent(ProjectUpdateEvent event) {
+    public void attachUpdateEvent(ProjectUpdateEvent event) {
         this.oldProjectState = event.getOldProjectState();
         this.newProjectState = event.getNewProjectState();
         this.projectId = event.getProjectId();

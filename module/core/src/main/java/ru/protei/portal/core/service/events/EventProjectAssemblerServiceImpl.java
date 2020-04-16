@@ -27,9 +27,9 @@ public class EventProjectAssemblerServiceImpl implements EventProjectAssemblerSe
 
     @Override
     @EventListener
-    public void onProjectSaveEvent(ProjectUpdateEvent event) {
+    public void onProjectUpdateEvent(ProjectUpdateEvent event) {
         AssembledProjectEvent assembledProjectEvent = getAssembledProjectEvent(event);
-        assembledProjectEvent.attachSaveEvent(event);
+        assembledProjectEvent.attachUpdateEvent(event);
         publishAndClear(makeEventKey(event));
     }
 
