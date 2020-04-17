@@ -50,6 +50,11 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
              * сообщения удаленной стороне
              **/
 
+            if (commonService.getExternalAppId(caseId).isError()) {
+                logger.debug("case {} has no ext-app-id", caseId);
+                return;
+            }
+
             commonService.getExternalCaseAppData(caseId)
                     .flatMap(this::findEndpointAndIssueId)
                     .flatMap(endpointAndIssueId -> proceedUpdate(endpointAndIssueId.IssueId, event, endpointAndIssueId.endpoint))
