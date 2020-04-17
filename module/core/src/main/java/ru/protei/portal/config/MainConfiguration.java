@@ -814,6 +814,11 @@ public class MainConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
+    @Bean
+    public RoomReservationService getRoomReservationService() {
+        return new RoomReservationServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {
