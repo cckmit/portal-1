@@ -97,21 +97,21 @@
                                 <ui:text from="{lang.projectSlaReactionTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaReactionTime"
-                                                 styleName="inline m-l-10"/>
+                                                 styleName="inline m-l-10 small"/>
                         </div>
                         <div class="col-md-12">
                             <label class="inline fade">
                                 <ui:text from="{lang.projectSlaTemporaryTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaTemporarySolutionTime"
-                                                 styleName="inline m-l-10"/>
+                                                 styleName="inline m-l-10 small"/>
                         </div>
                         <div class="col-md-12">
                             <label class="inline fade">
                                 <ui:text from="{lang.projectSlaFullTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaFullSolutionTime"
-                                                 styleName="inline m-l-10"/>
+                                                 styleName="inline m-l-10 small"/>
                         </div>
                     </g:HTMLPanel>
                 </div>
