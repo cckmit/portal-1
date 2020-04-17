@@ -218,7 +218,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onAddLinkClicked(IsWidget target) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, lang.issues()));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, ISSUE_CASE_TYPE));
     }
 
     @Override
@@ -426,6 +426,7 @@ public abstract class IssueEditActivity implements
 
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
+    private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

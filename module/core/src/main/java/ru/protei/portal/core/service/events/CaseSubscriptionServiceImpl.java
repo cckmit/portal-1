@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
@@ -87,6 +88,18 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         log.info( "subscribers: AssembledCaseEvent: {}", join( result, NotificationEntry::getAddress, ",") );
         return result;
     }
+
+    @Override
+    public Set<NotificationEntry> subscribers(List<Long> personIds) {
+        return CollectionUtils.stream(personIds)
+                .map(personDAO::get)
+                .map(Person::getContactInfo)
+                .map(PlainContactInfoFacade::new)
+                .map(PlainContactInfoFacade::getEmail)
+                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                .collect(Collectors.toSet());
+    }
+
     private List<CompanySubscription> safeGetByCompany( Long companyId ) {
         if (companyId == null) return Collections.emptyList();
         Company company = companyDAO.get( companyId );

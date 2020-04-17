@@ -55,7 +55,7 @@ public class ReportProjectTest extends BaseServiceTest {
         project1.setCustomer(company1);
         project1.setTeam(new ArrayList<>());
 
-        project1.setId(projectService.createProject(null, project1).getData().getId());
+        project1.setId(projectService.createProject(getAuthToken(), project1).getData().getId());
 
         caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Comment 1"));
         caseCommentDAO.persist(createNewComment(person1, project1.getId(), REPORT_PROJECT_TEST + " : Last Comment 1"));
@@ -70,7 +70,7 @@ public class ReportProjectTest extends BaseServiceTest {
         project2.setCustomer(company1);
         project2.setTeam(new ArrayList<>());
 
-        project2.setId(projectService.createProject(null, project2).getData().getId());
+        project2.setId(projectService.createProject(getAuthToken(), project2).getData().getId());
 
         caseCommentDAO.persist(createNewComment(person1, project2.getId(), REPORT_PROJECT_TEST + " : Comment 2"));
         caseCommentDAO.persist(createNewComment(person1, project2.getId(), REPORT_PROJECT_TEST + " : Last Comment 2"));
@@ -85,7 +85,7 @@ public class ReportProjectTest extends BaseServiceTest {
         project3.setCustomer(company2);
         project3.setTeam(new ArrayList<>());
 
-        project3.setId(projectService.createProject(null, project3).getData().getId());
+        project3.setId(projectService.createProject(getAuthToken(), project3).getData().getId());
         // no comments in project
     }
 

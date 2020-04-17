@@ -665,8 +665,18 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getEventProjectAssemblerService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean

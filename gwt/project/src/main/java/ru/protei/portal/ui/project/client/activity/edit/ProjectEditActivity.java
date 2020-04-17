@@ -98,14 +98,14 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Event
     public void onAddLink(CaseLinkEvents.Added event) {
-        if (lang.projects().equals(event.pageId)) {
+        if (PROJECT_CASE_TYPE.equals(event.caseType)) {
             project.addLink(event.caseLink);
         }
     }
 
     @Event
     public void onRemoveLink(CaseLinkEvents.Removed event) {
-        if (lang.projects().equals(event.pageId)) {
+        if (PROJECT_CASE_TYPE.equals(event.caseType)) {
             project.getLinks().remove(event.caseLink);
         }
     }
@@ -117,7 +117,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, lang.projects(), false));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, PROJECT_CASE_TYPE, false));
     }
 
     @Override
@@ -232,7 +232,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                     .withCaseId(projectId)
-                    .withCaseType(En_CaseType.PROJECT)
+                    .withCaseType(PROJECT_CASE_TYPE)
                     .withReadOnly(!hasPrivileges(projectId)));
         }
     }
@@ -288,6 +288,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
+
+    private static final En_CaseType PROJECT_CASE_TYPE = En_CaseType.PROJECT;
 
     private AppEvents.InitDetails initDetails;
 }
