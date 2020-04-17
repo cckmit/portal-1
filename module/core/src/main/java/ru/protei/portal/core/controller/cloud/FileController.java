@@ -322,6 +322,7 @@ public class FileController {
         Attachment attachment = new Attachment();
         attachment.setCreatorId(creatorId);
         attachment.setFileName(fileName);
+        attachment.setLabelText(fileName);
         attachment.setDataSize(size);
         attachment.setMimeType(contentType);
 
@@ -331,7 +332,6 @@ public class FileController {
 
         String filePath = saveFile(is, generateCloudFileName(attachment.getId(), attachment.getFileName()), size, contentType);
         attachment.setExtLink(filePath);
-        attachment.setLabelText(attachment.getFileName());
 
         logger.debug("saveAttachment: creatorId=" + creatorId + ", filePath=" + filePath);
 
