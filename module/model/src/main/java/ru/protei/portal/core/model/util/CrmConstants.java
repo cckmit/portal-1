@@ -102,4 +102,8 @@ public class CrmConstants {
         String HTTP = "http://";
         String HTTPS = "https://";
     }
+
+    public interface Redmine {
+        String NO_CONTENT_TYPE = "application/octet-stream";
+    }
 }
