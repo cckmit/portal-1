@@ -88,24 +88,31 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public Result<String> updateCompany(String companyOldName, String companyNewName) {
-        log.info("updateCompany(): companyOldName={}, companyNewName={}", companyOldName, companyNewName);
+    public Result<String> updateCompany(String companyId, String companyName) {
+        log.info("updateCompany(): companyId={}, companyName={}", companyId, companyName);
 
-        Result<String> companyResult = api.getCompanyByName(companyOldName)
+        YtEnumBundleElement companyToUpdate = makeBundleElement(companyName);
+        return api.updateCompanyName(companyId, companyToUpdate)
+                .map(enumBundleElement -> enumBundleElement.id);
+    }
+
+    @Override
+    public Result<String> getCompanyByName(String companyName) {
+        log.info("getCompanyByName(): companyName={}", companyName);
+
+        Result<String> companyResult = api.getCompanyByName(companyName)
                 .flatMap(companies -> {
                     if (companies.size() == 1)
-                        if (companyOldName.equals(companies.get(0).name)) return ok(companies.get(0));
+                        if (companyName.equals(companies.get(0).name)) return ok(companies.get(0));
                     return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one company: " + companies.size());
                 })
                 .map(company -> company.id);
         if (companyResult.isError()) {
-            log.info("updateCompany(): companyOldName={}, companyNewName={} | failed to get company", companyOldName, companyNewName);
+            log.info("getCompanyByName(): companyName={} | failed to get company", companyName);
             return error(companyResult.getStatus(), companyResult.getMessage());
         }
 
-        YtEnumBundleElement companyToUpdate = makeBundleElement(companyNewName);
-        return api.updateCompanyName(companyResult.getData(), companyToUpdate)
-                .map(enumBundleElement -> enumBundleElement.id);
+        return companyResult;
     }
 
     @Override

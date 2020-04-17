@@ -266,12 +266,18 @@ public class CompanyServiceImpl implements CompanyService {
             return error(En_ResultStatus.NOT_UPDATED);
 
         if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
-            youtrackService.updateCompany(oldName, company.getCname())
-                    .ifOk(companyId ->
-                            log.info("updateCompany(): updated company in youtrack. YoutrackCompanyId = {}", companyId))
+            youtrackService.getCompanyByName(oldName)
+                    .ifOk(companyIdByName -> {
+                        youtrackService.updateCompany(companyIdByName, company.getCname())
+                                .ifOk(companyId ->
+                                        log.info("updateCompany(): updated company in youtrack. YoutrackCompanyId = {}", companyId))
+                                .ifError(errorResult ->
+                                        log.info("updateCompany(): Can't update company in youtrack. {}", errorResult)
+                                );
+                    })
                     .ifError(errorResult ->
-                            log.info("updateCompany(): Can't update company in youtrack. {}", errorResult)
-            );
+                            log.info("getCompanyByName(): Can't get company in youtrack. {}", errorResult)
+                    );
         }
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());

@@ -19,7 +19,9 @@ public interface YoutrackService {
 
     Result<String> createCompany(String companyName);
 
-    Result<String> updateCompany(String companyOldName, String companyNewName);
+    Result<String> updateCompany(String companyId, String companyName);
+
+    Result<String> getCompanyByName(String companyName);
 
     Result<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectName, Date updatedAfter);
 
