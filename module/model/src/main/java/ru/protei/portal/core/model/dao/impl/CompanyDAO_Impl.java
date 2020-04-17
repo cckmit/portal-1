@@ -54,7 +54,13 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         log.info( "createSqlCondition(): query={}", query );
         return new SqlCondition().build((condition, args) -> {
 
-            condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null )");
+            condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null ");
+
+            if (query.getSynchronizeWith1C() != null){
+                condition.append("and synchronize_1c = ").append(query.getSynchronizeWith1C() ? "true" : "false");
+            }
+
+            condition.append(")");
 
             if (query.getCompanyIds() != null) {
                 condition.append( " and company.id in " ).append( HelperFunc.makeInArg( query.getCompanyIds()) );

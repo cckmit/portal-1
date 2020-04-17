@@ -97,7 +97,7 @@
                                 <label>
                                     <ui:text from="{lang.company}"/>
                                 </label>
-                                <homecompanyselector:HomeCompanyButtonSelector ui:field="company" validation="true"/>
+                                <homecompanyselector:HomeCompanyButtonSelector ui:field="company" validation="true" synchronizeWith1C="false"/>
                             </div>
 
                             <div class="form-group col-md-4">
