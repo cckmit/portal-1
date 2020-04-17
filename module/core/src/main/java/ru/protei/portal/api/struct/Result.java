@@ -101,6 +101,11 @@ public class Result<T> {
     }
 
     @JsonIgnore
+    public static <T> Result<T> errorWithData( En_ResultStatus status, T data ) {
+        return new Result<>(status, data, null, null);
+    }
+
+    @JsonIgnore
     public static <T> Result<T> ok() {
         return ok(null);
     }
