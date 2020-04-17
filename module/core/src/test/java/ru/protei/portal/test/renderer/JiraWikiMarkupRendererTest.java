@@ -6,10 +6,18 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.service.AttachmentService;
+
+import java.util.Date;
+
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -225,19 +233,23 @@ public class JiraWikiMarkupRendererTest {
 
     @Test
     public void testImage() {
-        String input =
-                "!2020-049455.png!";
-        String expected =
-                "<ul>\n" +
-                        "\t<li>some<br/></li>\n" +
-                        "\t<li>bullet<br/>\n" +
-                        "\t<ul>\n" +
-                        "\t\t<li>indented<br/></li>\n" +
-                        "\t\t<li>bullets<br/></li>\n" +
-                        "\t</ul>\n" +
-                        "\t</li>\n" +
-                        "\t<li>points</li>\n" +
-                        "</ul>";
+        final String EXT_LINK = "path/image.png";
+
+        Attachment attachment = new Attachment();
+        attachment.setId(1L);
+        attachment.setFileName("FileName");
+        attachment.setMimeType("image/png");
+        attachment.setCreatorId(7777L);
+        attachment.setExtLink(EXT_LINK);
+        attachment.setCreated(new Date());
+
+        when(attachmentService.getAttachmentByExtLink(EXT_LINK))
+                .thenReturn(Result.ok(attachment));
+
+        String input = "!path/image.png!";
+        String expected = "<p><span class=\"image-wrap\" style=\"\"><img src=" +
+                "\"" + portalConfig.data().getCommonConfig().getCrmUrlFiles() + "springApi/files/" + attachment.getExtLink() + "\"" +
+                " style=\"border: 0px solid black\" /></span></p>";
         doTest(input, expected);
     }
 
@@ -248,4 +260,8 @@ public class JiraWikiMarkupRendererTest {
 
     @Autowired
     HTMLRenderer htmlRenderer;
+    @Autowired
+    AttachmentService attachmentService;
+    @Autowired
+    PortalConfig portalConfig;
 }
