@@ -14,7 +14,7 @@
     <changeSet id="add-linked_equipment_id-equipment-fk" author="fomin">
         <addForeignKeyConstraint baseTableName="equipment"
                                  baseColumnNames="linked_equipment_id"
-                                 constraintName="linked_equipment_id-equipment-fk"
+                                 constraintName="linked_equipment_id_fk"
                                  referencedTableName="equipment"
                                  referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="SET NULL"/>
