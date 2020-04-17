@@ -48,9 +48,16 @@ public class LegacyDAO_Test {
         log.info("{}", company);
 
         ExternalProduct product = dao.getExternalProduct(TEST_PRODUCT_EXISTS);
-
         Assert.assertNotNull(product);
         log.info("{}", product);
+
+        List<ExternalSubnet> subnets = dao.getExternalSubnets();
+        Assert.assertNotNull(subnets);
+        subnets.forEach( subnet -> log.info("{}", subnet.getSubnetAddress()));
+
+        List<ExternalReservedIp> reservedIps = dao.getExternalReservedIps();
+        Assert.assertNotNull(reservedIps);
+        reservedIps.forEach( ip -> log.info("{}", ip.getIpAddress()));
     }
 
     @Test

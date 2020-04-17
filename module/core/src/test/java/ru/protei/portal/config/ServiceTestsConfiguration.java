@@ -109,9 +109,7 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public ProductService getProductService() {
-        return new ProductServiceImpl();
-    }
+    public ProductService getProductService() { return new ProductServiceImpl(); }
 
     @Bean
     public ContactService getContactService () {
@@ -280,6 +278,8 @@ public class ServiceTestsConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
+    @Bean
+    public IpReservationService getIpReservationService() { return new IpReservationServiceImpl(); }
 
     @Bean
     public ReportCase getReportCase() {

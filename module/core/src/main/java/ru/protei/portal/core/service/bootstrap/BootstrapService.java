@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.tools.migrate.sybase.LegacyEntityDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -331,7 +332,6 @@ if(true) return; //TODO remove
 
     private void migrateIpReservation() {
         log.info("Migrate subnets and reservedIps started");
-
         /*
           @todo
             get from old_portal
@@ -383,6 +383,8 @@ if(true) return; //TODO remove
     DocumentSvnApi documentSvnApi;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
+    @Autowired
+    LegacyEntityDAO legacyEnitityDAO;
     @Autowired
     PortalConfig config;
 }
