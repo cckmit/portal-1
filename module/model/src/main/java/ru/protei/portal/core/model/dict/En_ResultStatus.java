@@ -154,12 +154,6 @@ public enum En_ResultStatus {
     NOT_ALLOWED_LINK_ISSUE_TO_ITSELF,
 
     /**
-     * Некоторые ссылки не добавились
-     */
-
-    SOME_LINKS_NOT_ADDED,
-
-    /**
      * Эта ссылка уже привязана
      */
 

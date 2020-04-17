@@ -31,8 +31,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
-import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.*;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления проектами
@@ -246,9 +246,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.setCreator(personDAO.get(project.getCreatorId()));
 
-        return addLinksResult.isOk() ?
-                ok(project).publishEvent(new ProjectCreateEvent(this, token.getPersonId(), project.getId())) :
-                error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
+        ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
+
+        return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {

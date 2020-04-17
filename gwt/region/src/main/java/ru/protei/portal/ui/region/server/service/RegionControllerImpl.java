@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
@@ -113,26 +114,30 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Project saveProject(Project project) throws RequestFailedException {
+    public UiResult<Project> saveProject(Project project) throws RequestFailedException {
         log.info("saveProject(): project={}", project);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Project> response;
-        if (project.getId() == null) {
+        if (project.getId() != null) {
+            response = projectService.saveProject(token, project);
+        } else {
             project.setCreated(new Date());
             project.setCreatorId(token.getPersonId());
             response = projectService.createProject(token, project);
         }
-        else {
-            response = projectService.saveProject(token, project);
-        }
 
         if ( response.isError() ) {
+            log.info("saveProject(): status={}", response.getStatus());
             throw new RequestFailedException( response.getStatus() );
         }
 
-        return response.getData();
+        if (response.getMessage() != null) {
+            log.info("saveProject(): message={}", response.getMessage());
+        }
+
+        return new UiResult<>(response.getData(), response.getMessage());
     }
 
     @Override
