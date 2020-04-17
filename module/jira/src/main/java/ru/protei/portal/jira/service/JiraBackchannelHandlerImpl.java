@@ -122,7 +122,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             Optional<String> imageString = attachments.stream()
                     .filter(a -> a.getExtLink().equals(attachmentExtLink) && a.getCreatorId().equals(personId))
                     .max(Comparator.comparing(Attachment::getCreated))
-                    .map(attachment -> JiraMarkUpUtils.makeImageString(attachment.getFileName()));
+                    .map(attachment -> JiraMarkUpUtils.makeImageString(attachment.getFileName(), attachment.getFileName()));
             if (imageString.isPresent()) {
                 resultText = resultText.replace(group, imageString.get());
             }

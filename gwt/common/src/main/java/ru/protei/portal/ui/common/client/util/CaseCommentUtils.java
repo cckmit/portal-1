@@ -68,7 +68,7 @@ public class CaseCommentUtils {
     public static String addImageInMessage(En_TextMarkup textMarkup, String message, Integer position, Attachment attach) {
         String imageString;
         switch (textMarkup) {
-            case JIRA_WIKI_MARKUP: imageString = JiraMarkUpUtils.makeImageString(attach.getExtLink()); break;
+            case JIRA_WIKI_MARKUP: imageString = JiraMarkUpUtils.makeImageString(attach.getFileName(), attach.getExtLink()); break;
             case MARKDOWN:
             default:
                 imageString = MarkDownUtils.makeImageString(attach.getFileName(), attach.getExtLink()); break;

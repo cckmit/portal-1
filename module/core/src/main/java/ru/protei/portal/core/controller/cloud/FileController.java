@@ -269,6 +269,7 @@ public class FileController {
                     generateCloudFileName(attachment.getId(), attachment.getFileName()),
                     fileSize, contentType);
             attachment.setExtLink(filePath);
+            attachment.setLabelText(attachment.getFileName());
         }
 
         if (attachmentService.saveAttachment(attachment).isError()) {
@@ -330,6 +331,7 @@ public class FileController {
 
         String filePath = saveFile(is, generateCloudFileName(attachment.getId(), attachment.getFileName()), size, contentType);
         attachment.setExtLink(filePath);
+        attachment.setLabelText(attachment.getFileName());
 
         logger.debug("saveAttachment: creatorId=" + creatorId + ", filePath=" + filePath);
 

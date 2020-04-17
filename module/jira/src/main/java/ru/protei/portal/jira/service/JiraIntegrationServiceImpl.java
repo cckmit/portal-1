@@ -307,6 +307,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             ourCaseComments.forEach(caseComment -> {
                 if (!isEmpty(caseComment.getCaseAttachments())) {
                     caseService.updateExistsAttachmentsFlag(caseComment.getCaseId(), true);
+                    caseComment.getCaseAttachments().forEach(caseAttachment -> caseAttachment.setCommentId(caseComment.getId()));
                     caseAttachmentDAO.persistBatch(caseComment.getCaseAttachments());
                 }
             });
@@ -456,14 +457,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                     .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(caseComment.getAuthorId()))
                     .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
                     .ifPresent(attachment -> {
-                        String imageString = JiraMarkUpUtils.makeImageString(attachment.getExtLink());
+                        String imageString = JiraMarkUpUtils.makeImageString(attachment.getFileName(), attachment.getExtLink());
                         caseComment.setText(caseComment.getText().replace(group, imageString));
 
                         List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
                         if (caseAttachments == null) {
                             caseAttachments = new ArrayList<>();
                         }
-                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId(), caseComment.getId()));
+                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
                         caseComment.setCaseAttachments(caseAttachments);
                     });
         }
