@@ -336,6 +336,16 @@ public class DaoTestsConfiguration {
         return new CompanyImportanceItemDAO_Impl();
     }
 
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return new RoomReservableDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return new RoomReservationDAO_Impl();
+    }
+
 
 
 }

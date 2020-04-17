@@ -552,6 +552,16 @@ public class MainConfiguration {
         return new JiraCompanyGroupDAO_Impl();
     }
 
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return new RoomReservableDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return new RoomReservationDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

@@ -1,0 +1,103 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-room-reservable-table" author="buchmastov">
+        <createTable tableName="room_reservable">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(1024)"/>
+            <column name="active" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-room-reservable-allowed-persons-table" author="buchmastov">
+        <createTable tableName="room_reservable_allowed_persons">
+            <column name="room_reservable_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="person_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-on-room-reservable-allowed-persons-table" author="buchmastov">
+        <addPrimaryKey constraintName="pk_room_reservable_allowed_persons"
+                       tableName="room_reservable_allowed_persons"
+                       columnNames="room_reservable_id, person_id"/>
+        <addForeignKeyConstraint constraintName="fk_room_reservable_id_to_room"
+                                 baseTableName="room_reservable_allowed_persons" baseColumnNames="room_reservable_id"
+                                 referencedTableName="room_reservable" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_person_id_to_person"
+                                 baseTableName="room_reservable_allowed_persons" baseColumnNames="person_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-room-reservation-table" author="buchmastov">
+        <createTable tableName="room_reservation">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="date_requested" type="DATETIME"/>
+            <column name="person_requester_id" type="BIGINT"/>
+            <column name="person_responsible_id" type="BIGINT"/>
+            <column name="room_id" type="BIGINT"/>
+            <column name="date_from" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_until" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason_id" type="INT"/>
+            <column name="coffee_break_count" type="INT"/>
+            <column name="comment" type="VARCHAR(2048)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-on-room-reservation-table" author="buchmastov">
+        <addForeignKeyConstraint constraintName="fk_person_requester_id_to_person"
+                                 baseTableName="room_reservation" baseColumnNames="person_requester_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+        <addForeignKeyConstraint constraintName="fk_person_responsible_id_to_person"
+                                 baseTableName="room_reservation" baseColumnNames="person_responsible_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+        <addForeignKeyConstraint constraintName="fk_room_id_to_room_reservable"
+                                 baseTableName="room_reservation" baseColumnNames="room_id"
+                                 referencedTableName="room_reservable" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="add-room-reservation-notifiers-table" author="buchmastov">
+        <createTable tableName="room_reservation_notifiers">
+            <column name="room_reservation_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="person_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-on-room-reservation-notifiers-table" author="buchmastov">
+        <addPrimaryKey constraintName="pk_room_reservation_notifiers"
+                       tableName="room_reservation_notifiers"
+                       columnNames="room_reservation_id, person_id"/>
+        <addForeignKeyConstraint constraintName="fk_room_reservation_id_to_room"
+                                 baseTableName="room_reservation_notifiers" baseColumnNames="room_reservation_id"
+                                 referencedTableName="room_reservation" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_person_id_to_person"
+                                 baseTableName="room_reservation_notifiers" baseColumnNames="person_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

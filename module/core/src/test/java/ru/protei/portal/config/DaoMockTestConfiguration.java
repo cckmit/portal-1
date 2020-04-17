@@ -4,8 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.CompanyImportanceItemDAO_Impl;
-import ru.protei.portal.core.model.dao.impl.ImportanceLevelDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -328,6 +326,16 @@ public class DaoMockTestConfiguration {
     @Bean
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return mock(CompanyImportanceItemDAO.class);
+    }
+
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return mock(RoomReservableDAO.class);
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return mock(RoomReservationDAO.class);
     }
 
 
