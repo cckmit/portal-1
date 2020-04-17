@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.session.SessionService;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.service.IssueController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -58,7 +59,7 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public ru.protei.portal.core.model.ent.Result<Long> createIssue(CaseObjectCreateRequest caseObjectCreateRequest) throws RequestFailedException {
+    public UiResult<Long> createIssue(CaseObjectCreateRequest caseObjectCreateRequest) throws RequestFailedException {
         log.info("createIssue(): caseObjectCreateRequest={}", caseObjectCreateRequest);
 
         if (caseObjectCreateRequest == null || caseObjectCreateRequest.getCaseId() != null) {
@@ -83,7 +84,7 @@ public class IssueControllerImpl implements IssueController {
 
         log.info("createIssue(): id={}", response.getData().getId());
 
-        return new ru.protei.portal.core.model.ent.Result<>(response.getData().getId(), response.getMessage());
+        return new UiResult<>(response.getData().getId(), response.getMessage());
     }
 
     @Override

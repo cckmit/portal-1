@@ -84,6 +84,4 @@ public interface CaseService {
 
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
-
-    String SOME_LINKS_NOT_SAVED = "some links not saved";
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
@@ -113,7 +114,7 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public ru.protei.portal.core.model.ent.Result<Project> saveProject(Project project) throws RequestFailedException {
+    public UiResult<Project> saveProject(Project project) throws RequestFailedException {
         log.info("saveProject(): project={}", project);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -136,7 +137,7 @@ public class RegionControllerImpl implements RegionController {
             log.info("saveProject(): message={}", response.getMessage());
         }
 
-        return new ru.protei.portal.core.model.ent.Result<>(response.getData(), response.getMessage());
+        return new UiResult<>(response.getData(), response.getMessage());
     }
 
     @Override

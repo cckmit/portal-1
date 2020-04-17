@@ -40,6 +40,7 @@ import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления обращениями
@@ -211,7 +212,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setNotifiers(caseObject.getNotifiers());
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return new Result<>(En_ResultStatus.OK, newState, addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED, Collections.singletonList(caseObjectCreateEvent));
+        return new Result<>(En_ResultStatus.OK, newState, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(caseObjectCreateEvent));
     }
 
     @Override

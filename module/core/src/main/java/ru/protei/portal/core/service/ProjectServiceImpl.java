@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 import static ru.protei.portal.api.struct.Result.*;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления проектами
@@ -247,7 +248,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
-        return new Result<>(En_ResultStatus.OK, project, addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED, Collections.singletonList(projectCreateEvent));
+        return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {

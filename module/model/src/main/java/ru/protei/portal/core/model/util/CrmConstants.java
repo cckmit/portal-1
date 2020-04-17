@@ -11,6 +11,8 @@ public class CrmConstants {
     public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
     public static final int EMAIL_MAX_SIZE = 254;
 
+    public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
+
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";

@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Result;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -54,7 +54,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         }
 
         fillProject();
-        regionService.saveProject(project, new FluentCallback<Result<Project>>()
+        regionService.saveProject(project, new FluentCallback<UiResult<Project>>()
                 .withErrorMessage(lang.errNotSaved())
                 .withSuccess(project -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

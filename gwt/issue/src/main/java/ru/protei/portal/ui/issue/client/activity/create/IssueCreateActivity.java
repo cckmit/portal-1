@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
@@ -36,6 +37,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
 import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
 
@@ -136,11 +138,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         lockSave();
-        issueService.createIssue(createRequest, new FluentCallback<Result<Long>>()
+        issueService.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
                 .withError(throwable -> unlockSave())
                 .withSuccess(createIssueResult -> {
                     unlockSave();
-                    if (createIssueResult.getMessage() != null) {
+                    if (SOME_LINKS_NOT_SAVED.equals(createIssueResult.getMessage())) {
                         fireEvent(new NotifyEvents.Show(lang.caseLinkSomeNotAdded(), NotifyEvents.NotifyType.INFO));
                     }
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

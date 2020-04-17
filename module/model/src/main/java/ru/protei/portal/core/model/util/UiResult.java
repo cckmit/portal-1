@@ -1,14 +1,14 @@
-package ru.protei.portal.core.model.ent;
+package ru.protei.portal.core.model.util;
 
 import java.io.Serializable;
 
-public class Result<T> implements Serializable {
+public class UiResult<T> implements Serializable {
     private T data;
     private String message;
 
-    public Result() {}
+    public UiResult() {}
 
-    public Result(T data, String message) {
+    public UiResult(T data, String message) {
         this.data = data;
         this.message = message;
     }

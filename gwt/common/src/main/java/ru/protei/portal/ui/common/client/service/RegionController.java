@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.Project;
@@ -31,7 +31,7 @@ public interface RegionController extends RemoteService {
 
     Project getProject(Long id) throws RequestFailedException;
 
-    ru.protei.portal.core.model.ent.Result<Project> saveProject(Project project) throws RequestFailedException;
+    UiResult<Project> saveProject(Project project) throws RequestFailedException;
 
     SearchResult<Project> getProjects(ProjectQuery query) throws RequestFailedException;
 

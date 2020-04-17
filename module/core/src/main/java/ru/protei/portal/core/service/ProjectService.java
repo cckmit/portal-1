@@ -74,6 +74,4 @@ public interface ProjectService {
     @Privileged(En_Privilege.PROJECT_REMOVE)
     @Auditable(En_AuditType.PROJECT_REMOVE)
     Result<Boolean> removeProject(AuthToken token, Long projectId);
-
-    String SOME_LINKS_NOT_SAVED = "some links not saved";
 }
