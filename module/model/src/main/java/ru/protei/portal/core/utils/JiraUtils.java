@@ -40,6 +40,6 @@ public class JiraUtils {
     }
 
     public static Pattern getJiraImagePattern() {
-        return Pattern.compile("\\![^\\|\\!]*[\\!|]");
+        return Pattern.compile("\\![^\\!]*\\!");
     }
 }
