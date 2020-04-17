@@ -20,7 +20,6 @@ import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
@@ -236,7 +235,7 @@ public abstract class IssueEditActivity implements
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         issueNameDescriptionEditWidget.description().setValue(
-                addImageInMessage(issueNameDescriptionEditWidget.description().getValue(), strPosition, attach));
+                addImageInMessage(isJiraMarkupCase(issue), issueNameDescriptionEditWidget.description().getValue(), strPosition, attach));
     }
 
     private void requestIssue(Long number, HasWidgets container) {
@@ -401,6 +400,10 @@ public abstract class IssueEditActivity implements
 
     private boolean isReadOnly() {
         return !policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
+    }
+
+    private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
+        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
     }
 
     @Inject

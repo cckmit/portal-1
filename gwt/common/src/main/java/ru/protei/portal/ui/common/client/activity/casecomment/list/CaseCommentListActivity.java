@@ -304,7 +304,7 @@ public abstract class CaseCommentListActivity
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.message().setValue(
-                addImageInMessage(view.message().getValue(), strPosition, attach));
+                addImageInMessage(textMarkup, view.message().getValue(), strPosition, attach));
     }
 
     private void addTempAttachment(Attachment attach) {

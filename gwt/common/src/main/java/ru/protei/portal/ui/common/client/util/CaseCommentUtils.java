@@ -3,11 +3,12 @@ package ru.protei.portal.ui.common.client.util;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.helper.JiraMarkUpUtils;
+import ru.protei.portal.core.model.helper.MarkDownUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.Date;
 
-import static ru.protei.portal.core.model.helper.MarkDownUtils.makeImageString;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 /**
@@ -64,8 +65,15 @@ public class CaseCommentUtils {
         }
     }
 
-    public static String addImageInMessage(String message, Integer position, Attachment attach) {
-        String imageString = makeImageString(attach.getFileName(), attach.getExtLink());
+    public static String addImageInMessage(En_TextMarkup textMarkup, String message, Integer position, Attachment attach) {
+        String imageString;
+        switch (textMarkup) {
+            case JIRA_WIKI_MARKUP: imageString = JiraMarkUpUtils.makeImageString(attach.getExtLink()); break;
+            case MARKDOWN:
+            default:
+                imageString = MarkDownUtils.makeImageString(attach.getFileName(), attach.getExtLink()); break;
+        }
+
         if (position != null) {
             return message.substring(0, position) + NEW_LINE_SYMBOL + imageString + NEW_LINE_SYMBOL + message.substring(position);
         } else {

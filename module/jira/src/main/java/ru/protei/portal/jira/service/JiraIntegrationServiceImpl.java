@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
+import ru.protei.portal.core.model.helper.JiraMarkUpUtils;
 import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.DiffResult;
@@ -455,7 +456,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                     .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(caseComment.getAuthorId()))
                     .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
                     .ifPresent(attachment -> {
-                        String imageString = JiraUtils.makeImageString(attachment.getFileName());
+                        String imageString = JiraMarkUpUtils.makeImageString(attachment.getExtLink());
                         caseComment.setText(caseComment.getText().replace(group, imageString));
 
                         List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();

@@ -42,8 +42,4 @@ public class JiraUtils {
     public static Pattern getJiraImagePattern() {
         return Pattern.compile("\\![^\\!]*\\!");
     }
-
-    public static String makeImageString(String fileName) {
-        return "!" + fileName + "!";
-    }
 }

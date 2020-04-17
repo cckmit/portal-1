@@ -15,6 +15,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.JiraMarkUpUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
@@ -121,7 +122,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             Optional<String> imageString = attachments.stream()
                     .filter(a -> a.getExtLink().equals(attachmentExtLink) && a.getCreatorId().equals(personId))
                     .max(Comparator.comparing(Attachment::getCreated))
-                    .map(attachment -> JiraUtils.makeImageString(attachment.getFileName()));
+                    .map(attachment -> JiraMarkUpUtils.makeImageString(attachment.getFileName()));
             if (imageString.isPresent()) {
                 resultText = resultText.replace(group, imageString.get());
             }
