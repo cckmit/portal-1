@@ -77,6 +77,10 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void setPositionCompanyId (Long companyId);
 
+    void setPositionValid (boolean isValid);
+
+    void setDepartmentValid (boolean isValid);
+
     HasVisibility saveVisibility();
 
     HasEnabled companyEnabled ();

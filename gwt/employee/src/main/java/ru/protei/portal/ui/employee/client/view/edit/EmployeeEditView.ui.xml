@@ -105,7 +105,7 @@
                                     <ui:text from="{lang.contactPosition}"/>
                                 </label>
                                 <div class="dropdown-selector">
-                                    <g:Button ui:field="workerPosition" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>
+                                    <g:Button ui:field="workerPosition" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12 has-error"/>
                                 </div>
                             </div>
 
@@ -114,7 +114,7 @@
                                     <ui:text from="{lang.department}"/>
                                 </label>
                                 <div class="dropdown-selector">
-                                    <g:Button ui:field="companyDepartment" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12"/>
+                                    <g:Button ui:field="companyDepartment" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12 has-error"/>
                                 </div>
                             </div>
 

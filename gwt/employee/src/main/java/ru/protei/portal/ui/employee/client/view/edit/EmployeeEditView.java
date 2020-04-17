@@ -47,12 +47,22 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
         passwordGenPopup.addRejectHandler(event -> password.setFocus(true));
 
-        departmentSelector.addValueChangeHandler(event -> companyDepartment.setText(event.getValue().getName()));
+        departmentSelector.addValueChangeHandler(event -> {
+            if (event.getValue() != null) {
+                companyDepartment.setText(event.getValue().getName());
+                setDepartmentValid(true);
+            }
+        });
         departmentSelector.addAddHandler(addEvent -> activity.onAddCompanyDepartmentClicked());
         departmentSelector.addEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.companyDepartment));
         companyDepartmentEnabled().setEnabled(false);
 
-        positionSelector.addValueChangeHandler(event -> workerPosition.setText(event.getValue().getName()));
+        positionSelector.addValueChangeHandler(event -> {
+            if (event.getValue() != null) {
+                workerPosition.setText(event.getValue().getName());
+                setPositionValid(true);
+            }
+        });
         positionSelector.addAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
         positionSelector.addEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.workerPosition));
         workerPositionEnabled().setEnabled(false);
@@ -242,6 +252,16 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public void setPositionCompanyId (Long companyId){
         positionSelector.setCompanyId(companyId);
+    }
+
+    @Override
+    public void setPositionValid (boolean isValid){
+        workerPosition.setStyleName("has-error", !isValid);
+    }
+
+    @Override
+    public void setDepartmentValid (boolean isValid){
+        companyDepartment.setStyleName("has-error", !isValid);
     }
 
     @Override
@@ -440,12 +460,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiHandler("companyDepartment")
     public void onDisplayDepartmentClicked(ClickEvent event){
-        departmentSelector.showUnderLeft( (UIObject) companyDepartment, companyDepartment.getOffsetWidth() );
+        departmentSelector.showUnderLeft( companyDepartment, companyDepartment.getOffsetWidth() );
     }
 
     @UiHandler("workerPosition")
     public void onDisplayPositionClicked(ClickEvent event){
-        positionSelector.showUnderLeft( (UIObject) workerPosition, workerPosition.getOffsetWidth() );
+        positionSelector.showUnderLeft( workerPosition, workerPosition.getOffsetWidth() );
     }
 
     private void showGenPasswordPopupIfNeeded() {
