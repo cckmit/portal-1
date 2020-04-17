@@ -2,6 +2,8 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.RoomReservationNotificationEvent;
 import ru.protei.portal.core.model.dao.RoomReservableDAO;
 import ru.protei.portal.core.model.dao.RoomReservationDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -9,18 +11,18 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class RoomReservationServiceImpl implements RoomReservationService {
 
@@ -53,6 +55,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        // TODO check for date-time intersection
+
         reservation.setDateRequested(new Date());
         reservation.setPersonRequester(new Person(token.getPersonId()));
 
@@ -63,7 +67,13 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         jdbcManyRelationsHelper.persist(reservation, "personsToBeNotified");
 
         RoomReservation result = getReservation(id);
-        return ok(result);
+        return ok(result)
+            .publishEvent(new RoomReservationNotificationEvent(
+                this,
+                result,
+                RoomReservationNotificationEvent.Action.CREATED,
+                makeNotificationList(result)
+            ));
     }
 
     @Override
@@ -100,6 +110,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        // TODO check for date-time intersection
+
         reservation.setDateRequested(stored.getDateRequested());
         reservation.setPersonRequester(stored.getPersonRequester());
 
@@ -110,7 +122,13 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         jdbcManyRelationsHelper.persist(reservation, "personsToBeNotified");
 
         RoomReservation result = getReservation(reservation.getId());
-        return ok(result);
+        return ok(result)
+            .publishEvent(new RoomReservationNotificationEvent(
+                this,
+                result,
+                RoomReservationNotificationEvent.Action.UPDATED,
+                makeNotificationList(result)
+            ));
     }
 
     @Override
@@ -140,7 +158,13 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.NOT_REMOVED);
         }
 
-        return ok(stored);
+        return ok(stored)
+            .publishEvent(new RoomReservationNotificationEvent(
+                this,
+                stored,
+                RoomReservationNotificationEvent.Action.REMOVED,
+                makeNotificationList(stored)
+            ));
     }
 
     @Override
@@ -222,6 +246,29 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         return false;
     }
 
+    private List<NotificationEntry> makeNotificationList(RoomReservation reservation) {
+        List<NotificationEntry> entries = stream(new ArrayList<Person>() {{
+            addAll(reservation.getPersonsToBeNotified());
+            add(reservation.getPersonRequester());
+            add(reservation.getPersonResponsible());
+        }})
+            .filter(Objects::nonNull)
+            .map(person -> {
+                PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
+                return NotificationEntry.email(contact.getEmail(), person.getLocale());
+            })
+            .filter(entry -> StringUtils.isNotEmpty(entry.getAddress()))
+            .collect(Collectors.toList());
+        entries.addAll(stream(Arrays.asList(config.data().getMailNotificationConfig().getCrmRoomReservationNotificationsRecipients()))
+            .filter(Objects::nonNull)
+            .filter(not(String::isEmpty))
+            .map(address -> NotificationEntry.email(address, "ru"))
+            .collect(Collectors.toList()));
+        return entries;
+    }
+
+    @Autowired
+    PortalConfig config;
     @Autowired
     RoomReservationDAO roomReservationDAO;
     @Autowired
