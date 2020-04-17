@@ -19,13 +19,13 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
-import ru.protei.portal.core.model.helper.MarkDownUtils;
 import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.utils.EntityCache;
+import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.mapper.CachedPersonMapper;
@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
@@ -69,6 +70,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     @Autowired
     private CaseCommentDAO commentDAO;
     @Autowired
+    private CaseAttachmentDAO caseAttachmentDAO;
+    @Autowired
     private JiraStatusMapEntryDAO jiraStatusMapEntryDAO;
     @Autowired
     private JiraPriorityMapEntryDAO jiraPriorityMapEntryDAO;
@@ -89,7 +92,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return jiraEndpointCache;
     }
 
-    private Pattern jiraImagePattern = Pattern.compile("\\![^\\!]*\\!");    // "!19_1020_duck.jpeg!"
+    private final Pattern jiraImagePattern = JiraUtils.getJiraImagePattern();
 
     @Override
     public Result<JiraEndpoint> selectEndpoint( Issue issue, Long originalCompanyId ) {
@@ -300,6 +303,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         if (!ourCaseComments.isEmpty()) {
             logger.debug("store case comments, size = {}", ourCaseComments.size());
             commentDAO.persistBatch(ourCaseComments);
+            ourCaseComments.forEach(caseComment -> {
+                if (!isEmpty(caseComment.getCaseAttachments())) {
+                    caseService.updateExistsAttachmentsFlag(caseComment.getCaseId(), true);
+                    caseAttachmentDAO.persistBatch(caseComment.getCaseAttachments());
+                }
+            });
         }
 
         return ourCaseComments;
@@ -438,8 +447,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private void replaceImageLink(CaseComment caseComment,
                                     List<ru.protei.portal.core.model.ent.Attachment> attachments) {
-        String text = caseComment.getText();
-        Matcher matcher = jiraImagePattern.matcher(text);
+        Matcher matcher = jiraImagePattern.matcher(caseComment.getText());
         while (matcher.find()) {
             String group = matcher.group();
             String jiraFileName = group.substring(1, group.length() - 1);
@@ -447,7 +455,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                     .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(caseComment.getAuthorId()))
                     .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
                     .ifPresent(attachment -> {
-                        String imageString = "!" + attachment.getExtLink() + "!";
+                        String imageString = JiraUtils.makeImageString(attachment.getFileName());
                         caseComment.setText(caseComment.getText().replace(group, imageString));
 
                         List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();

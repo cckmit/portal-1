@@ -2,6 +2,8 @@ package ru.protei.portal.core.utils;
 
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 
+import java.util.regex.Pattern;
+
 public class JiraUtils {
 
     public static JiraIssueData convert(ExternalCaseAppData appData) {
@@ -35,5 +37,13 @@ public class JiraUtils {
             this.key = key;
             this.projectId = projectId;
         }
+    }
+
+    public static Pattern getJiraImagePattern() {
+        return Pattern.compile("\\![^\\!]*\\!");
+    }
+
+    public static String makeImageString(String fileName) {
+        return "!" + fileName + "!";
     }
 }
