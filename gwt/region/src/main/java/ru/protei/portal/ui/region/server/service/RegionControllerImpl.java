@@ -113,26 +113,30 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Project saveProject(Project project) throws RequestFailedException {
+    public ru.protei.portal.core.model.ent.Result<Project> saveProject(Project project) throws RequestFailedException {
         log.info("saveProject(): project={}", project);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Project> response;
-        if (project.getId() == null) {
+        if (project.getId() != null) {
+            response = projectService.saveProject(token, project);
+        } else {
             project.setCreated(new Date());
             project.setCreatorId(token.getPersonId());
             response = projectService.createProject(token, project);
         }
-        else {
-            response = projectService.saveProject(token, project);
-        }
 
         if ( response.isError() ) {
+            log.info("saveProject(): status={}", response.getStatus());
             throw new RequestFailedException( response.getStatus() );
         }
 
-        return response.getData();
+        if (response.getMessage() != null) {
+            log.info("saveProject(): message={}", response.getMessage());
+        }
+
+        return new ru.protei.portal.core.model.ent.Result<>(response.getData(), response.getMessage());
     }
 
     @Override

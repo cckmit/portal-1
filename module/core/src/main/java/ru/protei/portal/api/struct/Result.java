@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.context.ApplicationEvent;
-import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -98,11 +97,6 @@ public class Result<T> {
     @JsonIgnore
     public static <T> Result<T> error( En_ResultStatus status, String message, List<ApplicationEvent> events ) {
         return new Result<T>( status, null, message, events);
-    }
-
-    @JsonIgnore
-    public static <T> Result<T> errorWithData( En_ResultStatus status, T data ) {
-        return new Result<>(status, data, null, null);
     }
 
     @JsonIgnore

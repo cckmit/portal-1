@@ -247,9 +247,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
-        return addLinksResult.isOk() ?
-                ok(project).publishEvent(projectCreateEvent) :
-                errorWithData(En_ResultStatus.SOME_LINKS_NOT_ADDED, project).publishEvent(projectCreateEvent);
+        return new Result<>(En_ResultStatus.OK, project, addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED, Collections.singletonList(projectCreateEvent));
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {

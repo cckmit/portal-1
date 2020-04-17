@@ -22,7 +22,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
@@ -59,8 +58,8 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public Long createIssue(CaseObjectCreateRequest caseObjectCreateRequest) throws RequestFailedException {
-        log.info("saveIssue(): case={}", caseObjectCreateRequest);
+    public ru.protei.portal.core.model.ent.Result<Long> createIssue(CaseObjectCreateRequest caseObjectCreateRequest) throws RequestFailedException {
+        log.info("createIssue(): caseObjectCreateRequest={}", caseObjectCreateRequest);
 
         if (caseObjectCreateRequest == null || caseObjectCreateRequest.getCaseId() != null) {
             throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
@@ -73,10 +72,18 @@ public class IssueControllerImpl implements IssueController {
 
         Result<CaseObject> response = caseService.createCaseObject(token, caseObjectCreateRequest);
 
-        log.info("saveIssue(): response.isOk()={}", response.isOk());
-        if (response.isError()) throw new RequestFailedException(response.getStatus());
-        log.info("saveIssue(): id={}", response.getData().getId());
-        return response.getData().getId();
+        if (response.isError()) {
+            log.info("createIssue(): status={}", response.getStatus());
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        if (response.getMessage() != null) {
+            log.info("createIssue(): message={}", response.getMessage());
+        }
+
+        log.info("createIssue(): id={}", response.getData().getId());
+
+        return new ru.protei.portal.core.model.ent.Result<>(response.getData().getId(), response.getMessage());
     }
 
     @Override

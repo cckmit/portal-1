@@ -211,9 +211,7 @@ public class CaseServiceImpl implements CaseService {
         newState.setNotifiers(caseObject.getNotifiers());
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return addLinksResult.isOk() ?
-                ok(newState).publishEvent(caseObjectCreateEvent) :
-                errorWithData(En_ResultStatus.SOME_LINKS_NOT_ADDED, newState).publishEvent(caseObjectCreateEvent);
+        return new Result<>(En_ResultStatus.OK, newState, addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED, Collections.singletonList(caseObjectCreateEvent));
     }
 
     @Override

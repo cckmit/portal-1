@@ -21,8 +21,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -31,7 +29,10 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -135,24 +136,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         lockSave();
-        issueService.createIssue(createRequest, new FluentCallback<Long>()
-                .withError(throwable -> {
+        issueService.createIssue(createRequest, new FluentCallback<Result<Long>>()
+                .withError(throwable -> unlockSave())
+                .withSuccess(createIssueResult -> {
                     unlockSave();
-                    if (throwable instanceof RequestFailedException){
-                        En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
-                        if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
-                            fireEvent(new IssueEvents.Show(true));
-                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        }
-                        defaultErrorHandler.accept(throwable);
+                    if (createIssueResult.getMessage() != null) {
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSomeNotAdded(), NotifyEvents.NotifyType.INFO));
                     }
-                    else {
-                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                    }
-
-                })
-                .withSuccess(caseId -> {
-                    unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.Show(true));
                 })
@@ -549,8 +539,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CompanyControllerAsync companyService;
     @Inject
     IssueControllerAsync issueService;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
 
     private boolean saving;
     private AppEvents.InitDetails init;

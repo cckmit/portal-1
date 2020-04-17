@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
@@ -30,7 +31,7 @@ public interface IssueController extends RemoteService {
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 
-    Long createIssue(CaseObjectCreateRequest p) throws RequestFailedException;
+    ru.protei.portal.core.model.ent.Result<Long> createIssue(CaseObjectCreateRequest p) throws RequestFailedException;
 
     void updateManagerOfIssue(long issueId, long personId) throws RequestFailedException;
 }

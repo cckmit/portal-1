@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
@@ -17,7 +18,7 @@ public interface IssueControllerAsync {
 
     void getIssue( long id, AsyncCallback< CaseObject > callback );
 
-    void createIssue(CaseObjectCreateRequest p, AsyncCallback<Long> callback);
+    void createIssue(CaseObjectCreateRequest p, AsyncCallback<ru.protei.portal.core.model.ent.Result<Long>> callback);
 
     void saveIssueNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Void> callback);
 
