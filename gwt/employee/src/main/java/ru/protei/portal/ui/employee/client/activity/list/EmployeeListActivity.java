@@ -123,7 +123,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
-                null,
+                filterView.organizations().getValue(),
                 filterView.searchPattern().getValue(),
                 normalizePhoneNumber(filterView.workPhone().getValue()),
                 normalizePhoneNumber(filterView.mobilePhone().getValue()),

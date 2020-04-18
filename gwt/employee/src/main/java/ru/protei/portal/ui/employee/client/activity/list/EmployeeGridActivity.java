@@ -103,7 +103,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
-                null,
+                filterView.organizations().getValue(),
                 filterView.searchPattern().getValue(),
                 filterView.workPhone().getValue(),
                 filterView.mobilePhone().getValue(),
