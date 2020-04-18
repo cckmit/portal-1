@@ -16,28 +16,15 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasValue<String> lastName();
     HasText secondName();
 
-    HasText displayName();
-    HasText shortName();
-
     HasValue<Date> birthDay ();
 
     HasText workPhone ();
-
-    HasText homePhone ();
 
     HasText mobilePhone();
 
     HasText workEmail();
 
     HasText personalEmail();
-
-    HasText workFax();
-
-    HasText homeFax();
-
-    HasText workAddress ();
-
-    HasText homeAddress ();
 
     HasText workerPosition();
 
@@ -47,31 +34,15 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasEnabled workerPositionEnabled();
 
-    HasText personInfo ();
-
-    HasText login();
-
-    HasValue<String> password();
-
-    HasValue<String> confirmPassword();
-
     HasValue<EntityOption> company();
 
     HasValue<En_Gender> gender ();
-
-    HasValue<String> locale();
-
-    HasValue<Boolean> sendWelcomeEmail();
 
     HasValidable companyValidator();
 
     HasValidable firstNameValidator();
 
     HasValidable lastNameValidator();
-
-    void setEmployeeLoginStatus(NameStatus status);
-
-    void showInfo( boolean isShow );
 
     void setDepartmentCompanyId (Long companyId);
 
@@ -80,6 +51,10 @@ public interface AbstractEmployeeEditView extends IsWidget {
     void setPositionValid (boolean isValid);
 
     void setDepartmentValid (boolean isValid);
+
+    boolean isPositionValid ();
+
+    boolean isDepartmentValid ();
 
     HasVisibility saveVisibility();
 
@@ -91,10 +66,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasVisibility deletedMsgVisibility();
 
-    HasVisibility sendWelcomeEmailVisibility();
-
-    HasVisibility sendEmailWarningVisibility();
-
     HasValidable workEmailValidator();
 
     HasValidable personalEmailValidator();
@@ -105,15 +76,11 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasVisibility lastNameErrorLabelVisibility();
 
-    HasVisibility shortNameErrorLabelVisibility();
-
     HasText firstNameErrorLabel();
 
     HasText secondNameErrorLabel();
 
     HasText lastNameErrorLabel();
-
-    HasText shortNameErrorLabel();
 
     String firstNameLabel();
 
@@ -121,20 +88,9 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     String lastNameLabel();
 
-    String shortNameLabel();
-
     String personalEmailLabel();
 
     String workEmailLabel();
 
-    String loginLabel();
-
-    HasText loginErrorLabel();
-
     HasEnabled saveEnabled();
-
-    NameStatus getEmployeeLoginStatus();
-
-    HasVisibility loginErrorLabelVisibility();
-
 }

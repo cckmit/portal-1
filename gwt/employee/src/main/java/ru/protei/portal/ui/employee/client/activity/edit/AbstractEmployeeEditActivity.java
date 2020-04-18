@@ -7,15 +7,15 @@ public interface AbstractEmployeeEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onFireClicked();
-    void onChangeEmployeeLogin();
-    void onChangeSendWelcomeEmail();
     void validateLimitedFields();
     void onCompanySelected();
-    void onPasswordGenerationClicked();
 
     void onAddCompanyDepartmentClicked();
     void onEditCompanyDepartmentClicked(CompanyDepartment companyDepartment);
 
     void onAddWorkerPositionClicked();
     void onEditWorkerPositionClicked(WorkerPosition workerPosition);
+
+    void onChangedCompanyDepartment(Long departmentId);
+    void onChangedWorkerPosition(Long positionId);
 }

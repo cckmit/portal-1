@@ -92,4 +92,8 @@ public class CrmConstants {
     public interface ImportanceLevel {
         List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
     }
+
+    public interface Company {
+        long HOME_COMPANY_ID = 1L;
+    }
 }

@@ -17,4 +17,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="set-default-value-null-to-worker_entry-worker" author="vologzhanin">
+        <sql>
+            ALTER TABLE worker_entry MODIFY worker_extId varchar(32) default null
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

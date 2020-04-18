@@ -6,26 +6,17 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.CompanyDepartment;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.WorkerPosition;
-import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.model.util.GenerationPasswordUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
+import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Objects;
-
-import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
@@ -49,17 +40,15 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        origin = event.origin;
-
         if (event.id == null) {
             Person newPerson = new Person();
             newPerson.setCompanyId(event.companyId);
             newPerson.setCompany(event.company);
-            initialView(newPerson, new UserLogin());
+            initialView(newPerson, new WorkerEntry());
         } else {
             contactService.getContact(event.id, new FluentCallback<Person>()
                     .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<UserLogin>()
-                            .withSuccess(userLogin -> initialView(person, userLogin == null ? new UserLogin() : userLogin)))));
+                            .withSuccess(userLogin -> {} /*initialView(person, userLogin == null ? new UserLogin() : userLogin)*/))));
         }
     }
 
@@ -118,6 +107,16 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     @Override
+    public void onChangedCompanyDepartment(Long departmentId) {
+        worker.setDepartmentId(departmentId);
+    }
+
+    @Override
+    public void onChangedWorkerPosition(Long positionId) {
+        worker.setPositionId(positionId);
+    }
+
+    @Override
     public void onSaveClicked() {
         String errorMsg = validate();
 
@@ -126,22 +125,19 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return;
         }
 
-        if (passwordNotDefined()) {
-            fireEvent(new NotifyEvents.Show(lang.accountPasswordNotDefinied(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
+        employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
+                .withSuccess(person -> {
+                    worker.setPersonId(person.getId());
+                    employeeService.createEmployeeWorker(worker, new FluentCallback<WorkerEntry>()
+                            .withSuccess(workerEntry -> {
+                                fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
+                                fireEvent(new Back());
+                            }));
+                }));
 
-        if(!passwordConfirmed()) {
-            fireEvent(new NotifyEvents.Show(lang.accountPasswordsNotMatch(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
 
-        UserLogin userLogin = applyChangesLogin();
 
-        Boolean sendWelcomeEmailVisibility = view.sendWelcomeEmailVisibility().isVisible();
-        Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
-
-        contactService.saveContact(applyChangesContact(), new FluentCallback<Person>().withSuccess(person -> {
+       /* contactService.saveContact(applyChangesContact(), new FluentCallback<Person>().withSuccess(person -> {
                     if (userLogin.getId() == null) {
                         userLogin.setPersonId(person.getId());
                         userLogin.setPerson(person);
@@ -163,35 +159,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                         }
                     });
                 }
-        ));
-    }
-
-    @Override
-    public void onChangeEmployeeLogin() {
-        view.sendWelcomeEmailVisibility().setVisible(isVisibleSendEmail());
-        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
-
-        String login = view.login().getText().trim();
-
-        if (login.isEmpty()) {
-            view.setEmployeeLoginStatus(NameStatus.NONE);
-            view.loginErrorLabelVisibility().setVisible(false);
-            validateSaveButton();
-            return;
-        }
-
-        validateLimitedFields();
-
-        if (login.length() > LOGIN_SIZE) {
-            view.setEmployeeLoginStatus(NameStatus.NONE);
-            return;
-        }
-
-        accountService.isLoginUnique(
-                login,
-                account.getId(),
-                new FluentCallback<Boolean>()
-                        .withSuccess(isUnique -> view.setEmployeeLoginStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR)));
+        ));*/
     }
 
     @Override
@@ -201,16 +169,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onFireClicked() {
-        if (contact.isFired()) {
+        if (employee.isFired()) {
             return;
         }
 
-        fireEvent(new ConfirmDialogEvents.Show(lang.contactFireConfirmMessage(), lang.contactFire(), removeAction(contact.getId())));
-    }
-
-    @Override
-    public void onChangeSendWelcomeEmail() {
-        view.sendEmailWarningVisibility().setVisible(isVisibleSendEmailWarning());
+        fireEvent(new ConfirmDialogEvents.Show(lang.contactFireConfirmMessage(), lang.contactFire(), removeAction(employee.getId())));
     }
 
     @Override
@@ -227,14 +190,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             view.secondNameErrorLabelVisibility().setVisible(view.secondName().getText().length() > SECOND_NAME_SIZE);
         }
 
-        if (view.shortName().getText() != null) {
-            view.shortNameErrorLabelVisibility().setVisible(view.shortName().getText().length() > SHORT_NAME_SIZE);
-        }
-
-        if (view.login().getText() != null) {
-            view.loginErrorLabelVisibility().setVisible(view.login().getText().trim().length() > LOGIN_SIZE);
-        }
-
         view.saveEnabled().setEnabled(validateSaveButton());
     }
 
@@ -246,16 +201,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.workerPositionEnabled().setEnabled(isValid);
 
         if (isValid) {
+            worker.setCompanyId(view.company().getValue().getId());
             view.setDepartmentCompanyId(view.company().getValue().getId());
             view.setPositionCompanyId(view.company().getValue().getId());
         }
-    }
-
-    @Override
-    public void onPasswordGenerationClicked() {
-        String password = GenerationPasswordUtils.generate();
-        view.password().setValue(password);
-        view.confirmPassword().setValue(password);
     }
 
     private boolean validateSaveButton() {
@@ -271,14 +220,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return false;
         }
 
-        if ((view.shortName().getText() != null) && (view.shortName().getText().length() > SHORT_NAME_SIZE)) {
-            return false;
-        }
-
-        if ((view.login().getText() != null) && (view.login().getText().trim().length() > LOGIN_SIZE)) {
-            return false;
-        }
-
         return true;
     }
 
@@ -286,51 +227,30 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         return person.getId() == null;
     }
 
-    private void resetValidationStatus(){
-        view.setEmployeeLoginStatus(NameStatus.NONE);
-    }
-
     private boolean fireErrorMessage(String msg) {
         fireEvent(new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
         return false;
     }
 
-    private Person applyChangesContact() {
-        contact.setGender(view.gender().getValue());
-        contact.setCompanyId(view.company().getValue().getId());
-        contact.setFirstName(view.firstName().getValue());
-        contact.setLastName(view.lastName().getValue());
-        contact.setSecondName(view.secondName().getText());
-        contact.setDisplayName(view.displayName().getText());
-        contact.setDisplayShortName(view.shortName().getText());
-        contact.setBirthday(view.birthDay().getValue());
-        contact.setLocale(view.locale().getValue());
-        contact.setInfo(view.personInfo().getText());
+    private Person applyChangesEmployee() {
+        employee.setGender(view.gender().getValue());
+        employee.setCompanyId(view.company().getValue().getId());
+        employee.setFirstName(view.firstName().getValue());
+        employee.setLastName(view.lastName().getValue());
+        employee.setSecondName(view.secondName().getText());
+        employee.setBirthday(view.birthDay().getValue());
 
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(contact.getContactInfo());
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
 
         infoFacade.setWorkPhone(view.workPhone().getText());
-        infoFacade.setHomePhone(view.homePhone().getText());
         infoFacade.setMobilePhone(view.mobilePhone().getText());
 
         infoFacade.setEmail(view.workEmail().getText());
         infoFacade.setEmail_own(view.personalEmail().getText());
-        infoFacade.setFactAddress(view.workAddress().getText());
-        infoFacade.setHomeAddress(view.homeAddress().getText());
-        infoFacade.setFax(view.workFax().getText());
-        infoFacade.setFaxHome(view.homeFax().getText());
-        contact.setPosition(view.workerPosition().getText());
-        contact.setDepartment(view.companyDepartment().getText());
+        employee.setPosition(view.workerPosition().getText());
+        employee.setDepartment(view.companyDepartment().getText());
 
-        return contact;
-    }
-
-    private UserLogin applyChangesLogin() {
-        account.setUlogin(view.login().getText());
-        if (!HelperFunc.isEmpty(view.password().getValue())) {
-            account.setUpass(view.password().getValue());
-        }
-        return account;
+        return employee;
     }
 
     private String validate() {
@@ -346,8 +266,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errFieldsRequired();
         }
 
-        if (!isLoginValid()) {
-            return lang.errorFieldHasInvalidValue(view.loginLabel());
+        if (!view.isDepartmentValid()){
+            return lang.errFieldsRequired();
+        }
+
+        if(!view.isPositionValid()){
+            return lang.errFieldsRequired();
         }
 
         if (!view.workEmail().getText().isEmpty() && !view.workEmailValidator().isValid()) {
@@ -370,21 +294,16 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errorFieldHasInvalidValue(view.secondNameLabel());
         }
 
-        if ((view.shortName().getText() != null) && (view.shortName().getText().length() > SHORT_NAME_SIZE)) {
-            return lang.errorFieldHasInvalidValue(view.shortNameLabel());
-        }
-
         return null;
     }
 
-    private void initialView(Person person, UserLogin userLogin){
-        this.contact = person;
-        this.account = userLogin;
-        fillView(contact, account);
-        resetValidationStatus();
+    private void initialView(Person person, WorkerEntry worker){
+        this.employee = person;
+        this.worker = worker;
+        fillView(employee);
     }
 
-    private void fillView(Person person, UserLogin userLogin){
+    private void fillView(Person person){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
         view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
         view.companyValidator().setValid(person.getCompany() != null);
@@ -392,85 +311,26 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
         view.secondName().setText(person.getSecondName());
-        view.displayName().setText(person.getDisplayName());
-        view.shortName().setText(person.getDisplayShortName());
         view.birthDay().setValue(person.getBirthday());
-        view.locale().setValue(person.getLocale());
-
-        view.personInfo().setText(defaultString(person.getInfo(), ""));
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
 
         view.workPhone().setText(infoFacade.getWorkPhone());
-        view.homePhone().setText(infoFacade.getHomePhone());
         view.mobilePhone().setText(infoFacade.getMobilePhone());
 
         view.workEmail().setText(infoFacade.getEmail());
         view.personalEmail().setText(infoFacade.getEmail_own());
-        view.workAddress().setText(infoFacade.getFactAddress());
-        view.homeAddress().setText(infoFacade.getHomeAddress());
 
-        view.workFax().setText(infoFacade.getFax());
-        view.homeFax().setText(infoFacade.getFaxHome());
         view.workerPosition().setText(StringUtils.isEmpty(person.getPosition()) ? "Выберите Бла-бла" : person.getPosition());
         view.companyDepartment().setText(StringUtils.isEmpty(person.getDepartment()) ? "Выберите Бла-бла" : person.getDepartment());
-
-        view.login().setText(userLogin.getUlogin());
-        view.password().setValue(null);
-        view.confirmPassword().setValue(null);
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());
         view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
-        view.sendWelcomeEmailVisibility().setVisible(false);
-        view.sendWelcomeEmail().setValue(true);
-        view.sendEmailWarningVisibility().setVisible(false);
-
-        view.showInfo(userLogin.getId() != null);
 
         view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
         view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
-        view.shortNameErrorLabel().setText(lang.contactFieldLengthExceed(view.shortNameLabel(), SHORT_NAME_SIZE));
-        view.loginErrorLabel().setText(lang.contactFieldLengthExceed(view.loginLabel(), LOGIN_SIZE));
-    }
-
-    private boolean passwordNotDefined() {
-        return HelperFunc.isNotEmpty(view.login().getText()) &&
-                !Objects.equals(view.login().getText().trim(), account.getUlogin()) &&
-                HelperFunc.isEmpty(view.password().getValue());
-    }
-
-    private boolean passwordConfirmed() {
-        return HelperFunc.isEmpty(view.login().getText()) ||
-                HelperFunc.isEmpty(view.password().getValue()) ||
-                (!HelperFunc.isEmpty(view.confirmPassword().getValue()) &&
-                        view.password().getValue().equals(view.confirmPassword().getValue()));
-    }
-
-    private boolean isVisibleSendEmail() {
-        return HelperFunc.isNotEmpty(view.login().getText()) &&
-                (!Objects.equals(view.login().getText().trim(), account.getUlogin()) ||
-                        HelperFunc.isNotEmpty(view.password().getValue()));
-    }
-
-    private boolean isVisibleSendEmailWarning() {
-        return view.sendWelcomeEmailVisibility().isVisible() &&
-                view.sendWelcomeEmail().getValue() &&
-                view.workEmail().getText().isEmpty() &&
-                view.personalEmail().getText().isEmpty();
-    }
-
-    private boolean isLoginValid() {
-        if (Objects.equals(view.getEmployeeLoginStatus(), NameStatus.ERROR)) {
-            return false;
-        }
-
-        if ((view.login() != null) && (view.login().getText().trim().length() > LOGIN_SIZE)) {
-            return false;
-        }
-
-        return true;
     }
 
     private boolean hasPrivileges(Long personId) {
@@ -503,6 +363,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Inject
     Lang lang;
     @Inject
+    EmployeeControllerAsync employeeService;
+
+    @Inject
     ContactControllerAsync contactService;
     @Inject
     AccountControllerAsync accountService;
@@ -510,8 +373,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     PolicyService policyService;
 
 
-    private Person contact;
-    private UserLogin account;
+    private Person employee;
+    private WorkerEntry worker;
     private AppEvents.InitDetails initDetails;
-    private String origin;
 }

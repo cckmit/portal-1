@@ -44,12 +44,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
 
-        passwordGenPopup.addApproveHandler(event -> activity.onPasswordGenerationClicked());
-        passwordGenPopup.addRejectHandler(event -> password.setFocus(true));
-
         departmentSelector.addValueChangeHandler(event -> {
             if (event.getValue() != null) {
                 companyDepartment.setText(event.getValue().getName());
+                activity.onChangedCompanyDepartment(event.getValue().getId());
                 setDepartmentValid(true);
             }
         });
@@ -60,6 +58,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         positionSelector.addValueChangeHandler(event -> {
             if (event.getValue() != null) {
                 workerPosition.setText(event.getValue().getName());
+                activity.onChangedWorkerPosition(event.getValue().getId());
                 setPositionValid(true);
             }
         });
@@ -89,16 +88,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText displayName() {
-        return displayName;
-    }
-
-    @Override
-    public HasText shortName() {
-        return shortName;
-    }
-
-    @Override
     public HasValue<Date> birthDay() {
         return birthDay;
     }
@@ -106,11 +95,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasText workPhone() {
         return workPhone;
-    }
-
-    @Override
-    public HasText homePhone() {
-        return homePhone;
     }
 
     @Override
@@ -126,26 +110,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasText personalEmail() {
         return personalEmail;
-    }
-
-    @Override
-    public HasText workFax() {
-        return workFax;
-    }
-
-    @Override
-    public HasText homeFax() {
-        return homeFax;
-    }
-
-    @Override
-    public HasText workAddress() {
-        return workAddress;
-    }
-
-    @Override
-    public HasText homeAddress() {
-        return homeAddress;
     }
 
     @Override
@@ -179,42 +143,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasValue<String> locale() {
-        return locale;
-    }
-
-    @Override
-    public HasText personInfo() {
-        return personInfo;
-    }
-
-    @Override
-    public HasText login() {
-        return login;
-    }
-
-    @Override
-    public void setEmployeeLoginStatus(NameStatus status) {
-        this.status = status;
-        verifiableIcon.setClassName(status.getStyle());
-    }
-
-    @Override
-    public HasValue<String> password() {
-        return password;
-    }
-
-    @Override
-    public HasValue<String> confirmPassword() {
-        return confirmPassword;
-    }
-
-    @Override
-    public HasValue<Boolean> sendWelcomeEmail() {
-        return sendWelcomeEmail;
-    }
-
-    @Override
     public HasValidable companyValidator() {
         return company;
     }
@@ -240,11 +168,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public void showInfo( boolean isShow ) {
-        infoPanel.setVisible( isShow );
-    }
-
-    @Override
     public void setDepartmentCompanyId (Long companyId){
         departmentSelector.setCompanyId(companyId);
     }
@@ -262,6 +185,16 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public void setDepartmentValid (boolean isValid){
         companyDepartment.setStyleName("has-error", !isValid);
+    }
+
+    @Override
+    public boolean isPositionValid (){
+        return !workerPosition.getStyleName().contains("has-error");
+    }
+
+    @Override
+    public boolean isDepartmentValid (){
+        return !companyDepartment.getStyleName().contains("has-error");
     }
 
     @Override
@@ -285,18 +218,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasVisibility sendWelcomeEmailVisibility() {
-        return sendWelcomeEmail;
-    }
-
-    @Override
     public HasVisibility fireBtnVisibility() {
         return fireBtn;
-    }
-
-    @Override
-    public HasVisibility sendEmailWarningVisibility() {
-        return sendWelcomeEmailWarning;
     }
 
     @Override
@@ -315,16 +238,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasVisibility shortNameErrorLabelVisibility() {
-        return shortNameErrorLabel;
-    }
-
-    @Override
-    public HasVisibility loginErrorLabelVisibility() {
-        return loginErrorLabel;
-    }
-
-    @Override
     public HasText firstNameErrorLabel() {
         return firstNameErrorLabel;
     }
@@ -340,23 +253,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText shortNameErrorLabel() {
-        return shortNameErrorLabel;
-    }
-
-    @Override
-    public HasText loginErrorLabel() {
-        return loginErrorLabel;
-    }
-
-    @Override
     public HasEnabled saveEnabled() {
         return saveButton;
-    }
-
-    @Override
-    public NameStatus getEmployeeLoginStatus() {
-        return status;
     }
 
     @Override
@@ -374,10 +272,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         return lastNameLabel.getInnerText();
     }
 
-    @Override
-    public String shortNameLabel() {
-        return shortNameLabel.getInnerText();
-    }
 
     @Override
     public String personalEmailLabel() {
@@ -389,10 +283,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         return workEmailLabel.getInnerText();
     }
 
-    @Override
-    public String loginLabel() {
-        return loginLabel.getInnerText();
-    }
 
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
@@ -415,27 +305,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         }
     }
 
-    @UiHandler("login")
-    public void onChangeEmployeeLogin(InputEvent inputEvent ) {
-        verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle() );
-        changeEmployeeLoginTimer.cancel();
-        changeEmployeeLoginTimer.schedule( 300 );
-    }
-
     @UiHandler({"workEmail", "personalEmail"})
     public void onChangeEmail( KeyUpEvent keyUpEvent ) {
         changeEmployeeEmailTimer.cancel();
         changeEmployeeEmailTimer.schedule( 300 );
     }
 
-    @UiHandler("sendWelcomeEmail")
-    public void onClickSendWelcomeEmail( ClickEvent event ) {
-        if (activity != null) {
-            activity.onChangeSendWelcomeEmail();
-        }
-    }
-
-    @UiHandler({"firstName", "secondName", "lastName", "shortName"})
+    @UiHandler({"firstName", "secondName", "lastName"})
     public void onLimitedFieldsChanged(InputEvent event) {
         resetValidateTimer();
     }
@@ -447,17 +323,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         }
     }
 
-    @UiHandler("password")
-    public void onPasswordClicked(FocusEvent event) {
-        showGenPasswordPopupIfNeeded();
-    }
-
-    @UiHandler("password")
-    public void onPasswordChanged(InputEvent event) {
-        changeEmployeeLoginTimer.schedule( 300 );
-        showGenPasswordPopupIfNeeded();
-    }
-
     @UiHandler("companyDepartment")
     public void onDisplayDepartmentClicked(ClickEvent event){
         departmentSelector.showUnderLeft( companyDepartment, companyDepartment.getOffsetWidth() );
@@ -466,15 +331,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiHandler("workerPosition")
     public void onDisplayPositionClicked(ClickEvent event){
         positionSelector.showUnderLeft( workerPosition, workerPosition.getOffsetWidth() );
-    }
-
-    private void showGenPasswordPopupIfNeeded() {
-        boolean isNeededShowPasswordGenPopup = StringUtils.isBlank(password().getValue());
-        if (isNeededShowPasswordGenPopup) {
-            passwordGenPopup.showNear(password);
-        } else {
-            passwordGenPopup.hide();
-        }
     }
 
     private void resetValidateTimer() {
@@ -501,9 +357,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     ValidableTextBox secondName;
 
     @UiField
-    ValidableTextBox shortName;
-
-    @UiField
     Label firstNameErrorLabel;
 
     @UiField
@@ -511,12 +364,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     Label secondNameErrorLabel;
-
-    @UiField
-    Label shortNameErrorLabel;
-
-    @UiField
-    Label loginErrorLabel;
 
     @UiField
     LabelElement firstNameLabel;
@@ -527,21 +374,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     LabelElement secondNameLabel;
 
-    @UiField
-    LabelElement shortNameLabel;
-
-    @UiField
-    TextBox displayName;
-
     @com.google.inject.Inject
     @UiField(provided = true)
     SinglePicker birthDay;
 
     @UiField
     TextBox workPhone;
-
-    @UiField
-    TextBox homePhone;
 
     @UiField
     TextBox mobilePhone;
@@ -553,34 +391,16 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     ValidableTextBox personalEmail;
 
     @UiField
-    TextBox workFax;
-
-    @UiField
-    TextBox homeFax;
-
-    @UiField
-    TextArea workAddress;
-
-    @UiField
-    TextArea homeAddress;
-
-    @UiField
     LabelElement personalEmailLabel;
 
     @UiField
     LabelElement workEmailLabel;
 
     @UiField
-    LabelElement loginLabel;
-
-    @UiField
     Button workerPosition;
 
     @UiField
     Button companyDepartment;
-
-    @UiField
-    TextArea personInfo;
 
     @Inject
     @UiField ( provided = true )
@@ -591,34 +411,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     GenderButtonSelector gender;
 
     @UiField
-    ValidableTextBox login;
-
-    @UiField
-    ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox password;
-
-    @UiField
-    Element verifiableIcon;
-
-    @UiField
-    HTMLPanel infoPanel;
-
-    @UiField
-    PasswordTextBox confirmPassword;
-
-    @UiField
     HTMLPanel employeeFired;
 
     @UiField
     HTMLPanel employeeDeleted;
-
-    @Inject
-    @UiField(provided = true)
-    LocaleButtonSelector locale;
-
-    @UiField
-    CheckBox sendWelcomeEmail;
-    @UiField
-    Label sendWelcomeEmailWarning;
 
     @Inject
     private DepartmentSelector departmentSelector;
@@ -626,20 +422,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Inject
     private PositionSelector positionSelector;
 
-    private Timer changeEmployeeLoginTimer = new Timer() {
-        @Override
-        public void run() {
-            if ( activity != null ) {
-                activity.onChangeEmployeeLogin();
-            }
-        }
-    };
 
     private Timer changeEmployeeEmailTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
-                activity.onChangeSendWelcomeEmail();
+                //activity.onChangeSendWelcomeEmail();
             }
         }
     };
@@ -653,8 +441,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         }
     };
 
-    private NameStatus status;
-    private PasswordGenPopup passwordGenPopup = new PasswordGenPopup();
     private AbstractEmployeeEditActivity activity;
 
     private static EmployeeEditViewUiBinder ourUiBinder = GWT.create(EmployeeEditViewUiBinder.class);

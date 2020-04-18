@@ -1,13 +1,19 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -27,6 +33,8 @@ import static ru.protei.portal.api.struct.Result.ok;
  */
 public class EmployeeServiceImpl implements EmployeeService {
 
+    private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
+
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
 
@@ -44,6 +52,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     WorkerEntryShortViewDAO workerEntryShortViewDAO;
+
+    @Autowired
+    WorkerEntryDAO workerEntryDAO;
 
     @Autowired
     CompanyDepartmentDAO companyDepartmentDAO;
@@ -138,8 +149,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Result<List<WorkerView>> list(String param) {
 
-        // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
-        Company our_comp = companyDAO.get(1L);
+        Company our_comp = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
 
         param = HelperFunc.makeLikeArg(param, true);
 
@@ -165,6 +175,66 @@ public class EmployeeServiceImpl implements EmployeeService {
                 department.getHead().toFullNameShortView()));
     }
 
+    @Transactional
+    @Override
+    public Result<Person> createEmployeePerson(AuthToken token, Person person) {
+        if (person == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!validatePerson(person)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
+        person.setDisplayShortName(createPersonShortName(person));
+
+        person.setCreated(new Date());
+        person.setCreator(token.getPersonDisplayShortName());
+
+        person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+
+        if (person.getGender() == null)
+            person.setGender(En_Gender.UNDEFINED);
+
+        Long personId = personDAO.persist(person);
+
+        if (personId != null) {
+            person.setId(personId);
+            return ok(person);
+        }
+
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker) {
+        if (worker == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        worker.setCreated(new Date());
+        Long workerId = workerEntryDAO.persist(worker);
+
+        if (workerId != null) {
+            worker.setId(workerId);
+            return ok(worker);
+        }
+
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    private String createPersonShortName(Person person) {
+        StringBuilder b = new StringBuilder();
+        b.append (person.getLastName()).append(" ")
+                .append (person.getFirstName().substring(0,1).toUpperCase()).append(".")
+        ;
+
+        if (!person.getSecondName().isEmpty()) {
+            b.append(" ").append(person.getSecondName().substring(0,1).toUpperCase()).append(".");
+        }
+        return b.toString();
+    }
+
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
         if(personAbsences.size()==0)
             return;
@@ -182,5 +252,47 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         for(PersonAbsence p:personAbsences)
             p.setCreator(creators.get(p.getCreatorId()));
+    }
+
+    private boolean validatePerson(Person person) {
+        if (person.isFired()) {
+            log.warn("avoid to update fired person with id = {}", person.getId());
+            return false;
+        }
+
+        if (person.isDeleted()) {
+            log.warn("avoid to update deleted person with id = {}", person.getId());
+            return false;
+        }
+
+        if (!personDAO.isEmployee(person)) {
+            log.warn("person with id = {} is not employee",person.getId());
+            return false;
+        }
+
+        if (StringUtils.isBlank(person.getFirstName())) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(person.getLastName())) {
+            return false;
+        }
+
+        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
+        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
+        if (person.getId() != null) {
+            Person personOld = personDAO.getContact(person.getId());
+            if (personOld.isFired() != person.isFired()) {
+                log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
+                return false;
+            }
+
+            if (personOld.isDeleted() != person.isDeleted()) {
+                log.warn("prevented change of person.isDeleted attr, person with id = {}", person.getId());
+                return false;
+            }
+        }
+
+        return true;
     }
 }

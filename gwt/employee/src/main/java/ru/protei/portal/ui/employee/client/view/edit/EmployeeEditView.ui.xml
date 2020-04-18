@@ -4,10 +4,7 @@
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
              xmlns:homecompanyselector='urn:import:ru.protei.portal.ui.common.client.widget.homecompany'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:locale='urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale'
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
-             xmlns:visiblepwd="urn:import:ru.protei.portal.ui.common.client.widget.passwordbox">
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -58,49 +55,28 @@
                                 <validablefield:ValidableTextBox ui:field="secondName" styleName="form-control" notNull="false"/>
                                 <g:Label ui:field="secondNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
-                            <div class="form-group col-md-2">
+                            <div class="form-group col-md-4">
                                 <label class="">
                                     <ui:text from="{lang.birthday}"/>
                                 </label>
                                 <single:SinglePicker ui:field="birthDay" formatValue="dd.MM.yyyy" mandatory="false"/>
                             </div>
 
-                            <div class="form-group col-md-1">
+                            <div class="form-group col-md-2">
                                 <label class="">
                                     <ui:text from="{lang.gender}"/>
                                 </label>
                                 <dict:GenderButtonSelector ui:field="gender"/>
                             </div>
 
-                            <div class="form-group col-md-1">
-                                <label>
-                                    <ui:text from="{lang.locale}"/>
-                                </label>
-                                <locale:LocaleButtonSelector ui:field="locale" value="ru"/>
-                            </div>
-
-                            <div class="form-group col-md-4">
-                                <label>
-                                    <ui:text from="{lang.displayName}"/>
-                                </label>
-                                <g:TextBox ui:field="displayName" styleName="form-control"/>
-                            </div>
-
-                            <div class="form-group col-md-4">
-                                <label ui:field="shortNameLabel">
-                                    <ui:text from="{lang.displayShortName}"/>
-                                </label>
-                                <validablefield:ValidableTextBox ui:field="shortName" styleName="form-control" notNull="false"/>
-                                <g:Label ui:field="shortNameErrorLabel" styleName="text-danger size-error" visible="false"/>
-                            </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label>
                                     <ui:text from="{lang.company}"/>
                                 </label>
                                 <homecompanyselector:HomeCompanyButtonSelector ui:field="company" validation="true" synchronizeWith1C="false"/>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label>
                                     <ui:text from="{lang.contactPosition}"/>
                                 </label>
@@ -109,23 +85,13 @@
                                 </div>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label class="">
                                     <ui:text from="{lang.department}"/>
                                 </label>
                                 <div class="dropdown-selector">
                                     <g:Button ui:field="companyDepartment" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12 has-error"/>
                                 </div>
-                            </div>
-
-                            <div class="form-group col-md-12">
-                                <label class="">
-                                    <ui:text from="{lang.comment}"/>
-                                </label>
-                                <autoresizetextarea:AutoResizeTextArea ui:field="personInfo"
-                                                                       minRows="2"
-                                                                       maxRows="10"
-                                                                       styleName="form-control "/>
                             </div>
                         </div>
                     </div>
@@ -156,109 +122,29 @@
                                                                 notNull="false"
                                                                 styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label>
                                     <ui:text from="{lang.workPhone}"/>
                                 </label>
                                 <g:TextBox ui:field="workPhone" styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-4">
-                                <label class="">
-                                    <ui:text from="{lang.personalPhone}"/>
-                                </label>
-                                <g:TextBox ui:field="homePhone" styleName="form-control"/>
-                            </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label class="">
                                     <ui:text from="{lang.mobilePhone}"/>
                                 </label>
                                 <g:TextBox ui:field="mobilePhone" styleName="form-control"/>
                             </div>
 
-                            <div class="form-group col-md-6">
-                                <label class="">
-                                    <ui:text from="{lang.primaryFax}"/>
-                                </label>
-                                <g:TextBox ui:field="workFax" styleName="form-control"/>
-                            </div>
 
-                            <div class="form-group col-md-6">
-                                <label class="">
-                                    <ui:text from="{lang.secondaryFax}"/>
-                                </label>
-                                <g:TextBox ui:field="homeFax" styleName="form-control"/>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label class="">
-                                    <ui:text from="{lang.workAddress}"/>
-                                </label>
-                                <autoresizetextarea:AutoResizeTextArea ui:field="workAddress"
-                                                                       minRows="2"
-                                                                       maxRows="10"
-                                                                       styleName="form-control "/>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label class="">
-                                    <ui:text from="{lang.homeAddress}"/>
-                                </label>
-                                <autoresizetextarea:AutoResizeTextArea ui:field="homeAddress"
-                                                                       minRows="2"
-                                                                       maxRows="10"
-                                                                       styleName="form-control "/>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="container-fluid padding-15">
-                <div class="card card-transparent no-margin">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <ui:text from="{lang.contactAccountTitle}"/>
-                        </div>
-                        <p class="small hint-text">
-                            <ui:text from="{lang.contactAccountHint}"/>
-                        </p>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="form-group col-md-4">
-                                <label ui:field="loginLabel">
-                                    <ui:text from="{lang.accountLogin}"/>
-                                </label>
-                                <div class="verifiable">
-                                    <i ui:field="verifiableIcon"/>
-                                </div>
-                                <validablefield:ValidableTextBox ui:field="login" styleName="form-control" notNull="false"/>
-                                <g:Label ui:field="loginErrorLabel" styleName="text-danger size-error" visible="false"/>
-                            </div>
-                            <g:HTMLPanel ui:field="infoPanel" styleName="col-md-12 p-t-15">
-                                <ui:text from="{lang.accountLoginInfo}"/>
-                            </g:HTMLPanel>
-                            <div class="form-group col-md-4">
-                                <label class="">
-                                    <ui:text from="{lang.accountPassword}"/>
-                                </label>
-                                <visiblepwd:PasswordTextBox ui:field="password"/>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label class="">
-                                    <ui:text from="{lang.accountConfirmPassword}"/>
-                                </label>
-                                <visiblepwd:PasswordTextBox ui:field="confirmPassword"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
 
         <div class="card-footer">
             <div class="pull-right">
-                <g:Label ui:field="sendWelcomeEmailWarning" text="{lang.sendEmailWarning}" visible="false" styleName="text-danger inline-block p-r-5"/>
-                <g:CheckBox ui:field="sendWelcomeEmail" styleName="checkbox p-r-5" text="{lang.sendEmail}"/>
                 <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
