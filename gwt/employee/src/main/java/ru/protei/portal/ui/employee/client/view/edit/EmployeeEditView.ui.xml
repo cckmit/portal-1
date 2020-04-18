@@ -122,17 +122,25 @@
                                                                 notNull="false"
                                                                 styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label>
                                     <ui:text from="{lang.workPhone}"/>
                                 </label>
                                 <g:TextBox ui:field="workPhone" styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label class="">
                                     <ui:text from="{lang.mobilePhone}"/>
                                 </label>
                                 <g:TextBox ui:field="mobilePhone" styleName="form-control"/>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label ui:field="ipAddressLabel">
+                                    <ui:text from="{lang.employeeIPAddress}"/>
+                                </label>
+                                <validatefield:ValidableTextBox ui:field="ipAddress"
+                                                                notNull="false"
+                                                                styleName="form-control"/>
                             </div>
 
 

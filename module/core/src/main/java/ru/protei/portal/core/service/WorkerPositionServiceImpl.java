@@ -57,13 +57,13 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
     }
 
     @Override
-    public Result<Long> removeWorkerPositions(AuthToken token, Long workerPositionId) {
-        boolean result = workerPositionDAO.removeByKey(workerPositionId);
+    public Result<Long> removeWorkerPositions(AuthToken token, WorkerPosition workerPosition) {
+        boolean result = workerPositionDAO.removeByKey(workerPosition.getId());
 
         if ( !result )
             return error(En_ResultStatus.NOT_REMOVED);
 
-        return ok(workerPositionId);
+        return ok(workerPosition.getId());
     }
 
     private boolean isValid (WorkerPosition workerPosition){

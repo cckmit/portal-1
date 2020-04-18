@@ -1,7 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
@@ -36,7 +38,11 @@ public interface EmployeeService {
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employee);
 
+    @Auditable(En_AuditType.EMPLOYEE_CREATE)
+    @Privileged(En_Privilege.EMPLOYEE_CREATE)
     Result<Person> createEmployeePerson(AuthToken token, Person person);
 
+    @Auditable(En_AuditType.WORKER_CREATE)
+    @Privileged(En_Privilege.EMPLOYEE_CREATE)
     Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker);
 }

@@ -43,6 +43,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
         workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
+        ipAddress.setRegexp( CrmConstants.Masks.IP);
 
         departmentSelector.addValueChangeHandler(event -> {
             if (event.getValue() != null) {
@@ -113,6 +114,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public HasText ipAddress() {
+        return ipAddress;
+    }
+
+    @Override
     public HasText workerPosition() {
         return workerPosition;
     }
@@ -165,6 +171,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValidable personalEmailValidator(){
         return personalEmail;
+    }
+
+    @Override
+    public HasValidable ipAddressValidator(){
+        return ipAddress;
     }
 
     @Override
@@ -279,6 +290,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public String ipAddressLabel() {
+        return ipAddressLabel.getInnerText();
+    }
+
+    @Override
     public String workEmailLabel() {
         return workEmailLabel.getInnerText();
     }
@@ -303,12 +319,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         if (activity != null) {
             activity.onFireClicked();
         }
-    }
-
-    @UiHandler({"workEmail", "personalEmail"})
-    public void onChangeEmail( KeyUpEvent keyUpEvent ) {
-        changeEmployeeEmailTimer.cancel();
-        changeEmployeeEmailTimer.schedule( 300 );
     }
 
     @UiHandler({"firstName", "secondName", "lastName"})
@@ -391,7 +401,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     ValidableTextBox personalEmail;
 
     @UiField
+    ValidableTextBox ipAddress;
+
+    @UiField
     LabelElement personalEmailLabel;
+
+    @UiField
+    LabelElement ipAddressLabel;
 
     @UiField
     LabelElement workEmailLabel;
@@ -421,16 +437,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Inject
     private PositionSelector positionSelector;
-
-
-    private Timer changeEmployeeEmailTimer = new Timer() {
-        @Override
-        public void run() {
-            if ( activity != null ) {
-                //activity.onChangeSendWelcomeEmail();
-            }
-        }
-    };
 
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override

@@ -59,13 +59,13 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    public Result<Long> removeCompanyDepartments(AuthToken token, Long companyDepartmentId) {
-        boolean result = companyDepartmentDAO.removeByKey(companyDepartmentId);
+    public Result<Long> removeCompanyDepartments(AuthToken token, CompanyDepartment companyDepartment) {
+        boolean result = companyDepartmentDAO.removeByKey(companyDepartment.getId());
 
         if ( !result )
             return error(En_ResultStatus.NOT_REMOVED);
 
-        return ok(companyDepartmentId);
+        return ok(companyDepartment.getId());
     }
 
     private boolean isValid (CompanyDepartment companyDepartment){

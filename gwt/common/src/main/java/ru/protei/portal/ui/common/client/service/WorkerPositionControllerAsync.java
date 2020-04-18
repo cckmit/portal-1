@@ -8,7 +8,7 @@ import java.util.List;
 public interface WorkerPositionControllerAsync {
     void getWorkerPositions(Long companyId, AsyncCallback<List<WorkerPosition>> async);
 
-    void removeWorkerPosition(Long workerPositionId, AsyncCallback<Long> async);
+    void removeWorkerPosition(WorkerPosition workerPosition, AsyncCallback<Long> async);
 
     void createWorkerPosition(WorkerPosition workerPosition, AsyncCallback<Long> async);
 

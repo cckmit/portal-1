@@ -26,6 +26,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasText personalEmail();
 
+    HasText ipAddress();
+
     HasText workerPosition();
 
     HasText companyDepartment();
@@ -70,6 +72,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasValidable personalEmailValidator();
 
+    HasValidable ipAddressValidator();
+
     HasVisibility firstNameErrorLabelVisibility();
 
     HasVisibility secondNameErrorLabelVisibility();
@@ -89,6 +93,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
     String lastNameLabel();
 
     String personalEmailLabel();
+
+    String ipAddressLabel();
 
     String workEmailLabel();
 

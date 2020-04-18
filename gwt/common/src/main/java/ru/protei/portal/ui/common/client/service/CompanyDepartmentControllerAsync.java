@@ -8,7 +8,7 @@ import java.util.List;
 public interface CompanyDepartmentControllerAsync {
     void getCompanyDepartments(Long companyId, AsyncCallback<List<CompanyDepartment>> async);
 
-    void removeCompanyDepartment(Long companyDepartmentId, AsyncCallback<Long> async);
+    void removeCompanyDepartment(CompanyDepartment companyDepartment, AsyncCallback<Long> async);
 
     void createCompanyDepartment(CompanyDepartment companyDepartment, AsyncCallback<Long> async);
 

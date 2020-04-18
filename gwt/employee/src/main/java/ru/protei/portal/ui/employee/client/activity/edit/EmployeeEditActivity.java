@@ -249,6 +249,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         infoFacade.setEmail_own(view.personalEmail().getText());
         employee.setPosition(view.workerPosition().getText());
         employee.setDepartment(view.companyDepartment().getText());
+        employee.setIpAddress(view.ipAddress().getText());
 
         return employee;
     }
@@ -280,6 +281,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         if (!view.personalEmail().getText().isEmpty() && !view.personalEmailValidator().isValid()) {
             return lang.errorFieldHasInvalidValue(view.personalEmailLabel());
+        }
+
+        if (!view.ipAddress().getText().isEmpty() && !view.ipAddressValidator().isValid()) {
+            return lang.errorFieldHasInvalidValue(view.ipAddressLabel());
         }
 
         if ((view.firstName().getValue() != null) && (view.firstName().getValue().length() > FIRST_NAME_SIZE)) {
