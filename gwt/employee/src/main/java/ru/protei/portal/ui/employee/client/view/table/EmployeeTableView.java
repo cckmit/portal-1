@@ -186,11 +186,17 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         Element department;
         Element departmentParent;
         Element position;
+        Element company;
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
 
         if (mainEntry != null) {
+            company = LabelValuePairBuilder.make()
+                    .addIconValuePair(null, mainEntry.getCompanyName(), "contacts")
+                    .toElement();
+            employeeDepartment.appendChild(company);
+
             if (mainEntry.getDepartmentParentName() == null) {
                 department = LabelValuePairBuilder.make()
                         .addIconValuePair(null, mainEntry.getDepartmentName(), "contacts")

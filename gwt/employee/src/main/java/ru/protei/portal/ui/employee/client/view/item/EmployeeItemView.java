@@ -69,6 +69,12 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
+    public void setCompany( String value ) {
+        companyContainer.setVisible( value != null && !value.isEmpty() );
+        company.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
     public void setIP(String value) {
         ipContainer.setVisible( value != null && !value.isEmpty() );
         ip.setInnerText( value == null ? "" : value );
@@ -113,6 +119,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     HTMLPanel positionContainer;
 
     @UiField
+    HTMLPanel companyContainer;
+
+    @UiField
     HTMLPanel ipContainer;
 
     @UiField
@@ -135,6 +144,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     SpanElement position;
+
+    @UiField
+    SpanElement company;
 
     @UiField
     SpanElement ip;
