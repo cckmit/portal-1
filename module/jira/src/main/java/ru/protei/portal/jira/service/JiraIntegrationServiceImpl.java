@@ -47,6 +47,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
@@ -452,12 +453,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         Matcher matcher = jiraImagePattern.matcher(caseComment.getText());
         while (matcher.find()) {
             String group = matcher.group();
-            String jiraFileName = group.substring(1, group.length() - 1);
+            JiraUtils.ImageNode imageNode = parseImageNode(group.substring(1, group.length() - 1));
             attachments.stream()
-                    .filter(a -> a.getFileName().equals(jiraFileName) && a.getCreatorId().equals(caseComment.getAuthorId()))
+                    .filter(a -> a.getFileName().equals(imageNode.link) && a.getCreatorId().equals(caseComment.getAuthorId()))
                     .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
                     .ifPresent(attachment -> {
-                        String imageString = JiraMarkUpUtils.makeImageString(attachment.getFileName(), attachment.getExtLink());
+                        String imageString = JiraMarkUpUtils.makeImageString(attachment.getExtLink(),
+                                attachment.getFileName() + (imageNode.alt != null ? ", imageNode.alt" : ""));
                         caseComment.setText(caseComment.getText().replace(group, imageString));
 
                         List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();

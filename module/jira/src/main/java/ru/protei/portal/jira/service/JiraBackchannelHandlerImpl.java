@@ -25,6 +25,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
+
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
     @Autowired
@@ -118,11 +120,12 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         String resultText = text;
         while (matcher.find()) {
             String group = matcher.group();
-            String attachmentExtLink = group.substring(1, group.length() - 1);
+            JiraUtils.ImageNode imageNode = parseImageNode(group.substring(1, group.length() - 1));
             Optional<String> imageString = attachments.stream()
-                    .filter(a -> a.getExtLink().equals(attachmentExtLink) && a.getCreatorId().equals(personId))
+                    .filter(a -> a.getExtLink().equals(imageNode.link) && a.getCreatorId().equals(personId))
                     .max(Comparator.comparing(Attachment::getCreated))
-                    .map(attachment -> JiraMarkUpUtils.makeImageString(attachment.getFileName(), attachment.getFileName()));
+                    .map(attachment -> JiraMarkUpUtils.makeImageString(attachment.getFileName(),
+                            imageNode.alt != null ? imageNode.alt : attachment.getFileName()));
             if (imageString.isPresent()) {
                 resultText = resultText.replace(group, imageString.get());
             }
