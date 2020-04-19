@@ -28,6 +28,9 @@ public interface EmployeeService {
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
 
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<SearchResult<EmployeeShortView>> employeeListWithChangedHiddenCompanyNames(AuthToken token, EmployeeQuery query);
+
     Result<PersonShortView> getEmployee(AuthToken token, Long employeeId);
 
     EmployeeDetailView getEmployeeProfile(Long id);
@@ -37,6 +40,9 @@ public interface EmployeeService {
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employee);
+
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<EmployeeShortView> getEmployeeShortViewWithChangedHiddenCompanyNames(AuthToken token, Long employee);
 
     @Auditable(En_AuditType.EMPLOYEE_CREATE)
     @Privileged(En_Privilege.EMPLOYEE_CREATE)

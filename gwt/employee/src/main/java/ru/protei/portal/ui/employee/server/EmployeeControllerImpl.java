@@ -44,6 +44,13 @@ public class EmployeeControllerImpl implements EmployeeController {
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
     }
 
+    @Override
+    public SearchResult<EmployeeShortView> getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query) throws RequestFailedException {
+        log.info("getEmployeesWithChangedHiddenCompanyNames(): query={}", query);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.employeeListWithChangedHiddenCompanyNames(token, query));
+    }
+
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
         log.info( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
@@ -71,6 +78,13 @@ public class EmployeeControllerImpl implements EmployeeController {
         log.info("getEmployeeShortView(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeShortView(token, employeeId));
+    }
+
+    @Override
+    public EmployeeShortView getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
+        log.info("getEmployeeShortViewWithChangedHiddenCompanyNames(): employeeId={}", employeeId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(token, employeeId));
     }
 
 

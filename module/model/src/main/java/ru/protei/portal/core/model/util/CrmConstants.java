@@ -96,5 +96,7 @@ public class CrmConstants {
 
     public interface Company {
         long HOME_COMPANY_ID = 1L;
+        long MAIN_HOME_COMPANY_ID = 3084L;
+        String MAIN_HOME_COMPANY_NAME = "Протей";
     }
 }

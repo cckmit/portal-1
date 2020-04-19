@@ -33,6 +33,8 @@ public interface EmployeeController extends RemoteService {
      */
     List<PersonShortView> getEmployeeViewList(EmployeeQuery query) throws RequestFailedException;
 
+    SearchResult<EmployeeShortView> getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query) throws RequestFailedException;
+
     /**
      * Получение руководителя подразделения
      * @param departmentId айди подразделения
@@ -41,6 +43,8 @@ public interface EmployeeController extends RemoteService {
     PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
 
     EmployeeShortView getEmployeeShortView( Long employeeId) throws RequestFailedException;
+
+    EmployeeShortView getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException;
 
     Person createEmployeePerson (Person person) throws RequestFailedException;
 

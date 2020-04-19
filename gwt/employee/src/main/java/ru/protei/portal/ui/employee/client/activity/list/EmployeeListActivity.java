@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
-import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -31,9 +30,7 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -106,7 +103,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
-        employeeService.getEmployees( query, new FluentCallback< SearchResult< EmployeeShortView > >()
+        employeeService.getEmployeesWithChangedHiddenCompanyNames( query, new FluentCallback< SearchResult< EmployeeShortView > >()
                 .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
                         if ( isFirstChunk ) {
@@ -178,8 +175,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
     };
 
-    @Inject
-    PlateListAnimation animation;
     @Inject
     AbstractEmployeeListView view;
     @Inject

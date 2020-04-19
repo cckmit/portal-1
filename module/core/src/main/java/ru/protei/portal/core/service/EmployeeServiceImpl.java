@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
@@ -22,6 +23,7 @@ import ru.protei.winter.jdbc.JdbcSort;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -134,6 +136,27 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public Result<SearchResult<EmployeeShortView>> employeeListWithChangedHiddenCompanyNames(AuthToken token, EmployeeQuery query) {
+
+        query.setHomeCompanies(fillHiddenCompaniesIfProteiChosen(query.getHomeCompanies()));
+
+        SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        List<EmployeeShortView> results = sr.getResults();
+
+        if (CollectionUtils.isNotEmpty(results)) {
+            List<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toList());
+            List<WorkerEntryShortView> workerEntries = changeCompanyNameIfHidden(workerEntryShortViewDAO.listByPersonIds(employeeIds));
+
+            results.forEach(employee ->
+                    employee.setWorkerEntries(workerEntries.stream()
+                            .filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId()))
+                            .collect(Collectors.toList()))
+            );
+        }
+        return ok(sr);
+    }
+
+    @Override
     public Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employeeId) {
 
         if (employeeId == null) {
@@ -142,6 +165,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+
+        return ok(employeeShortView);
+    }
+
+    @Override
+    public Result<EmployeeShortView> getEmployeeShortViewWithChangedHiddenCompanyNames(AuthToken token, Long employeeId) {
+
+        if (employeeId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+        jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+
+        employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
 
         return ok(employeeShortView);
     }
@@ -235,6 +273,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         return b.toString();
     }
 
+    private Set<EntityOption> fillHiddenCompaniesIfProteiChosen(Set<EntityOption> homeCompanies) {
+        boolean containsProtei = homeCompanies.stream().anyMatch(company -> company.getId().equals(CrmConstants.Company.MAIN_HOME_COMPANY_ID));
+        if (containsProtei) {
+            SearchResult<Company> homeCompaniesSearchResult = companyDAO.getSearchResultByQuery(new CompanyQuery(true));
+            List<Company> allHomeCompanies = homeCompaniesSearchResult.getResults();
+            allHomeCompanies.forEach(company -> {
+                if (company.getHidden() != null && company.getHidden()){
+                    homeCompanies.add(new EntityOption(company.getCname(), company.getId()));
+                }
+            });
+        }
+        return homeCompanies;
+    }
+
     private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
         if(personAbsences.size()==0)
             return;
@@ -294,5 +346,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return true;
+    }
+
+    private List<WorkerEntryShortView> changeCompanyNameIfHidden(List<WorkerEntryShortView> list){
+        list.forEach(workerEntry ->
+                workerEntry.setCompanyName(workerEntry.getCompanyIsHidden() != null && workerEntry.getCompanyIsHidden()
+                        ? CrmConstants.Company.MAIN_HOME_COMPANY_NAME
+                        : workerEntry.getCompanyName())
+                );
+        return list;
     }
 }
