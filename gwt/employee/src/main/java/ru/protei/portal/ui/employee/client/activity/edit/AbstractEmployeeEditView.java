@@ -46,13 +46,9 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasValidable lastNameValidator();
 
-    void setDepartmentCompanyId (Long companyId);
-
     void companyDepartmentSelectorReload();
 
     void workerPositionSelectorReload();
-
-    void setPositionCompanyId (Long companyId);
 
     HasValidable companyDepartmentValidator();
 

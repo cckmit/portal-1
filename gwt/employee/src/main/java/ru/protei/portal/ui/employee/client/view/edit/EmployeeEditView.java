@@ -15,9 +15,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.InputEvent;
-import ru.protei.portal.ui.common.client.widget.departmentselector.popup.DepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
-import ru.protei.portal.ui.common.client.widget.positionselector.popup.PositionSelector;
 import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.workerposition.WorkerPositionSelector;
@@ -160,11 +158,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public void setDepartmentCompanyId (Long companyId){
-        departmentSelector.setCompanyId(companyId);
-    }
-
-    @Override
     public void companyDepartmentSelectorReload(){
         companyDepartmentSelector.reload();
     }
@@ -172,11 +165,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public void workerPositionSelectorReload(){
         workerPositionSelector.reload();
-    }
-
-    @Override
-    public void setPositionCompanyId (Long companyId){
-        positionSelector.setCompanyId(companyId);
     }
 
     @Override
@@ -447,12 +435,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     HTMLPanel employeeDeleted;
-
-    @Inject
-    private DepartmentSelector departmentSelector;
-
-    @Inject
-    private PositionSelector positionSelector;
 
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override

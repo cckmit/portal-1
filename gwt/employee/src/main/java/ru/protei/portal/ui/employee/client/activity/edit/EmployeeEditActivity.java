@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -56,39 +55,33 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Event
     public void onCreateDepartment(CompanyDepartmentEvents.Created event){
-        view.setDepartmentCompanyId(view.company().getValue().getId());
         view.companyDepartmentSelectorReload();
         view.companyDepartment().setValue(new EntityOption(event.companyDepartment.getName(), event.companyDepartment.getId()));
     }
 
     @Event
     public void onChangeDepartment(CompanyDepartmentEvents.Changed event){
-        view.setDepartmentCompanyId(view.company().getValue().getId());
         view.companyDepartmentSelectorReload();
     }
 
     @Event
     public void onRemovedDepartment(CompanyDepartmentEvents.Removed event){
-        view.setDepartmentCompanyId(view.company().getValue().getId());
         view.companyDepartmentSelectorReload();
     }
 
     @Event
     public void onCreatePosition(WorkerPositionEvents.Created event){
-        view.setPositionCompanyId(view.company().getValue().getId());
         view.workerPositionSelectorReload();
         view.workerPosition().setValue(new EntityOption(event.workerPosition.getName(), event.workerPosition.getId()));
     }
 
     @Event
     public void onChangePosition(WorkerPositionEvents.Changed event){
-        view.setPositionCompanyId(view.company().getValue().getId());
         view.workerPositionSelectorReload();
     }
 
     @Event
     public void onRemovedPosition(WorkerPositionEvents.Removed event){
-        view.setPositionCompanyId(view.company().getValue().getId());
         view.workerPositionSelectorReload();
     }
 
@@ -215,10 +208,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.setAddButtonWorkerPositionVisible(isValid);
 
         if (isValid) {
-            view.setDepartmentCompanyId(view.company().getValue().getId());
             view.updateCompanyDepartments(view.company().getValue().getId());
             view.updateWorkerPositions(view.company().getValue().getId());
-            view.setPositionCompanyId(view.company().getValue().getId());
         }
     }
 
