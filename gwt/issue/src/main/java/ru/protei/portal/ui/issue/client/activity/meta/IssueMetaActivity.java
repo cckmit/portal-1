@@ -516,7 +516,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return true;
         }
 
-        if (pauseDate != null && new Date().compareTo(pauseDate) <= 0) {
+        Date currentDate = new Date();
+
+        if (pauseDate != null && (currentDate.compareTo(pauseDate) < 0 || CalendarUtil.isSameDate(currentDate, pauseDate))) {
             return true;
         }
 

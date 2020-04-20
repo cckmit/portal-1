@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.util.CalendarUtil;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -551,7 +552,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return true;
         }
 
-        if (pauseDate != null && new Date().compareTo(pauseDate) <= 0) {
+        Date currentDate = new Date();
+
+        if (pauseDate != null && (currentDate.compareTo(pauseDate) < 0 || CalendarUtil.isSameDate(currentDate, pauseDate))) {
             return true;
         }
 

@@ -805,7 +805,30 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (En_CaseState.PAUSED.equals(caseState)) {
-            return pauseDate != null && new Date().compareTo(pauseDate) <= 0;
+            Date currentDate = new Date();
+            return pauseDate != null && (currentDate.compareTo(pauseDate) < 0 || isCurrentDate(pauseDate));
+        }
+
+        return true;
+    }
+
+    private boolean isCurrentDate(Date date) {
+        if (date == null) {
+            return false;
+        }
+
+        Date currentDate = new Date();
+
+        if (currentDate.getYear() != date.getYear()) {
+            return false;
+        }
+
+        if (currentDate.getMonth() != date.getMonth()) {
+            return false;
+        }
+
+        if (currentDate.getDate() != date.getDate()) {
+            return false;
         }
 
         return true;

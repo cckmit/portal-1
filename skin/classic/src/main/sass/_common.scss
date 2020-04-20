@@ -4068,11 +4068,14 @@ table {
   &.form-group-default.pause-date {
     height: 54px !important;
 
+    .form-control {
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
+    }
+
     .has-error {
       .form-control {
-        border: 1px solid $error_color !important;
-        border-top-right-radius: 3px;
-        border-bottom-right-radius: 3px;
+        border: 1px solid $error_color;
       }
     }
   }
