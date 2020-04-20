@@ -7,9 +7,21 @@ import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.annotations.EnumType;
 
+import java.util.Date;
+import java.util.List;
+
 import static ru.protei.winter.jdbc.JdbcHelper.makeSqlStringCollection;
 
 public class RoomReservationDAO_Impl extends PortalBaseJdbcDAO<RoomReservation> implements RoomReservationDAO {
+
+    @Override
+    public List<RoomReservation> listByRoomAndDateBounds(Long roomId, Date from, Date until) {
+        return getListByCondition("room_reservation.room_id = ? AND (" +
+                    "(room_reservation.date_until >= ? AND room_reservation.date_until <= ?) OR " +
+                    "(room_reservation.date_from >= ? AND room_reservation.date_from <= ?)" +
+                ")",
+                roomId, from, until, from, until);
+    }
 
     @Override
     @SqlConditionBuilder

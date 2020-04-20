@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
@@ -41,7 +42,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     @Override
     public Result<RoomReservation> createReservation(AuthToken token, RoomReservation reservation) {
 
-        if (!validate(reservation)) {
+        boolean valid = isValid(reservation);
+        if (!valid) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -55,16 +57,15 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        // TODO check for date-time intersection
+        boolean hasIntersections = hasReservationIntersections(reservation);
+        if (hasIntersections) {
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
 
-        reservation.setDateRequested(new Date());
-        reservation.setPersonRequester(new Person(token.getPersonId()));
-
-        Long id = roomReservationDAO.persist(reservation);
+        Long id = persistReservation(reservation, new Person(token.getPersonId()));
         if (id == null) {
             return error(En_ResultStatus.NOT_CREATED);
         }
-        jdbcManyRelationsHelper.persist(reservation, "personsToBeNotified");
 
         RoomReservation result = getReservation(id);
         return ok(result)
@@ -79,7 +80,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     @Override
     public Result<RoomReservation> updateReservation(AuthToken token, RoomReservation reservation) {
 
-        if (!validate(reservation) || token == null || reservation.getId() == null) {
+        boolean valid = isValid(reservation) && token != null && reservation.getId() != null;
+        if (!valid) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -88,10 +90,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (stored.getPersonRequester() != null && (
-                reservation.getPersonRequester() == null
-                || !Objects.equals(stored.getPersonRequester().getId(), reservation.getPersonRequester().getId())
-        )) {
+        boolean requesterValid = idRequesterValid(reservation, stored);
+        if (!requesterValid) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -110,16 +110,15 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        // TODO check for date-time intersection
+        boolean hasIntersections = hasReservationIntersections(reservation);
+        if (hasIntersections) {
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
 
-        reservation.setDateRequested(stored.getDateRequested());
-        reservation.setPersonRequester(stored.getPersonRequester());
-
-        boolean merged = roomReservationDAO.merge(reservation);
+        boolean merged = mergeReservation(reservation, stored);
         if (!merged) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
-        jdbcManyRelationsHelper.persist(reservation, "personsToBeNotified");
 
         RoomReservation result = getReservation(reservation.getId());
         return ok(result)
@@ -134,7 +133,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     @Override
     public Result<RoomReservation> removeReservation(AuthToken token, Long reservationId) {
 
-        if (token == null || reservationId == null) {
+        boolean valid = token != null && reservationId != null;
+        if (!valid) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -179,13 +179,35 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         return reservation;
     }
 
+    private Long persistReservation(RoomReservation reservation, Person requester) {
+        reservation.setId(null);
+        reservation.setDateRequested(new Date());
+        reservation.setPersonRequester(requester);
+        Long id = roomReservationDAO.persist(reservation);
+        boolean persisted = id != null;
+        if (persisted) {
+            jdbcManyRelationsHelper.persist(reservation, "personsToBeNotified");
+        }
+        return id;
+    }
+
+    private boolean mergeReservation(RoomReservation reservation, RoomReservation previous) {
+        reservation.setDateRequested(previous.getDateRequested());
+        reservation.setPersonRequester(previous.getPersonRequester());
+        boolean merged = roomReservationDAO.merge(reservation);
+        if (merged) {
+            jdbcManyRelationsHelper.persist(reservation, "personsToBeNotified");
+        }
+        return merged;
+    }
+
     private List<RoomReservable> getActiveRooms() {
         List<RoomReservable> rooms = roomReservableDAO.listActiveRooms();
         jdbcManyRelationsHelper.fill(rooms, "personsAllowedToReserve");
         return rooms;
     }
 
-    private boolean validate(RoomReservation reservation) {
+    private boolean isValid(RoomReservation reservation) {
         if (reservation == null) {
             return false;
         }
@@ -208,6 +230,19 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return false;
         }
         return true;
+    }
+
+    private boolean idRequesterValid(RoomReservation reservation, RoomReservation previous) {
+        boolean requesterWasSet = previous.getPersonRequester() != null;
+        if (!requesterWasSet) {
+            return true;
+        }
+        boolean requesterSet = reservation.getPersonRequester() != null;
+        if (!requesterSet) {
+            return false;
+        }
+        boolean requesterMatchedWithPreviousState = Objects.equals(previous.getPersonRequester().getId(), reservation.getPersonRequester().getId());
+        return requesterMatchedWithPreviousState;
     }
 
     private boolean isReservationStarted(RoomReservation reservation) {
@@ -235,19 +270,37 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             if (!availableRoom.isActive()) {
                 return false;
             }
-            if (isNotEmpty(availableRoom.getPersonsAllowedToReserve())) {
-                return stream(availableRoom.getPersonsAllowedToReserve())
+            boolean roomHasRestrictionOnPersonsAllowedToReserve = isNotEmpty(availableRoom.getPersonsAllowedToReserve());
+            if (roomHasRestrictionOnPersonsAllowedToReserve) {
+                List<Long> personsAllowedToReserve = stream(availableRoom.getPersonsAllowedToReserve())
                         .map(Person::getId)
-                        .collect(Collectors.toList())
-                        .contains(personId);
+                        .collect(Collectors.toList());
+                return personsAllowedToReserve.contains(personId);
             }
             return true;
         }
         return false;
     }
 
+    private boolean hasReservationIntersections(RoomReservation reservation) {
+        List<RoomReservation> reservationIntersections = roomReservationDAO.listByRoomAndDateBounds(
+                reservation.getRoom().getId(),
+                reservation.getDateFrom(),
+                reservation.getDateUntil()
+        );
+        return isNotEmpty(reservationIntersections);
+    }
+
+    @SuppressWarnings("unchecked")
     private List<NotificationEntry> makeNotificationList(RoomReservation reservation) {
-        List<NotificationEntry> entries = stream(new ArrayList<Person>() {{
+        return (List<NotificationEntry>) CollectionUtils.union(
+            makeNotificationListFromReservation(reservation),
+            makeNotificationListFromConfiguration()
+        );
+    }
+
+    private List<NotificationEntry> makeNotificationListFromReservation(RoomReservation reservation) {
+        return stream(new ArrayList<Person>() {{
             addAll(reservation.getPersonsToBeNotified());
             add(reservation.getPersonRequester());
             add(reservation.getPersonResponsible());
@@ -259,12 +312,14 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             })
             .filter(entry -> StringUtils.isNotEmpty(entry.getAddress()))
             .collect(Collectors.toList());
-        entries.addAll(stream(Arrays.asList(config.data().getMailNotificationConfig().getCrmRoomReservationNotificationsRecipients()))
+    }
+
+    private List<NotificationEntry> makeNotificationListFromConfiguration() {
+        return stream(Arrays.asList(config.data().getMailNotificationConfig().getCrmRoomReservationNotificationsRecipients()))
             .filter(Objects::nonNull)
             .filter(not(String::isEmpty))
             .map(address -> NotificationEntry.email(address, "ru"))
-            .collect(Collectors.toList()));
-        return entries;
+            .collect(Collectors.toList());
     }
 
     @Autowired
