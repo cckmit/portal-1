@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.*;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 
 /**
  * Активность списка комментариев

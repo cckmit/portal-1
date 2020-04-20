@@ -15,7 +15,6 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.JiraMarkUpUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.factory.JiraClientFactory;
@@ -25,6 +24,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
 import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
@@ -124,7 +124,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             Optional<String> imageString = attachments.stream()
                     .filter(a -> a.getExtLink().equals(imageNode.link) && a.getCreatorId().equals(personId))
                     .max(Comparator.comparing(Attachment::getCreated))
-                    .map(attachment -> JiraMarkUpUtils.makeImageString(attachment.getFileName(),
+                    .map(attachment -> makeJiraImageString(attachment.getFileName(),
                             imageNode.alt != null ? imageNode.alt : attachment.getFileName()));
             if (imageString.isPresent()) {
                 resultText = resultText.replace(group, imageString.get());

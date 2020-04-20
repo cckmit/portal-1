@@ -170,16 +170,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Result<String> getAttachmentNameByExtLink( String extLink) {
-        Attachment attachment = attachmentDAO.partialGetByCondition("ext_link = ?", Collections.singletonList(extLink), "file_name");
-        if (attachment == null) {
-            return error( En_ResultStatus.NOT_FOUND);
-        }
-        return ok( attachment.getFileName());
-    }
-
-    @Override
-    public Result<Attachment> getAttachmentByExtLink(String extLink) {
+    public Result<Attachment> getAttachmentByExtLink( String extLink ) {
         Attachment attachment = attachmentDAO.getByCondition("ext_link = ?", Collections.singletonList(extLink));
         if (attachment == null) {
             return error( En_ResultStatus.NOT_FOUND);

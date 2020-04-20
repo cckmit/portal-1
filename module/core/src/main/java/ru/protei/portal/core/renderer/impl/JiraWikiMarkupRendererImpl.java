@@ -166,7 +166,6 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
     }
 
     private RendererAttachmentManager makeRendererAttachmentManager() {
-
         return new RendererAttachmentManager() {
             private final String DOWNLOAD_PATH = config.data().getCommonConfig().getCrmUrlFiles() + "springApi/files/";
             @Override
@@ -178,12 +177,13 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
                             attachment.getId(),
                             attachment.getFileName(),
                             attachment.getMimeType(),
-                            attachment.getCreatorId().toString(),
+                            attachment.getCreatorId() != null ? attachment.getCreatorId().toString() : null,
                             attachment.getLabelText(),
                             DOWNLOAD_PATH + attachment.getExtLink(),
                             null,
                             null,
-                            new Timestamp(attachment.getCreated().getTime()));
+                            attachment.getCreated() != null ? new Timestamp(attachment.getCreated().getTime()) : null
+                    );
                 }
                 return null;
             }

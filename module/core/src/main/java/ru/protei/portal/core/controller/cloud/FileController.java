@@ -372,9 +372,9 @@ public class FileController {
     }
 
     private String getRealFileName(String filePath, String encodedFileName) {
-        Result<String> nameResult = attachmentService.getAttachmentNameByExtLink(filePath);
-        if (nameResult.isOk() && StringUtils.isNotBlank(nameResult.getData())) {
-            return nameResult.getData();
+        Result<Attachment> result = attachmentService.getAttachmentByExtLink(filePath);
+        if (result.isOk() && result.getData() != null) {
+            return result.getData().getFileName();
         }
         return extractRealFileName(encodedFileName);
     }

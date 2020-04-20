@@ -1,11 +1,8 @@
-package ru.protei.portal.ui.common.client.util;
+package ru.protei.portal.core.model.helper;
 
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.helper.JiraMarkUpUtils;
-import ru.protei.portal.core.model.helper.MarkDownUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.Date;
 
@@ -68,10 +65,10 @@ public class CaseCommentUtils {
     public static String addImageInMessage(En_TextMarkup textMarkup, String message, Integer position, Attachment attach) {
         String imageString;
         switch (textMarkup) {
-            case JIRA_WIKI_MARKUP: imageString = JiraMarkUpUtils.makeImageString( attach.getExtLink(), attach.getFileName()); break;
+            case JIRA_WIKI_MARKUP: imageString = makeJiraImageString( attach.getExtLink(), attach.getFileName()); break;
             case MARKDOWN:
             default:
-                imageString = MarkDownUtils.makeImageString(attach.getFileName(), attach.getExtLink()); break;
+                imageString = makeMarkDownImageString(attach.getExtLink(), attach.getFileName()); break;
         }
 
         if (position != null) {
@@ -79,6 +76,14 @@ public class CaseCommentUtils {
         } else {
             return isEmpty(message)? imageString : message + NEW_LINE_SYMBOL + imageString;
         }
+    }
+
+    public static String makeJiraImageString(String link, String alt) {
+        return "!" + link + "|alt=" + alt +"!";
+    }
+
+    public static String makeMarkDownImageString(String link, String alt) {
+        return "![alt=" + alt + "](" + link + ")";
     }
 
     private static final long EDIT_PERIOD = 300000;

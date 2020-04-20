@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
-import ru.protei.portal.core.model.helper.JiraMarkUpUtils;
 import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.DiffResult;
@@ -46,6 +45,7 @@ import java.util.regex.Pattern;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
@@ -458,7 +458,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                     .filter(a -> a.getFileName().equals(imageNode.link) && a.getCreatorId().equals(caseComment.getAuthorId()))
                     .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
                     .ifPresent(attachment -> {
-                        String imageString = JiraMarkUpUtils.makeImageString(attachment.getExtLink(),
+                        String imageString = makeJiraImageString(attachment.getExtLink(),
                                 attachment.getFileName() + (imageNode.alt != null ? ", imageNode.alt" : ""));
                         caseComment.setText(caseComment.getText().replace(group, imageString));
 
