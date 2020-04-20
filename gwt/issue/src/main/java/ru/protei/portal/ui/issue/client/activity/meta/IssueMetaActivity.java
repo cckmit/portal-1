@@ -516,7 +516,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return true;
         }
 
-        if (pauseDate != null && new Date().compareTo(pauseDate) < 0) {
+        if (pauseDate != null && new Date().compareTo(pauseDate) <= 0) {
             return true;
         }
 

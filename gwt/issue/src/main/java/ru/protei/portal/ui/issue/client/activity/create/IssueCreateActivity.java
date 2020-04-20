@@ -551,7 +551,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return true;
         }
 
-        if (pauseDate != null && new Date().compareTo(pauseDate) < 0) {
+        if (pauseDate != null && new Date().compareTo(pauseDate) <= 0) {
             return true;
         }
 

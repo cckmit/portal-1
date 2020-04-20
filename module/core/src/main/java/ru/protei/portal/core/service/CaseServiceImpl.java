@@ -805,7 +805,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (En_CaseState.PAUSED.equals(caseState)) {
-            return pauseDate != null && new Date().compareTo(pauseDate) < 0;
+            return pauseDate != null && new Date().compareTo(pauseDate) <= 0;
         }
 
         return true;
