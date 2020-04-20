@@ -1,13 +1,14 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -75,16 +76,20 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Event
     public void onCreatePosition(WorkerPositionEvents.Created event){
         view.setPositionCompanyId(view.company().getValue().getId());
+        view.workerPositionSelectorReload();
+        view.workerPosition().setValue(new EntityOption(event.workerPosition.getName(), event.workerPosition.getId()));
     }
 
     @Event
     public void onChangePosition(WorkerPositionEvents.Changed event){
         view.setPositionCompanyId(view.company().getValue().getId());
+        view.workerPositionSelectorReload();
     }
 
     @Event
     public void onRemovedPosition(WorkerPositionEvents.Removed event){
         view.setPositionCompanyId(view.company().getValue().getId());
+        view.workerPositionSelectorReload();
     }
 
     @Override
@@ -111,20 +116,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     @Override
-    public void onEditWorkerPositionClicked(WorkerPosition workerPosition) {
+    public void onEditWorkerPositionClicked(Long id, String text) {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setId(id);
+        workerPosition.setName(text);
+        workerPosition.setCompanyId(view.company().getValue().getId());
         fireEvent(new WorkerPositionEvents.Edit(workerPosition));
     }
 
-    @Override
-    public void onChangedCompanyDepartment(Long departmentId) {
-        view.companyDepartmentValidator().setValid(view.companyDepartment().getValue() != null);
-        worker.setDepartmentId(departmentId);
-    }
-
-    @Override
-    public void onChangedWorkerPosition(Long positionId) {
-        worker.setPositionId(positionId);
-    }
 
     @Override
     public void onSaveClicked() {
@@ -137,7 +136,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
                 .withSuccess(person -> {
+
                     worker.setPersonId(person.getId());
+                    worker.setPositionId(view.workerPosition().getValue().getId());
+                    worker.setDepartmentId(view.companyDepartment().getValue().getId());
+                    worker.setCompanyId(view.company().getValue().getId());
+
                     employeeService.createEmployeeWorker(worker, new FluentCallback<WorkerEntry>()
                             .withSuccess(workerEntry -> {
                                 fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -207,16 +211,21 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     public void onCompanySelected() {
         boolean isValid = view.company().getValue() != null;
         view.companyValidator().setValid(isValid);
-        view.companyDepartmentEnabled().setEnabled(isValid);
-        view.workerPositionEnabled().setEnabled(isValid);
         view.setAddButtonCompanyDepartmentVisible(isValid);
+        view.setAddButtonWorkerPositionVisible(isValid);
 
         if (isValid) {
-            worker.setCompanyId(view.company().getValue().getId());
             view.setDepartmentCompanyId(view.company().getValue().getId());
             view.updateCompanyDepartments(view.company().getValue().getId());
+            view.updateWorkerPositions(view.company().getValue().getId());
             view.setPositionCompanyId(view.company().getValue().getId());
         }
+    }
+
+    @Override
+    public void onGenderSelected() {
+        boolean isValid = !view.gender().getValue().equals(En_Gender.UNDEFINED);
+        view.genderValidator().setValid(isValid);
     }
 
     private boolean validateSaveButton() {
@@ -259,7 +268,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         infoFacade.setEmail(view.workEmail().getText());
         infoFacade.setEmail_own(view.personalEmail().getText());
-        employee.setPosition(view.workerPosition().getText());
+        employee.setPosition(view.workerPosition().getValue().getDisplayText());
         employee.setDepartment(view.companyDepartment().getValue().getDisplayText());
         employee.setIpAddress(view.ipAddress().getText());
 
@@ -283,7 +292,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errFieldsRequired();
         }
 
-        if(!view.isPositionValid()){
+        if(!view.workerPositionValidator().isValid()){
+            return lang.errFieldsRequired();
+        }
+
+        if(!view.genderValidator().isValid()){
             return lang.errFieldsRequired();
         }
 
@@ -323,9 +336,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     private void fillView(Person person){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
         view.companyDepartment().setValue(worker.getDepartmentId() == null ? null : new EntityOption(worker.getDepartmentName(), worker.getDepartmentId()));
+        view.workerPosition().setValue(worker.getPositionName() == null ? null : new EntityOption(worker.getPositionName(), worker.getPositionId()));
         view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
         view.companyValidator().setValid(person.getCompany() != null);
         view.companyDepartmentValidator().setValid(worker.getDepartmentId() != null);
+        view.workerPositionValidator().setValid(worker.getPositionName() != null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());
@@ -340,7 +355,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.workEmail().setText(infoFacade.getEmail());
         view.personalEmail().setText(infoFacade.getEmail_own());
 
-        view.workerPosition().setText(StringUtils.isEmpty(person.getPosition()) ? "Выберите Бла-бла" : person.getPosition());
+        //view.workerPosition().setText(StringUtils.isEmpty(person.getPosition()) ? "Выберите Бла-бла" : person.getPosition());
         //view.companyDepartment().(StringUtils.isEmpty(person.getDepartment()) ? "Выберите Бла-бла" : person.getDepartment());
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());

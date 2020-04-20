@@ -45,6 +45,11 @@ public class GenderButtonSelector extends ButtonSelector<En_Gender> {
         }
     }
 
+    @Override
+    public boolean isValid(){
+        return !getValue().equals(En_Gender.UNDEFINED);
+    }
+
     @Inject
     Lang lang;
 }

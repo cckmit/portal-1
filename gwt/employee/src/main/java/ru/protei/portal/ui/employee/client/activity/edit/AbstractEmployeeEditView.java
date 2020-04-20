@@ -28,7 +28,7 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasText ipAddress();
 
-    HasText workerPosition();
+    HasValue<EntityOption> workerPosition();
 
     HasValue<EntityOption> companyDepartment();
 
@@ -50,14 +50,15 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void companyDepartmentSelectorReload();
 
+    void workerPositionSelectorReload();
+
     void setPositionCompanyId (Long companyId);
 
-    void setPositionValid (boolean isValid);
-
-
-    boolean isPositionValid ();
-
     HasValidable companyDepartmentValidator();
+
+    HasValidable workerPositionValidator();
+
+    HasValidable genderValidator();
 
     HasVisibility saveVisibility();
 
@@ -104,5 +105,9 @@ public interface AbstractEmployeeEditView extends IsWidget {
     void updateCompanyDepartments(Long companyId);
 
     void setAddButtonCompanyDepartmentVisible(boolean isVisible);
+
+    void updateWorkerPositions(Long companyId);
+
+    void setAddButtonWorkerPositionVisible(boolean isVisible);
 
 }

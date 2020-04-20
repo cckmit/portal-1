@@ -5,6 +5,7 @@
              xmlns:homecompanyselector='urn:import:ru.protei.portal.ui.common.client.widget.homecompany'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:companydepartment='urn:import:ru.protei.portal.ui.common.client.widget.selector.companydepartment'
+             xmlns:workerposition='urn:import:ru.protei.portal.ui.common.client.widget.selector.workerposition'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -67,7 +68,7 @@
                                 <label class="">
                                     <ui:text from="{lang.gender}"/>
                                 </label>
-                                <dict:GenderButtonSelector ui:field="gender"/>
+                                <dict:GenderButtonSelector ui:field="gender" validation="false"/>
                             </div>
 
                             <div class="form-group col-md-6">
@@ -81,9 +82,7 @@
                                 <label>
                                     <ui:text from="{lang.contactPosition}"/>
                                 </label>
-                                <div class="dropdown-selector">
-                                    <g:Button ui:field="workerPosition" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12 has-error"/>
-                                </div>
+                                <workerposition:WorkerPositionSelector ui:field="workerPositionSelector" validation="true"/>
                             </div>
 
                             <div class="form-group col-md-6">

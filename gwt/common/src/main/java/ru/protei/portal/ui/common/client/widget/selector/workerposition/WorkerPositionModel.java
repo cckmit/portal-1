@@ -1,11 +1,11 @@
-package ru.protei.portal.ui.common.client.widget.selector.companydepartment;
+package ru.protei.portal.ui.common.client.widget.selector.workerposition;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
-import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
-import ru.protei.portal.ui.common.client.service.CompanyDepartmentControllerAsync;
+import ru.protei.portal.ui.common.client.service.WorkerPositionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.person.Refreshable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -16,14 +16,14 @@ import java.util.List;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 /**
- * Модель селектора отделов
+ * Модель селектора должностей
  */
-public abstract class CompanyDepartmentModel implements Activity, SelectorModel<EntityOption> {
+public abstract class WorkerPositionModel implements Activity, SelectorModel<EntityOption> {
 
-    public void updateCompanyDepartments (Refreshable selector, Long companyId) {
-        companyDepartmentController.getCompanyDepartments(companyId, new FluentCallback<List<CompanyDepartment>>()
-                .withSuccess(companyDepartments -> {
-                    fillEntityOptionList(companyDepartments);
+    public void updateWorkerPositions(Refreshable selector, Long companyId) {
+        workerPositionController.getWorkerPositions(companyId, new FluentCallback<List<WorkerPosition>>()
+                .withSuccess(workerPositions -> {
+                    fillEntityOptionList(workerPositions);
                     if(selector!=null){
                         selector.refresh();
                     }
@@ -41,14 +41,14 @@ public abstract class CompanyDepartmentModel implements Activity, SelectorModel<
         return options.get( elementIndex );
     }
 
-    private void fillEntityOptionList (List<CompanyDepartment> companyDepartments) {
+    private void fillEntityOptionList (List<WorkerPosition> workerPositions) {
         options.clear();
-        companyDepartments.forEach(companyDepartment -> options.add (new EntityOption(companyDepartment.getName(), companyDepartment.getId())));
+        workerPositions.forEach(workerPosition -> options.add (new EntityOption(workerPosition.getName(), workerPosition.getId())));
     }
 
 
     @Inject
-    CompanyDepartmentControllerAsync companyDepartmentController;
+    WorkerPositionControllerAsync workerPositionController;
 
     private List<EntityOption> options = new ArrayList<>();
 }

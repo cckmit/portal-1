@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSel
 import ru.protei.portal.ui.common.client.widget.positionselector.popup.PositionSelector;
 import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.workerposition.WorkerPositionSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditActivity;
@@ -38,31 +39,14 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         ipAddress.setRegexp( CrmConstants.Masks.IP);
 
-       /* departmentSelector.addValueChangeHandler(event -> {
-            if (event.getValue() != null) {
-                companyDepartment.setText(event.getValue().getName());
-                activity.onChangedCompanyDepartment(event.getValue().getId());
-                setDepartmentValid(true);
-            }
-        });
-        departmentSelector.addAddHandler(addEvent -> activity.onAddCompanyDepartmentClicked());
-        departmentSelector.addEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.companyDepartment));
-        companyDepartmentEnabled().setEnabled(false);*/
+        gender.setValid(false);
 
         companyDepartmentSelector.setEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.id, editEvent.text));
         companyDepartmentSelector.setAddHandler(addEvent -> activity.onAddCompanyDepartmentClicked());
 
-        positionSelector.addValueChangeHandler(event -> {
-            if (event.getValue() != null) {
-                workerPosition.setText(event.getValue().getName());
-                activity.onChangedWorkerPosition(event.getValue().getId());
-                setPositionValid(true);
-            }
-        });
-        positionSelector.addAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
-        positionSelector.addEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.workerPosition));
-        workerPositionEnabled().setEnabled(false);
-        //company.addEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.workerPosition));
+        workerPositionSelector.setEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.id, editEvent.text));
+        workerPositionSelector.setAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
+
     }
 
     @Override
@@ -116,8 +100,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText workerPosition() {
-        return workerPosition;
+    public HasValue<EntityOption> workerPosition() {
+        return workerPositionSelector;
     }
 
     @Override
@@ -132,7 +116,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public HasEnabled workerPositionEnabled() {
-        return workerPosition;
+        return workerPositionSelector;
     }
 
     @Override
@@ -186,25 +170,28 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public void workerPositionSelectorReload(){
+        workerPositionSelector.reload();
+    }
+
+    @Override
     public void setPositionCompanyId (Long companyId){
         positionSelector.setCompanyId(companyId);
     }
 
     @Override
-    public void setPositionValid (boolean isValid){
-        workerPosition.setStyleName("has-error", !isValid);
-    }
-
-
-
-    @Override
-    public boolean isPositionValid (){
-        return !workerPosition.getStyleName().contains("has-error");
-    }
-
-    @Override
     public HasValidable companyDepartmentValidator(){
         return companyDepartmentSelector;
+    }
+
+    @Override
+    public HasValidable workerPositionValidator(){
+        return workerPositionSelector;
+    }
+
+    @Override
+    public HasValidable genderValidator(){
+        return gender;
     }
 
     @Override
@@ -308,6 +295,16 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         companyDepartmentSelector.setAddButtonVisible(isVisible);
     }
 
+    @Override
+    public void updateWorkerPositions(Long companyId) {
+        workerPositionSelector.updateWorkerPositions(companyId);
+    }
+
+    @Override
+    public void setAddButtonWorkerPositionVisible(boolean isVisible) {
+        workerPositionSelector.setAddButtonVisible(isVisible);
+    }
+
 
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
@@ -342,15 +339,18 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         }
     }
 
+    @UiHandler("gender")
+    public void onGenderSelected(ValueChangeEvent<En_Gender> event) {
+        if (activity != null) {
+            activity.onGenderSelected();
+        }
+    }
+
     /*@UiHandler("companyDepartment")
     public void onDisplayDepartmentClicked(ClickEvent event){
         departmentSelector.showUnderLeft( companyDepartment, companyDepartment.getOffsetWidth() );
     }*/
 
-    @UiHandler("workerPosition")
-    public void onDisplayPositionClicked(ClickEvent event){
-        positionSelector.showUnderLeft( workerPosition, workerPosition.getOffsetWidth() );
-    }
 
     private void resetValidateTimer() {
         limitedFieldsValidationTimer.cancel();
@@ -421,8 +421,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     LabelElement workEmailLabel;
 
-    @UiField
-    Button workerPosition;
+
 
     /*@UiField
     Button companyDepartment;*/
@@ -430,6 +429,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Inject
     @UiField(provided = true)
     CompanyDepartmentSelector companyDepartmentSelector;
+
+    @Inject
+    @UiField(provided = true)
+    WorkerPositionSelector workerPositionSelector;
 
     @Inject
     @UiField ( provided = true )
