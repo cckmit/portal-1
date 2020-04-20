@@ -147,6 +147,7 @@ public class AttachmentUploader extends FileUploader{
         Attachment attachment = new Attachment();
         attachment.setId(Long.valueOf(jsonObj.get("id").toString()));
         attachment.setFileName(jsonObj.get("fileName").isString().stringValue());
+        attachment.setLabelText(attachment.getFileName());
         attachment.setCreatorId(Long.valueOf(jsonObj.get("creatorId").toString()));
         attachment.setExtLink(jsonObj.get("extLink").isString().stringValue());
         attachment.setDataSize(Long.valueOf(jsonObj.get("dataSize").toString()));

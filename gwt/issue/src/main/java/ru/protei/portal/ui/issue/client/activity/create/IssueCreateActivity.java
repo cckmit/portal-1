@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
-import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -270,7 +270,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.description().setValue(
-                addImageInMessage(view.description().getValue(), strPosition, attach));
+                addImageInMessage(En_TextMarkup.MARKDOWN, view.description().getValue(), strPosition, attach));
     }
 
     private void fillView() {
