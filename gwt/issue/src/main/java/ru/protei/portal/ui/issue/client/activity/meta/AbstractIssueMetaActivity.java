@@ -9,7 +9,8 @@ public interface AbstractIssueMetaActivity {
     void onImportanceChanged();
     void onPlatformChanged();
     void onProductChanged();
-    default void onStateChange(){};
+    void onPauseDateChanged();
+    void onStateChange();
     default void onManagerChanged(){};
     default void onInitiatorChanged(){};
     default void onTimeElapsedChanged(){};

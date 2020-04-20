@@ -4065,6 +4065,18 @@ table {
 }
 
 .form-group {
+  &.form-group-default.pause-date {
+    height: 54px !important;
+
+    .has-error {
+      .form-control {
+        border: 1px solid $error_color !important;
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+      }
+    }
+  }
+
   .form-control {
     &.sla-input-time {
       border: 1px solid rgba(0, 0, 0, 0.07);

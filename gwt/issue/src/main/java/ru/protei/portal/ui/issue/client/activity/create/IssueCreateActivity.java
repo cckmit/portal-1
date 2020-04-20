@@ -276,6 +276,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
     }
 
+    @Override
+    public void onPauseDateChanged() {
+        issueMetaView.setPauseDateValid(isPauseDateValidity(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue()));
+    }
+
+    @Override
+    public void onStateChange() {
+        issueMetaView.pauseDate().setValue(null);
+        issueMetaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(issueMetaView.state().getValue()));
+
+        boolean stateValid = isPauseDateValidity(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue());
+        issueMetaView.setPauseDateValid(stateValid);
+    }
+
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.description().setValue(
                 addImageInMessage(view.description().getValue(), strPosition, attach));
@@ -324,6 +338,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
+        issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate());
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
+        issueMetaView.setPauseDateValid(isPauseDateValidity(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
@@ -400,6 +417,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setPrivateCase(view.isPrivate().getValue());
         caseObject.setStateId(issueMetaView.state().getValue().getId());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
+        caseObject.setPauseDate(issueMetaView.pauseDate().getValue());
 
         caseObject.setInitiatorCompany(issueMetaView.getCompany());
         caseObject.setInitiator(issueMetaView.getInitiator());
@@ -456,10 +474,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
+        if (!isPauseDateValidity(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue())) {
+            fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         boolean isFieldsValid = view.nameValidator().isValid() &&
                 issueMetaView.stateValidator().isValid() &&
-                        issueMetaView.importanceValidator().isValid() &&
-                        issueMetaView.companyValidator().isValid();
+                issueMetaView.importanceValidator().isValid() &&
+                issueMetaView.companyValidator().isValid();
 
         if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
@@ -521,6 +544,26 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private boolean makePreviewDisplaying( String key ) {
         return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, "false" ) );
+    }
+
+    private boolean isPauseDateValidity(En_CaseState currentState, Date pauseDate) {
+        if (!En_CaseState.PAUSED.equals(currentState)) {
+            return true;
+        }
+
+        if (pauseDate != null && new Date().compareTo(pauseDate) < 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isPauseDateVisible(En_CaseState currentState) {
+        if (!En_CaseState.PAUSED.equals(currentState)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Inject

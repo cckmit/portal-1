@@ -65,6 +65,8 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcColumn(name = CaseObject.Columns.EXT_APP)
     private String extAppType;
 
+    @JdbcColumn(name = "pause_date")
+    private Date pauseDate;
 
     public CaseObjectMeta() {}
 
@@ -73,6 +75,7 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getId() != null) setId(co.getId());
         if (co.getModified() != null) setModified(co.getModified());
         if (co.getStateId() != 0) setStateId(co.getStateId());
+        if (co.getPauseDate() != null) setPauseDate(co.getPauseDate());
         if (co.getImpLevel() != null) setImpLevel(co.getImpLevel());
         if (co.getInitiator() != null) setInitiator(co.getInitiator());
         if (co.getInitiatorId() != null) setInitiatorId(co.getInitiatorId());
@@ -94,6 +97,7 @@ public class CaseObjectMeta extends AuditableObject {
         if (getId() != null) co.setId(getId());
         if (getModified() != null) co.setModified(getModified());
         if (getStateId() != 0) co.setStateId(getStateId());
+        if (getPauseDate() != null) co.setPauseDate(getPauseDate());
         if (getImpLevel() != null) co.setImpLevel(getImpLevel());
         if (getInitiator() != null) co.setInitiator(getInitiator());
         if (getInitiatorId() != null) co.setInitiatorId(getInitiatorId());
@@ -277,6 +281,14 @@ public class CaseObjectMeta extends AuditableObject {
         this.extAppType = extAppType;
     }
 
+    public Date getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Date pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
     @Override
     public String toString() {
         return "CaseObjectMeta{" +
@@ -297,6 +309,7 @@ public class CaseObjectMeta extends AuditableObject {
                 ", timeElapsed=" + timeElapsed +
                 ", privateCase=" + privateCase +
                 ", extAppType='" + extAppType + '\'' +
+                ", pauseDate=" + pauseDate +
                 '}';
     }
 }

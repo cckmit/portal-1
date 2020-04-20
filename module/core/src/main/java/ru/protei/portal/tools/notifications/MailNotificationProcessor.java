@@ -768,6 +768,7 @@ public class MailNotificationProcessor {
     private boolean publicChangesExistWithoutComments(AssembledCaseEvent assembledCaseEvent) {
         return  assembledCaseEvent.isCaseImportanceChanged()
                 || assembledCaseEvent.isCaseStateChanged()
+                || assembledCaseEvent.isPauseDateChanged()
                 || assembledCaseEvent.isInitiatorChanged()
                 || assembledCaseEvent.isInitiatorCompanyChanged()
                 || assembledCaseEvent.isManagerChanged()

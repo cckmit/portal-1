@@ -130,6 +130,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEventMeta() && lastMetaState.getState() != initMetaState.getState();
     }
 
+    public boolean isPauseDateChanged() {
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getPauseDate(), initMetaState.getPauseDate());
+    }
+
     public boolean isTimeElapsedChanged() {
         return isUpdateEvent() && getTimeElapsedChanging() != 0L;
     }

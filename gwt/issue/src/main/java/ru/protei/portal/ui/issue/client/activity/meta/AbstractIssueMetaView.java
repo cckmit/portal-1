@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -98,4 +99,10 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setValuesContainerWarning(boolean isWarning);
 
     void setSlaTimesContainerTitle(String title);
+
+    HasVisibility pauseDateContainerVisibility();
+
+    HasValue<Date> pauseDate();
+
+    void setPauseDateValid(boolean isValid);
 }
