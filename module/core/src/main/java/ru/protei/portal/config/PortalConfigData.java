@@ -526,6 +526,7 @@ public class PortalConfigData {
         private final String adminProject;
         private final String phoneProject;
         private final Long youtrackUserId;
+        private final String youtrackCustomFieldCompanyId;
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
@@ -535,6 +536,7 @@ public class PortalConfigData {
             adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
+            youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
         }
 
         public String getApiBaseUrl() {
@@ -563,6 +565,10 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+
+        public String getYoutrackCustomFieldCompanyId() {
+            return youtrackCustomFieldCompanyId;
         }
     }
 

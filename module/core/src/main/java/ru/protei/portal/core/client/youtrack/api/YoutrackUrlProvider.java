@@ -21,4 +21,8 @@ class YoutrackUrlProvider {
     public String projects() { return baseUrl + "/admin/projects"; }
 
     public String project(String projectId) { return baseUrl + "/admin/projects/" + projectId; }
+
+    public String fieldDefaultsBundle(String customFieldId) { return baseUrl + "/admin/customFieldSettings/customFields/" + customFieldId + "/fieldDefaults/bundle/values"; }
+
+    public String fieldDefaultsValue(String customFieldId, String bundleElementId) { return baseUrl + "/admin/customFieldSettings/customFields/" + customFieldId + "/fieldDefaults/bundle/values/" + bundleElementId; }
 }
