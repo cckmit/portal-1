@@ -10,6 +10,8 @@ public class EditEvent extends GwtEvent<EditHandler> {
     public CaseTag caseTag;
     public CompanyDepartment companyDepartment;
     public WorkerPosition workerPosition;
+    public Long id;
+    public String text;
     public boolean isReadOnly;
 
     public static <T> void fire(HasEditHandlers source, CaseTag caseTag, boolean isReadOnly) {
@@ -29,6 +31,18 @@ public class EditEvent extends GwtEvent<EditHandler> {
             source.fireEvent(new EditEvent(workerPosition));
         }
     }
+    public static <T> void fire(HasEditHandlers source) {
+        if(TYPE != null) {
+            source.fireEvent(new EditEvent());
+        }
+    }
+
+    public static <T> void fire(HasEditHandlers source, Long id, String text) {
+        if(TYPE != null) {
+            source.fireEvent(new EditEvent(id, text));
+        }
+    }
+
 
     public static Type<EditHandler> getType() {
         if(TYPE == null) {
@@ -49,6 +63,13 @@ public class EditEvent extends GwtEvent<EditHandler> {
 
     public EditEvent(WorkerPosition workerPosition){
         this.workerPosition = workerPosition;
+    }
+    public EditEvent(){
+    }
+
+    public EditEvent(Long id, String text){
+        this.id = id;
+        this.text = text;
     }
 
     @Override

@@ -4,6 +4,7 @@
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
              xmlns:homecompanyselector='urn:import:ru.protei.portal.ui.common.client.widget.homecompany'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:companydepartment='urn:import:ru.protei.portal.ui.common.client.widget.selector.companydepartment'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -89,9 +90,10 @@
                                 <label class="">
                                     <ui:text from="{lang.department}"/>
                                 </label>
-                                <div class="dropdown-selector">
+                               <!-- <div class="dropdown-selector">
                                     <g:Button ui:field="companyDepartment" styleName="form-control form-control btn btn-default btn-flat dropdown-toggle col-xs-12 has-error"/>
-                                </div>
+                                </div>-->
+                                <companydepartment:CompanyDepartmentSelector ui:field="companyDepartmentSelector"/>
                             </div>
                         </div>
                     </div>

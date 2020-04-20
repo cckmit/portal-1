@@ -50,7 +50,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        boolean result = companyDepartmentDAO.merge(companyDepartment);
+        boolean result = companyDepartmentDAO.partialMerge(companyDepartment, "dep_name");
 
         if ( !result )
             return error(En_ResultStatus.NOT_UPDATED);

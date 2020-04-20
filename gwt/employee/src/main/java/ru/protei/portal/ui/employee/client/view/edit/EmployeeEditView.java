@@ -1,11 +1,8 @@
 package ru.protei.portal.ui.employee.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -15,18 +12,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.InputEvent;
-import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
 import ru.protei.portal.ui.common.client.widget.departmentselector.popup.DepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
-import ru.protei.portal.ui.common.client.widget.passwordbox.PasswordTextBox;
 import ru.protei.portal.ui.common.client.widget.positionselector.popup.PositionSelector;
+import ru.protei.portal.ui.common.client.widget.selector.companydepartment.CompanyDepartmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
-import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.employee.client.activity.edit.AbstractEmployeeEditActivity;
@@ -45,7 +38,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         ipAddress.setRegexp( CrmConstants.Masks.IP);
 
-        departmentSelector.addValueChangeHandler(event -> {
+       /* departmentSelector.addValueChangeHandler(event -> {
             if (event.getValue() != null) {
                 companyDepartment.setText(event.getValue().getName());
                 activity.onChangedCompanyDepartment(event.getValue().getId());
@@ -54,7 +47,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         });
         departmentSelector.addAddHandler(addEvent -> activity.onAddCompanyDepartmentClicked());
         departmentSelector.addEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.companyDepartment));
-        companyDepartmentEnabled().setEnabled(false);
+        companyDepartmentEnabled().setEnabled(false);*/
+
+        companyDepartmentSelector.setEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.id, editEvent.text));
 
         positionSelector.addValueChangeHandler(event -> {
             if (event.getValue() != null) {
@@ -66,6 +61,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         positionSelector.addAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
         positionSelector.addEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.workerPosition));
         workerPositionEnabled().setEnabled(false);
+        //company.addEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.workerPosition));
     }
 
     @Override
@@ -124,13 +120,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText companyDepartment() {
-        return companyDepartment;
+    public HasValue<EntityOption> companyDepartment() {
+        return companyDepartmentSelector;
     }
 
     @Override
     public HasEnabled companyDepartmentEnabled() {
-        return companyDepartment;
+        return companyDepartmentSelector;
     }
 
     @Override
@@ -195,7 +191,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public void setDepartmentValid (boolean isValid){
-        companyDepartment.setStyleName("has-error", !isValid);
+        companyDepartmentSelector.setValid(isValid);
     }
 
     @Override
@@ -205,7 +201,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public boolean isDepartmentValid (){
-        return !companyDepartment.getStyleName().contains("has-error");
+        return companyDepartmentSelector.isValid();
     }
 
     @Override
@@ -299,6 +295,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         return workEmailLabel.getInnerText();
     }
 
+    @Override
+    public void updateCompanyDepartments(Long companyId) {
+        companyDepartmentSelector.updateCompanyDepartments(companyId);
+    }
+
 
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
@@ -333,10 +334,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         }
     }
 
-    @UiHandler("companyDepartment")
+    /*@UiHandler("companyDepartment")
     public void onDisplayDepartmentClicked(ClickEvent event){
         departmentSelector.showUnderLeft( companyDepartment, companyDepartment.getOffsetWidth() );
-    }
+    }*/
 
     @UiHandler("workerPosition")
     public void onDisplayPositionClicked(ClickEvent event){
@@ -415,8 +416,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     Button workerPosition;
 
-    @UiField
-    Button companyDepartment;
+    /*@UiField
+    Button companyDepartment;*/
+
+    @Inject
+    @UiField(provided = true)
+    CompanyDepartmentSelector companyDepartmentSelector;
 
     @Inject
     @UiField ( provided = true )

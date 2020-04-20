@@ -30,7 +30,7 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasText workerPosition();
 
-    HasText companyDepartment();
+    HasValue<EntityOption> companyDepartment();
 
     HasEnabled companyDepartmentEnabled();
 
@@ -99,4 +99,7 @@ public interface AbstractEmployeeEditView extends IsWidget {
     String workEmailLabel();
 
     HasEnabled saveEnabled();
+
+    void updateCompanyDepartments(Long companyId);
+
 }

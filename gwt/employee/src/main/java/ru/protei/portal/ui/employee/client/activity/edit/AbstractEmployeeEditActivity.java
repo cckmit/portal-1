@@ -11,7 +11,7 @@ public interface AbstractEmployeeEditActivity {
     void onCompanySelected();
 
     void onAddCompanyDepartmentClicked();
-    void onEditCompanyDepartmentClicked(CompanyDepartment companyDepartment);
+    void onEditCompanyDepartmentClicked(Long id, String name);
 
     void onAddWorkerPositionClicked();
     void onEditWorkerPositionClicked(WorkerPosition workerPosition);

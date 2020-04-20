@@ -90,7 +90,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     @Override
-    public void onEditCompanyDepartmentClicked(CompanyDepartment companyDepartment) {
+    public void onEditCompanyDepartmentClicked(Long id, String text) {
+        CompanyDepartment companyDepartment = new CompanyDepartment();
+        companyDepartment.setId(id);
+        companyDepartment.setName(text);
+        companyDepartment.setCompanyId(view.company().getValue().getId());
         fireEvent(new CompanyDepartmentEvents.Edit(companyDepartment));
     }
 
@@ -203,6 +207,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         if (isValid) {
             worker.setCompanyId(view.company().getValue().getId());
             view.setDepartmentCompanyId(view.company().getValue().getId());
+            view.updateCompanyDepartments(view.company().getValue().getId());
             view.setPositionCompanyId(view.company().getValue().getId());
         }
     }
@@ -248,7 +253,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         infoFacade.setEmail(view.workEmail().getText());
         infoFacade.setEmail_own(view.personalEmail().getText());
         employee.setPosition(view.workerPosition().getText());
-        employee.setDepartment(view.companyDepartment().getText());
+        employee.setDepartment(view.companyDepartment().getValue().getDisplayText());
         employee.setIpAddress(view.ipAddress().getText());
 
         return employee;
@@ -327,7 +332,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.personalEmail().setText(infoFacade.getEmail_own());
 
         view.workerPosition().setText(StringUtils.isEmpty(person.getPosition()) ? "Выберите Бла-бла" : person.getPosition());
-        view.companyDepartment().setText(StringUtils.isEmpty(person.getDepartment()) ? "Выберите Бла-бла" : person.getDepartment());
+        //view.companyDepartment().(StringUtils.isEmpty(person.getDepartment()) ? "Выберите Бла-бла" : person.getDepartment());
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());
