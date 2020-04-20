@@ -44,7 +44,7 @@ public abstract class CompanyDepartmentEditActivity implements Activity, Abstrac
 
         dialogView.removeButtonVisibility().setVisible(true);
         dialogView.saveButtonVisibility().setVisible(true);
-        dialogView.setHeader(companyDepartment.getId() == null ? "create111" : "edit111");
+        dialogView.setHeader(companyDepartment.getId() == null ? lang.departmentCreate() : lang.departmentEdit());
         dialogView.showPopup();
     }
 

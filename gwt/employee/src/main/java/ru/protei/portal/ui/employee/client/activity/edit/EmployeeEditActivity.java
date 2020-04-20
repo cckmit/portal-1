@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -55,16 +56,20 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Event
     public void onCreateDepartment(CompanyDepartmentEvents.Created event){
         view.setDepartmentCompanyId(view.company().getValue().getId());
+        view.companyDepartmentSelectorReload();
+        view.companyDepartment().setValue(new EntityOption(event.companyDepartment.getName(), event.companyDepartment.getId()));
     }
 
     @Event
     public void onChangeDepartment(CompanyDepartmentEvents.Changed event){
         view.setDepartmentCompanyId(view.company().getValue().getId());
+        view.companyDepartmentSelectorReload();
     }
 
     @Event
     public void onRemovedDepartment(CompanyDepartmentEvents.Removed event){
         view.setDepartmentCompanyId(view.company().getValue().getId());
+        view.companyDepartmentSelectorReload();
     }
 
     @Event
@@ -112,6 +117,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onChangedCompanyDepartment(Long departmentId) {
+        view.companyDepartmentValidator().setValid(view.companyDepartment().getValue() != null);
         worker.setDepartmentId(departmentId);
     }
 
@@ -203,6 +209,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.companyValidator().setValid(isValid);
         view.companyDepartmentEnabled().setEnabled(isValid);
         view.workerPositionEnabled().setEnabled(isValid);
+        view.setAddButtonCompanyDepartmentVisible(isValid);
 
         if (isValid) {
             worker.setCompanyId(view.company().getValue().getId());
@@ -272,7 +279,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errFieldsRequired();
         }
 
-        if (!view.isDepartmentValid()){
+        if (!view.companyDepartmentValidator().isValid()){
             return lang.errFieldsRequired();
         }
 
@@ -315,8 +322,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     private void fillView(Person person){
         view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
+        view.companyDepartment().setValue(worker.getDepartmentId() == null ? null : new EntityOption(worker.getDepartmentName(), worker.getDepartmentId()));
         view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
         view.companyValidator().setValid(person.getCompany() != null);
+        view.companyDepartmentValidator().setValid(worker.getDepartmentId() != null);
         view.gender().setValue(person.getGender());
         view.firstName().setValue(person.getFirstName());
         view.lastName().setValue(person.getLastName());

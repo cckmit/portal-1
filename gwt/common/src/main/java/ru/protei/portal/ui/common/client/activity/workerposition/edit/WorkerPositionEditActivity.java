@@ -44,7 +44,7 @@ public abstract class WorkerPositionEditActivity implements Activity, AbstractWo
 
         dialogView.removeButtonVisibility().setVisible(true);
         dialogView.saveButtonVisibility().setVisible(true);
-        dialogView.setHeader(workerPosition.getId() == null ? "create111" : "edit111");
+        dialogView.setHeader(workerPosition.getId() == null ? lang.positionCreate() : lang.positionEdit());
         dialogView.showPopup();
     }
 

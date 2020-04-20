@@ -1338,6 +1338,7 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeShowFired();
 
     String initiatorSelectACompany();
+
     String serverAccessParamsColumn();
 
     String contactPhone();
@@ -2079,6 +2080,30 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardActionRemove();
 
     String backToEmployees();
+
+    String departmentAddButton();
+
+    String departmentSelectCompanyLabel();
+
+    String departmentName();
+
+    String departmentCompany();
+
+    String departmentEdit();
+
+    String departmentCreate();
+
+    String positionAddButton();
+
+    String positionSelectCompanyLabel();
+
+    String positionName();
+
+    String positionCompany();
+
+    String positionEdit();
+
+    String positionCreate();
 
     String employeeDepartmentHead();
 

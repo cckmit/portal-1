@@ -48,15 +48,16 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void setDepartmentCompanyId (Long companyId);
 
+    void companyDepartmentSelectorReload();
+
     void setPositionCompanyId (Long companyId);
 
     void setPositionValid (boolean isValid);
 
-    void setDepartmentValid (boolean isValid);
 
     boolean isPositionValid ();
 
-    boolean isDepartmentValid ();
+    HasValidable companyDepartmentValidator();
 
     HasVisibility saveVisibility();
 
@@ -101,5 +102,7 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasEnabled saveEnabled();
 
     void updateCompanyDepartments(Long companyId);
+
+    void setAddButtonCompanyDepartmentVisible(boolean isVisible);
 
 }

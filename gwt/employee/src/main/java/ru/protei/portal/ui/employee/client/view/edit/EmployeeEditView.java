@@ -50,6 +50,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         companyDepartmentEnabled().setEnabled(false);*/
 
         companyDepartmentSelector.setEditHandler(editEvent -> activity.onEditCompanyDepartmentClicked(editEvent.id, editEvent.text));
+        companyDepartmentSelector.setAddHandler(addEvent -> activity.onAddCompanyDepartmentClicked());
 
         positionSelector.addValueChangeHandler(event -> {
             if (event.getValue() != null) {
@@ -180,6 +181,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public void companyDepartmentSelectorReload(){
+        companyDepartmentSelector.reload();
+    }
+
+    @Override
     public void setPositionCompanyId (Long companyId){
         positionSelector.setCompanyId(companyId);
     }
@@ -189,10 +195,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workerPosition.setStyleName("has-error", !isValid);
     }
 
-    @Override
-    public void setDepartmentValid (boolean isValid){
-        companyDepartmentSelector.setValid(isValid);
-    }
+
 
     @Override
     public boolean isPositionValid (){
@@ -200,8 +203,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public boolean isDepartmentValid (){
-        return companyDepartmentSelector.isValid();
+    public HasValidable companyDepartmentValidator(){
+        return companyDepartmentSelector;
     }
 
     @Override
@@ -298,6 +301,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public void updateCompanyDepartments(Long companyId) {
         companyDepartmentSelector.updateCompanyDepartments(companyId);
+    }
+
+    @Override
+    public void setAddButtonCompanyDepartmentVisible(boolean isVisible) {
+        companyDepartmentSelector.setAddButtonVisible(isVisible);
     }
 
 

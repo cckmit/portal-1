@@ -8,13 +8,13 @@
         <div class="card-body">
             <div class="row">
                 <div class="form-group col-md-12">
-                    <label ui:field="departmentNameLabel"><ui:text from="{lang.tagName}"/></label>
+                    <label ui:field="departmentNameLabel"><ui:text from="{lang.departmentName}"/></label>
                     <g:TextBox ui:field="name" styleName="form-control" maxLength="60"/>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-md-12">
-                    <label ui:field="departmentCompanyLabel"><ui:text from="{lang.tagCompany}"/></label>
+                    <label ui:field="departmentCompanyLabel"><ui:text from="{lang.departmentCompany}"/></label>
                     <company:HomeCompanyButtonSelector ui:field="company" validation="false" hasNullValue="false" synchronizeWith1C="false"/>
                 </div>
             </div>
