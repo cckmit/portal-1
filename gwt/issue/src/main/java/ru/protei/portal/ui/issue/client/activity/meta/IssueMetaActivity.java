@@ -512,10 +512,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private boolean isPauseDateValid(En_CaseState currentState, Date pauseDate) {
-        if (isJiraIssue()) {
-            return true;
-        }
-
         if (!En_CaseState.PAUSED.equals(currentState)) {
             return true;
         }
@@ -528,10 +524,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private boolean isPauseDateVisible(En_CaseState currentState) {
-        if (isJiraIssue()) {
-            return false;
-        }
-
         if (!En_CaseState.PAUSED.equals(currentState)) {
             return false;
         }
