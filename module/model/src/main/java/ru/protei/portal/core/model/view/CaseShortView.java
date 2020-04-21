@@ -283,7 +283,7 @@ public class CaseShortView implements Serializable {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CaseShortView{" +
                 "id=" + id +
                 ", typeId=" + typeId +
@@ -307,6 +307,7 @@ public class CaseShortView implements Serializable {
                 ", managerShortName='" + managerShortName + '\'' +
                 ", isAttachmentExists=" + isAttachmentExists +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", pauseDate=" + pauseDate +
                 '}';
     }
 }

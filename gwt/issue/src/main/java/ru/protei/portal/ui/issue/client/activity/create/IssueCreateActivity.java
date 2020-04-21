@@ -279,7 +279,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPauseDateChanged() {
-        issueMetaView.setPauseDateValid(isPauseDateValidity(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue()));
     }
 
     @Override
@@ -287,7 +287,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.pauseDate().setValue(null);
         issueMetaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(issueMetaView.state().getValue()));
 
-        boolean stateValid = isPauseDateValidity(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue());
+        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue());
         issueMetaView.setPauseDateValid(stateValid);
     }
 
@@ -341,7 +341,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.state().setValue( caseObjectMeta.getState() );
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate());
         issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
-        issueMetaView.setPauseDateValid(isPauseDateValidity(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
@@ -475,7 +475,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
-        if (!isPauseDateValidity(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue())) {
+        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -547,7 +547,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, "false" ) );
     }
 
-    private boolean isPauseDateValidity(En_CaseState currentState, Date pauseDate) {
+    private boolean isPauseDateValid(En_CaseState currentState, Date pauseDate) {
         if (!En_CaseState.PAUSED.equals(currentState)) {
             return true;
         }
