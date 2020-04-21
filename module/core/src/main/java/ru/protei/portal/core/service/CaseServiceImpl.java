@@ -32,6 +32,8 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -817,21 +819,17 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        Date currentDate = new Date();
+        LocalDate localDate = date
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
 
-        if (currentDate.getYear() != date.getYear()) {
-            return false;
-        }
+        LocalDate localCurrentDate = new Date()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
 
-        if (currentDate.getMonth() != date.getMonth()) {
-            return false;
-        }
-
-        if (currentDate.getDate() != date.getDate()) {
-            return false;
-        }
-
-        return true;
+        return localDate.equals(localCurrentDate);
     }
 
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
