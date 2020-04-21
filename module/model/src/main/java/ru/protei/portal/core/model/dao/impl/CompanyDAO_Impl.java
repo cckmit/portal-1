@@ -61,7 +61,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if (query.getSynchronizeWith1C() != null){
-                condition.append("and synchronize_1c = ").append(query.getSynchronizeWith1C() ? "true" : "false");
+                condition.append("and synchronize_with_1c = ").append(query.getSynchronizeWith1C() ? "true" : "false");
             }
 
             condition.append(")");

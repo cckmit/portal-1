@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -8,7 +7,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -18,7 +20,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -490,12 +491,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     Lang lang;
     @Inject
     EmployeeControllerAsync employeeService;
-
     @Inject
     CompanyControllerAsync companyService;
-    @Inject
-    ContactControllerAsync contactService;
-
     @Inject
     PolicyService policyService;
 

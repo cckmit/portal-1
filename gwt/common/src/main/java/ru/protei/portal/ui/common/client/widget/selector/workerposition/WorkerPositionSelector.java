@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.Refreshable;
  * Селектор списка отделов
  */
 public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOption> implements Refreshable {
+
     @Inject
     public void init(WorkerPositionModel positionModel) {
         this.model = positionModel;
@@ -52,11 +53,6 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
         }
     }
 
-    public void reload() {
-        updateWorkerPositions(companyId);
-        getPopup().hide();
-    }
-
     @Override
     public void onShowPopupClicked( ClickEvent event) {
         if (companyId != null) {
@@ -71,6 +67,11 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
         }
     }
 
+    public void reload() {
+        updateWorkerPositions(companyId);
+        getPopup().hide();
+    }
+
     public void updateWorkerPositions(Long companyId) {
         this.companyId = companyId;
         if(model!=null){
@@ -83,9 +84,6 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
         setAddButton(isVisible, lang.positionAddButton());
     }
 
-    @Inject
-    Lang lang;
-
     public void setEditHandler(EditHandler editHandler){
         this.editHandler = editHandler;
     }
@@ -93,6 +91,9 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
     public void setAddHandler (AddHandler handler){
         addAddHandler(handler);
     }
+
+    @Inject
+    Lang lang;
 
     private WorkerPositionModel model;
     private EditHandler editHandler;

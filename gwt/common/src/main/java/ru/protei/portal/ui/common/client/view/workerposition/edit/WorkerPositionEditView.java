@@ -18,7 +18,6 @@ public class WorkerPositionEditView extends Composite implements AbstractWorkerP
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         company.setDefaultValue(lang.selectIssueCompany());
-        ensureDebugIds();
     }
 
     @Override
@@ -42,13 +41,6 @@ public class WorkerPositionEditView extends Composite implements AbstractWorkerP
     @Override
     public HasEnabled companyEnabled() {
         return company;
-    }
-
-    private void ensureDebugIds() {
-        /*positionNameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.NAME_LABEL);
-        positionCompanyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COMPANY_LABEL);
-        name.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.NAME_INPUT);
-        company.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.COMPANY_SELECTOR);*/
     }
 
     @Inject

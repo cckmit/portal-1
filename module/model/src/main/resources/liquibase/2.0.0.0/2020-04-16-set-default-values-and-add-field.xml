@@ -11,9 +11,9 @@
         </sql>
     </changeSet>
 
-    <changeSet id="add-synchronize_1c-field-to-company_group_home" author="vologzhanin">
+    <changeSet id="add-synchronize_with_1c-field-to-company_group_home" author="vologzhanin">
         <addColumn tableName="company_group_home">
-            <column name="synchronize_1c" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="synchronize_with_1c" type="BOOLEAN" defaultValueBoolean="true"/>
         </addColumn>
     </changeSet>
 

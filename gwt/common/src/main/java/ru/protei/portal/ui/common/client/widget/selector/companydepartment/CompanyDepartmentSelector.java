@@ -52,11 +52,6 @@ public class CompanyDepartmentSelector extends ButtonPopupSingleSelector<EntityO
         }
     }
 
-    public void reload() {
-        updateCompanyDepartments(companyId);
-        getPopup().hide();
-    }
-
     @Override
     public void onShowPopupClicked( ClickEvent event) {
         if (companyId != null) {
@@ -71,6 +66,11 @@ public class CompanyDepartmentSelector extends ButtonPopupSingleSelector<EntityO
         }
     }
 
+    public void reload() {
+        updateCompanyDepartments(companyId);
+        getPopup().hide();
+    }
+
     public void updateCompanyDepartments(Long companyId) {
         this.companyId = companyId;
         if(model!=null){
@@ -83,9 +83,6 @@ public class CompanyDepartmentSelector extends ButtonPopupSingleSelector<EntityO
         setAddButton(isVisible, lang.departmentAddButton());
     }
 
-    @Inject
-    Lang lang;
-
     public void setEditHandler(EditHandler editHandler){
         this.editHandler = editHandler;
     }
@@ -93,6 +90,9 @@ public class CompanyDepartmentSelector extends ButtonPopupSingleSelector<EntityO
     public void setAddHandler (AddHandler handler){
         addAddHandler(handler);
     }
+
+    @Inject
+    Lang lang;
 
     private CompanyDepartmentModel model;
     private EditHandler editHandler;

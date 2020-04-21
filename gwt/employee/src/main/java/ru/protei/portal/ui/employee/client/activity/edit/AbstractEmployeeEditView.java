@@ -33,7 +33,9 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasEnabled ipAddressEnabled();
 
     HasValue<String> firstName();
+
     HasValue<String> lastName();
+
     HasText secondName();
 
     HasValue<Date> birthDay ();

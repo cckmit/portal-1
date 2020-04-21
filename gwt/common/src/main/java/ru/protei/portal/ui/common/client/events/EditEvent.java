@@ -8,8 +8,6 @@ import ru.protei.portal.core.model.ent.WorkerPosition;
 public class EditEvent extends GwtEvent<EditHandler> {
     private static Type<EditHandler> TYPE;
     public CaseTag caseTag;
-    public CompanyDepartment companyDepartment;
-    public WorkerPosition workerPosition;
     public Long id;
     public String text;
     public boolean isReadOnly;
@@ -20,29 +18,11 @@ public class EditEvent extends GwtEvent<EditHandler> {
         }
     }
 
-    public static <T> void fire(HasEditHandlers source, CompanyDepartment companyDepartment) {
-        if(TYPE != null) {
-            source.fireEvent(new EditEvent(companyDepartment));
-        }
-    }
-
-    public static <T> void fire(HasEditHandlers source, WorkerPosition workerPosition) {
-        if(TYPE != null) {
-            source.fireEvent(new EditEvent(workerPosition));
-        }
-    }
-    public static <T> void fire(HasEditHandlers source) {
-        if(TYPE != null) {
-            source.fireEvent(new EditEvent());
-        }
-    }
-
     public static <T> void fire(HasEditHandlers source, Long id, String text) {
         if(TYPE != null) {
             source.fireEvent(new EditEvent(id, text));
         }
     }
-
 
     public static Type<EditHandler> getType() {
         if(TYPE == null) {
@@ -55,16 +35,6 @@ public class EditEvent extends GwtEvent<EditHandler> {
     protected EditEvent(CaseTag caseTag, boolean isReadOnly) {
         this.caseTag = caseTag;
         this.isReadOnly = isReadOnly;
-    }
-
-    public EditEvent(CompanyDepartment companyDepartment){
-        this.companyDepartment = companyDepartment;
-    }
-
-    public EditEvent(WorkerPosition workerPosition){
-        this.workerPosition = workerPosition;
-    }
-    public EditEvent(){
     }
 
     public EditEvent(Long id, String text){

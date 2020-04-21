@@ -60,6 +60,21 @@ public PopupSelectorItemWithEdit() {
         return addHandler(handler, ClickEvent.getType());
     }
 
+    @Override
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
+    }
+
+    @Override
+    public void setElementHtml(String elementHtml) {
+        panel.getElement().setInnerHTML( elementHtml );
+    }
+
+    @Override
+    public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
+        return addHandler( handler, KeyUpEvent.getType() );
+    }
+
     public void setEditable(boolean isEditable) {
         editIcon.setStyleName("hide", !isEditable);
     }
@@ -92,21 +107,6 @@ public PopupSelectorItemWithEdit() {
     InlineLabel text;
     @UiField
     InlineLabel editIcon;
-
-    @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
-    }
-
-    @Override
-    public void setElementHtml(String elementHtml) {
-        panel.getElement().setInnerHTML( elementHtml );
-    }
-
-    @Override
-    public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
-        return addHandler( handler, KeyUpEvent.getType() );
-    }
 
     private T value = null;
     private SelectorItemHandler<T> selectorItemHandler;

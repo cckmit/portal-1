@@ -86,6 +86,7 @@ public class EmployeeSqlBuilder {
                 args.add(helper);
                 args.add(helper);
             }
+
             if (CollectionUtils.isNotEmpty(query.getHomeCompanies())) {
                 condition.append(" and person.id in ")
                         .append("(select personId from worker_entry where active > 0 and companyId in ")

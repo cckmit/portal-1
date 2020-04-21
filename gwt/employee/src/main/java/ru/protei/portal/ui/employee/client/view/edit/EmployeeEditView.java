@@ -54,12 +54,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         this.activity = activity;
     }
 
-   /* @Override
-    public void setBirthdayMandatory (boolean mandatory){
-        birthDay.setMandatory(mandatory);
-    }*/
-
-
     @Override
     public HasEnabled firstNameEnabled() {
         return firstName;
@@ -255,11 +249,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         return employeeFired;
     }
 
-  /*  @Override
-    public HasVisibility deletedMsgVisibility() {
-        return employeeDeleted;
-    }*/
-
     @Override
     public HasVisibility fireBtnVisibility() {
         return fireBtn;
@@ -392,12 +381,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         }
     }
 
-    /*@UiHandler("companyDepartment")
-    public void onDisplayDepartmentClicked(ClickEvent event){
-        departmentSelector.showUnderLeft( companyDepartment, companyDepartment.getOffsetWidth() );
-    }*/
-
-
     private void resetValidateTimer() {
         limitedFieldsValidationTimer.cancel();
         limitedFieldsValidationTimer.schedule(200);
@@ -467,11 +450,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     LabelElement workEmailLabel;
 
-
-
-    /*@UiField
-    Button companyDepartment;*/
-
     @Inject
     @UiField(provided = true)
     CompanyDepartmentSelector companyDepartmentSelector;
@@ -490,9 +468,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     HTMLPanel employeeFired;
-
-   /* @UiField
-    HTMLPanel employeeDeleted;*/
 
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override

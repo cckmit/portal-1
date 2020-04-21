@@ -20,6 +20,12 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.size;
  */
 public abstract class WorkerPositionModel implements Activity, SelectorModel<EntityOption> {
 
+    @Override
+    public EntityOption get( int elementIndex ) {
+        if(size( options ) <= elementIndex) return null;
+        return options.get( elementIndex );
+    }
+
     public void updateWorkerPositions(Refreshable selector, Long companyId) {
         workerPositionController.getWorkerPositions(companyId, new FluentCallback<List<WorkerPosition>>()
                 .withSuccess(workerPositions -> {
@@ -33,12 +39,6 @@ public abstract class WorkerPositionModel implements Activity, SelectorModel<Ent
 
     public Collection<EntityOption> getValues() {
         return options;
-    }
-
-    @Override
-    public EntityOption get( int elementIndex ) {
-        if(size( options ) <= elementIndex) return null;
-        return options.get( elementIndex );
     }
 
     private void fillEntityOptionList (List<WorkerPosition> workerPositions) {

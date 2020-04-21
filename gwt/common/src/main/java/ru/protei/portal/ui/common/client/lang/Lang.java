@@ -1351,6 +1351,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeSaved();
 
+    String employeeMainInfoTitle();
+
+    String employeeContactInfoTitle();
+
     String initiatorSelectACompany();
 
     String serverAccessParamsColumn();

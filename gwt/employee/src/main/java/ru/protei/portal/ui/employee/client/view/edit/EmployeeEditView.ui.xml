@@ -16,7 +16,7 @@
                 <div class="card card-transparent no-margin">
                     <div class="card-header">
                         <div class="card-title">
-                            <ui:text from="{lang.contactMainInfoTitle}"/>
+                            <ui:text from="{lang.employeeMainInfoTitle}"/>
                         </div>
                     </div>
                     <div class="card-body">
@@ -24,7 +24,7 @@
                             <g:HTMLPanel styleName="form-group col-md-12 text-complete" ui:field="employeeFired">
                                 <i class="fa fa-ban text-danger"/>
                                 <label class="text-danger">
-                                    <ui:text from="{lang.contactFired}"/>
+                                    <ui:text from="{lang.employeeFired}"/>
                                 </label>
                             </g:HTMLPanel>
                             <div class="form-group col-md-4">
@@ -74,7 +74,7 @@
 
                             <div class="form-group col-md-6">
                                 <label>
-                                    <ui:text from="{lang.contactPosition}"/>
+                                    <ui:text from="{lang.employeePosition}"/>
                                 </label>
                                 <workerposition:WorkerPositionSelector ui:field="workerPositionSelector" validation="true"/>
                             </div>
@@ -93,7 +93,7 @@
                 <div class="card card-transparent no-margin">
                     <div class="card-header">
                         <div class="card-title">
-                            <ui:text from="{lang.contactContactInfoTitle}"/>
+                            <ui:text from="{lang.employeeContactInfoTitle}"/>
                         </div>
                     </div>
                     <div class="card-body">
@@ -134,18 +134,15 @@
                                                                 notNull="false"
                                                                 styleName="form-control"/>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="card-footer">
             <div class="pull-right">
-                <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
+                <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.employeeFire}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
             </div>

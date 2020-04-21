@@ -20,6 +20,11 @@ public class GenderButtonSelector extends ButtonSelector<En_Gender> {
         fillOptions();
     }
 
+    @Override
+    public boolean isValid(){
+        return !getValue().equals(En_Gender.UNDEFINED);
+    }
+
     private void fillOptions() {
         for ( En_Gender value : En_Gender.values() ) {
             addOption( value );
@@ -43,11 +48,6 @@ public class GenderButtonSelector extends ButtonSelector<En_Gender> {
             default:
                 return lang.genderUndefined();
         }
-    }
-
-    @Override
-    public boolean isValid(){
-        return !getValue().equals(En_Gender.UNDEFINED);
     }
 
     @Inject
