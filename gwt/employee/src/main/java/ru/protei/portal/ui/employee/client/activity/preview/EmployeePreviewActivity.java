@@ -91,6 +91,11 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         fireEvent(new EmployeeEvents.Show());
     }
 
+    @Override
+    public void onEditClicked() {
+        fireEvent(new EmployeeEvents.Edit(employeeId));
+    }
+
     private void fillView(Long employeeId) {
         employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }

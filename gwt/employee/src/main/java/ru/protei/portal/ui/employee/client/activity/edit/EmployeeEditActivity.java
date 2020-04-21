@@ -8,15 +8,21 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
@@ -37,21 +43,29 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Event
     public void onShow( EmployeeEvents.Edit event ) {
+        personId = null;
+        workerId = null;
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        if (event.id == null) {
-            Person newPerson = new Person();
-            newPerson.setCompanyId(event.companyId);
-            newPerson.setCompany(event.company);
-            initialView(newPerson, new WorkerEntry());
-        } else {
-            contactService.getContact(event.id, new FluentCallback<Person>()
-                    .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<UserLogin>()
-                            .withSuccess(userLogin -> {} /*initialView(person, userLogin == null ? new UserLogin() : userLogin)*/))));
-        }
+        companyService.getCompanyOptionList(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
+                new FluentCallback<List<EntityOption>>()
+                        .withSuccess(companies -> {
+                            companiesWithoutSync.clear();
+                            companiesWithoutSync.addAll(companies);
+
+                            if (event.id == null) {
+                                fillView(new EmployeeShortView());
+                            } else {
+                                personId = event.id;
+                                fillView(event.id);
+                            }
+
+                        }));
     }
+
+
 
     @Event
     public void onCreateDepartment(CompanyDepartmentEvents.Created event){
@@ -127,46 +141,35 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return;
         }
 
-        employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
-                .withSuccess(person -> {
+        WorkerEntry worker = new WorkerEntry();
+        worker.setPositionId(view.workerPosition().getValue().getId());
+        worker.setDepartmentId(view.companyDepartment().getValue().getId());
+        worker.setCompanyId(view.company().getValue().getId());
 
-                    worker.setPersonId(person.getId());
-                    worker.setPositionId(view.workerPosition().getValue().getId());
-                    worker.setDepartmentId(view.companyDepartment().getValue().getId());
-                    worker.setCompanyId(view.company().getValue().getId());
+        if (personId == null) {
+            createPersonAndCreateWorker(worker);
+            return;
+        }
 
-                    employeeService.createEmployeeWorker(worker, new FluentCallback<WorkerEntry>()
-                            .withSuccess(workerEntry -> {
-                                fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
-                                fireEvent(new Back());
-                            }));
-                }));
+        worker.setPersonId(personId);
 
+        if (workerId == null){
+            if (isEditablePerson){
+                updatePersonAndCreateWorker(worker);
+            } else {
+                createEmployeeWorker(worker);
+            }
+            return;
+        }
 
+        worker.setId(workerId);
 
-       /* contactService.saveContact(applyChangesContact(), new FluentCallback<Person>().withSuccess(person -> {
-                    if (userLogin.getId() == null) {
-                        userLogin.setPersonId(person.getId());
-                        userLogin.setPerson(person);
-                        userLogin.setInfo(person.getDisplayName());
-                    }
+        if (isEditablePerson){
+            updatePersonAndUpdateWorker(worker);
+        } else {
+            updateEmployeeWorker(worker);
+        }
 
-                    contactService.saveAccount(userLogin, sendWelcomeEmailVisibility && sendWelcomeEmail, new RequestCallback<Boolean>() {
-                        @Override
-                        public void onError(Throwable throwable) {
-                            fireErrorMessage(lang.errEditContactLogin());
-                            fireEvent(new Back());
-                        }
-
-                        @Override
-                        public void onSuccess(Boolean result) {
-                            fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
-                            fireEvent(new PersonEvents.PersonCreated(person, origin));
-                            fireEvent(isNew(contact) ? new ContactEvents.Show(true) : new Back());
-                        }
-                    });
-                }
-        ));*/
     }
 
     @Override
@@ -215,8 +218,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onGenderSelected() {
-        boolean isValid = !view.gender().getValue().equals(En_Gender.UNDEFINED);
-        view.genderValidator().setValid(isValid);
+        checkGenderValid();
     }
 
     private boolean validateSaveButton() {
@@ -235,18 +237,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         return true;
     }
 
-    private boolean isNew(Person person) {
-        return person.getId() == null;
-    }
-
     private boolean fireErrorMessage(String msg) {
         fireEvent(new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
         return false;
     }
 
     private Person applyChangesEmployee() {
+        employee.setId(personId);
         employee.setGender(view.gender().getValue());
-        employee.setCompanyId(view.company().getValue().getId());
         employee.setFirstName(view.firstName().getValue());
         employee.setLastName(view.lastName().getValue());
         employee.setSecondName(view.secondName().getText());
@@ -318,45 +316,121 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         return null;
     }
 
-    private void initialView(Person person, WorkerEntry worker){
-        this.employee = person;
-        this.worker = worker;
-        fillView(employee);
+    private void fillView(Long employeeId) {
+        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
-    private void fillView(Person person){
-        view.company().setValue(person.getCompany() == null ? null : person.getCompany().toEntityOption());
-        view.companyDepartment().setValue(worker.getDepartmentId() == null ? null : new EntityOption(worker.getDepartmentName(), worker.getDepartmentId()));
-        view.workerPosition().setValue(worker.getPositionName() == null ? null : new EntityOption(worker.getPositionName(), worker.getPositionId()));
-        view.companyEnabled().setEnabled(person.getId() == null && person.getCompany() == null);
-        view.companyValidator().setValid(person.getCompany() != null);
-        view.companyDepartmentValidator().setValid(worker.getDepartmentId() != null);
-        view.workerPositionValidator().setValid(worker.getPositionName() != null);
-        view.gender().setValue(person.getGender());
-        view.firstName().setValue(person.getFirstName());
-        view.lastName().setValue(person.getLastName());
-        view.secondName().setText(person.getSecondName());
-        view.birthDay().setValue(person.getBirthday());
+    private void fillView(EmployeeShortView employee){
+        view.gender().setValue(employee.getGender());
+        checkGenderValid();
+        view.firstName().setValue(employee.getFirstName());
+        view.lastName().setValue(employee.getLastName());
+        view.secondName().setText(employee.getSecondName());
+        view.birthDay().setValue(employee.getBirthday());
+        view.ipAddress().setText(employee.getIpAddress());
 
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
+        view.workPhone().setText(employee.getContactInfo() == null ? null : infoFacade.getWorkPhone());
+        view.mobilePhone().setText(employee.getContactInfo() == null ? null : infoFacade.getMobilePhone());
+        view.workEmail().setText(employee.getContactInfo() == null ? null : infoFacade.getEmail());
+        view.personalEmail().setText(employee.getContactInfo() == null ? null : infoFacade.getEmail_own());
 
-        view.workPhone().setText(infoFacade.getWorkPhone());
-        view.mobilePhone().setText(infoFacade.getMobilePhone());
+        view.firedMsgVisibility().setVisible(employee.isFired());
+        view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());
+        WorkerEntryShortView workerEntry = getWorkerEntryWithoutSync (employee.getWorkerEntries());
+        boolean isEmployeeInSyncCompanies = workerEntry != null;
 
-        view.workEmail().setText(infoFacade.getEmail());
-        view.personalEmail().setText(infoFacade.getEmail_own());
+        if (!isEmployeeInSyncCompanies){
+            workerEntry = new WorkerEntryShortView();
+            workerId = null;
+        } else {
+            workerId = workerEntry.getId();
+        }
 
-        //view.workerPosition().setText(StringUtils.isEmpty(person.getPosition()) ? "Выберите Бла-бла" : person.getPosition());
-        //view.companyDepartment().(StringUtils.isEmpty(person.getDepartment()) ? "Выберите Бла-бла" : person.getDepartment());
+        view.company().setValue(workerEntry.getCompanyId() == null ? null : new EntityOption(workerEntry.getCompanyName(), workerEntry.getCompanyId()));
+        onCompanySelected();
+        view.companyDepartment().setValue(workerEntry.getDepId() == null ? null : new EntityOption(workerEntry.getDepartmentName(), workerEntry.getDepId()));
+        view.workerPosition().setValue(workerEntry.getPersonId() == null ? null : new EntityOption(workerEntry.getPositionName(), workerEntry.getPositionId()));
 
-        view.deletedMsgVisibility().setVisible(person.isDeleted());
-        view.firedMsgVisibility().setVisible(person.isFired());
-        view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
+        view.companyValidator().setValid(workerEntry.getCompanyId() != null);
+        view.companyDepartmentValidator().setValid(workerEntry.getDepId() != null);
+        view.workerPositionValidator().setValid(workerEntry.getPersonId() != null);
+
 
         view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
         view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
+
+
+        setPersonFieldsEnabled ((employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0) || (isEmployeeInSyncCompanies && employee.getWorkerEntries().size() == 1));
     }
+
+    private void setPersonFieldsEnabled (boolean isEnabled) {
+        isEditablePerson = isEnabled;
+        view.firstNameEnabled().setEnabled(isEnabled);
+        view.secondNameEnabled().setEnabled(isEnabled);
+        view.lastNameEnabled().setEnabled(isEnabled);
+        view.birthDayEnabled().setEnabled(isEnabled);
+        view.genderEnabled().setEnabled(isEnabled);
+        view.personalEmailEnabled().setEnabled(isEnabled);
+        view.workEmailEnabled().setEnabled(isEnabled);
+        view.mobilePhoneEnabled().setEnabled(isEnabled);
+        view.workPhoneEnabled().setEnabled(isEnabled);
+        view.ipAddressEnabled().setEnabled(isEnabled);
+    }
+
+    private void createEmployeeWorker (WorkerEntry worker){
+        employeeService.createEmployeeWorker(worker, new FluentCallback<WorkerEntry>()
+                .withSuccess(workerEntry -> {
+                    fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
+                }));
+    }
+
+    private void updateEmployeeWorker (WorkerEntry worker){
+        employeeService.updateEmployeeWorker(worker, new FluentCallback<Boolean>()
+                .withSuccess(workerEntry -> {
+                    fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
+                }));
+    }
+
+    private void createPersonAndCreateWorker(WorkerEntry worker){
+        employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
+                .withSuccess(person -> {
+                    worker.setPersonId(person.getId());
+                    createEmployeeWorker(worker);
+                }));
+    }
+
+    private void updatePersonAndCreateWorker(WorkerEntry worker){
+        employeeService.updateEmployeePerson(applyChangesEmployee(), new FluentCallback<Boolean>()
+                .withSuccess(success -> {
+                    createEmployeeWorker(worker);
+                }));
+    }
+
+    private void updatePersonAndUpdateWorker(WorkerEntry worker){
+        employeeService.updateEmployeePerson(applyChangesEmployee(), new FluentCallback<Boolean>()
+                .withSuccess(success -> {
+                    updateEmployeeWorker(worker);
+                }));
+    }
+
+    private WorkerEntryShortView getWorkerEntryWithoutSync (List<WorkerEntryShortView> workerEntryShortViews) {
+        if (workerEntryShortViews != null){
+            for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
+                for (EntityOption entityOption : companiesWithoutSync) {
+                    if (workerEntryShortView.getCompanyId().equals(entityOption.getId())){
+                        return workerEntryShortView;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     private boolean hasPrivileges(Long personId) {
         if (personId == null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE)) {
@@ -383,6 +457,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         );
     }
 
+    private void checkGenderValid(){
+        boolean isValid = !view.gender().getValue().equals(En_Gender.UNDEFINED);
+        view.genderValidator().setValid(isValid);
+    }
+
     @Inject
     AbstractEmployeeEditView view;
     @Inject
@@ -391,14 +470,18 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     EmployeeControllerAsync employeeService;
 
     @Inject
-    ContactControllerAsync contactService;
+    CompanyControllerAsync companyService;
     @Inject
-    AccountControllerAsync accountService;
+    ContactControllerAsync contactService;
+
     @Inject
     PolicyService policyService;
 
 
-    private Person employee;
-    private WorkerEntry worker;
+    private List<EntityOption> companiesWithoutSync = new ArrayList<>();
+    private Person employee = new Person();
+    private Long personId;
+    private boolean isEditablePerson;
+    private Long workerId;
     private AppEvents.InitDetails initDetails;
 }

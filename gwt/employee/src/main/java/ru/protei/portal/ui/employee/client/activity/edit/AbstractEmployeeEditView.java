@@ -12,6 +12,26 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     void setActivity(AbstractEmployeeEditActivity activity);
 
+    HasEnabled firstNameEnabled();
+
+    HasEnabled lastNameEnabled();
+
+    HasEnabled secondNameEnabled();
+
+    HasEnabled birthDayEnabled();
+
+    HasEnabled genderEnabled();
+
+    HasEnabled personalEmailEnabled();
+
+    HasEnabled workEmailEnabled();
+
+    HasEnabled mobilePhoneEnabled();
+
+    HasEnabled workPhoneEnabled();
+
+    HasEnabled ipAddressEnabled();
+
     HasValue<String> firstName();
     HasValue<String> lastName();
     HasText secondName();
@@ -63,8 +83,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasVisibility fireBtnVisibility();
 
     HasVisibility firedMsgVisibility();
-
-    HasVisibility deletedMsgVisibility();
 
     HasValidable workEmailValidator();
 

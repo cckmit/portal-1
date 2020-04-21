@@ -105,6 +105,15 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         }
     }
 
+    @UiHandler("editIcon")
+    public void onEditClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onEditClicked();
+        }
+    }
+
     @UiField
     HTMLPanel rootWrapper;
 
@@ -122,6 +131,9 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     Anchor employeeName;
+
+    @UiField
+    Anchor editIcon;
 
     @UiField
     SpanElement birthday;

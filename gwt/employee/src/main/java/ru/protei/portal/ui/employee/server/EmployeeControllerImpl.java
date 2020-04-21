@@ -113,6 +113,29 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
+    public Boolean updateEmployeePerson(Person person) throws RequestFailedException {
+
+        if (person == null || person.getId() == null) {
+            log.warn("updateEmployeePerson(): null person or null id in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        log.info("updateEmployeePerson(): update person, id: {} ", HelperFunc.nvl(person.getId()));
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.updateEmployeePerson( token, person );
+
+        log.info("updateEmployeePerson(): update person, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
     public WorkerEntry createEmployeeWorker(WorkerEntry worker) throws RequestFailedException {
 
         if (worker == null) {
@@ -130,6 +153,29 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         if (response.isOk()) {
             log.info("createEmployeeWorker(): create worker, applied id: {}", response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Boolean updateEmployeeWorker(WorkerEntry worker) throws RequestFailedException {
+
+        if (worker == null || worker.getId() == null) {
+            log.warn("updateEmployeeWorker(): null worker or null worker id in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        log.info("updateEmployeeWorker(): update worker, id: {} ", HelperFunc.nvl(worker.getId()));
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.updateEmployeeWorker( token, worker );
+
+        log.info("updateEmployeeWorker(): update worker, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
             return response.getData();
         }
 

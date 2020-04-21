@@ -41,7 +41,11 @@ public interface EmployeeControllerAsync {
 
     void createEmployeePerson(Person person, AsyncCallback<Person> async);
 
+    void updateEmployeePerson(Person person, AsyncCallback<Boolean> async);
+
     void createEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<WorkerEntry> async);
+
+    void updateEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<Boolean> async);
 
     void getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId, AsyncCallback<EmployeeShortView> async);
 

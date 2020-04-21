@@ -48,7 +48,15 @@ public interface EmployeeService {
     @Privileged(En_Privilege.EMPLOYEE_CREATE)
     Result<Person> createEmployeePerson(AuthToken token, Person person);
 
+    @Auditable(En_AuditType.EMPLOYEE_MODIFY)
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> updateEmployeePerson(AuthToken token, Person person);
+
     @Auditable(En_AuditType.WORKER_CREATE)
     @Privileged(En_Privilege.EMPLOYEE_CREATE)
     Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker);
+
+    @Auditable(En_AuditType.WORKER_MODIFY)
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker);
 }

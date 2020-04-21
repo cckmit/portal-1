@@ -27,12 +27,6 @@
                                     <ui:text from="{lang.contactFired}"/>
                                 </label>
                             </g:HTMLPanel>
-                            <g:HTMLPanel styleName="form-group col-md-12 text-complete" ui:field="employeeDeleted">
-                                <i class="fa fa-ban text-danger"/>
-                                <label class="text-danger">
-                                    <ui:text from="{lang.contactDeleted}"/>
-                                </label>
-                            </g:HTMLPanel>
                             <div class="form-group col-md-4">
                                 <label ui:field="lastNameLabel">
                                     <ui:text from="{lang.lastName}"/>

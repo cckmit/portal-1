@@ -83,28 +83,8 @@ public class EmployeeEvents {
     public static class Edit {
 
         public Long id;
-        public Long companyId;
-        @Omit
-        public Company company;
-        public String origin;
 
         public Edit() { this.id = null; }
-        public Edit (Long id, Long companyId) {
-            this.id = id;
-            this.companyId = companyId;
-        }
-        public Edit (Long id, Company company, String origin) {
-            this.id = id;
-            this.company = company;
-            this.origin = origin;
-        }
-
-        public static ContactEvents.Edit byId (Long id) {
-            return new ContactEvents.Edit(id, null);
-        }
-
-        public static ContactEvents.Edit newItem (EntityOption option) {
-            return new ContactEvents.Edit(null, option != null ? option.getId() : null);
-        }
+        public Edit(Long id) { this.id = id; }
     }
 }

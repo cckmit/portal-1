@@ -43,6 +43,9 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn(name = "dep_id")
     private Long depId;
 
+    @JdbcColumn(name = "positionId")
+    private Long positionId;
+
     public Long getId() {
         return id;
     }
@@ -127,6 +130,14 @@ public class WorkerEntryShortView implements Serializable {
         this.companyIsHidden = companyIsHidden;
     }
 
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
+    }
+
     @Override
     public String toString() {
         return "WorkerEntryShortView{" +
@@ -139,6 +150,7 @@ public class WorkerEntryShortView implements Serializable {
                 ", positionName='" + positionName + '\'' +
                 ", activeFlag=" + activeFlag +
                 ", depId=" + depId +
+                ", positionId=" + positionId +
                 ", companyIsHidden=" + companyIsHidden +
                 '}';
     }

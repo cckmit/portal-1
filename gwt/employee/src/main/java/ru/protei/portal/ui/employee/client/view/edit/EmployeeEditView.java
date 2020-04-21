@@ -45,11 +45,69 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workerPositionSelector.setEditHandler(editEvent -> activity.onEditWorkerPositionClicked(editEvent.id, editEvent.text));
         workerPositionSelector.setAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
 
+        birthDay.setMandatory(false);
+
     }
 
     @Override
     public void setActivity(AbstractEmployeeEditActivity activity) {
         this.activity = activity;
+    }
+
+   /* @Override
+    public void setBirthdayMandatory (boolean mandatory){
+        birthDay.setMandatory(mandatory);
+    }*/
+
+
+    @Override
+    public HasEnabled firstNameEnabled() {
+        return firstName;
+    }
+
+    @Override
+    public HasEnabled lastNameEnabled() {
+        return lastName;
+    }
+
+    @Override
+    public HasEnabled secondNameEnabled() {
+        return secondName;
+    }
+
+    @Override
+    public HasEnabled birthDayEnabled() {
+        return birthDay;
+    }
+
+    @Override
+    public HasEnabled genderEnabled() {
+        return gender;
+    }
+
+    @Override
+    public HasEnabled personalEmailEnabled() {
+        return personalEmail;
+    }
+
+    @Override
+    public HasEnabled workEmailEnabled() {
+        return workEmail;
+    }
+
+    @Override
+    public HasEnabled mobilePhoneEnabled() {
+        return mobilePhone;
+    }
+
+    @Override
+    public HasEnabled workPhoneEnabled() {
+        return workPhone;
+    }
+
+    @Override
+    public HasEnabled ipAddressEnabled() {
+        return ipAddress;
     }
 
     @Override
@@ -197,10 +255,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         return employeeFired;
     }
 
-    @Override
+  /*  @Override
     public HasVisibility deletedMsgVisibility() {
         return employeeDeleted;
-    }
+    }*/
 
     @Override
     public HasVisibility fireBtnVisibility() {
@@ -433,8 +491,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     HTMLPanel employeeFired;
 
-    @UiField
-    HTMLPanel employeeDeleted;
+   /* @UiField
+    HTMLPanel employeeDeleted;*/
 
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override

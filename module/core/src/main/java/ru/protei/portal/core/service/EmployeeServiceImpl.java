@@ -213,7 +213,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 department.getHead().toFullNameShortView()));
     }
 
-    @Transactional
     @Override
     public Result<Person> createEmployeePerson(AuthToken token, Person person) {
         if (person == null) {
@@ -232,14 +231,48 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
 
-        if (person.getGender() == null)
-            person.setGender(En_Gender.UNDEFINED);
-
         Long personId = personDAO.persist(person);
 
         if (personId != null) {
             person.setId(personId);
             return ok(person);
+        }
+
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person) {
+        if (person == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!validatePerson(person) || person.getId() == null) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
+        person.setDisplayShortName(createPersonShortName(person));
+
+        boolean success = personDAO.partialMerge(person,  "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
+
+        if (success) {
+            return ok(true);
+        }
+
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker) {
+        if (worker == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = workerEntryDAO.partialMerge(worker, "dep_id", "companyId", "positionId");
+
+        if (result) {
+            return ok(true);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR);
@@ -312,37 +345,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             return false;
         }
 
-        if (person.isDeleted()) {
-            log.warn("avoid to update deleted person with id = {}", person.getId());
-            return false;
-        }
-
-        if (!personDAO.isEmployee(person)) {
-            log.warn("person with id = {} is not employee",person.getId());
-            return false;
-        }
-
         if (StringUtils.isBlank(person.getFirstName())) {
             return false;
         }
 
         if (StringUtils.isBlank(person.getLastName())) {
             return false;
-        }
-
-        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
-        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
-        if (person.getId() != null) {
-            Person personOld = personDAO.getContact(person.getId());
-            if (personOld.isFired() != person.isFired()) {
-                log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
-                return false;
-            }
-
-            if (personOld.isDeleted() != person.isDeleted()) {
-                log.warn("prevented change of person.isDeleted attr, person with id = {}", person.getId());
-                return false;
-            }
         }
 
         return true;
