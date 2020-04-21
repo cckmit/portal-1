@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -59,4 +60,8 @@ public interface EmployeeService {
     @Auditable(En_AuditType.WORKER_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker);
+
+    @Auditable(En_AuditType.EMPLOYEE_MODIFY)
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> fireEmployee(AuthToken token, Person person);
 }

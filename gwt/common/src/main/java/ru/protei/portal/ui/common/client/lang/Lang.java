@@ -1345,6 +1345,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeShowFired();
 
+    String employeeFireConfirmMessage();
+
+    String employeeFire();
+
+    String employeeSaved();
+
     String initiatorSelectACompany();
 
     String serverAccessParamsColumn();

@@ -53,4 +53,6 @@ public interface EmployeeController extends RemoteService {
     Boolean updateEmployeePerson(Person person) throws RequestFailedException;
 
     Boolean updateEmployeeWorker(WorkerEntry workerEntry) throws RequestFailedException;
+
+    boolean fireEmployee(Person person) throws RequestFailedException;
 }

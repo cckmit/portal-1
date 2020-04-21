@@ -182,6 +182,19 @@ public class EmployeeControllerImpl implements EmployeeController {
         throw new RequestFailedException(response.getStatus());
     }
 
+    @Override
+    public boolean fireEmployee(Person person) throws RequestFailedException {
+        log.info("fire employee, id: {}", person.getId());
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.fireEmployee(token, person);
+
+        log.info("fire employee, id: {} -> {} ", person.getId(), response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
+
+        return response.isOk() ? response.getData() : false;
+    }
+
     @Autowired
     SessionService sessionService;
     @Autowired

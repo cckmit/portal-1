@@ -50,4 +50,6 @@ public interface EmployeeControllerAsync {
     void getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId, AsyncCallback<EmployeeShortView> async);
 
     void getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query, AsyncCallback<SearchResult<EmployeeShortView>> async);
+
+    void fireEmployee(Person person, AsyncCallback<Boolean> async);
 }

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -134,6 +135,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onSaveClicked() {
+        if (employee.isFired()){
+            fireEvent(new Back());
+            return;
+        }
+
         String errorMsg = validate();
 
         if (errorMsg != null) {
@@ -183,7 +189,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return;
         }
 
-        fireEvent(new ConfirmDialogEvents.Show(lang.contactFireConfirmMessage(), lang.contactFire(), removeAction(employee.getId())));
+        fireEvent(new ConfirmDialogEvents.Show(lang.employeeFireConfirmMessage(), lang.employeeFire(), removeAction()));
     }
 
     @Override
@@ -321,6 +327,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(EmployeeShortView employee){
+        this.employee.setFired(employee.isFired());
         view.gender().setValue(employee.getGender());
         checkGenderValid();
         view.firstName().setValue(employee.getFirstName());
@@ -361,8 +368,13 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
         view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
 
+        boolean isEnabled = (employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0) || (isEmployeeInSyncCompanies && employee.getWorkerEntries().size() == 1);
+        view.fireBtnVisibility().setVisible(personId!= null & isEnabled & !employee.isFired());
 
-        setPersonFieldsEnabled ((employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0) || (isEmployeeInSyncCompanies && employee.getWorkerEntries().size() == 1));
+        setPersonFieldsEnabled (isEnabled);
+        if (employee.isFired()) {
+            setAllFieldsEnabled(false);
+        }
     }
 
     private void setPersonFieldsEnabled (boolean isEnabled) {
@@ -379,10 +391,17 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddressEnabled().setEnabled(isEnabled);
     }
 
+    private void setAllFieldsEnabled(boolean isEnabled){
+        setPersonFieldsEnabled(isEnabled);
+        view.companyEnabled().setEnabled(isEnabled);
+        view.companyDepartmentEnabled().setEnabled(isEnabled);
+        view.workerPositionEnabled().setEnabled(isEnabled);
+    }
+
     private void createEmployeeWorker (WorkerEntry worker){
         employeeService.createEmployeeWorker(worker, new FluentCallback<WorkerEntry>()
                 .withSuccess(workerEntry -> {
-                    fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new Back());
                 }));
     }
@@ -390,7 +409,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     private void updateEmployeeWorker (WorkerEntry worker){
         employeeService.updateEmployeeWorker(worker, new FluentCallback<Boolean>()
                 .withSuccess(workerEntry -> {
-                    fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new Back());
                 }));
     }
@@ -433,22 +452,22 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
 
     private boolean hasPrivileges(Long personId) {
-        if (personId == null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE)) {
+        if (personId == null && policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
             return true;
         }
 
-        if (personId != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT)) {
+        if (personId != null && policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT)) {
             return true;
         }
 
         return false;
     }
 
-    private Runnable removeAction(Long contactId) {
-        return () -> contactService.fireContact(contactId, new FluentCallback<Boolean>()
+    private Runnable removeAction() {
+        return () -> employeeService.fireEmployee(applyChangesEmployee(), new FluentCallback<Boolean>()
                 .withSuccess(result -> {
                     if (result) {
-                        fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new NotifyEvents.Show(lang.employeeFired(), NotifyEvents.NotifyType.SUCCESS));
                         fireEvent(new Back());
                     } else {
                         fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));

@@ -62,6 +62,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     CompanyDepartmentDAO companyDepartmentDAO;
 
     @Autowired
+    UserLoginDAO userLoginDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
@@ -292,6 +295,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    @Transactional
+    public Result<Boolean> fireEmployee(AuthToken token, Person person) {
+
+        Person personFromDb = personDAO.getEmployee(person.getId());
+
+        if (personFromDb == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        personFromDb.setFired(true);
+
+        boolean result = personDAO.merge(personFromDb);
+
+        if (result) {
+            userLoginDAO.removeByPersonId(personFromDb.getId());
+        }
+
+        return ok(result);
     }
 
     private String createPersonShortName(Person person) {
