@@ -20,6 +20,16 @@ public class CompanyDepartmentDAO_Impl extends PortalBaseJdbcDAO<CompanyDepartme
     }
 
     @Override
+    public boolean checkExistsByName(String name, Long companyId) {
+        return checkExistsByCondition ("company_dep.dep_name=? and company_dep.company_id=?", name, companyId);
+    }
+
+    @Override
+    public boolean checkExistsByNameAndDepId(String name, Long companyId, Long departmentId) {
+        return checkExistsByCondition ("company_dep.dep_name=? and company_dep.company_id=? and company_dep.id!=?", name, companyId, departmentId);
+    }
+
+    @Override
     public CompanyDepartment getByExternalId(String extId, Long companyId) {
         return getByCondition ("company_dep.dep_extId=? and company_dep.company_id=?", extId, companyId);
     }

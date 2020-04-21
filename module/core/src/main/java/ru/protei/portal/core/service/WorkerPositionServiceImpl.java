@@ -38,6 +38,10 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (workerPositionDAO.checkExistsByName(workerPosition.getName(), workerPosition.getCompanyId())){
+            return error(En_ResultStatus.POSITION_ALREADY_EXIST);
+        }
+
         Long workerPositionId = workerPositionDAO.persist(workerPosition);
 
         if (workerPositionId == null) {
@@ -52,6 +56,11 @@ public class WorkerPositionServiceImpl implements WorkerPositionService{
         if (!isValid(workerPosition)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        if (workerPositionDAO.checkExistsByNameAndPosId(workerPosition.getName(), workerPosition.getCompanyId(), workerPosition.getId())){
+            return error(En_ResultStatus.POSITION_ALREADY_EXIST);
+        }
+
         boolean result = workerPositionDAO.merge(workerPosition);
 
         if ( !result )

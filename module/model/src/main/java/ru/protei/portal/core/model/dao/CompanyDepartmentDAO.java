@@ -10,6 +10,8 @@ import java.util.List;
 public interface CompanyDepartmentDAO extends PortalBaseDAO<CompanyDepartment> {
     boolean checkExistsByParentId(Long departmentId);
     boolean checkExistsByParent(String extId, Long companyId);
+    boolean checkExistsByName(String name, Long companyId);
+    boolean checkExistsByNameAndDepId(String name, Long companyId, Long departmentId);
     CompanyDepartment getByExternalId(String extId, Long companyId);
     List<CompanyDepartment> getListByCompanyId(Long companyId);
 }

@@ -188,5 +188,15 @@ public enum En_ResultStatus {
     /**
      * Существует сотрудник занимающий данную должность
      */
-    WORKER_WITH_THIS_POSITION_ALREADY_EXIST
+    WORKER_WITH_THIS_POSITION_ALREADY_EXIST,
+
+    /**
+     * Такой отдел уже существует
+     */
+    DEPARTMENT_ALREADY_EXIST,
+
+    /**
+     * Такая должность уже существует
+     */
+    POSITION_ALREADY_EXIST
 }
