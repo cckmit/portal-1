@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
@@ -16,7 +15,6 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -144,9 +142,23 @@ public abstract class SubnetTableActivity
 
     @Override
     public void onRemoveClicked(Subnet value) {
-        if (value != null && !policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE)) {
-            fireEvent(new ConfirmDialogEvents.Show(lang.reservedIpSubnetRemoveConfirmMessage(), lang.reservedIpSubnetRemove(), onConfirmRemoveClicked(value)));
+        if (value == null || !policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE)) {
+            return;
         }
+
+        ipReservationService.isSubnetAvailableToRemove(
+                value.getId(),
+                new FluentCallback<Boolean>()
+                        .withError(throwable -> showErrorFromServer(throwable))
+                        .withSuccess(result -> {
+                                    String confMessage = result ?
+                                            lang.reservedIpSubnetRemoveConfirmMessage() :
+                                            lang.reservedIpSubnetRemoveWithIpsConfirmMessage();
+
+                                    fireEvent(new ConfirmDialogEvents.Show(confMessage, lang.reservedIpSubnetRemove(), onConfirmRemoveClicked(value)));
+                                }
+                                )
+        );
     }
 
     @Override
@@ -157,16 +169,11 @@ public abstract class SubnetTableActivity
     }
 
     private Runnable onConfirmRemoveClicked(Subnet value) {
-        return () -> ipReservationService.removeSubnet(value, new FluentCallback<Long>()
-                .withError(throwable -> {
-                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
-                        fireEvent(new NotifyEvents.Show(lang.reservedIpSubnetUnableToRemove(), NotifyEvents.NotifyType.ERROR));
-                    } else {
-                        errorHandler.accept(throwable);
-                    }
-                })
+        return () -> ipReservationService.removeSubnet(value, true, new FluentCallback<Long>()
+                .withError(throwable -> showError(lang.reservedIpSubnetUnableToRemove()))
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.reservedIpSubnetRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IpReservationEvents.ChangeModel());
                     fireEvent(new IpReservationEvents.ShowSubnet());
                 })
         );
@@ -181,18 +188,12 @@ public abstract class SubnetTableActivity
         view.clearRecords();
         animation.closeDetails();
 
-        ipReservationService.getSubnetList( makeQuery(), new RequestCallback<SearchResult<Subnet>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess(SearchResult<Subnet> result) {
-                view.clearRecords();
-                result.getResults().forEach(view::addRow);
-            }
-        });
+        ipReservationService.getSubnetList( makeQuery(), new FluentCallback<SearchResult<Subnet>>()
+                .withError(throwable -> showError(lang.errGetList()))
+                .withSuccess(sr -> {
+                    view.clearRecords();
+                    sr.getResults().forEach(view::addRow);
+                }));
     }
 
     private ReservedIpQuery makeQuery() {
@@ -210,6 +211,14 @@ public abstract class SubnetTableActivity
                 }));*/
 /*        fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));*/
         Window.alert("Refresh subnet " + subnet.getAddress());
+    }
+
+    private void showErrorFromServer(Throwable throwable) {
+        errorHandler.accept(throwable);
+    }
+
+    private void showError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     @Inject

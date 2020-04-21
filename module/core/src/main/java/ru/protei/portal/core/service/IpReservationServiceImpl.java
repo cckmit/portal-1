@@ -173,17 +173,11 @@ public class IpReservationServiceImpl implements IpReservationService {
         if( subnetId == null )
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        ReservedIpQuery query = new ReservedIpQuery();
-        query.setSubnetId(subnetId);
-        Long result = reservedIpDAO.count(query);
-        if (result == null || result == 0)
-            return ok(true);
-
-        return ok(false);
+        return ok(subnetAvailableToRemove(subnetId));
     }
 
     @Override
-    public Result<Long> removeSubnet( AuthToken token, Subnet subnet) {
+    public Result<Long> removeSubnet( AuthToken token, Subnet subnet, boolean removeWithIps) {
         if (subnet == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
@@ -192,10 +186,14 @@ public class IpReservationServiceImpl implements IpReservationService {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (!subnetDAO.removeByKey(subnet.getId()))
-            return error(En_ResultStatus.INTERNAL_ERROR);
+        if (removeWithIps || subnetAvailableToRemove(subnet.getId())) {
+            if (!subnetDAO.removeByKey(subnet.getId()))
+                return error(En_ResultStatus.INTERNAL_ERROR);
 
-        return ok(subnet.getId());
+            return ok(subnet.getId());
+        }
+
+        return error(En_ResultStatus.NOT_REMOVED);
     }
 
     @Override
@@ -250,7 +248,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
             Subnet subnet = subnetDAO.getSubnetByAddress(reservedIpRequest.getSubnetAddress());
             if (subnet == null) {
-                return error(En_ResultStatus.UNDEFINED_OBJECT);
+                return error(En_ResultStatus.SUBNET_DOES_NOT_EXIST);
             }
             templateIp.setSubnetId(subnet.getId());
 
@@ -528,6 +526,14 @@ public class IpReservationServiceImpl implements IpReservationService {
             return false;
 
         return true;
+    }
+
+    private boolean subnetAvailableToRemove (Long subnetId) {
+        ReservedIpQuery query = new ReservedIpQuery();
+        query.setSubnetId(subnetId);
+        Long result = reservedIpDAO.count(query);
+
+        return result == null || result == 0;
     }
 
     private boolean hasAccessForSubnet(AuthToken token, En_Privilege privilege) {

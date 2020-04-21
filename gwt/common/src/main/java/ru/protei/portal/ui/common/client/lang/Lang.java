@@ -2364,6 +2364,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpSubnetRemoveConfirmMessage();
 
+    String reservedIpSubnetRemoveWithIpsConfirmMessage();
+
     String reservedIpReleaseConfirmMessage();
 
     String reservedIpUnableToRemove();
@@ -2397,4 +2399,6 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpWrongNumber(int minCount, int maxCount);
 
     String reservedIpCreateBy();
+
+    String errSaveReservedIpSubnetDoesNotExist();
 }

@@ -27,7 +27,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     @Event
     public void onShow (IpReservationEvents.EditSubnet event) {
         if (!hasPrivileges()) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new IpReservationEvents.CloseEdit());
             return;
         }
 

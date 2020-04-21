@@ -61,6 +61,7 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE: return lang.documentTypeUnableToRemoveUsedDocumentType();
             case UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR: return lang.errUpdateOrDeleteLinkedObjectError();
             case SVN_ERROR: return lang.errSVN();
+            case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
             default: return lang.errUnknownResult();
         }
     }

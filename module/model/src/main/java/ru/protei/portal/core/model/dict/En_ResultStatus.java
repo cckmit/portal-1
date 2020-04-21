@@ -178,5 +178,10 @@ public enum En_ResultStatus {
     /**
      * Ошибка при использовании SVN
      */
-    SVN_ERROR
+    SVN_ERROR,
+
+    /**
+     * Подсеть не существует
+     */
+    SUBNET_DOES_NOT_EXIST
 }

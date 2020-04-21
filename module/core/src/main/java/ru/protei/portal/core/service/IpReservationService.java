@@ -77,7 +77,7 @@ public interface IpReservationService {
      */
     @Privileged(En_Privilege.SUBNET_REMOVE)
     @Auditable(En_AuditType.SUBNET_REMOVE)
-    Result<Long> removeSubnet(AuthToken token, Subnet subnet);
+    Result<Long> removeSubnet(AuthToken token, Subnet subnet, boolean removeWithIps);
 
     /**
      *

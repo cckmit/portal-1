@@ -22,7 +22,6 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.AbstractReservedIpFilterActivity;
@@ -162,13 +161,7 @@ public abstract class ReservedIpTableActivity
 
     private Runnable onConfirmRemoveClicked(ReservedIp value) {
         return () -> ipReservationService.removeReservedIp(value, new FluentCallback<Long>()
-                .withError(throwable -> {
-                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {
-                        fireEvent(new NotifyEvents.Show(lang.reservedIpUnableToRemove(), NotifyEvents.NotifyType.ERROR));
-                    } else {
-                        errorHandler.accept(throwable);
-                    }
-                })
+                .withError(throwable -> showError(lang.reservedIpUnableToRemove()))
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.reservedIpIpReleased(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IpReservationEvents.ShowReservedIp());
@@ -185,7 +178,7 @@ public abstract class ReservedIpTableActivity
 
         ipReservationService.getReservedIpList(query, new FluentCallback<SearchResult<ReservedIp>>()
                 .withError(throwable -> {
-                    errorHandler.accept(throwable);
+                    showError(lang.errGetList());
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
@@ -286,6 +279,10 @@ public abstract class ReservedIpTableActivity
         }
 
         return false;
+    }
+
+    private void showError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     @Inject
