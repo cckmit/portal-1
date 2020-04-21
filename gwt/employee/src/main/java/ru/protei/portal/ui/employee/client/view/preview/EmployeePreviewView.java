@@ -89,6 +89,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         return emailContainer;
     }
 
+    @Override
+    public HasVisibility editIconVisibility() {
+        return editIcon;
+    }
+
     @UiHandler("backButton")
     public void onBackButtonClicked(ClickEvent event) {
         if (activity != null) {

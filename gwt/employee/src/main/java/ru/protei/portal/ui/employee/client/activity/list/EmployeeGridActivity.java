@@ -48,7 +48,9 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
         ));
 
-        fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
+        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
+        }
 
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }

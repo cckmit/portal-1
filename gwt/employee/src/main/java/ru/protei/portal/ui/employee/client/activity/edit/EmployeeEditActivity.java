@@ -44,6 +44,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Event
     public void onShow( EmployeeEvents.Edit event ) {
+        if (!hasPrivileges(event.id)) {
+            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            return;
+        }
         personId = null;
         workerId = null;
 
@@ -449,7 +453,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         return null;
     }
-
 
     private boolean hasPrivileges(Long personId) {
         if (personId == null && policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
