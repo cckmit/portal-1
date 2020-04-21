@@ -199,7 +199,7 @@ public abstract class EquipmentEditActivity
 
         view.setLinkedEquipmentFilter(isCreate ?
                         (equipmentShortView -> true) :
-                        (equipmentShortView -> equipmentShortView == null || !Objects.equals(equipmentShortView.getId(), equipment.getId()))
+                        (equipmentShortView -> !Objects.equals(equipmentShortView.getId(), equipment.getId()))
         );
 
         fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
