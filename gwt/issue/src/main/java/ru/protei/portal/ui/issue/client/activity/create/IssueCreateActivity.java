@@ -552,9 +552,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return true;
         }
 
-        Date currentDate = new Date();
-
-        if (pauseDate != null && (currentDate.compareTo(pauseDate) < 0 || CalendarUtil.isSameDate(currentDate, pauseDate))) {
+        if (!CalendarUtil.isPauseDateExpired(pauseDate)) {
             return true;
         }
 

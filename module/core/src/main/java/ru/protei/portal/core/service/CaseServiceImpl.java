@@ -678,6 +678,7 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
                 || !Objects.equals(co1.getState(), co2.getState())
+                || !Objects.equals(co1.getPauseDate(), co2.getPauseDate())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());

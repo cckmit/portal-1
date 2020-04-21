@@ -4110,3 +4110,7 @@ table {
 .max-z-index {
   z-index: 9999 !important;
 }
+
+.pause-status-expired-date {
+  border: 2px solid $error_color;
+}

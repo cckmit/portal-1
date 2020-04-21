@@ -10,6 +10,9 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CalendarUtil;
+
+import java.util.Date;
 
 /**
  * Колонка "Номер"
@@ -52,6 +55,13 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );
         stateElement.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() );
         stateElement.setInnerText( caseStateLang.getStateName( En_CaseState.getById( value.getStateId() ) ) );
+
+        if (En_CaseState.PAUSED.getId() == value.getStateId() && CalendarUtil.isPauseDateExpired(value.getPauseDate())) {
+            stateElement.addClassName("pause-status-expired-date");
+        } else {
+            stateElement.removeClassName("pause-status-expired-date");
+        }
+
         divElement.appendChild( stateElement );
 
         cell.appendChild( divElement );

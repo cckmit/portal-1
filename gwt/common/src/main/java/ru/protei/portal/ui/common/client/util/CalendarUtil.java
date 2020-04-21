@@ -22,4 +22,22 @@ public class CalendarUtil {
 
         return true;
     }
+
+    public static boolean isPauseDateExpired(Date date) {
+        if (date == null) {
+            return true;
+        }
+
+        Date currentDate = new Date();
+
+        if (isSameDate(currentDate, date)) {
+            return false;
+        }
+
+        if (currentDate.compareTo(date) < 0) {
+            return false;
+        }
+
+        return true;
+    }
 }
