@@ -123,6 +123,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUnknownResult();
 
+    String errWorkerWithThisPositionAlreadyExist();
+
+    String errWorkerWithThisDepartmentAlreadyExist();
+
     String companyInfoHeader();
 
     String companyCommonHeader();

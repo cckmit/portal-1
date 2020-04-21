@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanyDepartmentDAO;
+import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
@@ -21,6 +22,9 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     CompanyDepartmentDAO companyDepartmentDAO;
 
     @Autowired
+    WorkerEntryDAO workerEntryDAO;
+
+    @Autowired
     PolicyService policyService;
 
     @Override
@@ -30,7 +34,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    public Result<Long> createCompanyDepartments(AuthToken token, CompanyDepartment companyDepartment) {
+    public Result<Long> createCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -46,7 +50,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    public Result<Long> updateCompanyDepartments(AuthToken token, CompanyDepartment companyDepartment) {
+    public Result<Long> updateCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -59,7 +63,12 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    public Result<Long> removeCompanyDepartments(AuthToken token, CompanyDepartment companyDepartment) {
+    public Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
+
+        if(workerEntryDAO.checkExistsByDepId(companyDepartment.getId())){
+            return error(En_ResultStatus.WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST);
+        }
+
         boolean result = companyDepartmentDAO.removeByKey(companyDepartment.getId());
 
         if ( !result )

@@ -20,14 +20,14 @@ public interface CompanyDepartmentService {
 
     @Auditable(En_AuditType.DEPARTMENT_CREATE)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE})
-    Result<Long> createCompanyDepartments(AuthToken token, CompanyDepartment companyDepartment);
+    Result<Long> createCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment);
 
     @Auditable(En_AuditType.DEPARTMENT_MODIFY)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
-    Result<Long> updateCompanyDepartments(AuthToken token, CompanyDepartment companyDepartment);
+    Result<Long> updateCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment);
 
     @Auditable(En_AuditType.DEPARTMENT_REMOVE)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
-    Result<Long> removeCompanyDepartments(AuthToken token, CompanyDepartment companyDepartment);
+    Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment);
 
 }

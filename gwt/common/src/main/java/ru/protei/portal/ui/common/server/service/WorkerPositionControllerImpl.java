@@ -27,19 +27,19 @@ public class WorkerPositionControllerImpl implements WorkerPositionController {
     @Override
     public Long removeWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(workerPositionService.removeWorkerPositions(authToken, workerPosition));
+        return checkResultAndGetData(workerPositionService.removeWorkerPosition(authToken, workerPosition));
     }
 
     @Override
     public Long createWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(workerPositionService.createWorkerPositions(authToken, workerPosition));
+        return checkResultAndGetData(workerPositionService.createWorkerPosition(authToken, workerPosition));
     }
 
     @Override
     public Long updateWorkerPosition(WorkerPosition workerPosition) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(workerPositionService.updateWorkerPositions(authToken, workerPosition));
+        return checkResultAndGetData(workerPositionService.updateWorkerPosition(authToken, workerPosition));
     }
 
     @Autowired

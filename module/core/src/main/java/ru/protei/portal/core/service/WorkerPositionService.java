@@ -20,14 +20,14 @@ public interface WorkerPositionService {
 
     @Auditable(En_AuditType.POSITION_CREATE)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE})
-    Result<Long> createWorkerPositions(AuthToken token, WorkerPosition workerPosition);
+    Result<Long> createWorkerPosition(AuthToken token, WorkerPosition workerPosition);
 
     @Auditable(En_AuditType.POSITION_MODIFY)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
-    Result<Long> updateWorkerPositions(AuthToken token, WorkerPosition workerPosition);
+    Result<Long> updateWorkerPosition(AuthToken token, WorkerPosition workerPosition);
 
     @Auditable(En_AuditType.POSITION_REMOVE)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
-    Result<Long> removeWorkerPositions(AuthToken token, WorkerPosition workerPosition);
+    Result<Long> removeWorkerPosition(AuthToken token, WorkerPosition workerPosition);
 
 }

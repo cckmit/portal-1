@@ -178,5 +178,15 @@ public enum En_ResultStatus {
     /**
      * Ошибка при использовании SVN
      */
-    SVN_ERROR
+    SVN_ERROR,
+
+    /**
+     * Существует сотрудник уже привязанный к данному отделу
+     */
+    WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST,
+
+    /**
+     * Существует сотрудник занимающий данную должность
+     */
+    WORKER_WITH_THIS_POSITION_ALREADY_EXIST
 }

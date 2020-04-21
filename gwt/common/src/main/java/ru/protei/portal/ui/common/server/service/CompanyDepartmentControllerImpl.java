@@ -27,19 +27,19 @@ public class CompanyDepartmentControllerImpl implements CompanyDepartmentControl
     @Override
     public Long removeCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyDepartmentService.removeCompanyDepartments(authToken, companyDepartment));
+        return checkResultAndGetData(companyDepartmentService.removeCompanyDepartment(authToken, companyDepartment));
     }
 
     @Override
     public Long createCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyDepartmentService.createCompanyDepartments(authToken, companyDepartment));
+        return checkResultAndGetData(companyDepartmentService.createCompanyDepartment(authToken, companyDepartment));
     }
 
     @Override
     public Long updateCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyDepartmentService.updateCompanyDepartments(authToken, companyDepartment));
+        return checkResultAndGetData(companyDepartmentService.updateCompanyDepartment(authToken, companyDepartment));
     }
 
     @Autowired
