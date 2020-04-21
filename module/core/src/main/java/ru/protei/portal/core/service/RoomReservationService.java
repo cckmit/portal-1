@@ -19,7 +19,7 @@ public interface RoomReservationService {
     Result<RoomReservation> getReservation(AuthToken token, Long reservationId);
 
     @Privileged({ En_Privilege.ROOM_RESERVATION_CREATE })
-    Result<RoomReservation> createReservation(AuthToken token, RoomReservation reservation);
+    Result<List<RoomReservation>> createReservations(AuthToken token, List<RoomReservation> reservations);
 
     @Privileged({ En_Privilege.ROOM_RESERVATION_EDIT })
     Result<RoomReservation> updateReservation(AuthToken token, RoomReservation reservation);

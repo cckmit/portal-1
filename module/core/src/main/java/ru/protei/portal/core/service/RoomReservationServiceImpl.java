@@ -2,9 +2,12 @@ package ru.protei.portal.core.service;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.RoomReservationNotificationEvent;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.RoomReservableDAO;
 import ru.protei.portal.core.model.dao.RoomReservationDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -40,44 +43,58 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     }
 
     @Override
-    public Result<RoomReservation> createReservation(AuthToken token, RoomReservation reservation) {
+    @Transactional
+    public Result<List<RoomReservation>> createReservations(AuthToken token, List<RoomReservation> reservations) {
 
-        boolean valid = isValid(reservation);
-        if (!valid) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+        for (RoomReservation reservation : reservations) {
+
+            boolean valid = isValid(reservation);
+            if (!valid) {
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+            }
+
+            boolean outdated = isReservationFinished(reservation);
+            if (outdated) {
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+            }
+
+            boolean hasAccessToRoom = hasAccessToRoom(token.getPersonId(), getActiveRooms(), reservation.getRoom());
+            if (!hasAccessToRoom) {
+                return error(En_ResultStatus.PERMISSION_DENIED);
+            }
+
+            boolean hasIntersections = hasReservationIntersections(reservation);
+            if (hasIntersections) {
+                return error(En_ResultStatus.NOT_AVAILABLE);
+            }
         }
 
-        boolean outdated = isReservationFinished(reservation);
-        if (outdated) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
+        List<RoomReservation> result = stream(reservations)
+            .map(reservation -> {
+                Long id = persistReservation(reservation, new Person(token.getPersonId()));
+                if (id == null) {
+                    throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+                }
+                return id;
+            })
+            .map(this::getReservation)
+            .collect(Collectors.toList());
 
-        boolean hasAccessToRoom = hasAccessToRoom(token.getPersonId(), getActiveRooms(), reservation.getRoom());
-        if (!hasAccessToRoom) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        boolean hasIntersections = hasReservationIntersections(reservation);
-        if (hasIntersections) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
-        }
-
-        Long id = persistReservation(reservation, new Person(token.getPersonId()));
-        if (id == null) {
-            return error(En_ResultStatus.NOT_CREATED);
-        }
-
-        RoomReservation result = getReservation(id);
-        return ok(result)
-            .publishEvent(new RoomReservationNotificationEvent(
+        List<ApplicationEvent> events = stream(result)
+            .map(reservation -> new RoomReservationNotificationEvent(
                 this,
-                result,
+                reservation,
                 RoomReservationNotificationEvent.Action.CREATED,
-                makeNotificationList(result)
-            ));
+                makeNotificationList(reservation)
+            ))
+            .collect(Collectors.toList());
+
+        return ok(result)
+            .publishEvents(events);
     }
 
     @Override
+    @Transactional
     public Result<RoomReservation> updateReservation(AuthToken token, RoomReservation reservation) {
 
         boolean valid = isValid(reservation) && token != null && reservation.getId() != null;
@@ -131,6 +148,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     }
 
     @Override
+    @Transactional
     public Result<RoomReservation> removeReservation(AuthToken token, Long reservationId) {
 
         boolean valid = token != null && reservationId != null;
