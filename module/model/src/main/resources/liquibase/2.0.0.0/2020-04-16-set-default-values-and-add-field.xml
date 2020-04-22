@@ -6,9 +6,7 @@
     <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql"/>
 
     <changeSet id="set-default-value-null-to-company_dep-dep_extId" author="vologzhanin">
-        <sql>
-            ALTER TABLE company_dep MODIFY dep_extId varchar(32) default null
-        </sql>
+        <dropNotNullConstraint tableName="company_dep" columnName="dep_extId" columnDataType="VARCHAR(32)"/>
     </changeSet>
 
     <changeSet id="add-synchronize_with_1c-field-to-company_group_home" author="vologzhanin">
@@ -18,9 +16,7 @@
     </changeSet>
 
     <changeSet id="set-default-value-null-to-worker_entry-worker" author="vologzhanin">
-        <sql>
-            ALTER TABLE worker_entry MODIFY worker_extId varchar(32) default null
-        </sql>
+        <dropNotNullConstraint tableName="worker_entry" columnName="worker_extId" columnDataType="VARCHAR(32)"/>
     </changeSet>
 
 </databaseChangeLog>
