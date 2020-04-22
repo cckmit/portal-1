@@ -90,7 +90,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setPauseDate((!En_CaseState.PAUSED.equals(meta.getState()) || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
         metaView.pauseDate().setValue(!En_CaseState.PAUSED.equals(meta.getState()) ? null : metaView.pauseDate().getValue());
 
-        metaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(meta.getState()));
+        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(meta.getState()));
 
         if (!isPauseDateValid(meta.getState(), meta.getPauseDate())) {
             metaView.setPauseDateValid(false);
@@ -343,7 +343,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue( meta.getState() );
         metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
-        metaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(meta.getState()));
+        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(meta.getState()));
         metaView.setPauseDateValid(isPauseDateValid(meta.getState(), meta.getPauseDate()));
 
         metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
@@ -516,14 +516,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         return false;
-    }
-
-    private boolean isPauseDateVisible(En_CaseState currentState) {
-        if (!En_CaseState.PAUSED.equals(currentState)) {
-            return false;
-        }
-
-        return true;
     }
 
     @Inject

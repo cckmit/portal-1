@@ -284,7 +284,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
-        issueMetaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(issueMetaView.state().getValue()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
 
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
@@ -556,14 +556,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         return false;
-    }
-
-    private boolean isPauseDateVisible(En_CaseState currentState) {
-        if (!En_CaseState.PAUSED.equals(currentState)) {
-            return false;
-        }
-
-        return true;
     }
 
     @Inject
