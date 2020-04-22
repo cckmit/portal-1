@@ -4065,6 +4065,21 @@ table {
 }
 
 .form-group {
+  &.form-group-default.pause-date {
+    height: 54px !important;
+
+    .form-control {
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
+    }
+
+    .has-error {
+      .form-control {
+        border: 1px solid $error_color;
+      }
+    }
+  }
+
   .form-control {
     &.sla-input-time {
       border: 1px solid rgba(0, 0, 0, 0.07);
@@ -4094,4 +4109,8 @@ table {
 
 .max-z-index {
   z-index: 9999 !important;
+}
+
+.pause-status-expired-date {
+  border: 2px solid $error_color;
 }

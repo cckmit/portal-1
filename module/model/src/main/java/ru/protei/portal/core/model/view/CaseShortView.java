@@ -82,6 +82,9 @@ public class CaseShortView implements Serializable {
     })
     private String managerCompanyName;
 
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
+
     public CaseShortView() {
 
     }
@@ -263,6 +266,14 @@ public class CaseShortView implements Serializable {
         isAttachmentExists = attachmentExists;
     }
 
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -272,7 +283,7 @@ public class CaseShortView implements Serializable {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CaseShortView{" +
                 "id=" + id +
                 ", typeId=" + typeId +
@@ -296,6 +307,7 @@ public class CaseShortView implements Serializable {
                 ", managerShortName='" + managerShortName + '\'' +
                 ", isAttachmentExists=" + isAttachmentExists +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", pauseDate=" + pauseDate +
                 '}';
     }
 }

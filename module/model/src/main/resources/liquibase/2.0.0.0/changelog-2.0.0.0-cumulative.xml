@@ -6,5 +6,6 @@
 
   <include file="01-init-database.xml" relativeToChangelogFile="true" />
   <include file="2020-04-17-set-linked_equipment_id-equipment-fk.xml" relativeToChangelogFile="true" />
+  <include file="2020-04-20-add-pause_date-to-case_object.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

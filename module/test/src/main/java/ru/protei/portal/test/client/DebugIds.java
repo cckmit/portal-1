@@ -249,6 +249,7 @@ public class DebugIds {
         String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
+        String PAUSE_DATE_CONTAINER = "issue-pause-date-container";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
         String PLATFORM_SELECTOR = "issue-platform-selector";
         String COMPANY_SELECTOR = "issue-company-selector";

@@ -136,6 +136,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("caseState", newMetaState.getState() == null ? null : newMetaState.getState().getName());
         templateModel.put("oldCaseState", oldMetaState == null || oldMetaState.getState() == null ? null : oldMetaState.getState().getName());
 
+        templateModel.put("isPausedState", En_CaseState.PAUSED.equals(newMetaState.getState()));
+        templateModel.put("pauseDateChanged", event.isPauseDateChanged());
+        templateModel.put("pauseDate", newMetaState.getPauseDate() == null ? null : new Date(newMetaState.getPauseDate()));
+        templateModel.put("oldPauseDate", (oldMetaState == null || oldMetaState.getPauseDate() == null) ? null : new Date(oldMetaState.getPauseDate()));
+
         templateModel.put("timeElapsedChanged", event.isTimeElapsedChanged());
         templateModel.put("elapsed", newMetaState.getTimeElapsed());
         templateModel.put("oldElapsed", !event.isTimeElapsedChanged() ? null : (newMetaState.getTimeElapsed() - event.getTimeElapsedChanging()));

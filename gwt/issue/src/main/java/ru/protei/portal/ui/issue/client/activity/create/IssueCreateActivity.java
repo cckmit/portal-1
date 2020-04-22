@@ -30,10 +30,7 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -268,6 +265,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
     }
 
+    @Override
+    public void onPauseDateChanged() {
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime()));
+    }
+
+    @Override
+    public void onStateChange() {
+        issueMetaView.pauseDate().setValue(null);
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
+
+        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
+        issueMetaView.setPauseDateValid(stateValid);
+    }
+
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.description().setValue(
                 addImageInMessage(En_TextMarkup.MARKDOWN, view.description().getValue(), strPosition, attach));
@@ -316,6 +327,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
+        issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
@@ -392,6 +406,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setPrivateCase(view.isPrivate().getValue());
         caseObject.setStateId(issueMetaView.state().getValue().getId());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
+        caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 
         caseObject.setInitiatorCompany(issueMetaView.getCompany());
         caseObject.setInitiator(issueMetaView.getInitiator());
@@ -448,10 +463,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
+        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
+            fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         boolean isFieldsValid = view.nameValidator().isValid() &&
                 issueMetaView.stateValidator().isValid() &&
-                        issueMetaView.importanceValidator().isValid() &&
-                        issueMetaView.companyValidator().isValid();
+                issueMetaView.importanceValidator().isValid() &&
+                issueMetaView.companyValidator().isValid();
 
         if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
@@ -513,6 +533,18 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private boolean makePreviewDisplaying( String key ) {
         return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, "false" ) );
+    }
+
+    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
+        if (!En_CaseState.PAUSED.equals(currentState)) {
+            return true;
+        }
+
+        if (pauseDate != null && pauseDate > System.currentTimeMillis()) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject

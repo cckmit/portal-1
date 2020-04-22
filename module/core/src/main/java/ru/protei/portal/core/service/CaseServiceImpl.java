@@ -32,6 +32,8 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -676,6 +678,7 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
                 || !Objects.equals(co1.getState(), co2.getState())
+                || !Objects.equals(co1.getPauseDate(), co2.getPauseDate())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
@@ -784,7 +787,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta.getImpLevel() == null) return false;
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
         if (En_CaseState.getById( caseMeta.getStateId() ) == null) return false;
-        if (!listOf( En_CaseState.CREATED, En_CaseState.CANCELED ).contains( caseMeta.getState() ) && caseMeta.getManagerId() == null) return false;
+        if (!isStateValid(caseMeta.getState(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
             return false;
@@ -797,6 +800,18 @@ public class CaseServiceImpl implements CaseService {
         List<Person> persons = personDAO.getPersons( personQuery );
         log.info( "personBelongsToCompany(): companyId={} personId={} in {}", companyId, personId, toList( persons, Person::getId ) );
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
+    }
+
+    private boolean isStateValid(En_CaseState caseState, Long managerId, Long pauseDate) {
+        if (!(listOf(En_CaseState.CREATED, En_CaseState.CANCELED).contains(caseState)) && managerId == null) {
+            return false;
+        }
+
+        if (En_CaseState.PAUSED.equals(caseState)) {
+            return pauseDate != null && (System.currentTimeMillis() < pauseDate);
+        }
+
+        return true;
     }
 
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
