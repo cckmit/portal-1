@@ -2369,4 +2369,14 @@ public interface Lang extends Messages, ContactItemLang {
     String sundayShort();
 
     String roomReservation();
+
+    String roomReservationReasonValue0();
+
+    String roomReservationReasonValue1();
+
+    String roomReservationReasonValue2();
+
+    String roomReservationReasonValue3();
+
+    String roomReservationReasonValue4();
 }

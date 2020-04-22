@@ -195,9 +195,18 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
 }
 
 // Pages calendar overrides
-.calendar .weeks-wrapper .week:last-child {
-  padding-left: 30px;
-}
-.calendar .week-dragger.scroll-content {
-  overflow-x: auto;
+.calendar {
+  padding-top: 1px; // fix margin offset
+
+  .weeks-wrapper .week:last-child {
+    padding-left: 30px;
+  }
+
+  .week-dragger.scroll-content {
+    overflow-x: auto;
+  }
+
+  .calendar-container .grid {
+    overflow: hidden;
+  }
 }

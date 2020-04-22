@@ -5,8 +5,11 @@ import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 
 public class DateUtils {
 
@@ -179,15 +182,61 @@ public class DateUtils {
         return new YearMonthDay(year, month, dayOfMonth);
     }
 
-    public static String leadingZero(int number, int digits) {
-        int numberOfDigits = String.valueOf(number).length();
-        int numberOfLeadingZeroes = digits - numberOfDigits;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < numberOfLeadingZeroes; i++) {
-            sb.append("0");
-        }
-        sb.append(number);
-        return sb.toString();
+    public static boolean isSame(YearMonthDay d1, YearMonthDay d2) {
+        return Objects.equals(d1.getYear(), d2.getYear())
+                && Objects.equals(d1.getMonth(), d2.getMonth())
+                && Objects.equals(d1.getDayOfMonth(), d2.getDayOfMonth());
+    }
+
+    public static Date setBeginOfDay(Date date) {
+        Date d = copyDate(date);
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        setMilliseconds(d, 0);
+        return d;
+    }
+
+    public static Date setEndOfDay(Date date) {
+        Date d = copyDate(date);
+        d.setHours(23);
+        d.setMinutes(59);
+        d.setSeconds(59);
+        setMilliseconds(d, 999);
+        return d;
+    }
+
+    public static Date setBeginOfMonth(Date date) {
+        Date d = copyDate(date);
+        d = resetTime(d);
+        d.setDate(1);
+        d = setBeginOfDay(d);
+        return d;
+    }
+
+    public static Date setEndOfMonth(Date date) {
+        Date d = copyDate(date);
+        d = resetTime(d);
+        d.setDate(getDaysInMonth(
+            getMonthNormalized(d),
+            getYearNormalized(d)
+        ));
+        d = setEndOfDay(d);
+        return d;
+    }
+
+    public static Date resetTime(Date date) {
+        Date d = copyDate(date);
+        com.google.gwt.user.datepicker.client.CalendarUtil.resetTime(d);
+        return d;
+    }
+
+    public static int getMinutesBetween(Date start, Date finish) {
+        long from = resetSeconds(resetMilliseconds(start)).getTime() / 1000;
+        long until = resetSeconds(resetMilliseconds(finish)).getTime() / 1000;
+        long seconds = until - from;
+        long minutes = seconds / 60L;
+        return (int) minutes;
     }
 
     public static boolean isLeapYear(Integer year) {
@@ -195,5 +244,25 @@ public class DateUtils {
             return false;
         }
         return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
+    }
+
+    private static void setMilliseconds(Date date, long millis) {
+        long timeWithoutMilliseconds = (date.getTime() / 1000) * 1000;
+        date.setTime(timeWithoutMilliseconds + millis);
+    }
+
+    private static Date resetMilliseconds(Date date) {
+        long msec = date.getTime();
+        int offset = (int) (msec % 1000);
+        if (offset < 0) {
+            offset += 1000;
+        }
+        return new Date(msec - offset);
+    }
+
+    private static Date resetSeconds(Date date) {
+        Date d = copyDate(date);
+        d.setSeconds(0);
+        return d;
     }
 }

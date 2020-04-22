@@ -1,13 +1,13 @@
 package ru.protei.portal.ui.roomreservation.client.activity.calendar;
 
 import com.google.gwt.user.client.TakesValue;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.RoomReservable;
+import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
 import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
-
-import java.util.List;
-import java.util.Map;
 
 public interface AbstractCalendarView extends IsWidget {
 
@@ -22,4 +22,12 @@ public interface AbstractCalendarView extends IsWidget {
     HasValue<YearMonthDay> dayOfMonth();
 
     TakesValue<String> dayAndName();
+
+    HasValue<RoomReservationCalendar> calendarContainer();
+
+    HasEnabled addNewReservationEnabled();
+
+    HasVisibility loadingVisibility();
+
+    HasVisibility calendarContainerVisibility();
 }

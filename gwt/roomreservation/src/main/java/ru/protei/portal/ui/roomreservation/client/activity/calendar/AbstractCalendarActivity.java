@@ -1,9 +1,14 @@
 package ru.protei.portal.ui.roomreservation.client.activity.calendar;
 
 import ru.protei.portal.core.model.ent.RoomReservable;
+import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
 
 public interface AbstractCalendarActivity {
+
+    void onAddNewReservationClicked();
+
+    void onEditReservationClicked(RoomReservation reservation);
 
     void onRoomChanged(RoomReservable room);
 

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.roomreservation.client.widget.calendar.dayofmonth;
+package ru.protei.portal.ui.roomreservation.client.widget.calendar.options;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -17,8 +17,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.google.gwt.user.datepicker.client.CalendarUtil.resetTime;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
+import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeDiv;
+import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeStyledDiv;
 
 public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthDay> {
 
@@ -62,8 +63,7 @@ public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthD
     }
 
     private void fillView() {
-        HTMLPanel wrapper = new HTMLPanel("div", "");
-        wrapper.setStyleName("weeks-wrapper");
+        HTMLPanel wrapper = makeStyledDiv("weeks-wrapper");
         for (List<Day> week : makeWeeks(value)) {
             wrapper.add(makeWeek(week));
         }
@@ -71,12 +71,19 @@ public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthD
     }
 
     private Widget makeWeek(List<Day> week) {
-        HTMLPanel container = new HTMLPanel("div", "");
+        HTMLPanel container = makeDiv();
         boolean hasSelected = false;
         for (Day day : week) {
-            YearMonthDay current = new YearMonthDay(value.getYear(), value.getMonth(), day.getDayOfMonth());
+            YearMonthDay current = new YearMonthDay(
+                value.getYear(),
+                value.getMonth(),
+                day.getDayOfMonth()
+            );
+            boolean isToday = isSame(
+                makeYearMonthDay(new Date()),
+                current
+            );
             boolean isSelected = isSame(value, current);
-            boolean isToday = isSame(makeYearMonthDay(new Date()), current);
             hasSelected |= isSelected;
             container.add(makeDay(day, isSelected, isToday));
         }
@@ -85,22 +92,16 @@ public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthD
     }
 
     private Widget makeDay(Day day, boolean active, boolean today) {
-        HTMLPanel wrapper = new HTMLPanel("div", "");
-        wrapper.setStyleName("day-wrapper date-selector");
+        HTMLPanel wrapper = makeStyledDiv("day-wrapper date-selector");
 
-        HTMLPanel container = new HTMLPanel("div", "");
+        HTMLPanel container = makeDiv();
 
-        HTMLPanel weekDay = new HTMLPanel("div", "");
-        weekDay.setStyleName("week-day");
-        HTMLPanel header = new HTMLPanel("div", getDayOfWeekNameShort(day.getDayOfWeek(), lang));
-        header.setStyleName("day week-header");
-        weekDay.add(header);
+        HTMLPanel weekDay = makeStyledDiv("week-day");
+        weekDay.add(makeStyledDiv("day week-header", getDayOfWeekNameShort(day.getDayOfWeek(), lang)));
         container.add(weekDay);
 
-        HTMLPanel weekDate = new HTMLPanel("div", "");
-        weekDate.setStyleName("week-date" + (active ? " active" : "") + (today ? " current-date" : ""));
-        HTMLPanel content = new HTMLPanel("div", "");
-        content.setStyleName("day");
+        HTMLPanel weekDate = makeStyledDiv("week-date" + (active ? " active" : "") + (today ? " current-date" : ""));
+        HTMLPanel content = makeStyledDiv("day");
         Anchor date = new Anchor();
         date.setText(String.valueOf(day.getDayOfMonth()));
         date.addClickHandler(event -> {
@@ -124,7 +125,7 @@ public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthD
     private List<List<Day>> makeWeeks(YearMonthDay value) {
         int year = value.getYear();
         int month = value.getMonth();
-        int daysInMonth = getDaysInMonth(value.getMonth(), value.getYear());
+        int daysInMonth = getDaysInMonth(month, year);
         List<List<Day>> weeks = new ArrayList<>();
         weeks.add(new ArrayList<>());
         for (int dayOfMonth = 1; dayOfMonth <= daysInMonth; dayOfMonth++) {
@@ -139,18 +140,11 @@ public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthD
     }
 
     private Date makeDate(int year, int month, int dayOfMonth) {
-        Date date = new Date();
-        resetTime(date);
+        Date date = resetTime(new Date());
         date.setYear(getYearDeNormalized(year));
         date.setMonth(getMonthDeNormalized(month));
         date.setDate(dayOfMonth);
         return date;
-    }
-
-    private boolean isSame(YearMonthDay d1, YearMonthDay d2) {
-        return Objects.equals(d1.getYear(), d2.getYear())
-            && Objects.equals(d1.getMonth(), d2.getMonth())
-            && Objects.equals(d1.getDayOfMonth(), d2.getDayOfMonth());
     }
 
     @Inject
