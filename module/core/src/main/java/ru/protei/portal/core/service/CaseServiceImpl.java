@@ -814,24 +814,6 @@ public class CaseServiceImpl implements CaseService {
         return true;
     }
 
-    private boolean isCurrentDate(Date date) {
-        if (date == null) {
-            return false;
-        }
-
-        LocalDate localDate = date
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        LocalDate localCurrentDate = new Date()
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        return localDate.equals(localCurrentDate);
-    }
-
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
         for (CaseLink link : emptyIfNull( caseLinks )) {
             if (!YT.equals( link.getType() ) || link.getRemoteId() == null) continue;
