@@ -551,7 +551,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return true;
         }
 
-        if (pauseDate != null && pauseDate >= System.currentTimeMillis()) {
+        if (pauseDate != null && pauseDate > System.currentTimeMillis()) {
             return true;
         }
 

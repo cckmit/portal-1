@@ -511,7 +511,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return true;
         }
 
-        if (pauseDate != null && pauseDate >= System.currentTimeMillis()) {
+        if (pauseDate != null && pauseDate > System.currentTimeMillis()) {
             return true;
         }
 

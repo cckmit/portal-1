@@ -53,7 +53,7 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         stateElement.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() );
         stateElement.setInnerText( caseStateLang.getStateName( En_CaseState.getById( value.getStateId() ) ) );
 
-        if (En_CaseState.PAUSED.getId() == value.getStateId() && (value.getPauseDate() == null || System.currentTimeMillis() > value.getPauseDate())) {
+        if (!isPauseDateValid(En_CaseState.getById(value.getStateId()), value.getPauseDate())) {
             stateElement.addClassName("pause-status-expired-date");
         } else {
             stateElement.removeClassName("pause-status-expired-date");
@@ -64,7 +64,18 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         cell.appendChild( divElement );
     }
 
-    Lang lang;
+    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
+        if (!En_CaseState.PAUSED.equals(currentState)) {
+            return true;
+        }
 
-    En_CaseStateLang caseStateLang;
+        if (pauseDate != null && pauseDate > System.currentTimeMillis()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private Lang lang;
+    private En_CaseStateLang caseStateLang;
 }
