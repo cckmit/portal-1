@@ -66,7 +66,7 @@ public class CaseObjectMeta extends AuditableObject {
     private String extAppType;
 
     @JdbcColumn(name = "pause_date")
-    private Date pauseDate;
+    private Long pauseDate;
 
     public CaseObjectMeta() {}
 
@@ -281,11 +281,11 @@ public class CaseObjectMeta extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public Date getPauseDate() {
+    public Long getPauseDate() {
         return pauseDate;
     }
 
-    public void setPauseDate(Date pauseDate) {
+    public void setPauseDate(Long pauseDate) {
         this.pauseDate = pauseDate;
     }
 

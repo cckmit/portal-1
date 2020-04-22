@@ -83,7 +83,7 @@ public class CaseShortView implements Serializable {
     private String managerCompanyName;
 
     @JdbcColumn(name = "pause_date")
-    private Date pauseDate;
+    private Long pauseDate;
 
     public CaseShortView() {
 
@@ -266,11 +266,11 @@ public class CaseShortView implements Serializable {
         isAttachmentExists = attachmentExists;
     }
 
-    public Date getPauseDate() {
+    public Long getPauseDate() {
         return pauseDate;
     }
 
-    public void setPauseDate(Date pauseDate) {
+    public void setPauseDate(Long pauseDate) {
         this.pauseDate = pauseDate;
     }
 

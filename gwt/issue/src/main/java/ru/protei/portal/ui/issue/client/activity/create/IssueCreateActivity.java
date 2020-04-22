@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.util.CalendarUtil;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -279,7 +278,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPauseDateChanged() {
-        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime()));
     }
 
     @Override
@@ -287,7 +286,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.pauseDate().setValue(null);
         issueMetaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(issueMetaView.state().getValue()));
 
-        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue());
+        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
     }
 
@@ -339,7 +338,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
-        issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate());
+        issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
         issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
@@ -418,7 +417,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setPrivateCase(view.isPrivate().getValue());
         caseObject.setStateId(issueMetaView.state().getValue().getId());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
-        caseObject.setPauseDate(issueMetaView.pauseDate().getValue());
+        caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 
         caseObject.setInitiatorCompany(issueMetaView.getCompany());
         caseObject.setInitiator(issueMetaView.getInitiator());
@@ -475,7 +474,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
-        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue())) {
+        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
             fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -547,12 +546,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, "false" ) );
     }
 
-    private boolean isPauseDateValid(En_CaseState currentState, Date pauseDate) {
+    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
         if (!En_CaseState.PAUSED.equals(currentState)) {
             return true;
         }
 
-        if (!CalendarUtil.isPauseDateExpired(pauseDate)) {
+        if (pauseDate != null && pauseDate >= System.currentTimeMillis()) {
             return true;
         }
 

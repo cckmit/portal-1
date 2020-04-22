@@ -802,14 +802,13 @@ public class CaseServiceImpl implements CaseService {
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
     }
 
-    private boolean isStateValid(En_CaseState caseState, Long managerId, Date pauseDate) {
+    private boolean isStateValid(En_CaseState caseState, Long managerId, Long pauseDate) {
         if (!(listOf(En_CaseState.CREATED, En_CaseState.CANCELED).contains(caseState)) && managerId == null) {
             return false;
         }
 
         if (En_CaseState.PAUSED.equals(caseState)) {
-            Date currentDate = new Date();
-            return pauseDate != null && (currentDate.compareTo(pauseDate) < 0 || isCurrentDate(pauseDate));
+            return pauseDate != null && (System.currentTimeMillis() < pauseDate);
         }
 
         return true;

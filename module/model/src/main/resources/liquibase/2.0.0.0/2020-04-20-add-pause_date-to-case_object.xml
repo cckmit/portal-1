@@ -6,7 +6,7 @@
 
     <changeSet id="add-pause_date-to-case_object" author="fomin">
         <addColumn tableName="case_object">
-            <column name="pause_date" type="DATE">
+            <column name="pause_date" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
         </addColumn>

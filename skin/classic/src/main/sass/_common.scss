@@ -4114,3 +4114,7 @@ table {
 .pause-status-expired-date {
   border: 2px solid $error_color;
 }
+
+.fa-clock-o:before {
+  content: "\f017";
+}

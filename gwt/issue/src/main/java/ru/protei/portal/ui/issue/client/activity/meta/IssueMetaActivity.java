@@ -21,7 +21,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.SLAControllerAsync;
-import ru.protei.portal.ui.common.client.util.CalendarUtil;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -88,7 +87,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         meta.setStateId(metaView.state().getValue().getId());
 
-        meta.setPauseDate(!En_CaseState.PAUSED.equals(meta.getState()) ? null : metaView.pauseDate().getValue());
+        meta.setPauseDate((!En_CaseState.PAUSED.equals(meta.getState()) || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
         metaView.pauseDate().setValue(!En_CaseState.PAUSED.equals(meta.getState()) ? null : metaView.pauseDate().getValue());
 
         metaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(meta.getState()));
@@ -146,16 +145,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onPauseDateChanged() {
-        if (CalendarUtil.isSameDate(meta.getPauseDate(), metaView.pauseDate().getValue())) {
-            return;
-        }
-
-        if (!isPauseDateValid(meta.getState(), metaView.pauseDate().getValue())) {
+        if (!isPauseDateValid(meta.getState(), metaView.pauseDate().getValue() == null ? null : metaView.pauseDate().getValue().getTime())) {
             metaView.setPauseDateValid(false);
             return;
         }
 
-        meta.setPauseDate(metaView.pauseDate().getValue());
+        meta.setPauseDate(metaView.pauseDate().getValue().getTime());
         metaView.setPauseDateValid(true);
 
         onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
@@ -347,7 +342,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue( meta.getState() );
-        metaView.pauseDate().setValue(meta.getPauseDate());
+        metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
         metaView.pauseDateContainerVisibility().setVisible(isPauseDateVisible(meta.getState()));
         metaView.setPauseDateValid(isPauseDateValid(meta.getState(), meta.getPauseDate()));
 
@@ -511,12 +506,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return caseMetaJira != null;
     }
 
-    private boolean isPauseDateValid(En_CaseState currentState, Date pauseDate) {
+    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
         if (!En_CaseState.PAUSED.equals(currentState)) {
             return true;
         }
 
-        if (!CalendarUtil.isPauseDateExpired(pauseDate)) {
+        if (pauseDate != null && pauseDate >= System.currentTimeMillis()) {
             return true;
         }
 

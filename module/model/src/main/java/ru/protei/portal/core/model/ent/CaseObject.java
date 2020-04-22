@@ -142,9 +142,8 @@ public class CaseObject extends AuditableObject {
     }, mappedColumn = "name")
     private String regionName;
 
-    @JsonFormat(pattern="yyyy-MM-dd")
     @JdbcColumn(name = "pause_date")
-    private Date pauseDate;
+    private Long pauseDate;
 
     // not db column
     private List<EntityOption> contracts;
@@ -561,11 +560,11 @@ public class CaseObject extends AuditableObject {
         this.technicalSupportValidity = technicalSupportValidity;
     }
 
-    public Date getPauseDate() {
+    public Long getPauseDate() {
         return pauseDate;
     }
 
-    public void setPauseDate(Date pauseDate) {
+    public void setPauseDate(Long pauseDate) {
         this.pauseDate = pauseDate;
     }
 
