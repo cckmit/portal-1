@@ -2315,4 +2315,58 @@ public interface Lang extends Messages, ContactItemLang {
     String auditTypeApplicationRemove();
 
     String rolePrivilegesNote();
+
+    String january();
+
+    String february();
+
+    String march();
+
+    String april();
+
+    String may();
+
+    String june();
+
+    String july();
+
+    String august();
+
+    String september();
+
+    String october();
+
+    String november();
+
+    String december();
+
+    String monday();
+
+    String tuesday();
+
+    String wednesday();
+
+    String thursday();
+
+    String friday();
+
+    String saturday();
+
+    String sunday();
+
+    String mondayShort();
+
+    String tuesdayShort();
+
+    String wednesdayShort();
+
+    String thursdayShort();
+
+    String fridayShort();
+
+    String saturdayShort();
+
+    String sundayShort();
+
+    String roomReservation();
 }

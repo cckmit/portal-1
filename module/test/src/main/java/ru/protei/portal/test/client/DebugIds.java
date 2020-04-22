@@ -78,6 +78,7 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String ICON_SUFFIX = "-icon";
     }
 

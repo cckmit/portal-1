@@ -29,11 +29,11 @@
         <addPrimaryKey constraintName="pk_room_reservable_allowed_persons"
                        tableName="room_reservable_allowed_persons"
                        columnNames="room_reservable_id, person_id"/>
-        <addForeignKeyConstraint constraintName="fk_room_reservable_id_to_room"
+        <addForeignKeyConstraint constraintName="fk_room_reservable_allowed_persons_room_reservable_id_to_room"
                                  baseTableName="room_reservable_allowed_persons" baseColumnNames="room_reservable_id"
                                  referencedTableName="room_reservable" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
-        <addForeignKeyConstraint constraintName="fk_person_id_to_person"
+        <addForeignKeyConstraint constraintName="fk_room_reservable_allowed_persons_person_id_to_person"
                                  baseTableName="room_reservable_allowed_persons" baseColumnNames="person_id"
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
@@ -61,15 +61,15 @@
     </changeSet>
 
     <changeSet id="add-fk-on-room-reservation-table" author="buchmastov">
-        <addForeignKeyConstraint constraintName="fk_person_requester_id_to_person"
+        <addForeignKeyConstraint constraintName="fk_room_reservation_person_requester_id_to_person"
                                  baseTableName="room_reservation" baseColumnNames="person_requester_id"
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="SET NULL"/>
-        <addForeignKeyConstraint constraintName="fk_person_responsible_id_to_person"
+        <addForeignKeyConstraint constraintName="fk_room_reservation_person_responsible_id_to_person"
                                  baseTableName="room_reservation" baseColumnNames="person_responsible_id"
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="SET NULL"/>
-        <addForeignKeyConstraint constraintName="fk_room_id_to_room_reservable"
+        <addForeignKeyConstraint constraintName="fk_room_reservation_room_id_to_room_reservable"
                                  baseTableName="room_reservation" baseColumnNames="room_id"
                                  referencedTableName="room_reservable" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="SET NULL"/>
@@ -90,11 +90,11 @@
         <addPrimaryKey constraintName="pk_room_reservation_notifiers"
                        tableName="room_reservation_notifiers"
                        columnNames="room_reservation_id, person_id"/>
-        <addForeignKeyConstraint constraintName="fk_room_reservation_id_to_room"
+        <addForeignKeyConstraint constraintName="fk_room_reservation_notifiers_room_reservation_id_to_room"
                                  baseTableName="room_reservation_notifiers" baseColumnNames="room_reservation_id"
                                  referencedTableName="room_reservation" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
-        <addForeignKeyConstraint constraintName="fk_person_id_to_person"
+        <addForeignKeyConstraint constraintName="fk_room_reservation_notifiers_person_id_to_person"
                                  baseTableName="room_reservation_notifiers" baseColumnNames="person_id"
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>

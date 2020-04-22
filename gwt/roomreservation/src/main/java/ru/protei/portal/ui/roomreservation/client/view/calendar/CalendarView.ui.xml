@@ -1,0 +1,34 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:selector='urn:import:ru.protei.portal.ui.roomreservation.client.widget.selector'
+             xmlns:calendar='urn:import:ru.protei.portal.ui.roomreservation.client.widget.calendar'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="full-height">
+        <div class="calendar week">
+            <div class="options">
+
+                <selector:room.RoomReservableButtonSelector ui:field="roomSelector"
+                                                           validation="false" hasNullValue="false"
+                                                           addStyleNames="inline-block align-middle m-r-5"/>
+
+                <selector:year.YearButtonSelector ui:field="yearSelector"
+                                                  validation="false" hasNullValue="false"
+                                                  addStyleNames="inline-block align-middle m-r-5"/>
+
+                <selector:month.MonthButtonSelector ui:field="monthSelector"
+                                                    validation="false" hasNullValue="false"
+                                                    addStyleNames="inline-block align-middle m-r-5"/>
+
+                <h5 ui:field="dayAndName" class="semi-bold inline-block align-middle m-t-0 m-b-0"/>
+
+                <calendar:dayofmonth.CalendarDayOfMonth ui:field="dayOfMonthSelector"/>
+
+            </div>
+            <div class="calendar-container">
+
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

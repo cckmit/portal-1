@@ -22,6 +22,7 @@ import ru.protei.portal.ui.product.client.factory.ProductClientModule;
 import ru.protei.portal.ui.project.client.factory.ProjectClientModule;
 import ru.protei.portal.ui.region.client.factory.RegionClientModule;
 import ru.protei.portal.ui.role.client.factory.RoleClientModule;
+import ru.protei.portal.ui.roomreservation.client.factory.RoomReservationClientModule;
 import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
 
 /**
@@ -29,7 +30,7 @@ import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
  */
 @GinModules({
         ClientModule.class, CommonClientModule.class, IssueAssignmentClientModule.class,
-        EmployeeClientModule.class, CompanyClientModule.class, ContactClientModule.class,
+        EmployeeClientModule.class, RoomReservationClientModule.class, CompanyClientModule.class, ContactClientModule.class,
         ProductClientModule.class, ProjectClientModule.class, RegionClientModule.class, EmployeeRegistrationClientModule.class,
         IssueClientModule.class, IssueReportClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
         DocumentClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class, SiteFolderClientModule.class,
