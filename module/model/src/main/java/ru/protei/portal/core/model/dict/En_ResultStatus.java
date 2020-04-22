@@ -198,5 +198,10 @@ public enum En_ResultStatus {
     /**
      * Такая должность уже существует
      */
-    POSITION_ALREADY_EXIST
+    POSITION_ALREADY_EXIST,
+
+    /**
+     * Такой сотрудник уже существует
+     */
+    EMPLOYEE_ALREADY_EXIST
 }

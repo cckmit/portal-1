@@ -216,6 +216,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 department.getHead().toFullNameShortView()));
     }
 
+    @Transactional
     @Override
     public Result<Person> createEmployeePerson(AuthToken token, Person person) {
         if (person == null) {
@@ -224,6 +225,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (!validatePerson(person)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if (checkExistEmployee(person)){
+            return error(En_ResultStatus.EMPLOYEE_ALREADY_EXIST);
         }
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
@@ -316,6 +321,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return ok(result);
+    }
+
+    private boolean checkExistEmployee (Person person){
+        EmployeeQuery employeeQuery = new EmployeeQuery();
+        employeeQuery.setFired(false);
+        employeeQuery.setDeleted(false);
+        employeeQuery.setFirstName(person.getFirstName());
+        employeeQuery.setLastName(person.getLastName());
+        employeeQuery.setSecondName(person.getSecondName());
+        employeeQuery.setBirthday(person.getBirthday());
+
+        List<EmployeeShortView> employee = employeeShortViewDAO.getEmployees(employeeQuery);
+
+        return employee != null && !employee.isEmpty();
     }
 
     private String createPersonShortName(Person person) {

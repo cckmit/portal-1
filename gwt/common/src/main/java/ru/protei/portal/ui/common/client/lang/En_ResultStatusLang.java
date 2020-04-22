@@ -65,6 +65,7 @@ public class En_ResultStatusLang {
             case WORKER_WITH_THIS_POSITION_ALREADY_EXIST: return lang.errWorkerWithThisPositionAlreadyExist();
             case DEPARTMENT_ALREADY_EXIST: return lang.errDepartmentAlreadyExistInThisCompany();
             case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
+            case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
             default: return lang.errUnknownResult();
         }
     }
