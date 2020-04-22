@@ -8,6 +8,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -18,9 +19,9 @@ import ru.protei.portal.core.utils.TimeFormatter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 public class ReportCaseImpl implements ReportCase {
 
@@ -61,13 +62,44 @@ public class ReportCaseImpl implements ReportCase {
 
         int sheetNumber = writer.createSheet();
 
-        if (writeReport(writer, sheetNumber, report, count)) {
+//        if (writeReport(writer, sheetNumber, report, count)) {
+//            writer.collect(buffer);
+//            return true;
+//        } else {
+//            writer.close();
+//            return false;
+//        }
+        List<Interval> intervals = splitIntervals( config.data().reportConfig().getChunkSize(), count );
+        for (Interval interval : intervals) {
+            try {
+                CaseQuery query = report.getCaseQuery();
+                query.setOffset( interval.offset );
+                query.setLimit( interval.limit );
+                List<CaseObjectComments> comments = processChunk( query );
+                writer.write( sheetNumber, comments );
+            } catch (Exception ex) {
+                log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} {}", interval.offset, interval.limit, report.getId(), report.getCaseQuery(), ex );
+                writer.close();
+                return false;
+            }
+        }
+
             writer.collect(buffer);
             return true;
-        } else {
-            writer.close();
-            return false;
+    }
+
+    private static List<Interval> splitIntervals( int step, int total ) {
+        ArrayList<Interval> intervals = new ArrayList<>();
+        int limit = 0;
+        for (int offset = 0; offset < total; offset += step) {
+            limit = (offset + step) < total ? step : total - offset;
+            intervals.add( new Interval( offset, limit ) );
         }
+        return intervals;
+    }
+    public static void main(String[] args) {
+        List<Interval> intervals = splitIntervals( 10, 29 );
+        System.out.println(intervals);
     }
 
     private boolean writeReport(ReportWriter<CaseObjectComments> writer, int sheetNumber, Report report, int count) {
@@ -104,4 +136,36 @@ public class ReportCaseImpl implements ReportCase {
         });
         writer.write(sheetNumber, data);
     }
+
+    List<CaseObjectComments> processChunk( CaseQuery query ) {
+        List<CaseObjectComments> data = new ArrayList<>();
+        List<CaseObject> cases = caseObjectDAO.getCases( query );
+        for (CaseObject caseObject : emptyIfNull(cases)) {
+            CaseCommentQuery commentQuery = new CaseCommentQuery();
+            commentQuery.addCaseObjectId( caseObject.getId() );
+            commentQuery.setCaseStateNotNull( true );
+            List<CaseComment> caseComments = caseCommentDAO.getCaseComments( commentQuery );
+            data.add( new CaseObjectComments( caseObject, caseComments ) );
+        }
+        return data;
+    }
+
+    public static class Interval {
+
+        public Interval( int offset, int limit ) {
+            this.offset = offset;
+            this.limit = limit;
+        }
+
+       @Override
+        public String toString() {
+            return "Interval{" +
+                    "offset=" + offset +
+                    ", limit=" + limit +
+                    '}';
+        }
+
+        public int offset;
+        public int limit;
+     }
 }
