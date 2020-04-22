@@ -37,9 +37,9 @@ public class CompanyDepartmentControllerImpl implements CompanyDepartmentControl
     }
 
     @Override
-    public Long updateCompanyDepartment(CompanyDepartment companyDepartment) throws RequestFailedException {
+    public Long updateCompanyDepartmentName(CompanyDepartment companyDepartment) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyDepartmentService.updateCompanyDepartment(authToken, companyDepartment));
+        return checkResultAndGetData(companyDepartmentService.updateCompanyDepartmentName(authToken, companyDepartment));
     }
 
     @Autowired

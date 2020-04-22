@@ -131,6 +131,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeAlreadyExist();
 
+    String errEmployeeNotFiredFromThisCompany();
+
     String errDepartmentAlreadyExistInThisCompany();
 
     String companyInfoHeader();

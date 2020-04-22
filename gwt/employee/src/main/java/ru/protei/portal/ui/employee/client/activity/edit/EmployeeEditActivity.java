@@ -268,8 +268,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         infoFacade.setEmail(view.workEmail().getText());
         infoFacade.setEmail_own(view.personalEmail().getText());
-        employee.setPosition(view.workerPosition().getValue().getDisplayText());
-        employee.setDepartment(view.companyDepartment().getValue().getDisplayText());
         employee.setIpAddress(view.ipAddress().getText());
 
         return employee;
@@ -394,6 +392,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.mobilePhoneEnabled().setEnabled(isEnabled);
         view.workPhoneEnabled().setEnabled(isEnabled);
         view.ipAddressEnabled().setEnabled(isEnabled);
+        view.companyEnabled().setEnabled(true);
+        view.companyDepartmentEnabled().setEnabled(true);
+        view.workerPositionEnabled().setEnabled(true);
     }
 
     private void setAllFieldsEnabled(boolean isEnabled){

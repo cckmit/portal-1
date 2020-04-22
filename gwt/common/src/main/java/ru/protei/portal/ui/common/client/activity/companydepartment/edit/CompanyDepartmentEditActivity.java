@@ -86,7 +86,7 @@ public abstract class CompanyDepartmentEditActivity implements Activity, Abstrac
             return;
         }
 
-        companyDepartmentController.updateCompanyDepartment(companyDepartment, new FluentCallback<Long>()
+        companyDepartmentController.updateCompanyDepartmentName(companyDepartment, new FluentCallback<Long>()
                 .withSuccess(id -> {
                     dialogView.hidePopup();
                     fireEvent(new CompanyDepartmentEvents.Changed(companyDepartment));

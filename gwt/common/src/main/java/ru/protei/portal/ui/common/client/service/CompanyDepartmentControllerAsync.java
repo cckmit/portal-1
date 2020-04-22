@@ -12,5 +12,5 @@ public interface CompanyDepartmentControllerAsync {
 
     void createCompanyDepartment(CompanyDepartment companyDepartment, AsyncCallback<Long> async);
 
-    void updateCompanyDepartment(CompanyDepartment companyDepartment, AsyncCallback<Long> async);
+    void updateCompanyDepartmentName(CompanyDepartment companyDepartment, AsyncCallback<Long> async);
 }

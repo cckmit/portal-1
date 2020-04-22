@@ -54,7 +54,7 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
     }
 
     @Override
-    public Result<Long> updateCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment) {
+    public Result<Long> updateCompanyDepartmentName(AuthToken token, CompanyDepartment companyDepartment) {
         if (!isValid(companyDepartment)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }

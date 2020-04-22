@@ -49,6 +49,12 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return jdbcTemplate.queryForList(query, Long.class);
     }
 
+    @Override
+    public List<Long> getAllHomeCompanyIdsWithoutSync() {
+        String query = "SELECT companyId FROM company_group_home where synchronize_with_1c = false ";
+        return jdbcTemplate.queryForList(query, Long.class);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );

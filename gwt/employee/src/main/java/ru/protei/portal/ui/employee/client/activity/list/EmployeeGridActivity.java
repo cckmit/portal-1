@@ -69,12 +69,12 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onTopBrassClicked(ActionBarEvents.Clicked event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+        if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
             return;
         }
 
-        if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
@@ -84,12 +84,12 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onEmployeeCreateClicked(ActionBarEvents.Clicked event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_CREATE.equals(event.identity))) {
             return;
         }
 
-        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_CREATE.equals(event.identity))) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
             return;
         }
 

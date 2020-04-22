@@ -19,6 +19,6 @@ public interface CompanyDepartmentController extends RemoteService {
 
     Long createCompanyDepartment (CompanyDepartment companyDepartment) throws RequestFailedException;
 
-    Long updateCompanyDepartment (CompanyDepartment companyDepartment) throws RequestFailedException;
+    Long updateCompanyDepartmentName(CompanyDepartment companyDepartment) throws RequestFailedException;
 
 }

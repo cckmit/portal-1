@@ -203,5 +203,10 @@ public enum En_ResultStatus {
     /**
      * Такой сотрудник уже существует
      */
-    EMPLOYEE_ALREADY_EXIST
+    EMPLOYEE_ALREADY_EXIST,
+
+    /**
+     * Нельзя уволить сотрудника, работающего в текущих компаниях
+     */
+    EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY
 }

@@ -2,8 +2,6 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.event.shared.GwtEvent;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.CompanyDepartment;
-import ru.protei.portal.core.model.ent.WorkerPosition;
 
 public class EditEvent extends GwtEvent<EditHandler> {
     private static Type<EditHandler> TYPE;

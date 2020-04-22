@@ -24,7 +24,7 @@ public interface CompanyDepartmentService {
 
     @Auditable(En_AuditType.DEPARTMENT_MODIFY)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
-    Result<Long> updateCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment);
+    Result<Long> updateCompanyDepartmentName(AuthToken token, CompanyDepartment companyDepartment);
 
     @Auditable(En_AuditType.DEPARTMENT_REMOVE)
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})

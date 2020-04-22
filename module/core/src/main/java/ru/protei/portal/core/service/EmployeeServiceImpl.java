@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -317,10 +318,31 @@ public class EmployeeServiceImpl implements EmployeeService {
         boolean result = personDAO.merge(personFromDb);
 
         if (result) {
+            boolean isRemoved = removeWorkerEntry(personFromDb.getId());
+
+            if (!isRemoved){
+                return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY);
+            }
+            
             userLoginDAO.removeByPersonId(personFromDb.getId());
         }
 
         return ok(result);
+    }
+
+    private boolean removeWorkerEntry(Long personId){
+        WorkerEntryQuery workerEntryQuery = new WorkerEntryQuery(personId);
+        List<WorkerEntry> workers = workerEntryDAO.getWorkers(workerEntryQuery);
+
+        if (workers.size() != 1){
+            return false;
+        }
+
+        if (!companyDAO.getAllHomeCompanyIdsWithoutSync().contains(workers.get(0).getCompanyId())){
+            return false;
+        }
+
+        return workerEntryDAO.remove(workers.get(0));
     }
 
     private boolean checkExistEmployee (Person person){
