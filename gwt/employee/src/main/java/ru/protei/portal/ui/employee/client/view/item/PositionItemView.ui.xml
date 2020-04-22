@@ -5,6 +5,10 @@
 
     <g:HTMLPanel styleName="p-t-10 p-b-10">
         <div class="small">
+            <b><ui:text from="{lang.company}: "/></b>
+            <span ui:field="company"/>
+        </div>
+        <div class="small">
             <span ui:field="departmentParent"/>
         </div>
         <g:HTMLPanel ui:field="departmentContainer" styleName="small" visible="false">

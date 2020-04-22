@@ -575,6 +575,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CompanyDepartmentService getCompanyDepartmentService() {
+        return new CompanyDepartmentServiceImpl();
+    }
+
+    @Bean
+    public WorkerPositionService getWorkerPositionService() {
+        return new WorkerPositionServiceImpl();
+    }
+
+    @Bean
     public ProductService getProductService() {
         return new ProductServiceImpl();
     }

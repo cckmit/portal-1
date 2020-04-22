@@ -7,14 +7,10 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.selector.pageable.Selector;
-import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
-import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
-import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
-import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
-import ru.protei.portal.ui.common.client.selector.pageable.ItemsContainer;
+import ru.protei.portal.ui.common.client.selector.pageable.*;
 import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
 import ru.protei.portal.ui.common.client.selector.popup.SelectorPopupWithSearch;
+import ru.protei.portal.ui.common.client.selector.popup.item.SelectorItemHandler;
 
 import java.util.Iterator;
 
@@ -169,6 +165,10 @@ public abstract class AbstractPopupSelector<T> extends Composite
 
     public void setAddButtonVisibility(boolean isVisible) {
         getPopup().setAddButtonVisibility(isVisible);
+    }
+
+    public void setAddButton (boolean addVisible, String text){
+        getPopup().setAddButton(addVisible, text);
     }
 
     public void setSearchEnabled(boolean isSearchEnabled) {

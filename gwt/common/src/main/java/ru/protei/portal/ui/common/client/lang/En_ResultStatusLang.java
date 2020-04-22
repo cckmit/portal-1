@@ -60,6 +60,12 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE: return lang.documentTypeUnableToRemoveUsedDocumentType();
             case UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR: return lang.errUpdateOrDeleteLinkedObjectError();
             case SVN_ERROR: return lang.errSVN();
+            case WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST: return lang.errWorkerWithThisDepartmentAlreadyExist();
+            case WORKER_WITH_THIS_POSITION_ALREADY_EXIST: return lang.errWorkerWithThisPositionAlreadyExist();
+            case DEPARTMENT_ALREADY_EXIST: return lang.errDepartmentAlreadyExistInThisCompany();
+            case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
+            case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
+            case EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY: return lang.errEmployeeNotFiredFromThisCompany();
             default: return lang.errUnknownResult();
         }
     }

@@ -27,6 +27,10 @@
                     <i class="fa fa-envelope"/>
                     <span ui:field="emails"/>
                 </g:HTMLPanel>
+                <g:HTMLPanel ui:field="companyContainer" styleName="contacts position" visible="false">
+                    <i class="fa fa-building"></i>
+                    <span ui:field="company"/>
+                </g:HTMLPanel>
                 <g:HTMLPanel ui:field="departmentParentContainer" styleName="contacts department" visible="false">
                     <i class="fa fa-sitemap"/>
                     <span ui:field="departmentParent"/>

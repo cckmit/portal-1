@@ -786,10 +786,10 @@ label.bordered:after {
     tbody {
       tr {
         td {
-          height: 56px;
+          height: 92px;
           > div {
-            height: 56px;
-            max-height: 56px;
+            height: 75px;
+            max-height: 75px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1786,6 +1786,27 @@ a {
         font-weight: bold;
       }
     }
+  }
+}
+
+/**** item with edit ****/
+
+.item-with-edit {
+  display: flex;
+  cursor: pointer;
+  &:hover{
+    color: #262626;
+    text-decoration: none;
+    background-color: whitesmoke;
+  }
+
+  .item-with-edit-text {
+    flex-grow: 1;
+    padding: 3px 20px;
+  }
+
+  .item-with-edit-icon {
+    padding: 8px 10px 5px 10px;
   }
 }
 
