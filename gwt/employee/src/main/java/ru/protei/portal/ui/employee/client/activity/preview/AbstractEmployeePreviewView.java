@@ -34,4 +34,6 @@ public interface AbstractEmployeePreviewView extends IsWidget {
     HasWidgets getPositionsContainer();
 
     void showFullScreen(boolean isFullScreen);
+
+    HasVisibility editIconVisibility();
 }

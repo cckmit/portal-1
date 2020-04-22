@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,14 @@ public class EmployeeQuery extends BaseQuery {
     private String email;
 
     private String departmentParent;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String secondName;
+
+    private Date birthday;
 
     public EmployeeQuery() {
         fired = false;
@@ -143,6 +152,38 @@ public class EmployeeQuery extends BaseQuery {
         this.ids = ids;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public void setSecondName(String secondName) {
+        this.secondName = secondName;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
@@ -160,6 +201,10 @@ public class EmployeeQuery extends BaseQuery {
                 ", sortDir=" + sortDir +
                 ", limit=" + limit +
                 ", offset=" + offset +
+                ", firstName=" + firstName +
+                ", lastName=" + lastName +
+                ", secondName=" + secondName +
+                ", birthday=" + birthday +
                 '}';
     }
 }

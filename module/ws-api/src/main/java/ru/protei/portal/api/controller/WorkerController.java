@@ -15,9 +15,11 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
@@ -34,10 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -59,6 +58,9 @@ public class WorkerController {
 
     @Autowired
     private PersonDAO personDAO;
+
+    @Autowired
+    private CompanyDAO companyDAO;
 
     @Autowired
     private CompanyGroupHomeDAO companyGroupHomeDAO;
@@ -199,8 +201,13 @@ public class WorkerController {
         WorkerRecordList persons = new WorkerRecordList();
 
         try {
+            List<Company> homeCompaniesWithSync = companyDAO.listByQuery(new CompanyQuery(true, true).synchronizeWith1C(true));
+            Set<EntityOption> homeCompanies = new HashSet<>();
+            homeCompaniesWithSync.forEach(company -> homeCompanies.add(company.toEntityOption()));
 
             EmployeeQuery query = new EmployeeQuery(Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
+
+            query.setHomeCompanies(homeCompanies);
 
             personDAO.getEmployees(query).forEach(
                     p -> persons.append(new WorkerRecord(p))

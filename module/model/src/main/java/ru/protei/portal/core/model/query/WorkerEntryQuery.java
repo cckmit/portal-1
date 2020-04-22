@@ -11,7 +11,6 @@ public class WorkerEntryQuery extends BaseQuery {
 
     public WorkerEntryQuery(Long personId) {
         this.personId = personId;
-        this.active = active;
     }
 
     public Long getPersonId() {

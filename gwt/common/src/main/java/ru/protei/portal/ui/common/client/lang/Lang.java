@@ -123,6 +123,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUnknownResult();
 
+    String errWorkerWithThisPositionAlreadyExist();
+
+    String errWorkerWithThisDepartmentAlreadyExist();
+
+    String errPositionAlreadyExistInThisCompany();
+
+    String errEmployeeAlreadyExist();
+
+    String errEmployeeNotFiredFromThisCompany();
+
+    String errDepartmentAlreadyExistInThisCompany();
+
     String companyInfoHeader();
 
     String companyCommonHeader();
@@ -1337,7 +1349,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeShowFired();
 
+    String employeeFireConfirmMessage();
+
+    String employeeFire();
+
+    String employeeSaved();
+
+    String employeeMainInfoTitle();
+
+    String employeeContactInfoTitle();
+
     String initiatorSelectACompany();
+
     String serverAccessParamsColumn();
 
     String contactPhone();
@@ -2081,6 +2104,30 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardActionRemove();
 
     String backToEmployees();
+
+    String departmentAddButton();
+
+    String departmentSelectCompanyLabel();
+
+    String departmentName();
+
+    String departmentCompany();
+
+    String departmentEdit();
+
+    String departmentCreate();
+
+    String positionAddButton();
+
+    String positionSelectCompanyLabel();
+
+    String positionName();
+
+    String positionCompany();
+
+    String positionEdit();
+
+    String positionCreate();
 
     String employeeDepartmentHead();
 
