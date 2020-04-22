@@ -103,37 +103,30 @@
                                     <ui:text from="{lang.workEmail}"/>
                                 </label>
                                 <validatefield:ValidableTextBox ui:field="workEmail"
-                                                                notNull="false"
+                                                                notNull="true"
                                                                 styleName="form-control"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <label ui:field="personalEmailLabel">
-                                    <ui:text from="{lang.personalEmail}"/>
+                                <label ui:field="ipAddressLabel">
+                                    <ui:text from="{lang.employeeIPAddress}"/>
                                 </label>
-                                <validatefield:ValidableTextBox ui:field="personalEmail"
-                                                                notNull="false"
+                                <validatefield:ValidableTextBox ui:field="ipAddress"
+                                                                notNull="true"
                                                                 styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label>
                                     <ui:text from="{lang.workPhone}"/>
                                 </label>
                                 <g:TextBox ui:field="workPhone" styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-6">
                                 <label class="">
                                     <ui:text from="{lang.mobilePhone}"/>
                                 </label>
                                 <g:TextBox ui:field="mobilePhone" styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-4">
-                                <label ui:field="ipAddressLabel">
-                                    <ui:text from="{lang.employeeIPAddress}"/>
-                                </label>
-                                <validatefield:ValidableTextBox ui:field="ipAddress"
-                                                                notNull="false"
-                                                                styleName="form-control"/>
-                            </div>
+
                         </div>
                     </div>
                 </div>

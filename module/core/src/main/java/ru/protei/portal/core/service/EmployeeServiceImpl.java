@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -415,6 +416,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (StringUtils.isBlank(person.getLastName())) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(person.getIpAddress())) {
+            return false;
+        }
+
+        if (En_Gender.UNDEFINED.equals(person.getGender())) {
+            return false;
+        }
+
+        PlainContactInfoFacade facade = new PlainContactInfoFacade(person.getContactInfo());
+        if (StringUtils.isBlank(facade.getEmail())) {
             return false;
         }
 

@@ -32,9 +32,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         workEmail.setRegexp( CrmConstants.Masks.EMAIL );
-        personalEmail.setRegexp( CrmConstants.Masks.EMAIL );
         workEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
-        personalEmail.setMaxLength( CrmConstants.EMAIL_MAX_SIZE );
         ipAddress.setRegexp( CrmConstants.Masks.IP);
 
         gender.setValid(false);
@@ -77,11 +75,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasEnabled genderEnabled() {
         return gender;
-    }
-
-    @Override
-    public HasEnabled personalEmailEnabled() {
-        return personalEmail;
     }
 
     @Override
@@ -135,17 +128,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasText workEmail() {
+    public HasValue<String> workEmail() {
         return workEmail;
     }
 
     @Override
-    public HasText personalEmail() {
-        return personalEmail;
-    }
-
-    @Override
-    public HasText ipAddress() {
+    public HasValue<String> ipAddress() {
         return ipAddress;
     }
 
@@ -197,11 +185,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValidable workEmailValidator(){
         return workEmail;
-    }
-
-    @Override
-    public HasValidable personalEmailValidator(){
-        return personalEmail;
     }
 
     @Override
@@ -302,12 +285,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public String lastNameLabel() {
         return lastNameLabel.getInnerText();
-    }
-
-
-    @Override
-    public String personalEmailLabel() {
-        return personalEmailLabel.getInnerText();
     }
 
     @Override
@@ -436,13 +413,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     ValidableTextBox workEmail;
 
     @UiField
-    ValidableTextBox personalEmail;
-
-    @UiField
     ValidableTextBox ipAddress;
-
-    @UiField
-    LabelElement personalEmailLabel;
 
     @UiField
     LabelElement ipAddressLabel;

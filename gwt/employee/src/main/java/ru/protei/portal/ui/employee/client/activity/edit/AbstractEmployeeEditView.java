@@ -22,8 +22,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasEnabled genderEnabled();
 
-    HasEnabled personalEmailEnabled();
-
     HasEnabled workEmailEnabled();
 
     HasEnabled mobilePhoneEnabled();
@@ -44,11 +42,9 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasText mobilePhone();
 
-    HasText workEmail();
+    HasValue<String> workEmail();
 
-    HasText personalEmail();
-
-    HasText ipAddress();
+    HasValue<String> ipAddress();
 
     HasValue<EntityOption> workerPosition();
 
@@ -88,8 +84,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasValidable workEmailValidator();
 
-    HasValidable personalEmailValidator();
-
     HasValidable ipAddressValidator();
 
     HasVisibility firstNameErrorLabelVisibility();
@@ -109,8 +103,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
     String secondNameLabel();
 
     String lastNameLabel();
-
-    String personalEmailLabel();
 
     String ipAddressLabel();
 

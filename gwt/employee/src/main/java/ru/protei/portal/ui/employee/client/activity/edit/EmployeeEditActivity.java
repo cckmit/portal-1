@@ -266,9 +266,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         infoFacade.setWorkPhone(view.workPhone().getText());
         infoFacade.setMobilePhone(view.mobilePhone().getText());
 
-        infoFacade.setEmail(view.workEmail().getText());
-        infoFacade.setEmail_own(view.personalEmail().getText());
-        employee.setIpAddress(view.ipAddress().getText());
+        infoFacade.setEmail(view.workEmail().getValue());
+        employee.setIpAddress(view.ipAddress().getValue());
 
         return employee;
     }
@@ -298,15 +297,11 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errFieldsRequired();
         }
 
-        if (!view.workEmail().getText().isEmpty() && !view.workEmailValidator().isValid()) {
+        if (view.workEmail().getValue() != null && !view.workEmailValidator().isValid()) {
             return lang.errorFieldHasInvalidValue(view.workEmailLabel());
         }
 
-        if (!view.personalEmail().getText().isEmpty() && !view.personalEmailValidator().isValid()) {
-            return lang.errorFieldHasInvalidValue(view.personalEmailLabel());
-        }
-
-        if (!view.ipAddress().getText().isEmpty() && !view.ipAddressValidator().isValid()) {
+        if (view.ipAddress().getValue() != null && !view.ipAddressValidator().isValid()) {
             return lang.errorFieldHasInvalidValue(view.ipAddressLabel());
         }
 
@@ -337,13 +332,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.lastName().setValue(employee.getLastName());
         view.secondName().setText(employee.getSecondName());
         view.birthDay().setValue(employee.getBirthday());
-        view.ipAddress().setText(employee.getIpAddress());
+        view.ipAddress().setValue(employee.getIpAddress());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
         view.workPhone().setText(employee.getContactInfo() == null ? null : infoFacade.getWorkPhone());
         view.mobilePhone().setText(employee.getContactInfo() == null ? null : infoFacade.getMobilePhone());
-        view.workEmail().setText(employee.getContactInfo() == null ? null : infoFacade.getEmail());
-        view.personalEmail().setText(employee.getContactInfo() == null ? null : infoFacade.getEmail_own());
+        view.workEmail().setValue(employee.getContactInfo() == null ? null : infoFacade.getEmail());
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());
@@ -387,7 +381,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.lastNameEnabled().setEnabled(isEnabled);
         view.birthDayEnabled().setEnabled(isEnabled);
         view.genderEnabled().setEnabled(isEnabled);
-        view.personalEmailEnabled().setEnabled(isEnabled);
         view.workEmailEnabled().setEnabled(isEnabled);
         view.mobilePhoneEnabled().setEnabled(isEnabled);
         view.workPhoneEnabled().setEnabled(isEnabled);

@@ -7,7 +7,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditActivity;
 import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -44,7 +43,6 @@ public class CompanyDepartmentEditView extends Composite implements AbstractComp
         return company;
     }
 
-    @Inject
     @UiField
     Lang lang;
 

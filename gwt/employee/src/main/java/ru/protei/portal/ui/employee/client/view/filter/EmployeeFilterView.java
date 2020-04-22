@@ -222,7 +222,6 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @UiField
     CheckBox showTopBrass;
 
-    @Inject
     @UiField
     Lang lang;
 

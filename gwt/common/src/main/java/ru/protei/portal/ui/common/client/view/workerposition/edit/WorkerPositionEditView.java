@@ -43,7 +43,6 @@ public class WorkerPositionEditView extends Composite implements AbstractWorkerP
         return company;
     }
 
-    @Inject
     @UiField
     Lang lang;
 
