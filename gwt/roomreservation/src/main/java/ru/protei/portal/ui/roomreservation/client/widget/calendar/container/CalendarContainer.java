@@ -143,10 +143,30 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
             value.getYearMonthDay(),
             current
         );
-        if (day.getDayOfMonth() == null) {
-            return makeStyledDiv("tcell" + (isSelected ? " active" : ""));
+        boolean isIllegalDay = day.getDayOfMonth() == null;
+        boolean isPastDay = !isIllegalDay && makeDateEndOfHour(current, hour).before(new Date());
+        if (isIllegalDay) {
+            HTMLPanel cell = makeStyledDiv("tcell" + (isSelected ? " active" : ""));
+            return cell;
+        } else if (isPastDay) {
+            HTMLPanel cell = makeStyledDiv("tcell" + (isSelected ? " active" : ""));
+            cell.add(makeTableDayCell(reservations, hour));
+            return cell;
+        } else {
+            FocusPanel cell = makeStyledFocusDiv("tcell" + (isSelected ? " active" : ""));
+            cell.add(makeTableDayCell(reservations, hour));
+            cell.addDoubleClickHandler(event -> {
+                event.preventDefault();
+                event.stopPropagation();
+                if (handler != null) {
+                    handler.onCellClicked(value.getRoom(), current, hour);
+                }
+            });
+            return cell;
         }
-        FocusPanel cell = makeStyledFocusDiv("tcell" + (isSelected ? " active" : ""));
+    }
+
+    private Widget makeTableDayCell(List<RoomReservation> reservations, int hour) {
         HTMLPanel cellWrapper = makeDiv();
         HTMLPanel cellInner = makeStyledDiv("cell-inner");
         for (RoomReservation reservation : reservations) {
@@ -154,15 +174,7 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
         }
         cellWrapper.add(cellInner);
         cellWrapper.add(makeStyledDiv("cell-inner"));
-        cell.add(cellWrapper);
-        cell.addDoubleClickHandler(event -> {
-            event.preventDefault();
-            event.stopPropagation();
-            if (handler != null) {
-                handler.onCellClicked(value.getRoom(), current, hour);
-            }
-        });
-        return cell;
+        return cellWrapper;
     }
 
     private Widget makeTableEvent(RoomReservation reservation, int hour) {
@@ -251,6 +263,14 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
             week.add(new Day(m, w));
         }
         return week;
+    }
+
+    private Date makeDateEndOfHour(YearMonthDay day, int hour) {
+        Date date = makeDate(day);
+        date.setHours(hour);
+        date.setMinutes(59);
+        date.setSeconds(59);
+        return date;
     }
 
     private String makeTimeHourMinutes(Date date) {

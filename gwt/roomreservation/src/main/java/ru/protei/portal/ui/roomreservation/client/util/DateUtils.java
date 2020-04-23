@@ -183,6 +183,18 @@ public class DateUtils {
         return new YearMonthDay(year, month, dayOfMonth, dayOfWeek);
     }
 
+    public static Date makeDate(YearMonthDay day) {
+        return makeDate(day.getYear(), day.getMonth(), day.getDayOfMonth());
+    }
+
+    public static Date makeDate(int year, int month, int dayOfMonth) {
+        Date date = resetTime(new Date());
+        date.setYear(getYearDeNormalized(year));
+        date.setMonth(getMonthDeNormalized(month));
+        date.setDate(dayOfMonth);
+        return date;
+    }
+
     public static boolean isSame(YearMonthDay d1, YearMonthDay d2) {
         return Objects.equals(d1.getYear(), d2.getYear())
                 && Objects.equals(d1.getMonth(), d2.getMonth())

@@ -12,6 +12,8 @@ public interface AbstractRoomReservationCalendarActivity {
 
     void onEditReservationClicked(RoomReservation reservation);
 
+    void showTodayButtonClicked();
+
     void toggleHourStartButtonClicked();
 
     void onRoomChanged(RoomReservable room);

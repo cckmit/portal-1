@@ -2380,6 +2380,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationReasonValue4();
 
+    String roomReservationShowTodayButton();
+
     String roomReservationHourStartButton();
 
     String roomReservationCreation();

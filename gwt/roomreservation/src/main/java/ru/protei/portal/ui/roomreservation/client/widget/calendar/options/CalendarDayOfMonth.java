@@ -140,14 +140,6 @@ public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthD
         return weeks;
     }
 
-    private Date makeDate(int year, int month, int dayOfMonth) {
-        Date date = resetTime(new Date());
-        date.setYear(getYearDeNormalized(year));
-        date.setMonth(getMonthDeNormalized(month));
-        date.setDate(dayOfMonth);
-        return date;
-    }
-
     @Inject
     Lang lang;
 

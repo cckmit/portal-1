@@ -20,8 +20,11 @@
                                                     addStyleNames="inline-block align-middle m-r-5"/>
                 <h5 ui:field="dayAndName" class="semi-bold inline-block align-middle m-t-0 m-b-0 m-l-5"/>
                 <div class="btn-group pull-right m-r-15">
+                    <g:Button styleName="btn btn-default" ui:field="showTodayButton" title="{lang.roomReservationShowTodayButton}">
+                        <i class="fas fa-calendar-day"/>
+                    </g:Button>
                     <g:Button styleName="btn btn-default" ui:field="toggleHourStartButton" title="{lang.roomReservationHourStartButton}">
-                        <i class="far fa-clock"/>
+                        <i class="fas fa-clock"/>
                     </g:Button>
                     <g:Button styleName="btn btn-complete" ui:field="addNewReservationButton" title="{lang.buttonCreate}">
                         <i class="fas fa-plus-circle"/>

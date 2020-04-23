@@ -77,6 +77,13 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     }
 
     @Override
+    public void showTodayButtonClicked() {
+        date = new Date();
+        selectDate(date);
+        show(room, date);
+    }
+
+    @Override
     public void toggleHourStartButtonClicked() {
         saveHoursStartHidden(!isHoursStartHidden());
         show(room, date);

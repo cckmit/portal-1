@@ -130,6 +130,13 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
         }
     }
 
+    @UiHandler("showTodayButton")
+    public void showTodayButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.showTodayButtonClicked();
+        }
+    }
+
     @UiHandler("toggleHourStartButton")
     public void toggleHourStartButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -148,6 +155,8 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
     MonthButtonSelector monthSelector;
     @UiField
     HeadingElement dayAndName;
+    @UiField
+    Button showTodayButton;
     @UiField
     Button toggleHourStartButton;
     @UiField
