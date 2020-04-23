@@ -9,6 +9,7 @@
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
+             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
              xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -81,11 +82,17 @@
         </div>
 
         <div class="row">
-            <div ui:field="importanceContainer" class="form-group col-md-4 resize-md-12">
+            <div ui:field="importanceContainer" class="form-group col-md-4 resize-md-8">
                 <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
                 <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
             </div>
 
+            <div class="col-md-4">
+                <label ui:field="notifyLabel" class="m-r-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
+                <switcher:Switcher ui:field="checkImportanceHistory"/>
+            </div>
+        </div>
+        <div class="row">
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>

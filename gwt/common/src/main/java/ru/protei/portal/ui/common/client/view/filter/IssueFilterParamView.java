@@ -39,6 +39,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
 import java.util.*;
@@ -292,6 +293,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
                 query.setImportances(importance.getValue());
+                query.setCheckImportanceHistory( checkImportanceHistory.getValue() );
                 query.setStates(state.getValue());
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setCaseTagsIds( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
@@ -471,6 +473,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
         labelSearchPrivate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.PRIVACY_LABEL);
         labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
+        checkImportanceHistory.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_CHECK_HISTORY);
         labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
         creators.ensureDebugId(DebugIds.FILTER.CREATOR_SELECTOR);
         creators.setAddEnsureDebugId(DebugIds.FILTER.CREATOR_ADD_BUTTON);
@@ -733,6 +736,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     DivElement importanceContainer;
     @UiField
     DivElement stateContainer;
+    @UiField
+    Switcher checkImportanceHistory;
 
     @Inject
     PolicyService policyService;
