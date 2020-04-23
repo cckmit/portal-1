@@ -58,6 +58,11 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
     }
 
     @Override
+    public void onAddNewReservationClicked(RoomReservable room, YearMonthDay day, Integer hour) {
+        // TODO open reservation create view
+    }
+
+    @Override
     public void onEditReservationClicked(RoomReservation reservation) {
         // TODO open reservation edit view
     }

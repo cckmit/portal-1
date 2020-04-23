@@ -8,6 +8,8 @@ public interface AbstractCalendarActivity {
 
     void onAddNewReservationClicked();
 
+    void onAddNewReservationClicked(RoomReservable room, YearMonthDay day, Integer hour);
+
     void onEditReservationClicked(RoomReservation reservation);
 
     void onRoomChanged(RoomReservable room);

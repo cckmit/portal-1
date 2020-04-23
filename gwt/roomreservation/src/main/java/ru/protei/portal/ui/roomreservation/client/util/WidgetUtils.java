@@ -2,6 +2,7 @@ package ru.protei.portal.ui.roomreservation.client.util;
 
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class WidgetUtils {
 
@@ -15,6 +16,10 @@ public class WidgetUtils {
 
     public static FocusPanel makeFocusDiv() {
         return new FocusPanel();
+    }
+
+    public static FocusPanel makeFocusDiv(Widget child) {
+        return new FocusPanel(child);
     }
 
     public static HTMLPanel makeStyledDiv(String styleName) {

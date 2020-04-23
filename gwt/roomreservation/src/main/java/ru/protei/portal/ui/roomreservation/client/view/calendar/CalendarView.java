@@ -11,6 +11,7 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.RoomReservable;
+import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractCalendarActivity;
 import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractCalendarView;
@@ -27,9 +28,16 @@ public class CalendarView extends Composite implements AbstractCalendarView {
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        calendarContainer.setHandler(reservation -> {
-            if (activity != null) {
-                activity.onEditReservationClicked(reservation);
+        calendarContainer.setHandler(new CalendarContainer.Handler() {
+            public void onReservationClicked(RoomReservation reservation) {
+                if (activity != null) {
+                    activity.onEditReservationClicked(reservation);
+                }
+            }
+            public void onCellClicked(RoomReservable room, YearMonthDay day, Integer hour) {
+                if (activity != null) {
+                    activity.onAddNewReservationClicked(room, day, hour);
+                }
             }
         });
     }

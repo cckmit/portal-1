@@ -27,8 +27,7 @@ import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.isSame;
-import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeStyledDiv;
-import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeStyledFocusDiv;
+import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.*;
 
 public class CalendarContainer extends Composite implements HasValue<RoomReservationCalendar>, HasVisibility {
 
@@ -120,14 +119,14 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
         for (int hour = value.getHourStart(); hour < 24; hour++) {
             HTMLPanel row = makeStyledDiv("trow");
             for (Day day : week) {
-                row.add(makeTableDayCell(day, hour));
+                row.add(makeTableDayCell(value, day, hour));
             }
             table.add(row);
         }
         return table;
     }
 
-    private Widget makeTableDayCell(Day day, int hour) {
+    private Widget makeTableDayCell(RoomReservationCalendar value, Day day, int hour) {
         YearMonthDay current = new YearMonthDay(
             value.getYearMonthDay().getYear(),
             value.getYearMonthDay().getMonth(),
@@ -143,15 +142,25 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
             value.getYearMonthDay(),
             current
         );
-        HTMLPanel cell = makeStyledDiv("tcell" + (isSelected ? " active" : ""));
-        if (day.getDayOfMonth() != null) {
-            HTMLPanel cellInner = makeStyledDiv("cell-inner");
-            for (RoomReservation reservation : reservations) {
-                cellInner.add(makeTableEvent(reservation, hour));
-            }
-            cell.add(cellInner);
-            cell.add(makeStyledDiv("cell-inner"));
+        if (day.getDayOfMonth() == null) {
+            return makeStyledDiv("tcell" + (isSelected ? " active" : ""));
         }
+        FocusPanel cell = makeStyledFocusDiv("tcell" + (isSelected ? " active" : ""));
+        HTMLPanel cellWrapper = makeDiv();
+        HTMLPanel cellInner = makeStyledDiv("cell-inner");
+        for (RoomReservation reservation : reservations) {
+            cellInner.add(makeTableEvent(reservation, hour));
+        }
+        cellWrapper.add(cellInner);
+        cellWrapper.add(makeStyledDiv("cell-inner"));
+        cell.add(cellWrapper);
+        cell.addDoubleClickHandler(event -> {
+            event.preventDefault();
+            event.stopPropagation();
+            if (handler != null) {
+                handler.onCellClicked(value.getRoom(), current, hour);
+            }
+        });
         return cell;
     }
 
@@ -280,6 +289,7 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
 
     public interface Handler {
         void onReservationClicked(RoomReservation reservation);
+        void onCellClicked(RoomReservable room, YearMonthDay day, Integer hour);
     }
 
     interface CalendarContainerBinder extends UiBinder<HTMLPanel, CalendarContainer> {}
