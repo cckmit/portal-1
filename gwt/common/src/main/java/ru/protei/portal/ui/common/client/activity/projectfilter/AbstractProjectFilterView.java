@@ -18,9 +18,10 @@ public interface AbstractProjectFilterView extends IsWidget {
     void setActivity( AbstractProjectFilterActivity activity );
 
     HasValue<En_SortField> sortField();
+
     HasValue< Boolean > sortDir();
+
     HasValue< String > searchPattern();
-    void resetFilter();
 
     HasValue< Set< En_RegionState > > states();
 
@@ -33,4 +34,7 @@ public interface AbstractProjectFilterView extends IsWidget {
     HasValue< Set<PersonShortView> > headManagers();
 
     HasValue< Set<PersonShortView> > caseMembers();
+
+    void resetFilter();
+    void clearFooterStyle();
 }

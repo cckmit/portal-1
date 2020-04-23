@@ -37,6 +37,8 @@ public abstract class IssueReportCreateActivity implements Activity,
         issueFilterWidget.addAdditionalFilterValidate(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
         issueFilterWidget.getIssueFilterParams().setModel(this);
+        issueFilterWidget.clearFooterStyle();
+        projectFilterView.clearFooterStyle();
     }
 
     @Event
