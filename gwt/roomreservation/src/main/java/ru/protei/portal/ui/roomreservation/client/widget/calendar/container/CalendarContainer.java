@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
+import static java.lang.Math.log10;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
 import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.*;
@@ -255,7 +256,11 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
     private String makeTimeHourMinutes(Date date) {
         int hours = date.getHours();
         int minutes = date.getMinutes();
-        return hours + ":" + minutes;
+        return makeTwoDigitNumber(hours) + ":" + makeTwoDigitNumber(minutes);
+    }
+
+    private String makeTwoDigitNumber(int number) {
+        return (String.valueOf(number).length() == 1 ? "0" : "") + number;
     }
 
     @Inject

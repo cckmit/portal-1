@@ -24,6 +24,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -63,7 +64,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
                 return error(En_ResultStatus.PERMISSION_DENIED);
             }
 
-            boolean hasIntersections = hasReservationIntersections(reservation);
+            boolean hasIntersections = hasReservationIntersections(reservation, emptyList());
             if (hasIntersections) {
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
@@ -127,7 +128,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        boolean hasIntersections = hasReservationIntersections(reservation);
+        boolean hasIntersections = hasReservationIntersections(reservation, listOf(reservation.getId()));
         if (hasIntersections) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
@@ -235,6 +236,9 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         if (reservation.getRoom() == null) {
             return false;
         }
+        if (reservation.getReason() == null) {
+            return false;
+        }
         if (reservation.getDateFrom() == null) {
             return false;
         }
@@ -300,13 +304,12 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         return false;
     }
 
-    private boolean hasReservationIntersections(RoomReservation reservation) {
-        List<RoomReservation> reservationIntersections = roomReservationDAO.listByRoomAndDateBounds(
-                reservation.getRoom().getId(),
-                reservation.getDateFrom(),
-                reservation.getDateUntil()
-        );
-        return isNotEmpty(reservationIntersections);
+    private boolean hasReservationIntersections(RoomReservation reservation, List<Long> excludeIds) {
+        return stream(roomReservationDAO.listByRoomAndDateBounds(
+            reservation.getRoom().getId(),
+            reservation.getDateFrom(),
+            reservation.getDateUntil()
+        )).anyMatch(r -> !excludeIds.contains(r.getId()));
     }
 
     @SuppressWarnings("unchecked")

@@ -209,4 +209,8 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   .calendar-container .grid {
     overflow: hidden;
   }
+
+  .calendar-container .event-container {
+    min-height: 0 !important;
+  }
 }
