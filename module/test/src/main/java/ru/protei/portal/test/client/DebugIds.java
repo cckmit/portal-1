@@ -78,6 +78,8 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String SUBNET = "sidebar-menu-subnet";
+        String RESERVED_IP = "sidebar-menu-reserved-ip";
         String ICON_SUFFIX = "-icon";
     }
 
@@ -781,5 +783,30 @@ public class DebugIds {
         interface LINK {
             String PLATFORM = "sitefolder-link-platform";
         }
+    }
+
+    public interface SUBNET {
+        String ADDRESS_INPUT = "subnet-address-input";
+        String MASK_INPUT = "subnet-mask-input";
+        String COMMENT_INPUT = "subnet-comment-input";
+        String SAVE_BUTTON = "subnet-save-button";
+        String CANCEL_BUTTON = "subnet-cancel-button";
+    }
+
+    public interface RESERVED_IP {
+        String MODE_TOGGLE = "reservedip-mode-toggle";
+        String IP_ADDRESS_INPUT = "reservedip-address-input";
+        String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
+        String NUMBER_INPUT = "reservedip-number-input";
+        String SUBNET_SELECTOR = "reservedip-subnet-selector";
+        String OWNER_SELECTOR = "reservedip-owner-selector";
+        String USE_RANGE_TYPED_TOGGLE = "reservedip-use-range-typed-toggle";
+        String USE_RANGE_TYPED_INPUT = "reservedip-use-range-typed-input";
+        String USE_RANGE_TYPED_BUTTON = "reservedip-use-range-typed-button";
+        String USE_RANGE_INPUT = "reservedip-use-range-input";
+        String USE_RANGE_BUTTON = "reservedip-use-range-button";
+        String COMMENT_INPUT = "reservedip-comment-input";
+        String SAVE_BUTTON = "reservedip-save-button";
+        String CANCEL_BUTTON = "reservedip-cancel-button";
     }
 }

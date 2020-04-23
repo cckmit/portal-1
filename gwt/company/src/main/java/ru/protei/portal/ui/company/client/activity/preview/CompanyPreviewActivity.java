@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;

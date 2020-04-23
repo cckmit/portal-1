@@ -102,6 +102,13 @@ public enum En_AuditType implements HasId {
     APPLICATION_CREATE(64),
     APPLICATION_MODIFY(65),
     APPLICATION_REMOVE(66),
+
+    SUBNET_MODIFY(67),
+    SUBNET_CREATE(68),
+    SUBNET_REMOVE(69),
+    RESERVED_IP_MODIFY(70),
+    RESERVED_IP_CREATE(71),
+    RESERVED_IP_REMOVE(72),
     ;
 
     En_AuditType(int id ) {

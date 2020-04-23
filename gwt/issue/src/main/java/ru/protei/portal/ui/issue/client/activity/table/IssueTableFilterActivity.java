@@ -40,7 +40,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

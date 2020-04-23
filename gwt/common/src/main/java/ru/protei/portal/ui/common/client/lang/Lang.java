@@ -587,7 +587,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String equipmentCopyNotFilledNewName();
 
-    String equpmentCopySuccess();
+    String equipmentCopySuccess();
 
     String equipmentCopyHeader();
 
@@ -728,6 +728,8 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonLocale();
 
     String privilegeCategoryOfficial();
+
+    String privilegeIpReservation();
 
     String matrixSolutions();
 
@@ -2366,4 +2368,94 @@ public interface Lang extends Messages, ContactItemLang {
     String errPauseDateError();
 
     String issuePauseDateValidity();
+
+    String ipReservation();
+
+    String subnet();
+
+    String reservedIp();
+
+    String reservedIpOwner();
+
+    String reservedIpAddress();
+
+    String reservedIpIpAddress();
+
+    String reservedIpMacAddress();
+
+    String reservedIpReserveDate();
+
+    String reservedIpReleaseDate();
+
+    String reservedIpForever();
+
+    String reservedIpCheck();
+
+    String reservedIpCheckDate();
+
+    String reservedIpCheckInfo();
+
+    String reservedIpUsePeriod();
+
+    String reservedIpWrongSubnetAddress();
+
+    String reservedIpWrongSubnetMask();
+
+    String reservedIpWrongIpAddress();
+
+    String reservedIpWrongMacAddress();
+
+    String reservedIpSubnetAddress();
+
+    String reservedIpSubnetMask();
+
+    String selectReservedIpOwner();
+
+    String reservedIpIpRelease();
+
+    String reservedIpIpReleased();
+
+    String reservedIpSubnetRemove();
+
+    String reservedIpSubnetRemoved();
+
+    String reservedIpSubnetRemoveConfirmMessage();
+
+    String reservedIpSubnetRemoveWithIpsConfirmMessage();
+
+    String reservedIpReleaseConfirmMessage();
+
+    String reservedIpUnableToRemove();
+
+    String reservedIpSubnetUnableToRemove();
+
+    String reservedIpSubnetsBtn();
+
+    String reservedIpIpsBtn();
+
+    String reservedIpNumber();
+
+    String reservedIpState();
+
+    String reservedIpExactIp();
+
+    String reservedIpAnyFreeIps();
+
+    String reservedIpSelectedSubnets();
+
+    String monthInterval();
+
+    String fixedInterval();
+
+    String unlimitedInterval();
+
+    String errSaveReservedIpUseInterval();
+
+    String errSaveReservedIpNeedSelectOwner();
+
+    String reservedIpWrongNumber(int minCount, int maxCount);
+
+    String reservedIpCreateBy();
+
+    String errSaveReservedIpSubnetDoesNotExist();
 }

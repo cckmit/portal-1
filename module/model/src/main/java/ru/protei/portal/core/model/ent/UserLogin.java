@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
