@@ -224,6 +224,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         if (isValid) {
             view.updateCompanyDepartments(view.company().getValue().getId());
             view.updateWorkerPositions(view.company().getValue().getId());
+        } else {
+            view.updateCompanyDepartments(null);
+            view.updateWorkerPositions(null);
         }
     }
 
