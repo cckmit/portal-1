@@ -53,7 +53,7 @@ public class BootstrapService {
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
-        fillImportanceLevels();
+        //fillImportanceLevels();
         migrateIpReservation();
     }
 

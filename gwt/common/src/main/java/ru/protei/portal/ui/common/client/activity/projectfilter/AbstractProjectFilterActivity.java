@@ -1,8 +1,8 @@
-package ru.protei.portal.ui.project.client.activity.filter;
+package ru.protei.portal.ui.common.client.activity.projectfilter;
 
 /**
  * Абстракция активности фильтра проектов
  */
 public interface AbstractProjectFilterActivity {
-    void onFilterChanged();
+    void onProjectFilterChanged();
 }

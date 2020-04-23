@@ -296,4 +296,8 @@ public class CollectionUtils {
 
         return null;
     }
+
+    public static <T> Predicate<T> not(Predicate<T> predicate) {
+        return predicate.negate();
+    }
 }

@@ -13,11 +13,10 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
-import java.util.function.Consumer;
 
 /**
  * Активность карточки редактирования зарезервированного IP
@@ -61,7 +60,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         ipReservationService.updateReservedIp(reservedIp, new FluentCallback<ReservedIp>()
                 .withError(throwable -> {
                     view.saveEnabled().setEnabled(true);
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    showErrorFromServer(throwable);
                 })
                 .withSuccess(aVoid -> {
                     view.saveEnabled().setEnabled(true);
@@ -105,12 +104,12 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     private boolean validateView() {
         if(StringUtils.isNotBlank(view.macAddress().getValue())
            && !view.macAddressValidator().isValid()){
-            fireEvent(new NotifyEvents.Show(lang.reservedIpWrongMacAddress(), NotifyEvents.NotifyType.ERROR));
+            showError(lang.reservedIpWrongMacAddress());
             return false;
         }
 
         if(view.useRange().getValue() == null) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
+            showError(lang.errSaveReservedIpUseInterval());
             return false;
         }
 
@@ -119,12 +118,12 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
         if ( from == null
              || (to == null && !policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE))) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
+            showError(lang.errSaveReservedIpUseInterval());
             return false;
         }
 
         if(view.owner().getValue() == null){
-            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpNeedSelectOwner(), NotifyEvents.NotifyType.ERROR));
+            showError(lang.errSaveReservedIpNeedSelectOwner());
             return false;
         }
 
@@ -141,6 +140,14 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         return false;
     }
 
+    private void showErrorFromServer(Throwable throwable) {
+        errorHandler.accept(throwable);
+    }
+
+    private void showError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -149,6 +156,8 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     IpReservationControllerAsync ipReservationService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler errorHandler;
 
     private ReservedIp reservedIp;
 }

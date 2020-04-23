@@ -3,10 +3,10 @@ package ru.protei.portal.ui.equipment.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.List;
 
@@ -38,6 +38,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
     HasValue<String> date();
 
     HasWidgets documents();
+
+    void setLinkedEquipmentFilter(Selector.SelectorFilter<EquipmentShortView> filter);
 
     void setVisibilitySettingsForCreated(boolean isVisible);
 

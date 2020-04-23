@@ -6,7 +6,7 @@ import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCr
 import ru.protei.portal.ui.project.client.activity.quickcreate.ProjectCreateActivity;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.activity.edit.ProjectEditActivity;
-import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.project.client.activity.list.AbstractProjectDocumentsListView;
 import ru.protei.portal.ui.project.client.activity.list.ProjectDocumentsListActivity;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemView;
@@ -19,7 +19,7 @@ import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableVie
 import ru.protei.portal.ui.project.client.activity.table.ProjectTableActivity;
 import ru.protei.portal.ui.project.client.view.quickcreate.ProjectCreateView;
 import ru.protei.portal.ui.project.client.view.edit.ProjectEditView;
-import ru.protei.portal.ui.project.client.view.filter.ProjectFilterView;
+import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterView;
 import ru.protei.portal.ui.project.client.view.list.ProjectDocumentsListView;
 import ru.protei.portal.ui.project.client.view.list.item.ProjectDocumentsListItemView;
 import ru.protei.portal.ui.project.client.view.preview.ProjectPreviewView;

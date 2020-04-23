@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.homecompany'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label ui:field="positionNameLabel"><ui:text from="{lang.positionName}"/></label>
+                    <g:TextBox ui:field="name" styleName="form-control" maxLength="60"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label ui:field="positionCompanyLabel"><ui:text from="{lang.positionCompany}"/></label>
+                    <company:HomeCompanyButtonSelector ui:field="company" validation="false" hasNullValue="false" synchronizeWith1C="false"/>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

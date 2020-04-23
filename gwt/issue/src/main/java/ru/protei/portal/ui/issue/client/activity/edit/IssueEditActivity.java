@@ -39,7 +39,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -188,7 +188,7 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
-        issueInfoWidget.getDescriptionRO().setClassName("HIDE");
+        issueInfoWidget.descriptionReadOnlyVisibility().setVisible(false);
         view.getInfoContainer().add(issueInfoWidget);
 
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
@@ -200,6 +200,7 @@ public abstract class IssueEditActivity implements
     public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
         issue.setName(changeRequest.getName());
         issue.setInfo(changeRequest.getInfo());
+        issueInfoWidget.descriptionReadOnlyVisibility().setVisible(true);
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
@@ -216,7 +217,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onAddLinkClicked(IsWidget target) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, lang.issues()));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, ISSUE_CASE_TYPE));
     }
 
     @Override
@@ -234,7 +235,7 @@ public abstract class IssueEditActivity implements
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         issueNameDescriptionEditWidget.description().setValue(
-                addImageInMessage(issueNameDescriptionEditWidget.description().getValue(), strPosition, attach));
+                addImageInMessage(isJiraMarkupCase(issue), issueNameDescriptionEditWidget.description().getValue(), strPosition, attach));
     }
 
     private void requestIssue(Long number, HasWidgets container) {
@@ -401,6 +402,10 @@ public abstract class IssueEditActivity implements
         return !policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
     }
 
+    private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
+        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+    }
+
     @Inject
     AbstractIssueEditView view;
 
@@ -424,6 +429,7 @@ public abstract class IssueEditActivity implements
 
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
+    private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

@@ -39,7 +39,9 @@ public interface IpReservationController extends RemoteService {
 
     ReservedIp updateReservedIp(ReservedIp reservedIp) throws RequestFailedException;
 
-    Long removeSubnet(Subnet subnet) throws RequestFailedException;
+    Long removeSubnet(Subnet subnet, boolean removeWithIps) throws RequestFailedException;
+
+    Boolean isSubnetAvailableToRemove(Long subnetId) throws RequestFailedException;
 
     Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException;
 

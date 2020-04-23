@@ -29,6 +29,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::remindAboutEmployeeProbationPeriod, new CronTrigger( "0 10 11 * * ?"));
         // Ежедневно в 11:14
         scheduler.schedule(this::notifyAboutContractDates, new CronTrigger("0 14 11 * * ?"));
+        // at 06:00:00 am every day
+        scheduler.schedule(this::processScheduledMailReportsDaily, new CronTrigger( "0 0 6 * * ?"));
+        // at 05:00:00 am every MONDAY
+        scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -59,14 +63,12 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
          );
     }
 
-    @Scheduled(cron = "0 0 6 * * ?") // at 06:00:00 am every day
     public void processScheduledMailReportsDaily() {
         reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
     }
 
-    @Scheduled(cron = "0 0 5 * * MON") // at 05:00:00 am every MONDAY
     public void processScheduledMailReportsWeekly() {
         reportControlService.processScheduledMailReports(En_ReportScheduledType.WEEKLY).ifError(response ->
                 log.warn("fail to process reports : status={}", response.getStatus() )

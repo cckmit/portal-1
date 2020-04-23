@@ -98,6 +98,16 @@ public class ToggleBtnGroupBase<T>
         return itemView;
     }
 
+    public void addBtnWithIconAndTooltip( String iconStyle, String buttonStyle, String tooltip, T value ) {
+        ToggleButton itemView = addBtn( null, value, buttonStyle );
+        if ( iconStyle != null ) {
+            itemView.setIcon( iconStyle, false );
+        }
+        if ( tooltip != null) {
+            itemView.setTooltip(tooltip);
+        }
+    }
+
     public void addBtnWithIcon( String iconStyle, String buttonStyle, String caption, T value ) {
         ToggleButton itemView = addBtn( caption, value, buttonStyle );
         if ( iconStyle != null ) {

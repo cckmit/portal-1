@@ -176,16 +176,10 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public Long removeSubnet(Subnet subnet) throws RequestFailedException {
+    public Long removeSubnet(Subnet subnet, boolean removeWithIps) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> result = ipReservationService.isSubnetAvailableToRemove(token, subnet.getId());
-
-        if (result.isError() || !result.getData()) {
-            throw new RequestFailedException(En_ResultStatus.NOT_REMOVED);
-        }
-
-        Result<Long> response = ipReservationService.removeSubnet(token, subnet);
+        Result<Long> response = ipReservationService.removeSubnet(token, subnet, removeWithIps);
 
         if (response.isOk()) {
             return response.getData();
@@ -228,6 +222,21 @@ public class IpReservationControllerImpl implements IpReservationController {
         Result<Boolean> response = ipReservationService.isReservedIpAddressExists( address, excludeId );
 
         log.info( "isReservedIpAddressExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
+
+        if ( response.isError() ) throw new RequestFailedException(response.getStatus());
+
+        return response.getData();
+    }
+
+    @Override
+    public Boolean isSubnetAvailableToRemove( Long subnetId ) throws RequestFailedException {
+        log.info( "isSubnetAvailableToRemove(): subnetId={}", subnetId );
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = ipReservationService.isSubnetAvailableToRemove(token, subnetId);
+
+        log.info( "isSubnetAvailableToRemove(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 

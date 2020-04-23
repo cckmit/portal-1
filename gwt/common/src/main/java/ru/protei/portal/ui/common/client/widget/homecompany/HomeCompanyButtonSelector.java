@@ -28,5 +28,9 @@ public class HomeCompanyButtonSelector extends ButtonPopupSingleSelector<EntityO
         model.setReverseOrder(reverseOrder);
     }
 
+    public void setSynchronizeWith1C(Boolean synchronizeWith1C) {
+        model.setSynchronizeWith1C(synchronizeWith1C);
+    }
+
     private HomeCompanyModel model;
 }

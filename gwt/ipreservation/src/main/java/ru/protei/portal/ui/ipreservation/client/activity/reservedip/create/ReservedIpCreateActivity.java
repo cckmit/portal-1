@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.ipreservation.client.activity.reservedip.create;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -21,6 +20,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.ipreservation.client.view.widget.mode.En_ReservedMode;
@@ -62,7 +62,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         ipReservationService.createReservedIp(fillReservedIpRequest(), new FluentCallback<List<ReservedIp>>()
                 .withError(throwable -> {
                     view.saveEnabled().setEnabled(true);
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    showErrorFromServer(throwable);
                 })
                 .withSuccess(reservedIpList -> {
                     view.saveEnabled().setEnabled(true);
@@ -177,12 +177,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         if (En_ReservedMode.EXACT_IP.equals(view.reservedMode().getValue())) {
 
             if(!view.ipAddressValidator().isValid()){
-                fireEvent(new NotifyEvents.Show(lang.reservedIpWrongIpAddress(), NotifyEvents.NotifyType.ERROR));
+                showError(lang.reservedIpWrongIpAddress());
                 return false;
             }
 
             if(StringUtils.isNotBlank(view.macAddress().getValue()) && !view.macAddressValidator().isValid()){
-                fireEvent(new NotifyEvents.Show(lang.reservedIpWrongMacAddress(), NotifyEvents.NotifyType.ERROR));
+                showError(lang.reservedIpWrongMacAddress());
                 return false;
             }
         } else {
@@ -192,16 +192,15 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             if(number == null
                || number < CrmConstants.IpReservation.MIN_IPS_COUNT
                || number > CrmConstants.IpReservation.MAX_IPS_COUNT ){
-                fireEvent(new NotifyEvents.Show(lang.reservedIpWrongNumber(
+                showError(lang.reservedIpWrongNumber(
                         CrmConstants.IpReservation.MIN_IPS_COUNT,
-                        CrmConstants.IpReservation.MAX_IPS_COUNT
-                ), NotifyEvents.NotifyType.ERROR));
+                        CrmConstants.IpReservation.MAX_IPS_COUNT));
                 return false;
             }
         }
 
         if(view.owner().getValue() == null){
-            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpNeedSelectOwner(), NotifyEvents.NotifyType.ERROR));
+            showError(lang.errSaveReservedIpNeedSelectOwner());
             return false;
         }
 
@@ -209,7 +208,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
            || ( view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED)
                 && !view.useRange().getValue().getInterval().isValid() ))
         {
-            fireEvent(new NotifyEvents.Show(lang.errSaveReservedIpUseInterval(), NotifyEvents.NotifyType.ERROR));
+            showError(lang.errSaveReservedIpUseInterval());
             return false;
         }
 
@@ -228,6 +227,14 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         return false;
     }
 
+    private void showErrorFromServer(Throwable throwable) {
+        errorHandler.accept(throwable);
+    }
+
+    private void showError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -236,4 +243,6 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     IpReservationControllerAsync ipReservationService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler errorHandler;
 }

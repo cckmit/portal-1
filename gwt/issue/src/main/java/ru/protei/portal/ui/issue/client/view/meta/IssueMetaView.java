@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -345,6 +346,21 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         slaTimesContainer.setTitle(title);
     }
 
+    @Override
+    public HasVisibility pauseDateContainerVisibility() {
+        return pauseDateContainer;
+    }
+
+    @Override
+    public HasValue<Date> pauseDate() {
+        return pauseDate;
+    }
+
+    @Override
+    public void setPauseDateValid(boolean isValid) {
+        pauseDate.markInputValid(isValid);
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
@@ -359,6 +375,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) return;
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
+        pauseDate.setEnsureDebugId(DebugIds.ISSUE.PAUSE_DATE_CONTAINER);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
         platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
@@ -458,12 +475,22 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         activity.onCaseMetaJiraChanged();
     }
 
+    @UiHandler("pauseDate")
+    public void onPauseDateChanged(ValueChangeEvent<Date> event) {
+        activity.onPauseDateChanged();
+    }
+
     @UiField
     @Inject
     Lang lang;
     @Inject
     @UiField(provided = true)
     IssueStateFormSelector state;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker pauseDate;
+    @UiField
+    HTMLPanel pauseDateContainer;
     @Inject
     @UiField(provided = true)
     ImportanceFormSelector importance;

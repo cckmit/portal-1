@@ -31,6 +31,8 @@ import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.AccountServiceImpl;
@@ -583,6 +585,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CompanyDepartmentService getCompanyDepartmentService() {
+        return new CompanyDepartmentServiceImpl();
+    }
+
+    @Bean
+    public WorkerPositionService getWorkerPositionService() {
+        return new WorkerPositionServiceImpl();
+    }
+
+    @Bean
     public ProductService getProductService() {
         return new ProductServiceImpl();
     }
@@ -673,8 +685,18 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getEventProjectAssemblerService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean
@@ -811,6 +833,11 @@ public class MainConfiguration {
     @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
+    }
+
+    @Bean
+    public ReportProject getReportProject() {
+        return new ReportProjectImpl();
     }
 
     @Bean

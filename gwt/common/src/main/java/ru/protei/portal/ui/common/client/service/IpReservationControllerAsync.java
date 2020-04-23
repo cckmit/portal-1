@@ -36,7 +36,9 @@ public interface IpReservationControllerAsync {
 
     void updateReservedIp(ReservedIp reservedIp, AsyncCallback<ReservedIp> async);
 
-    void removeSubnet(Subnet subnet, AsyncCallback<Long> async);
+    void removeSubnet(Subnet subnet, boolean removeWithIps, AsyncCallback<Long> async);
+
+    void isSubnetAvailableToRemove(Long subnetId, AsyncCallback<Boolean> async);
 
     void removeReservedIp(ReservedIp reservedIp, AsyncCallback<Long> async);
 

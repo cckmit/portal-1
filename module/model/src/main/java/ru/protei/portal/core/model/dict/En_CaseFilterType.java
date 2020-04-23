@@ -14,5 +14,10 @@ public enum En_CaseFilterType {
     /**
      * Фильтр по времени завершения
      */
-    CASE_RESOLUTION_TIME
+    CASE_RESOLUTION_TIME,
+
+    /**
+     * Фильтр проектам
+     */
+    PROJECT
 }

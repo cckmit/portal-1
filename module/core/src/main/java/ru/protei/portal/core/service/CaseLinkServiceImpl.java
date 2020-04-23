@@ -10,10 +10,12 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseLinkEvent;
+import ru.protei.portal.core.event.ProjectLinkEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -111,9 +113,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Transactional
     public Result<Long> createLink(AuthToken authToken, CaseLink link, boolean createCrossLinks) {
 
-        Result<CaseLink> result = validateLinkBeforeAdd(link, authToken);
-        if (result.isError())
-            return error(result.getStatus());
+        En_ResultStatus validationStatus = validateLinkBeforeAdd(link, authToken);
+        if (!En_ResultStatus.OK.equals(validationStatus)) {
+            return error(validationStatus);
+        }
 
         Long createdLinkId = addLink(link, createCrossLinks).getData();
 
@@ -122,16 +125,25 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink link, boolean createCrossLinks) {
+    public Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType, boolean createCrossLinks) {
 
-        Result<CaseLink> result = validateLinkBeforeAdd(link, authToken);
-        if (result.isError())
-            return error(result.getStatus());
+        En_ResultStatus validationStatus = validateLinkBeforeAdd(link, authToken);
+        if (!En_ResultStatus.OK.equals(validationStatus)) {
+            return error(validationStatus);
+        }
 
         Long createdLinkId = addLink(link, createCrossLinks).getData();
+        Result<Long> completeResult = ok(createdLinkId);
 
-        return ok(createdLinkId)
-                .publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null ) );
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            completeResult.publishEvent(new CaseLinkEvent(this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null));
+        }
+
+        if (En_CaseType.PROJECT.equals(caseType)) {
+            completeResult.publishEvent(new ProjectLinkEvent(this, link.getCaseId(), authToken.getPersonId(), link, null));
+        }
+
+        return completeResult;
     }
 
     @Override
@@ -146,7 +158,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result deleteLinkWithPublish (AuthToken authToken, Long id) {
+    public Result deleteLinkWithPublish (AuthToken authToken, Long id, En_CaseType caseType) {
         Result<CaseLink> validationResult = validateLinkBeforeRemove(id);
         if (validationResult.isError())
             return error(validationResult.getStatus());
@@ -155,8 +167,19 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         Result result = removeLink(existedLink);
 
-        return result.isError() ? error(result.getStatus()) : ok()
-                .publishEvent( new CaseLinkEvent( this, ServiceModule.GENERAL, authToken.getPersonId(), existedLink.getCaseId(), null, existedLink ) );
+        if (result.isError()) {
+            return error(result.getStatus());
+        }
+
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            result.publishEvent(new CaseLinkEvent(this, ServiceModule.GENERAL, authToken.getPersonId(), existedLink.getCaseId(), null, existedLink));
+        }
+
+        if (En_CaseType.PROJECT.equals(caseType)) {
+            result.publishEvent(new ProjectLinkEvent(this, existedLink.getCaseId(), authToken.getPersonId(), null, existedLink));
+        }
+
+        return result;
     }
 
 
@@ -199,24 +222,24 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(existedLink);
     }
 
-    private Result<CaseLink> validateLinkBeforeAdd(CaseLink link, AuthToken authToken){
+    private En_ResultStatus validateLinkBeforeAdd(CaseLink link, AuthToken authToken){
 
         if (link == null || !isValidLink(link)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return En_ResultStatus.INCORRECT_PARAMS;
         }
         if (Objects.equals(link.getRemoteId(), String.valueOf(link.getCaseId()))) {
-            return error(En_ResultStatus.NOT_ALLOWED_LINK_ISSUE_TO_ITSELF);
+            return En_ResultStatus.NOT_ALLOWED_LINK_ISSUE_TO_ITSELF;
         }
         boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
         // запрещено изменение ссылок вне зоны видимости
         if (isShowOnlyPublic && link.isPrivate()) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
+            return En_ResultStatus.PERMISSION_DENIED;
         }
         boolean isAlreadyExist = caseLinkDAO.checkExistLink(link.getType(), link.getCaseId(), link.getRemoteId());
         if (isAlreadyExist) {
-            return error(En_ResultStatus.THIS_LINK_ALREADY_ADDED);
+            return En_ResultStatus.THIS_LINK_ALREADY_ADDED;
         }
-        return ok(link);
+        return En_ResultStatus.OK;
     }
 
     private Result<Long> addLink (CaseLink link, boolean createCrossLinks) {

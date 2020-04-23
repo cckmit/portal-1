@@ -83,7 +83,7 @@ public enum En_SortField {
     /**
      * region name
      */
-    region_name("region_name"),
+    region_name("location_region_name"),
 
     /**
      * equipment project

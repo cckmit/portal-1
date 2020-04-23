@@ -9,8 +9,8 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Активность карточки создания и редактирования проектов
@@ -72,23 +73,15 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.saveEnabled().setEnabled(false);
 
-        regionService.saveProject(project, new FluentCallback<Project>()
-                .withError(throwable -> {
+        regionService.saveProject(project, new FluentCallback<UiResult<Project>>()
+                .withError(throwable -> view.saveEnabled().setEnabled(true))
+                .withSuccess(projectSaveResult -> {
                     view.saveEnabled().setEnabled(true);
-                    if (throwable instanceof RequestFailedException){
-                        En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
-                        if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
-                            fireEvent(new ProjectEvents.Show(true));
-                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        }
-                        defaultErrorHandler.accept(throwable);
+
+                    if (SOME_LINKS_NOT_SAVED.equals(projectSaveResult.getMessage())) {
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSomeNotAdded(), NotifyEvents.NotifyType.INFO));
                     }
-                    else {
-                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                    }
-                })
-                .withSuccess(aVoid -> {
-                    view.saveEnabled().setEnabled(true);
+
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(isNew(project) ? new ProjectEvents.Show(true) : new Back());
@@ -98,14 +91,14 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Event
     public void onAddLink(CaseLinkEvents.Added event) {
-        if (lang.projects().equals(event.pageId)) {
+        if (PROJECT_CASE_TYPE.equals(event.caseType)) {
             project.addLink(event.caseLink);
         }
     }
 
     @Event
     public void onRemoveLink(CaseLinkEvents.Removed event) {
-        if (lang.projects().equals(event.pageId)) {
+        if (PROJECT_CASE_TYPE.equals(event.caseType)) {
             project.getLinks().remove(event.caseLink);
         }
     }
@@ -117,7 +110,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, lang.projects(), false));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, PROJECT_CASE_TYPE, false));
     }
 
     @Override
@@ -232,7 +225,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)){
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                     .withCaseId(projectId)
-                    .withCaseType(En_CaseType.PROJECT)
+                    .withCaseType(PROJECT_CASE_TYPE)
                     .withReadOnly(!hasPrivileges(projectId)));
         }
     }
@@ -288,6 +281,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
 
     private Project project;
+
+    private static final En_CaseType PROJECT_CASE_TYPE = En_CaseType.PROJECT;
 
     private AppEvents.InitDetails initDetails;
 }

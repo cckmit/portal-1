@@ -1,10 +1,8 @@
-package ru.protei.portal.ui.common.client.util;
+package ru.protei.portal.core.model.helper;
 
-import com.google.gwt.core.client.GWT;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.Date;
 
@@ -64,16 +62,28 @@ public class CaseCommentUtils {
         }
     }
 
-    public static String addImageInMessage(String message, Integer position, Attachment attach) {
+    public static String addImageInMessage(En_TextMarkup textMarkup, String message, Integer position, Attachment attach) {
+        String imageString;
+        switch (textMarkup) {
+            case JIRA_WIKI_MARKUP: imageString = makeJiraImageString( attach.getExtLink(), attach.getFileName()); break;
+            case MARKDOWN:
+            default:
+                imageString = makeMarkDownImageString(attach.getExtLink(), attach.getFileName()); break;
+        }
+
         if (position != null) {
-            return message.substring(0, position) + NEW_LINE_SYMBOL + makeImageString(attach) + NEW_LINE_SYMBOL + message.substring(position);
+            return message.substring(0, position) + NEW_LINE_SYMBOL + imageString + NEW_LINE_SYMBOL + message.substring(position);
         } else {
-            return isEmpty(message)? makeImageString(attach) : message + NEW_LINE_SYMBOL + makeImageString(attach);
+            return isEmpty(message)? imageString : message + NEW_LINE_SYMBOL + imageString;
         }
     }
 
-    public static String makeImageString(Attachment attach) {
-        return ("![alt=" +  attach.getFileName() +"]("+ attach.getExtLink() +")");
+    public static String makeJiraImageString(String link, String alt) {
+        return "!" + link + "|alt=" + alt +"!";
+    }
+
+    public static String makeMarkDownImageString(String link, String alt) {
+        return "![alt=" + alt + "](" + link + ")";
     }
 
     private static final long EDIT_PERIOD = 300000;

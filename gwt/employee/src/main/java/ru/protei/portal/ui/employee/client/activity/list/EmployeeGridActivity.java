@@ -48,6 +48,10 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
         ));
 
+        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
+        }
+
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
@@ -65,17 +69,32 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onTopBrassClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
+            return;
+        }
+
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
-        if (!(UiConstants.ActionBarIdentity.TOP_BRASS.equals(event.identity))) {
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new EmployeeEvents.ShowTopBrass());
+    }
+
+    @Event
+    public void onEmployeeCreateClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_CREATE.equals(event.identity))) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ForbiddenEvents.Show());
             return;
         }
 
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new EmployeeEvents.ShowTopBrass());
+        fireEvent(new EmployeeEvents.Edit());
     }
 
     @Override
@@ -86,7 +105,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
-                null,
+                filterView.organizations().getValue(),
                 filterView.searchPattern().getValue(),
                 filterView.workPhone().getValue(),
                 filterView.mobilePhone().getValue(),
