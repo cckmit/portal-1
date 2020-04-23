@@ -337,11 +337,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setProduct(caseObjectMeta.getProduct());
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
 
-        issueMetaView.slaContainerVisibility().setVisible(true);
+        issueMetaView.slaContainerVisibility().setVisible(isSystemScope());
         requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
     }
 
     private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+        if (!isSystemScope()) {
+            return;
+        }
+
         if (platformId == null) {
             slaList = DefaultSlaValues.getList();
             issueMetaView.setValuesContainerWarning(true);
@@ -533,6 +537,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private boolean makePreviewDisplaying( String key ) {
         return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, "false" ) );
+    }
+
+    private boolean isSystemScope() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE);
     }
 
     private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {

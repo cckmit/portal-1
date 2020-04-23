@@ -389,11 +389,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
 
-        metaView.slaContainerVisibility().setVisible(!isJiraIssue());
+        metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
     }
 
     private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+        if (!isSystemScope()) {
+            return;
+        }
+
         if (isJiraIssue()) {
             return;
         }
@@ -516,6 +520,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         return false;
+    }
+
+    private boolean isSystemScope() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
     }
 
     @Inject
