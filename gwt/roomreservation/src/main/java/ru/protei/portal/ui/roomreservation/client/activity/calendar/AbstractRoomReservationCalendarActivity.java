@@ -4,13 +4,15 @@ import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
 
-public interface AbstractCalendarActivity {
+public interface AbstractRoomReservationCalendarActivity {
 
     void onAddNewReservationClicked();
 
     void onAddNewReservationClicked(RoomReservable room, YearMonthDay day, Integer hour);
 
     void onEditReservationClicked(RoomReservation reservation);
+
+    void toggleHourStartButtonClicked();
 
     void onRoomChanged(RoomReservable room);
 
@@ -19,6 +21,4 @@ public interface AbstractCalendarActivity {
     void onMonthChanged(Integer month);
 
     void onDayOfMonthChanged(YearMonthDay day);
-
-    void toggleHourStartButtonClick();
 }

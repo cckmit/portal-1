@@ -9,9 +9,9 @@ import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
 import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
 
-public interface AbstractCalendarView extends IsWidget {
+public interface AbstractRoomReservationCalendarView extends IsWidget {
 
-    void setActivity(AbstractCalendarActivity activity);
+    void setActivity(AbstractRoomReservationCalendarActivity activity);
 
     HasValue<RoomReservable> room();
 

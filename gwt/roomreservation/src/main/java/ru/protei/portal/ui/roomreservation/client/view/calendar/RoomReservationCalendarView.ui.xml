@@ -9,7 +9,6 @@
     <g:HTMLPanel styleName="full-height bg-white">
         <div class="calendar week">
             <div class="options">
-                <g:Button ui:field="addNewReservation" styleName="btn btn-complete btn-cons" text="{lang.buttonCreate}"/>
                 <selector:room.RoomReservableButtonSelector ui:field="roomSelector"
                                                            validation="false" hasNullValue="false"
                                                            addStyleNames="inline-block align-middle m-r-5"/>
@@ -23,6 +22,9 @@
                 <div class="btn-group pull-right m-r-15">
                     <g:Button styleName="btn btn-default" ui:field="toggleHourStartButton" title="{lang.roomReservationHourStartButton}">
                         <i class="far fa-clock"/>
+                    </g:Button>
+                    <g:Button styleName="btn btn-complete" ui:field="addNewReservationButton" title="{lang.buttonCreate}">
+                        <i class="fas fa-plus-circle"/>
                     </g:Button>
                 </div>
                 <calendar:options.CalendarDayOfMonth ui:field="dayOfMonthSelector"/>

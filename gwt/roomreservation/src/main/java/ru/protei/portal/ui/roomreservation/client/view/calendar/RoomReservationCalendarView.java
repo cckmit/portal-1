@@ -13,8 +13,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
-import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractCalendarActivity;
-import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractCalendarView;
+import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractRoomReservationCalendarActivity;
+import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractRoomReservationCalendarView;
 import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
 import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
 import ru.protei.portal.ui.roomreservation.client.widget.calendar.container.CalendarContainer;
@@ -23,7 +23,7 @@ import ru.protei.portal.ui.roomreservation.client.widget.selector.month.MonthBut
 import ru.protei.portal.ui.roomreservation.client.widget.selector.room.RoomReservableButtonSelector;
 import ru.protei.portal.ui.roomreservation.client.widget.selector.year.YearButtonSelector;
 
-public class CalendarView extends Composite implements AbstractCalendarView {
+public class RoomReservationCalendarView extends Composite implements AbstractRoomReservationCalendarView {
 
     @Inject
     public void onInit() {
@@ -43,7 +43,7 @@ public class CalendarView extends Composite implements AbstractCalendarView {
     }
 
     @Override
-    public void setActivity(AbstractCalendarActivity activity) {
+    public void setActivity(AbstractRoomReservationCalendarActivity activity) {
         this.activity = activity;
     }
 
@@ -82,7 +82,7 @@ public class CalendarView extends Composite implements AbstractCalendarView {
 
     @Override
     public HasEnabled addNewReservationEnabled() {
-        return addNewReservation;
+        return addNewReservationButton;
     }
 
     @Override
@@ -95,8 +95,8 @@ public class CalendarView extends Composite implements AbstractCalendarView {
         return calendarContainer;
     }
 
-    @UiHandler("addNewReservation")
-    public void addNewReservationClick(ClickEvent event) {
+    @UiHandler("addNewReservationButton")
+    public void addNewReservationButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onAddNewReservationClicked();
         }
@@ -133,12 +133,10 @@ public class CalendarView extends Composite implements AbstractCalendarView {
     @UiHandler("toggleHourStartButton")
     public void toggleHourStartButtonClick(ClickEvent event) {
         if (activity != null) {
-            activity.toggleHourStartButtonClick();
+            activity.toggleHourStartButtonClicked();
         }
     }
 
-    @UiField
-    Button addNewReservation;
     @Inject
     @UiField(provided = true)
     RoomReservableButtonSelector roomSelector;
@@ -152,6 +150,8 @@ public class CalendarView extends Composite implements AbstractCalendarView {
     HeadingElement dayAndName;
     @UiField
     Button toggleHourStartButton;
+    @UiField
+    Button addNewReservationButton;
     @Inject
     @UiField(provided = true)
     CalendarDayOfMonth dayOfMonthSelector;
@@ -161,8 +161,8 @@ public class CalendarView extends Composite implements AbstractCalendarView {
     @UiField(provided = true)
     CalendarContainer calendarContainer;
 
-    private AbstractCalendarActivity activity;
+    private AbstractRoomReservationCalendarActivity activity;
 
-    interface CalendarViewBinder extends UiBinder<HTMLPanel, CalendarView> {}
+    interface CalendarViewBinder extends UiBinder<HTMLPanel, RoomReservationCalendarView> {}
     private static CalendarViewBinder ourUiBinder = GWT.create(CalendarViewBinder.class);
 }

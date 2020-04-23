@@ -252,14 +252,6 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
         return week;
     }
 
-    private Date makeDate(int year, int month, int dayOfMonth) {
-        Date date = resetTime(new Date());
-        date.setYear(getYearDeNormalized(year));
-        date.setMonth(getMonthDeNormalized(month));
-        date.setDate(dayOfMonth);
-        return date;
-    }
-
     private String makeTimeHourMinutes(Date date) {
         int hours = date.getHours();
         int minutes = date.getMinutes();
@@ -282,7 +274,6 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
         "bg-primary-lighter",
         "bg-complete-lighter",
         "bg-success-lighter",
-        "bg-warning-lighter",
         "bg-danger-lighter",
         "bg-master-lighter",
     };

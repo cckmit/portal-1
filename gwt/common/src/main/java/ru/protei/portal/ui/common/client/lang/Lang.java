@@ -2381,4 +2381,33 @@ public interface Lang extends Messages, ContactItemLang {
     String roomReservationReasonValue4();
 
     String roomReservationHourStartButton();
+
+    String roomReservationCreation();
+
+    String roomReservationEditing();
+
+    String roomReservationPersonResponsible();
+
+    String roomReservationRoom();
+
+    String roomReservationDates();
+
+    String roomReservationDatesCreateAddWeek();
+
+    String roomReservationDatesCreateAddDay();
+
+    String roomReservationReason();
+
+    String roomReservationCoffeeBreakCount();
+
+    String roomReservationNotifiers();
+
+    String roomReservationComment();
+
+    String roomReservationSaved();
+
+    String roomReservationUpdated();
+
+    String roomReservationRemoved();
+
 }

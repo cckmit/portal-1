@@ -2,10 +2,13 @@ package ru.protei.portal.ui.roomreservation.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractCalendarView;
-import ru.protei.portal.ui.roomreservation.client.activity.calendar.CalendarActivity;
+import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractRoomReservationCalendarView;
+import ru.protei.portal.ui.roomreservation.client.activity.calendar.RoomReservationCalendarActivity;
+import ru.protei.portal.ui.roomreservation.client.activity.edit.AbstractRoomReservationEditView;
+import ru.protei.portal.ui.roomreservation.client.activity.edit.RoomReservationEditActivity;
 import ru.protei.portal.ui.roomreservation.client.page.RoomReservationPage;
-import ru.protei.portal.ui.roomreservation.client.view.calendar.CalendarView;
+import ru.protei.portal.ui.roomreservation.client.view.calendar.RoomReservationCalendarView;
+import ru.protei.portal.ui.roomreservation.client.view.edit.RoomReservationEditView;
 
 public class RoomReservationClientModule extends AbstractGinModule {
     @Override
@@ -13,8 +16,9 @@ public class RoomReservationClientModule extends AbstractGinModule {
 
         bind(RoomReservationPage.class).asEagerSingleton();
 
-        bind(CalendarActivity.class).asEagerSingleton();
-        bind(AbstractCalendarView.class).to(CalendarView.class).in(Singleton.class);
-
+        bind(RoomReservationCalendarActivity.class).asEagerSingleton();
+        bind(AbstractRoomReservationCalendarView.class).to(RoomReservationCalendarView.class).in(Singleton.class);
+        bind(RoomReservationEditActivity.class).asEagerSingleton();
+        bind(AbstractRoomReservationEditView.class).to(RoomReservationEditView.class);
     }
 }

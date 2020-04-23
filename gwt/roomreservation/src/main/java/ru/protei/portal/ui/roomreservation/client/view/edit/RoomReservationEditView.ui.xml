@@ -1,0 +1,53 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:room='urn:import:ru.protei.portal.ui.roomreservation.client.widget.selector.room'
+             xmlns:reason='urn:import:ru.protei.portal.ui.roomreservation.client.widget.selector.reason'
+             xmlns:rawtext='urn:import:ru.protei.portal.ui.common.client.widget.selector.text'
+             xmlns:datetime='urn:import:ru.protei.portal.ui.roomreservation.client.widget.datetime'
+             xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin" ui:field="root">
+        <loading:IndeterminateCircleLoading ui:field="loading" visible="false"
+                                            styleName="p-t-20 p-b-20 p-l-20 p-r-20"/>
+        <g:HTMLPanel ui:field="content" visible="false" styleName="card-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.roomReservationPersonResponsible}"/></label>
+                    <person:EmployeeButtonSelector ui:field="personResponsible" validation="true"
+                                                   defaultValue="{lang.selectValue}"/>
+                </div>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.roomReservationRoom}"/></label>
+                    <room:RoomReservableButtonSelector ui:field="room" validation="true"
+                                                       defaultValue="{lang.selectValue}"/>
+                </div>
+                <div class="form-group col-md-6">
+                    <label><ui:text from="{lang.roomReservationReason}"/></label>
+                    <reason:RoomReservationReasonButtonSelector ui:field="reason" validation="true"
+                                                                defaultValue="{lang.selectValue}"/>
+                </div>
+                <div class="form-group col-md-6">
+                    <label><ui:text from="{lang.roomReservationCoffeeBreakCount}"/></label>
+                    <rawtext:RawTextButtonSelector ui:field="coffeeBreakCount" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.roomReservationDates}"/></label>
+                    <datetime:RoomReservationDates ui:field="dates"/>
+                </div>
+                <person:EmployeeMultiSelector ui:field="notifiers"
+                                              header="{lang.roomReservationNotifiers}"
+                                              addStyleNames="form-group col-md-12"/>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.roomReservationComment}"/></label>
+                    <autoresizetextarea:AutoResizeTextArea ui:field="comment" styleName="form-control"
+                                                           minRows="2" maxRows="10"/>
+                </div>
+            </div>
+
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

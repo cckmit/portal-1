@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
 import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
@@ -27,7 +28,7 @@ import java.util.Objects;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
 
-public abstract class CalendarActivity implements Activity, AbstractCalendarActivity {
+public abstract class RoomReservationCalendarActivity implements Activity, AbstractRoomReservationCalendarActivity {
 
     @PostConstruct
     public void onInit() {
@@ -55,17 +56,30 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
 
     @Override
     public void onAddNewReservationClicked() {
-        // TODO open reservation create view
+        Date d = resetTime(date);
+        d.setHours(date.getHours() + 1);
+        fireEvent(new RoomReservationEvents.Create(room, d));
     }
 
     @Override
     public void onAddNewReservationClicked(RoomReservable room, YearMonthDay day, Integer hour) {
-        // TODO open reservation create view
+        Date d = resetTime(date);
+        d.setYear(getYearDeNormalized(day.getYear()));
+        d.setMonth(getMonthDeNormalized(day.getMonth()));
+        d.setDate(day.getDayOfMonth());
+        d.setHours(hour);
+        fireEvent(new RoomReservationEvents.Create(room, d));
     }
 
     @Override
     public void onEditReservationClicked(RoomReservation reservation) {
-        // TODO open reservation edit view
+        fireEvent(new RoomReservationEvents.Edit(reservation.getId()));
+    }
+
+    @Override
+    public void toggleHourStartButtonClicked() {
+        saveHoursStartHidden(!isHoursStartHidden());
+        show(room, date);
     }
 
     @Override
@@ -94,12 +108,6 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
         date.setMonth(getMonthDeNormalized(day.getMonth()));
         date.setDate(day.getDayOfMonth());
         selectDate(date);
-        show(room, date);
-    }
-
-    @Override
-    public void toggleHourStartButtonClick() {
-        saveHoursStartHidden(!isHoursStartHidden());
         show(room, date);
     }
 
@@ -142,6 +150,11 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
         }
         showLoading();
         roomReservationController.getReservations(query, new FluentCallback<List<RoomReservation>>()
+            .withError(throwable -> {
+                hideLoading();
+                hideCalendar();
+                defaultErrorHandler.accept(throwable);
+            })
             .withSuccess(roomReservations -> {
                 hideLoading();
                 storeToCache(query, roomReservations);
@@ -216,13 +229,15 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
     @Inject
     Lang lang;
     @Inject
-    AbstractCalendarView view;
+    AbstractRoomReservationCalendarView view;
     @Inject
     PolicyService policyService;
     @Inject
     LocalStorageService localStorageService;
     @Inject
     RoomReservationControllerAsync roomReservationController;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private RoomReservable room;
     private Date date;
