@@ -179,7 +179,8 @@ public class DateUtils {
         int year = getYearNormalized(date);
         int month = getMonthNormalized(date);
         int dayOfMonth = getDayOfMonth(date);
-        return new YearMonthDay(year, month, dayOfMonth);
+        int dayOfWeek = getDayOfWeekNormalized(date);
+        return new YearMonthDay(year, month, dayOfMonth, dayOfWeek);
     }
 
     public static boolean isSame(YearMonthDay d1, YearMonthDay d2) {

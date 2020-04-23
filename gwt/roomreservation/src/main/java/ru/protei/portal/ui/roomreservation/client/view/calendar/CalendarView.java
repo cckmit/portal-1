@@ -130,6 +130,13 @@ public class CalendarView extends Composite implements AbstractCalendarView {
         }
     }
 
+    @UiHandler("toggleHourStartButton")
+    public void toggleHourStartButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.toggleHourStartButtonClick();
+        }
+    }
+
     @UiField
     Button addNewReservation;
     @Inject
@@ -143,6 +150,8 @@ public class CalendarView extends Composite implements AbstractCalendarView {
     MonthButtonSelector monthSelector;
     @UiField
     HeadingElement dayAndName;
+    @UiField
+    Button toggleHourStartButton;
     @Inject
     @UiField(provided = true)
     CalendarDayOfMonth dayOfMonthSelector;

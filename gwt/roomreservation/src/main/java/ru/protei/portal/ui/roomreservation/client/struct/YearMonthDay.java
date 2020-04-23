@@ -7,13 +7,15 @@ public class YearMonthDay implements Serializable {
     private Integer year;
     private Integer month;
     private Integer dayOfMonth;
+    private Integer dayOfWeek;
 
     public YearMonthDay() {}
 
-    public YearMonthDay(Integer year, Integer month, Integer dayOfMonth) {
+    public YearMonthDay(Integer year, Integer month, Integer dayOfMonth, Integer dayOfWeek) {
         this.year = year;
         this.month = month;
         this.dayOfMonth = dayOfMonth;
+        this.dayOfWeek = dayOfWeek;
     }
 
     public Integer getYear() {
@@ -40,12 +42,21 @@ public class YearMonthDay implements Serializable {
         this.dayOfMonth = dayOfMonth;
     }
 
+    public Integer getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(Integer dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
+
     @Override
     public String toString() {
         return "YearMonthDay{" +
                 "year=" + year +
                 ", month=" + month +
                 ", dayOfMonth=" + dayOfMonth +
+                ", dayOfWeek=" + dayOfWeek +
                 '}';
     }
 }

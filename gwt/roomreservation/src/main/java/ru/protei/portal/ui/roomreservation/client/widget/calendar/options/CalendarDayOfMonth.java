@@ -77,7 +77,8 @@ public class CalendarDayOfMonth extends Composite implements HasValue<YearMonthD
             YearMonthDay current = new YearMonthDay(
                 value.getYear(),
                 value.getMonth(),
-                day.getDayOfMonth()
+                day.getDayOfMonth(),
+                day.getDayOfWeek()
             );
             boolean isToday = isSame(
                 makeYearMonthDay(new Date()),

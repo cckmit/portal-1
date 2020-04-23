@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
-import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.isSame;
 import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.*;
 
 public class CalendarContainer extends Composite implements HasValue<RoomReservationCalendar>, HasVisibility {
@@ -130,7 +129,8 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
         YearMonthDay current = new YearMonthDay(
             value.getYearMonthDay().getYear(),
             value.getYearMonthDay().getMonth(),
-            day.getDayOfMonth()
+            day.getDayOfMonth(),
+            day.getDayOfWeek()
         );
         List<RoomReservation> reservations = fetchReservations(
             value.getReservations(),
@@ -240,7 +240,7 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
         int year = value.getYear();
         int month = value.getMonth();
         int dayOfMonth = value.getDayOfMonth();
-        int dayOfWeek = getDayOfWeekNormalized(makeDate(year, month, dayOfMonth));
+        int dayOfWeek = value.getDayOfWeek();
         List<Day> week = new ArrayList<>();
         for (int w = 1; w <= 7; w++) {
             Integer m = dayOfMonth - (dayOfWeek - w);

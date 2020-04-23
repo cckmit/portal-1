@@ -20,6 +20,11 @@
                                                     validation="false" hasNullValue="false"
                                                     addStyleNames="inline-block align-middle m-r-5"/>
                 <h5 ui:field="dayAndName" class="semi-bold inline-block align-middle m-t-0 m-b-0 m-l-5"/>
+                <div class="btn-group pull-right m-r-15">
+                    <g:Button styleName="btn btn-default" ui:field="toggleHourStartButton" title="{lang.roomReservationHourStartButton}">
+                        <i class="far fa-clock"/>
+                    </g:Button>
+                </div>
                 <calendar:options.CalendarDayOfMonth ui:field="dayOfMonthSelector"/>
             </div>
             <loading:IndeterminateCircleLoading ui:field="loading" visible="false"

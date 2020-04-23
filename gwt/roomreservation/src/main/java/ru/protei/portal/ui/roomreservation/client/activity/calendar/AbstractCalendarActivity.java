@@ -19,4 +19,6 @@ public interface AbstractCalendarActivity {
     void onMonthChanged(Integer month);
 
     void onDayOfMonthChanged(YearMonthDay day);
+
+    void toggleHourStartButtonClick();
 }

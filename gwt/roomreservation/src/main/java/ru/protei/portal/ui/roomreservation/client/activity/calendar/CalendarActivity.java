@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
@@ -96,6 +97,12 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
         show(room, date);
     }
 
+    @Override
+    public void toggleHourStartButtonClick() {
+        saveHoursStartHidden(!isHoursStartHidden());
+        show(room, date);
+    }
+
     private void showView() {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -111,15 +118,12 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
     }
 
     private void selectDate(Date date) {
-        int year = getYearNormalized(date);
-        int month = getMonthNormalized(date);
-        int dayOfMonth = getDayOfMonth(date);
-        int dayOfWeek = getDayOfWeekNormalized(date);
+        YearMonthDay day = makeYearMonthDay(date);
         boolean isPastDate = resetTime(date).before(resetTime(new Date()));
-        view.year().setValue(year, false);
-        view.month().setValue(month, false);
-        view.dayOfMonth().setValue(makeYearMonthDay(date), false);
-        view.dayAndName().setValue(dayOfMonth + " " + getDayOfWeekName(dayOfWeek, lang));
+        view.year().setValue(day.getYear(), false);
+        view.month().setValue(day.getMonth(), false);
+        view.dayOfMonth().setValue(day, false);
+        view.dayAndName().setValue(day.getDayOfMonth() + " " + getDayOfWeekName(day.getDayOfWeek(), lang));
         view.addNewReservationEnabled().setEnabled(!isPastDate);
     }
 
@@ -150,7 +154,7 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
             room,
             makeYearMonthDay(date),
             reservations,
-            0 /* TODO make hour-start filter (hide first 9 hours) */
+            isHoursStartHidden() ? 9 : 0
         ));
         view.calendarContainerVisibility().setVisible(true);
     }
@@ -201,12 +205,22 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
         storeToCache(null, null);
     }
 
+    private boolean isHoursStartHidden() {
+        return Boolean.parseBoolean(localStorageService.getOrDefault(CALENDAR_HIDE_HOURS_START, "true"));
+    }
+
+    private void saveHoursStartHidden(boolean isHidden) {
+        localStorageService.set(CALENDAR_HIDE_HOURS_START, String.valueOf(isHidden));
+    }
+
     @Inject
     Lang lang;
     @Inject
     AbstractCalendarView view;
     @Inject
     PolicyService policyService;
+    @Inject
+    LocalStorageService localStorageService;
     @Inject
     RoomReservationControllerAsync roomReservationController;
 
@@ -215,4 +229,5 @@ public abstract class CalendarActivity implements Activity, AbstractCalendarActi
     private RoomReservationQuery queryCache;
     private List<RoomReservation> reservationsCache;
     private AppEvents.InitDetails initDetails;
+    private final static String CALENDAR_HIDE_HOURS_START = "room_reservation_hide_hours_start";
 }
