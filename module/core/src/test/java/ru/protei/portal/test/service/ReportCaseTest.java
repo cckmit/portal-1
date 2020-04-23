@@ -9,9 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
+import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.TimeFormatter;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
@@ -24,11 +25,10 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static ru.protei.portal.core.model.dict.En_ImportanceLevel.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.find;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
@@ -48,15 +48,57 @@ public class ReportCaseTest extends BaseServiceTest {
     }
 
     @Test
-    public void productQueryTest() throws Exception {
+    public void writeReport() throws Exception {
+        initData();
 
+        CaseQuery caseQuery = makeCaseQuery(BASIC, IMPORTANT, CRITICAL);
+        Report report = makeReport( caseQuery );
+
+        assertTrue( "Expected not empty report", writeReport( report ) );
+    }
+
+    @Test
+    public void withoutImportanceHistory() throws Exception {
+        List<En_ImportanceLevel> importances = listOf( BASIC, IMPORTANT, CRITICAL );
+
+        List<CaseObject> initCases = initData();
+        List<CaseObject> cases = filterToList( initCases, caseObject -> importances.contains( caseObject.importanceLevel() ));
+
+        CaseQuery caseQuery = makeCaseQuery();
+        caseQuery.setCheckImportanceHistory(false);
+
+        List<CaseObjectComments> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
+
+        assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
+        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectComments::getCaseObject );
+        for (CaseObject aCase : cases) {
+            assertTrue(  "Missing case: " + aCase, find(  reportCases, caseObject -> Objects.equals( caseObject.getId(), aCase.getId() ) ).isPresent() );
+        }
+    }
+
+    @Test
+    public void withImportanceHistory() throws Exception {
+        List<CaseObject> cases = initData();
+
+        CaseQuery caseQuery = makeCaseQuery();
+        caseQuery.setCheckImportanceHistory(true);
+
+        List<CaseObjectComments> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery );
+
+        assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
+        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectComments::getCaseObject );
+        for (CaseObject aCase : cases) {
+            assertTrue(  "Missing case: " + aCase, find(  reportCases, caseObject -> Objects.equals( caseObject.getId(), aCase.getId() ) ).isPresent() );
+        }
+    }
+
+    private List<CaseObject> initData() {
         Person person = makePerson( makeCustomerCompany() );
+        List<CaseObject> cases = new ArrayList<>();
         authService.makeThreadAuthToken( makeUserLogin( person ) );
         CaseObject caseObject1 = makeCaseObject( person );
-//        makeComment( person, caseObject1, En_ImportanceLevel.IMPORTANT );
-//        makeComment( person, caseObject1, BASIC );
+        cases.add( caseObject1 );
         caseObject1.setImpLevel( BASIC.getId() );
-//        caseObjectDAO.persist( caseObject1 );
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject1) );
         caseObject1.setImpLevel( IMPORTANT.getId() );
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject1) );
@@ -64,26 +106,16 @@ public class ReportCaseTest extends BaseServiceTest {
         caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject1) );
 
         CaseObject caseObject2 = makeCaseObject( person );
-//        makeComment( person, caseObject2, BASIC );
-//        caseObject1.setImpLevel( BASIC.getId() );
-//        caseObjectDAO.persist( caseObject1 );
+        cases.add( caseObject2 );
+        caseObject2.setImpLevel( IMPORTANT.getId() );
+        caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject2) );
 
         CaseObject caseObject3 = makeCaseObject( person );
-//        makeComment( person, caseObject3, COSMETIC );
-//        caseObject1.setImpLevel( COSMETIC.getId() );
-//        caseObjectDAO.persist( caseObject1 );
+        cases.add( caseObject3 );
+        caseObject3.setImpLevel( CRITICAL.getId() );
+        caseService.updateCaseObjectMeta( getAuthToken(), new CaseObjectMeta(caseObject3) );
 
-
-
-        List<CaseComment> all = caseCommentDAO.getAll();
-        assertNotNull( all );
-
-        CaseQuery caseQuery = makeCaseQuery(BASIC, IMPORTANT, COSMETIC);
-
-        Report report = makeReport( caseQuery );
-
-        assertTrue( "Expected not empty report", writeReport( report ) );
-
+        return cases;
     }
 
     private Report makeReport( CaseQuery caseQuery ) {

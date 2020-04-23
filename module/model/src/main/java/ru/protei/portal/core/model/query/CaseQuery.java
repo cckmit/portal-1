@@ -88,6 +88,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> creatorIds;
 
+    private Boolean isCheckImportanceHistory;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -374,7 +376,15 @@ public class CaseQuery extends BaseQuery {
         this.caseMemberIds = caseMemberIds;
     }
 
-    @Override
+    public void setCheckImportanceHistory( boolean isCheckImportanceHistory ) {
+        this.isCheckImportanceHistory = isCheckImportanceHistory;
+    }
+
+    public Boolean isCheckImportanceHistory() {
+        return isCheckImportanceHistory;
+    }
+
+
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
@@ -402,6 +412,7 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 local != null ||
+                isCheckImportanceHistory != null ||
                 platformIndependentProject != null;
     }
 

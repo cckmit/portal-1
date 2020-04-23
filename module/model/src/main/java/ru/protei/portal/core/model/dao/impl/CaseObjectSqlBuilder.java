@@ -117,7 +117,15 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
-                condition.append(" and importance in " + makeInArg(query.getImportanceIds(), false));
+                String importantces = makeInArg( query.getImportanceIds(), false );
+                if (query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory()) {
+                    condition.append( " and importance in " ).append( importantces );
+                } else {
+                    condition.append( " and (importance in " ).append( importantces )
+                            .append( " or case_comment.cimp_level in " ).append( importantces )
+                            .append( ")" );
+
+                }
             }
 
             if ( query.getCreatedFrom() != null ) {
