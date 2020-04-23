@@ -69,6 +69,7 @@ public class UiConstants {
         String CONTRACT = "contract";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
         String TOP_BRASS = "top_brass";
+        String EMPLOYEE_CREATE = "employee_create";
         String SUBNET = "subnet";
         String SUBNET_CREATE = "subnet_create";
         String RESERVED_IP = "reserved_ip";

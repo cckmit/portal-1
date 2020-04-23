@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -35,7 +36,7 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
-    Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink value, boolean createCrossLinks);
+    Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink value, En_CaseType caseType, boolean createCrossLinks);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
@@ -43,5 +44,5 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
-    Result deleteLinkWithPublish(AuthToken authToken, Long id);
+    Result deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
 }

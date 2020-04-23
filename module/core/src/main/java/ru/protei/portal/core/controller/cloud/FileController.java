@@ -269,6 +269,7 @@ public class FileController {
                     generateCloudFileName(attachment.getId(), attachment.getFileName()),
                     fileSize, contentType);
             attachment.setExtLink(filePath);
+            attachment.setLabelText(attachment.getFileName());
         }
 
         if (attachmentService.saveAttachment(attachment).isError()) {
@@ -321,6 +322,7 @@ public class FileController {
         Attachment attachment = new Attachment();
         attachment.setCreatorId(creatorId);
         attachment.setFileName(fileName);
+        attachment.setLabelText(fileName);
         attachment.setDataSize(size);
         attachment.setMimeType(contentType);
 
@@ -370,9 +372,9 @@ public class FileController {
     }
 
     private String getRealFileName(String filePath, String encodedFileName) {
-        Result<String> nameResult = attachmentService.getAttachmentNameByExtLink(filePath);
-        if (nameResult.isOk() && StringUtils.isNotBlank(nameResult.getData())) {
-            return nameResult.getData();
+        Result<Attachment> result = attachmentService.getAttachmentByExtLink(filePath);
+        if (result.isOk() && result.getData() != null) {
+            return result.getData().getFileName();
         }
         return extractRealFileName(encodedFileName);
     }

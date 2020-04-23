@@ -16,6 +16,7 @@ public interface AbstractPositionItemView extends IsWidget {
     void setDepartment(String value );
     void setDepartmentParent(String value);
     void setPosition(String value );
+    void setCompany(String value );
 
     void setDepartmentHead(String departmentHead, String link);
 }

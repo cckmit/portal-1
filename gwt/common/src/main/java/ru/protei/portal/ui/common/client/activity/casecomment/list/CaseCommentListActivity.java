@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.*;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 
 /**
  * Активность списка комментариев
@@ -304,7 +304,7 @@ public abstract class CaseCommentListActivity
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.message().setValue(
-                addImageInMessage(view.message().getValue(), strPosition, attach));
+                addImageInMessage(textMarkup, view.message().getValue(), strPosition, attach));
     }
 
     private void addTempAttachment(Attachment attach) {
@@ -376,8 +376,6 @@ public abstract class CaseCommentListActivity
         if (HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
             itemView.hideOptions();
         }
-
-        itemView.enabledEdit(isModifyEnabled && isModifyEnabled);
 
         if ( isStateChangeComment ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );

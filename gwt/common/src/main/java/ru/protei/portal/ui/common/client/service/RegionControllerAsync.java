@@ -2,12 +2,14 @@ package ru.protei.portal.ui.common.client.service;
 
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +24,7 @@ public interface RegionControllerAsync {
 
     void getProjectsByRegions(ProjectQuery query, AsyncCallback<Map<String,List<Project>>> callback);
 
-    void getProjectList(ProjectQuery query, AsyncCallback<List<Project>> callback);
+    void getProjects(ProjectQuery query, AsyncCallback<SearchResult<Project>> callback);
 
     void getProjectOptionList(ProjectQuery query, AsyncCallback<List<EntityOption>> async);
 
@@ -32,7 +34,7 @@ public interface RegionControllerAsync {
 
     void getProjectInfo(Long id, AsyncCallback<ProjectInfo> callback);
 
-    void saveProject(Project project, AsyncCallback<Project> callback);
+    void saveProject(Project project, AsyncCallback<UiResult<Project>> callback);
 
     void getRegionList(AsyncCallback<List<EntityOption>> callback);
 

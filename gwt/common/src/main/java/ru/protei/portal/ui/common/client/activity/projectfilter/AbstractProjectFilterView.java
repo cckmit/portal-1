@@ -1,11 +1,12 @@
-package ru.protei.portal.ui.project.client.activity.filter;
+package ru.protei.portal.ui.common.client.activity.projectfilter;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Set;
 
@@ -17,15 +18,23 @@ public interface AbstractProjectFilterView extends IsWidget {
     void setActivity( AbstractProjectFilterActivity activity );
 
     HasValue<En_SortField> sortField();
+
     HasValue< Boolean > sortDir();
+
     HasValue< String > searchPattern();
-    void resetFilter();
 
     HasValue< Set< En_RegionState > > states();
 
-    HasValue< Set<DistrictInfo>> districts();
-
-    HasValue<ProductDirectionInfo> direction();
+    HasValue<Set<ProductDirectionInfo>> direction();
 
     HasValue<Boolean> onlyMineProjects();
+
+    HasValue< Set<EntityOption> > regions();
+
+    HasValue< Set<PersonShortView> > headManagers();
+
+    HasValue< Set<PersonShortView> > caseMembers();
+
+    void resetFilter();
+    void clearFooterStyle();
 }

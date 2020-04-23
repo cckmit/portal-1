@@ -78,11 +78,18 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         fireEvent(new EmployeeEvents.Show());
     }
 
+    @Override
+    public void onEditClicked() {
+        fireEvent(new EmployeeEvents.Edit(employeeId));
+    }
+
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeShortView(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee) {
+
+        view.editIconVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT));
 
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
@@ -144,6 +151,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         itemView.setPosition(workerEntry.getPositionName());
+        itemView.setCompany(workerEntry.getCompanyName());
 
         return itemView;
     }

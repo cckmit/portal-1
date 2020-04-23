@@ -56,9 +56,9 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     @Override
     public void setValid(boolean isValid){
         if(isValid)
-            button.removeStyleName(REQUIRED_STYLE_NAME);
+            button.removeStyleName(ERROR_STYLENAME);
         else
-            button.addStyleName(REQUIRED_STYLE_NAME);
+            button.addStyleName(ERROR_STYLENAME);
     }
 
     @Override
@@ -128,6 +128,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     Element icon;
 
     private boolean isValidable;
+    private static final String ERROR_STYLENAME ="has-error";
     private static final String REQUIRED_STYLE_NAME ="required";
     private static final String INACTIVE_STYLE_NAME="inactive";
     private boolean isEnabled;

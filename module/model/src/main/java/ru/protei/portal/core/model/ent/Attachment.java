@@ -136,6 +136,7 @@ public class Attachment extends AuditableObject {
         return "Attachment{" +
                 "id=" + id +
                 " fileName=" + fileName +
+                " extLink=" + extLink +
                 '}';
     }
 }

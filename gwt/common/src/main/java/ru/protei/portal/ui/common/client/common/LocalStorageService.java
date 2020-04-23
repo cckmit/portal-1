@@ -24,6 +24,13 @@ public class LocalStorageService {
             return mapStorage.getOrDefault(key, def);
         }
     }
+    public boolean getBooleanOrDefault(String key, boolean defaultValue) {
+        if (localStorage != null) {
+            return contains(key) ? Boolean.parseBoolean(localStorage.getItem(key)) : defaultValue;
+        } else {
+            return mapStorage.containsKey(key) ? Boolean.parseBoolean(mapStorage.get(key)) : defaultValue;
+        }
+    }
     public void set(String key, String item){
         if (localStorage != null) {
             localStorage.setItem(key, item);

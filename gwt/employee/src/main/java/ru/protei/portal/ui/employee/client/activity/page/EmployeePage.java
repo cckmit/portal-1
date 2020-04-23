@@ -42,6 +42,11 @@ public abstract class EmployeePage implements Activity {
     }
 
     @Event
+    public void onShowEdit( EmployeeEvents.Edit event ) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onShowPreview( EmployeeEvents.ShowFullScreen event ) {
         fireSelectTab();
     }

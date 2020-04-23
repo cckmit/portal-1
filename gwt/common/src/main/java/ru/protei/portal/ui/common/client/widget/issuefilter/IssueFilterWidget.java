@@ -100,6 +100,10 @@ public class IssueFilterWidget extends Composite {
         return issueFilterParamView.getFilterFields(filterType);
     }
 
+    public void clearFooterStyle() {
+        footer.removeClassName("card-footer");
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         onUserFilterChanged(null);
@@ -305,6 +309,8 @@ public class IssueFilterWidget extends Composite {
     TextBox filterName;
     @UiField
     DivElement filterNameContainer;
+    @UiField
+    DivElement footer;
 
     @Inject
     PersonModel personModel;

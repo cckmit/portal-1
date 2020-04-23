@@ -230,6 +230,7 @@
                     <sourceLevel>1.8</sourceLevel>
                     <runTarget>index.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
+                    <extraJvmArgs>-Xmx1024m</extraJvmArgs>
                 </configuration>
             </plugin>
 

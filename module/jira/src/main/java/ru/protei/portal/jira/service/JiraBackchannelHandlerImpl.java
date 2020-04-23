@@ -21,6 +21,11 @@ import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
+import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
@@ -30,6 +35,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     PersonDAO personDAO;
     @Autowired
     FileStorage fileStorage;
+
+    private final Pattern jiraImagePattern = JiraUtils.getJiraImagePattern();
 
     @Override
     public void handle(AssembledCaseEvent event) {
@@ -88,22 +95,42 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 generalUpdate(endpoint, event, issue, issueClient);
             }
 
+            if (event.getAddedAttachments() != null) {
+                issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(event.getAddedAttachments())).claim();
+            }
+
             if (event.isCommentAttached()) {
                 event.getAddedCaseComments().forEach(comment -> {
                     if (!comment.isPrivateComment()) {
                         logger.debug("add comment {} to issue {}", comment.getId(), issue.getKey());
-                        issueClient.addComment(issue.getCommentsUri(), convertComment(comment, event.getInitiator())).claim();
+                        issueClient.addComment(issue.getCommentsUri(), convertComment(comment, event.getInitiator(), event.getAddedAttachments())).claim();
                     }});
-            }
-
-            if (event.getAddedAttachments() != null) {
-                issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(event.getAddedAttachments())).claim();
             }
         });
     }
 
-    private Comment convertComment (CaseComment ourComment, Person initiator) {
-        return Comment.valueOf(TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText());
+    private Comment convertComment (CaseComment ourComment, Person initiator, Collection<Attachment> attachments) {
+        String text = TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText();
+        text = replaceImageLink(text, initiator.getId(), attachments);
+        return Comment.valueOf(text);
+    }
+
+    private String replaceImageLink(String text, Long personId, Collection<Attachment> attachments) {
+        Matcher matcher = jiraImagePattern.matcher(text);
+        String resultText = text;
+        while (matcher.find()) {
+            String group = matcher.group();
+            JiraUtils.ImageNode imageNode = parseImageNode(group.substring(1, group.length() - 1));
+            Optional<String> imageString = attachments.stream()
+                    .filter(a -> a.getExtLink().equals(imageNode.link) && a.getCreatorId().equals(personId))
+                    .max(Comparator.comparing(Attachment::getCreated))
+                    .map(attachment -> makeJiraImageString(attachment.getFileName(),
+                            imageNode.alt != null ? imageNode.alt : attachment.getFileName()));
+            if (imageString.isPresent()) {
+                resultText = resultText.replace(group, imageString.get());
+            }
+        }
+        return resultText;
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {

@@ -82,6 +82,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case PROJECT:
                 addOption( En_SortField.project_name );
                 addOption( En_SortField.issue_number );
+                addOption( En_SortField.region_name );
                 break;
             case REGION:
                 addOption( En_SortField.name );
