@@ -65,7 +65,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @PostConstruct
     public void setYoutrackIntergationEnabled () {
-        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
+        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
     }
 
     @Override

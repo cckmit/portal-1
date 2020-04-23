@@ -371,6 +371,7 @@ public class PortalConfigData {
         private final boolean redmineEnabled;
         private final boolean redmineBackchannelEnabled;
         private final boolean youtrackEnabled;
+        private final boolean youtrackCompanySyncEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -380,6 +381,7 @@ public class PortalConfigData {
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             redmineBackchannelEnabled = properties.getProperty("integration.redmine.backchannel", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
+            youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -396,6 +398,10 @@ public class PortalConfigData {
 
         public boolean isYoutrackEnabled() {
             return youtrackEnabled;
+        }
+
+        public boolean isYoutrackCompanySyncEnabled() {
+            return youtrackCompanySyncEnabled;
         }
 
         public boolean isJiraEnabled() {
