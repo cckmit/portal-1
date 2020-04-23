@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterMode
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issueimportance.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
@@ -42,10 +41,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -217,7 +213,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void presetCompany(Company company) {
         HashSet<EntityOption> companyIds = new HashSet<>();
-        companyIds.add(IssueFilterUtils.toEntityOption(company));
+        companyIds.add(toEntityOption(company));
         companies.setValue(companyIds);
         updateInitiators();
     }
@@ -245,8 +241,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
         dateCreatedRange.setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
         dateModifiedRange.setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
-        importance.setValue(getImportances(caseQuery.getImportanceIds()));
-        state.setValue(getStates(caseQuery.getStateIds()));
+        importance.setValue(caseQuery.getImportances());
+        state.setValue(setOf(caseQuery.getStates()));
 
         companies.setValue(new HashSet<>(emptyIfNull(filter.getCompanyEntityOptions())));
         updateInitiators();
@@ -295,8 +291,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
-                query.setImportanceIds(getImportancesIdList(importance.getValue()));
-                query.setStates(getStateList(state.getValue()));
+                query.setImportances(importance.getValue());
+                query.setStates(state.getValue());
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setCaseTagsIds( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
                 query.setCreatorIds(toList(creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId()));
@@ -317,8 +313,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setCaseTagsIds( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
-                query.setImportanceIds(getImportancesIdList(importance.getValue()));
-                query.setStates(getStateList(state.getValue()));
+                query.setImportances(importance.getValue());
+                query.setStates(state.getValue());
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 break;
         }
@@ -599,6 +595,65 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private void updateInitiators() {
         initiators.updateCompanies();
+    }
+
+    public static Set< Long > getProductsIdList( Set< ProductShortView > productSet ) {
+
+        if ( productSet == null || productSet.isEmpty() ) {
+            return null;
+        }
+        return productSet
+                .stream()
+                .map( ProductShortView::getId )
+                .collect( Collectors.toSet() );
+    }
+
+    public static CaseQuery fillCreatedInterval( CaseQuery query, DateInterval interval ) {
+        if (interval != null) {
+            query.setCreatedFrom(interval.from);
+            query.setCreatedTo(interval.to);
+        }
+        return query;
+    }
+    public static CaseQuery fillModifiedInterval( CaseQuery query, DateInterval interval ) {
+        if (interval != null) {
+            query.setModifiedFrom(interval.from);
+            query.setModifiedTo(interval.to);
+        }
+        return query;
+    }
+
+    public static List< Long > getCompaniesIdList( Set< EntityOption > companySet ) {
+
+        if ( companySet == null || companySet.isEmpty() ) {
+            return null;
+        }
+        return companySet
+                .stream()
+                .map( EntityOption::getId )
+                .collect( Collectors.toList() );
+    }
+
+    public static EntityOption toEntityOption( Company company ) {
+        if ( company == null  ) {
+            return null;
+        }
+        EntityOption option = new EntityOption();
+        option.setId( company.getId() );
+        option.setDisplayText( company.getCname() );
+        return option;
+    }
+
+    public static List< Long > getManagersIdList( Set< PersonShortView > personSet ) {
+
+        if ( personSet == null || personSet.isEmpty() ) {
+            return null;
+        }
+
+        return personSet
+                .stream()
+                .map( PersonShortView::getId )
+                .collect( Collectors.toList() );
     }
 
     @Inject

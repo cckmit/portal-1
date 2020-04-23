@@ -2,22 +2,23 @@ package ru.protei.portal.core.model.query;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
+
 /**
  * Created by Mike on 02.11.2016.
  */
 public class CaseQuery extends BaseQuery {
 
-    @JsonIgnore
+   @JsonIgnore
     private Long id;
 
     @JsonIgnore
@@ -215,18 +216,26 @@ public class CaseQuery extends BaseQuery {
 
     public void setStateIds(List<Integer> stateIds) { this.stateIds = stateIds; }
 
+    public List<En_CaseState> getStates() {
+        return stateIds == null ? null : toList( stateIds, id1 -> En_CaseState.getById( Long.valueOf( id1 ) ) );
+    }
+
     @JsonIgnore
-    public void setStates(List<En_CaseState> states) {
-        List<Integer> stateIds = null;
-        if (states != null && !states.isEmpty()){
-            stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
-        }
-        this.setStateIds(stateIds);
+    public void setStates( Iterable<En_CaseState> states ) {
+        this.stateIds = states == null ? null : toList( states, state -> state.getId() );
     }
 
     public List<Integer> getImportanceIds() { return importanceIds; }
 
     public void setImportanceIds(List<Integer> importanceIds) { this.importanceIds = importanceIds; }
+
+    public void setImportances(Iterable<En_ImportanceLevel> importances) {
+        this.importanceIds = importances == null ? null : toList( importances, importanceLevel -> importanceLevel.getId() );
+    }
+
+    public Set<En_ImportanceLevel> getImportances() {
+        return this.importanceIds == null ? null : toSet( importanceIds, id1 -> En_ImportanceLevel.getById( id1 ) );
+    }
 
     public Date getCreatedFrom() { return createdFrom; }
 

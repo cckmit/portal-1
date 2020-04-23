@@ -128,7 +128,7 @@ public class ReportCaseTest extends BaseServiceTest {
     private boolean writeReport( Report report ) throws IOException {
         MockStream mockStream = new MockStream();
         reportCase.writeReport( mockStream, report, new SimpleDateFormat( "dd.MM.yyyy HH:mm" ), new TimeFormatter() );
-        return mockStream.isEmpty();
+        return !mockStream.isEmpty();
     }
 
     private class MockStream extends OutputStream {
@@ -140,7 +140,7 @@ public class ReportCaseTest extends BaseServiceTest {
         int bytes = 0;
 
         public boolean isEmpty() {
-            return bytes > 0;
+            return bytes < 1;
         }
     }
 
