@@ -55,7 +55,7 @@ public class IpReservationServiceTest extends BaseServiceTest {
         Assert.assertNotNull(updated);
 
         /* remove */
-        Result<Long> result = ipReservationService.removeSubnet(null, subnet);
+        Result<Long> result = ipReservationService.removeSubnet(null, subnet, true);
         Assert.assertNotNull(result);
     }
 
