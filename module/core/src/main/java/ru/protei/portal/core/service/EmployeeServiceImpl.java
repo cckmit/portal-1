@@ -233,6 +233,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.EMPLOYEE_ALREADY_EXIST);
         }
 
+        person.setLocale("ru");
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
 
@@ -373,15 +374,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private Set<EntityOption> fillHiddenCompaniesIfProteiChosen(Set<EntityOption> homeCompanies) {
-        boolean containsProtei = homeCompanies.stream().anyMatch(company -> company.getId().equals(CrmConstants.Company.MAIN_HOME_COMPANY_ID));
-        if (containsProtei) {
-            SearchResult<Company> homeCompaniesSearchResult = companyDAO.getSearchResultByQuery(new CompanyQuery(true));
-            List<Company> allHomeCompanies = homeCompaniesSearchResult.getResults();
-            allHomeCompanies.forEach(company -> {
-                if (company.getHidden() != null && company.getHidden()){
-                    homeCompanies.add(new EntityOption(company.getCname(), company.getId()));
-                }
-            });
+        if (homeCompanies != null && !homeCompanies.isEmpty()) {
+            boolean containsProtei = homeCompanies.stream().anyMatch(company -> company.getId().equals(CrmConstants.Company.MAIN_HOME_COMPANY_ID));
+            if (containsProtei) {
+                SearchResult<Company> homeCompaniesSearchResult = companyDAO.getSearchResultByQuery(new CompanyQuery(true));
+                List<Company> allHomeCompanies = homeCompaniesSearchResult.getResults();
+                allHomeCompanies.forEach(company -> {
+                    if (company.getHidden() != null && company.getHidden()) {
+                        homeCompanies.add(new EntityOption(company.getCname(), company.getId()));
+                    }
+                });
+            }
         }
         return homeCompanies;
     }
