@@ -781,4 +781,13 @@ public class DebugIds {
             String PLATFORM = "sitefolder-link-platform";
         }
     }
+
+    public interface Absence {
+        interface LABEL {
+            String EMPLOYEE = "absence-employee-label";
+            String DATE_RANGE = "absence-date-range-label";
+            String REASON = "absence-reason-label";
+            String COMMENT = "absence-comment-label";
+        }
+    }
 }

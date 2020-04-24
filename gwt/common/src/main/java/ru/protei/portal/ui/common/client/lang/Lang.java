@@ -2309,4 +2309,38 @@ public interface Lang extends Messages, ContactItemLang {
     String auditTypeApplicationRemove();
 
     String rolePrivilegesNote();
+
+    String absenceEmployee();
+
+    String selectAbsenceEmployee();
+
+    String absenceDateRange();
+
+    String absenceReason();
+
+    String absenceComment();
+
+    String absenceReasonPersonAffair();
+
+    String absenceReasonBusinessTrip();
+
+    String absenceReasonLocalBusinessTrip();
+
+    String absenceReasonStudy();
+
+    String absenceReasonDisease();
+
+    String absenceReasonSickLeave();
+
+    String absenceReasonGuestPass();
+
+    String absenceReasonNightWork();
+
+    String absenceReasonLeaveWithoutPay();
+
+    String absenceReasonDuty();
+
+    String absenceReasonRemoteWork();
+
+    String selectAbsenceReason();
 }
