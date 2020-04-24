@@ -1326,7 +1326,7 @@ td.info {
 .state-workaround,
 .state-info_request,
 .state-nx_request,
-.state-cust_request {
+.state-customer_request {
   color: $info_color !important;
 }
 
@@ -1405,18 +1405,18 @@ td.info {
 .label-info_request,
 .label-technical_project,
 .label-nx_request,
-.label-cust_request,
+.label-customer_request,
 .option-opened .option-name,
 .option-workaround .option-name,
 .option-info_request .option-name,
 .option-technical_project .option-name,
 .option-nx_request .option-name,
-.option-cust_request .option-name {
+.option-customer_request .option-name {
   background-color: $info_color;
 }
 
 .case-opened, .case-workaround, .case-info_request,
-.case-nx_request, .case-cust_request {
+.case-nx_request, .case-customer_request {
   color: $info_color;
   font-weight: bold;
 }

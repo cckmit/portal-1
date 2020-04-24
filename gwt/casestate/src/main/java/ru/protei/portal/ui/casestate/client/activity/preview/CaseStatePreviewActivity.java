@@ -96,7 +96,7 @@ public abstract class CaseStatePreviewActivity
     }
 
     private void fillView(CaseState state) {
-        view.setName(caseStateLang.getStateName(En_CaseState.getById(state.getId())));
+        view.setName(caseStateLang.getStateName(state));
         view.description().setValue(defaultString(state.getInfo(), ""));
         view.usageInCompanies().setValue(state.getUsageInCompanies());
         view.companiesVisibility().setVisible(SELECTED.equals(state.getUsageInCompanies()));

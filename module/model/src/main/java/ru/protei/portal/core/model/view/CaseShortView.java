@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -35,6 +36,9 @@ public class CaseShortView implements Serializable {
 
     @JdbcColumn(name = "STATE")
     private long stateId;
+
+    @JdbcJoinedObject(localColumn = "STATE", remoteColumn = "id")
+    private CaseState state;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
@@ -140,10 +144,6 @@ public class CaseShortView implements Serializable {
 
     public long getStateId() {
         return stateId;
-    }
-
-    public void setStateId( long stateId ) {
-        this.stateId = stateId;
     }
 
     public Integer getImpLevel() {
@@ -272,6 +272,10 @@ public class CaseShortView implements Serializable {
 
     public void setPauseDate(Long pauseDate) {
         this.pauseDate = pauseDate;
+    }
+
+    public CaseState getState() {
+        return state;
     }
 
     @Override

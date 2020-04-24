@@ -13,7 +13,7 @@ public class En_CaseStateLang {
         if(state == null)
             return lang.errUnknownResult();
 
-        return getStateName(En_CaseState.getById(state.getId()));
+        return state.getState();
     }
 
     public String getStateName(En_CaseState state){

@@ -23,7 +23,8 @@ public class IssueStatesOptionList extends OptionList<CaseState> implements Sele
     public void fillOptions( List< CaseState > states ) {
         clearOptions();
         states.forEach(state -> {
-            addOption( lang.getStateName( state ), state, "inline m-r-5 option-" + state.toString().toLowerCase() );
+            addOption( lang.getStateName( state ), state, "inline m-r-5 option-" +
+                    state.getState().replaceAll("[.-]", "_").toLowerCase() );
             setEnsureDebugId(state, DebugIdsHelper.ISSUE_STATE.byId(state.getId()));
         });
     }

@@ -98,7 +98,7 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
             @Override
             public void fillColumnValue(Element cell, CaseState value) {
-                String stateName = caseStateLang.getStateName(En_CaseState.getById(value.getId()));
+                String stateName = caseStateLang.getStateName(value);
                 cell.setInnerText(stateName);
             }
         };

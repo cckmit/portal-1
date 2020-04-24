@@ -50,8 +50,9 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         divElement.appendChild( numberElement );
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );
-        stateElement.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() );
-        stateElement.setInnerText( caseStateLang.getStateName( En_CaseState.getById( value.getStateId() ) ) );
+        stateElement.addClassName( "label label-" +
+                value.getState().getState().replaceAll("[.-]", "_").toLowerCase() );
+        stateElement.setInnerText( caseStateLang.getStateName( value.getState() ) );
 
         if (!isPauseDateValid(En_CaseState.getById(value.getStateId()), value.getPauseDate())) {
             stateElement.addClassName("pause-status-expired-date");
