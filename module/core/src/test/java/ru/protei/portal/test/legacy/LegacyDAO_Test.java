@@ -51,13 +51,13 @@ public class LegacyDAO_Test {
         Assert.assertNotNull(product);
         log.info("{}", product);
 
-        List<ExternalSubnet> subnets = dao.getExternalSubnets();
+/*        List<ExternalSubnet> subnets = dao.getExternalSubnets();
         Assert.assertNotNull(subnets);
         subnets.forEach( subnet -> log.info("{}", subnet.getSubnetAddress()));
 
         List<ExternalReservedIp> reservedIps = dao.getExternalReservedIps();
         Assert.assertNotNull(reservedIps);
-        reservedIps.forEach( ip -> log.info("{}", ip.getIpAddress()));
+        reservedIps.forEach( ip -> log.info("{}", ip.getIpAddress()));*/
     }
 
     @Test
@@ -70,9 +70,9 @@ public class LegacyDAO_Test {
                 ExtCrmComment.class,
                 ExtCrmSession.class,
                 ExtCompanyEmailSubs.class,
-                ExtContactLogin.class,
+                ExtContactLogin.class/*,
                 ExternalSubnet.class,
-                ExternalReservedIp.class
+                ExternalReservedIp.class*/
         );
 
         dao.runAction(transaction -> {

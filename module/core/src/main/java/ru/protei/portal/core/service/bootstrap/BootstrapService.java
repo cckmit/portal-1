@@ -383,8 +383,8 @@ if(true) return; //TODO remove
     DocumentSvnApi documentSvnApi;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
-    @Autowired
-    LegacyEntityDAO legacyEnitityDAO;
+/*    @Autowired
+    LegacyEntityDAO legacyEnitityDAO;*/
     @Autowired
     PortalConfig config;
 }
