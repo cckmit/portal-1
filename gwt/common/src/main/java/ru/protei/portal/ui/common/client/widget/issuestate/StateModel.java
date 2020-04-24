@@ -156,10 +156,8 @@ public abstract class StateModel implements Activity {
     }
 
     private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
-        if (currentCaseState.isTerminalState()) {
-            return new ArrayList<>();
-        }
-        return workflowCaseStateMap.get(workflow).get(currentCaseState);
+        List<En_CaseState> en_caseStates = workflowCaseStateMap.get(workflow).get(currentCaseState);
+        return en_caseStates != null ? en_caseStates : new ArrayList<>();
     }
 
     @Inject
