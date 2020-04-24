@@ -101,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
     public Result<DevUnitInfo> getProductInfo( AuthToken authToken, Long productId ) {
         DevUnit devUnit = devUnitDAO.get( productId );
         if (devUnit == null) return error( En_ResultStatus.NOT_FOUND );
-        return ok( toInfo(devUnit) );
+        return ok( DevUnitInfo.toInfo(devUnit) );
     }
 
     @Override
@@ -123,6 +123,8 @@ public class ProductServiceImpl implements ProductService {
 
         if (product == null)
             return error(En_ResultStatus.NOT_FOUND);
+
+        helper.fillAll( product );
 
         product.setParents(devUnitDAO.getParents(id));
         product.setChildren(devUnitDAO.getChildren(id));
@@ -159,7 +161,16 @@ public class ProductServiceImpl implements ProductService {
         saveChildren(product);
 
         return ok(product);
+    }
 
+    @Override
+    @Transactional
+    public Result<DevUnitInfo> createProductByInfo(AuthToken token, DevUnitInfo product) {
+        if (product.getId() != null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return createProduct(token, DevUnitInfo.fromInfo(product)).map(DevUnitInfo::toInfo);
     }
 
     @Override
@@ -342,17 +353,9 @@ public class ProductServiceImpl implements ProductService {
         if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
         if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
         if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
+        if (product.getWikiLink() != null) devUnit.setWikiLink( product.getWikiLink() );
+        if (product.getName() != null) devUnit.setName( product.getName() );
         return devUnit;
-    }
-
-    private DevUnitInfo toInfo( DevUnit devUnit) {
-        DevUnitInfo info = new DevUnitInfo();
-        info.setId( devUnit.getId() );
-        info.setConfiguration( devUnit.getConfiguration() );
-        info.setCdrDescription( devUnit.getCdrDescription() );
-        info.setHistoryVersion( devUnit.getHistoryVersion() );
-        info.setDescription( devUnit.getInfo() );
-        return info;
     }
 
     private Result<List<ProductShortView>> makeListProductShortView(List<DevUnit> devUnits) {

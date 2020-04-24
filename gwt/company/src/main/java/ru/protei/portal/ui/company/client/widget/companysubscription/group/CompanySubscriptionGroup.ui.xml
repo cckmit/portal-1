@@ -1,0 +1,38 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:product="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
+             xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform"
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="subscription-group m-t-10">
+        <div class="row">
+            <div class="col-md-4">
+                <platform:PlatformButtonSelector ui:field="platformSelector"
+                                                 validation="false"
+                                                 header="{lang.siteFolderPlatform}"
+                                                 hasNullValue="true"
+                                                 defaultValue="{lang.companySubscriptionGroupAnyValuePlatform}"/>
+            </div>
+
+            <div class="col-md-4">
+                <product:DevUnitButtonSelector ui:field="productSelector"
+                                               validation="false"
+                                               header="{lang.issueProduct}"
+                                               hasNullValue="true"
+                                               defaultValue="{lang.companySubscriptionGroupAnyValueProduct}"/>
+            </div>
+
+            <div class="col-md-4 align-self-end">
+                <g:Button ui:field="collapseButton" text="{lang.companySubscriptionGroupCollapseButton}" styleName="btn btn-xs btn-complete collapse-group-button"/>
+                <g:Button ui:field="removeButton" text="{lang.companySubscriptionGroupRemoveButton}" styleName="btn btn-info btn-xs remove-group-button"/>
+                <span ui:field="quantity"/>
+            </div>
+        </div>
+
+        <g:HTMLPanel ui:field="itemContainer">
+            <br/>
+        </g:HTMLPanel>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

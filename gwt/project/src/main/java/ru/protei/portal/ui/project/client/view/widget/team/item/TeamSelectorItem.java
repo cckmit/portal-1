@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.project.client.view.widget.selector.ProjectRoleButtonSelector;
+import ru.protei.portal.ui.project.client.view.widget.selector.ProjectRoleFormSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
 
 import java.util.Comparator;
@@ -50,7 +50,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         role.setValue(model.role);
         members.setValue(model.members, false);
         fireRoleChanged(null, model.role);
-        applySingleMember();
     }
 
     @Override
@@ -83,7 +82,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         model.role = roleValue;
         fireRoleChanged(previousRoleValue, roleValue);
         fireModelChanged();
-        applySingleMember();
     }
 
     @UiHandler("members")
@@ -93,19 +91,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
 //            members.hidePopup();
         }
         fireModelChanged();
-    }
-
-    private void applySingleMember() {
-        if (En_DevUnitPersonRoleType.HEAD_MANAGER == model.role) {
-//            members.setSelectedLimit(1);
-            if (model.members.size() > 1) {
-                Set<PersonShortView> value = new HashSet<>();
-                value.add(model.members.stream().findFirst().get());
-                members.setValue(value, true);
-            }
-        } else {
-//            members.setSelectedLimit(0);
-        }
     }
 
     private void fireModelChanged() {
@@ -122,7 +107,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
 
     @Inject
     @UiField(provided = true)
-    ProjectRoleButtonSelector role;
+    ProjectRoleFormSelector role;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector members;

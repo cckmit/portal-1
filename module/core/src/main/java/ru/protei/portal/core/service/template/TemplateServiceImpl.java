@@ -5,8 +5,12 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
+import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
@@ -18,6 +22,7 @@ import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.utils.LinkData;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 
@@ -27,6 +32,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -130,9 +136,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("caseState", newMetaState.getState() == null ? null : newMetaState.getState().getName());
         templateModel.put("oldCaseState", oldMetaState == null || oldMetaState.getState() == null ? null : oldMetaState.getState().getName());
 
+        templateModel.put("isPausedState", En_CaseState.PAUSED.equals(newMetaState.getState()));
+        templateModel.put("pauseDateChanged", event.isPauseDateChanged());
+        templateModel.put("pauseDate", newMetaState.getPauseDate() == null ? null : new Date(newMetaState.getPauseDate()));
+        templateModel.put("oldPauseDate", (oldMetaState == null || oldMetaState.getPauseDate() == null) ? null : new Date(oldMetaState.getPauseDate()));
+
         templateModel.put("timeElapsedChanged", event.isTimeElapsedChanged());
         templateModel.put("elapsed", newMetaState.getTimeElapsed());
-        templateModel.put("oldElapsed", oldMetaState == null ? null : oldMetaState.getTimeElapsed());
+        templateModel.put("oldElapsed", !event.isTimeElapsedChanged() ? null : (newMetaState.getTimeElapsed() - event.getTimeElapsedChanging()));
 
         templateModel.put("customerChanged", event.isInitiatorChanged() || event.isInitiatorCompanyChanged());
         templateModel.put("initiator", newMetaState.getInitiator() == null ? null : newMetaState.getInitiator().getDisplayName());
@@ -364,7 +375,126 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private List<Map<String, Object>> getCommentsModelKeys( List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
+    @Override
+    public PreparedTemplate getMailReportBody(Report report) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportId", report.getId());
+        templateModel.put("name", report.getName());
+        templateModel.put("created", report.getCreated());
+        templateModel.put("creator", report.getCreator().getDisplayShortName());
+        templateModel.put("type", report.getReportType());
+        templateModel.put("status", report.getStatus());
+        templateModel.put("filter", report.getCaseQuery());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getMailReportSubject(Report report) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportTitle", report.getName());
+        templateModel.put("scheduledType", report.getScheduledType());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/report.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getMailProjectSubject(Project project, Person initiator) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("projectNumber", String.valueOf(project.getId()));
+        templateModel.put("initiator", initiator.getDisplayName());
+        templateModel.put("TransliterationUtils", new TransliterationUtils());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/project.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil enumLangUtil) {
+        Project oldProjectState = event.getOldProjectState();
+        Project newProjectState = event.getNewProjectState();
+
+        Map<String, Object> templateModel = new HashMap<>();
+
+        templateModel.put("TransliterationUtils", new TransliterationUtils());
+        templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("TimeFormatter", new WorkTimeFormatter());
+        templateModel.put("TextUtils", new TextUtils());
+
+        templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
+        templateModel.put("created", newProjectState.getCreated());
+        templateModel.put("isCreated", event.isCreateEvent());
+        templateModel.put("recipients", recipients);
+
+        templateModel.put("linkToProject", String.format(crmProjectUrl, event.getProjectId()));
+        templateModel.put("projectNumber", String.valueOf(event.getProjectId()));
+        templateModel.put("nameChanged", event.isNameChanged());
+        templateModel.put("oldName", getNullOrElse(oldProjectState, Project::getName));
+        templateModel.put("newName", newProjectState.getName());
+
+        templateModel.put("descriptionChanged", event.isDescriptionChanged());
+        templateModel.put("oldDescription", getNullOrElse(oldProjectState, Project::getDescription));
+        templateModel.put("newDescription", newProjectState.getDescription());
+
+        templateModel.put("stateChanged", event.isStateChanged());
+        templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
+        templateModel.put("newState", newProjectState.getState());
+
+        templateModel.put("regionChanged", event.isRegionChanged());
+        templateModel.put("oldRegion", getNullOrElse(getNullOrElse(oldProjectState, Project::getRegion), EntityOption::getDisplayText));
+        templateModel.put("newRegion", getNullOrElse(newProjectState.getRegion(), EntityOption::getDisplayText));
+
+        templateModel.put("companyChanged", event.isCompanyChanged());
+        templateModel.put("oldCompany", getNullOrElse(getNullOrElse(oldProjectState, Project::getCustomer), Company::getCname));
+        templateModel.put("newCompany", newProjectState.getCustomer().getCname());
+
+        templateModel.put("customerTypeChanged", event.isCustomerTypeChanged());
+        templateModel.put("oldCustomerType", getNullOrElse(oldProjectState, Project::getCustomerType));
+        templateModel.put("newCustomerType", newProjectState.getCustomerType());
+
+        templateModel.put("productDirectionChanged", event.isProductDirectionChanged());
+        templateModel.put("oldProductDirection", getNullOrElse(getNullOrElse(oldProjectState, Project::getProductDirection), EntityOption::getDisplayText));
+        templateModel.put("newProductDirection", newProjectState.getProductDirection().getDisplayText());
+
+        templateModel.put("productChanged", event.isProductChanged());
+        templateModel.put("oldProduct", getNullOrElse(getNullOrElse(oldProjectState, Project::getSingleProduct), ProductShortView::getName));
+        templateModel.put("newProduct", getNullOrElse(newProjectState.getSingleProduct(), ProductShortView::getName));
+
+        templateModel.put("supportValidityChanged", event.isSupportValidityChanged());
+        templateModel.put("oldSupportValidity", getNullOrElse(oldProjectState, Project::getTechnicalSupportValidity));
+        templateModel.put("newSupportValidity", newProjectState.getTechnicalSupportValidity());
+
+        templateModel.put("team", event.getTeamDiffs());
+        templateModel.put("sla", event.getSlaDiffs());
+
+        templateModel.put( "caseComments",  getProjectCommentsModelKeys(event.getAllComments(), event.getAddedComments(), event.getChangedComments(), event.getRemovedComments(), En_TextMarkup.MARKDOWN));
+
+        templateModel.put("hasLinks", hasLinks(links));
+        templateModel.put("existingLinks", links == null ? null : links.getSameEntries());
+        templateModel.put("addedLinks", links == null ? null : links.getAddedEntries());
+        templateModel.put("removedLinks", links == null ? null : links.getRemovedEntries());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/project.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+
+        return template;
+    }
+
+    private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
+        return value == null ? null : orElseFunction.apply(value);
+    }
+
+    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map( comment -> {
@@ -389,6 +519,29 @@ public class TemplateServiceImpl implements TemplateService {
                     return mailComment;
                 } )
                 .collect( toList() );
+    }
+
+    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed, En_TextMarkup textMarkup){
+        return comments.stream()
+                .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
+                .map(comment -> {
+
+                    boolean isNew = contains(added, comment);
+                    boolean isChanged = contains(changed, comment);
+
+                    Map<String, Object> mailComment = new HashMap<>();
+                    mailComment.put("created", comment.getCreated());
+                    mailComment.put("author", comment.getAuthor());
+                    mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
+                    mailComment.put("added", isNew);
+                    if (isChanged) {
+                        CaseComment oldComment = changed.get(changed.indexOf(comment));
+                        mailComment.put("oldText", escapeTextAndRenderHTML(oldComment.getText(), textMarkup));
+                    }
+                    mailComment.put("removed", contains(removed, comment));
+                    return mailComment;
+                })
+                .collect(toList());
     }
 
     String escapeTextAndRenderHTML(String text, En_TextMarkup textMarkup) {

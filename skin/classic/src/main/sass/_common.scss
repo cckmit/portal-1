@@ -586,7 +586,7 @@ label.bordered:after {
     color: black;
     vertical-align: bottom;
   }
-  .edit, .remove, .copy {
+  .edit, .remove, .copy, .refresh {
     width: 45px;
   }
 }
@@ -786,10 +786,10 @@ label.bordered:after {
     tbody {
       tr {
         td {
-          height: 56px;
+          height: 92px;
           > div {
-            height: 56px;
-            max-height: 56px;
+            height: 75px;
+            max-height: 75px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1293,6 +1293,30 @@ td.info {
   content: "\f448";
 }
 
+.remove-group-button {
+  height: 35px;
+}
+
+.collapse-group-button {
+  height: 35px;
+  width: 85px;
+}
+
+.add-group-button {
+  height: 35px;
+}
+
+.subscription-group {
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.zero-opacity {
+  opacity: 0;
+}
+
 /**** STATES ****/
 .state-created {
   color: #ef5350 !important;
@@ -1765,6 +1789,27 @@ a {
   }
 }
 
+/**** item with edit ****/
+
+.item-with-edit {
+  display: flex;
+  cursor: pointer;
+  &:hover{
+    color: #262626;
+    text-decoration: none;
+    background-color: whitesmoke;
+  }
+
+  .item-with-edit-text {
+    flex-grow: 1;
+    padding: 3px 20px;
+  }
+
+  .item-with-edit-icon {
+    padding: 8px 10px 5px 10px;
+  }
+}
+
 /**** Importance level icons ****/
 .importance-btn {
   padding: 5px 10px 5px 5px !important;
@@ -1817,7 +1862,7 @@ a {
       content: "C";
       color: #333333;
     }
-    background-color: #e6e6e6 !important;
+    background-color: #e6e6e6;
   }
 
   &.basic {
@@ -1825,7 +1870,7 @@ a {
       content: "B";
       color: #333333;
     }
-    background-color: #b7e281 !important;
+    background-color: #b7e281;
   }
 
   &.important {
@@ -1833,7 +1878,7 @@ a {
       content: "I";
       color: #333333;
     }
-    background-color: #fed74a !important;
+    background-color: #fed74a;
   }
 
   &.critical {
@@ -1841,7 +1886,15 @@ a {
       content: "C";
       color: #ffffff;
     }
-    background-color: #e30000 !important;
+    background-color: #e30000;
+  }
+
+  &.medium {
+    &:before {
+      content: "M";
+      color: #333333;
+    }
+    background-color: #eeff00 !important;
   }
 
   &.center {
@@ -1867,6 +1920,14 @@ a {
   }
 }
 
+.importance-btn-group {
+  width: 200px;
+
+  .btn {
+    padding: .375rem .75rem;
+  }
+}
+
 .case-importance-cometic {
   color: #7b7b7b;
   font-weight: bold;
@@ -1884,6 +1945,11 @@ a {
 
 .case-importance-critical {
   color: #e30000;
+  font-weight: bold;
+}
+
+.case-importance-medium {
+  color: #c9d600;
   font-weight: bold;
 }
 
@@ -2088,73 +2154,60 @@ a {
   }
 }
 
-.sf-detailed-list {
-  margin: -5px !important;
+/**** PROJECTS ****/
+.projects {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
 
-  .sf-detailed-list-item {
-    position: relative;
-    width: 100% !important;
-    height: initial !important;
-    min-height: 22px;
-    margin: 2px 0 !important;
-    padding: 5px !important;
-    overflow: hidden;
-    border: none;
-    box-sizing: border-box;
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
 
-    .sf-detailed-list-item-content {
-      position: relative;
-      line-height: 1.2em;
-      width: calc(100% - 28px);
+          small {
+            font-size: 85%;
+          }
 
-      > span {
-        display: inline-block;
-        width: 100%;
-        height: 1.2em;
-        word-wrap: break-word;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
 
-      > .comment {
-        white-space: pre-wrap !important;
-      }
-    }
-
-    .sf-detailed-list-item-controls {
-      position: absolute;
-      display: block;
-      top: 0;
-      right: 0;
-      width: 28px;
-      height: 100%;
-      vertical-align: middle;
-      text-align: center;
-
-      > * {
-        display: block;
-        float: left;
-        width: 14px;
-        padding: 8px 7px;
-        vertical-align: middle;
-        text-align: center;
-      }
-
-      &:after {
-        content: "";
-        display: block;
-        clear: both;
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
       }
     }
+    .status {
+      width: 45px;
+    }
 
-    &:hover, &:active {
-      background-color: #f6f7f8;
+    .number {
+      width: 8%;
+    }
+    .customers {
+      width: 12%;
+    }
+    .managers {
+      width: 15%;
+    }
+    .info {
     }
   }
 }
 
-/**** PROJECTS ****/
 
 .project-main-info {
   display: flex;
@@ -2462,6 +2515,13 @@ ul.privileges {
     color: #686868;
     font-size: 100%;
     font-weight: normal;
+    padding-bottom: 0;
+  }
+  .option-info {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 .6em .3em 3.2em;
   }
 }
 
@@ -2666,6 +2726,26 @@ div.select2-container {
     border-bottom: 2px solid #dee4e5;
     padding: 15px;
   }
+
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.project-filter {
+  padding-top: 0px !important;
+
+  .user-filter {
+    background: #f5f5f51a;
+    border-bottom: 2px solid #dee4e5;
+    padding: 15px;
+  }
+
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
 }
 
 .user-filter-name {
@@ -2768,18 +2848,6 @@ div.select2-container {
       color: #797979;
     }
   }
-}
-.report-issue-filter {
-  .user-filter {
-    padding-bottom: 15px;
-  }
-  .col-xs-12.resize-xs-6 {
-    width: 50% !important;
-  }
-}
-
-.resize-vertical {
-  resize: vertical;
 }
 
 .sf-detailed-list {
@@ -2925,16 +2993,6 @@ div.select2-container {
 
 .nowrap {
   white-space: nowrap;
-}
-
-.report-issue-filter {
-  .user-filter {
-    padding-bottom: 15px;
-  }
-
-  .col-xs-12.resize-xs-6 {
-    width: 50% !important;
-  }
 }
 
 .resize-vertical {
@@ -3240,6 +3298,91 @@ label {
     }
 
     .cost-column {
+      display: none;
+    }
+  }
+}
+
+.subnet {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 16px;
+    }
+  }
+}
+
+.reserved-ip {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .ip-address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 16px;
+    }
+  }
+  .ip-use-range {
+    width: 15%;
+  }
+  .ip-owner {
+  }
+  .ip-comment {
+  }
+  .ip-last-check {
+  }
+}
+
+.short-table-view {
+  .reserved-ip {
+    .ip-owner {
+      display: none;
+    }
+
+    .ip-comment {
+      display: none;
+    }
+
+    .ip-last-check {
       display: none;
     }
   }
@@ -3927,11 +4070,17 @@ table {
   width: 0;
 }
 
-.product-links-formatter {
+.links-list-formatter {
   display: flex;
   flex-flow: row wrap;
   a {
     margin-right: 15px;
+  }
+}
+
+.links-list-column-formatter {
+  a {
+    display: block;
   }
 }
 
@@ -3981,4 +4130,100 @@ table {
     border-top: 1px solid #dadada;
     z-index: 150;
   }
+}
+
+.jira-info {
+  padding: 15px;
+
+  .jira-info-item {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  table {
+    .jira-status {
+      width: 15%;
+    }
+
+    .crm-status {
+      width: 15%;
+    }
+
+    .status-definition {
+      width: 35%;
+    }
+
+    .status-comment {
+      width: 35%;
+    }
+  }
+
+  .jira-info-footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    padding: 8px 5px;
+    background-color: #ededed;
+    border-top: 1px solid #dadada;
+    z-index: 150;
+  }
+}
+
+.form-group {
+  &.form-group-default.pause-date {
+    height: 54px !important;
+
+    .form-control {
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
+    }
+
+    .has-error {
+      .form-control {
+        border: 1px solid $error_color;
+      }
+    }
+  }
+
+  .form-control {
+    &.sla-input-time {
+      border: 1px solid rgba(0, 0, 0, 0.07);
+      padding-left: 5px;
+    }
+  }
+
+  .project-team-selector {
+    .select2-container {
+      border: 0;
+      &.select2-container-multi {
+        .select2-add-button {
+          flex-grow: 0;
+        }
+      }
+    }
+
+    .project-team-selector-item:not(:first-child) {
+      margin-top: 20px;
+    }
+  }
+}
+
+.technical-validity {
+  height: 56px;
+}
+
+.max-z-index {
+  z-index: 9999 !important;
+}
+
+.pause-status-expired-date {
+  border: 2px solid $error_color;
+}
+
+.reserved-ip-info {
+  max-height: 4.26em;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

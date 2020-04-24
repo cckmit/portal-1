@@ -5,10 +5,7 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
@@ -24,8 +21,9 @@ public class Location implements Serializable {
     @JdbcColumn(name="PARENT_ID")
     private int parentId;
 
-    @JdbcColumn(name="TYPE_ID")
-    private int typeId;
+    @JdbcColumn(name="TYPE_ID" )
+    @JdbcEnumerated( EnumType.ID )
+    private En_LocationType locationType;
 
     @JdbcColumn(name="NAME")
     private String name;
@@ -48,12 +46,6 @@ public class Location implements Serializable {
         this.id = id;
     }
 
-    public Location( int typeId, String name, String description ) {
-        this.typeId = typeId;
-        this.name = name;
-        this.description = description;
-    }
-
     public Long getId() {
         return id;
     }
@@ -62,17 +54,9 @@ public class Location implements Serializable {
         this.id = id;
     }
 
-    public int getTypeId() {
-        return typeId;
-    }
-
     public int getParentId() { return parentId; }
 
     public void setParentId(int parentId) { this.parentId = parentId; }
-
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
-    }
 
     public String getName() {
         return name;
@@ -99,7 +83,7 @@ public class Location implements Serializable {
     }
 
     public En_LocationType getType () {
-        return En_LocationType.forId(this.typeId);
+        return locationType;
     }
 
     public DistrictInfo toDistrictInfo() {
@@ -136,7 +120,7 @@ public class Location implements Serializable {
         return "Location{" +
             "id=" + id +
             ", parentId=" + parentId +
-            ", typeId=" + typeId +
+            ", locationType=" + locationType +
             ", name='" + name + '\'' +
             ", description='" + description + '\'' +
             ", oldId=" + oldId +

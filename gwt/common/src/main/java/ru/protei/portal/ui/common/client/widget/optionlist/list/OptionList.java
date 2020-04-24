@@ -63,16 +63,18 @@ public class OptionList<T>
     }
 
 
-    public void addOption( String name, T value, String styleName ) {
+    public void addOption( String name, String info, String text, T value, String styleName ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
 
         OptionItem itemView = itemFactory.get();
         itemView.setName( name );
+        itemView.setInfo( info );
+        itemView.setText( text );
         itemView.addValueChangeHandler( this );
-        itemView.setValue(selected.contains(value));
-        itemView.setEnabled(isEnabled);
+        itemView.setValue( selected.contains( value ) );
+        itemView.setEnabled( isEnabled );
 
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
@@ -85,12 +87,14 @@ public class OptionList<T>
             itemView.setStyleName( styleName );
         }
         container.add( itemView.asWidget() );
-
-
     }
 
     public void addOption( String name, T value ) {
         addOption( name, value, null );
+    }
+
+    public void addOption( String name, T value, String styleName ) {
+        addOption( name, null, null, value, styleName );
     }
 
     @Override

@@ -47,7 +47,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "person")
     })
     private String managerShortName;
 
@@ -56,7 +56,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "person")
     }, mappedColumn = "displayShortName")
     private String caseManagerShortName;
 
@@ -68,7 +68,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "INITIATOR", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "INITIATOR", remoteColumn = "id", table = "person")
     }, mappedColumn = "displayShortName")
     private String curatorShortName;
 
@@ -80,7 +80,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "Company")
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
     }, mappedColumn = "cname")
     private String contragentName;
 
@@ -90,7 +90,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     //    TODO: refactor
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "Company")
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
     }, mappedColumn = "cname")
     private String caseContragentName;
 
@@ -174,7 +174,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
     private String parentContractNumber;
 
-    @JdbcOneToMany(table = "Contract", localColumn = "id", remoteColumn = "parent_contract_id")
+    @JdbcOneToMany(table = "contract", localColumn = "id", remoteColumn = "parent_contract_id")
     private List<Contract> childContracts;
 
     @JdbcColumn(name = "project_id")
@@ -455,12 +455,18 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", modified=" + modified +
                 ", managerId=" + managerId +
                 ", managerShortName='" + managerShortName + '\'' +
+                ", caseManagerId=" + caseManagerId +
+                ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", curatorId=" + curatorId +
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", contragentId=" + contragentId +
                 ", contragentName='" + contragentName + '\'' +
+                ", caseContragentId=" + caseContragentId +
+                ", caseContragentName='" + caseContragentName + '\'' +
                 ", directionId=" + directionId +
                 ", directionName='" + directionName + '\'' +
+                ", caseDirectionId=" + caseDirectionId +
+                ", caseDirectionName='" + caseDirectionName + '\'' +
                 ", stateId=" + stateId +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +
@@ -476,7 +482,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", parentContractNumber='" + parentContractNumber + '\'' +
                 ", childContracts=" + childContracts +
                 ", projectId=" + projectId +
-                ", projectName=" + projectName +
+                ", projectName='" + projectName + '\'' +
                 '}';
     }
 

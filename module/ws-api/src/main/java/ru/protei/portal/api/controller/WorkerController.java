@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
@@ -16,9 +15,11 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
@@ -28,7 +29,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -36,10 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -61,6 +58,9 @@ public class WorkerController {
 
     @Autowired
     private PersonDAO personDAO;
+
+    @Autowired
+    private CompanyDAO companyDAO;
 
     @Autowired
     private CompanyGroupHomeDAO companyGroupHomeDAO;
@@ -201,8 +201,13 @@ public class WorkerController {
         WorkerRecordList persons = new WorkerRecordList();
 
         try {
+            List<Company> homeCompaniesWithSync = companyDAO.listByQuery(new CompanyQuery(true, true).synchronizeWith1C(true));
+            Set<EntityOption> homeCompanies = new HashSet<>();
+            homeCompaniesWithSync.forEach(company -> homeCompanies.add(company.toEntityOption()));
 
             EmployeeQuery query = new EmployeeQuery(Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
+
+            query.setHomeCompanies(homeCompanies);
 
             personDAO.getEmployees(query).forEach(
                     p -> persons.append(new WorkerRecord(p))
@@ -676,7 +681,6 @@ public class WorkerController {
             if (department.getId() == null) {
                 department.setCreated(new Date());
                 department.setCompanyId(operationData.homeItem().getCompanyId());
-                department.setTypeId(1);
                 department.setExternalId(rec.getDepartmentId().trim());
                 persistDepartment(department);
             } else {
@@ -941,7 +945,7 @@ public class WorkerController {
 
             UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
             userLogin.setUlogin(login.trim());
-            userLogin.setAuthTypeId(En_AuthType.LDAP.getId());
+            userLogin.setAuthType(En_AuthType.LDAP);
             userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
             return userLogin;
         }
@@ -1037,7 +1041,7 @@ public class WorkerController {
     private void makeAudit(AuditableObject object, En_AuditType type) throws Exception {
         AuditObject auditObject = new AuditObject();
         auditObject.setCreated( new Date() );
-        auditObject.setTypeId(type.getId());
+        auditObject.setType(type);
         auditObject.setCreatorId( 0L );
         auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
         auditObject.setCreatorShortName("portal-api");

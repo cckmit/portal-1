@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.event.ProjectCreateEvent;
+import ru.protei.portal.core.event.ProjectUpdateEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -21,16 +23,16 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static java.util.stream.Collectors.*;
+import static ru.protei.portal.api.struct.Result.*;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления проектами
@@ -46,7 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
     LocationDAO locationDAO;
 
     @Autowired
-    JdbcManyRelationsHelper helper;
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     CaseMemberDAO caseMemberDAO;
@@ -76,9 +78,6 @@ public class ProjectServiceImpl implements ProjectService {
     PlatformDAO platformDAO;
 
     @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    @Autowired
     CaseLinkService caseLinkService;
 
     @Override
@@ -91,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Result< Map< String, List<Project> > > listProjectsByRegions(AuthToken token, ProjectQuery query ) {
 
         Map< String, List<Project> > regionToProjectMap = new HashMap<>();
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery( token, query );
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         caseQuery.setSortField(query.getSortField());
         caseQuery.setSortDir(query.getSortDir());
 
@@ -121,12 +120,11 @@ public class ProjectServiceImpl implements ProjectService {
             project.setPlatformName(platform.getName());
         }
 
-        helper.fillAll( project );
-        Contract contract = contractDAO.getByProjectId(id);
+        jdbcManyRelationsHelper.fillAll( project );
+        List<Contract> contracts = contractDAO.getByProjectId(id);
 
-        if (contract != null) {
-            project.setContractId(contract.getId());
-            project.setContractNumber(contract.getNumber());
+        if (CollectionUtils.isNotEmpty(contracts)) {
+            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
         }
 
         return ok(Project.fromCaseObject(project));
@@ -151,7 +149,9 @@ public class ProjectServiceImpl implements ProjectService {
     public Result<Project> saveProject(AuthToken token, Project project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
-        helper.fillAll( caseObject );
+        jdbcManyRelationsHelper.fillAll( caseObject );
+
+        Project oldStateProject = Project.fromCaseObject(caseObject);
 
         if (!Objects.equals(project.getCustomer(), caseObject.getInitiatorCompany())) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PROJECT_COMPANY);
@@ -167,6 +167,8 @@ public class ProjectServiceImpl implements ProjectService {
                 .findFirst()
                 .orElse(null)
         );
+
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
 
         caseObject.setManager(personDAO.get(caseObject.getManagerId()));
 
@@ -185,6 +187,10 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
 
+        caseObject.setProjectSlas(project.getProjectSlas());
+
+        jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
+
         try {
             updateTeam( caseObject, project.getTeam() );
             updateLocations( caseObject, project.getRegion() );
@@ -196,7 +202,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return ok(Project.fromCaseObject( caseObject ));
+        CaseObject updatedCaseObject = caseObjectDAO.get(project.getId());
+        jdbcManyRelationsHelper.fillAll(updatedCaseObject);
+        Project newStateProject = Project.fromCaseObject(updatedCaseObject);
+
+        return ok(project).publishEvent(new ProjectUpdateEvent(this, oldStateProject, newStateProject, token.getPersonId()));
     }
 
     @Override
@@ -211,6 +221,10 @@ public class ProjectServiceImpl implements ProjectService {
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
             return error(En_ResultStatus.NOT_CREATED);
+
+        project.setId(id);
+
+        jdbcManyRelationsHelper.persist(caseObject, "projectSlas");
 
         try {
             updateTeam(caseObject, project.getTeam());
@@ -230,19 +244,25 @@ public class ProjectServiceImpl implements ProjectService {
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
-        return addLinksResult.isOk() ? ok(Project.fromCaseObject(caseObject)) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
+        project.setCreator(personDAO.get(project.getCreatorId()));
+
+        ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
+
+        return new Result<>(En_ResultStatus.OK, project, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(projectCreateEvent));
     }
 
     private CaseObject createCaseObjectFromProjectInfo(Project project) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setType(En_CaseType.PROJECT);
         caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
         caseObject.setStateId(project.getState().getId());
         caseObject.setCreatorId(project.getCreatorId());
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+        caseObject.setProjectSlas(project.getProjectSlas());
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());
@@ -276,22 +296,26 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<Project>> listProjects(AuthToken authToken, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+    public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
 
-        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+        SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
 
-        helper.fill(projects, "members");
-        helper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "members");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
+        jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
 
-        List<Project> result = projects.stream()
-                .map(Project::fromCaseObject).collect(toList());
+        SearchResult<Project> result = new SearchResult<>(
+                projects.getResults().isEmpty() ?
+                        new ArrayList<>()
+                        : projects.getResults().stream().map(Project::fromCaseObject).collect(toList()),
+                projects.getTotalCount());
         return ok(result);
     }
 
     @Override
-    public Result<List<EntityOption>> listOptionProjects(AuthToken authToken, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+    public Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query) {
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
         List<EntityOption> result = projects.stream()
@@ -300,11 +324,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Result<List<ProjectInfo>> listInfoProjects(AuthToken authToken, ProjectQuery query) {
-        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
+    public Result<List<ProjectInfo>> listInfoProjects(AuthToken token, ProjectQuery query) {
+        CaseQuery caseQuery = query.toCaseQuery(token.getPersonId());
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
 
-        helper.fill(projects, "products");
+        jdbcManyRelationsHelper.fill(projects, "products");
 
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
@@ -322,7 +346,7 @@ public class ProjectServiceImpl implements ProjectService {
                 if (!projectRoles.contains(member.getRole())) {
                     continue;
                 }
-                int nPos = toAdd.indexOf(PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()));
+                int nPos = toAdd.indexOf(PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()));
                 if (nPos == -1) {
                     toRemove.add(member.getId());
                 } else {
@@ -350,6 +374,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private void updateLocations( CaseObject caseObject, EntityOption location ) {
+        if ( location == null ) {
+            return;
+        }
+
         boolean locationFound = false;
 
         if ( caseObject.getLocations() != null ) {
@@ -364,10 +392,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if ( locationFound ) {
-            return;
-        }
-
-        if ( location == null ) {
             return;
         }
 
@@ -406,7 +430,7 @@ public class ProjectServiceImpl implements ProjectService {
             return;
         }
 
-        helper.fillAll( project );
+        jdbcManyRelationsHelper.fillAll( project );
 
         List< CaseLocation > locations = project.getLocations();
         if ( locations == null || locations.isEmpty() ) {
@@ -452,44 +476,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project projectInfo = Project.fromCaseObject( project );
         projectInfos.add( projectInfo );
-    }
-
-    private CaseQuery applyProjectQueryToCaseQuery(AuthToken authToken, ProjectQuery projectQuery) {
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-
-        if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
-            caseQuery.setStateIds(projectQuery.getStates().stream()
-                    .map((state) -> new Long(state.getId()).intValue())
-                    .collect(toList())
-            );
-        }
-
-        if (projectQuery.getDirectionId() != null) {
-            caseQuery.setProductDirectionId(projectQuery.getDirectionId());
-        }
-        if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
-            caseQuery.setProductIds(projectQuery.getProductIds());
-        }
-
-        if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
-            caseQuery.setMemberId(authToken.getPersonId());
-        }
-
-        if (projectQuery.getCustomerType() != null) {
-            caseQuery.setLocal(projectQuery.getCustomerType().getId());
-        }
-
-        caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
-        caseQuery.setCreatedTo(projectQuery.getCreatedTo());
-        caseQuery.setSearchString(projectQuery.getSearchString());
-        caseQuery.setSortDir(projectQuery.getSortDir());
-        caseQuery.setSortField(projectQuery.getSortField());
-        caseQuery.setContractIndependentProject(projectQuery.getContractIndependentProject());
-        caseQuery.setPlatformIndependentProject(projectQuery.getPlatformIndependentProject());
-        caseQuery.setDistrictIds(projectQuery.getDistrictIds());
-
-        return caseQuery;
     }
 
     private LocationQuery makeLocationQuery( ProjectQuery query, boolean isSortByFilter ) {

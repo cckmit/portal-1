@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 import static java.util.Collections.replaceAll;
 
@@ -110,16 +110,23 @@ public abstract class   CaseTagListActivity
         }
 
         if ( isCaseCreationMode() ) {
-            fireEvent(new CaseTagEvents.Detach(show.caseId, itemView.getModelId()));
+            fireEvent(new CaseTagEvents.Detach(show.caseId, itemView.getCaseTag().getId()));
             itemView.asWidget().removeFromParent();
-            hideOrShowIfNoTags();
+            if(tags.remove( itemView.getCaseTag() )) {
+                fillView( tags );
+            }
             return;
         }
 
-        controller.detachTag(show.caseId, itemView.getModelId(), new FluentCallback<Void>()
-                .withSuccess(res -> {
+        final CaseTag forRemove =  itemView.getCaseTag();
+        if(forRemove==null) return;
+        controller.detachTag(show.caseId,forRemove.getId(), new FluentCallback<Long>()
+                .withSuccess(removedId -> {
+                    if(!Objects.equals( removedId, forRemove.getId())) return;
                     itemView.asWidget().removeFromParent();
-                    hideOrShowIfNoTags();
+                    if(tags.remove( forRemove )) {
+                        fillView( tags );
+                    }
                 }));
     }
 
@@ -145,6 +152,7 @@ public abstract class   CaseTagListActivity
     }
 
     private void fillView(List<CaseTag> links) {
+        log.info( "fillView(): " + CollectionUtils.toList( links, caseTag -> caseTag.getId() + "-" + caseTag.getName() ));
         view.getTagsContainer().clear();
         hideOrShowIfNoTags();
         if (CollectionUtils.isEmpty(links)) {
@@ -154,12 +162,12 @@ public abstract class   CaseTagListActivity
         hideOrShowIfNoTags();
     }
 
-    private void makeCaseTagViewAndAddToParent(CaseTag value) {
+    private void makeCaseTagViewAndAddToParent(CaseTag caseTag) {
         AbstractCaseTagItemView itemWidget = itemViewProvider.get();
         itemWidget.setActivity(this);
-        itemWidget.setNameAndColor(value.getName(), value.getColor());
+        itemWidget.setNameAndColor(caseTag.getName(), caseTag.getColor());
         itemWidget.setEnabled(!show.isReadOnly);
-        itemWidget.setModelId(value.getId());
+        itemWidget.setCaseTag(caseTag);
         view.getTagsContainer().add(itemWidget.asWidget());
     }
 
@@ -189,6 +197,7 @@ public abstract class   CaseTagListActivity
         view.setType(show.caseType);
     }
 
+    private static final Logger log = Logger.getLogger( CaseTagListActivity.class.getName() );
 
     @Inject
     private Lang lang;

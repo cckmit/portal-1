@@ -8,6 +8,9 @@ import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
 import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
+import ru.protei.portal.core.service.AttachmentService;
+
+import static org.mockito.Mockito.mock;
 
 @Configuration
 public class RendererTestConfiguration {
@@ -24,5 +27,10 @@ public class RendererTestConfiguration {
     @Bean
     public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
         return new JiraWikiMarkupRendererImpl();
+    }
+
+    @Bean
+    public AttachmentService getAttachmentService() {
+        return  mock(AttachmentService.class);
     }
 }

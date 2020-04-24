@@ -7,13 +7,13 @@
     <inherits name="ru.protei.portal.ui.product.Product"/>
     <inherits name="ru.protei.portal.ui.contact.Contact"/>
     <inherits name="ru.protei.portal.ui.issue.Issue"/>
+    <inherits name="ru.protei.portal.ui.issueassignment.IssueAssignment"/>
     <inherits name="ru.protei.portal.ui.issuereport.IssueReport"/>
     <inherits name="ru.protei.portal.ui.equipment.Equipment"/>
     <inherits name="ru.protei.portal.ui.region.Region" />
     <inherits name="ru.protei.portal.ui.project.Project" />
     <inherits name="ru.protei.portal.ui.account.Account" />
     <inherits name="ru.protei.portal.ui.role.Role" />
-    <inherits name="ru.protei.portal.ui.official.Official"/>
     <inherits name="ru.protei.portal.ui.document.Document"/>
     <inherits name="ru.protei.portal.ui.documenttype.DocumentType"/>
     <inherits name="ru.protei.portal.ui.casestate.CaseState"/>
@@ -21,6 +21,7 @@
     <inherits name="ru.protei.portal.ui.employee.Employee"/>
     <inherits name="ru.protei.portal.ui.employeeregistration.EmployeeRegistration"/>
     <inherits name="ru.protei.portal.ui.contract.Contract"/>
+    <inherits name="ru.protei.portal.ui.ipreservation.IpReservation"/>
 
     <entry-point class='ru.protei.portal.app.portal.client.Main'/>
 

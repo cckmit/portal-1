@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
@@ -16,10 +18,7 @@ import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseLinkService;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.ProductService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -54,6 +53,10 @@ public class PortalApiController {
     CaseCommentService caseCommentService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private CaseTagService caseTagService;
 
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
@@ -190,6 +193,16 @@ public class PortalApiController {
                         productId, result ) );
     }
 
+    @PostMapping(value = "/products/create")
+    public Result<DevUnitInfo> createProductByInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody DevUnitInfo product) {
+        log.info("createProduct() product={} ", product);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> productService.createProductByInfo(authToken, product))
+                .ifOk(devUnit -> log.info("createProduct(): OK"))
+                .ifError(devUnitResult -> log.warn("createProduct(): Can't create product={}. {}", product, devUnitResult));
+    }
+
     @PostMapping(value = "/products/update")
     public Result<Long> updateProductByInfo( HttpServletRequest request, HttpServletResponse response,
                                              @RequestBody DevUnitInfo product) {
@@ -266,6 +279,46 @@ public class PortalApiController {
         return caseCommentService.getCaseCommentShortViewList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query)).map( SearchResult::getResults );
     }
 
+    @PostMapping(value = "/employees")
+    public Result<List<PersonInfo>> getEmployees(HttpServletRequest request, HttpServletResponse response, @RequestBody EmployeeApiQuery query) {
+        log.info("API | getEmployees(): query={}", query);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> employeeService.employeeList(authToken, makeEmployeeQuery(query)))
+                .map(SearchResult::getResults)
+                .map(employeeShortViews -> employeeShortViews.stream().map(PersonInfo::fromEmployeeShortView).collect(Collectors.toList()))
+                .ifOk(personInfos -> log.info("getEmployees(): OK"))
+                .ifError(result -> log.warn("getEmployees(): Can't find personInfos by query={}. {}", query, result));
+    }
+
+    @PostMapping(value = "/tags/create")
+    public Result<CaseTag> createCaseTag(HttpServletRequest request, HttpServletResponse response, @RequestBody CaseTagInfo caseTagInfo) {
+        log.info("API | createCaseTag(): caseTagInfo={}", caseTagInfo);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return caseTagService.create(authToken, CaseTagInfo.toCaseTag(caseTagInfo))
+                .flatMap(tagId -> caseTagService.getTag(authToken, tagId))
+                .ifOk(caseTagId -> log.info("createCaseTag(): OK"))
+                .ifError(result -> log.warn("createCaseTag(): Can't create tag={}. {}", caseTagInfo, result));
+    }
+
+    @PostMapping(value = "/tags/remove/{caseTagId:[0-9]+}")
+    public Result<Long> removeCaseTag(HttpServletRequest request, HttpServletResponse response, @PathVariable("caseTagId") Long caseTagId) {
+        log.info("API | removeCaseTag(): caseTagId={}", caseTagId);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> caseTagService.removeTag(authToken, caseTagId))
+                .ifOk(id -> log.info("removeCaseTag(): OK"))
+                .ifError(result -> log.warn("removeCaseTag(): Can't remove tag={}. {}", caseTagId, result));
+    }
+
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
         query.setLimit(apiQuery.getLimit());
@@ -287,6 +340,18 @@ public class PortalApiController {
         query.setSortField(En_SortField.creation_date);
         query.setSortDir(En_SortDir.DESC);
         query.setCaseNumber(apiQuery.getCaseNumber());
+        return query;
+    }
+
+    private EmployeeQuery makeEmployeeQuery(EmployeeApiQuery apiQuery) {
+        EmployeeQuery query = new EmployeeQuery();
+        query.setSearchString(apiQuery.getDisplayName());
+        query.setEmail(apiQuery.getEmail());
+        query.setWorkPhone(apiQuery.getWorkPhone());
+        query.setMobilePhone(apiQuery.getMobilePhone());
+        query.setLimit(apiQuery.getLimit());
+        query.setOffset(apiQuery.getOffset());
+
         return query;
     }
 

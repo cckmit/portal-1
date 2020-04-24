@@ -3,15 +3,20 @@ package ru.protei.portal.test.jira.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableAsync;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigData;
+import ru.protei.portal.config.PortalConfigReloadable;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
+import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -28,6 +33,7 @@ import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
 import ru.protei.portal.jira.service.*;
+import ru.protei.portal.jira.utils.JiraQueueSingleThreadPoolTaskExecutor;
 import ru.protei.portal.test.jira.mock.JiraEndpointDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraPriorityMapEntryDAO_ImplMock;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
@@ -35,12 +41,42 @@ import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
+
+@EnableAspectJAutoProxy
+@EnableAsync
 @Configuration
 public class JiraTestConfiguration {
 
+    @Autowired
+    PortalConfig config;
+
+    /**
+     * Запуск фоновых задач
+     */
+    @Bean(name = JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
+    public Executor threadPoolTaskExecutor() {
+        int queueLimit = config.data().jiraConfig().getQueueLimit();
+        return new JiraQueueSingleThreadPoolTaskExecutor( queueLimit );
+    }
+
+    @Bean(name = BACKGROUND_TASKS)
+    public Executor backgroundTaskExecutor() {
+        return Executors.newCachedThreadPool();
+    }
+
+    @Bean
+    public MailSendChannel getMailChannel() {
+        return new VirtualMailSendChannel();
+    }
+
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigReloadable("portal.properties");
     }
 
     @Bean
@@ -205,11 +241,6 @@ public class JiraTestConfiguration {
     }
 
     @Bean
-    public CompanyCategoryDAO getCompanyCategoryDao() {
-        return new CompanyCategoryDAO_Impl();
-    }
-
-    @Bean
     public CompanySubscriptionDAO getCompanySubscriptionDao() {
         return new CompanySubscriptionDAO_Impl();
     }
@@ -222,11 +253,6 @@ public class JiraTestConfiguration {
     @Bean
     public JiraClientFactory getJiraClientFactory () {
         return new JiraClientFactoryImpl();
-    }
-
-    @Bean
-    public JiraIntegrationQueueService getJiraIntegrationQueueService() {
-        return new JiraIntegrationQueueServiceImpl();
     }
 
     @Bean
@@ -317,5 +343,10 @@ public class JiraTestConfiguration {
     @Bean
     public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
         return new JiraCompanyGroupDAO_Impl();
+    }
+
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
     }
 }

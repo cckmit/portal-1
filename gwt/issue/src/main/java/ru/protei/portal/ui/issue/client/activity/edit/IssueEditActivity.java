@@ -24,8 +24,8 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -54,7 +55,11 @@ public abstract class IssueEditActivity implements
 
         AttachmentUploader.FileUploadHandler uploadHandler = new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess( Attachment attachment ) {
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                    addImageToMessage(pasteInfo.strPosition, attachment);
+                    issueNameDescriptionEditWidget.addTempAttachment(attachment);
+                }
                 addAttachmentsToCase( Collections.singleton( attachment ) );
             }
 
@@ -65,6 +70,9 @@ public abstract class IssueEditActivity implements
         };
 
         issueInfoWidget.setFileUploadHandler( uploadHandler );
+        issueNameDescriptionEditWidget.setFileUploader(issueInfoWidget.getFileUploader());
+
+        setNotifyFunctionsForJavascript(this);
     }
 
     @Event
@@ -170,17 +178,6 @@ public abstract class IssueEditActivity implements
     }
 
     @Override
-    public void onCopyNumberClicked() {
-        boolean isCopied = ClipboardUtils.copyToClipboard(String.valueOf(issue.getCaseNumber()));
-
-        if (isCopied) {
-            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
-        } else {
-            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
-        }
-    }
-
-    @Override
     public void onNameAndDescriptionEditClicked() {
         boolean isAllowedEditNameAndDescription = isSelfIssue(issue);
         boolean readOnly = isReadOnly();
@@ -191,15 +188,19 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().clear();
         view.getInfoContainer().add(issueNameDescriptionEditWidget);
 
+        issueInfoWidget.descriptionReadOnlyVisibility().setVisible(false);
+        view.getInfoContainer().add(issueInfoWidget);
+
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
-                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo()), textMarkup);
+                new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo(), issue.getAttachments()), textMarkup);
     }
 
     @Override
     public void onIssueNameInfoChanged(CaseNameAndDescriptionChangeRequest changeRequest) {
         issue.setName(changeRequest.getName());
         issue.setInfo(changeRequest.getInfo());
+        issueInfoWidget.descriptionReadOnlyVisibility().setVisible(true);
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
     }
@@ -216,7 +217,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onAddLinkClicked(IsWidget target) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, lang.issues()));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, ISSUE_CASE_TYPE));
     }
 
     @Override
@@ -224,15 +225,17 @@ public abstract class IssueEditActivity implements
         fireEvent(new Back());
     }
 
-    @Override
-    public void onCopyNumberAndName() {
-        boolean isCopied = ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() );
+    public void fireSuccessCopyNotify() {
+        fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+    }
 
-        if (isCopied) {
-            fireEvent( new NotifyEvents.Show( lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS ) );
-        } else {
-            fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
-        }
+    public void fireErrorCopyNotify() {
+        fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
+    }
+
+    private void addImageToMessage(Integer strPosition, Attachment attach) {
+        issueNameDescriptionEditWidget.description().setValue(
+                addImageInMessage(isJiraMarkupCase(issue), issueNameDescriptionEditWidget.description().getValue(), strPosition, attach));
     }
 
     private void requestIssue(Long number, HasWidgets container) {
@@ -295,6 +298,15 @@ public abstract class IssueEditActivity implements
         fireEvent(new CaseCommentEvents.Reload());
     }
 
+    private static native void setNotifyFunctionsForJavascript(AbstractIssueEditActivity activity)/*-{
+        $wnd.fireSuccessCopyNotify = function () {
+            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireSuccessCopyNotify()();
+        }
+        $wnd.fireErrorCopyNotify = function () {
+            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireErrorCopyNotify()();
+        }
+    }-*/;
+
     private void attachToContainer(HasWidgets container) {
         container.add(view.asWidget());
     }
@@ -325,6 +337,8 @@ public abstract class IssueEditActivity implements
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setCopyNameText(String.valueOf(issue.getCaseNumber()));
+        view.setCopyNameAndNumberText(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
@@ -388,6 +402,10 @@ public abstract class IssueEditActivity implements
         return !policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
     }
 
+    private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
+        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+    }
+
     @Inject
     AbstractIssueEditView view;
 
@@ -411,6 +429,7 @@ public abstract class IssueEditActivity implements
 
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
+    private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

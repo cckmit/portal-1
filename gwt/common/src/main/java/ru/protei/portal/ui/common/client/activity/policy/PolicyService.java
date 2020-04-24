@@ -80,7 +80,7 @@ public abstract class PolicyService implements Activity {
             return false;
         }
 
-        return Objects.equals(En_CompanyCategory.HOME.getId(), profile.getCompany().getCategory().getId());
+        return Objects.equals(En_CompanyCategory.HOME, profile.getCompany().getCategory());
     }
 
     @Event

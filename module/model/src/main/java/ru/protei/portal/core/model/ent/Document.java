@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -14,7 +15,8 @@ import java.util.List;
  * элемент раздела "Банк документов"
  */
 @JdbcEntity(table = "document")
-public class Document implements Serializable {
+public class Document extends AuditableObject {
+    public static final String AUDIT_TYPE = "Document";
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -126,6 +128,7 @@ public class Document implements Serializable {
 
     @JdbcManyToMany(linkTable = "document_member", localLinkColumn = "document_id", remoteLinkColumn = "person_id")
     private List<Person> members;
+
 
     public Document(){}
 
@@ -314,11 +317,16 @@ public class Document implements Serializable {
     }
 
     public boolean isValid() {
-        // Основная проверка, дополнительные проверки обрабатываются в клиенте и сервере отдельно
+        // Основная проверка, дополнительные проверки обрабатываются в DocumentUtils.isValid
         return  this.getType() != null &&
                 (this.getInventoryNumber() == null || (this.getInventoryNumber() > 0)) &&
                 this.getProjectId() != null &&
                 HelperFunc.isNotEmpty(this.getName());
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override

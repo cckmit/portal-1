@@ -7,36 +7,38 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterView;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractIssueFilterModel {
+        AbstractIssueReportCreateActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.getIssueFilter().setModel(this);
+        issueFilterWidget.addAdditionalFilterValidate(
+                caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
+        issueFilterWidget.getIssueFilterParams().setModel(this);
+        issueFilterWidget.clearFooterStyle();
+        projectFilterView.clearFooterStyle();
     }
 
     @Event
@@ -47,6 +49,9 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         view.fillReportTypes(makeReportTypeList());
+        view.fillReportScheduledTypes(Arrays.asList(En_ReportScheduledType.values()));
+
+        projectFilterView.resetFilter();
     }
 
     @Event(Type.FILL_CONTENT)
@@ -63,51 +68,29 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.reset();
 
         if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
-            HashSet<EntityOption> companyIds = new HashSet<>();
-            companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
-            view.getIssueFilter().companies().setValue(companyIds);
-            view.getIssueFilter().updateInitiators();
+            issueFilterWidget.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
         }
-    }
-
-    @Event
-    public void onConfirmRemoveUserFilter(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName()) || filterIdToRemove == null) {
-            return;
-        }
-        filterService.removeIssueFilter(filterIdToRemove, new FluentCallback<Boolean>()
-                .withError(throwable -> {
-                    filterIdToRemove = null;
-                    fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(aBoolean -> {
-                    filterIdToRemove = null;
-                    fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeUserFilterModel());
-                    view.getIssueFilter().reset();
-                }));
-    }
-
-    @Event
-    public void onCancelRemoveUserFilter(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        filterIdToRemove = null;
     }
 
     @Override
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();
-        CaseQuery query = view.getIssueFilter().getValue();
+        En_ReportScheduledType scheduledType = view.reportScheduledType().getValue();
+
+        CaseQuery query;
+        if (reportType == En_ReportType.PROJECT) {
+            query = getProjectQuery().toCaseQuery(policyService.getProfile().getId());
+        } else {
+            query = issueFilterWidget.getFilterFieldsByFilterType();
+        }
 
         if (!validateQuery(reportType, query)) {
             return;
         }
-
         Report report = new Report();
         report.setReportType(reportType);
+        report.setScheduledType(scheduledType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
         report.setCaseQuery(query);
@@ -134,45 +117,30 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onReportTypeChanged() {
-        applyIssueFilterVisibilityByPrivileges();
-    }
-
-    @Override
-    public void onUserFilterChanged(Long id, Consumer<CaseFilter> consumer) {
-
-        filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
-                .withErrorMessage(lang.errNotFound())
-                .withSuccess(caseFilter ->
-                    consumer.accept(caseFilter)));
-    }
-
-    @Override
-    public void onSaveFilterClicked(CaseFilter caseFilter, Consumer<CaseFilterShortView> consumer) {
-
-        if (!validateQuery(caseFilter.getType(), caseFilter.getParams())) {
-            return;
+    public void onReportTypeChanged(En_CaseFilterType filterType) {
+        if (filterType == En_CaseFilterType.PROJECT) {
+            projectFilterView.resetFilter();
+            view.getIssueFilterContainer().clear();
+            view.getIssueFilterContainer().add(projectFilterView.asWidget());
+        } else {
+            issueFilterWidget.updateFilterType(filterType);
+            applyIssueFilterVisibilityByPrivileges();
+            view.getIssueFilterContainer().clear();
+            view.getIssueFilterContainer().add(issueFilterWidget.asWidget());
         }
-
-        filterService.saveIssueFilter(caseFilter, new FluentCallback<CaseFilter>()
-                .withError(throwable -> {
-                    defaultErrorHandler.accept(throwable);
-                    fireEvent(new NotifyEvents.Show(lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(filter -> {
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeUserFilterModel());
-                    consumer.accept(filter.toShortView());
-                }));
     }
 
     @Override
-    public void onRemoveFilterClicked(Long id) {
-        filterIdToRemove = id;
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
+    public void onUserFilterChanged() {
+        ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
-    private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
+    @Override
+    public void onProjectFilterChanged()  {
+        ; // ничего не делаем, мы используем фильтр при создании отчета
+    }
+
+    private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
         return validateQuery(En_ReportType.valueOf(filterType.name()), query);
     }
 
@@ -197,14 +165,15 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
-        if (view.getIssueFilter().productsVisibility().isVisible()) {
-            view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+        AbstractIssueFilterParamView issueFilterParams = issueFilterWidget.getIssueFilterParams();
+        if (issueFilterParams.productsVisibility().isVisible()) {
+            issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
         }
-        if (view.getIssueFilter().managersVisibility().isVisible()) {
-            view.getIssueFilter().managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
+        if (issueFilterParams.managersVisibility().isVisible()) {
+            issueFilterParams.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
         }
-        if (view.getIssueFilter().searchPrivateVisibility().isVisible()) {
-            view.getIssueFilter().searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        if (issueFilterParams.searchPrivateVisibility().isVisible()) {
+            issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
         }
     }
 
@@ -215,6 +184,26 @@ public abstract class IssueReportCreateActivity implements Activity,
         return Arrays.asList(En_ReportType.CASE_OBJECTS);
     }
 
+    private ProjectQuery getProjectQuery() {
+        ProjectQuery query = new ProjectQuery();
+
+        String searchString = projectFilterView.searchPattern().getValue();
+        query.setCaseIds(searchCaseNumber(searchString, false));
+        if (query.getCaseIds() == null) {
+            query.setSearchString(isBlank(searchString) ? null : searchString);
+        }
+
+        query.setStates(projectFilterView.states().getValue());
+        query.setRegions(projectFilterView.regions().getValue());
+        query.setHeadManagers(projectFilterView.headManagers().getValue());
+        query.setCaseMembers(projectFilterView.caseMembers().getValue());
+        query.setDirections(projectFilterView.direction().getValue());
+        query.setSortField(projectFilterView.sortField().getValue());
+        query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setOnlyMineProjects(projectFilterView.onlyMineProjects().getValue());
+        return  query;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -223,12 +212,12 @@ public abstract class IssueReportCreateActivity implements Activity,
     ReportControllerAsync reportController;
     @Inject
     PolicyService policyService;
-    @Inject
-    IssueFilterControllerAsync filterService;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
 
-    private Long filterIdToRemove;
+    @Inject
+    IssueFilterWidget issueFilterWidget;
+    @Inject
+    ProjectFilterView projectFilterView;
+
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
 }

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -9,10 +10,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by michael on 19.05.16.
@@ -24,7 +22,8 @@ public class CaseObject extends AuditableObject {
     private Long id;
 
     @JdbcColumn(name = "case_type")
-    private int typeId;
+    @JdbcEnumerated( EnumType.ID )
+    private En_CaseType type;
 
     @JdbcColumn(name = "CASENO")
     private Long caseNumber;
@@ -131,11 +130,23 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
     private String platformName;
 
-    // not db column
-    private Long contractId;
+    @JdbcOneToMany(table = "project_sla", localColumn = "id", remoteColumn = "project_id")
+    private List<ProjectSla> projectSlas;
+
+    @JdbcColumn(name = "technical_support_validity")
+    private Date technicalSupportValidity;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
+            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
+    }, mappedColumn = "name")
+    private String regionName;
+
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
 
     // not db column
-    private String contractNumber;
+    private List<EntityOption> contracts;
 
     // not db column
     private En_TimeElapsedType timeElapsedType;
@@ -155,7 +166,7 @@ public class CaseObject extends AuditableObject {
     }
 
     public String defGUID () {
-        En_CaseType t = En_CaseType.find(this.typeId);
+        En_CaseType t = type;
         return t != null ? t.makeGUID(this.caseNumber) : null;
     }
 
@@ -167,12 +178,25 @@ public class CaseObject extends AuditableObject {
         this.id = id;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public En_CaseType getType() {
+        return type;
     }
 
+    public void setType(En_CaseType type) {
+        this.type = type;
+    }
+
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
+    public int getTypeId() {
+        return type!=null?type.getId():0;
+    }
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
     public void setTypeId(int typeId) {
-        this.typeId = typeId;
+        type = En_CaseType.find( typeId );
     }
 
     public Long getCaseNumber() {
@@ -381,14 +405,6 @@ public class CaseObject extends AuditableObject {
         return initiatorCompany;
     }
 
-    public En_CaseType getCaseType () {
-        return En_CaseType.find(this.typeId);
-    }
-
-    public void setCaseType (En_CaseType type) {
-        this.typeId = type.getId();
-    }
-
     public List<Attachment> getAttachments() {
         return attachments == null? Collections.EMPTY_LIST: attachments;
     }
@@ -499,20 +515,12 @@ public class CaseObject extends AuditableObject {
         this.platformName = platformName;
     }
 
-    public Long getContractId() {
-        return contractId;
+    public List<EntityOption> getContracts() {
+        return contracts;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
-    }
-
-    public String getContractNumber() {
-        return contractNumber;
-    }
-
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
+    public void setContracts(List<EntityOption> contracts) {
+        this.contracts = contracts;
     }
 
     public String getJiraUrl() {
@@ -521,6 +529,14 @@ public class CaseObject extends AuditableObject {
 
     public void setJiraUrl(String jiraUrl) {
         this.jiraUrl = jiraUrl;
+    }
+
+    public List<ProjectSla> getProjectSlas() {
+        return projectSlas;
+    }
+
+    public void setProjectSlas(List<ProjectSla> projectSlas) {
+        this.projectSlas = projectSlas;
     }
 
     @Override
@@ -536,11 +552,27 @@ public class CaseObject extends AuditableObject {
         return new EntityOption(this.getName(), this.getId());
     }
 
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
+
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
     @Override
     public String toString() {
         return "CaseObject{" +
                 "id=" + id +
-                ", typeId=" + typeId +
+                ", type=" + type +
                 ", caseNumber=" + caseNumber +
                 ", created=" + created +
                 ", modified=" + modified +
@@ -574,11 +606,16 @@ public class CaseObject extends AuditableObject {
                 ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
                 ", products=" + products +
-                ", timeElapsedType=" + timeElapsedType +
-                ", jiraMetaData=" + caseObjectMetaJira +
                 ", platformId=" + platformId +
-                ", platformName=" + platformName +
+                ", platformName='" + platformName + '\'' +
+                ", projectSlas=" + projectSlas +
+                ", technicalSupportValidity=" + technicalSupportValidity +
+                ", regionName='" + regionName + '\'' +
+                ", pauseDate=" + pauseDate +
+                ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
+                ", caseObjectMetaJira=" + caseObjectMetaJira +
+                ", jiraUrl='" + jiraUrl + '\'' +
                 '}';
     }
 }

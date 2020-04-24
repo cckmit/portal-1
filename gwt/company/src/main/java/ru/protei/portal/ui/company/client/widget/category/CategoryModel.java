@@ -3,7 +3,8 @@ package ru.protei.portal.ui.company.client.widget.category;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.view.EntityOption;
+
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -22,7 +23,7 @@ public abstract class CategoryModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( SelectorWithModel< EntityOption > selector ) {
+    public void subscribe( SelectorWithModel< En_CompanyCategory > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
@@ -36,13 +37,13 @@ public abstract class CategoryModel implements Activity {
 
     private void refreshOptions() {
 
-        companyService.getCategoryOptionList( new RequestCallback< List< EntityOption > >() {
+        companyService.getCategoryOptionList( new RequestCallback< List< En_CompanyCategory > >() {
             @Override
             public void onError( Throwable throwable ) {
             }
 
             @Override
-            public void onSuccess( List< EntityOption > categories ) {
+            public void onSuccess( List<En_CompanyCategory> categories ) {
                 list.clear();
                 list.addAll( categories );
 
@@ -55,7 +56,7 @@ public abstract class CategoryModel implements Activity {
     @Inject
     CompanyControllerAsync companyService;
 
-    private List< EntityOption > list = new ArrayList<>();
+    private List< En_CompanyCategory > list = new ArrayList<>();
 
     List<SelectorWithModel> subscribers = new ArrayList<SelectorWithModel>();
 

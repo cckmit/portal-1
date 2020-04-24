@@ -36,6 +36,10 @@ public interface ProductService {
     @Auditable( En_AuditType.PRODUCT_CREATE )
     Result<DevUnit> createProduct( AuthToken token, DevUnit product);
 
+    @Privileged(En_Privilege.PRODUCT_CREATE)
+    @Auditable(En_AuditType.PRODUCT_CREATE)
+    Result<DevUnitInfo> createProductByInfo(AuthToken token, DevUnitInfo product);
+
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )
     Result<DevUnit> updateProduct( AuthToken token, DevUnit product );

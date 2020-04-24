@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.util;
 
 import com.google.gwt.user.client.Window;
+import ru.protei.portal.core.model.util.CrmConstants;
 
 public class LinkUtils {
 
@@ -23,5 +24,11 @@ public class LinkUtils {
             default:
                 return "";
         }
+    }
+
+    public static String makeJiraInfoLink() {
+        String href = Window.Location.getHref();
+
+        return href.substring(0, href.indexOf("#") + 1) + CrmConstants.Jira.INFO_LINK;
     }
 }

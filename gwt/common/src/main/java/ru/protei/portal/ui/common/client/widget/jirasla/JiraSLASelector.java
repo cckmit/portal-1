@@ -1,6 +1,9 @@
 package ru.protei.portal.ui.common.client.widget.jirasla;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -75,6 +78,10 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
         fillValueFromView();
         renderView();
         fireChanged();
+    }
+
+    public void setJiraInfoLink(String link) {
+        jiraInfoLink.setHref(link);
     }
 
     private void fireChanged() {
@@ -214,7 +221,6 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
     @Inject
     @UiField
     Lang lang;
-
     @UiField
     TextBox issueType;
     @Inject
@@ -225,6 +231,8 @@ public class JiraSLASelector extends Composite implements HasValue<CaseObjectMet
     @UiField
     TextBox timeOfDecision;
 
+    @UiField
+    Anchor jiraInfoLink;
     private CaseObjectMetaJira value;
     private List<JiraSLAMapEntry> cache;
     private boolean severityShouldBeEnabled = false;

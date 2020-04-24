@@ -12,11 +12,11 @@ public interface CaseTagControllerAsync {
 
     void create( CaseTag caseTag, AsyncCallback<Long> async);
 
-    void removeTag(CaseTag caseTag, AsyncCallback<Void> async);
+    void removeTag(Long id, AsyncCallback<Long> async);
 
     void getTags(CaseTagQuery query, AsyncCallback<List<CaseTag>> async);
 
     void attachTag(Long caseId, Long tagId, AsyncCallback<Void> async);
 
-    void detachTag(Long caseId, Long tagId, AsyncCallback<Void> async);
+    void detachTag( Long caseId, Long tagId, AsyncCallback<Long> async);
 }

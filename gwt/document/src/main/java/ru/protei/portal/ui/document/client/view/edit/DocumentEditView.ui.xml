@@ -23,7 +23,7 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group form-group-default">
+                            <div class="form-group form-group-default required">
                                 <label class="fade" ui:field="nameLabel"><ui:text from="{lang.documentName}"/></label>
                                 <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                             </div>

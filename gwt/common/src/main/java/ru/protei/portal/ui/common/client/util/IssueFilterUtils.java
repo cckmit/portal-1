@@ -4,23 +4,18 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 /**
@@ -124,6 +119,7 @@ public class IssueFilterUtils {
         }
             EntityOption option = new EntityOption();
             option.setId( company.getId() );
+            option.setDisplayText( company.getCname() );
         return option;
     }
 
@@ -184,39 +180,6 @@ public class IssueFilterUtils {
         personsIds.forEach(id -> persons.add(new PersonShortView(null, id)));
 
         return persons;
-    }
-
-    public static CaseQuery makeCaseQuery(AbstractIssueFilterWidgetView filterWidgetView) {
-        CaseQuery query = new CaseQuery();
-        query.setType(En_CaseType.CRM_SUPPORT);
-        String searchString = filterWidgetView.searchPattern().getValue();
-        query.setCaseNumbers(searchCaseNumber(searchString, filterWidgetView.searchByComments().getValue()));
-        if (query.getCaseNumbers() == null) {
-            query.setSearchStringAtComments(filterWidgetView.searchByComments().getValue());
-            query.setSearchString(isBlank(searchString) ? null : searchString);
-        }
-        query.setViewPrivate(filterWidgetView.searchPrivate().getValue());
-        query.setSortField(filterWidgetView.sortField().getValue());
-        query.setSortDir(filterWidgetView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setCompanyIds(getCompaniesIdList(filterWidgetView.companies().getValue()));
-        query.setProductIds(getProductsIdList(filterWidgetView.products().getValue()));
-        query.setManagerIds(getManagersIdList(filterWidgetView.managers().getValue()));
-        query.setInitiatorIds(getManagersIdList(filterWidgetView.initiators().getValue()));
-        query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
-        query.setStates(getStateList(filterWidgetView.states().getValue()));
-        query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
-        query.setCaseTagsIds( toList( filterWidgetView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
-        DateInterval createdInterval = filterWidgetView.dateCreatedRange().getValue();
-        if (createdInterval != null) {
-            query.setCreatedFrom(createdInterval.from);
-            query.setCreatedTo(createdInterval.to);
-        }
-        DateInterval modifiedInterval = filterWidgetView.dateModifiedRange().getValue();
-        if (modifiedInterval != null) {
-            query.setModifiedFrom(modifiedInterval.from);
-            query.setModifiedTo(modifiedInterval.to);
-        }
-        return query;
     }
 
     public static CaseQuery fillCreatedInterval( CaseQuery query, DateInterval interval ) {

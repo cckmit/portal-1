@@ -49,48 +49,48 @@ public class CaseLinkEvents {
     }
 
     public static class Removed {
-        public Removed(Long caseId, CaseLink caseLink, String pageId) {
+        public Removed(Long caseId, CaseLink caseLink, En_CaseType caseType) {
             this.caseId = caseId;
             this.caseLink = caseLink;
-            this.pageId = pageId;
+            this.caseType = caseType;
         }
 
         public CaseLink caseLink;
         public Long caseId;
-        public String pageId;
+        public En_CaseType caseType;
     }
 
     public static class Added {
-        public Added(Long caseId, CaseLink caseLink, String pageId) {
+        public Added(Long caseId, CaseLink caseLink, En_CaseType caseType) {
             this.caseId = caseId;
             this.caseLink = caseLink;
-            this.pageId = pageId;
+            this.caseType = caseType;
         }
 
         public Long caseId;
         public CaseLink caseLink;
-        public String pageId;
+        public En_CaseType caseType;
     }
 
     public static class ShowLinkSelector {
         public ShowLinkSelector() {}
 
         public ShowLinkSelector(IsWidget target) {
-            this(target, "");
+            this(target, null);
         }
 
-        public ShowLinkSelector(IsWidget target, String pageId) {
-            this(target, pageId, true);
+        public ShowLinkSelector(IsWidget target, En_CaseType caseType) {
+            this(target, caseType, true);
         }
 
-        public ShowLinkSelector(IsWidget target, String pageId, boolean createCrossLinks) {
+        public ShowLinkSelector(IsWidget target, En_CaseType caseType, boolean createCrossLinks) {
             this.target = target;
-            this.pageId = pageId;
+            this.caseType = caseType;
             this.createCrossLinks = createCrossLinks;
         }
 
         public IsWidget target;
-        public String pageId = PAGE_ID_DEFAULT_VALUE;
+        public En_CaseType caseType;
         public boolean createCrossLinks = true;
     }
 }

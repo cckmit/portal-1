@@ -141,6 +141,7 @@ public class PortalConfigData {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
             crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
+            crmUrlFiles = properties.getProperty( "crm.url.files", "http://newportal/crm/" );
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -154,13 +155,19 @@ public class PortalConfigData {
             return crmUrlCurrent;
         }
 
+        public String getCrmUrlFiles() {
+            return crmUrlFiles;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
+        private final String crmUrlFiles;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
         private final String crmCaseUrl;
+        private final String crmProjectUrl;
         private final String contractUrl;
         private final String crmDocumentPreviewUrl;
         private final String crmEmployeeRegistrationUrl;
@@ -169,6 +176,7 @@ public class PortalConfigData {
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+            crmProjectUrl = properties.getProperty("crm.project.url", "#project_preview:id=%d");
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
             crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
@@ -178,6 +186,10 @@ public class PortalConfigData {
 
         public String getCrmCaseUrl() {
             return crmCaseUrl;
+        }
+
+        public String getCrmProjectUrl() {
+            return crmProjectUrl;
         }
 
         public String getContractUrl() {
@@ -359,6 +371,7 @@ public class PortalConfigData {
         private final boolean redmineEnabled;
         private final boolean redmineBackchannelEnabled;
         private final boolean youtrackEnabled;
+        private final boolean youtrackCompanySyncEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -368,6 +381,7 @@ public class PortalConfigData {
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             redmineBackchannelEnabled = properties.getProperty("integration.redmine.backchannel", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
+            youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -384,6 +398,10 @@ public class PortalConfigData {
 
         public boolean isYoutrackEnabled() {
             return youtrackEnabled;
+        }
+
+        public boolean isYoutrackCompanySyncEnabled() {
+            return youtrackCompanySyncEnabled;
         }
 
         public boolean isJiraEnabled() {
@@ -514,6 +532,7 @@ public class PortalConfigData {
         private final String adminProject;
         private final String phoneProject;
         private final Long youtrackUserId;
+        private final String youtrackCustomFieldCompanyId;
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
@@ -523,6 +542,7 @@ public class PortalConfigData {
             adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
+            youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
         }
 
         public String getApiBaseUrl() {
@@ -551,6 +571,10 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+
+        public String getYoutrackCustomFieldCompanyId() {
+            return youtrackCustomFieldCompanyId;
         }
     }
 

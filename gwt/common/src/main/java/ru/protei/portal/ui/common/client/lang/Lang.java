@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonSaveAndContinue();
+
     String buttonApply();
 
     String buttonCancel();
@@ -121,6 +123,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUnknownResult();
 
+    String errWorkerWithThisPositionAlreadyExist();
+
+    String errWorkerWithThisDepartmentAlreadyExist();
+
+    String errPositionAlreadyExistInThisCompany();
+
+    String errEmployeeAlreadyExist();
+
+    String errEmployeeNotFiredFromThisCompany();
+
+    String errDepartmentAlreadyExistInThisCompany();
+
     String companyInfoHeader();
 
     String companyCommonHeader();
@@ -195,7 +209,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactMobilePhone();
 
-    String contactPersonalPhone();
+    String contactWorkPhone();
 
     String contactEmail();
 
@@ -238,6 +252,22 @@ public interface Lang extends Messages, ContactItemLang {
     String companyParentLabel();
 
     String companyChildrenLabel();
+
+    String companySubscriptionGroupRemoveConfirmMessage();
+
+    String companySubscriptionGroupRemoveButton();
+
+    String companySubscriptionGroupCollapseButton();
+
+    String companySubscriptionGroupExpandButton();
+
+    String companySubscriptionGroupAddButton();
+
+    String companySubscriptionGroupAnyValuePlatform();
+
+    String companySubscriptionGroupAnyValueProduct();
+
+    String companySubscriptionGroupQuantity();
 
     String issues();
 
@@ -353,6 +383,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cosmeticImportance();
 
+    String mediumImportance();
+
     String comments();
 
     String product();
@@ -446,6 +478,8 @@ public interface Lang extends Messages, ContactItemLang {
     String regionState();
 
     String regionDistrict();
+
+    String regionNotSpecified();
 
     String productDirection();
 
@@ -553,7 +587,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String equipmentCopyNotFilledNewName();
 
-    String equpmentCopySuccess();
+    String equipmentCopySuccess();
 
     String equipmentCopyHeader();
 
@@ -653,6 +687,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCategoryIssue();
 
+    String privilegeCategoryIssueAssignment();
+
     String privilegeCategoryRegion();
 
     String privilegeCategoryProject();
@@ -692,6 +728,8 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonLocale();
 
     String privilegeCategoryOfficial();
+
+    String privilegeIpReservation();
 
     String matrixSolutions();
 
@@ -853,7 +891,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inventoryNumberIsEmpty();
 
+    String decimalNumberIsInvalid();
+
     String documentApproveFieldsIsEmpty();
+
+    String documentPDFFileIsNotSet();
 
     String negativeInventoryNumber();
 
@@ -1059,6 +1101,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errCaseLinkAlreadyAdded();
 
+    String errCaseLinkNotFound();
+
     String linkedWith();
 
     String id();
@@ -1126,6 +1170,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderIP();
 
     String siteFolderPlatform();
+
+    String siteFolderPlatformRequestError();
 
     String siteFolderPlatforms();
 
@@ -1305,7 +1351,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeShowFired();
 
+    String employeeFireConfirmMessage();
+
+    String employeeFire();
+
+    String employeeSaved();
+
+    String employeeMainInfoTitle();
+
+    String employeeContactInfoTitle();
+
     String initiatorSelectACompany();
+
     String serverAccessParamsColumn();
 
     String contactPhone();
@@ -1662,6 +1719,16 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
+    String reportTypeProject();
+
+    String reportScheduledType();
+
+    String reportScheduledTypeNone();
+
+    String reportScheduledTypeDaily();
+
+    String reportScheduledTypeWeekly();
+
     String employeeRegistrationNumberColumn();
 
     String employeeRegistrationCurators();
@@ -1844,8 +1911,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errInvalidCurrentPassword();
 
-    String errSaveProjectNeedSelectRegion();
-
     String errSaveProjectNeedSelectDirection();
 
     String errSaveProjectNeedSelectCustomerType();
@@ -1903,6 +1968,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectCreate();
 
     String projectSiteFolder();
+
+    String productDirectionNotSpecified();
 
     String issueInitiatorInfo();
 
@@ -1992,6 +2059,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUpdateOrDeleteLinkedObjectError();
 
+    String errSVN();
+
     String contactGeneratePassword();
 
     String passwordIsDisplay();
@@ -2038,6 +2107,30 @@ public interface Lang extends Messages, ContactItemLang {
 
     String backToEmployees();
 
+    String departmentAddButton();
+
+    String departmentSelectCompanyLabel();
+
+    String departmentName();
+
+    String departmentCompany();
+
+    String departmentEdit();
+
+    String departmentCreate();
+
+    String positionAddButton();
+
+    String positionSelectCompanyLabel();
+
+    String positionName();
+
+    String positionCompany();
+
+    String positionEdit();
+
+    String positionCreate();
+
     String employeeDepartmentHead();
 
     String employeePosition();
@@ -2047,4 +2140,322 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeTopBrassBtn();
 
     String employeeTopBrassLabel();
+
+    String issueAssignment();
+
+    String issueAssignmentEntryEdit();
+
+    String issueAssignmentEntryRemove();
+
+    String issueAssignmentTableFilter();
+
+    String issueAssignmentTableFilterDefault();
+
+    String issueAssignmentTableOverflow(int records);
+
+    String issueAssignmentIssueAssignTo();
+
+    String issueAssignmentIssueReassignTo();
+
+    String contactSaved();
+
+    String contactDelete();
+
+    String issueAssignmentToggleTable();
+
+    String issueAssignmentReload();
+
+    String issueAssignmentMenuEdit();
+
+    String issueAssignmentMenuActions();
+
+    String issueAssignmentIssueOpen();
+
+    String issueAssignmentToggleDeskRow();
+
+    String issueAssignmentDeskAddColumn();
+
+    String issueAssignmentDeskAddRow();
+
+    String issueCreator();
+
+    String technicalSupportValidity();
+
+    String technicalSupportValidityNotFound(String managerName);
+
+    String technicalSupportValidityNotDefined();
+
+    String jiraInfoPageHeader();
+
+    String issueJiraInfo();
+
+    String jiraInfoStatusMap();
+
+    String jiraInfoWorkFlow();
+
+    String jiraInfoJiraStatus();
+
+    String jiraInfoCrmStatus();
+
+    String jiraInfoStatusDefinition();
+
+    String jiraInfoStatusComment();
+
+    String jiraInfoBackButton();
+
+    String projectSlaTemporaryTime();
+
+    String projectSlaReactionTime();
+
+    String projectSlaFullTime();
+
+    String projectSla();
+
+    String projectImportance();
+
+    String projectSlaNotValid();
+
+    String projectTeamRole();
+
+    String projectSlaSetValuesByManager();
+
+    String projectSlaDefaultValues();
+
+    String companyCategoryCustomer();
+
+    String companyCategoryPartner();
+
+    String companyCategorySubcontractor();
+
+    String companyCategoryOfficial();
+
+    String companyCategoryHome();
+
+    String auditTypeIssueModify();
+
+    String auditTypeIssueCreate();
+
+    String auditTypeIssueReport();
+
+    String auditTypeIssueExport();
+
+    String auditTypeRegionModify();
+
+    String auditTypeRegionReport();
+
+    String auditTypeRegionExport();
+
+    String auditTypeProjectModify();
+
+    String auditTypeProjectCreate();
+
+    String auditTypeCompanyModify();
+
+    String auditTypeCompanyCreate();
+
+    String auditTypeProductModify();
+
+    String auditTypeProductCreate();
+
+    String auditTypeContactModify();
+
+    String auditTypeContactCreate();
+
+    String auditTypeAccountModify();
+
+    String auditTypeAccountCreate();
+
+    String auditTypeAccountRemove();
+
+    String auditTypeEquipmentModify();
+
+    String auditTypeEquipmentCreate();
+
+    String auditTypeEquipmentRemove();
+
+    String auditTypeRoleModify();
+
+    String auditTypeRoleCreate();
+
+    String auditTypeIssueCommentCreate();
+
+    String auditTypeIssueCommentModify();
+
+    String auditTypeIssueCommentRemove();
+
+    String auditTypeAttachmentRemove();
+
+    String auditTypeEquipmentCopy();
+
+    String auditTypeOfficialModify();
+
+    String auditTypeOfficialCreate();
+
+    String auditTypeRoleRemove();
+
+    String auditTypeEmployeeModify();
+
+    String auditTypeEmployeeCreate();
+
+    String auditTypeDepartmentModify();
+
+    String auditTypeDepartmentCreate();
+
+    String auditTypeDepartmentRemove();
+
+    String auditTypeWorkerModify();
+
+    String auditTypeWorkerCreate();
+
+    String auditTypeWorkerRemove();
+
+    String auditTypePositionModify();
+
+    String auditTypePositionCreate();
+
+    String auditTypePositionRemove();
+
+    String auditTypePhotoUpload();
+
+    String auditTypeDocumentModify();
+
+    String auditTypeDocumentRemove();
+
+    String auditTypeEmployeeRegistrationCreate();
+
+    String auditTypeProjectRemove();
+
+    String auditTypeEmployeeRegistrationModify();
+
+    String auditTypeContractModify();
+
+    String auditTypeContractCreate();
+
+    String auditTypeContactFire();
+
+    String auditTypeContactDelete();
+
+    String auditTypeLinkCreate();
+
+    String auditTypeLinkRemove();
+
+    String auditTypeDocumentCreate();
+
+    String auditTypeDocumentTypeCreate();
+
+    String auditTypeDocumentTypeRemove();
+
+    String auditTypePlatformCreate();
+
+    String auditTypePlatformModify();
+
+    String auditTypePlatformRemove();
+
+    String auditTypeServerCreate();
+
+    String auditTypeServerModify();
+
+    String auditTypeServerRemove();
+
+    String auditTypeApplicationCreate();
+
+    String auditTypeApplicationModify();
+
+    String auditTypeApplicationRemove();
+
+    String rolePrivilegesNote();
+
+    String errPauseDateError();
+
+    String issuePauseDateValidity();
+
+    String ipReservation();
+
+    String subnet();
+
+    String reservedIp();
+
+    String reservedIpOwner();
+
+    String reservedIpAddress();
+
+    String reservedIpIpAddress();
+
+    String reservedIpMacAddress();
+
+    String reservedIpReserveDate();
+
+    String reservedIpReleaseDate();
+
+    String reservedIpForever();
+
+    String reservedIpCheck();
+
+    String reservedIpCheckDate();
+
+    String reservedIpCheckInfo();
+
+    String reservedIpUsePeriod();
+
+    String reservedIpWrongSubnetAddress();
+
+    String reservedIpWrongSubnetMask();
+
+    String reservedIpWrongIpAddress();
+
+    String reservedIpWrongMacAddress();
+
+    String reservedIpSubnetAddress();
+
+    String reservedIpSubnetMask();
+
+    String selectReservedIpOwner();
+
+    String reservedIpIpRelease();
+
+    String reservedIpIpReleased();
+
+    String reservedIpSubnetRemove();
+
+    String reservedIpSubnetRemoved();
+
+    String reservedIpSubnetRemoveConfirmMessage();
+
+    String reservedIpSubnetRemoveWithIpsConfirmMessage();
+
+    String reservedIpReleaseConfirmMessage();
+
+    String reservedIpUnableToRemove();
+
+    String reservedIpSubnetUnableToRemove();
+
+    String reservedIpSubnetsBtn();
+
+    String reservedIpIpsBtn();
+
+    String reservedIpNumber();
+
+    String reservedIpState();
+
+    String reservedIpExactIp();
+
+    String reservedIpAnyFreeIps();
+
+    String reservedIpSelectedSubnets();
+
+    String monthInterval();
+
+    String fixedInterval();
+
+    String unlimitedInterval();
+
+    String errSaveReservedIpUseInterval();
+
+    String errSaveReservedIpNeedSelectOwner();
+
+    String reservedIpWrongNumber(int minCount, int maxCount);
+
+    String reservedIpCreateBy();
+
+    String errSaveReservedIpSubnetDoesNotExist();
 }

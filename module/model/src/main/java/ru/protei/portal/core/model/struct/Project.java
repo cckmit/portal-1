@@ -74,9 +74,7 @@ public class Project extends AuditableObject {
 
     private Person creator;
 
-    private Long contractId;
-
-    private String contractNumber;
+    private List<EntityOption> contracts;
 
     private boolean deleted;
 
@@ -87,6 +85,10 @@ public class Project extends AuditableObject {
     private String platformName;
 
     private Long platformId;
+
+    private Date technicalSupportValidity;
+
+    private List<ProjectSla> projectSlas;
 
     public Long getId() {
         return id;
@@ -182,6 +184,7 @@ public class Project extends AuditableObject {
 
     public void setCreator(Person creator) {
         this.creator = creator;
+        this.creatorId = creator == null ? null : creator.getId();
     }
 
     public List<PersonProjectMemberView> getTeam() {
@@ -232,20 +235,12 @@ public class Project extends AuditableObject {
         return products == null ? null : products.stream().findAny().orElse(null);
     }
 
-    public Long getContractId() {
-        return contractId;
+    public List<EntityOption> getContracts() {
+        return contracts;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
-    }
-
-    public String getContractNumber() {
-        return contractNumber;
-    }
-
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
+    public void setContracts(List<EntityOption> contracts) {
+        this.contracts = contracts;
     }
 
     public EntityOption getManager() {
@@ -280,66 +275,86 @@ public class Project extends AuditableObject {
         this.platformId = platformId;
     }
 
-    public static Project fromCaseObject(CaseObject project ) {
-        if (project == null)
-            return null;
+    public Date getTechnicalSupportValidity() {
+        return technicalSupportValidity;
+    }
 
-        Project projectInfo = new Project();
-        projectInfo.setId( project.getId() );
-        projectInfo.setName( project.getName() );
-        projectInfo.setCreator(project.getCreator());
-        projectInfo.setDescription(project.getInfo());
-        projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
-        projectInfo.setDeleted(project.isDeleted());
-        if ( project.getProduct() != null ) {
-            projectInfo.setProductDirection( new EntityOption(
-                project.getProduct().getName(), project.getProduct().getId()
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
+    public List<ProjectSla> getProjectSlas() {
+        return projectSlas;
+    }
+
+    public void setProjectSlas(List<ProjectSla> projectSlas) {
+        this.projectSlas = projectSlas;
+    }
+
+    public static Project fromCaseObject(CaseObject caseObject) {
+        if (caseObject == null) {
+            return null;
+        }
+
+        Project project = new Project();
+        project.setId( caseObject.getId() );
+        project.setName( caseObject.getName() );
+        project.setCreator(caseObject.getCreator());
+        project.setDescription(caseObject.getInfo());
+        project.setState( En_RegionState.forId( caseObject.getStateId() ) );
+        project.setDeleted(caseObject.isDeleted());
+        if ( caseObject.getProduct() != null ) {
+            project.setProductDirection( new EntityOption(
+                caseObject.getProduct().getName(), caseObject.getProduct().getId()
             ) );
         }
 
-        projectInfo.setCustomerType(En_CustomerType.find(project.getLocal()));
-        projectInfo.setCustomer(project.getInitiatorCompany());
+        project.setCustomerType(En_CustomerType.find(caseObject.getLocal()));
+        project.setCustomer(caseObject.getInitiatorCompany());
 
-        projectInfo.setTeam(new ArrayList<>());
-        if (project.getMembers() != null) {
+        project.setTeam(new ArrayList<>());
+        if (caseObject.getMembers() != null) {
             List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
-            project.getMembers().stream()
+            caseObject.getMembers().stream()
                     .filter(member -> projectRoles.contains(member.getRole()))
-                    .map(member -> PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()))
-                    .forEach(projectInfo::addTeamMember);
+                    .map(member -> PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()))
+                    .forEach(project::addTeamMember);
         }
 
-        projectInfo.setCreated( project.getCreated() );
+        project.setCreated( caseObject.getCreated() );
 
-        List<CaseLocation> locations = project.getLocations();
+        List<CaseLocation> locations = caseObject.getLocations();
         if ( locations != null && !locations.isEmpty() ) {
-            projectInfo.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
+            project.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
         }
 
-        if (project.getProducts() != null) {
-            projectInfo.setProducts( project.getProducts().stream()
+        if (caseObject.getProducts() != null) {
+            project.setProducts( caseObject.getProducts().stream()
                                         .map(ProductShortView::fromProduct)
                                         .collect(Collectors.toSet()) );
         }
 
-        projectInfo.setContractId(project.getContractId());
-        projectInfo.setContractNumber(project.getContractNumber());
+        project.setContracts(caseObject.getContracts());
 
-        if (project.getManager() != null) {
-            projectInfo.setManager(new EntityOption(project.getManager().getDisplayShortName(), project.getManagerId()));
+        if (caseObject.getManager() != null) {
+            project.setManager(new EntityOption(caseObject.getManager().getDisplayShortName(), caseObject.getManagerId()));
         }
 
-        if (project.getInitiatorCompany() != null) {
-            projectInfo.setContragent(new EntityOption(project.getInitiatorCompany().getCname(), project.getInitiatorCompanyId()));
+        if (caseObject.getInitiatorCompany() != null) {
+            project.setContragent(new EntityOption(caseObject.getInitiatorCompany().getCname(), caseObject.getInitiatorCompanyId()));
         }
 
-        if (project.getPlatformId() != null){
-            projectInfo.setPlatformId(project.getPlatformId());
-            projectInfo.setPlatformName(project.getPlatformName());
+        if (caseObject.getPlatformId() != null){
+            project.setPlatformId(caseObject.getPlatformId());
+            project.setPlatformName(caseObject.getPlatformName());
 
         }
 
-        return projectInfo;
+        project.setTechnicalSupportValidity(caseObject.getTechnicalSupportValidity());
+
+        project.setProjectSlas(caseObject.getProjectSlas());
+
+        return project;
     }
 
     @Override
@@ -372,15 +387,23 @@ public class Project extends AuditableObject {
                 ", description='" + description + '\'' +
                 ", stateId=" + stateId +
                 ", customerType=" + customerType +
+                ", customer=" + customer +
                 ", productDirection=" + productDirection +
                 ", created=" + created +
-                ", region=" + region +
+                ", creatorId=" + creatorId +
                 ", team=" + team +
+                ", region=" + region +
+                ", links=" + links +
+                ", products=" + products +
+                ", creator=" + creator +
+                ", contracts=" + contracts +
                 ", deleted=" + deleted +
-                ", manager" + manager +
-                ", contragent" + contragent +
-                ", platformName" + platformName +
-                ", platformId" + platformId +
+                ", manager=" + manager +
+                ", contragent=" + contragent +
+                ", platformName='" + platformName + '\'' +
+                ", platformId=" + platformId +
+                ", technicalSupportValidity=" + technicalSupportValidity +
+                ", projectSlas=" + projectSlas +
                 '}';
     }
 }

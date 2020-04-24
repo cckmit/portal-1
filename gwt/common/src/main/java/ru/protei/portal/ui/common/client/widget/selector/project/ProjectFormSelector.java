@@ -39,10 +39,6 @@ public class ProjectFormSelector extends FormSelector<EntityOption> implements S
         this.defaultValue = defaultValue;
     }
 
-    public void setContractIndependentProject(Boolean contractIndependentProject) {
-        model.setContractIndependentProject(contractIndependentProject);
-    }
-
     public void setPlatformIndependentProject(Boolean platformIndependentProject) {
         model.setPlatformIndependentProject(platformIndependentProject);
     }

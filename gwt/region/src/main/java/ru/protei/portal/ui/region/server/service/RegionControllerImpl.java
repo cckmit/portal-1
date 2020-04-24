@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
@@ -19,12 +20,12 @@ import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.RegionController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Реализация сервиса управления регионами
@@ -113,34 +114,38 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public Project saveProject(Project project) throws RequestFailedException {
+    public UiResult<Project> saveProject(Project project) throws RequestFailedException {
         log.info("saveProject(): project={}", project);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Project> response;
-        if (project.getId() == null) {
+        if (project.getId() != null) {
+            response = projectService.saveProject(token, project);
+        } else {
             project.setCreated(new Date());
             project.setCreatorId(token.getPersonId());
             response = projectService.createProject(token, project);
         }
-        else {
-            response = projectService.saveProject(token, project);
-        }
 
         if ( response.isError() ) {
+            log.info("saveProject(): status={}", response.getStatus());
             throw new RequestFailedException( response.getStatus() );
         }
 
-        return response.getData();
+        if (response.getMessage() != null) {
+            log.info("saveProject(): message={}", response.getMessage());
+        }
+
+        return new UiResult<>(response.getData(), response.getMessage());
     }
 
     @Override
-    public List<Project> getProjectList(ProjectQuery query) throws RequestFailedException {
-        log.info("getProjectsList(): query={}", query);
+    public SearchResult<Project> getProjects(ProjectQuery query) throws RequestFailedException {
+        log.info("getProjects(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(projectService.listProjects(token, query));
+        return ServiceUtils.checkResultAndGetData(projectService.projects(token, query));
     }
 
     @Override

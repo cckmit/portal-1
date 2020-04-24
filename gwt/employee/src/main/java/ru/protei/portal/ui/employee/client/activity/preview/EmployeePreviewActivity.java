@@ -69,7 +69,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     @Override
-    public void onFullScreenClicked () {
+    public void onFullScreenClicked() {
         fireEvent(new EmployeeEvents.ShowFullScreen(employeeId));
     }
 
@@ -78,11 +78,18 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         fireEvent(new EmployeeEvents.Show());
     }
 
+    @Override
+    public void onEditClicked() {
+        fireEvent(new EmployeeEvents.Edit(employeeId));
+    }
+
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeShortView(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee) {
+
+        view.editIconVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT));
 
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
@@ -114,7 +121,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         view.getPositionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
-        entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getPersonId(), workerEntry.getDepId(), new FluentCallback<PersonShortView>()
+        entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
                     AbstractPositionItemView positionItemView = makePositionView(workerEntry, head);
                     view.getPositionsContainer().add(positionItemView.asWidget());
@@ -138,12 +145,13 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             itemView.departmentContainerVisibility().setVisible(true);
         }
 
-        if (head != null) {
+        if (head != null && !head.getId().equals(employeeId)) {
             itemView.setDepartmentHead(head.getName(), LinkUtils.makeLink(EmployeeShortView.class, head.getId()));
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
 
         itemView.setPosition(workerEntry.getPositionName());
+        itemView.setCompany(workerEntry.getCompanyName());
 
         return itemView;
     }

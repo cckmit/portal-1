@@ -118,10 +118,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isCreateEvent;
     }
 
-    private boolean isUpdateEvent() {
-        return !isCreateEvent();
-    }
-
     private boolean isUpdateEventMeta() {
         return initMetaState != null && lastMetaState != null;
     }
@@ -134,8 +130,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEventMeta() && lastMetaState.getState() != initMetaState.getState();
     }
 
+    public boolean isPauseDateChanged() {
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getPauseDate(), initMetaState.getPauseDate());
+    }
+
     public boolean isTimeElapsedChanged() {
-        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getTimeElapsed(), initMetaState.getTimeElapsed());
+        return isUpdateEvent() && getTimeElapsedChanging() != 0L;
     }
 
     public boolean isCaseImportanceChanged() {
@@ -166,18 +166,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEvent() && publicLinksChanged();
     }
 
-    private boolean publicLinksChanged() {
-        if (!CollectionUtils.isEmpty(links.getAddedEntries()) && links.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
-            return true;
-        }
-
-        if (!CollectionUtils.isEmpty(links.getRemovedEntries()) && links.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
-            return true;
-        }
-
-        return false;
-    }
-
     public boolean isEagerEvent() {
         return isEagerEvent;
     }
@@ -194,14 +182,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         }
     }
 
-    @Deprecated
-    public void includeCaseComments (List<CaseComment> commentList) {
+    public void putAddedComments( List<CaseComment> commentList) {
         comments.putAddedEntries( commentList );
         lastUpdated = currentTimeMillis();
     }
 
-    @Deprecated
-    public void includeCaseAttachments (List<Attachment> attachments1) {
+    public void putAddedAttachments( List<Attachment> attachments1) {
         this.lastUpdated = currentTimeMillis();
         DiffCollectionResult<Attachment> diff = new DiffCollectionResult<>();
         diff.putAddedEntries( attachments1 );
@@ -240,6 +226,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public CaseObject getCaseObject() {
         return lastState;
+    }
+
+    public String getExtId() {
+        return getCaseObject() == null ? null : getCaseObject().getExtId();
     }
 
     public CaseObjectMeta getCaseMeta() {
@@ -370,6 +360,24 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return caseObject.getId();
     }
 
+    public Long getTimeElapsedChanging() {
+        long timeElapsedChanging = 0L;
+
+        timeElapsedChanging +=
+                stream(existingComments)
+                .filter(caseComment -> emptyIfNull(getAddedCaseComments()).contains(caseComment) ||
+                        (getChangedComments().contains(caseComment) && !Objects.equals(getChangedComments().get(getChangedComments().indexOf(caseComment)).getTimeElapsed(), caseComment.getTimeElapsed())))
+                .mapToLong(this::getTimeElapsedFromComment)
+                .sum();
+
+        timeElapsedChanging -= CollectionUtils.emptyIfNull(getRemovedComments())
+                .stream()
+                .mapToLong(this::getTimeElapsedFromComment)
+                .sum();
+
+        return timeElapsedChanging;
+    }
+
     //Только добавленные и удаленные
     private <T> DiffCollectionResult<T> synchronizeDiffs( DiffCollectionResult<T> source, DiffCollectionResult<T> other, Function<T, Object> getId ) {
         if(!other.hasDifferences()) return source;
@@ -424,6 +432,26 @@ public class AssembledCaseEvent extends ApplicationEvent {
             result.setNewState(other.getNewState());
             return result;
         }
+    }
+
+    private boolean publicLinksChanged() {
+        if (!CollectionUtils.isEmpty(links.getAddedEntries()) && links.getAddedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        if (!CollectionUtils.isEmpty(links.getRemovedEntries()) && links.getRemovedEntries().stream().anyMatch(caseLink -> !caseLink.isPrivate())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isUpdateEvent() {
+        return !isCreateEvent();
+    }
+
+    private Long getTimeElapsedFromComment(CaseComment caseComment) {
+        return caseComment.getTimeElapsed() == null ? 0L : caseComment.getTimeElapsed();
     }
 
     private static final Logger log = LoggerFactory.getLogger( AssembledCaseEvent.class );

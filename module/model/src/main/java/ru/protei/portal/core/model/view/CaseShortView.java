@@ -46,16 +46,16 @@ public class CaseShortView implements Serializable {
     private Long initiatorId;
 
     // Вариант 1: mappedColumn + table + localColumn + remoteColumn + опционально sqlTableAlias
-    @JdbcJoinedColumn( mappedColumn = "displayname", table = "Person", localColumn = "INITIATOR", remoteColumn = "ID" )
+    @JdbcJoinedColumn( mappedColumn = "displayname", table = "person", localColumn = "INITIATOR", remoteColumn = "ID" )
     private String initiatorName;
 
-    @JdbcJoinedColumn( table = "Person", localColumn = "INITIATOR", remoteColumn = "ID", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( table = "person", localColumn = "INITIATOR", remoteColumn = "ID", mappedColumn = "displayShortName")
     private String initiatorShortName;
 
     @JdbcColumn(name = "initiator_company")
     private Long initiatorCompanyId;
 
-    @JdbcJoinedColumn( table="Company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "cname")
+    @JdbcJoinedColumn( table="company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "cname")
     private String initiatorCompanyName;
 
     @JdbcColumn(name = "product_id")
@@ -70,17 +70,20 @@ public class CaseShortView implements Serializable {
     @JdbcJoinedColumn( table = "person", localColumn = "MANAGER", remoteColumn = "id", mappedColumn = "displayname" )
     private String managerName;
 
-    @JdbcJoinedColumn( table = "Person", localColumn = "MANAGER", remoteColumn = "ID", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( table = "person", localColumn = "MANAGER", remoteColumn = "ID", mappedColumn = "displayShortName")
     private String managerShortName;
 
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
     @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
-            @JdbcJoinPath( table = "Person", localColumn = "MANAGER", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" )
+            @JdbcJoinPath( table = "person", localColumn = "MANAGER", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id" )
     })
     private String managerCompanyName;
+
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
 
     public CaseShortView() {
 
@@ -263,6 +266,14 @@ public class CaseShortView implements Serializable {
         isAttachmentExists = attachmentExists;
     }
 
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -272,7 +283,7 @@ public class CaseShortView implements Serializable {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CaseShortView{" +
                 "id=" + id +
                 ", typeId=" + typeId +
@@ -296,6 +307,7 @@ public class CaseShortView implements Serializable {
                 ", managerShortName='" + managerShortName + '\'' +
                 ", isAttachmentExists=" + isAttachmentExists +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", pauseDate=" + pauseDate +
                 '}';
     }
 }

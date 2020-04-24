@@ -16,15 +16,21 @@ import ru.protei.portal.ui.common.client.activity.casetag.edit.CaseTagEditActivi
 import ru.protei.portal.ui.common.client.activity.casetag.item.AbstractCaseTagItemView;
 import ru.protei.portal.ui.common.client.activity.casetag.list.AbstractCaseTagListView;
 import ru.protei.portal.ui.common.client.activity.casetag.list.CaseTagListActivity;
+import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditView;
+import ru.protei.portal.ui.common.client.activity.companydepartment.edit.CompanyDepartmentEditActivity;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
 import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoActivity;
+import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoView;
+import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -32,6 +38,8 @@ import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
 import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
+import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPositionEditActivity;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -45,19 +53,22 @@ import ru.protei.portal.ui.common.client.view.caselink.list.CaseLinkListView;
 import ru.protei.portal.ui.common.client.view.casetag.edit.CaseTagEditView;
 import ru.protei.portal.ui.common.client.view.casetag.item.CaseTagItemView;
 import ru.protei.portal.ui.common.client.view.casetag.list.CaseTagListView;
+import ru.protei.portal.ui.common.client.view.companydepartment.edit.CompanyDepartmentEditView;
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
+import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
+import ru.protei.portal.ui.common.client.view.info.JiraInfoView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
+import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
-import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
@@ -92,6 +103,7 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
+        bind( StateSelectorModel.class ).asEagerSingleton();
 
         bind( HomeCompanyService.class ).asEagerSingleton();
 
@@ -124,10 +136,16 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractCaseTagItemView.class ).to( CaseTagItemView.class );
         bind( AbstractCaseTagListView.class ).to( CaseTagListView.class ).in( Singleton.class );
         bind( CaseTagEditActivity.class ).asEagerSingleton();
+        bind( CompanyDepartmentEditActivity.class ).asEagerSingleton();
+        bind( WorkerPositionEditActivity.class ).asEagerSingleton();
         bind( AbstractCaseTagEditView.class ).to( CaseTagEditView.class ).in( Singleton.class );
+        bind( AbstractCompanyDepartmentEditView.class ).to( CompanyDepartmentEditView.class ).in( Singleton.class );
+        bind( AbstractWorkerPositionEditView.class ).to( WorkerPositionEditView.class ).in( Singleton.class );
 
-        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
         bind( CustomerTypeModel.class ).asEagerSingleton();
+
+        bind(AbstractJiraInfoActivity.class).to(JiraInfoActivity.class).asEagerSingleton();
+        bind(AbstractJiraInfoView.class).to(JiraInfoView.class).in(Singleton.class);
 
         // Models
         bind( PrivilegeModel.class ).asEagerSingleton();
@@ -141,6 +159,8 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
 
+        bind( IssueFilterWidgetModel.class ).asEagerSingleton();
+        bind( AbstractIssueFilterParamView.class ).to( IssueFilterParamView.class );
     }
 }
 

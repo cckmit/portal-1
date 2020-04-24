@@ -94,7 +94,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         boolean isFirstChunk = offset == 0;
         query.setOffset(offset);
         query.setLimit(limit);
-        employeeService.getEmployees(query, new FluentCallback<SearchResult<EmployeeShortView>>()
+        employeeService.getEmployeesWithChangedHiddenCompanyNames(query, new FluentCallback<SearchResult<EmployeeShortView>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     asyncCallback.onFailure(throwable);

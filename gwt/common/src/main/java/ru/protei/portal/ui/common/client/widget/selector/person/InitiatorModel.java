@@ -4,12 +4,14 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -31,9 +33,8 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
         myId = event.profile.getId();
     }
 
-    public void updateCompanies( Refreshable selector, Set<Long> companyIds, boolean fired) {
+    public void updateCompanies( Refreshable selector, Set<Long> companyIds, Boolean fired) {
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
-//        selector.clearOptions();
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 
             @Override
@@ -93,5 +94,4 @@ public abstract class InitiatorModel implements Activity, SelectorModel<PersonSh
     Lang lang;
     private List<PersonShortView> options;
     private Long myId;
-    private static final Logger log = Logger.getLogger( InitiatorModel.class.getName() );
 }

@@ -6,9 +6,10 @@
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:selector="urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector"
              xmlns:jirasla="urn:import:ru.protei.portal.ui.common.client.widget.jirasla"
-             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance">
+             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
+             xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform"
+             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -29,6 +30,14 @@
                                                             mandatory="false"/>
                 </div>
             </div>
+            <g:HTMLPanel ui:field="pauseDateContainer" styleName="row">
+                <div class="col-md-12">
+                    <div class="form-group form-group-default pause-date" ui:field="approvalDateContainer">
+                        <label class="fade" ui:field="approvalDateLabel"><ui:text from="{lang.issuePauseDateValidity}"/></label>
+                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                    </div>
+                </div>
+            </g:HTMLPanel>
             <div class="row">
                 <div class="col-md-12">
                     <devunit:DevUnitFormSelector ui:field="product"
@@ -74,7 +83,7 @@
             </div>
             <g:HTMLPanel ui:field="platformContainer" styleName="row">
                 <div class="col-md-12">
-                    <selector:PlatformFormSelector ui:field="platform"
+                    <platform:PlatformFormSelector ui:field="platform"
                                                    validation="false"
                                                    header="{lang.siteFolderPlatform}"
                                                    mandatory="false"/>
@@ -83,6 +92,40 @@
         </div>
 
         <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="jira-sla-selector form-group"/>
+
+        <g:HTMLPanel ui:field="slaContainer" styleName="row form-group m-t-10">
+            <div class="col-md-12">
+                <label>
+                    <ui:text from="{lang.projectSla}"/>
+                </label>
+
+                <div class="form-group-attached">
+                    <g:HTMLPanel ui:field="slaTimesContainer" styleName="row clearfix form-group-default">
+                        <div class="col-md-12">
+                            <label class="inline fade">
+                                <ui:text from="{lang.projectSlaReactionTime}"/>
+                            </label>
+                            <timefield:TimeLabel ui:field="slaReactionTime"
+                                                 styleName="inline m-l-10 small"/>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="inline fade">
+                                <ui:text from="{lang.projectSlaTemporaryTime}"/>
+                            </label>
+                            <timefield:TimeLabel ui:field="slaTemporarySolutionTime"
+                                                 styleName="inline m-l-10 small"/>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="inline fade">
+                                <ui:text from="{lang.projectSlaFullTime}"/>
+                            </label>
+                            <timefield:TimeLabel ui:field="slaFullSolutionTime"
+                                                 styleName="inline m-l-10 small"/>
+                        </div>
+                    </g:HTMLPanel>
+                </div>
+            </div>
+        </g:HTMLPanel>
 
         <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row form-group m-b-0">
             <g:HTMLPanel ui:field="timeElapsedHeader" styleName="col-md-12">

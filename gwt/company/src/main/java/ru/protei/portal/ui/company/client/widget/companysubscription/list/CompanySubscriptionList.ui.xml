@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+
+        <g:HTMLPanel ui:field="groupContainer"/>
+        <br/>
+
+        <g:Button ui:field="addButton" text="{lang.companySubscriptionGroupAddButton}" styleName="btn btn-info btn-xs add-group-button"/>
+        <br/><br/>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

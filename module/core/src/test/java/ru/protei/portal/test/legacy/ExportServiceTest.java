@@ -228,7 +228,7 @@ public class ExportServiceTest {
         newCompany.setCname(JUNIT_TEST_NAME);
         newCompany.setCreated(new Date());
         newCompany.setInfo("junit-test-info");
-        newCompany.setCategory(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        newCompany.setCategory(En_CompanyCategory.CUSTOMER);
 
         companyDAO.persist(newCompany);
 

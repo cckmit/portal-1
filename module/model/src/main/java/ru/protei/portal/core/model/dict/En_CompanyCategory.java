@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  *
  */
-public enum En_CompanyCategory {
+public enum En_CompanyCategory implements HasId {
 
     CUSTOMER(1),
     PARTNER(2),
@@ -11,13 +13,13 @@ public enum En_CompanyCategory {
     OFFICIAL(4),
     HOME(5);
 
-    En_CompanyCategory( long id ) {
+    En_CompanyCategory( int id ) {
         this.id = id;
     }
 
-    private final long id;
+    private final int id;
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 

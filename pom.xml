@@ -22,6 +22,8 @@
         <project.jetty.version>9.4.6.v20170531</project.jetty.version>
         <project.junit.version>4.12</project.junit.version>
         <project.lucene.version>7.3.1</project.lucene.version>
+        <project.mockito.version>3.1.0</project.mockito.version>
+        <project.maven-surefire-plugin>2.18.1</project.maven-surefire-plugin>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -50,13 +52,13 @@
                 <module>gwt/product</module>
                 <module>gwt/contact</module>
                 <module>gwt/issue</module>
+                <module>gwt/issueassignment</module>
                 <module>gwt/issuereport</module>
                 <module>gwt/region</module>
                 <module>gwt/project</module>
                 <module>gwt/equipment</module>
                 <module>gwt/account</module>
                 <module>gwt/role</module>
-                <module>gwt/official</module>
                 <module>gwt/document</module>
                 <module>gwt/documenttype</module>
                 <module>gwt/casestate</module>
@@ -64,6 +66,7 @@
                 <module>gwt/employee</module>
                 <module>gwt/employeeregistration</module>
                 <module>gwt/contract</module>
+                <module>gwt/ipreservation</module>
 
                 <module>app/portal</module>
             </modules>

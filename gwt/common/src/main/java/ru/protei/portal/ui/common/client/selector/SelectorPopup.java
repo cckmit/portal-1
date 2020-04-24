@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.selector.popup.PopupHandler;
 
 public interface SelectorPopup {
@@ -15,6 +16,8 @@ public interface SelectorPopup {
 
     void showNear( UIObject showNear );
 
+    void showNear( UIObject showNear, BasePopupView.Position position, Integer width );
+
     void showLoading( boolean isLoading );
 
     void setNoElements( boolean isSearchResultEmpty, String noElementsMessage );
@@ -22,6 +25,8 @@ public interface SelectorPopup {
     HandlerRegistration addAddHandler( AddHandler addhandler );
 
     void setAddButtonVisibility( boolean isVisible );
+
+    void setAddButton(boolean addVisible, String text);
 
     void hide();
 }

@@ -17,9 +17,9 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
@@ -102,8 +102,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
-            createPhoneYoutrackIssueIfNeeded(employeeRegistration);
-            createAdminYoutrackIssueIfNeeded(employeeRegistration);
+            String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
+            createPhoneYoutrackIssueIfNeeded(employeeRegistration, youTrackIssueId);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
@@ -112,7 +112,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = new CaseObject();
-        caseObject.setCaseType(En_CaseType.EMPLOYEE_REGISTRATION);
+        caseObject.setType(En_CaseType.EMPLOYEE_REGISTRATION);
         caseObject.setState(En_CaseState.CREATED);
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.EMPLOYEE_REGISTRATION));
         caseObject.setCreated(new Date());
@@ -124,10 +124,10 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return caseObject;
     }
 
-    private void createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+    private String createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
         if (isEmpty(resourceList)) {
-            return;
+            return null;
         }
         boolean needPC = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.COMPUTER);
 
@@ -137,15 +137,16 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 needPC ? "\n Требуется установить новый ПК." : "",
                 "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
                 (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
-                makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
+                makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() ),
+                "\n", "Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
+        return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
-        );
+        ).getData();
     }
 
-    private void createPhoneYoutrackIssueIfNeeded( EmployeeRegistration employeeRegistration) {
+    private void createPhoneYoutrackIssueIfNeeded( EmployeeRegistration employeeRegistration, String youTrackIssueId ) {
         Set<En_PhoneOfficeType> resourceList = employeeRegistration.getPhoneOfficeTypeList();
         if (isEmpty(resourceList)) {
             return;
@@ -163,7 +164,21 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                         join(removeItem(resourceList, En_PhoneOfficeType.OFFICE), r -> getPhoneOfficeTypeName(r), ", ")
                 ).toString() : "";
 
-        String description = join( makeCommonDescriptionString( employeeRegistration ),
+        String employmentDate = null;
+        if( employeeRegistration.getEmploymentDate()!=null){
+            employmentDate = "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(
+                    employeeRegistration.getEmploymentDate() );
+        }
+
+        String youtrackIssue = null;
+        if(!isBlank( youTrackIssueId )){
+            youtrackIssue = "Регистрация нового сотрудника: " + youTrackIssueId;
+        }
+
+        String description = join(
+                youtrackIssue,
+                "\n", makeCommonDescriptionString( employeeRegistration ),
+                "\n", employmentDate,
                 needPhone,
                 needConfigure,
                 needCommunication

@@ -56,10 +56,17 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_CHANGE_PLATFORM_COMPANY: return lang.errSavePlatformConnectedIssuesExist();
             case NOT_ALLOWED_CHANGE_PROJECT_COMPANY: return lang.errSaveProjectCannotChangeCompany();
             case NOT_ALLOWED_LINK_ISSUE_TO_ITSELF: return lang.errUnableLinkIssueToItself();
-            case SOME_LINKS_NOT_ADDED: return lang.caseLinkSomeNotAdded();
             case THIS_LINK_ALREADY_ADDED: return lang.errCaseLinkAlreadyAdded();
             case NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE: return lang.documentTypeUnableToRemoveUsedDocumentType();
             case UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR: return lang.errUpdateOrDeleteLinkedObjectError();
+            case SVN_ERROR: return lang.errSVN();
+            case WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST: return lang.errWorkerWithThisDepartmentAlreadyExist();
+            case WORKER_WITH_THIS_POSITION_ALREADY_EXIST: return lang.errWorkerWithThisPositionAlreadyExist();
+            case DEPARTMENT_ALREADY_EXIST: return lang.errDepartmentAlreadyExistInThisCompany();
+            case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
+            case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
+            case EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY: return lang.errEmployeeNotFiredFromThisCompany();
+            case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
             default: return lang.errUnknownResult();
         }
     }

@@ -41,7 +41,8 @@
 
                 <person:EmployeeMultiSelector ui:field="managers"
                                               header="{lang.contractManager}"
-                                              addStyleNames="form-group col-md-12"/>
+                                              addStyleNames="form-group col-md-12"
+                                              firedEmployeesVisible="true"/>
 
                 <company:CompanyMultiSelector ui:field="contragents"
                                               header="{lang.contractContragent}"

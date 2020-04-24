@@ -52,6 +52,29 @@ public class BootstrapService {
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
+        //fillImportanceLevels();
+    }
+
+    private void fillImportanceLevels() {
+        if(importanceLevelDAO.getAll().size() == 4){
+            importanceLevelDAO.persist(new ImportanceLevel(5L, "medium", "medium"));
+        }
+
+        if (!companyImportanceItemDAO.getAll().isEmpty()){
+            return;
+        }
+
+        List<Company> companies = companyDAO.getAll();
+        List<CompanyImportanceItem> importanceItems = new ArrayList<>();
+
+        for (Company company : companies) {
+            if (company.getId() > 0) {
+                for (En_ImportanceLevel value : En_ImportanceLevel.values(true)) {
+                    importanceItems.add(new CompanyImportanceItem(company.getId(), value.getId(), value.getId()));
+                }
+            }
+        }
+        companyImportanceItemDAO.persistBatch(importanceItems);
     }
 
     private void autoPatchDefaultRoles () {
@@ -106,7 +129,7 @@ public class BootstrapService {
             SearchResult<Platform> result = platformDAO.getAll(offset, limit);
             for (Platform platform : result.getResults()) {
                 CaseObject caseObject = new CaseObject();
-                caseObject.setCaseType(En_CaseType.SF_PLATFORM);
+                caseObject.setType(En_CaseType.SF_PLATFORM);
                 caseObject.setCaseNumber(platform.getId());
                 caseObject.setCreated(new Date());
                 caseObject.setName(platform.getName());
@@ -212,7 +235,7 @@ public class BootstrapService {
             DevUnit complex = new DevUnit();
             complex.setName(complexName);
             complex.setStateId(En_DevUnitState.ACTIVE.getId());
-            complex.setTypeId(En_DevUnitType.COMPLEX.getId());
+            complex.setType(En_DevUnitType.COMPLEX);
             complex.setChildren(project.getProducts().stream().filter(DevUnit::isProduct).collect(toList()));
             complex.setCreated(new Date());
 
@@ -225,43 +248,43 @@ public class BootstrapService {
         });
     }
 
-    private void createProjectsForContracts() {
-        List<Contract> contracts = contractDAO.getAll();
-
-        if (contracts == null) {
-            return;
-        }
-
-        contracts
-                .stream()
-                .filter(contract -> contract.getProjectId() == null)
-                .forEach(contract -> {
-                    CaseObject contractAsCaseObject = caseObjectDAO.get(contract.getId());
-
-                    CaseObject project = new CaseObject();
-                    project.setName("Проект для договора №" + contract.getNumber());
-                    project.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
-                    project.setTypeId(En_CaseType.PROJECT.getId());
-                    project.setCreated(new Date());
-                    project.setStateId(En_RegionState.UNKNOWN.getId());
-                    project.setLocal(En_CustomerType.COMMERCIAL_PROTEI.getId());
-                    project.setInitiatorCompanyId(contractAsCaseObject.getInitiatorCompanyId());
-                    project.setProductId(contractAsCaseObject.getProductId());
-                    project.setManagerId(contractAsCaseObject.getManagerId());
-
-                    Long caseId = caseObjectDAO.persist(project);
-
-                    if (contractAsCaseObject.getManagerId() != null) {
-                        CaseMember caseMember = new CaseMember();
-                        caseMember.setCaseId(caseId);
-                        caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
-                        caseMember.setMemberId(contractAsCaseObject.getManagerId());
-                        caseMemberDAO.persist(caseMember);
-                    }
-                    contract.setProjectId(caseId);
-                    contractDAO.merge(contract);
-                });
-    }
+//    private void createProjectsForContracts() {
+//        List<Contract> contracts = contractDAO.getAll();
+//
+//        if (contracts == null) {
+//            return;
+//        }
+//
+//        contracts
+//                .stream()
+//                .filter(contract -> contract.getProjectId() == null)
+//                .forEach(contract -> {
+//                    CaseObject contractAsCaseObject = caseObjectDAO.get(contract.getId());
+//
+//                    CaseObject project = new CaseObject();
+//                    project.setName("Проект для договора №" + contract.getNumber());
+//                    project.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+//                    project.setType(En_CaseType.PROJECT);
+//                    project.setCreated(new Date());
+//                    project.setStateId(En_RegionState.UNKNOWN.getId());
+//                    project.setLocal(En_CustomerType.COMMERCIAL_PROTEI.getId());
+//                    project.setInitiatorCompanyId(contractAsCaseObject.getInitiatorCompanyId());
+//                    project.setProductId(contractAsCaseObject.getProductId());
+//                    project.setManagerId(contractAsCaseObject.getManagerId());
+//
+//                    Long caseId = caseObjectDAO.persist(project);
+//
+//                    if (contractAsCaseObject.getManagerId() != null) {
+//                        CaseMember caseMember = new CaseMember();
+//                        caseMember.setCaseId(caseId);
+//                        caseMember.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
+//                        caseMember.setMemberId(contractAsCaseObject.getManagerId());
+//                        caseMemberDAO.persist(caseMember);
+//                    }
+//                    contract.setProjectId(caseId);
+//                    contractDAO.merge(contract);
+//                });
+//    }
 
     private void documentBuildFullIndex() { // Данный метод создаст индексы для всех существующих документов
 if(true) return; //TODO remove
@@ -338,6 +361,12 @@ if(true) return; //TODO remove
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     DocumentDAO documentDAO;
+    @Autowired
+    CompanyDAO companyDAO;
+    @Autowired
+    CompanyImportanceItemDAO companyImportanceItemDAO;
+    @Autowired
+    ImportanceLevelDAO importanceLevelDAO;
     @Autowired
     DocumentSvnApi documentSvnApi;
     @Autowired

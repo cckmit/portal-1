@@ -45,7 +45,15 @@ public class IssueInfoWidget extends Composite {
         return attachmentContainer;
     }
 
-    public void setFileUploadHandler( AttachmentUploader.FileUploadHandler handler ) {
+    public AttachmentUploader getFileUploader(){
+        return fileUploader;
+    }
+
+    public HasVisibility descriptionReadOnlyVisibility() {
+        return descriptionReadOnly;
+    }
+
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler ) {
         fileUploader.setUploadHandler( handler );
     }
 
@@ -54,7 +62,7 @@ public class IssueInfoWidget extends Composite {
     }
 
     public void setDescription( String issueDescription, En_TextMarkup textMarkup ) {
-        renderMarkupText(issueDescription, textMarkup, descriptionRO::setInnerHTML);
+        renderMarkupText(issueDescription, textMarkup, descriptionReadOnly.getElement()::setInnerHTML);
     }
 
     public HasVisibility attachmentUploaderVisibility() {
@@ -77,7 +85,7 @@ public class IssueInfoWidget extends Composite {
             return;
         }
 
-        descriptionRO.setId( DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.DESCRIPTION_FIELD );
+        descriptionReadOnly.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD );
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
@@ -105,7 +113,7 @@ public class IssueInfoWidget extends Composite {
     @UiField
     DivElement commentsPanel;
     @UiField
-    DivElement descriptionRO;
+    HTMLPanel descriptionReadOnly;
 
     @Inject
     TextRenderControllerAsync textRenderController;

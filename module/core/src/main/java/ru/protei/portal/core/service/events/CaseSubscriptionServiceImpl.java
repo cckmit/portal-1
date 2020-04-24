@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
@@ -73,21 +73,33 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
                 .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
                 .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
                 .ifPresent(notifiers::add);
-        log.info( "subscribers: EmployeeRegistrationEvent: {}", join( notifiers, ni->ni.getAddress(), ",") );
+        log.info( "subscribers: EmployeeRegistrationEvent: {}", join( notifiers, NotificationEntry::getAddress, ",") );
         return notifiers;
     }
 
     @Override
     public Set<NotificationEntry> subscribers( CaseObjectMeta caseMeta ) {
         Set<NotificationEntry> result = new HashSet<>();
-        appendCompanySubscriptions(caseMeta.getInitiatorCompanyId(), result);
+        appendCompanySubscriptions(caseMeta, result);
         appendProductSubscriptions(caseMeta.getProductId(), result);
         appendNotifiers(caseMeta.getId(), result);
         //HomeCompany persons don't need to get notifications
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
-        log.info( "subscribers: AssembledCaseEvent: {}", join( result, ni->ni.getAddress(), ",") );
+        log.info( "subscribers: AssembledCaseEvent: {}", join( result, NotificationEntry::getAddress, ",") );
         return result;
     }
+
+    @Override
+    public Set<NotificationEntry> subscribers(List<Long> personIds) {
+        return CollectionUtils.stream(personIds)
+                .map(personDAO::get)
+                .map(Person::getContactInfo)
+                .map(PlainContactInfoFacade::new)
+                .map(PlainContactInfoFacade::getEmail)
+                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                .collect(Collectors.toSet());
+    }
+
     private List<CompanySubscription> safeGetByCompany( Long companyId ) {
         if (companyId == null) return Collections.emptyList();
         Company company = companyDAO.get( companyId );
@@ -103,10 +115,21 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         return devUnitId == null ? Collections.emptyList() : productSubscriptionDAO.listByDevUnitId(devUnitId);
     }
 
-    private void appendCompanySubscriptions(Long companyId, Set<NotificationEntry> result) {
-        List<CompanySubscription> companySubscriptions = safeGetByCompany( companyId );
-        log.info( "companySubscriptions: {}", companySubscriptions.stream().map(smsc->smsc.getEmail()).collect( Collectors.joining( "," ) ) );
-        companySubscriptions.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
+    private void appendCompanySubscriptions(CaseObjectMeta caseMeta, Set<NotificationEntry> result) {
+        List<CompanySubscription> companySubscriptions = safeGetByCompany(caseMeta.getInitiatorCompanyId());
+
+        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = filterByPlatformAndProduct(companySubscriptions, caseMeta.getPlatformId(), caseMeta.getProductId());
+
+        subscriptionsBasedOnPlatformAndProduct.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
+
+        log.info( "companySubscriptions: {}", join( result, NotificationEntry::getAddress, ",") );
+    }
+
+    private List<CompanySubscription> filterByPlatformAndProduct(List<CompanySubscription> companySubscriptions, Long platformId, Long productId) {
+        return companySubscriptions.stream()
+                .filter(companySubscription -> (companySubscription.getPlatformId() == null || Objects.equals(platformId, companySubscription.getPlatformId()))
+                                            && (companySubscription.getProductId() == null || Objects.equals(productId, companySubscription.getProductId())))
+                .collect( Collectors.toList());
     }
 
     private void appendProductSubscriptions( Long devUnitId, Set<NotificationEntry> result ) {

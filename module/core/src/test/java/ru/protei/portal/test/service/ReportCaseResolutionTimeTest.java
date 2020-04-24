@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -296,15 +297,15 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private QueryModel initCaseObjectsQueryTestModel( QueryModel model) {
         CaseObjectFactory factory = new CaseObjectFactory( model );
 
-        model.companyCategory = new CompanyCategory( 2L );
+        model.companyCategory = En_CompanyCategory.PARTNER;
         Company company = factory.makeCompany( "some_company" );
         Person person = factory.makePerson( company );
         model.person = person;
 
         model.caseTagType = En_CaseType.CRM_SUPPORT;
-        CaseTag includeTag = factory.makeTag( "tag_for_include_1" );
-        CaseTag includeTag2 = factory.makeTag( "tag_for_include_2" );
-        CaseTag excludeTag = factory.makeTag( "tag_for_exclude" );
+        CaseTag includeTag = factory.makeTag( "tag_for_include_1", company.getId() );
+        CaseTag includeTag2 = factory.makeTag( "tag_for_include_2", company.getId() );
+        CaseTag excludeTag = factory.makeTag( "tag_for_exclude", company.getId() );
         model.caseTagIncludedIds = toList( listOf( includeTag, includeTag2 ), CaseTag::getId );
 
         Long includedProduct = factory.makeProduct( "product_included_1" );
@@ -453,8 +454,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         caseObjectDAO.removeByKeys( model.caseIds );
         personDAO.removeByKeys( model.personIds );
-        companyDAO.removeByKeys( model.companyIds );
         caseTagDAO.removeByKeys( model.caseTagIds );
+        companyDAO.removeByKeys( model.companyIds );
 
         return model;
     }
@@ -516,7 +517,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         public String prefix;
         public int numberOfDays;
-        public CompanyCategory companyCategory;
+        public En_CompanyCategory companyCategory;
         public En_CaseType caseTagType;
 
         List<Long> caseObjectIncludedIds = new ArrayList<>();
@@ -556,8 +557,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             return person;
         }
 
-        protected CaseTag makeTag( String tag1 ) {
-            CaseTag caseTag = ReportCaseResolutionTimeTest.this.makeCaseTag(model.prefix + tag1, model.caseTagType );
+        protected CaseTag makeTag( String tag1, Long companyId ) {
+            CaseTag caseTag = ReportCaseResolutionTimeTest.this.makeCaseTag(model.prefix + tag1, model.caseTagType, companyId );
             model.rememberTagId( caseTag.getId() );
             return caseTag;
         }

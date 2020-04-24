@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
-import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -22,6 +21,7 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -30,9 +30,7 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -105,7 +103,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
-        employeeService.getEmployees( query, new FluentCallback< SearchResult< EmployeeShortView > >()
+        employeeService.getEmployeesWithChangedHiddenCompanyNames( query, new FluentCallback< SearchResult< EmployeeShortView > >()
                 .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
                         if ( isFirstChunk ) {
@@ -122,7 +120,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
-                null,
+                filterView.organizations().getValue(),
                 filterView.searchPattern().getValue(),
                 normalizePhoneNumber(filterView.workPhone().getValue()),
                 normalizePhoneNumber(filterView.mobilePhone().getValue()),
@@ -138,7 +136,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         AbstractEmployeeItemView itemView = factory.get();
         itemView.setActivity( this );
 
-        itemView.setName( employee.getDisplayName() );
+        itemView.setName( employee.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, employee.getId()) );
         itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
@@ -156,6 +154,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             }
 
             itemView.setPosition( mainEntry.getPositionName() );
+            itemView.setCompany( mainEntry.getCompanyName() );
         }
         itemView.setPhoto(AvatarUtils.getPhotoUrl(employee.getId()));
         itemView.setIP(employee.getIpAddress());
@@ -176,8 +175,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
     };
 
-    @Inject
-    PlateListAnimation animation;
     @Inject
     AbstractEmployeeListView view;
     @Inject

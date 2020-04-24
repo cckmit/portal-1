@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -18,8 +19,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcJoinedObject( localColumn = "category_id", table = "company_category" )
-    private CompanyCategory category;
+    @JdbcColumn( name = "category_id" )
+    @JdbcEnumerated( EnumType.ID )
+    private En_CompanyCategory category;
 
     @JdbcColumn(name = "groupId")
     private Long groupId;
@@ -54,7 +56,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "is_hidden")
     private Boolean isHidden;
 
-    @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
+    @JdbcOneToMany(table = "company_subscription", localColumn = "id", remoteColumn = "company_id" )
     private List<CompanySubscription> subscriptions;
 
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")
@@ -97,15 +99,11 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         return this.created;
     }
 
-    public Long getCategoryId() {
-        return category == null ? null : category.getId();
-    }
-
-    public CompanyCategory getCategory() {
+    public En_CompanyCategory getCategory() {
         return category;
     }
 
-    public void setCategory( CompanyCategory category ) {
+    public void setCategory( En_CompanyCategory category ) {
         this.category = category;
     }
 
@@ -212,12 +210,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.childCompanies = childCompanies;
     }
 
-    public Boolean getHideden() {
+    public Boolean getHidden() {
         return isHidden;
     }
 
-    public void setHideden(Boolean hideden) {
-        isHidden = hideden;
+    public void setHidden(Boolean hidden) {
+        isHidden = hidden;
     }
 
     public boolean isArchived() {

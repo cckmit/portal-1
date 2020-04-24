@@ -49,12 +49,28 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return jdbcTemplate.queryForList(query, Long.class);
     }
 
+    @Override
+    public List<Long> getAllHomeCompanyIdsWithoutSync() {
+        String query = "SELECT companyId FROM company_group_home where synchronize_with_1c = false ";
+        return jdbcTemplate.queryForList(query, Long.class);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );
         return new SqlCondition().build((condition, args) -> {
 
-            condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null )");
+            condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null ");
+
+            if (query.getShowHidden() != null && !query.getShowHidden()) {
+                condition.append(" and (company.is_hidden = false or company.is_hidden is NULL)");
+            }
+
+            if (query.getSynchronizeWith1C() != null){
+                condition.append("and synchronize_with_1c = ").append(query.getSynchronizeWith1C() ? "true" : "false");
+            }
+
+            condition.append(")");
 
             if (query.getCompanyIds() != null) {
                 condition.append( " and company.id in " ).append( HelperFunc.makeInArg( query.getCompanyIds()) );

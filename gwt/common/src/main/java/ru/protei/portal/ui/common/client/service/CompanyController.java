@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -78,7 +80,7 @@ public interface CompanyController extends RemoteService {
      * Получение списка сокращенного представления катогирии компаний (name,id)
      * @return
      */
-    List< EntityOption > getCategoryOptionList() throws RequestFailedException;
+    List<En_CompanyCategory> getCategoryOptionList() throws RequestFailedException;
 
     /**
      * Получение список рассылок по компании
@@ -95,4 +97,6 @@ public interface CompanyController extends RemoteService {
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
 
     List<Long> getAllHomeCompanyIds() throws RequestFailedException;
+
+    List<En_ImportanceLevel> getImportanceLevels(Long id) throws RequestFailedException;;
 }

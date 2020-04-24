@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -36,17 +37,15 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class IssueMetaView extends Composite implements AbstractIssueMetaView {
@@ -76,7 +75,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setProduct( DevUnit product ) {
+    public void fillImportanceOptions(List<En_ImportanceLevel> options) {
+        importance.fillOptions(options);
+    }
+
+    @Override
+    public void setProduct(DevUnit product) {
         this.product.setValue(ProductShortView.fromProduct(product));
     }
 
@@ -307,6 +311,56 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         return timeElapsedType;
     }
 
+    @Override
+    public void setJiraInfoLink(String link) {
+        jiraSlaSelector.setJiraInfoLink(link);
+    }
+
+    @Override
+    public HasTime slaReactionTime() {
+        return slaReactionTime;
+    }
+
+    @Override
+    public HasTime slaTemporarySolutionTime() {
+        return slaTemporarySolutionTime;
+    }
+
+    @Override
+    public HasTime slaFullSolutionTime() {
+        return slaFullSolutionTime;
+    }
+
+    @Override
+    public HasVisibility slaContainerVisibility() {
+        return slaContainer;
+    }
+
+    @Override
+    public void setValuesContainerWarning(boolean isWarning) {
+        slaTimesContainer.setStyleName("b-warning-light", isWarning);
+    }
+
+    @Override
+    public void setSlaTimesContainerTitle(String title) {
+        slaTimesContainer.setTitle(title);
+    }
+
+    @Override
+    public HasVisibility pauseDateContainerVisibility() {
+        return pauseDateContainer;
+    }
+
+    @Override
+    public HasValue<Date> pauseDate() {
+        return pauseDate;
+    }
+
+    @Override
+    public void setPauseDateValid(boolean isValid) {
+        pauseDate.markInputValid(isValid);
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
@@ -321,6 +375,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) return;
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
+        pauseDate.setEnsureDebugId(DebugIds.ISSUE.PAUSE_DATE_CONTAINER);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
         platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
@@ -420,12 +475,22 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         activity.onCaseMetaJiraChanged();
     }
 
+    @UiHandler("pauseDate")
+    public void onPauseDateChanged(ValueChangeEvent<Date> event) {
+        activity.onPauseDateChanged();
+    }
+
     @UiField
     @Inject
     Lang lang;
     @Inject
     @UiField(provided = true)
     IssueStateFormSelector state;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker pauseDate;
+    @UiField
+    HTMLPanel pauseDateContainer;
     @Inject
     @UiField(provided = true)
     ImportanceFormSelector importance;
@@ -468,6 +533,19 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     LabelElement subscriptionsLabel;
     @UiField
     Element subscriptions;
+    @UiField
+    HTMLPanel slaContainer;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaReactionTime;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaTemporarySolutionTime;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaFullSolutionTime;
+    @UiField
+    HTMLPanel slaTimesContainer;
     @UiField
     HTMLPanel caseSubscriptionContainers;
     @UiField

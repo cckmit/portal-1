@@ -16,6 +16,8 @@ public enum En_Privilege {
     ISSUE_REPORT (ISSUE, REPORT),
     ISSUE_EXPORT (ISSUE, EXPORT),
 
+    ISSUE_ASSIGNMENT_VIEW (ISSUE_ASSIGNMENT, VIEW),
+
     REGION_VIEW (REGION, VIEW),
     REGION_EDIT (REGION, EDIT),
     REGION_REPORT (REGION, REPORT),
@@ -80,6 +82,8 @@ public enum En_Privilege {
     SITE_FOLDER_REMOVE (SITE_FOLDER, REMOVE),
 
     EMPLOYEE_VIEW (EMPLOYEE, VIEW),
+    EMPLOYEE_CREATE (EMPLOYEE, CREATE),
+    EMPLOYEE_EDIT (EMPLOYEE, EDIT),
 
     EMPLOYEE_REGISTRATION_VIEW(EMPLOYEE_REGISTRATION, VIEW),
     EMPLOYEE_REGISTRATION_CREATE(EMPLOYEE_REGISTRATION, CREATE),
@@ -87,6 +91,15 @@ public enum En_Privilege {
     CONTRACT_VIEW (CONTRACT, VIEW),
     CONTRACT_EDIT (CONTRACT, EDIT),
     CONTRACT_CREATE (CONTRACT, CREATE),
+
+    RESERVED_IP_VIEW (RESERVED_IP, VIEW),
+    RESERVED_IP_EDIT (RESERVED_IP, EDIT),
+    RESERVED_IP_CREATE (RESERVED_IP, CREATE),
+    RESERVED_IP_REMOVE (RESERVED_IP, REMOVE),
+    SUBNET_VIEW (SUBNET, VIEW),
+    SUBNET_EDIT (SUBNET, EDIT),
+    SUBNET_CREATE (SUBNET, CREATE),
+    SUBNET_REMOVE (SUBNET, REMOVE),
 
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
@@ -121,7 +134,7 @@ public enum En_Privilege {
             ISSUE_FILTER_PRODUCT_VIEW
     };
 
-    private En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
+    En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
         this.entity = entity;
         this.action = action;
     }
@@ -132,6 +145,14 @@ public enum En_Privilege {
 
     public En_PrivilegeAction getAction() {
         return action;
+    }
+
+    public String getActionShortName() {
+        return action == null ? "" : action.getShortName();
+    }
+
+    public Integer getOrder() {
+        return entity.getOrder() + (action == null ? 0 : action.getOrder());
     }
 
     public static En_Privilege findPrivilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
@@ -147,5 +168,4 @@ public enum En_Privilege {
 
         return null;
     }
-
 }

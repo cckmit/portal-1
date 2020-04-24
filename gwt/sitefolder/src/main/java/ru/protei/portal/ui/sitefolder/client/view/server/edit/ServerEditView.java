@@ -7,13 +7,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.AbstractServerEditActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.AbstractServerEditView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformButtonSelector;
 
 public class ServerEditView extends Composite implements AbstractServerEditView {
 

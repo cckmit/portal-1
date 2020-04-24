@@ -32,15 +32,17 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления обращениями
@@ -210,9 +212,9 @@ public class CaseServiceImpl implements CaseService {
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
-        CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return addLinksResult.isOk() ? ok(newState).publishEvent(event) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
+        return new Result<>(En_ResultStatus.OK, newState, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(caseObjectCreateEvent));
     }
 
     @Override
@@ -240,6 +242,18 @@ public class CaseServiceImpl implements CaseService {
             if (!isUpdated) {
                 log.info("Failed to update issue {} at db", caseObject.getId());
                 return error(En_ResultStatus.NOT_UPDATED);
+            }
+
+            if(isNotEmpty(changeRequest.getAttachments())){
+                caseObject.setAttachmentExists(true);
+                caseObjectDAO.partialMerge(caseObject, "ATTACHMENT_EXISTS");
+
+                caseAttachmentDAO.persistBatch(
+                        changeRequest.getAttachments()
+                                .stream()
+                                .map(a -> new CaseAttachment(changeRequest.getId(), a.getId()))
+                                .collect(Collectors.toList())
+                );
             }
 
             return ok(changeRequest)
@@ -320,9 +334,8 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        if (oldCaseMeta.getManager() != null && caseMeta.getManager() != null &&
-            !Objects.equals(oldCaseMeta.getManager().getId(), caseMeta.getManager().getId())) {
-            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManager().getId());
+        if (!Objects.equals(oldCaseMeta.getManagerId(), caseMeta.getManagerId())) {
+            Long messageId = createAndPersistManagerMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getManagerId());
             if (messageId == null) {
                 log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -665,6 +678,7 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
                 || !Objects.equals(co1.getState(), co2.getState())
+                || !Objects.equals(co1.getPauseDate(), co2.getPauseDate())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
@@ -726,7 +740,7 @@ public class CaseServiceImpl implements CaseService {
             return false;
         }
 
-        return Objects.equals(En_CompanyCategory.HOME.getId(), company.getCategory().getId());
+        return (En_CompanyCategory.HOME == company.getCategory());
     }
 
     private void applyStateBasedOnManager(CaseObject caseObject) {
@@ -754,15 +768,18 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateFieldsOfNew(CaseObject caseObject) {
-        return validateFields(caseObject)
-            && validateMetaFields(new CaseObjectMeta(caseObject));
+        if (!validateFields( caseObject )) return false;
+        CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
+        if (!validateMetaFields( caseObjectMeta )) return false;
+        return true;
     }
 
     private boolean validateFields(CaseObject caseObject) {
-        return caseObject != null
-                && caseObject.getName() != null
-                && !caseObject.getName().isEmpty()
-                && En_CaseType.find(caseObject.getTypeId()) != null;
+        if(caseObject == null) return false;
+        if(caseObject.getName() == null) return false;
+        if(caseObject.getName().isEmpty()) return false;
+        if(caseObject.getType() == null) return false;
+        return true;
     }
 
     private boolean validateMetaFields(CaseObjectMeta caseMeta) {
@@ -770,7 +787,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta.getImpLevel() == null) return false;
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
         if (En_CaseState.getById( caseMeta.getStateId() ) == null) return false;
-        if (!listOf( En_CaseState.CREATED, En_CaseState.CANCELED ).contains( caseMeta.getState() ) && caseMeta.getManagerId() == null) return false;
+        if (!isStateValid(caseMeta.getState(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
             return false;
@@ -785,11 +802,24 @@ public class CaseServiceImpl implements CaseService {
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
     }
 
+    private boolean isStateValid(En_CaseState caseState, Long managerId, Long pauseDate) {
+        if (!(listOf(En_CaseState.CREATED, En_CaseState.CANCELED).contains(caseState)) && managerId == null) {
+            return false;
+        }
+
+        if (En_CaseState.PAUSED.equals(caseState)) {
+            return pauseDate != null && (System.currentTimeMillis() < pauseDate);
+        }
+
+        return true;
+    }
+
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
         for (CaseLink link : emptyIfNull( caseLinks )) {
             if (!YT.equals( link.getType() ) || link.getRemoteId() == null) continue;
             youtrackService.getIssueInfo( link.getRemoteId() )
-                    .ifOk( info -> link.setYouTrackIssueInfo( info ) );
+                    .ifError(e -> log.warn( "fillYouTrackInfo(): case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
+                    .ifOk(link::setYouTrackIssueInfo);
         }
         return caseLinks;
     }

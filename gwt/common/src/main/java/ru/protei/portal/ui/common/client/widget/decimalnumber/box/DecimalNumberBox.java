@@ -2,7 +2,9 @@ package ru.protei.portal.ui.common.client.widget.decimalnumber.box;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
+import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -16,9 +18,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.mask.MaskedTextBox;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationButtonSelector;
@@ -33,7 +34,7 @@ import ru.protei.winter.web.common.client.common.DisplayStyle;
  * Вид виджета децимального номера
  */
 public class DecimalNumberBox extends Composite
-        implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers, HasValidable {
+        implements HasValue<DecimalNumber>, HasEnabled, HasRemoveHandlers, HasAddHandlers, HasValidable, HasCorrectDecimalNumbersHandlers {
 
     @Inject
     public void onInit() {
@@ -94,6 +95,11 @@ public class DecimalNumberBox extends Composite
     }
 
     @Override
+    public HandlerRegistration addCorrectDecimalNumberHandler(CorrectDecimalNumbersHandler handler) {
+        return addHandler(handler, CorrectDecimalNumbersEvent.getType());
+    }
+
+    @Override
     public boolean isEnabled() {
         return classifierCode.isEnabled() && regNumModification.isEnabled() && regNum.isEnabled();
     }
@@ -103,6 +109,18 @@ public class DecimalNumberBox extends Composite
         classifierCode.setEnabled(enabled);
         regNumModification.setEnabled(enabled);
         regNum.setEnabled(enabled);
+    }
+
+    public void setClassifierCode(Integer classifierCode) {
+        this.classifierCode.setText(classifierCode == null ? null : NumberFormat.getFormat("000000").format(classifierCode));
+        value.setClassifierCode(classifierCode);
+        checkNextButtonState();
+    }
+
+    public void setRegisterNumber(Integer registerNumber) {
+        this.regNum.setText(registerNumber == null ? null : NumberFormat.getFormat("000").format(registerNumber));
+        value.setRegisterNumber(registerNumber);
+        checkNextButtonState();
     }
 
     public void setHandler(DecimalNumberBoxHandler boxHandler) {
@@ -130,36 +148,7 @@ public class DecimalNumberBox extends Composite
 
     public void setFocusToRegisterNumberField(boolean isFocused) {
         regNum.setFocus(isFocused);
-    }
-
-    private void setFocusToNextButton(boolean isFocused) {
-        next.setFocus(isFocused);
-    }
-
-    private void checkNextButtonState() {
-        next.setEnabled(!value.isEmpty());
-    }
-
-    private void markBoxAsError(boolean isError) {
-        if (isError) {
-            container.addClassName("has-error");
-            return;
-        }
-        container.removeClassName("has-error");
-    }
-
-    private void clearMessage() {
-        getNumberMsg.addClassName("hide");
-        msg.addClassName("hide");
-        msg.setInnerText("");
-    }
-
-    private Integer parseValue(String value) {
-        try {
-            return Integer.parseInt(value);
-        } catch (Throwable t) {
-            return null;
-        }
+        markBoxAsError(!isValid() || StringUtils.isNotBlank(msg.getInnerText()));
     }
 
     @Override
@@ -208,8 +197,39 @@ public class DecimalNumberBox extends Composite
         changeNumberTimer.schedule(300);
     }
 
+    private void setFocusToNextButton(boolean isFocused) {
+        next.setFocus(isFocused);
+        markBoxAsError(!isValid() || StringUtils.isNotBlank(msg.getInnerText()));
+    }
+
+    private void checkNextButtonState() {
+        next.setEnabled(!value.isEmpty());
+    }
+
+    private void markBoxAsError(boolean isError) {
+        if (isError) {
+            container.addClassName("has-error");
+            return;
+        }
+        container.removeClassName("has-error");
+    }
+
+    private void clearMessage() {
+        getNumberMsg.addClassName("hide");
+        msg.addClassName("hide");
+        msg.setInnerText("");
+    }
+
+    private Integer parseValue(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
     @UiHandler({"classifierCode", "regNum", "regNumModification"})
-    public void onNumberChanged(KeyUpEvent event) {
+    public void onNumberChanged(InputEvent event) {
         resetTimer();
     }
 
@@ -248,6 +268,13 @@ public class DecimalNumberBox extends Composite
     public void onSelectOrganizationCode(ValueChangeEvent<En_OrganizationCode> event) {
         value.setOrganizationCode(event.getValue());
         resetTimer();
+    }
+
+    @UiHandler({"classifierCode","regNum"})
+    public void onBlurClassifierCode(BlurEvent event) {
+        if (isValid()) {
+            CorrectDecimalNumbersEvent.fire(this);
+        }
     }
 
     @Inject
@@ -300,7 +327,9 @@ public class DecimalNumberBox extends Composite
                 handler.onGetNextNumber(DecimalNumberBox.this);
             }
 
-            if (regNumModification.getText().length() == 2) {
+            if (classifierCode.getText().length() == 6
+                    && regNum.getText().length() == 3 &&
+                    regNumModification.getText().length() == 2) {
                 setFocusToNextButton(true);
             }
         }

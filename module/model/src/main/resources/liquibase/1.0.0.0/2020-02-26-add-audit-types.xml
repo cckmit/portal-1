@@ -1,0 +1,105 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-audit-types" author="fomin">
+        <insert tableName="audit_type">
+            <column name="id" value="44"/>
+            <column name="code" value="DOCUMENT_MODITY"/>
+            <column name="info" value="Изменение документа"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="45"/>
+            <column name="code" value="DOCUMENT_REMOVE"/>
+            <column name="info" value="Удаление документа"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="47"/>
+            <column name="code" value="PROJECT_REMOVE"/>
+            <column name="info" value="Удаление проекта"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="51"/>
+            <column name="code" value="CONTACT_FIRE"/>
+            <column name="info" value="Увольнение контактного лица"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="52"/>
+            <column name="code" value="CONTACT_DELETE"/>
+            <column name="info" value="Удаление контактного лица"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="53"/>
+            <column name="code" value="LINK_CREATE"/>
+            <column name="info" value="Создание ссылки"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="54"/>
+            <column name="code" value="LINK_REMOVE"/>
+            <column name="info" value="Удаление ссылки"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="55"/>
+            <column name="code" value="DOCUMENT_CREATE"/>
+            <column name="info" value="Создание документа"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="56"/>
+            <column name="code" value="DOCUMENT_TYPE_CREATE"/>
+            <column name="info" value="Создание типа документа"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="57"/>
+            <column name="code" value="DOCUMENT_TYPE_REMOVE"/>
+            <column name="info" value="Удаление типа документа"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="58"/>
+            <column name="code" value="PLATFORM_CREATE"/>
+            <column name="info" value="Создание площадки"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="59"/>
+            <column name="code" value="PLATFORM_MODIFY"/>
+            <column name="info" value="Изменение площадки"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="60"/>
+            <column name="code" value="PLATFORM_REMOVE"/>
+            <column name="info" value="Удаление площадки"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="61"/>
+            <column name="code" value="SERVER_CREATE"/>
+            <column name="info" value="Создание сервера"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="62"/>
+            <column name="code" value="SERVER_MODIFY"/>
+            <column name="info" value="Изменение сервера"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="63"/>
+            <column name="code" value="SERVER_REMOVE"/>
+            <column name="info" value="Удаление сервера"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="64"/>
+            <column name="code" value="APPLICATION_CREATE"/>
+            <column name="info" value="Создание приложения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="65"/>
+            <column name="code" value="APPLICATION_MODIFY"/>
+            <column name="info" value="Изменение приложения"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="66"/>
+            <column name="code" value="APPLICATION_REMOVE"/>
+            <column name="info" value="Удаление приложения"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

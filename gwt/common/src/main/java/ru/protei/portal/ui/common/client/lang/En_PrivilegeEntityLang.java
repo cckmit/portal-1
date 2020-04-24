@@ -12,6 +12,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryCommon();
             case ISSUE:
                 return lang.privilegeCategoryIssue();
+            case ISSUE_ASSIGNMENT:
+                return lang.privilegeCategoryIssueAssignment();
             case REGION:
                 return lang.privilegeCategoryRegion();
             case PROJECT:
@@ -46,6 +48,10 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeCategoryEmployeeRegistration();
             case CONTRACT:
                 return lang.privilegeContract();
+            case SUBNET:
+                return lang.subnet();
+            case RESERVED_IP:
+                return lang.ipReservation();
             default:
                 return lang.unknownField();
         }

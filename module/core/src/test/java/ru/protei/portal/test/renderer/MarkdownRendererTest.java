@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
@@ -228,8 +229,8 @@ public class MarkdownRendererTest {
 
     @Test
     public void testImage() {
-        String input = "![Alt](http://localhost/image.png)";
-        String expected = "<p><img src=\"http://localhost/image.png\" alt=\"Alt\" /></p>";
+        String input = "![Alt](path/image.png)";
+        String expected = "<p><img src=\"" + DOWNLOAD_PATH + "path/image.png\" alt=\"Alt\" /></p>";
         doTest(input, expected);
     }
 
@@ -240,4 +241,11 @@ public class MarkdownRendererTest {
 
     @Autowired
     HTMLRenderer htmlRenderer;
+
+    @Autowired
+    public void onInit(PortalConfig config) {
+        DOWNLOAD_PATH = config.data().getCommonConfig().getCrmUrlFiles() + "springApi/files/";
+    }
+
+    private String DOWNLOAD_PATH;
 }

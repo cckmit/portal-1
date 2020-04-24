@@ -38,6 +38,9 @@
 
                     <include>*.xml</include>
                     <include>**/*.xml</include>
+
+                    <include>*.sql</include>
+                    <include>**/*.sql</include>
                 </includes>
             </resource>
         </resources>
@@ -57,6 +60,9 @@
 
                     <include>*.xml</include>
                     <include>**/*.xml</include>
+
+                    <include>*.sql</include>
+                    <include>**/*.sql</include>
                 </includes>
             </testResource>
         </testResources>
@@ -65,10 +71,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.10</version>
-                <configuration>
-                    <!--<skipTests>true</skipTests>-->
-                </configuration>
+                <version>${project.maven-surefire-plugin}</version>
             </plugin>
         </plugins>
     </build>

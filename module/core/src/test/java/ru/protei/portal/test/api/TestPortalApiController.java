@@ -1,10 +1,7 @@
 package ru.protei.portal.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,24 +14,28 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentApiQuery;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.EmployeeApiQuery;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
-import java.util.Base64;
-import java.util.Collections;
+import java.io.IOException;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,6 +54,7 @@ public class TestPortalApiController extends BaseServiceTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    private static final long FAKE_ID = 10000L;
     private Person person;
     private UserLogin userLogin;
     private Company company;
@@ -185,21 +187,35 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
                 .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
                 .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
+                .andExpect( jsonPath( "$.data.wikiLink", is( product.getWikiLink() ) ) )
+                .andExpect( jsonPath( "$.data.type", is( product.getType().name() ) ) )
         ;
     }
 
+    @Test
+    @Transactional
+    public void createProduct() throws Exception {
+        DevUnit product = createProduct("TestPortalApiController#createProduct");
+
+        createPostResultAction("/api/products/create", DevUnitInfo.toInfo(product))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", notNullValue()))
+                .andExpect(jsonPath("$.data.name", is(product.getName())))
+                .andExpect(jsonPath("$.data.historyVersion", is(product.getHistoryVersion())))
+                .andExpect(jsonPath("$.data.cdrDescription", is(product.getCdrDescription())))
+                .andExpect(jsonPath("$.data.configuration", is(product.getConfiguration())))
+                .andExpect(jsonPath("$.data.description", is(product.getInfo())))
+                .andExpect(jsonPath("$.data.wikiLink", is(product.getWikiLink())))
+                .andExpect(jsonPath("$.data.type", is(product.getType().name())));
+    }
 
     @Test
     @Transactional
     public void updateProduct() throws Exception {
         DevUnit devUnit = makeProduct( );
 
-        DevUnitInfo product = new DevUnitInfo();
-        product.setId( devUnit.getId() );
-        product.setHistoryVersion( "Updated historyVersion" );
-        product.setCdrDescription( "Updated cdrDescription" );
-        product.setConfiguration( "Updated configuration" );
-        product.setDescription( "Updated description" );
+        DevUnitInfo product = DevUnitInfo.toInfo(devUnit);
 
         createPostResultAction( "/api/products/update", product )
                 .andExpect( status().isOk() )
@@ -274,6 +290,161 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
+    @Test
+    @Transactional
+    @Ignore
+    public void getTwoEmployees() throws Exception {
+        Company homeCompany = companyDAO.get(1L);
+
+        String email = "getEmployees@portal.ru";
+        String workPhone = "222";
+
+        Person person = createNewPerson(homeCompany);
+        person.setDisplayName("getEmployees1");
+        person.setFirstName("getEmployees1");
+        person.setIpAddress("111");
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade();
+        infoFacade.setEmail(email);
+        infoFacade.setWorkPhone(workPhone);
+        infoFacade.setMobilePhone("333");
+
+        person.setContactInfo(infoFacade.editInfo());
+
+        Person person2 = createNewPerson(homeCompany);
+        person2.setDisplayName("getEmployees2");
+        person2.setFirstName("getEmployees2");
+        person2.setIpAddress("888");
+
+        PlainContactInfoFacade infoFacade2 = new PlainContactInfoFacade();
+        infoFacade2.setEmail(email);
+        infoFacade2.setWorkPhone(workPhone);
+        infoFacade2.setMobilePhone("444");
+
+        person2.setContactInfo(infoFacade2.editInfo());
+
+        personDAO.persistBatch(Arrays.asList(person, person2));
+
+        Assert.assertNotNull("Expected person id not null", person.getId());
+        Assert.assertNotNull("Expected person2 id not null", person2.getId());
+
+        EmployeeApiQuery employeeApiQuery = new EmployeeApiQuery();
+        employeeApiQuery.setWorkPhone(infoFacade.getWorkPhone());
+        employeeApiQuery.setEmail(infoFacade.getEmail());
+
+        createPostResultAction("/api/employees", employeeApiQuery)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(2)))
+                .andExpect(jsonPath("$.data[*].id", hasItems(person.getId().intValue(), person2.getId().intValue())))
+                .andExpect(jsonPath("$.data[*].displayName", hasItems(person.getDisplayName(), person2.getDisplayName())))
+        ;
+
+        personDAO.removeByKey(person.getId());
+        personDAO.removeByKey(person2.getId());
+    }
+
+    @Test
+    @Transactional
+    @Ignore
+    public void getEmployeesEmptyResult() throws Exception {
+        Company homeCompany = companyDAO.get(1L);
+
+        String email = "getEmployees@portal.ru";
+        String workPhone = "222";
+
+        Person person = createNewPerson(homeCompany);
+        person.setDisplayName("getEmployees1");
+        person.setFirstName("getEmployees1");
+        person.setIpAddress("111");
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade();
+        infoFacade.setEmail(email);
+        infoFacade.setWorkPhone(workPhone);
+        infoFacade.setMobilePhone("333");
+
+        person.setContactInfo(infoFacade.editInfo());
+
+        personDAO.persist(person);
+
+        Assert.assertNotNull("Expected person id not null", person.getId());
+
+        EmployeeApiQuery employeeApiQuery = new EmployeeApiQuery();
+        employeeApiQuery.setDisplayName(person.getDisplayName());
+        employeeApiQuery.setWorkPhone(infoFacade.getWorkPhone() + "!");
+        employeeApiQuery.setEmail(infoFacade.getEmail());
+
+        createPostResultAction("/api/employees", employeeApiQuery)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(0)));
+
+        personDAO.removeByKey(person.getId());
+    }
+
+
+    @Test
+    @Transactional
+    public void createTag() throws Exception {
+        CaseTagInfo caseTagInfo = new CaseTagInfo();
+
+        caseTagInfo.setName("TestPortalApiController :: test tag");
+        caseTagInfo.setCompanyId(company.getId());
+
+        ResultActions resultActions = createPostResultAction("/api/tags/create", caseTagInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", notNullValue()));
+
+        CaseTag result = getData(resultActions, CaseTag.class);
+
+        caseTagDAO.removeByKey(result.getId());
+    }
+
+    @Test
+    @Transactional
+    public void createTagWithId() throws Exception {
+        CaseTagInfo caseTagInfo = new CaseTagInfo();
+
+        caseTagInfo.setName("TestPortalApiController :: test tag");
+        caseTagInfo.setCompanyId(company.getId());
+        caseTagInfo.setId(FAKE_ID);
+
+        createPostResultAction("/api/tags/create", caseTagInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void removeTag() throws Exception {
+        CaseTag caseTag = createCaseTag("TestPortalApiController :: test tag", En_CaseType.CRM_SUPPORT, company.getId());
+        caseTag.setPersonId(person.getId());
+        caseTagDAO.persist(caseTag);
+
+        createPostResultAction("/api/tags/remove/" + caseTag.getId(), null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", notNullValue()));
+    }
+
+    @Test
+    @Transactional
+    public void removeNotMyTag() throws Exception {
+        CaseTag caseTag = createCaseTag("TestPortalApiController :: test tag", En_CaseType.CRM_SUPPORT, company.getId());
+
+        Person person = makePerson(company);
+        caseTag.setPersonId(person.getId());
+
+        Long persistedTagId = caseTagDAO.persist(caseTag);
+
+        createPostResultAction("/api/tags/remove/" + caseTag.getId(), null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.PERMISSION_DENIED.toString())));
+
+        caseTagDAO.removeByKey(persistedTagId);
+        personDAO.removeByKey(person.getId());
+    }
 
     private void setThreadUserLogin(UserLogin userLogin) {
         authService.makeThreadAuthToken(userLogin);
@@ -290,6 +461,11 @@ public class TestPortalApiController extends BaseServiceTest {
         }
 
         return mockMvc.perform( builder );
+    }
+
+    private <T> T getData(ResultActions resultActions, Class<T> clazz) throws IOException {
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(contentAsString.substring(contentAsString.indexOf("\"data\":") + "\"data\":".length(), contentAsString.lastIndexOf("}")), clazz);
     }
 
     @Autowired

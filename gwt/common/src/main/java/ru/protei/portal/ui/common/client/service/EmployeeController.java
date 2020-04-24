@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -31,13 +33,26 @@ public interface EmployeeController extends RemoteService {
      */
     List<PersonShortView> getEmployeeViewList(EmployeeQuery query) throws RequestFailedException;
 
+    SearchResult<EmployeeShortView> getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query) throws RequestFailedException;
+
     /**
      * Получение руководителя подразделения
-     * @param employeeId айди сотрудника
      * @param departmentId айди подразделения
      * @return сокращенное представление руководителя
      */
-    PersonShortView getDepartmentHead(Long employeeId, Long departmentId) throws RequestFailedException;
+    PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
 
     EmployeeShortView getEmployeeShortView( Long employeeId) throws RequestFailedException;
+
+    EmployeeShortView getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException;
+
+    Person createEmployeePerson (Person person) throws RequestFailedException;
+
+    WorkerEntry createEmployeeWorker (WorkerEntry worker) throws RequestFailedException;
+
+    Boolean updateEmployeePerson(Person person) throws RequestFailedException;
+
+    Boolean updateEmployeeWorker(WorkerEntry workerEntry) throws RequestFailedException;
+
+    boolean fireEmployee(Person person) throws RequestFailedException;
 }

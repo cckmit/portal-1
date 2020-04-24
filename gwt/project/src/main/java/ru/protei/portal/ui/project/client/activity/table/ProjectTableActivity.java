@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.table;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -11,6 +12,8 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -19,18 +22,21 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
-import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 /**
  * Активность таблицы проектов
  */
 public abstract class ProjectTableActivity
-        implements AbstractProjectTableActivity, AbstractProjectFilterActivity, Activity
+        implements AbstractProjectTableActivity, AbstractProjectFilterActivity,
+            AbstractPagerActivity, Activity
 {
 
     @PostConstruct
@@ -42,6 +48,8 @@ public abstract class ProjectTableActivity
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+
+        pagerView.setActivity( this );
     }
 
     @Event
@@ -58,17 +66,16 @@ public abstract class ProjectTableActivity
 
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.PROJECT_CREATE ) ?
             new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.PROJECT ) :
             new ActionBarEvents.Clear()
         );
 
-        projectIdForRemove = null;
-
         clearScroll(event);
 
-        requestProjects( null );
+        loadTable();
     }
 
     @Event
@@ -85,38 +92,6 @@ public abstract class ProjectTableActivity
     @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.initDetails = initDetails;
-    }
-
-    @Event
-    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
-
-        if (!getClass().getName().equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
-            return;
-        }
-
-        regionService.removeProject(projectIdForRemove, new FluentCallback<Boolean>()
-                .withError(t -> {
-                    projectIdForRemove = null;
-                })
-                .withSuccess(result -> {
-                    projectIdForRemove = null;
-                    fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Show());
-                })
-        );
-    }
-
-    @Event
-    public void onProjectCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!getClass().getName().equals(event.identity)) {
-            return;
-        }
-        projectIdForRemove = null;
     }
 
     @Event
@@ -148,51 +123,59 @@ public abstract class ProjectTableActivity
             return;
         }
 
-        projectIdForRemove = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.projectRemoveConfirmMessage(value.getName())));
+        fireEvent(new ConfirmDialogEvents.Show(lang.projectRemoveConfirmMessage(value.getName()), removeAction(value.getId())));
     }
 
     @Override
-    public void onFilterChanged() {
-        requestProjects( null );
+    public void onProjectFilterChanged() {
+        loadTable();
     }
 
-    private void requestProjects( Project rowToSelect ) {
-        if ( rowToSelect == null ) {
-            view.clearRecords();
-            animation.closeDetails();
-        }
+    @Override
+    public void loadData(int offset, int limit,
+                          final AsyncCallback<List<Project>> asyncCallback ) {
+        boolean isFirstChunk = offset == 0;
 
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<Project>>>() {
-                @Override
-                public void onError( Throwable throwable ) {
-                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                }
+        query = getQuery();
+        query.setOffset(offset);
+        query.setLimit(limit);
 
-                @Override
-                public void onSuccess( Map<String, List<Project>> result ) {
-                    fillRows( result );
-                    if ( rowToSelect != null ) {
-                        view.updateRow( rowToSelect );
-                    }
-                    restoreScrollTopPositionOrClearSelection();
-                }
-            } );
-    }
-
-    private void fillRows( Map<String, List<Project>> result ) {
-        view.clearRecords();
-        for ( Map.Entry<String, List<Project>> entry : result.entrySet() ) {
-            view.addSeparator( entry.getKey() );
-
-            for ( Project project : entry.getValue() ) {
-                view.addRow(project);
+        regionService.getProjects(query, new RequestCallback<SearchResult<Project>> () {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                asyncCallback.onFailure(throwable);
             }
-        }
+
+            @Override
+            public void onSuccess( SearchResult<Project> sr ) {
+                if (!query.equals(getQuery())) {
+                    loadData( offset, limit, asyncCallback );
+                } else {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
+                    }
+                }
+            }
+        } );
+    }
+
+
+    @Override
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
+    }
+
+    @Override
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
     }
 
     private void showPreview ( Project value ) {
-        currentValue = value;
         if ( value == null ) {
             animation.closeDetails();
         } else {
@@ -219,18 +202,18 @@ public abstract class ProjectTableActivity
 
     private ProjectQuery getQuery() {
         ProjectQuery query = new ProjectQuery();
-        query.setSearchString(filterView.searchPattern().getValue());
-        query.setStates( filterView.states().getValue() );
-        query.setDistrictIds(
-                filterView.districts().getValue().stream()
-                        .map( (district)-> district.id )
-                        .collect( Collectors.toSet() )
-        );
-        query.setDirectionId(
-                filterView.direction().getValue() == null
-                        ? null
-                        : filterView.direction().getValue().id
-        );
+
+        String searchString = filterView.searchPattern().getValue();
+        query.setCaseIds(searchCaseNumber(searchString, false));
+        if (query.getCaseIds() == null) {
+            query.setSearchString(isBlank(searchString) ? null : searchString);
+        }
+
+        query.setStates(filterView.states().getValue());
+        query.setRegions(filterView.regions().getValue());
+        query.setHeadManagers(filterView.headManagers().getValue());
+        query.setCaseMembers(filterView.caseMembers().getValue());
+        query.setDirections(filterView.direction().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());
@@ -244,6 +227,22 @@ public abstract class ProjectTableActivity
         }
     }
 
+    private Runnable removeAction(Long projectId) {
+        return () -> regionService.removeProject(projectId, new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new ProjectEvents.ChangeModel());
+                    fireEvent(new ProjectEvents.Show());
+                })
+        );
+    }
+
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -251,14 +250,15 @@ public abstract class ProjectTableActivity
     @Inject
     AbstractProjectFilterView filterView;
     @Inject
+    AbstractPagerView pagerView;
+    @Inject
     RegionControllerAsync regionService;
     @Inject
     TableAnimation animation;
     @Inject
     PolicyService policyService;
 
-    Project currentValue = null;
-    private Long projectIdForRemove = null;
+    private ProjectQuery query = null;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

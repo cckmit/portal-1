@@ -30,4 +30,10 @@ public class EmployeeButtonSelector extends ButtonPopupSingleSelector<PersonShor
         return item;
     }
 
+    public void setFiredEmployeesVisible(boolean firedEmployeesVisible) {
+        if (firedEmployeesVisible) {
+            setFilter(personView -> true);
+        }
+    }
+
 }

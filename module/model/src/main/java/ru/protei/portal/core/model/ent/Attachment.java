@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
@@ -13,7 +14,8 @@ import java.util.Objects;
  * Created by michael on 24.05.16.
  */
 @JdbcEntity(table = "attachment")
-public class Attachment implements Serializable {
+public class Attachment extends AuditableObject {
+    public static final String AUDIT_TYPE = "Attachment";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -115,6 +117,11 @@ public class Attachment implements Serializable {
     }
 
     @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return obj instanceof Attachment && Objects.equals(id, ((Attachment) obj).getId());
     }
@@ -129,6 +136,7 @@ public class Attachment implements Serializable {
         return "Attachment{" +
                 "id=" + id +
                 " fileName=" + fileName +
+                " extLink=" + extLink +
                 '}';
     }
 }

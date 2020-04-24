@@ -58,7 +58,7 @@ public enum En_ContactItemType implements Serializable {
     GENERAL_PHONE{
         @Override
         public String getMessage(ContactItemLang lang) {
-            return lang.contactPersonalPhone();
+            return lang.contactWorkPhone();
         }
     },
 

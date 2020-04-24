@@ -31,6 +31,8 @@ import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.AccountServiceImpl;
@@ -99,7 +101,7 @@ public class MainConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigReloadable("portal.properties");
     }
 
     /**
@@ -194,11 +196,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return new AbsenceReasonDAO_Impl();
-    }
-
-    @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {
         return new PersonAbsenceDAO_Impl();
     }
@@ -214,28 +211,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseTaskDAO getCaseTaskDAO() {
-        return new CaseTaskDAO_Impl();
-    }
-
-    @Bean
-    public CaseTermDAO getCaseTermDAO() {
-        return new CaseTermDAO_Impl();
-    }
-
-    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return new DevUnitDAO_Impl();
-    }
-
-    @Bean
-    public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return new DevUnitVersionDAO_Impl();
-    }
-
-    @Bean
-    public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return new DevUnitBranchDAO_Impl();
     }
 
     @Bean
@@ -246,11 +223,6 @@ public class MainConfiguration {
     @Bean
     public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
         return new CaseCommentShortViewDAO_Impl();
-    }
-
-    @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return new CaseDocumentDAO_Impl();
     }
 
     @Bean
@@ -299,6 +271,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public UserCaseAssignmentDAO getUserCaseAssignmentDAO() {
+        return new UserCaseAssignmentDAO_Impl();
+    }
+
+    @Bean
     public UserDashboardDAO getUserDashboardDAO() {
         return new UserDashboardDAO_Impl();
     }
@@ -329,13 +306,18 @@ public class MainConfiguration {
     }
 
     @Bean
-    public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
-        return new PersonCompanyEntryDAO_Impl();
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
     }
 
     @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return new CompanyCategoryDAO_Impl();
+    public ImportanceLevelDAO getImportanceLevelDAO() {
+        return new ImportanceLevelDAO_Impl();
+    }
+
+    @Bean
+    public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
+        return new PersonCompanyEntryDAO_Impl();
     }
 
     @Bean
@@ -521,6 +503,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProjectSlaDAO getProjectSlaDAO() {
+        return new ProjectSlaDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -565,6 +552,16 @@ public class MainConfiguration {
         return new JiraCompanyGroupDAO_Impl();
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() {
+        return new SubnetDAO_Impl();
+    }
+
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() {
+        return new ReservedIpDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -585,6 +582,16 @@ public class MainConfiguration {
     @Bean
     public CompanyService getCompanyService() {
         return new CompanyServiceImpl();
+    }
+
+    @Bean
+    public CompanyDepartmentService getCompanyDepartmentService() {
+        return new CompanyDepartmentServiceImpl();
+    }
+
+    @Bean
+    public WorkerPositionService getWorkerPositionService() {
+        return new WorkerPositionServiceImpl();
     }
 
     @Bean
@@ -668,11 +675,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public OfficialService getOfficialService() {
-        return new OfficialServiceImpl();
-    }
-
-    @Bean
     public BootstrapService getBootstrapService() {
         return new BootstrapService();
     }
@@ -683,8 +685,18 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EventProjectAssemblerService getEventProjectAssemblerService() {
+        return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerProjectService getAssemblerProjectService() {
+        return new AssemblerProjectServiceImpl();
     }
 
     @Bean
@@ -700,6 +712,11 @@ public class MainConfiguration {
     @Bean
     public IssueFilterService getIssueFilterService() {
         return new IssueFilterServiceImpl();
+    }
+
+    @Bean
+    public JiraStatusService getJiraSlaService() {
+        return new JiraStatusServiceImpl();
     }
 
     @Bean
@@ -788,6 +805,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public IpReservationService getIpReservationService() {
+        return new IpReservationServiceImpl();
+    }
+
+    @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
     }
@@ -802,10 +824,20 @@ public class MainConfiguration {
         return new UserDashboardServiceImpl();
     }
 
+    @Bean
+    public UserCaseAssignmentService getUserCaseAssignmentService() {
+        return new UserCaseAssignmentServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
+    }
+
+    @Bean
+    public ReportProject getReportProject() {
+        return new ReportProjectImpl();
     }
 
     @Bean
