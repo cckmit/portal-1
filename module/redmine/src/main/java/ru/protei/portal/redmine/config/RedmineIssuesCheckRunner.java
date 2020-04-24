@@ -9,6 +9,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.redmine.handlers.ForwardChannelEventHandler;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 
 @Component
 public final class RedmineIssuesCheckRunner {
@@ -18,7 +19,7 @@ public final class RedmineIssuesCheckRunner {
     }
 
     //5 minutes in MS
-    @Scheduled(fixedRate = 5 * MINUTE)
+    @Scheduled(fixedRate = 10 * SEC)
     public void queryIssues() {
         if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
             logger.debug("Redmine integration is disabled in config, therefore nothing happens");
