@@ -180,13 +180,4 @@ public class ReportCaseTest extends BaseServiceTest {
     }
 
 
-    @Test
-    public void intervalsTest() {
-        int numberOfDays = 12;
-//        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
-//        assertEquals( numberOfDays, intervals.size() );
-//        assertEquals( date9.getTime(), intervals.get( 0 ).from );
-//        assertEquals( addHours( date9, 1 * H_DAY ).getTime(), intervals.get( 0 ).to );
-    }
-
 }

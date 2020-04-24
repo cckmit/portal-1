@@ -75,10 +75,17 @@
                                           header="{lang.tags}"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
 
+        </div>
+        <div class="row">
             <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4 resize-md-12">
                 <label ui:field="labelSearchPrivate"><ui:text from="{lang.searchPrivate}"/></label>
                 <threestate:ThreeStateButton ui:field="searchPrivate"/>
             </g:HTMLPanel>
+
+            <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
+                <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
+                <issuestate:IssueStatesOptionList ui:field="state"/>
+            </div>
         </div>
 
         <div class="row">
@@ -87,17 +94,12 @@
                 <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
             </div>
 
-            <div class="col-md-4">
+            <div class="form-group col-md-4">
                 <label ui:field="notifyLabel" class="m-r-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
                 <switcher:Switcher ui:field="checkImportanceHistory"/>
             </div>
         </div>
-        <div class="row">
-            <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
-                <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
-                <issuestate:IssueStatesOptionList ui:field="state"/>
-            </div>
-        </div>
+
 
     </g:HTMLPanel>
 </ui:UiBinder>
