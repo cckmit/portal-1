@@ -38,6 +38,10 @@ public class CaseStateWorkflowUtil {
             return En_CaseStateWorkflow.NX_JIRA;
         }
 
+        if (En_ExtAppType.REDMINE.getCode().equals(extAppType)) {
+            return En_CaseStateWorkflow.REDMINE;
+        }
+
         return En_CaseStateWorkflow.NO_WORKFLOW;
     }
 }

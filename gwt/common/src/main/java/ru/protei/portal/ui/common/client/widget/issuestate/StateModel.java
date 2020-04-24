@@ -22,7 +22,6 @@ import java.util.*;
 
 import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.dict.En_CaseStateWorkflow.NO_WORKFLOW;
-import static ru.protei.portal.core.model.dict.En_CaseStateWorkflow.NX_JIRA;
 
 /**
  * Модель статусов
