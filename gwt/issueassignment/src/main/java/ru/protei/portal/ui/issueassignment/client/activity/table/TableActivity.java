@@ -32,7 +32,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.EnCaseStatesToCaseStateList;
+import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.EnCaseStatesToCaseState;
 
 public abstract class TableActivity implements Activity, AbstractTableActivity {
 
@@ -144,7 +144,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     private CaseQuery makeDefaultQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(EnCaseStatesToCaseStateList(Arrays.asList(
+        query.setStates(EnCaseStatesToCaseState(Arrays.asList(
                 En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE)));
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;

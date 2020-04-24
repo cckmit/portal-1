@@ -218,8 +218,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
         CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName() );
-        logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getState(), newState);
-        caseObj.setStateId(newState == null ? En_CaseState.CREATED.getId() : newState.getId());
+        logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getStateId(), newState);
+        caseObj.setState(newState == null ? new CaseState(En_CaseState.CREATED) : newState);
 
         En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
         logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.importanceLevel(), newImportance);

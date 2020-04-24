@@ -45,14 +45,11 @@ public class CaseStateWorkflowUtil {
         return En_CaseStateWorkflow.NO_WORKFLOW;
     }
 
-    public static List<Long> EnCaseStatesToIds(Collection<En_CaseState> enCaseStates) {
-        return enCaseStates.stream().map(en_caseState -> (long) en_caseState.getId()).collect(Collectors.toList());
+    public static List<CaseState> EnCaseStatesToCaseState(Collection<En_CaseState> enCaseStates) {
+        return enCaseStates.stream().map(CaseState::new).collect(Collectors.toList());
     }
 
     public static Set<CaseState> EnCaseStatesToCaseStateSet(Collection<En_CaseState> enCaseStates) {
         return enCaseStates.stream().map(en_caseState -> new CaseState((long)en_caseState.getId())).collect(Collectors.toSet());
-    }
-    public static List<CaseState> EnCaseStatesToCaseStateList(Collection<En_CaseState> enCaseStates) {
-        return enCaseStates.stream().map(en_caseState -> new CaseState((long)en_caseState.getId())).collect(Collectors.toList());
     }
 }

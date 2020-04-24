@@ -383,7 +383,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
-        caseObjectMeta.setStateId(En_CaseState.CREATED.getId());
+        caseObjectMeta.setState(new CaseState(En_CaseState.CREATED));
         caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 

@@ -128,7 +128,7 @@ public class CaseServiceImpl implements CaseService {
                 caseObject.setTimeElapsed(null);
             }
         } else {
-            caseObject.setStateId(En_CaseState.CREATED.getId());
+            caseObject.setState(new CaseState(En_CaseState.CREATED));
             caseObject.setTimeElapsed(null);
         }
 
@@ -465,13 +465,13 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
+    public Result<List<CaseState>> stateList( En_CaseType caseType ) {
         List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if (states == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return ok(states.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList()));
+        return ok(states);
     }
 
     @Override
@@ -751,7 +751,7 @@ public class CaseServiceImpl implements CaseService {
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
         if (En_CaseState.CREATED.isEquals(caseMeta.getState()) && caseMeta.getManager() != null) {
-            caseMeta.setStateId(En_CaseState.OPENED.getId());
+            caseMeta.setState(new CaseState(En_CaseState.OPENED));
         }
     }
 

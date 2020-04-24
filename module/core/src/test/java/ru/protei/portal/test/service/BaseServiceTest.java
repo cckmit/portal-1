@@ -65,8 +65,8 @@ public class BaseServiceTest {
     public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
         CaseObject caseObject = new CaseObject();
         caseObject.setName( "Test_Case_Name" );
-        caseObject.setCaseNumber(caseNo);
-        caseObject.setStateId( En_CaseState.CREATED.getId() );
+        caseObject.setCaseNumber( caseNo );
+        caseObject.setState( new CaseState(En_CaseState.CREATED) );
         caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );

@@ -133,7 +133,7 @@ public class BootstrapService {
                 caseObject.setCaseNumber(platform.getId());
                 caseObject.setCreated(new Date());
                 caseObject.setName(platform.getName());
-                caseObject.setStateId(En_CaseState.CREATED.getId());
+                caseObject.setState(new CaseState(En_CaseState.CREATED));
                 Long caseId = caseObjectDAO.persist(caseObject);
                 platform.setCaseId(caseId);
                 platformDAO.partialMerge(platform, "case_id");

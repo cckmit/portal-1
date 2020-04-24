@@ -7,10 +7,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -113,7 +110,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = new CaseObject();
         caseObject.setType(En_CaseType.EMPLOYEE_REGISTRATION);
-        caseObject.setStateId(En_CaseState.CREATED.getId());
+        caseObject.setState(new CaseState(En_CaseState.CREATED));
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.EMPLOYEE_REGISTRATION));
         caseObject.setCreated(new Date());
 

@@ -290,7 +290,7 @@ public class ReportCaseResolutionTime {
 
     static class Status {
 
-        public Status( Long created, int caseStateId ) {
+        public Status( Long created, long caseStateId ) {
             this.from = created;
             this.caseStateId = caseStateId;
         }
@@ -310,6 +310,6 @@ public class ReportCaseResolutionTime {
 
         Long to; // null - значит статус ещё длится (время завершения статуса окончательное или изменится в будущем)
         long from;
-        int caseStateId;
+        long caseStateId;
     }
 }

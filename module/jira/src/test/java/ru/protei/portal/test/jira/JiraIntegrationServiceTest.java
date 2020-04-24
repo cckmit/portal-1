@@ -134,7 +134,7 @@ public class JiraIntegrationServiceTest {
 
         caseEvent = jiraIntegrationService.updateOrCreate(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_UPDATED, issue));
         CaseObject object = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
-        Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
+        Assert.assertEquals("Issue not updated", (long)object.getState().getId(), En_CaseState.OPENED.getId());
     }
 
     @Test
@@ -164,7 +164,7 @@ public class JiraIntegrationServiceTest {
 
         for (CompletableFuture<AssembledCaseEvent> caseEvent : caseEvents) {
             CaseObject object = caseObjectDAO.get( caseEvent.get().getCaseObjectId() );
-            Assert.assertEquals( "Issue not updated", object.getState(), En_CaseState.OPENED );
+            Assert.assertEquals( "Issue not updated", (long)object.getState().getId(), En_CaseState.OPENED.getId() );
         }
     }
 

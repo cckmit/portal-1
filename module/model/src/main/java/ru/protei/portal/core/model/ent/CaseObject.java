@@ -447,13 +447,12 @@ public class CaseObject extends AuditableObject {
     }
 
     public CaseState getState () {
-        return new CaseState(this.stateId);
+        return new CaseState(En_CaseState.getById(stateId));
     }
 
     public void setState (CaseState state) {
         this.stateId = state.getId();
     }
-
 
     public En_ImportanceLevel importanceLevel () {
         return En_ImportanceLevel.getById(this.impLevel);

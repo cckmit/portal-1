@@ -34,6 +34,11 @@ public class CaseState implements Serializable {
         this.id = id;
     }
 
+    public CaseState(En_CaseState en_caseState) {
+        this.id = (long)en_caseState.getId();
+        this.state = en_caseState.getName();
+    }
+
     public Long getId() {
         return id;
     }
