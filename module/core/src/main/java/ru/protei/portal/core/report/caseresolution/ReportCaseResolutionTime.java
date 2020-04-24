@@ -67,7 +67,7 @@ public class ReportCaseResolutionTime {
 
         cases = groupBayIssues( comments );
 
-        Set<Integer> acceptableStates = new HashSet<Integer>( caseQuery.getStateIds() );
+        Set<Long> acceptableStates = new HashSet<>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {
             interval.fill( cases, acceptableStates );
         }
@@ -177,7 +177,7 @@ public class ReportCaseResolutionTime {
             this.to = to;
         }
 
-        public void fill( List<Case> cases, Set<Integer> acceptableStates ) {
+        public void fill( List<Case> cases, Set<Long> acceptableStates ) {
             for (Case aCase : cases) {
                 long time = aCase.getTime( this, acceptableStates );
                 if (time <= 0) {
@@ -212,7 +212,7 @@ public class ReportCaseResolutionTime {
     }
 
     public static class Case {
-        public long getTime( Interval interval, Set<Integer> acceptableStates ) {
+        public long getTime( Interval interval, Set<Long> acceptableStates ) {
 
             boolean hasIntersectionOnActiveInterval = false;
             long activeTime = 0;

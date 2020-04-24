@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
@@ -65,7 +66,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public HasValue<En_CaseState> state( ) {
+    public HasValue<CaseState> state( ) {
         return state;
     }
 
@@ -154,7 +155,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setStateFilter(Selector.SelectorFilter<En_CaseState> filter) {
+    public void setStateFilter(Selector.SelectorFilter<CaseState> filter) {
         state.setFilter(filter);
     }
 
@@ -420,7 +421,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @UiHandler("state")
-    public void onStateChanged(ValueChangeEvent<En_CaseState> event) {
+    public void onStateChanged(ValueChangeEvent<CaseState> event) {
         activity.onStateChange();
     }
 

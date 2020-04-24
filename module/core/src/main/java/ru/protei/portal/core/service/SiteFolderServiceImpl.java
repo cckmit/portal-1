@@ -398,7 +398,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         caseObject.setCaseNumber(platformId);
         caseObject.setCreated(new Date());
         caseObject.setName(name);
-        caseObject.setState(En_CaseState.CREATED);
+        caseObject.setStateId(En_CaseState.CREATED.getId());
         return caseObject;
     }
 

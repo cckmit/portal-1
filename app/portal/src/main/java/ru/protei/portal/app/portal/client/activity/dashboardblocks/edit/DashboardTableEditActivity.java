@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
@@ -26,6 +25,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.EnCaseStatesToIds;
 
 public abstract class DashboardTableEditActivity implements Activity, AbstractDashboardTableEditActivity, AbstractDialogDetailsActivity {
 
@@ -158,14 +159,14 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
+        query.setStateIds(EnCaseStatesToIds(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE)));
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
 
     private CaseQuery generateQueryActiveIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(issueStates.getActiveStates());
+        query.setStateIds(EnCaseStatesToIds(issueStates.getActiveStates()));
         List<Long> productIds = null;
         if (policyService.getProfile() != null) {
             productIds = new ArrayList<>();

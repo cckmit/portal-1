@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 
 import java.util.HashMap;
@@ -16,13 +17,14 @@ public class FieldMappingTest {
 
     @Test
     public void testStatusMapping () {
-        Map<String, En_CaseState> expectedMapping = new HashMap<>();
-        expectedMapping.put("Authorized", En_CaseState.CREATED);
-        expectedMapping.put("Studying", En_CaseState.OPENED);
-        expectedMapping.put("Request to customer", En_CaseState.CUST_REQUEST);
-        expectedMapping.put("Postpone", En_CaseState.PAUSED);
-        expectedMapping.put("Soft Close", En_CaseState.DONE);
-        expectedMapping.put("Nothing to change", En_CaseState.VERIFIED);
+        Map<String, CaseState> expectedMapping = new HashMap<>();
+        expectedMapping.put("Authorized", new CaseState((long)En_CaseState.CREATED.getId()));
+        expectedMapping.put("Studying", new CaseState((long)En_CaseState.OPENED.getId()));
+        expectedMapping.put("Postpone", new CaseState((long)En_CaseState.PAUSED.getId()));
+        expectedMapping.put("Soft Close", new CaseState((long)En_CaseState.DONE.getId()));
+        expectedMapping.put("Nothing to change", new CaseState((long)En_CaseState.VERIFIED.getId()));
+        expectedMapping.put("Request to customer", new CaseState((long)En_CaseState.CUST_REQUEST.getId()));
+        expectedMapping.put("Request to NX", new CaseState((long)En_CaseState.NX_REQUEST.getId()));
 
         expectedMapping.forEach((key,state) -> {
             Assert.assertEquals(state, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key));

@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
@@ -166,7 +167,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Set<En_CaseState>> states() {
+    public HasValue<Set<CaseState>> states() {
         return state;
     }
 
@@ -326,7 +327,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter) {
+    public void setStateFilter(Selector.SelectorFilter<CaseState> caseStateFilter) {
         state.setFilter(caseStateFilter);
     }
 
@@ -412,7 +413,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @UiHandler("state")
-    public void onStateSelected(ValueChangeEvent<Set<En_CaseState>> event) {
+    public void onStateSelected(ValueChangeEvent<Set<CaseState>> event) {
         onFilterChanged();
     }
 

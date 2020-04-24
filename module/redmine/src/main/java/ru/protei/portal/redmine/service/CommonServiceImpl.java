@@ -91,7 +91,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Result<RedmineStatusMapEntry> getRedmineStatus( En_CaseState initState, En_CaseState lastState, long statusMapId ) {
+    public Result<RedmineStatusMapEntry> getRedmineStatus( CaseState initState, CaseState lastState, long statusMapId ) {
         return ok( statusMapEntryDAO.getRedmineStatus( initState, lastState, statusMapId) );
     }
 

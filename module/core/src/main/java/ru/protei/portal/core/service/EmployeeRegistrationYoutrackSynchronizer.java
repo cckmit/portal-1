@@ -201,7 +201,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private boolean saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = caseObjectDAO.get(employeeRegistration.getId());
-        caseObject.setState(employeeRegistration.getState());
+        caseObject.setStateId(employeeRegistration.getState().getId());
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
     }
 

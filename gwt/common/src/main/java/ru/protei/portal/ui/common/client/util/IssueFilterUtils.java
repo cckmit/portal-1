@@ -3,8 +3,8 @@ package ru.protei.portal.ui.common.client.util;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -67,23 +67,23 @@ public class IssueFilterUtils {
     }
 
 
-    public static Set< En_CaseState > getStates( List< Integer > statesIdList ) {
+    public static Set< CaseState > getStates( List< Long > statesIdList ) {
         if ( statesIdList == null || statesIdList.isEmpty() ) {
             return null;
         }
-        Set< En_CaseState > states = new HashSet<>();
-        for ( Integer id : statesIdList ) {
-            states.add( En_CaseState.getById( Long.valueOf( id ) ) );
+        Set< CaseState > states = new HashSet<>();
+        for ( Long id : statesIdList ) {
+            states.add( new CaseState( id ) );
         }
         return states;
     }
 
-    public static List< En_CaseState > getStateList( Set< En_CaseState > stateSet ) {
+    public static List< CaseState > getStateList( Set< CaseState > stateSet ) {
 
         if ( stateSet == null || stateSet.isEmpty() ) {
             return null;
         }
-        List< En_CaseState > list = new ArrayList<>(  );
+        List< CaseState > list = new ArrayList<>(  );
         list.addAll( stateSet );
         return list;
     }

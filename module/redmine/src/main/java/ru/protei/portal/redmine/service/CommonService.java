@@ -52,7 +52,7 @@ public interface CommonService {
     Result<RedminePriorityMapEntry> getByPortalPriorityId( Integer impLevel, long priorityMapId );
 
     Result<RedmineToCrmEntry> getLocalStatus( long statusMapId, Integer statusId );
-    Result<RedmineStatusMapEntry> getRedmineStatus( En_CaseState initState, En_CaseState lastState, long statusMapId );
+    Result<RedmineStatusMapEntry> getRedmineStatus( CaseState initState, CaseState lastState, long statusMapId );
 
 
     Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint );

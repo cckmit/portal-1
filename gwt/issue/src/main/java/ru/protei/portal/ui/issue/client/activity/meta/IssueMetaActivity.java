@@ -79,7 +79,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
-        if (metaView.state().getValue().equals(En_CaseState.CREATED) && meta.getManager() != null){
+        if (En_CaseState.CREATED.isEquals(metaView.state().getValue()) && meta.getManager() != null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
             metaView.state().setValue(meta.getState());
             return;
@@ -87,10 +87,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         meta.setStateId(metaView.state().getValue().getId());
 
-        meta.setPauseDate((!En_CaseState.PAUSED.equals(meta.getState()) || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
-        metaView.pauseDate().setValue(!En_CaseState.PAUSED.equals(meta.getState()) ? null : metaView.pauseDate().getValue());
+        meta.setPauseDate((!En_CaseState.PAUSED.isEquals(meta.getState()) || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
+        metaView.pauseDate().setValue(!En_CaseState.PAUSED.isEquals(meta.getState()) ? null : metaView.pauseDate().getValue());
 
-        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(meta.getState()));
+        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.isEquals(meta.getState()));
 
         if (!isPauseDateValid(meta.getState(), meta.getPauseDate())) {
             metaView.setPauseDateValid(false);
@@ -173,7 +173,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         issueService.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
                 .withSuccess(caseMetaUpdated -> {
-                    meta.setState(caseMetaUpdated.getState());
+                    meta.setStateId(caseMetaUpdated.getStateId());
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
                     if(runAfterUpdate!=null) runAfterUpdate.run();
@@ -497,9 +497,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed( meta.isPrivateCase()));
     }
 
-    private boolean isStateWithRestrictions(En_CaseState caseState) {
-        return !En_CaseState.CREATED.equals(caseState) &&
-                !En_CaseState.CANCELED.equals(caseState);
+    private boolean isStateWithRestrictions(CaseState caseState) {
+        return !En_CaseState.CREATED.isEquals(caseState) &&
+                !En_CaseState.CANCELED.isEquals(caseState);
     }
 
     private String transliteration(String input) {
@@ -510,8 +510,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return caseMetaJira != null;
     }
 
-    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
-        if (!En_CaseState.PAUSED.equals(currentState)) {
+    private boolean isPauseDateValid(CaseState currentState, Long pauseDate) {
+        if (!En_CaseState.PAUSED.isEquals(currentState)) {
             return true;
         }
 

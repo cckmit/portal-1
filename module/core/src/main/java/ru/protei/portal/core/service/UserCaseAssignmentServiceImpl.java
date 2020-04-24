@@ -5,7 +5,6 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserCaseAssignmentDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -145,11 +144,11 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         if (CollectionUtils.isEmpty(userCaseAssignments)) {
             return null;
         }
-        List<Integer> stateIds = userCaseAssignments.stream()
+        List<Long> stateIds = userCaseAssignments.stream()
                 .filter(c -> c.getTableEntity() == En_TableEntity.COLUMN)
                 .map(UserCaseAssignment::getStates)
                 .flatMap(Collection::stream) // flatten
-                .map(En_CaseState::getId)
+                .map(en_caseState -> (long)en_caseState.getId())
                 .distinct()
                 .collect(Collectors.toList());
         List<Long> managerIds = userCaseAssignments.stream()

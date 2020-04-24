@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -32,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.EnCaseStatesToCaseStateSet;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
@@ -321,9 +323,10 @@ public class IssueFilterWidget extends Composite {
 
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
-    private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,
-            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND,
-            En_CaseState.INFO_REQUEST, En_CaseState.NX_REQUEST, En_CaseState.CUST_REQUEST));
+    private Set<CaseState> activeStates = EnCaseStatesToCaseStateSet(Arrays.asList(
+            En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE,
+            En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND, En_CaseState.INFO_REQUEST,
+            En_CaseState.NX_REQUEST, En_CaseState.CUST_REQUEST));
 
     private static IssueFilterWidget.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterWidget.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterWidget> {}

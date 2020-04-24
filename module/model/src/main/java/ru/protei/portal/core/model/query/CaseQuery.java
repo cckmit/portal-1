@@ -2,10 +2,10 @@ package ru.protei.portal.core.model.query;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 
@@ -39,7 +39,7 @@ public class CaseQuery extends BaseQuery {
 
     private En_CaseType type;
 
-    private List<Integer> stateIds;
+    private List<Long> stateIds;
 
     private List<Integer> importanceIds;
 
@@ -207,17 +207,17 @@ public class CaseQuery extends BaseQuery {
         this.type = type;
     }
 
-    public List<Integer> getStateIds() {
+    public List<Long> getStateIds() {
         return stateIds;
     }
 
-    public void setStateIds(List<Integer> stateIds) { this.stateIds = stateIds; }
+    public void setStateIds(List<Long> stateIds) { this.stateIds = stateIds; }
 
     @JsonIgnore
-    public void setStates(List<En_CaseState> states) {
-        List<Integer> stateIds = null;
+    public void setStates(List<CaseState> states) {
+        List<Long> stateIds = null;
         if (states != null && !states.isEmpty()){
-            stateIds = states.stream().map(En_CaseState::getId).collect(Collectors.toList());
+            stateIds = states.stream().map(CaseState::getId).collect(Collectors.toList());
         }
         this.setStateIds(stateIds);
     }

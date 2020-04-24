@@ -64,8 +64,8 @@ public final class JiraStatusMapEntry implements Serializable {
         this.localStatusName = localStatusName;
     }
 
-    public En_CaseState getLocalStatus() {
-        return En_CaseState.getById((long) localStatusId);
+    public CaseState getLocalStatus() {
+        return new CaseState((long) localStatusId);
     }
 
     public String getInfo() {

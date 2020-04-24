@@ -133,10 +133,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportance() == null ? null : oldMetaState.getImportance().getCode());
 
         templateModel.put("caseChanged", event.isCaseStateChanged());
-        templateModel.put("caseState", newMetaState.getState() == null ? null : newMetaState.getState().getName());
-        templateModel.put("oldCaseState", oldMetaState == null || oldMetaState.getState() == null ? null : oldMetaState.getState().getName());
+        templateModel.put("caseState", newMetaState.getState() == null ? null : newMetaState.getState().getState());
+        templateModel.put("oldCaseState", oldMetaState == null || oldMetaState.getState() == null ? null : oldMetaState.getState().getState());
 
-        templateModel.put("isPausedState", En_CaseState.PAUSED.equals(newMetaState.getState()));
+        templateModel.put("isPausedState", En_CaseState.PAUSED.isEquals(newMetaState.getState()));
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
         templateModel.put("pauseDate", newMetaState.getPauseDate() == null ? null : new Date(newMetaState.getPauseDate()));
         templateModel.put("oldPauseDate", (oldMetaState == null || oldMetaState.getPauseDate() == null) ? null : new Date(oldMetaState.getPauseDate()));
@@ -176,7 +176,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "TranslitUtils", new TransliterationUtils() );
         templateModel.put( "author", currentPerson );
         templateModel.put( "caseNumber", caseObject.getCaseNumber() );
-        templateModel.put( "caseState", caseMeta.getState() == null ? null : caseMeta.getState().getName() );
+        templateModel.put( "caseState", caseMeta.getState() == null ? null : caseMeta.getState().getState() );
         templateModel.put( "importanceLevel", caseMeta.getImportance() == null ? null : caseMeta.getImportance().getCode() );
         templateModel.put( "productName", caseMeta.getProduct() == null ? null : caseMeta.getProduct().getName() );
 

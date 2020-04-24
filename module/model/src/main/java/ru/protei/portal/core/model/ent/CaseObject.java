@@ -446,11 +446,11 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public En_CaseState getState () {
-        return En_CaseState.getById(this.stateId);
+    public CaseState getState () {
+        return new CaseState(this.stateId);
     }
 
-    public void setState (En_CaseState state) {
+    public void setState (CaseState state) {
         this.stateId = state.getId();
     }
 

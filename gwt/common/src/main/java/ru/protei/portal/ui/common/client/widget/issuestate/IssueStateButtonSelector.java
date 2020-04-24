@@ -1,10 +1,9 @@
 package ru.protei.portal.ui.common.client.widget.issuestate;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
-import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -12,7 +11,7 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> implements SelectorWithModel<En_CaseState> {
+public class IssueStateButtonSelector extends ButtonSelector<CaseState> implements SelectorWithModel<CaseState> {
 
     @Inject
     public void init(StateModel model, En_CaseStateLang lang) {
@@ -21,13 +20,13 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
     }
 
     @Override
-    public void setValue(En_CaseState value, boolean fireEvents) {
+    public void setValue(CaseState value, boolean fireEvents) {
         onValueSet(value);
         super.setValue(value, fireEvents);
     }
 
     @Override
-    public void fillOptions(List<En_CaseState> options) {
+    public void fillOptions(List<CaseState> options) {
         clearOptions();
         if (defaultValue != null) {
             addOption(null);
@@ -46,7 +45,7 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
         this.defaultValue = defaultValue;
     }
 
-    private void onValueSet(En_CaseState caseState) {
+    private void onValueSet(CaseState caseState) {
         if (model == null || workflow == null) {
             // widget has not been configured properly yet
             return;
@@ -55,23 +54,23 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
         model.subscribe(this, workflow, caseState);
     }
 
-    private DisplayOptionCreator<En_CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
+    private DisplayOptionCreator<CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
             return caseState -> new DisplayOption(makeCaseStateName(caseState));
         }
-        return new DisplayOptionCreator<En_CaseState>() {
+        return new DisplayOptionCreator<CaseState>() {
             @Override
-            public DisplayOption makeDisplayOption(En_CaseState caseState) {
+            public DisplayOption makeDisplayOption(CaseState caseState) {
                 return new DisplayOption(makeCaseStateName(caseState));
             }
             @Override
-            public DisplayOption makeDisplaySelectedOption(En_CaseState caseState) {
+            public DisplayOption makeDisplaySelectedOption(CaseState caseState) {
                 return new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
             }
         };
     }
 
-    private String makeCaseStateName(En_CaseState caseState) {
+    private String makeCaseStateName(CaseState caseState) {
         return caseState == null ? defaultValue : lang.getStateName(caseState);
     }
 

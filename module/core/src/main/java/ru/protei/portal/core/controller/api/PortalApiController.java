@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
@@ -57,6 +58,8 @@ public class PortalApiController {
     private EmployeeService employeeService;
     @Autowired
     private CaseTagService caseTagService;
+    @Autowired
+    private CaseStateDAO caseStateDAO;
 
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
@@ -355,12 +358,14 @@ public class PortalApiController {
         return query;
     }
 
-    private List<Integer> getCaseStateIdList(List<String> states) {
-        List<Integer> stateIds = null;
+    private List<Long> getCaseStateIdList(List<String> states) {
+        List<CaseState> allByCaseType = caseStateDAO.getAllByCaseType(En_CaseType.CRM_SUPPORT);
+
+        List<Long> stateIds = null;
         if (CollectionUtils.isNotEmpty(states)) {
-            stateIds = Arrays.asList(En_CaseState.values()).stream()
-                    .filter(state -> states.contains(state.name()))
-                    .map(En_CaseState::getId)
+            stateIds = allByCaseType.stream()
+                    .filter(state -> states.contains(state.getState()))
+                    .map(CaseState::getId)
                     .collect(Collectors.toList());
         }
         return stateIds;

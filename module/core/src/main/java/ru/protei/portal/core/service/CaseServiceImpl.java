@@ -128,7 +128,7 @@ public class CaseServiceImpl implements CaseService {
                 caseObject.setTimeElapsed(null);
             }
         } else {
-            caseObject.setState(En_CaseState.CREATED);
+            caseObject.setStateId(En_CaseState.CREATED.getId());
             caseObject.setTimeElapsed(null);
         }
 
@@ -620,12 +620,12 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistStateMessage(Long authorId, Long caseId, En_CaseState state) {
+    private Long createAndPersistStateMessage(Long authorId, Long caseId, CaseState state) {
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseStateId((long)state.getId());
+        stateChangeMessage.setCaseStateId(state.getId());
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -709,8 +709,8 @@ public class CaseServiceImpl implements CaseService {
 
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
-        return oldMeta.getState() == En_CaseState.VERIFIED &&
-                newMeta.getState() != En_CaseState.VERIFIED &&
+        return En_CaseState.VERIFIED.isEquals(oldMeta.getState()) &&
+                !En_CaseState.VERIFIED.isEquals(newMeta.getState())  &&
                 !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
     }
 
@@ -750,12 +750,12 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
-        if (caseMeta.getState() == En_CaseState.CREATED && caseMeta.getManager() != null) {
-            caseMeta.setState(En_CaseState.OPENED);
+        if (En_CaseState.CREATED.isEquals(caseMeta.getState()) && caseMeta.getManager() != null) {
+            caseMeta.setStateId(En_CaseState.OPENED.getId());
         }
     }
 
-    private boolean isCaseStateTransitionValid(En_CaseStateWorkflow workflow, En_CaseState caseStateFrom, En_CaseState caseStateTo) {
+    private boolean isCaseStateTransitionValid(En_CaseStateWorkflow workflow, CaseState caseStateFrom, CaseState caseStateTo) {
         if (caseStateFrom == caseStateTo) {
             return true;
         }
@@ -802,12 +802,13 @@ public class CaseServiceImpl implements CaseService {
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
     }
 
-    private boolean isStateValid(En_CaseState caseState, Long managerId, Long pauseDate) {
-        if (!(listOf(En_CaseState.CREATED, En_CaseState.CANCELED).contains(caseState)) && managerId == null) {
+    private boolean isStateValid(CaseState caseState, Long managerId, Long pauseDate) {
+        if (!(listOf(En_CaseState.CREATED.getId(), En_CaseState.CANCELED.getId())
+                .contains(caseState.getId().intValue())) && managerId == null) {
             return false;
         }
 
-        if (En_CaseState.PAUSED.equals(caseState)) {
+        if (En_CaseState.PAUSED.isEquals(caseState)) {
             return pauseDate != null && (System.currentTimeMillis() < pauseDate);
         }
 

@@ -144,11 +144,11 @@ public class CaseObjectMeta extends AuditableObject {
         this.stateId = stateId;
     }
 
-    public En_CaseState getState() {
-        return En_CaseState.getById(getStateId());
+    public CaseState getState() {
+        return new CaseState(getStateId());
     }
 
-    public void setState(En_CaseState state) {
+    public void setState(CaseState state) {
         setStateId(state.getId());
     }
 

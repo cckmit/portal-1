@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
@@ -33,7 +34,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
-    void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
+    void setStateFilter(Selector.SelectorFilter<CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
     void fillImportanceOptions(List<En_ImportanceLevel> options);
 
@@ -71,7 +72,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility jiraSlaSelectorVisibility();
 
     HasValue<En_TimeElapsedType> timeElapsedType();
-    HasValue<En_CaseState> state();
+    HasValue<CaseState> state();
     HasValue<En_ImportanceLevel> importance();
 
     void setProduct(DevUnit product);

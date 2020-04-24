@@ -267,7 +267,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPauseDateChanged() {
-        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(),
+                issueMetaView.pauseDate().getValue() == null ? null
+                        : issueMetaView.pauseDate().getValue().getTime()));
     }
 
     @Override
@@ -328,7 +330,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
-        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.isEquals(caseObjectMeta.getState()));
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
@@ -381,7 +383,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
-        caseObjectMeta.setState(En_CaseState.CREATED);
+        caseObjectMeta.setStateId(En_CaseState.CREATED.getId());
         caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 
@@ -530,9 +532,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
     }
 
-    private boolean isStateWithRestrictions(En_CaseState caseState) {
-        return !En_CaseState.CREATED.equals(caseState) &&
-                !En_CaseState.CANCELED.equals(caseState);
+    private boolean isStateWithRestrictions(CaseState caseState) {
+        return !En_CaseState.CREATED.isEquals(caseState) &&
+                !En_CaseState.CANCELED.isEquals(caseState);
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -543,8 +545,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE);
     }
 
-    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
-        if (!En_CaseState.PAUSED.equals(currentState)) {
+    private boolean isPauseDateValid(CaseState currentState, Long pauseDate) {
+        if (!En_CaseState.PAUSED.isEquals(currentState)) {
             return true;
         }
 

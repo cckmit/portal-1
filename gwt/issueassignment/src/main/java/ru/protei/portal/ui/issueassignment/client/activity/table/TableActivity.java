@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.issueassignment.client.activity.table;
 
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -33,6 +31,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.EnCaseStatesToCaseStateList;
 
 public abstract class TableActivity implements Activity, AbstractTableActivity {
 
@@ -144,7 +144,8 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     private CaseQuery makeDefaultQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
+        query.setStates(EnCaseStatesToCaseStateList(Arrays.asList(
+                En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE)));
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
