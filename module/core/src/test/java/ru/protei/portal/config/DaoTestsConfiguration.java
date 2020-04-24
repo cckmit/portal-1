@@ -336,6 +336,9 @@ public class DaoTestsConfiguration {
         return new CompanyImportanceItemDAO_Impl();
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() { return new SubnetDAO_Impl(); }
 
-
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() { return new ReservedIpDAO_Impl(); }
 }

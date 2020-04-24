@@ -283,6 +283,9 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public IpReservationService getIpReservationService() { return new IpReservationServiceImpl(); }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }

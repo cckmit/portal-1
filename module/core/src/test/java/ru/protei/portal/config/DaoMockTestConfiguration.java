@@ -328,5 +328,9 @@ public class DaoMockTestConfiguration {
         return mock(CompanyImportanceItemDAO.class);
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() { return mock(SubnetDAO.class); }
 
+    @Bean
+    public ReservedIpDAO getReservedIpAO() { return mock(ReservedIpDAO.class); }
 }
