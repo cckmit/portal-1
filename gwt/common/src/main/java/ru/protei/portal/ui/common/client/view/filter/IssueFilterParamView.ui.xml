@@ -94,7 +94,7 @@
                 <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
             </div>
 
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-4" title="{lang.issueImportanceCheckHistoryTitle}">
                 <label ui:field="notifyLabel" class="m-r-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
                 <switcher:Switcher ui:field="checkImportanceHistory"/>
             </div>

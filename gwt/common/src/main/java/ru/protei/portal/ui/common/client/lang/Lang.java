@@ -492,6 +492,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueImportanceCheckHistory();
 
+    String issueImportanceCheckHistoryTitle();
+
     String issueCompany();
 
     String issueInitiator();
