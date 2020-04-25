@@ -63,6 +63,10 @@ public class ToggleButton
         }
     }
 
+    public void setTooltip( String tooltip ) {
+        button.setTitle(tooltip);
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler( final ValueChangeHandler<Boolean> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );

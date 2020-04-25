@@ -11,6 +11,8 @@ public class CrmConstants {
     public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
     public static final int EMAIL_MAX_SIZE = 254;
 
+    public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
+
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
         String FILE_ITEM = "file-item";
@@ -55,6 +57,7 @@ public class CrmConstants {
     public interface Masks {
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
+        String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
     }
 
     public interface Time {
@@ -91,5 +94,25 @@ public class CrmConstants {
 
     public interface ImportanceLevel {
         List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
+    }
+
+    public interface Company {
+        long HOME_COMPANY_ID = 1L;
+        long MAIN_HOME_COMPANY_ID = 3084L;
+        String MAIN_HOME_COMPANY_NAME = "Протей";
+    }
+
+    public interface LocaleTags {
+        String RU = "ru";
+        String EN = "en";
+    }
+
+    public interface LinkStart {
+        String HTTP = "http://";
+        String HTTPS = "https://";
+    }
+
+    public interface Redmine {
+        String NO_CONTENT_TYPE = "application/octet-stream";
     }
 }

@@ -116,6 +116,7 @@ public class SelectorPopupWithSearch extends BasePopupView
         }
     }
 
+    @Override
     public void setAddButton(boolean addVisible, String text) {
         addButton.setText(text);
         setAddButton(addVisible);
@@ -141,6 +142,7 @@ public class SelectorPopupWithSearch extends BasePopupView
             search.setValue( "" );
     }
 
+    @Override
     public void setAddButtonVisibility(boolean isVisible) {
         addButton.setVisible( isVisible );
     }

@@ -18,7 +18,7 @@
                         <a ui:field="wikiLink" href="#" target="_blank"/>
                     </div>
 
-                    <div class="small">
+                    <div class="markdown">
                         <span ui:field="info"/>
                     </div>
 

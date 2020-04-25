@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
+import static ru.protei.portal.core.model.util.CrmConstants.Redmine.NO_CONTENT_TYPE;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 import static ru.protei.portal.redmine.enums.RedmineChangeType.*;
 import static ru.protei.portal.redmine.utils.CachedPersonMapper.isTechUser;
@@ -284,7 +285,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             a.setCreatorId( author.getId() );
             a.setDataSize( attachment.getFileSize() );
             a.setFileName( attachment.getFileName() );
-            a.setMimeType( attachment.getContentType() );
+            a.setMimeType( attachment.getContentType() != null ? attachment.getContentType() : NO_CONTENT_TYPE );
             a.setLabelText( attachment.getDescription() );
 
 

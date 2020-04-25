@@ -23,10 +23,32 @@ public class EmployeeSqlBuilder {
                 args.add(query.getFired() ? 1 : 0);
             }
 
+
             if (query.getDeleted() != null) {
                 condition.append(" and person.isdeleted=?");
                 args.add(query.getDeleted() ? 1 : 0);
             }
+
+            if (query.getFirstName() != null) {
+                condition.append(" and person.firstname=?");
+                args.add(query.getFirstName());
+            }
+
+            if (query.getLastName() != null) {
+                condition.append(" and person.lastname=?");
+                args.add(query.getLastName());
+            }
+
+            if (query.getBirthday() != null) {
+                condition.append(" and person.birthday=?");
+                args.add(query.getBirthday());
+            }
+
+            if (query.getSecondName() != null) {
+                condition.append(" and person.secondname=?");
+                args.add(query.getSecondName());
+            }
+
 
             if (query.getOnlyPeople() != null) {
                 condition.append(" and person.sex != ?");
@@ -85,6 +107,13 @@ public class EmployeeSqlBuilder {
                         .append(" where cd.dep_name like ? or cd2.dep_name like ?)");
                 args.add(helper);
                 args.add(helper);
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getHomeCompanies())) {
+                condition.append(" and person.id in ")
+                        .append("(select personId from worker_entry where active > 0 and companyId in ")
+                        .append(HelperFunc.makeInArg(query.getHomeCompanies(), s -> String.valueOf(s.getId())))
+                        .append(")");
             }
         });
     }

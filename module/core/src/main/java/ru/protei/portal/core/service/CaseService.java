@@ -84,5 +84,4 @@ public interface CaseService {
 
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
-
 }

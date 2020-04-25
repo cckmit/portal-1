@@ -38,4 +38,52 @@
         </createView>
     </changeSet>
 
+    <changeSet id="re-add-company_importance_item-table" author="eliseev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="company_importance_item"/>
+            </not>
+        </preConditions>
+        <createTable tableName="company_importance_item">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="company_id" type="BIGINT" />
+            <column name="importance_level_id" type="INT" />
+            <column name="order_number" type="INT" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="re-add-company_importance_item-importance_level-fk" author="eliseev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="company_importance_item"
+                foreignKeyName="company_importance_item-importance_level-id-fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableName="company_importance_item"
+                baseColumnNames="importance_level_id"
+                constraintName="company_importance_item-importance_level-id-fk"
+                referencedTableName="importance_level"
+                referencedColumnNames="id"
+                onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="re-add-company_importance_item-company-fk" author="eliseev">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="company_importance_item"
+                                            foreignKeyName="company_importance_item-company-id-fk"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                baseTableName="company_importance_item"
+                baseColumnNames="company_id"
+                constraintName="company_importance_item-company-id-fk"
+                referencedTableName="company"
+                referencedColumnNames="id"
+                onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
 </databaseChangeLog>

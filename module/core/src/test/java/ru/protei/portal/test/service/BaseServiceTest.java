@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -293,4 +294,6 @@ public class BaseServiceTest {
     protected JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     protected UserRoleDAO userRoleDAO;
+    @Autowired
+    protected ProjectService projectService;
 }

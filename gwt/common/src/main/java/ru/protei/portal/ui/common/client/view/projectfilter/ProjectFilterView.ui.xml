@@ -2,29 +2,38 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
+             xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
+             xmlns:employee="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:district="urn:import:ru.protei.portal.ui.common.client.widget.selector.district"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:item="urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item">
+>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.productDirection}"/></label>
-                    <productdirection:ProductDirectionButtonSelector ui:field="direction" />
+                    <productdirection:ProductDirectionMultiSelector ui:field="direction" />
                 </div>
-                <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.regionDistrict}"/></label>
-                    <district:DistrictBtnGroupMulti ui:field="districts" />
-                </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.regionState}"/></label>
                     <state:RegionStateBtnGroupMulti ui:field="states" />
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-4 resize-md-12">
+                    <label><ui:text from="{lang.regions}"/></label>
+                    <region:RegionMultiSelector ui:field="regions" />
+                </div>
+                <div class="form-group col-md-4 resize-md-12">
+                    <label><ui:text from="{lang.projectHeadManager}"/></label>
+                    <employee:EmployeeMultiSelector ui:field="headManagers" />
+                </div>
+                <div class="form-group col-md-4 resize-md-12">
+                    <label><ui:text from="{lang.projectTeam}"/></label>
+                    <employee:EmployeeMultiSelector ui:field="caseMembers" />
+                </div>
+                <div class="form-group col-md-4 resize-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
                         <sortfieldselector:SortFieldSelector ui:field="sortField" type="PRODUCT"/>

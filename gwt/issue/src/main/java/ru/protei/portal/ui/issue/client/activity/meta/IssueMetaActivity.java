@@ -6,10 +6,7 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
@@ -18,20 +15,20 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.service.SLAControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -57,6 +54,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta = event.meta;
         caseMetaJira = event.metaJira;
         metaNotifiers = event.metaNotifiers;
+        slaList = new ArrayList<>();
 
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
@@ -87,13 +85,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
         meta.setStateId(metaView.state().getValue().getId());
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueStateChanged( meta.getId() ) ) );
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
     }
 
     @Override
     public void onImportanceChanged() {
         meta.setImpLevel(metaView.importance().getValue().getId());
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueImportanceChanged( meta.getId() ) ) );
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId())));
+
+        if (!isJiraIssue()) {
+            fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel()));
+        }
     }
 
     @Override
@@ -117,7 +119,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onPlatformChanged() {
         meta.setPlatform(metaView.platform().getValue());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged(meta);
+        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
     }
 
     @Override
@@ -247,8 +250,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setInitiator(initiator);
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
 
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
     }
 
     @Override
@@ -354,6 +358,50 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setManager( meta.getManager() );
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
+
+        metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
+        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+    }
+
+    private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+        if (!isSystemScope()) {
+            return;
+        }
+
+        if (isJiraIssue()) {
+            return;
+        }
+
+        if (platformId == null) {
+            slaList = DefaultSlaValues.getList();
+            metaView.setValuesContainerWarning(true);
+            metaView.setSlaTimesContainerTitle(lang.projectSlaDefaultValues());
+            slaConsumer.accept(slaList);
+            return;
+        }
+
+        slaService.getSlaByPlatformId(platformId, new FluentCallback<List<ProjectSla>>()
+                .withSuccess(result -> {
+                    slaList = result.isEmpty() ? DefaultSlaValues.getList() : result;
+                    metaView.setValuesContainerWarning(result.isEmpty());
+                    metaView.setSlaTimesContainerTitle(result.isEmpty() ? lang.projectSlaDefaultValues() : lang.projectSlaSetValuesByManager());
+                    slaConsumer.accept(slaList);
+                })
+        );
+    }
+
+    private ProjectSla getSlaByImportanceLevel(List<ProjectSla> slaList, final int importanceLevelId) {
+        return slaList
+                .stream()
+                .filter(sla -> Objects.equals(importanceLevelId, sla.getImportanceLevelId()))
+                .findAny()
+                .orElse(new ProjectSla());
+    }
+
+    private void fillSla(ProjectSla sla) {
+        metaView.slaReactionTime().setTime(sla.getReactionTime());
+        metaView.slaTemporarySolutionTime().setTime(sla.getTemporarySolutionTime());
+        metaView.slaFullSolutionTime().setTime(sla.getFullSolutionTime());
     }
 
     private boolean validateCaseMeta(CaseObjectMeta caseMeta) {
@@ -428,6 +476,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
+    private boolean isJiraIssue() {
+        return caseMetaJira != null;
+    }
+
+    private boolean isSystemScope() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+    }
 
     @Inject
     AbstractIssueMetaView metaView;
@@ -443,6 +498,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     CompanyControllerAsync companyService;
     @Inject
     CaseStateFilterProvider caseStateFilter;
+    @Inject
+    SLAControllerAsync slaService;
 
     @ContextAware
     CaseObjectMeta meta;
@@ -454,6 +511,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private boolean readOnly;
+    private List<ProjectSla> slaList;
 
     private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
 

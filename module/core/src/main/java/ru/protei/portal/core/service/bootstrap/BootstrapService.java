@@ -52,7 +52,7 @@ public class BootstrapService {
         uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
-        fillImportanceLevels();
+        //fillImportanceLevels();
     }
 
     private void fillImportanceLevels() {

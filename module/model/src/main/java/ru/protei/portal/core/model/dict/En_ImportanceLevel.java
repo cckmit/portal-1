@@ -15,15 +15,13 @@ public enum En_ImportanceLevel  {
     COSMETIC (4, "cosmetic"),
     MEDIUM (5, "medium");
 
+    private final int id;
+    private final String code;
 
     En_ImportanceLevel (int id, String code) {
         this.id = id;
         this.code = code;
     }
-
-    private final int id;
-    private final String code;
-
 
     public static En_ImportanceLevel getById(Integer id) {
         if(id == null)

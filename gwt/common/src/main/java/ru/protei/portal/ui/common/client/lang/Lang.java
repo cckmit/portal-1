@@ -123,6 +123,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errUnknownResult();
 
+    String errWorkerWithThisPositionAlreadyExist();
+
+    String errWorkerWithThisDepartmentAlreadyExist();
+
+    String errPositionAlreadyExistInThisCompany();
+
+    String errEmployeeAlreadyExist();
+
+    String errEmployeeNotFiredFromThisCompany();
+
+    String errDepartmentAlreadyExistInThisCompany();
+
     String companyInfoHeader();
 
     String companyCommonHeader();
@@ -466,6 +478,8 @@ public interface Lang extends Messages, ContactItemLang {
     String regionState();
 
     String regionDistrict();
+
+    String regionNotSpecified();
 
     String productDirection();
 
@@ -1335,7 +1349,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeShowFired();
 
+    String employeeFireConfirmMessage();
+
+    String employeeFire();
+
+    String employeeSaved();
+
+    String employeeMainInfoTitle();
+
+    String employeeContactInfoTitle();
+
     String initiatorSelectACompany();
+
     String serverAccessParamsColumn();
 
     String contactPhone();
@@ -1692,6 +1717,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
+    String reportTypeProject();
+
     String reportScheduledType();
 
     String reportScheduledTypeNone();
@@ -1940,6 +1967,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectSiteFolder();
 
+    String productDirectionNotSpecified();
+
     String issueInitiatorInfo();
 
     String errNotAllowedChangeIssueNameOrDescription();
@@ -2076,6 +2105,30 @@ public interface Lang extends Messages, ContactItemLang {
 
     String backToEmployees();
 
+    String departmentAddButton();
+
+    String departmentSelectCompanyLabel();
+
+    String departmentName();
+
+    String departmentCompany();
+
+    String departmentEdit();
+
+    String departmentCreate();
+
+    String positionAddButton();
+
+    String positionSelectCompanyLabel();
+
+    String positionName();
+
+    String positionCompany();
+
+    String positionEdit();
+
+    String positionCreate();
+
     String employeeDepartmentHead();
 
     String employeePosition();
@@ -2161,6 +2214,10 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSlaNotValid();
 
     String projectTeamRole();
+
+    String projectSlaSetValuesByManager();
+
+    String projectSlaDefaultValues();
 
     String companyCategoryCustomer();
 

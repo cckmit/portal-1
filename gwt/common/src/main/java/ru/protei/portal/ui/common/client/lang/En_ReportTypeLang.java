@@ -18,6 +18,7 @@ public class En_ReportTypeLang {
             case CASE_OBJECTS: return lang.reportTypeCaseObjects();
             case CASE_TIME_ELAPSED: return lang.reportTypeCaseTimeElapsed();
             case CASE_RESOLUTION_TIME: return lang.reportTypeCaseResolutionTime();
+            case PROJECT: return lang.reportTypeProject();
             default: return lang.unknownField();
         }
     }

@@ -26,5 +26,7 @@ public interface SelectorPopup {
 
     void setAddButtonVisibility( boolean isVisible );
 
+    void setAddButton(boolean addVisible, String text);
+
     void hide();
 }

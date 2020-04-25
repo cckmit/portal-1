@@ -166,7 +166,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             return false;
         }
 
-        if (project.getProjectSlas().stream().allMatch(ProjectSla::isEmpty)) {
+        if (projectSlas.stream().allMatch(ProjectSla::isEmpty)) {
             return false;
         }
 

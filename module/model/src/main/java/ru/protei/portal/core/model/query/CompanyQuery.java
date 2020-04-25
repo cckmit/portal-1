@@ -17,6 +17,8 @@ public class CompanyQuery extends BaseQuery {
 
     private boolean onlyHome;
 
+    private Boolean synchronizeWith1C;
+
     private boolean isOnlyParentCompanies;
 
     private boolean sortHomeCompaniesAtBegin;
@@ -28,6 +30,8 @@ public class CompanyQuery extends BaseQuery {
     private Boolean isShowDeprecated;
 
     private Boolean isReverseOrder;
+
+    private Boolean isShowHidden;
 
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
@@ -43,9 +47,23 @@ public class CompanyQuery extends BaseQuery {
         this.onlyHome = onlyHome;
     }
 
+    public CompanyQuery(boolean onlyHome, boolean isShowHidden) {
+        super("", En_SortField.comp_name, En_SortDir.ASC);
+        this.onlyHome = onlyHome;
+        this.isShowHidden = isShowHidden;
+    }
+
     public CompanyQuery(String searchString, En_SortField sortField, En_SortDir sortDir, boolean isShowDeprecated) {
         super(searchString, sortField, sortDir);
         this.isShowDeprecated = isShowDeprecated;
+    }
+
+    public Boolean getShowHidden() {
+        return isShowHidden;
+    }
+
+    public void setShowHidden(Boolean showHidden) {
+        isShowHidden = showHidden;
     }
 
     public List<Integer> getCategoryIds() {
@@ -58,6 +76,14 @@ public class CompanyQuery extends BaseQuery {
 
     public boolean getOnlyHome() {
         return onlyHome;
+    }
+
+    public Boolean getSynchronizeWith1C() {
+        return synchronizeWith1C;
+    }
+
+    public void setSynchronizeWith1C(Boolean synchronizeWith1C) {
+        this.synchronizeWith1C = synchronizeWith1C;
     }
 
     public void setOnlyHome(boolean onlyHome) {
@@ -113,6 +139,11 @@ public class CompanyQuery extends BaseQuery {
         return this;
     }
 
+    public CompanyQuery synchronizeWith1C( Boolean synchronizeWith1C ) {
+        this.synchronizeWith1C = synchronizeWith1C;
+        return this;
+    }
+
 
     @Override
     public String toString() {
@@ -122,6 +153,7 @@ public class CompanyQuery extends BaseQuery {
                 ", categoryIds=" + categoryIds +
                 ", companyIds=" + companyIds +
                 ", reverseOrder=" + isReverseOrder +
+                ", synchronizeWith1C=" + synchronizeWith1C +
                 '}';
     }
 }

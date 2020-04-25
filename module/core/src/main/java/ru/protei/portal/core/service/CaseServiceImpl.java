@@ -37,10 +37,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления обращениями
@@ -210,9 +210,9 @@ public class CaseServiceImpl implements CaseService {
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
-        CaseObjectCreateEvent event = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
+        CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent(this, ServiceModule.GENERAL, token.getPersonId(), newState);
 
-        return addLinksResult.isOk() ? ok(newState).publishEvent(event) : error(En_ResultStatus.SOME_LINKS_NOT_ADDED);
+        return new Result<>(En_ResultStatus.OK, newState, (addLinksResult.isOk() ? null : SOME_LINKS_NOT_SAVED), Collections.singletonList(caseObjectCreateEvent));
     }
 
     @Override
@@ -765,15 +765,18 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateFieldsOfNew(CaseObject caseObject) {
-        return validateFields(caseObject)
-            && validateMetaFields(new CaseObjectMeta(caseObject));
+        if (!validateFields( caseObject )) return false;
+        CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
+        if (!validateMetaFields( caseObjectMeta )) return false;
+        return true;
     }
 
     private boolean validateFields(CaseObject caseObject) {
-        return caseObject != null
-                && caseObject.getName() != null
-                && !caseObject.getName().isEmpty()
-                && caseObject.getType() != null;
+        if(caseObject == null) return false;
+        if(caseObject.getName() == null) return false;
+        if(caseObject.getName().isEmpty()) return false;
+        if(caseObject.getType() == null) return false;
+        return true;
     }
 
     private boolean validateMetaFields(CaseObjectMeta caseMeta) {

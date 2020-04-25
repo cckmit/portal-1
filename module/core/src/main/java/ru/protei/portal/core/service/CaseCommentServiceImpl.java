@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
@@ -79,6 +80,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
             okResult.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
                     null, resultData.getCaseComment(), null ) );
+        }
+
+        if (En_CaseType.PROJECT.equals(caseType)) {
+            okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
         }
 
         return okResult;
@@ -162,6 +167,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
             okResult.publishEvent( new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(),
                             isEagerEvent, resultData.getOldCaseComment(), resultData.getCaseComment(), null ));
+        }
+
+        if (En_CaseType.PROJECT.equals(caseType)) {
+            okResult.publishEvent(new ProjectCommentEvent(this,
+                    resultData.getOldCaseComment(), resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId())
+            );
         }
 
         return okResult;
@@ -290,8 +301,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
 
+        Result<Boolean> okResult = ok(isRemoved);
+
+        if (En_CaseType.PROJECT.equals(caseType)) {
+            okResult.publishEvent(new ProjectCommentEvent(this,
+                    null, null, removedComment, token.getPersonId(), caseId)
+            );
+        }
+
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
-        return ok( isRemoved )
+        return okResult
                 .publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments ) )
                 .publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment ) );
     }

@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:homecompanyselector='urn:import:ru.protei.portal.ui.common.client.widget.homecompany'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -15,6 +16,11 @@
                 <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddress}" styleName="form-group col-md-12" addon="IP"/>
                 <cleanablesearchbox:CleanableSearchBox ui:field="email" placeholder="{lang.employeeEmail}" styleName="form-group col-md-12" addon="@"/>
                 <cleanablesearchbox:CleanableSearchBox ui:field="department" placeholder="{lang.employeeDepartment}" styleName="form-group col-md-12" addonIcon="fa fa-sitemap"/>
+
+                <homecompanyselector:HomeCompanyMultiSelector ui:field="organizations"
+                                                              header="{lang.contractOrganization}"
+                                                              reverseOrder="true"
+                                                              addStyleNames="form-group col-md-12"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
