@@ -6,9 +6,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.absence.client.activity.create.AbstractAbsenceCreateActivity;
 import ru.protei.portal.ui.absence.client.activity.create.AbstractAbsenceCreateView;
@@ -28,6 +33,26 @@ public class AbsenceCreateView extends Composite implements AbstractAbsenceCreat
     @Override
     public void setActivity(AbstractAbsenceCreateActivity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public HasValue<PersonShortView> employee() {
+        return employee;
+    }
+
+    @Override
+    public HasValue<DateInterval> dateRange() {
+        return dateRange;
+    }
+
+    @Override
+    public HasValue<En_AbsenceReason> reason() {
+        return reason;
+    }
+
+    @Override
+    public HasValue<String> comment() {
+        return comment;
     }
 
     private void ensureDebugIds() {

@@ -3,13 +3,14 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by michael on 05.07.16.
  */
 @JdbcEntity(table = "person_absence")
-public class PersonAbsence {
+public class PersonAbsence implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -35,6 +36,8 @@ public class PersonAbsence {
 
     @JdbcColumn(name = "user_comment")
     private String userComment;
+
+    public static final String AUDIT_TYPE = "PersonAbsence";
 
     public PersonAbsence() {}
 

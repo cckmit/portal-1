@@ -11,7 +11,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;

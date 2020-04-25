@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
 import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;

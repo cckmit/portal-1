@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 
 public abstract class AbsenceCreateActivity implements AbstractAbsenceCreateActivity, AbstractDialogDetailsActivity, Activity {
 
@@ -37,4 +38,6 @@ public abstract class AbsenceCreateActivity implements AbstractAbsenceCreateActi
     AbstractAbsenceCreateView view;
     @Inject
     AbstractDialogDetailsView dialogView;
+    @Inject
+    AbsenceControllerAsync absenceController;
 }

@@ -24,7 +24,7 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!checkExists(absence))
+        if (checkExists(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId()))
             return error(En_ResultStatus.ALREADY_EXIST);
 
         absence.setCreated(new Date());
@@ -38,11 +38,17 @@ public class AbsenceServiceImpl implements AbsenceService {
         return ok(absenceId);
     }
 
+    @Override
+    public Result<Boolean> isExistsAbsence(Long employeeId, Date dateFrom, Date dateTill, Long excludeId) {
+        boolean isExist = checkExists(employeeId, dateFrom, dateTill, excludeId);
+        return ok(isExist);
+    }
+
     private boolean validateFields(PersonAbsence absence) {
         return true;
     }
 
-    private boolean checkExists(PersonAbsence absence) {
+    private boolean checkExists(Long employeeId, Date dateFrom, Date dateTill, Long excludeId) {
         return true;
     }
 }

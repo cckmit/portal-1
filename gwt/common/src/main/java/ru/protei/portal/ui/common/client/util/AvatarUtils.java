@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.service;
+package ru.protei.portal.ui.common.client.util;
 
 
 import com.google.gwt.core.client.GWT;
