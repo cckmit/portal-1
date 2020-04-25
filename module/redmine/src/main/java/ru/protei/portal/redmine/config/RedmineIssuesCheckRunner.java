@@ -9,7 +9,6 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.redmine.handlers.ForwardChannelEventHandler;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
-import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
 
 @Component
 public final class RedmineIssuesCheckRunner {
