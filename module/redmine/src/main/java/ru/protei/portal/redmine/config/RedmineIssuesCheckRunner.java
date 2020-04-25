@@ -19,7 +19,7 @@ public final class RedmineIssuesCheckRunner {
     }
 
     //5 minutes in MS
-    @Scheduled(fixedRate = 10 * SEC)
+    @Scheduled(fixedRate = 5 * MINUTE)
     public void queryIssues() {
         if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
             logger.debug("Redmine integration is disabled in config, therefore nothing happens");
