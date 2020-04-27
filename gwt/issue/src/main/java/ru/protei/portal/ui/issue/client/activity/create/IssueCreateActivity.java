@@ -10,9 +10,11 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -195,7 +197,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         initiatorSelectorAllowAddNew(companyOption.getId());
 
-        issueMetaView.platform().setValue(null);
+        fillPlatformValue(companyOption.getId());
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         companyService.getCompanyWithParentCompanySubscriptions(
@@ -226,11 +228,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
             issueMetaView.setInitiator(initiator);
         }
-
-        requestSla(
-                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
-        );
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
@@ -277,6 +274,25 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
+    }
+
+    private void fillPlatformValue(Long companyId){
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+
+        siteFolderController.getPlatformsOptionList(query, new FluentCallback<List<PlatformOption>>()
+                .withError(throwable -> {
+                    issueMetaView.platform().setValue(null);
+                    onPlatformChanged();
+                })
+                .withSuccess( result -> {
+                    if(result != null && result.size() == 1){
+                        issueMetaView.platform().setValue(result.get(0));
+                    } else {
+                        issueMetaView.platform().setValue(null);
+                    }
+                    onPlatformChanged();
+                } ));
     }
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
@@ -581,6 +597,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CompanyControllerAsync companyService;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    SiteFolderControllerAsync siteFolderController;
 
     private boolean saving;
     private AppEvents.InitDetails init;
