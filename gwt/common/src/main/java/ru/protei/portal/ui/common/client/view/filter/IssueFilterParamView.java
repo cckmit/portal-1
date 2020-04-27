@@ -207,6 +207,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setValue(null);
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
+        checkImportanceHistory.setValue( false );
 
         model.onUserFilterChanged();
     }
@@ -336,6 +337,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
         initiators.setCompaniesSupplier(collectionSupplier);
+    }
+
+    @Override
+    public void setCheckImportanceHistoryVisibility( boolean isCheckImportanceHistoryVisible ) {
+        checkImportanceHistoryContainer.setVisible( isCheckImportanceHistoryVisible );
     }
 
     @UiHandler("search")
@@ -738,6 +744,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     DivElement stateContainer;
     @UiField
     Switcher checkImportanceHistory;
+    @UiField
+    HTMLPanel checkImportanceHistoryContainer;
 
     @Inject
     PolicyService policyService;

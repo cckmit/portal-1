@@ -51,6 +51,10 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 
+    public void setCheckImportanceHistoryVisibility( boolean isCheckImportanceHistoryVisible ) {
+        issueFilterParamView.setCheckImportanceHistoryVisibility(isCheckImportanceHistoryVisible);
+    }
+
     @Override
     protected void onAttach() {
         super.onAttach();
@@ -77,6 +81,7 @@ public class IssueFilterWidget extends Composite {
         createBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
+//        setCheckImportanceHistoryVisibility(false);
 
         setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
@@ -132,6 +137,7 @@ public class IssueFilterWidget extends Composite {
         if (!isCreateFilterAction) {
             filledUserFilter.setId(userFilter.getValue().getId());
         }
+        filledUserFilter.getParams().setCheckImportanceHistory( null );//don`t save CheckImportanceHistory
 
         model.onOkSavingFilterClicked(filterName.getValue(), filledUserFilter,
                 filter -> {
