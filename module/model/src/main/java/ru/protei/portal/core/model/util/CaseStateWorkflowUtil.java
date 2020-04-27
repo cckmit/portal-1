@@ -26,8 +26,8 @@ public class CaseStateWorkflowUtil {
 
         List<CaseStateWorkflowLink> links = workflow.getCaseStateWorkflowLinks();
         for (CaseStateWorkflowLink link : links) {
-            if (link.getCaseStateFrom().isEquals(caseStateFrom)
-                    && link.getCaseStateTo().isEquals(caseStateTo)) {
+            if (link.getCaseStateFrom().equals(caseStateFrom)
+                    && link.getCaseStateTo().equals(caseStateTo)) {
                 return true;
             }
         }

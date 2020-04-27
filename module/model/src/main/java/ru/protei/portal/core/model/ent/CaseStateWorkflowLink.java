@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -17,13 +16,11 @@ public class CaseStateWorkflowLink implements Serializable {
     @JdbcEnumerated(EnumType.ID)
     private En_CaseStateWorkflow caseStateWorkflow;
 
-    @JdbcColumn(name = "state_from")
-    @JdbcEnumerated(EnumType.ID)
-    private En_CaseState caseStateFrom;
+    @JdbcJoinedObject(localColumn = "state_from", table = "case_state", remoteColumn = "id")
+    private CaseState caseStateFrom;
 
-    @JdbcColumn(name = "state_to")
-    @JdbcEnumerated(EnumType.ID)
-    private En_CaseState caseStateTo;
+    @JdbcJoinedObject(localColumn = "state_to", table = "case_state", remoteColumn = "id")
+    private CaseState caseStateTo;
 
     public CaseStateWorkflowLink() {}
 
@@ -43,19 +40,19 @@ public class CaseStateWorkflowLink implements Serializable {
         this.caseStateWorkflow = caseStateWorkflow;
     }
 
-    public En_CaseState getCaseStateFrom() {
+    public CaseState getCaseStateFrom() {
         return caseStateFrom;
     }
 
-    public void setCaseStateFrom(En_CaseState caseStateFrom) {
+    public void setCaseStateFrom(CaseState caseStateFrom) {
         this.caseStateFrom = caseStateFrom;
     }
 
-    public En_CaseState getCaseStateTo() {
+    public CaseState getCaseStateTo() {
         return caseStateTo;
     }
 
-    public void setCaseStateTo(En_CaseState caseStateTo) {
+    public void setCaseStateTo(CaseState caseStateTo) {
         this.caseStateTo = caseStateTo;
     }
 
@@ -65,8 +62,8 @@ public class CaseStateWorkflowLink implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         CaseStateWorkflowLink that = (CaseStateWorkflowLink) o;
         return caseStateWorkflow == that.caseStateWorkflow &&
-                caseStateFrom == that.caseStateFrom &&
-                caseStateTo == that.caseStateTo;
+                caseStateFrom.equals(that.caseStateFrom) &&
+                caseStateTo.equals(that.caseStateTo);
     }
 
     @Override

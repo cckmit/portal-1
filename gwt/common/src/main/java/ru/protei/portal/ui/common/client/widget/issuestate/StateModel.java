@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
@@ -123,11 +122,11 @@ public abstract class StateModel implements Activity {
 
         if (caseStateWorkflow.isPresent()) {
             for (CaseStateWorkflowLink caseStateWorkflowLink : caseStateWorkflow.get().getCaseStateWorkflowLinks()) {
-                if (!caseStateWorkflowLink.getCaseStateFrom().isEquals(currentCaseState)) {
+                if (!caseStateWorkflowLink.getCaseStateFrom().equals(currentCaseState)) {
                     continue;
                 }
 
-                Optional<CaseState> caseState = caseStatesList.stream().filter(state -> En_CaseState.getById(state.getId()) == caseStateWorkflowLink.getCaseStateTo()).findFirst();
+                Optional<CaseState> caseState = caseStatesList.stream().filter(state -> state.equals(caseStateWorkflowLink.getCaseStateTo())).findFirst();
 
                 if (caseState.isPresent()) {
                     nextCaseStates.add(caseState.get());
