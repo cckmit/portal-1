@@ -9,7 +9,7 @@
     <g:HTMLPanel ui:field="root" styleName="form-group row">
         <selector:ContractDatesTypeSelector ui:field="type" addStyleNames="col-md-2"/>
 
-        <single:SinglePicker ui:field="date" formatValue="dd.MM.yyyy" styleName="col-md-2"/>
+        <single:SinglePicker ui:field="date" type="DATE" formatValue="dd.MM.yyyy" styleName="col-md-2"/>
 
         <div class="col-md-5">
             <g:TextBox ui:field="comment" styleName="form-control"/>

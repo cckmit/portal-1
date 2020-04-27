@@ -128,7 +128,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     PolicyService policyService;
 
     private ViewType currentViewType;
-    private boolean topBrassPage;
     private EmployeeQuery query;
     private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
 }
