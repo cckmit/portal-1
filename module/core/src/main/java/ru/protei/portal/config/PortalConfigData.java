@@ -178,7 +178,7 @@ public class PortalConfigData {
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
             crmProjectUrl = properties.getProperty("crm.project.url", "#project_preview:id=%d");
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
-            crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview");
+            crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview", "#doc_preview:id=%d");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
         }
