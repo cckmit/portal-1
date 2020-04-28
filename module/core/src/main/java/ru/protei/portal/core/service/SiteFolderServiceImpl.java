@@ -271,8 +271,17 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!Objects.equals(platformFromDb.getCompanyId(), platform.getCompanyId()) &&
-            CollectionUtils.isNotEmpty(caseObjectDAO.getCaseNumbersByPlatformId(platform.getId()))) {
+        Long oldCompanyId = platformFromDb.getCompanyId();
+        if (oldCompanyId == null) {
+            oldCompanyId = caseObjectDAO.get(platformFromDb.getProjectId()).getInitiatorCompanyId();
+        }
+
+        Long companyId = platform.getCompanyId();
+        if (companyId == null) {
+            companyId = caseObjectDAO.get(platform.getProjectId()).getInitiatorCompanyId();
+        }
+
+        if (!Objects.equals(oldCompanyId, companyId) && CollectionUtils.isNotEmpty(caseObjectDAO.getCaseNumbersByPlatformId(platform.getId()))) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PLATFORM_COMPANY);
         }
 

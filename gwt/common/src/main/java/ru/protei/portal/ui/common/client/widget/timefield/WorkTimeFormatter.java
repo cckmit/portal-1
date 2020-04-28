@@ -6,7 +6,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class WorkTimeFormatter {
 
-
     public WorkTimeFormatter(Lang lang) {
         day = lang.timeDayLiteral();
         hour = lang.timeHourLiteral();
@@ -54,7 +53,8 @@ public class WorkTimeFormatter {
 
         MatchResult match = regexp.exec(value);
         int groups = match.getGroupCount();
-        if (groups > 0) {            minutes += parseGroup(match.getGroup(1)) * (isFullDayTime ? MINUTE2FULLDAY : MINUTE2DAY);
+        if (groups > 0) {
+            minutes += parseGroup(match.getGroup(1)) * (isFullDayTime ? MINUTE2FULLDAY : MINUTE2DAY);
         }
         if (groups > 1) {
             minutes += parseGroup(match.getGroup(2)) * MINUTE2HOUR;
