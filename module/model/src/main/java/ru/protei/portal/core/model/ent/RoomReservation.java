@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_RoomReservationReason;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -8,7 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 @JdbcEntity(table = "room_reservation")
-public class RoomReservation implements Serializable {
+public class RoomReservation extends AuditableObject implements Serializable {
+    public static final String AUDIT_TYPE = "RoomReservation";
 
     @JdbcId(name="id", idInsertMode=IdInsertMode.AUTO)
     private Long id;
@@ -133,6 +135,11 @@ public class RoomReservation implements Serializable {
 
     public void setPersonsToBeNotified(List<Person> personsToBeNotified) {
         this.personsToBeNotified = personsToBeNotified;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override
