@@ -40,6 +40,9 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     @Override
     public Result<RoomReservation> getReservation(AuthToken token, Long reservationId) {
         RoomReservation result = getReservation(reservationId);
+        if (result == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
         return ok(result);
     }
 
@@ -195,7 +198,10 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
     private RoomReservation getReservation(Long reservationId) {
         RoomReservation reservation = roomReservationDAO.get(reservationId);
-        jdbcManyRelationsHelper.fill(reservation, "personsToBeNotified");
+        if (reservation != null) {
+            jdbcManyRelationsHelper.fill(reservation, "personsToBeNotified");
+            jdbcManyRelationsHelper.fill(reservation.getRoom(), "personsAllowedToReserve");
+        }
         return reservation;
     }
 

@@ -145,10 +145,11 @@ public class CalendarContainer extends Composite implements HasValue<RoomReserva
         );
         boolean isIllegalDay = day.getDayOfMonth() == null;
         boolean isPastDay = !isIllegalDay && makeDateEndOfHour(current, hour).before(new Date());
+        boolean isCellSelectable = !isPastDay && value.isHasCreateAccess();
         if (isIllegalDay) {
             HTMLPanel cell = makeStyledDiv("tcell" + (isSelected ? " active" : ""));
             return cell;
-        } else if (isPastDay) {
+        } else if (!isCellSelectable) {
             HTMLPanel cell = makeStyledDiv("tcell" + (isSelected ? " active" : ""));
             cell.add(makeTableDayCell(reservations, hour));
             return cell;

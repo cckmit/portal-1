@@ -12,6 +12,10 @@ public class RoomReservationEvents {
         public Show() {}
     }
 
+    public static class Reload {
+        public Reload() {}
+    }
+
     public static class Create {
         public RoomReservable room;
         public Date date;

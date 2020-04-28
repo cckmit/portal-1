@@ -2,6 +2,7 @@ package ru.protei.portal.ui.roomreservation.client.view.calendar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -73,6 +74,14 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
             public void setValue(String value) { dayAndName.setInnerText(value); }
             public String getValue() { return dayAndName.getInnerText(); }
         };
+    }
+
+    @Override
+    public void setRoomAccessibilityMessage(boolean isAccessible, String message) {
+        roomNotAccessiblePanel.setVisible(!isAccessible);
+        roomNotAccessibleMessage.setInnerText(message != null
+                ? ". " + message + "."
+                : "");
     }
 
     @Override
@@ -155,6 +164,10 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
     MonthButtonSelector monthSelector;
     @UiField
     HeadingElement dayAndName;
+    @UiField
+    HTMLPanel roomNotAccessiblePanel;
+    @UiField
+    SpanElement roomNotAccessibleMessage;
     @UiField
     Button showTodayButton;
     @UiField

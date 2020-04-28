@@ -23,6 +23,8 @@ public interface AbstractRoomReservationCalendarView extends IsWidget {
 
     TakesValue<String> dayAndName();
 
+    void setRoomAccessibilityMessage(boolean isAccessible, String message);
+
     HasValue<RoomReservationCalendar> calendarContainer();
 
     HasEnabled addNewReservationEnabled();

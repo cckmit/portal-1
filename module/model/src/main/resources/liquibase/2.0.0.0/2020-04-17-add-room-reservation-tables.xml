@@ -100,4 +100,9 @@
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>
 
+    <changeSet id="add-room-reservable-column-to-room-reservable-table" author="buchmastov">
+        <addColumn tableName="room_reservable">
+            <column name="restriction_message" type="VARCHAR(1024)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

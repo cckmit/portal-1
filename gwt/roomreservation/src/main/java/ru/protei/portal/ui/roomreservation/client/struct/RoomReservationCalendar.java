@@ -12,14 +12,22 @@ public class RoomReservationCalendar implements Serializable {
     private YearMonthDay yearMonthDay;
     private List<RoomReservation> reservations;
     private Integer hourStart;
+    private boolean hasCreateAccess;
 
     public RoomReservationCalendar() {}
 
-    public RoomReservationCalendar(RoomReservable room, YearMonthDay yearMonthDay, List<RoomReservation> reservations, Integer hourStart) {
+    public RoomReservationCalendar(
+        RoomReservable room,
+        YearMonthDay yearMonthDay,
+        List<RoomReservation> reservations,
+        Integer hourStart,
+        boolean hasCreateAccess
+    ) {
         this.room = room;
         this.yearMonthDay = yearMonthDay;
         this.reservations = reservations;
         this.hourStart = hourStart;
+        this.hasCreateAccess = hasCreateAccess;
     }
 
     public RoomReservable getRoom() {
@@ -54,6 +62,14 @@ public class RoomReservationCalendar implements Serializable {
         this.hourStart = hourStart;
     }
 
+    public boolean isHasCreateAccess() {
+        return hasCreateAccess;
+    }
+
+    public void setHasCreateAccess(boolean hasCreateAccess) {
+        this.hasCreateAccess = hasCreateAccess;
+    }
+
     @Override
     public String toString() {
         return "RoomReservationCalendar{" +
@@ -61,6 +77,7 @@ public class RoomReservationCalendar implements Serializable {
                 ", yearMonthDay=" + yearMonthDay +
                 ", reservations=" + reservations +
                 ", hourStart=" + hourStart +
+                ", hasCreateAccess=" + hasCreateAccess +
                 '}';
     }
 }

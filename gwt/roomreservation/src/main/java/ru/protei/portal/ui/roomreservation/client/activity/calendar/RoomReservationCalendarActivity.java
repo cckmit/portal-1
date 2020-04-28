@@ -6,12 +6,14 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -24,6 +26,7 @@ import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
@@ -33,6 +36,11 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+    }
+
+    @Event
+    public void onAuth(AuthEvents.Success event) {
+        currentPersonId = event.profile.getId();
     }
 
     @Event
@@ -51,6 +59,15 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         showView();
         selectFirstRoom();
         selectDate(date);
+        show(room, date);
+    }
+
+    @Event
+    public void onReload(RoomReservationEvents.Reload event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW)) {
+            return;
+        }
+        clearCache();
         show(room, date);
     }
 
@@ -134,12 +151,10 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
 
     private void selectDate(Date date) {
         YearMonthDay day = makeYearMonthDay(date);
-        boolean isPastDate = resetTime(date).before(resetTime(new Date()));
         view.year().setValue(day.getYear(), false);
         view.month().setValue(day.getMonth(), false);
         view.dayOfMonth().setValue(day, false);
         view.dayAndName().setValue(day.getDayOfMonth() + " " + getDayOfWeekName(day.getDayOfWeek(), lang));
-        view.addNewReservationEnabled().setEnabled(!isPastDate);
     }
 
     private void show(RoomReservable room, Date date) {
@@ -155,6 +170,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
             showCalendar(room, date, reservations);
             return;
         }
+        clearCache();
         showLoading();
         roomReservationController.getReservations(query, new FluentCallback<List<RoomReservation>>()
             .withError(throwable -> {
@@ -170,16 +186,22 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     }
 
     private void showCalendar(RoomReservable room, Date date, List<RoomReservation> reservations) {
+        boolean isPastDate = resetTime(date).before(resetTime(new Date()));
+        boolean hasCreateAccess = hasAccessToRoom(currentPersonId, room);
+        view.setRoomAccessibilityMessage(hasCreateAccess, room.getRestrictionMessage());
+        view.addNewReservationEnabled().setEnabled(!isPastDate && hasCreateAccess);
         view.calendarContainer().setValue(new RoomReservationCalendar(
             room,
             makeYearMonthDay(date),
             reservations,
-            isHoursStartHidden() ? 9 : 0
+            isHoursStartHidden() ? 9 : 0,
+            hasCreateAccess
         ));
         view.calendarContainerVisibility().setVisible(true);
     }
 
     private void hideCalendar() {
+        view.setRoomAccessibilityMessage(true, null);
         view.calendarContainerVisibility().setVisible(false);
     }
 
@@ -233,6 +255,20 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         localStorageService.set(CALENDAR_HIDE_HOURS_START, String.valueOf(isHidden));
     }
 
+    private boolean hasAccessToRoom(Long personId, RoomReservable room) {
+        if (!room.isActive()) {
+            return false;
+        }
+        boolean roomHasRestrictionOnPersonsAllowedToReserve = isNotEmpty(room.getPersonsAllowedToReserve());
+        if (roomHasRestrictionOnPersonsAllowedToReserve) {
+            List<Long> personsAllowedToReserve = stream(room.getPersonsAllowedToReserve())
+                    .map(Person::getId)
+                    .collect(Collectors.toList());
+            return personsAllowedToReserve.contains(personId);
+        }
+        return true;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -250,6 +286,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     private Date date;
     private RoomReservationQuery queryCache;
     private List<RoomReservation> reservationsCache;
+    private Long currentPersonId;
     private AppEvents.InitDetails initDetails;
     private final static String CALENDAR_HIDE_HOURS_START = "room_reservation_hide_hours_start";
 }

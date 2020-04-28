@@ -17,6 +17,9 @@ public class RoomReservable implements Serializable {
     @JdbcColumn(name="active")
     private boolean active;
 
+    @JdbcColumn(name="restriction_message")
+    private String restrictionMessage;
+
     @JdbcManyToMany(linkTable = "room_reservable_allowed_persons", localLinkColumn = "room_reservable_id", remoteLinkColumn = "person_id")
     private List<Person> personsAllowedToReserve;
 
@@ -35,6 +38,10 @@ public class RoomReservable implements Serializable {
         return active;
     }
 
+    public String getRestrictionMessage() {
+        return restrictionMessage;
+    }
+
     public List<Person> getPersonsAllowedToReserve() {
         return personsAllowedToReserve;
     }
@@ -45,6 +52,7 @@ public class RoomReservable implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", active=" + active +
+                ", restrictionMessage='" + restrictionMessage + '\'' +
                 ", personsAllowedToReserve=" + personsAllowedToReserve +
                 '}';
     }

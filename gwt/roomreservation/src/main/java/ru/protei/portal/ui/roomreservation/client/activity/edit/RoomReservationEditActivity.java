@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static java.lang.Integer.parseInt;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public abstract class RoomReservationEditActivity implements Activity, AbstractRoomReservationEditActivity, AbstractDialogDetailsActivity {
@@ -89,7 +90,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 .withSuccess(result -> {
                     onCancelClicked();
                     fireEvent(new NotifyEvents.Show(lang.roomReservationSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new RoomReservationEvents.Show());
+                    fireEvent(new RoomReservationEvents.Reload());
                 }));
         } else {
             if (reservations.size() != 1) {
@@ -100,7 +101,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 .withSuccess(result -> {
                     onCancelClicked();
                     fireEvent(new NotifyEvents.Show(lang.roomReservationUpdated(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new RoomReservationEvents.Show());
+                    fireEvent(new RoomReservationEvents.Reload());
                 }));
         }
     }
@@ -118,7 +119,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
             .withSuccess(result -> {
                 onCancelClicked();
                 fireEvent(new NotifyEvents.Show(lang.roomReservationRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new RoomReservationEvents.Show());
+                fireEvent(new RoomReservationEvents.Reload());
             }));
     }
 
@@ -126,6 +127,12 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
     public void onCancelClicked() {
         reservation = null;
         dialogView.hidePopup();
+    }
+
+    @Override
+    public void onRoomChanged(RoomReservable room) {
+        boolean hasCreateAccess = hasAccessToRoom(currentPerson != null ? currentPerson.getId() : null, room);
+        view.setRoomAccessibilityMessage(hasCreateAccess, room.getRestrictionMessage());
     }
 
     private void loadReservation(Long reservationId, Consumer<RoomReservation> onSuccess) {
@@ -183,7 +190,10 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 && policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_REMOVE)
                 && !isReservationStarted(reservation)
                 && hasModificationAccess(reservation);
-        boolean canModify = canCreate || canEdit;
+        boolean hasAccessToRoom = hasAccessToRoom(
+                currentPerson != null ? currentPerson.getId() : null,
+                reservation.getRoom());
+        boolean canModify = hasAccessToRoom && (canCreate || canEdit);
 
         view.fillCoffeeBreakCountOptions(stream(COFFEE_BREAK_OPTIONS)
                 .map(String::valueOf)
@@ -191,7 +201,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
         view.personResponsible().setValue(reservation.getPersonResponsible() != null
                 ? reservation.getPersonResponsible().toFullNameShortView()
                 : currentPerson);
-        view.room().setValue(reservation.getRoom());
+        view.room().setValue(reservation.getRoom(), true);
         view.reason().setValue(reservation.getReason());
         view.coffeeBreakCount().setValue(reservation.getCoffeeBreakCount() != null
                 ? String.valueOf(reservation.getCoffeeBreakCount())
@@ -284,6 +294,23 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
         boolean isRequester = reservation.getPersonRequester() != null && Objects.equals(reservation.getPersonRequester().getId(), currentPerson.getId());
         boolean isResponsible = reservation.getPersonResponsible() != null && Objects.equals(reservation.getPersonResponsible().getId(), currentPerson.getId());
         return isRequester || isResponsible;
+    }
+
+    private boolean hasAccessToRoom(Long personId, RoomReservable room) {
+        if (room == null) {
+            return true;
+        }
+        if (!room.isActive()) {
+            return false;
+        }
+        boolean roomHasRestrictionOnPersonsAllowedToReserve = isNotEmpty(room.getPersonsAllowedToReserve());
+        if (roomHasRestrictionOnPersonsAllowedToReserve) {
+            List<Long> personsAllowedToReserve = stream(room.getPersonsAllowedToReserve())
+                    .map(Person::getId)
+                    .collect(Collectors.toList());
+            return personsAllowedToReserve.contains(personId);
+        }
+        return true;
     }
 
     @Inject
