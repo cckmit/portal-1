@@ -2,6 +2,8 @@
     ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </#macro>
 
+<@set name="_you" value="${you}"/>
+<@set name="_notification_footer" value="${notification_footer}"/>
 <@set name="_reservationRoomActionCreated" value="${reservationRoomActionCreated}"/>
 <@set name="_reservationRoomActionUpdated" value="${reservationRoomActionUpdated}"/>
 <@set name="_reservationRoomActionRemoved" value="${reservationRoomActionRemoved}"/>

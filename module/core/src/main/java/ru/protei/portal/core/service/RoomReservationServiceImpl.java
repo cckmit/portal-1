@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +22,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static ru.protei.portal.api.struct.Result.error;
@@ -113,7 +113,8 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean outdated = isReservationStarted(stored);
+        boolean outdated = isReservationStarted(stored)
+                        || isReservationFinished(reservation);
         if (outdated) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
@@ -312,12 +313,14 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         )).anyMatch(r -> !excludeIds.contains(r.getId()));
     }
 
-    @SuppressWarnings("unchecked")
     private List<NotificationEntry> makeNotificationList(RoomReservation reservation) {
-        return (List<NotificationEntry>) CollectionUtils.union(
+        return Stream.of(
             makeNotificationListFromReservation(reservation),
             makeNotificationListFromConfiguration()
-        );
+        )
+            .flatMap(Collection::stream) // flatten
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     private List<NotificationEntry> makeNotificationListFromReservation(RoomReservation reservation) {
