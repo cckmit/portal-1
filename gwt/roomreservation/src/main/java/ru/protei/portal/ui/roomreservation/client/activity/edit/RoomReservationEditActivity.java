@@ -37,6 +37,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
     public void onInit() {
         view.setActivity(this);
         dialogView.setActivity(this);
+        dialogView.setSaveOnEnterClick(false);
         dialogView.getBodyContainer().add(view.asWidget());
     }
 
