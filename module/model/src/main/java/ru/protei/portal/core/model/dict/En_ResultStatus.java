@@ -178,5 +178,22 @@ public enum En_ResultStatus {
     /**
      * Ошибка при использовании SVN
      */
-    SVN_ERROR
+    SVN_ERROR,
+
+    /**
+     * Резервирование комнат: событие уже началось/закончилось
+     */
+    ROOM_RESERVATION_OUTDATED,
+
+    /**
+     * Резервирование комнат: доступ к комнате отклонен
+     */
+    ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE,
+
+    /**
+     * Резервирование комнат: найдены пересечения с другими событиями
+     */
+    ROOM_RESERVATION_HAS_INTERSECTIONS,
+
+    ;
 }

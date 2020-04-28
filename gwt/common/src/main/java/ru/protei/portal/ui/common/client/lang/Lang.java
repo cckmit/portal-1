@@ -2412,4 +2412,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationRemoved();
 
+    String errRoomReservationOutdated();
+
+    String errRoomReservationRoomNotAccessible();
+
+    String errRoomReservationHasIntersections();
+
 }

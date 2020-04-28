@@ -56,17 +56,17 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
             boolean outdated = isReservationFinished(reservation);
             if (outdated) {
-                return error(En_ResultStatus.INCORRECT_PARAMS);
+                return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
             }
 
             boolean hasAccessToRoom = hasAccessToRoom(token.getPersonId(), getActiveRooms(), reservation.getRoom());
             if (!hasAccessToRoom) {
-                return error(En_ResultStatus.PERMISSION_DENIED);
+                return error(En_ResultStatus.ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE);
             }
 
             boolean hasIntersections = hasReservationIntersections(reservation, emptyList());
             if (hasIntersections) {
-                return error(En_ResultStatus.NOT_AVAILABLE);
+                return error(En_ResultStatus.ROOM_RESERVATION_HAS_INTERSECTIONS);
             }
         }
 
@@ -116,7 +116,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         boolean outdated = isReservationStarted(stored)
                         || isReservationFinished(reservation);
         if (outdated) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
+            return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
         }
 
         boolean hasAccess = hasModificationAccessToReservation(token.getPersonId(), stored);
@@ -126,12 +126,12 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
         boolean hasAccessToRoom = hasAccessToRoom(token.getPersonId(), getActiveRooms(), reservation.getRoom());
         if (!hasAccessToRoom) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE);
         }
 
         boolean hasIntersections = hasReservationIntersections(reservation, listOf(reservation.getId()));
         if (hasIntersections) {
-            return error(En_ResultStatus.NOT_AVAILABLE);
+            return error(En_ResultStatus.ROOM_RESERVATION_HAS_INTERSECTIONS);
         }
 
         boolean merged = mergeReservation(reservation, stored);

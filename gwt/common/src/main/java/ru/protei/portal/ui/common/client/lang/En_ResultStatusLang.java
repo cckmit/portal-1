@@ -61,6 +61,9 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE: return lang.documentTypeUnableToRemoveUsedDocumentType();
             case UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR: return lang.errUpdateOrDeleteLinkedObjectError();
             case SVN_ERROR: return lang.errSVN();
+            case ROOM_RESERVATION_OUTDATED: return lang.errRoomReservationOutdated();
+            case ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE: return lang.errRoomReservationRoomNotAccessible();
+            case ROOM_RESERVATION_HAS_INTERSECTIONS: return lang.errRoomReservationHasIntersections();
             default: return lang.errUnknownResult();
         }
     }
