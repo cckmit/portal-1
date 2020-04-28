@@ -1618,8 +1618,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueReportsType();
 
-    String reportTypeProject();
-
     String caseStates();
 
     String privilegeCaseStates();
@@ -2121,6 +2119,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reportTypeCaseTimeElapsedWorkAutor();
 
     String reportTypeCaseTimeElapsedPeriod();
+
+    String reportTypeProject();
 
     String reportScheduledType();
 
