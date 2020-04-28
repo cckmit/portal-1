@@ -9,15 +9,15 @@ import ru.protei.portal.core.event.RoomReservationNotificationEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.RoomReservableDAO;
 import ru.protei.portal.core.model.dao.RoomReservationDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.RoomReservable;
-import ru.protei.portal.core.model.ent.RoomReservation;
+import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
                 return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
             }
 
-            boolean hasAccessToRoom = hasAccessToRoom(token.getPersonId(), getActiveRooms(), reservation.getRoom());
+            boolean hasAccessToRoom = hasAccessToRoom(token, En_Privilege.ROOM_RESERVATION_CREATE, findRoom(getActiveRooms(), reservation.getRoom()));
             if (!hasAccessToRoom) {
                 return error(En_ResultStatus.ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE);
             }
@@ -122,12 +122,12 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.ROOM_RESERVATION_OUTDATED);
         }
 
-        boolean hasAccess = hasModificationAccessToReservation(token.getPersonId(), stored);
+        boolean hasAccess = hasAccessToReservation(token, En_Privilege.ROOM_RESERVATION_EDIT, stored);
         if (!hasAccess) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        boolean hasAccessToRoom = hasAccessToRoom(token.getPersonId(), getActiveRooms(), reservation.getRoom());
+        boolean hasAccessToRoom = hasAccessToRoom(token, En_Privilege.ROOM_RESERVATION_EDIT, findRoom(getActiveRooms(), reservation.getRoom()));
         if (!hasAccessToRoom) {
             return error(En_ResultStatus.ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE);
         }
@@ -171,7 +171,7 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        boolean hasAccess = hasModificationAccessToReservation(token.getPersonId(), stored);
+        boolean hasAccess = hasAccessToReservation(token, En_Privilege.ROOM_RESERVATION_REMOVE, stored);
         if (!hasAccess) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -200,7 +200,6 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         RoomReservation reservation = roomReservationDAO.get(reservationId);
         if (reservation != null) {
             jdbcManyRelationsHelper.fill(reservation, "personsToBeNotified");
-            jdbcManyRelationsHelper.fill(reservation.getRoom(), "personsAllowedToReserve");
         }
         return reservation;
     }
@@ -229,7 +228,6 @@ public class RoomReservationServiceImpl implements RoomReservationService {
 
     private List<RoomReservable> getActiveRooms() {
         List<RoomReservable> rooms = roomReservableDAO.listActiveRooms();
-        jdbcManyRelationsHelper.fill(rooms, "personsAllowedToReserve");
         return rooms;
     }
 
@@ -284,31 +282,30 @@ public class RoomReservationServiceImpl implements RoomReservationService {
         return now.after(reservation.getDateUntil());
     }
 
-    private boolean hasModificationAccessToReservation(Long personId, RoomReservation reservation) {
-        // TODO check for superuser
+    private boolean hasAccessToReservation(AuthToken token, En_Privilege privilege, RoomReservation reservation) {
+        Long personId = token.getPersonId();
+        Set<UserRole> roles = token.getRoles();
         boolean isRequester = reservation.getPersonRequester() != null && Objects.equals(reservation.getPersonRequester().getId(), personId);
         boolean isResponsible = reservation.getPersonResponsible() != null && Objects.equals(reservation.getPersonResponsible().getId(), personId);
-        return isRequester || isResponsible;
+        boolean isPrivileged = policyService.hasPrivilegeFor(privilege, roles);
+        boolean isAdmin = policyService.hasScopeForPrivilege(roles, privilege, En_Scope.SYSTEM);
+        boolean isUserWithAccess = isPrivileged && (isRequester || isResponsible);
+        return isAdmin || isUserWithAccess;
     }
 
-    private boolean hasAccessToRoom(Long personId, List<RoomReservable> availableRooms, RoomReservable room) {
-        for (RoomReservable availableRoom : availableRooms) {
-            if (!Objects.equals(availableRoom.getId(), room.getId())) {
-                continue;
-            }
-            if (!availableRoom.isActive()) {
-                return false;
-            }
-            boolean roomHasRestrictionOnPersonsAllowedToReserve = isNotEmpty(availableRoom.getPersonsAllowedToReserve());
-            if (roomHasRestrictionOnPersonsAllowedToReserve) {
-                List<Long> personsAllowedToReserve = stream(availableRoom.getPersonsAllowedToReserve())
-                        .map(Person::getId)
-                        .collect(Collectors.toList());
-                return personsAllowedToReserve.contains(personId);
-            }
-            return true;
+    private boolean hasAccessToRoom(AuthToken token, En_Privilege privilege, RoomReservable room) {
+        if (room == null) {
+            return false;
         }
-        return false;
+        if (!room.isActive()) {
+            return false;
+        }
+        if (room.isRestricted()) {
+            Set<UserRole> roles = token.getRoles();
+            boolean isAdmin = policyService.hasScopeForPrivilege(roles, privilege, En_Scope.SYSTEM);
+            return isAdmin;
+        }
+        return true;
     }
 
     private boolean hasReservationIntersections(RoomReservation reservation, List<Long> excludeIds) {
@@ -317,6 +314,15 @@ public class RoomReservationServiceImpl implements RoomReservationService {
             reservation.getDateFrom(),
             reservation.getDateUntil()
         )).anyMatch(r -> !excludeIds.contains(r.getId()));
+    }
+
+    private RoomReservable findRoom(List<RoomReservable> availableRooms, RoomReservable room) {
+        for (RoomReservable availableRoom : availableRooms) {
+            if (Objects.equals(availableRoom.getId(), room.getId())) {
+                return availableRoom;
+            }
+        }
+        return null;
     }
 
     private List<NotificationEntry> makeNotificationList(RoomReservation reservation) {
@@ -360,4 +366,6 @@ public class RoomReservationServiceImpl implements RoomReservationService {
     RoomReservableDAO roomReservableDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PolicyService policyService;
 }

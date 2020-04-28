@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.*;
+import ru.protei.winter.jdbc.annotations.IdInsertMode;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
-import java.util.List;
 
 @JdbcEntity(table = "room_reservable")
 public class RoomReservable implements Serializable {
@@ -17,11 +19,11 @@ public class RoomReservable implements Serializable {
     @JdbcColumn(name="active")
     private boolean active;
 
+    @JdbcColumn(name="restricted")
+    private boolean restricted;
+
     @JdbcColumn(name="restriction_message")
     private String restrictionMessage;
-
-    @JdbcManyToMany(linkTable = "room_reservable_allowed_persons", localLinkColumn = "room_reservable_id", remoteLinkColumn = "person_id")
-    private List<Person> personsAllowedToReserve;
 
     public RoomReservable() {
     }
@@ -38,12 +40,12 @@ public class RoomReservable implements Serializable {
         return active;
     }
 
-    public String getRestrictionMessage() {
-        return restrictionMessage;
+    public boolean isRestricted() {
+        return restricted;
     }
 
-    public List<Person> getPersonsAllowedToReserve() {
-        return personsAllowedToReserve;
+    public String getRestrictionMessage() {
+        return restrictionMessage;
     }
 
     @Override
@@ -52,8 +54,8 @@ public class RoomReservable implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", active=" + active +
+                ", restricted=" + restricted +
                 ", restrictionMessage='" + restrictionMessage + '\'' +
-                ", personsAllowedToReserve=" + personsAllowedToReserve +
                 '}';
     }
 }

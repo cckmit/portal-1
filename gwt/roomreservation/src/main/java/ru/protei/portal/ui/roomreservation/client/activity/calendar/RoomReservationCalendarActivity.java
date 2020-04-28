@@ -6,14 +6,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
 import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -26,9 +24,10 @@ import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.canView;
+import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.hasAccessToRoom;
 import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
 
 public abstract class RoomReservationCalendarActivity implements Activity, AbstractRoomReservationCalendarActivity {
@@ -39,18 +38,13 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     }
 
     @Event
-    public void onAuth(AuthEvents.Success event) {
-        currentPersonId = event.profile.getId();
-    }
-
-    @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.initDetails = initDetails;
     }
 
     @Event(Type.FILL_CONTENT)
     public void onShow(RoomReservationEvents.Show event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW)) {
+        if (!canView(policyService)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
@@ -64,7 +58,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
 
     @Event
     public void onReload(RoomReservationEvents.Reload event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW)) {
+        if (!canView(policyService)) {
             return;
         }
         clearCache();
@@ -187,7 +181,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
 
     private void showCalendar(RoomReservable room, Date date, List<RoomReservation> reservations) {
         boolean isPastDate = resetTime(date).before(resetTime(new Date()));
-        boolean hasCreateAccess = hasAccessToRoom(currentPersonId, room);
+        boolean hasCreateAccess = hasAccessToRoom(policyService, En_Privilege.ROOM_RESERVATION_CREATE, room);
         view.setRoomAccessibilityMessage(hasCreateAccess, room.getRestrictionMessage());
         view.addNewReservationEnabled().setEnabled(!isPastDate && hasCreateAccess);
         view.calendarContainer().setValue(new RoomReservationCalendar(
@@ -255,20 +249,6 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         localStorageService.set(CALENDAR_HIDE_HOURS_START, String.valueOf(isHidden));
     }
 
-    private boolean hasAccessToRoom(Long personId, RoomReservable room) {
-        if (!room.isActive()) {
-            return false;
-        }
-        boolean roomHasRestrictionOnPersonsAllowedToReserve = isNotEmpty(room.getPersonsAllowedToReserve());
-        if (roomHasRestrictionOnPersonsAllowedToReserve) {
-            List<Long> personsAllowedToReserve = stream(room.getPersonsAllowedToReserve())
-                    .map(Person::getId)
-                    .collect(Collectors.toList());
-            return personsAllowedToReserve.contains(personId);
-        }
-        return true;
-    }
-
     @Inject
     Lang lang;
     @Inject
@@ -286,7 +266,6 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     private Date date;
     private RoomReservationQuery queryCache;
     private List<RoomReservation> reservationsCache;
-    private Long currentPersonId;
     private AppEvents.InitDetails initDetails;
     private final static String CALENDAR_HIDE_HOURS_START = "room_reservation_hide_hours_start";
 }

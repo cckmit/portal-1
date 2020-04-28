@@ -22,14 +22,17 @@ import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static java.lang.Integer.parseInt;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.*;
 
 public abstract class RoomReservationEditActivity implements Activity, AbstractRoomReservationEditActivity, AbstractDialogDetailsActivity {
 
@@ -51,7 +54,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
 
     @Event
     public void onCreate(RoomReservationEvents.Create event) {
-        boolean hasAccess = policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_CREATE);
+        boolean hasAccess = canCreate(policyService);
         if (!hasAccess) {
             return;
         }
@@ -68,8 +71,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
 
     @Event
     public void onEdit(RoomReservationEvents.Edit event) {
-        boolean hasAccess = policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW)
-                         || policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_EDIT);
+        boolean hasAccess = canView(policyService) || canEdit(policyService);
         if (!hasAccess) {
             return;
         }
@@ -132,8 +134,16 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
 
     @Override
     public void onRoomChanged(RoomReservable room) {
-        boolean hasCreateAccess = hasAccessToRoom(currentPerson != null ? currentPerson.getId() : null, room);
-        view.setRoomAccessibilityMessage(hasCreateAccess, room.getRestrictionMessage());
+        boolean isNew = reservation == null || reservation.getId() == null;
+        boolean canCreate = isNew && canCreate(policyService);
+        boolean canEdit = !isNew && canEdit(policyService, reservation);
+        boolean hasAccessToRoom = hasAccessToRoom(
+                policyService,
+                isNew ? En_Privilege.ROOM_RESERVATION_CREATE : En_Privilege.ROOM_RESERVATION_EDIT,
+                room);
+        boolean canModify = hasAccessToRoom && (canCreate || canEdit);
+        view.setRoomAccessibilityMessage(hasAccessToRoom, room.getRestrictionMessage());
+        dialogView.saveButtonVisibility().setVisible(canModify);
     }
 
     private void loadReservation(Long reservationId, Consumer<RoomReservation> onSuccess) {
@@ -181,18 +191,12 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
         this.reservation = reservation;
 
         boolean isNew = reservation.getId() == null;
-        boolean canCreate = isNew
-                && policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_CREATE);
-        boolean canEdit = !isNew
-                && policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_EDIT)
-                && !isReservationStarted(reservation)
-                && hasModificationAccess(reservation);
-        boolean canRemove = !isNew
-                && policyService.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_REMOVE)
-                && !isReservationStarted(reservation)
-                && hasModificationAccess(reservation);
+        boolean canCreate = isNew && canCreate(policyService);
+        boolean canEdit = !isNew && canEdit(policyService, reservation);
+        boolean canRemove = !isNew && canRemove(policyService, reservation);
         boolean hasAccessToRoom = hasAccessToRoom(
-                currentPerson != null ? currentPerson.getId() : null,
+                policyService,
+                isNew ? En_Privilege.ROOM_RESERVATION_CREATE : En_Privilege.ROOM_RESERVATION_EDIT,
                 reservation.getRoom());
         boolean canModify = hasAccessToRoom && (canCreate || canEdit);
 
@@ -212,6 +216,10 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 .map(Person::toFullNameShortView)
                 .collect(Collectors.toSet()));
         view.comment().setValue(reservation.getComment());
+
+        view.setRoomAccessibilityMessage(hasAccessToRoom, reservation.getRoom() != null
+                ? reservation.getRoom().getRestrictionMessage()
+                : null);
 
         view.personResponsibleEnabled().setEnabled(canModify);
         view.roomEnabled().setEnabled(canModify);
@@ -278,40 +286,8 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
         return intervals;
     }
 
-    private boolean isReservationStarted(RoomReservation reservation) {
-        Date now = new Date();
-        return now.after(reservation.getDateFrom());
-    }
-
     private void getPerson(Long personId, Consumer<PersonShortView> onSuccess) {
         employeeController.getEmployee(personId, new FluentCallback<PersonShortView>().withSuccess(onSuccess));
-    }
-
-    private boolean hasModificationAccess(RoomReservation reservation) {
-        if (currentPerson == null) {
-            return false;
-        }
-        // TODO check for superuser
-        boolean isRequester = reservation.getPersonRequester() != null && Objects.equals(reservation.getPersonRequester().getId(), currentPerson.getId());
-        boolean isResponsible = reservation.getPersonResponsible() != null && Objects.equals(reservation.getPersonResponsible().getId(), currentPerson.getId());
-        return isRequester || isResponsible;
-    }
-
-    private boolean hasAccessToRoom(Long personId, RoomReservable room) {
-        if (room == null) {
-            return true;
-        }
-        if (!room.isActive()) {
-            return false;
-        }
-        boolean roomHasRestrictionOnPersonsAllowedToReserve = isNotEmpty(room.getPersonsAllowedToReserve());
-        if (roomHasRestrictionOnPersonsAllowedToReserve) {
-            List<Long> personsAllowedToReserve = stream(room.getPersonsAllowedToReserve())
-                    .map(Person::getId)
-                    .collect(Collectors.toList());
-            return personsAllowedToReserve.contains(personId);
-        }
-        return true;
     }
 
     @Inject
