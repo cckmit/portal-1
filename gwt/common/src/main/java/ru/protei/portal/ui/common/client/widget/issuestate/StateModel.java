@@ -73,75 +73,81 @@ public abstract class StateModel implements Activity {
                 })
                 .withSuccess(caseStateAndWorkflowList -> {
                     isRefreshing = false;
-                    workflowCaseStateMap = createWorkflowCaseStateMap(
+                    workflowCaseStateEdges = createWorkflowCaseStateEdges(
                             caseStateAndWorkflowList.getCaseStatesList(),
                             caseStateAndWorkflowList.getCaseStateWorkflowList());
                     notifySubscribers();
                 }));
     }
 
-    private Map<En_CaseStateWorkflow, Map<En_CaseState, List<En_CaseState>>> createWorkflowCaseStateMap(
+    private Map<En_CaseStateWorkflow, Edges> createWorkflowCaseStateEdges(
             List<CaseState> caseStatesList, List<CaseStateWorkflow> caseStateWorkflowList) {
-        Map<En_CaseStateWorkflow, Map<En_CaseState, List<En_CaseState>>> workflowCaseStateMap = new HashMap<>();
+        Map<En_CaseStateWorkflow, Edges> workflowToEdges = new HashMap<>();
 
-        workflowCaseStateMap.put(NO_WORKFLOW, createNoWorkflowMap(caseStatesList));
+        workflowToEdges.put(NO_WORKFLOW, createNoWorkflowMap(caseStatesList));
 
-        Map<Long, Integer> idToOrder =
-                caseStatesList.stream().collect(
-                        toMap(CaseState::getId, CaseState::getViewOrder));
-        Comparator<En_CaseState> enCaseStateComparator =
-                Comparator.comparing((En_CaseState en_CaseState) -> idToOrder.get((long) en_CaseState.getId()))
-                        .thenComparing(En_CaseState::getId);
-        Map<Long, List<CaseStateWorkflowLink>> caseStateWorkflowListMap =
+        Map<Long, List<CaseStateWorkflowLink>> idToWorkflowList =
                 caseStateWorkflowList.stream().collect(
                         toMap(CaseStateWorkflow::getId, CaseStateWorkflow::getCaseStateWorkflowLinks));
 
+        Comparator<En_CaseState> stateComparator = createStateComparator(caseStatesList);
         for (En_CaseStateWorkflow en_caseStateWorkflow : En_CaseStateWorkflow.values()) {
             if (en_caseStateWorkflow == NO_WORKFLOW) {
                 continue;
             }
-            workflowCaseStateMap.put(en_caseStateWorkflow,
-                    createOtherWorkflowMap(enCaseStateComparator, caseStateWorkflowListMap.get((long) en_caseStateWorkflow.getId())));
+            workflowToEdges.put(en_caseStateWorkflow,
+                    createOtherWorkflowMap(stateComparator, idToWorkflowList.get((long) en_caseStateWorkflow.getId())));
         }
 
-        return workflowCaseStateMap;
+        return workflowToEdges;
     }
 
-    private Map<En_CaseState, List<En_CaseState>> createNoWorkflowMap(List<CaseState> caseStatesList) {
-        Map<En_CaseState, List<En_CaseState>> noWorkflowMap = new HashMap<>();
+    private Comparator<En_CaseState> createStateComparator(List<CaseState> caseStatesList) {
+        Map<Long, Integer> idToOrder =
+                caseStatesList.stream().collect(
+                        toMap(CaseState::getId, CaseState::getViewOrder));
+        return Comparator.comparing((En_CaseState en_CaseState) -> idToOrder.get((long) en_CaseState.getId()))
+                .thenComparing(En_CaseState::getId);
+    }
+
+    private Edges createNoWorkflowMap(List<CaseState> caseStatesList) {
+
         List<En_CaseState> noWorkflowList = caseStatesList.stream().map(
                 caseState -> En_CaseState.getById(caseState.getId()))
                 .collect( toList());
+
+        Edges noWorkflowEdges = new Edges();
         for (En_CaseState currentCaseState : En_CaseState.values()) {
             if (!currentCaseState.isTerminalState()) {
-                noWorkflowMap.put(currentCaseState, noWorkflowList);
+                noWorkflowEdges.addEdges(currentCaseState, noWorkflowList);
             }
         }
-        return noWorkflowMap;
+        return noWorkflowEdges;
     }
 
-    private  Map<En_CaseState, List<En_CaseState>> createOtherWorkflowMap(
-            Comparator<En_CaseState> comparator, List<CaseStateWorkflowLink> caseStateWorkflowList) {
-        Map<En_CaseState, Set<En_CaseState>> flow = caseStateWorkflowList.stream()
+    private Edges createOtherWorkflowMap(Comparator<En_CaseState> comparator,
+            List<CaseStateWorkflowLink> caseStateWorkflowList) {
+
+        Map<En_CaseState, Set<En_CaseState>> flowWithStateToOrder = caseStateWorkflowList.stream()
                 .collect(groupingBy(
                         CaseStateWorkflowLink::getCaseStateFrom,
                         mapping(CaseStateWorkflowLink::getCaseStateTo, toCollection(() -> new TreeSet<>(comparator)))
                 ));
 
-        Map<En_CaseState, List<En_CaseState>> workflowMap = new HashMap<>();
-        for (En_CaseState en_caseState : flow.keySet()) {
-            workflowMap.put(en_caseState, new ArrayList<>(flow.get(en_caseState)));
+        Edges workflowEdges = new Edges();
+        for (En_CaseState en_caseState : flowWithStateToOrder.keySet()) {
+            workflowEdges.addEdges(en_caseState, new ArrayList<>(flowWithStateToOrder.get(en_caseState)));
         }
 
-        return workflowMap;
+        return workflowEdges;
     }
 
     private boolean isDataLoaded() {
-        return workflowCaseStateMap != null;
+        return workflowCaseStateEdges != null;
     }
 
     private void clearData() {
-        workflowCaseStateMap = null;
+        workflowCaseStateEdges = null;
     }
 
     private void notifySubscribers() {
@@ -161,7 +167,7 @@ public abstract class StateModel implements Activity {
     }
 
     private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
-        return workflowCaseStateMap.get(workflow).getOrDefault(currentCaseState, new ArrayList<>());
+        return workflowCaseStateEdges.get(workflow).getTo(currentCaseState);
     }
 
     @Inject
@@ -171,14 +177,26 @@ public abstract class StateModel implements Activity {
 
     private boolean isRefreshing = false;
     private Map<SelectorWithModel<En_CaseState>, WorkflowWithState> subscriberMap = new HashMap<>();
-    private Map<En_CaseStateWorkflow, Map<En_CaseState, List<En_CaseState>>> workflowCaseStateMap;
+    private Map<En_CaseStateWorkflow, Edges> workflowCaseStateEdges;
 
-    private class WorkflowWithState {
+    private static class WorkflowWithState {
         En_CaseStateWorkflow workflow;
         En_CaseState state;
         WorkflowWithState(En_CaseStateWorkflow workflow, En_CaseState state) {
             this.workflow = workflow;
             this.state = state;
+        }
+    }
+
+    private static class Edges {
+        Map<En_CaseState, List<En_CaseState>> map = new HashMap<>();
+
+        void addEdges(En_CaseState from, List<En_CaseState> to) {
+            map.put(from, to);
+        }
+
+        List<En_CaseState> getTo(En_CaseState from) {
+            return map.getOrDefault(from, new ArrayList<>());
         }
     }
 }

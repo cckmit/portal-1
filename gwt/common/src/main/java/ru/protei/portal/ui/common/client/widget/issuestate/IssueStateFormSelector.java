@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
-import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -15,9 +15,10 @@ import java.util.List;
 public class IssueStateFormSelector extends FormSelector<En_CaseState> implements SelectorWithModel<En_CaseState> {
 
     @Inject
-    public void init(StateModel model, En_CaseStateLang lang) {
+    public void init(StateModel model, En_CaseStateLang En_CaseStateLang, Lang lang) {
         this.model = model;
-        this.lang = lang;
+        this.lang = En_CaseStateLang;
+        noSearchResult = lang.searchTerminalState();
     }
 
     @Override
