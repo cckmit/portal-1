@@ -795,7 +795,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String scopeCompany();
 
-    String scopeRole();
+    String scopeUser();
 
     String roleScope();
 

@@ -76,4 +76,11 @@
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>
 
+    <changeSet id="rename-user-role-scope-role-to-user" author="buchmastov">
+        <update tableName="user_role">
+            <column name="scopes" value="USER"/>
+            <where>scopes = 'ROLE'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
