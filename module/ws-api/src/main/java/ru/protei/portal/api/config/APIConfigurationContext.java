@@ -16,6 +16,8 @@ import ru.protei.portal.config.PortalConfigReloadable;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
+import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.EmployeeServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
@@ -97,6 +99,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Bean
     public AuditObjectDAO getAuditDAO() {
         return new AuditObjectDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeService getEmployeeService() {
+        return new EmployeeServiceImpl();
     }
 
     @Bean

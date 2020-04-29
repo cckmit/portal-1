@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -22,14 +25,16 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import javax.annotation.PostConstruct;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 
 /**
@@ -38,6 +43,8 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
+    private String ADMIN_PROJECT_NAME, PORTAL_URL;
+    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
@@ -68,6 +75,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    YoutrackService youtrackService;
+
+    @PostConstruct
+    public void setYoutrackConst() {
+        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+    }
 
     @Override
     public EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull) {
@@ -258,8 +278,18 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        Person oldPerson = personDAO.get(person.getId());
+
+        if (oldPerson == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         if (!validatePerson(person) || person.getId() == null) {
             return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if (YOUTRACK_INTEGRATION_ENABLED) {
+            createAdminYoutrackIssueIfNeeded(person.getId(), oldPerson.getFirstName(), oldPerson.getLastName(), oldPerson.getSecondName(), person.getLastName());
         }
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
@@ -330,6 +360,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return ok(result);
+    }
+
+    @Override
+    public String createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String newLastName) {
+        if (Objects.equals(lastName, newLastName)) {
+            return null;
+        }
+
+        String employeeFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
+
+        String summary = "Смена фамилии на " + newLastName + " у пользователя " + employeeFullName;
+
+        String description = "Анкета: " + "[" + employeeFullName + "](" + PORTAL_URL + "#employees/employee:id" + employeeId + ")";
+
+        return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).getData();
     }
 
     private boolean removeWorkerEntry(Long personId){

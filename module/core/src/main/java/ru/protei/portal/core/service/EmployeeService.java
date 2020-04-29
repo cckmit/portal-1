@@ -63,4 +63,6 @@ public interface EmployeeService {
     @Auditable(En_AuditType.EMPLOYEE_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> fireEmployee(AuthToken token, Person person);
+
+    String createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String newLastName);
 }

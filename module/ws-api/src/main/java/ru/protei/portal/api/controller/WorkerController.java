@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
@@ -94,6 +95,9 @@ public class WorkerController {
 
     @Autowired
     AuditObjectDAO auditObjectDAO;
+
+    @Autowired
+    EmployeeService employeeService;
 
     /**
      * Получить данные о физическом лице
@@ -1506,6 +1510,8 @@ public class WorkerController {
                     }
 
                     mergePerson(person);
+
+                    employeeService.createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), rec.getLastName());
 
                     if (userLogin == null) userLogin = createLDAPAccount(person);
                     if (userLogin != null) {
