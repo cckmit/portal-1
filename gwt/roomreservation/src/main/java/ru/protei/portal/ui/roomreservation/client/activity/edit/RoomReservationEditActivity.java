@@ -142,7 +142,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 isNew ? En_Privilege.ROOM_RESERVATION_CREATE : En_Privilege.ROOM_RESERVATION_EDIT,
                 room);
         boolean canModify = hasAccessToRoom && (canCreate || canEdit);
-        view.setRoomAccessibilityMessage(hasAccessToRoom, room.getRestrictionMessage());
+        view.roomAccessibilityVisibility().setVisible(!hasAccessToRoom);
         dialogView.saveButtonVisibility().setVisible(canModify);
     }
 
@@ -217,10 +217,6 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
                 .collect(Collectors.toSet()));
         view.comment().setValue(reservation.getComment());
 
-        view.setRoomAccessibilityMessage(hasAccessToRoom, reservation.getRoom() != null
-                ? reservation.getRoom().getRestrictionMessage()
-                : null);
-
         view.personResponsibleEnabled().setEnabled(canModify);
         view.roomEnabled().setEnabled(canModify);
         view.reasonEnabled().setEnabled(canModify);
@@ -230,6 +226,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
         view.commentEnabled().setEnabled(canModify);
 
         view.datesVaryAbility().setVaryAble(canCreate);
+        view.roomAccessibilityVisibility().setVisible(!hasAccessToRoom);
 
         dialogView.saveButtonVisibility().setVisible(canModify);
         dialogView.removeButtonVisibility().setVisible(canRemove);

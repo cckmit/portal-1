@@ -23,8 +23,6 @@ public interface AbstractRoomReservationCalendarView extends IsWidget {
 
     TakesValue<String> dayAndName();
 
-    void setRoomAccessibilityMessage(boolean isAccessible, String message);
-
     HasValue<RoomReservationCalendar> calendarContainer();
 
     HasEnabled addNewReservationEnabled();
@@ -32,4 +30,6 @@ public interface AbstractRoomReservationCalendarView extends IsWidget {
     HasVisibility loadingVisibility();
 
     HasVisibility calendarContainerVisibility();
+
+    HasVisibility roomAccessibilityVisibility();
 }

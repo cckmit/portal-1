@@ -23,8 +23,6 @@ public interface AbstractRoomReservationEditView extends IsWidget {
 
     void fillCoffeeBreakCountOptions(List<String> options);
 
-    void setRoomAccessibilityMessage(boolean isAccessible, String message);
-
     HasValue<PersonShortView> personResponsible();
 
     HasValue<RoomReservable> room();
@@ -54,4 +52,6 @@ public interface AbstractRoomReservationEditView extends IsWidget {
     HasEnabled commentEnabled();
 
     HasVaryAbility datesVaryAbility();
+
+    HasVisibility roomAccessibilityVisibility();
 }

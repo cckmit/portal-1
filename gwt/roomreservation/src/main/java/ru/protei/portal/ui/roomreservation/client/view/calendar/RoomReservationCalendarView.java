@@ -2,7 +2,6 @@ package ru.protei.portal.ui.roomreservation.client.view.calendar;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -77,14 +76,6 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
     }
 
     @Override
-    public void setRoomAccessibilityMessage(boolean isAccessible, String message) {
-        roomNotAccessiblePanel.setVisible(!isAccessible);
-        roomNotAccessibleMessage.setInnerText(message != null
-                ? ". " + message + "."
-                : "");
-    }
-
-    @Override
     public HasValue<RoomReservationCalendar> calendarContainer() {
         return calendarContainer;
     }
@@ -102,6 +93,11 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
     @Override
     public HasVisibility calendarContainerVisibility() {
         return calendarContainer;
+    }
+
+    @Override
+    public HasVisibility roomAccessibilityVisibility() {
+        return roomNotAccessiblePanel;
     }
 
     @UiHandler("addNewReservationButton")
@@ -166,8 +162,6 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
     HeadingElement dayAndName;
     @UiField
     HTMLPanel roomNotAccessiblePanel;
-    @UiField
-    SpanElement roomNotAccessibleMessage;
     @UiField
     Button showTodayButton;
     @UiField

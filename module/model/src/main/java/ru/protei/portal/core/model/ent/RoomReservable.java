@@ -22,9 +22,6 @@ public class RoomReservable implements Serializable {
     @JdbcColumn(name="restricted")
     private boolean restricted;
 
-    @JdbcColumn(name="restriction_message")
-    private String restrictionMessage;
-
     public RoomReservable() {
     }
 
@@ -44,10 +41,6 @@ public class RoomReservable implements Serializable {
         return restricted;
     }
 
-    public String getRestrictionMessage() {
-        return restrictionMessage;
-    }
-
     @Override
     public String toString() {
         return "RoomReservable{" +
@@ -55,7 +48,6 @@ public class RoomReservable implements Serializable {
                 ", name='" + name + '\'' +
                 ", active=" + active +
                 ", restricted=" + restricted +
-                ", restrictionMessage='" + restrictionMessage + '\'' +
                 '}';
     }
 }

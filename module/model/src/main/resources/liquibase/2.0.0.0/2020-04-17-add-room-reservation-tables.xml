@@ -10,33 +10,9 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(1024)"/>
-            <column name="active" type="BOOLEAN"/>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="restricted" type="BOOLEAN" defaultValueBoolean="false"/>
         </createTable>
-    </changeSet>
-
-    <changeSet id="add-room-reservable-allowed-persons-table" author="buchmastov">
-        <createTable tableName="room_reservable_allowed_persons">
-            <column name="room_reservable_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="person_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="add-fk-on-room-reservable-allowed-persons-table" author="buchmastov">
-        <addPrimaryKey constraintName="pk_room_reservable_allowed_persons"
-                       tableName="room_reservable_allowed_persons"
-                       columnNames="room_reservable_id, person_id"/>
-        <addForeignKeyConstraint constraintName="fk_room_reservable_allowed_persons_room_reservable_id_to_room"
-                                 baseTableName="room_reservable_allowed_persons" baseColumnNames="room_reservable_id"
-                                 referencedTableName="room_reservable" referencedColumnNames="id"
-                                 onUpdate="CASCADE" onDelete="CASCADE"/>
-        <addForeignKeyConstraint constraintName="fk_room_reservable_allowed_persons_person_id_to_person"
-                                 baseTableName="room_reservable_allowed_persons" baseColumnNames="person_id"
-                                 referencedTableName="person" referencedColumnNames="id"
-                                 onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>
 
     <changeSet id="add-room-reservation-table" author="buchmastov">
@@ -98,17 +74,6 @@
                                  baseTableName="room_reservation_notifiers" baseColumnNames="person_id"
                                  referencedTableName="person" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
-    </changeSet>
-
-    <changeSet id="add-restricted-columns-to-room-reservable-table" author="buchmastov">
-        <addColumn tableName="room_reservable">
-            <column name="restricted" type="BOOLEAN"/>
-            <column name="restriction_message" type="VARCHAR(1024)"/>
-        </addColumn>
-    </changeSet>
-
-    <changeSet id="drop-room-reservable-allowed-persons-table" author="buchmastov">
-        <dropTable tableName="room_reservable_allowed_persons"/>
     </changeSet>
 
 </databaseChangeLog>

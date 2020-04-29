@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.roomreservation.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -54,14 +53,6 @@ public class RoomReservationEditView extends Composite implements AbstractRoomRe
     @Override
     public void fillCoffeeBreakCountOptions(List<String> options) {
         coffeeBreakCount.fillOptions(options);
-    }
-
-    @Override
-    public void setRoomAccessibilityMessage(boolean isAccessible, String message) {
-        roomNotAccessiblePanel.setVisible(!isAccessible);
-        roomNotAccessibleMessage.setInnerText(message != null
-                ? ". " + message + "."
-                : "");
     }
 
     @Override
@@ -139,6 +130,11 @@ public class RoomReservationEditView extends Composite implements AbstractRoomRe
         return dates;
     }
 
+    @Override
+    public HasVisibility roomAccessibilityVisibility() {
+        return roomNotAccessiblePanel;
+    }
+
     @UiHandler("room")
     public void roomChanged(ValueChangeEvent<RoomReservable> event) {
         if (activity != null) {
@@ -160,8 +156,6 @@ public class RoomReservationEditView extends Composite implements AbstractRoomRe
     RoomReservableButtonSelector room;
     @UiField
     HTMLPanel roomNotAccessiblePanel;
-    @UiField
-    SpanElement roomNotAccessibleMessage;
     @Inject
     @UiField(provided = true)
     RoomReservationReasonButtonSelector reason;

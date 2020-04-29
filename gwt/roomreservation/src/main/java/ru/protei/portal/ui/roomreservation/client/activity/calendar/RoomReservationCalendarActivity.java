@@ -182,7 +182,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     private void showCalendar(RoomReservable room, Date date, List<RoomReservation> reservations) {
         boolean isPastDate = resetTime(date).before(resetTime(new Date()));
         boolean hasCreateAccess = hasAccessToRoom(policyService, En_Privilege.ROOM_RESERVATION_CREATE, room);
-        view.setRoomAccessibilityMessage(hasCreateAccess, room.getRestrictionMessage());
+        view.roomAccessibilityVisibility().setVisible(!hasCreateAccess);
         view.addNewReservationEnabled().setEnabled(!isPastDate && hasCreateAccess);
         view.calendarContainer().setValue(new RoomReservationCalendar(
             room,
@@ -195,7 +195,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     }
 
     private void hideCalendar() {
-        view.setRoomAccessibilityMessage(true, null);
+        view.roomAccessibilityVisibility().setVisible(false);
         view.calendarContainerVisibility().setVisible(false);
     }
 

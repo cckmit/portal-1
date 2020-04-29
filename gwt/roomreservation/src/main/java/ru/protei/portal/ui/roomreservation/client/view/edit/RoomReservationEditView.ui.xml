@@ -28,7 +28,7 @@
                 <g:HTMLPanel ui:field="roomNotAccessiblePanel" styleName="form-group col-md-12" visible="false">
                     <div class="card card-default bg-info m-t-0 m-b-0">
                         <div class="card-body">
-                            <p class="text-white m-t-0 m-b-0 m-l-0 m-r-0"><ui:text from="{lang.errRoomReservationRoomNotAccessible}"/><span ui:field="roomNotAccessibleMessage"/></p>
+                            <p class="text-white m-t-0 m-b-0 m-l-0 m-r-0"><ui:text from="{lang.errRoomReservationRoomNotAccessible}"/></p>
                         </div>
                     </div>
                 </g:HTMLPanel>
