@@ -6,7 +6,8 @@
              xmlns:multiselector='urn:import:ru.protei.portal.ui.employeeregistration.client.widget.optionlist'
              xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
-             xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+             xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.homecompany">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -21,7 +22,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <g:HTMLPanel styleName="form-group col-md-6">
+                        <g:HTMLPanel styleName="form-group col-md-3">
                             <label>
                                 <ui:text from="{lang.employeeRegistrationEmployeeFullName}"/>
                             </label>
@@ -34,6 +35,13 @@
                                 <ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/>
                             </label>
                             <person:EmployeeButtonSelector ui:field="headOfDepartment" hasNullValue="false"/>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label>
+                                <ui:text from="{lang.company}"/>
+                            </label>
+                            <company:HomeCompanyButtonSelector ui:field="company"/>
                         </div>
 
                         <div class="form-group col-md-3">

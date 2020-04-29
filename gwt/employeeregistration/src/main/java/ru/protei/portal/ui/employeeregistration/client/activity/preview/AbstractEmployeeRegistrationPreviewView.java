@@ -46,6 +46,8 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setAdditionalSoft( String additionalSoft );
 
+    void setCompany(String company);
+
     void showFullScreen(boolean isFullScreen);
 
     HasWidgets getCommentsContainer();

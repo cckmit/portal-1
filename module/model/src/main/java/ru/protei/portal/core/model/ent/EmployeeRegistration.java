@@ -155,6 +155,12 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "personemployee" )
     private Person person;
 
+    @JdbcColumn(name = "company_id")
+    private Long companyId;
+
+    @JdbcJoinedColumn(localColumn = "company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String companyName;
+
     public Person getPerson() {
         return person;
     }
@@ -351,6 +357,22 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     public void setCreatorShortName(String creatorShortName) {
         this.creatorShortName = creatorShortName;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     @Override

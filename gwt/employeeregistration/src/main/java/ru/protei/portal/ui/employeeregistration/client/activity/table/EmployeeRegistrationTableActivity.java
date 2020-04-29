@@ -96,6 +96,11 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
                 }));
     }
 
+    @Override
+    public void onEditClicked(EmployeeRegistration value) {
+
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();

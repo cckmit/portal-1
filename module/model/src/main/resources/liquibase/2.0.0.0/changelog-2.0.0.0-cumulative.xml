@@ -10,5 +10,6 @@
   <include file="2020-04-20-add-pause_date-to-case_object.xml" relativeToChangelogFile="true" />
   <include file="2020-03-18-ip-reservation.xml" relativeToChangelogFile="true"/>
   <include file="2020-04-17-add-room-reservation-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-28-add-company_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

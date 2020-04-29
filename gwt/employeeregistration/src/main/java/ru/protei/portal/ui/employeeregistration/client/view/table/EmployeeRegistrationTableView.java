@@ -9,11 +9,15 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -37,6 +41,8 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
             col.setHandler(activity);
             col.setColumnProvider(columnProvider);
         });
+
+        editClickColumn.setEditHandler(activity);
 
         table.setLoadHandler(activity);
     }
@@ -144,10 +150,13 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
             }
         };
 
+        editClickColumn.setEnabledPredicate(employeeShortView -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_EDIT));
+
         clickColumns.add(state);
         clickColumns.add(fullName);
         clickColumns.add(headOfDepartment);
         clickColumns.add(employmentDate);
+        clickColumns.add(editClickColumn);
 
         clickColumns.forEach(c -> table.addColumn(c.header, c.values));
     }
@@ -168,6 +177,12 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
 
     @Inject
     En_CaseStateLang caseStateLang;
+
+    @Inject
+    EditClickColumn<EmployeeRegistration> editClickColumn;
+
+    @Inject
+    PolicyService policyService;
 
     private ClickColumnProvider<EmployeeRegistration> columnProvider = new ClickColumnProvider<>();
 

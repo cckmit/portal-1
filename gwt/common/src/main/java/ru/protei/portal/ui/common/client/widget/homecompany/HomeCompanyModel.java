@@ -28,8 +28,14 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
 
     @Override
     public EntityOption get( int elementIndex, LoadingHandler handler ) {
-        if(list==null)refreshOptions(reverseOrder, handler, synchronizeWith1C);
-        if (size( list ) <= elementIndex) return null;
+        if (list == null) {
+            refreshOptions(reverseOrder, handler, synchronizeWith1C);
+        }
+
+        if (size( list ) <= elementIndex) {
+            return null;
+        }
+
         return list.get( elementIndex );
     }
 

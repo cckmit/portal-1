@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -109,6 +110,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setResourceComment(value.getResourceComment());
         view.setAdditionalSoft(value.getAdditionalSoft());
         view.setHeadOfDepartment(value.getHeadOfDepartment() == null ? "" : value.getHeadOfDepartment().getName());
+        view.setCompany(StringUtils.emptyIfNull(value.getCompanyName()));
 
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");

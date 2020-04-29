@@ -16,10 +16,13 @@ import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -205,6 +208,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         OSErrorLabel.setText(errorMsg);
     }
 
+    @Override
+    public HasValue<EntityOption> company() {
+        return company;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -263,6 +271,10 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Inject
     @UiField(provided = true)
     InternalResourceOptionList resourcesList;
+
+    @Inject
+    @UiField(provided = true)
+    HomeCompanyButtonSelector company;
 
     @Inject
     @UiField(provided = true)

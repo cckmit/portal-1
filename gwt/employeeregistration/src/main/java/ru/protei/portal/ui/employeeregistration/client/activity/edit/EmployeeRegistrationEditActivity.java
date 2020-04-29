@@ -188,6 +188,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         q.setOperatingSystem( view.operatingSystem().getValue() );
         q.setAdditionalSoft( view.additionalSoft().getValue() );
         q.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
+        q.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
 
         return q;
     }
@@ -224,6 +225,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.setOperatingSystemErrorLabel(lang.employeeRegistrationOperatingSystemExceed(CrmConstants.EmployeeRegistration.OPERATING_SYSTEM_MAX_LENGTH));
         view.setAdditionalSoftErrorLabel(lang.employeeRegistrationAdditionalSoftLengthExceed(CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH));
         view.setResourceCommentErrorLabel(lang.employeeRegistrationResourceCommentLengthExceed(CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH));
+
+        view.company().setValue(null);
 
         view.saveEnabled().setEnabled(true);
     }

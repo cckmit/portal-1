@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -79,4 +80,6 @@ public interface AbstractEmployeeRegistrationEditView extends IsWidget {
     HasVisibility operatingSystemErrorLabelVisibility();
 
     void setOperatingSystemErrorLabel(String errorMsg);
+
+    HasValue<EntityOption> company();
 }
