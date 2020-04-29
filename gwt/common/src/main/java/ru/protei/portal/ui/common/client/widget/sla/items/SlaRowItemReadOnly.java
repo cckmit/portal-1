@@ -20,6 +20,7 @@ public class SlaRowItemReadOnly extends Composite implements HasValue<ProjectSla
     @Inject
     public SlaRowItemReadOnly(Lang lang) {
         workTimeFormatter = new WorkTimeFormatter(lang);
+        workTimeFormatter.setFullDayTime(true);
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
