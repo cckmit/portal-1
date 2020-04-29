@@ -80,6 +80,7 @@ public class DebugIds {
         String CONTRACT = "sidebar-menu-contract";
         String SUBNET = "sidebar-menu-subnet";
         String RESERVED_IP = "sidebar-menu-reserved-ip";
+        String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String ICON_SUFFIX = "-icon";
     }
 

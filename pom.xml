@@ -67,6 +67,7 @@
                 <module>gwt/employeeregistration</module>
                 <module>gwt/contract</module>
                 <module>gwt/ipreservation</module>
+                <module>gwt/roomreservation</module>
 
                 <module>app/portal</module>
             </modules>

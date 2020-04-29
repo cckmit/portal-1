@@ -101,6 +101,11 @@ public enum En_Privilege {
     SUBNET_CREATE (SUBNET, CREATE),
     SUBNET_REMOVE (SUBNET, REMOVE),
 
+    ROOM_RESERVATION_VIEW (ROOM_RESERVATION, VIEW),
+    ROOM_RESERVATION_EDIT (ROOM_RESERVATION, EDIT),
+    ROOM_RESERVATION_CREATE (ROOM_RESERVATION, CREATE),
+    ROOM_RESERVATION_REMOVE (ROOM_RESERVATION, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),

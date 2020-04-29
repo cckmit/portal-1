@@ -1,0 +1,20 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:datetimepicker='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="form-group col-md-12 m-b-0">
+        <datetimepicker:single.SinglePicker ui:field="datePicker" type="DATE"
+                                            mandatory="true" formatValue="dd.MM.yyyy"
+                                            styleName="form-group col-md-5 p-l-0 p-r-0 m-b-5 inline-block"/>
+        <datetimepicker:range.RangePicker ui:field="timePicker" type="TIME" timeEnabledMode="HOURMINUTE"
+                                          mandatory="true" formatValue="HH:mm"
+                                          styleName="form-group col-md-5 p-l-0 p-r-0 m-b-5 inline-block"/>
+        <g:HTMLPanel styleName="btn-group pull-right">
+            <g:Button styleName="btn btn-danger" ui:field="remove">
+                <i class="fas fa-trash-alt"/>
+            </g:Button>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

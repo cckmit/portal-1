@@ -6,6 +6,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.event.RoomReservationNotificationEvent;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 
@@ -487,6 +489,58 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
 
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == RoomReservationNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
+        templateModel.put("room", roomReservation.getRoom() != null
+                ? roomReservation.getRoom().getName()
+                : "?");
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getRoomReservationNotificationBody(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == RoomReservationNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
+        templateModel.put("person_responsible", roomReservation.getPersonResponsible() != null
+                ? roomReservation.getPersonResponsible().getDisplayName()
+                : "?");
+        templateModel.put("room", roomReservation.getRoom() != null
+                ? roomReservation.getRoom().getName()
+                : "?");
+        templateModel.put("date", roomReservation.getDateFrom() != null
+                ? new SimpleDateFormat("dd.MM.yyyy").format(roomReservation.getDateFrom())
+                : "?");
+        templateModel.put("time",
+                (roomReservation.getDateFrom() != null
+                        ? new SimpleDateFormat("HH:mm").format(roomReservation.getDateFrom())
+                        : "?") +
+                " - " +
+                (roomReservation.getDateUntil() != null
+                        ? new SimpleDateFormat("HH:mm").format(roomReservation.getDateUntil())
+                        : "?"));
+        templateModel.put("reason", roomReservation.getReason() != null
+                ? roomReservation.getReason().getId()
+                : "?");
+        templateModel.put("coffee_break_count", roomReservation.getCoffeeBreakCount());
+        templateModel.put("comment", roomReservation.getComment());
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 
