@@ -17,14 +17,11 @@ public class RoomReservationDAO_Impl extends PortalBaseJdbcDAO<RoomReservation> 
     @Override
     public List<RoomReservation> listByRoomAndDateBounds(Long roomId, Date from, Date until) {
         return getListByCondition("room_reservation.room_id = ? AND (" +
-                    "(" +
-                        "(room_reservation.date_until > ? AND room_reservation.date_until < ?) OR " +
-                        "(room_reservation.date_from > ? AND room_reservation.date_from < ?)" +
-                    ") OR (" +
-                        "(room_reservation.date_from = ? AND room_reservation.date_until = ?)" +
-                    ")" +
-                ")",
-                roomId, from, until, from, until, from, until);
+                    "(? < room_reservation.date_from AND room_reservation.date_from < ?) OR " +
+                    "(? < room_reservation.date_until AND room_reservation.date_until < ?) OR " +
+                    "(room_reservation.date_from < ? AND ? < room_reservation.date_until) OR " +
+                    "(room_reservation.date_from < ? AND ? < room_reservation.date_until)" +
+                ")", roomId, from, until, from, until, from, from, until, until);
     }
 
     @Override
