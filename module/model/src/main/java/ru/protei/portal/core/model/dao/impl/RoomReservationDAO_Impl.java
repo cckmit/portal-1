@@ -20,8 +20,9 @@ public class RoomReservationDAO_Impl extends PortalBaseJdbcDAO<RoomReservation> 
                     "(? < room_reservation.date_from AND room_reservation.date_from < ?) OR " +
                     "(? < room_reservation.date_until AND room_reservation.date_until < ?) OR " +
                     "(room_reservation.date_from < ? AND ? < room_reservation.date_until) OR " +
-                    "(room_reservation.date_from < ? AND ? < room_reservation.date_until)" +
-                ")", roomId, from, until, from, until, from, from, until, until);
+                    "(room_reservation.date_from < ? AND ? < room_reservation.date_until) OR " +
+                    "(room_reservation.date_from = ? AND room_reservation.date_until = ?)" +
+                ")", roomId, from, until, from, until, from, from, until, until, from, until);
     }
 
     @Override
