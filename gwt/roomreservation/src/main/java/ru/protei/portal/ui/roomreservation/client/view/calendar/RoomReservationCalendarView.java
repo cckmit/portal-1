@@ -149,6 +149,13 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
         }
     }
 
+    @UiHandler("reloadButton")
+    public void reloadButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.reloadClicked();
+        }
+    }
+
     @Inject
     @UiField(provided = true)
     RoomReservableButtonSelector roomSelector;
@@ -166,6 +173,8 @@ public class RoomReservationCalendarView extends Composite implements AbstractRo
     Button showTodayButton;
     @UiField
     Button toggleHourStartButton;
+    @UiField
+    Button reloadButton;
     @UiField
     Button addNewReservationButton;
     @Inject

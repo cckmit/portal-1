@@ -16,6 +16,8 @@ public interface AbstractRoomReservationCalendarActivity {
 
     void toggleHourStartButtonClicked();
 
+    void reloadClicked();
+
     void onRoomChanged(RoomReservable room);
 
     void onYearChanged(Integer year);

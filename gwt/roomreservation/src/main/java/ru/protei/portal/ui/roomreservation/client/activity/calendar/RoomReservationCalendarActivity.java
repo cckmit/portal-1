@@ -61,8 +61,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         if (!canView(policyService)) {
             return;
         }
-        clearCache();
-        show(room, date);
+        reload();
     }
 
     @Override
@@ -98,6 +97,11 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     public void toggleHourStartButtonClicked() {
         saveHoursStartHidden(!isHoursStartHidden());
         show(room, date);
+    }
+
+    @Override
+    public void reloadClicked() {
+        reload();
     }
 
     @Override
@@ -149,6 +153,11 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
         view.month().setValue(day.getMonth(), false);
         view.dayOfMonth().setValue(day, false);
         view.dayAndName().setValue(day.getDayOfMonth() + " " + getDayOfWeekName(day.getDayOfWeek(), lang));
+    }
+
+    private void reload() {
+        clearCache();
+        show(room, date);
     }
 
     private void show(RoomReservable room, Date date) {
