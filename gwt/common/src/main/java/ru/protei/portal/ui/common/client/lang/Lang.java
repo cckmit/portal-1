@@ -214,6 +214,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String searchNoMatchesFound();
 
+    String searchTerminalState();
+
     String emptySelectorList();
 
     String company();
