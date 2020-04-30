@@ -1655,22 +1655,22 @@ public class WorkerController {
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
 
-    private String createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
         if (Objects.equals(lastName, oldLastName)) {
-            return null;
+            return;
         }
 
         String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
         String employeeNewFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
 
-        String summary = "Смена фамилии на " + lastName + " у пользователя " + employeeOldFullName;
+        String summary = "Смена фамилии сотрудника " + employeeOldFullName;
 
         String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
                              "Старое ФИО: " + employeeOldFullName + "\n" +
                              "Новое ФИО: " + employeeNewFullName + "\n" +
                              "\n" +
-                             "Необходимо изменение логина, почты.";
+                             "Необходимо изменение учетной записи, почты.";
 
-        return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).getData();
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).getData();
     }
 }
