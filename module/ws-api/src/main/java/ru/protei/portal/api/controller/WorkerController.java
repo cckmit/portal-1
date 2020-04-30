@@ -1527,9 +1527,9 @@ public class WorkerController {
 
                     mergePerson(person);
 
-                    if (YOUTRACK_INTEGRATION_ENABLED) {
+                    /*if (YOUTRACK_INTEGRATION_ENABLED) {
                         createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), personLastName);
-                    }
+                    }*/
 
                     if (userLogin == null) userLogin = createLDAPAccount(person);
                     if (userLogin != null) {
