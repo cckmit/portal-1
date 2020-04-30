@@ -388,7 +388,7 @@ public class PortalConfigData {
             redmineBackchannelEnabled = properties.getProperty("integration.redmine.backchannel", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
-            youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employee", Boolean.class, false);
+            youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 

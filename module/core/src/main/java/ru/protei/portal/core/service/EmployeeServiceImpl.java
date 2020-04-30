@@ -289,7 +289,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
-            createAdminYoutrackIssueIfNeeded(person.getId(), oldPerson.getFirstName(), oldPerson.getLastName(), oldPerson.getSecondName(), person.getLastName());
+            createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
@@ -362,17 +362,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ok(result);
     }
 
-    @Override
-    public String createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String newLastName) {
-        if (Objects.equals(lastName, newLastName)) {
+    private String createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+        if (Objects.equals(lastName, oldLastName)) {
             return null;
         }
 
-        String employeeFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
+        String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
+        String employeeNewFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
 
-        String summary = "Смена фамилии на " + newLastName + " у пользователя " + employeeFullName;
+        String summary = "Смена фамилии на " + lastName + " у пользователя " + employeeOldFullName;
 
-        String description = "Анкета: " + "[" + employeeFullName + "](" + PORTAL_URL + "#employees/employee:id" + employeeId + ")";
+        String description = "Предыдущее ФИО: " + employeeOldFullName + "\n" +
+                "Новое ФИО: " + employeeNewFullName + "\n" +
+                "Анкета: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employees/employee:id=" + employeeId + ")";
 
         return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).getData();
     }

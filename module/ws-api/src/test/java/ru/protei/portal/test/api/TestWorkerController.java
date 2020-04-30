@@ -134,6 +134,9 @@ public class TestWorkerController {
         result = updateWorker(worker);
         Assert.assertEquals("update.worker is not success! " + result.getMessage(), true, result.isOk());
 
+        worker.setLastName("new last name");
+        result = updateWorker(worker);
+
         worker.setFireDate("2019-05-05");
         result = updateWorker(worker);
         Assert.assertEquals("update.worker is not success! " + result.getMessage(), true, result.isOk());
