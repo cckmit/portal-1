@@ -125,6 +125,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         } else {
             issueFilterWidget.updateFilterType(filterType);
             applyIssueFilterVisibilityByPrivileges();
+            issueFilterWidget.setCheckImportanceHistoryVisibility(filterType == En_CaseFilterType.CASE_OBJECTS);
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(issueFilterWidget.asWidget());
         }

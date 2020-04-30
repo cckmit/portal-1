@@ -29,8 +29,8 @@ import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
-import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.LinkData;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
@@ -41,12 +41,9 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.partitioningBy;
-import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.filterToList;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -540,21 +537,21 @@ public class MailNotificationProcessor {
                 .map(this::fetchNotificationEntryFromPerson)
                 .filter(Objects::nonNull)
                 .distinct()
-                .collect(toList());
+                .collect(Collectors.toList());
 
         String url = String.format(getDocumentPreviewUrl(), document.getId());
 
         PreparedTemplate bodyTemplate = templateService.getDocumentMemberAddedBody(document.getName(), url);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for document added event | document.id={}, person.ids={}",
-                    document.getId(), personList.stream().map(Person::getId).collect(toList()));
+                    document.getId(), personList.stream().map(Person::getId).collect(Collectors.toList()));
             return;
         }
 
         PreparedTemplate subjectTemplate = templateService.getDocumentMemberAddedSubject(document.getName());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for document added event | document.id={}, person.ids={}",
-                    document.getId(), personList.stream().map(Person::getId).collect(toList()));
+                    document.getId(), personList.stream().map(Person::getId).collect(Collectors.toList()));
             return;
         }
 
@@ -576,19 +573,19 @@ public class MailNotificationProcessor {
                 .map(this::fetchNotificationEntryFromPerson)
                 .filter(Objects::nonNull)
                 .distinct()
-                .collect(toList());
+                .collect(Collectors.toList());
 
         PreparedTemplate bodyTemplate = templateService.getDocumentDocFileUpdatedByMemberBody(document.getName(), initiator.getDisplayShortName(), comment);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for document doc file updated by member | document.id={}, person.ids={}, comment={}",
-                    document.getId(), personList.stream().map(Person::getId).collect(toList()), comment);
+                    document.getId(), personList.stream().map(Person::getId).collect(Collectors.toList()), comment);
             return;
         }
 
         PreparedTemplate subjectTemplate = templateService.getDocumentDocFileUpdatedByMemberSubject(document.getName());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for document doc file updated by member | document.id={}, person.ids={}, comment={}",
-                    document.getId(), personList.stream().map(Person::getId).collect(toList()), comment);
+                    document.getId(), personList.stream().map(Person::getId).collect(Collectors.toList()), comment);
             return;
         }
 
@@ -637,7 +634,7 @@ public class MailNotificationProcessor {
 
         List<PersonProjectMemberView> team = event.getNewProjectState().getTeam();
 
-        List<Long> recipientsIds = CollectionUtils.emptyIfNull(team).stream().map(PersonShortView::getId).collect(toList());
+        List<Long> recipientsIds = CollectionUtils.emptyIfNull(team).stream().map(PersonShortView::getId).collect(Collectors.toList());
         recipientsIds.add(event.getInitiatorId());
         recipientsIds.add(event.getCreator().getId());
 
@@ -666,6 +663,40 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true);
+    }
+
+    // -----------------------
+    // Room reservation notifications
+    // -----------------------
+
+    @EventListener
+    public void onRoomReservationNotificationEvent(RoomReservationNotificationEvent event) {
+        RoomReservation roomReservation = event.getRoomReservation();
+        RoomReservationNotificationEvent.Action action = event.getAction();
+        List<NotificationEntry> notificationEntries = event.getNotificationEntryList();
+        List<String> recipients = stream(notificationEntries)
+                .map(NotificationEntry::getAddress)
+                .collect(Collectors.toList());
+
+        if (isEmpty(notificationEntries) || action == null || roomReservation == null) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getRoomReservationNotificationSubject(roomReservation, action);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for room reservation notification with id={} and action={}",
+                    roomReservation.getId(), action);
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getRoomReservationNotificationBody(roomReservation, action, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for room reservation notification with id={} and action={}",
+                    roomReservation.getId(), action);
+            return;
+        }
+
+        sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
     }
 
     // -----

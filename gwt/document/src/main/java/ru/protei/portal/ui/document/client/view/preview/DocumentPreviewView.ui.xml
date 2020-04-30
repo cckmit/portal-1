@@ -8,7 +8,9 @@
 
         <div class="card-body">
 
-            <h4 ui:field="header" class="m-r-50"/>
+            <h4 class="m-r-50">
+                <g:Anchor ui:field="documentNumber" href="#"/>
+            </h4>
             <div class="preview-title-image-container-right">
                 <g:Anchor href="javascript:void(0)" ui:field="downloadDocButton" target="_blank">
                     <img src="./images/document-doc.svg"/>
@@ -149,7 +151,7 @@
             </g:HTMLPanel>
         </div>
 
-        <g:HTMLPanel ui:field="footerContainer" styleName="card-footer">
+        <g:HTMLPanel ui:field="footerContainer" styleName="card-footer forcibly-bottom">
             <div class="card card-transparent no-margin">
                 <div class="text-right">
                     <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToDocuments}"/>

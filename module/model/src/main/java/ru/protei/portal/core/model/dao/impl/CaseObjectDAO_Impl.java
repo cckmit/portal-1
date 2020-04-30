@@ -162,7 +162,9 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)) {
+        if (isSearchAtComments(query)
+            || (query.isCheckImportanceHistory()!=null && query.isCheckImportanceHistory())
+        ) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
         }

@@ -199,6 +199,11 @@ public class CollectionUtils {
         return new ArrayList<>( elements );
     }
 
+    public static <T> List<T> listOfOrNull(Collection<T> elements){
+        if(elements == null) return null;
+        return new ArrayList<>( elements );
+    }
+
     public static <T> Set<T> setOf(T... elements){
         if(elements == null) return new HashSet<>();
         return new HashSet<>( Arrays.asList( elements ));

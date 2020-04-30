@@ -80,6 +80,7 @@ public class DebugIds {
         String CONTRACT = "sidebar-menu-contract";
         String SUBNET = "sidebar-menu-subnet";
         String RESERVED_IP = "sidebar-menu-reserved-ip";
+        String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String ICON_SUFFIX = "-icon";
     }
 
@@ -147,6 +148,7 @@ public class DebugIds {
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
+        String ISSUE_IMPORTANCE_CHECK_HISTORY ="filter-issue-importance-check-history";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
         String CREATOR_SELECTOR = "filter-creator-selector";
         String CREATOR_ADD_BUTTON = "filter-creator-add-button";

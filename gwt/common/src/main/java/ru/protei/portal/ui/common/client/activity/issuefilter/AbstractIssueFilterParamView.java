@@ -97,4 +97,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void stopWatchForScrollOf(Widget widget);
 
     void applyVisibilityByFilterType(En_CaseFilterType filterType);
+
+    void setCheckImportanceHistoryVisibility( boolean isCheckImportanceHistoryVisible );
 }

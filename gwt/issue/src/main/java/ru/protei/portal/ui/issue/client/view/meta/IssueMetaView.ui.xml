@@ -106,6 +106,7 @@
                                 <ui:text from="{lang.projectSlaReactionTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaReactionTime"
+                                                 fullDayTime="true"
                                                  styleName="inline m-l-10 small"/>
                         </div>
                         <div class="col-md-12">
@@ -113,6 +114,7 @@
                                 <ui:text from="{lang.projectSlaTemporaryTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaTemporarySolutionTime"
+                                                 fullDayTime="true"
                                                  styleName="inline m-l-10 small"/>
                         </div>
                         <div class="col-md-12">
@@ -120,6 +122,7 @@
                                 <ui:text from="{lang.projectSlaFullTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaFullSolutionTime"
+                                                 fullDayTime="true"
                                                  styleName="inline m-l-10 small"/>
                         </div>
                     </g:HTMLPanel>
