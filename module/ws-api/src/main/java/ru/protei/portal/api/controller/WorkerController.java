@@ -1671,6 +1671,6 @@ public class WorkerController {
                              "\n" +
                              "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).getData();
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
 }

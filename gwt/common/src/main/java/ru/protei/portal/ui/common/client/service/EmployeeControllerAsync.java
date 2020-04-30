@@ -51,5 +51,5 @@ public interface EmployeeControllerAsync {
 
     void fireEmployee(Person person, AsyncCallback<Boolean> async);
 
-    void updateEmployeePerson(Person person, Boolean needToChangeAccount, AsyncCallback<Boolean> async);
+    void updateEmployeePerson(Person person, boolean needToChangeAccount, AsyncCallback<Boolean> async);
 }

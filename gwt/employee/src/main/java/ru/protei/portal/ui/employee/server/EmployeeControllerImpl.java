@@ -113,7 +113,7 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public Boolean updateEmployeePerson(Person person, Boolean needToChangeAccount) throws RequestFailedException {
+    public Boolean updateEmployeePerson(Person person, boolean needToChangeAccount) throws RequestFailedException {
 
         if (person == null || person.getId() == null) {
             log.warn("updateEmployeePerson(): null person or null id in request");

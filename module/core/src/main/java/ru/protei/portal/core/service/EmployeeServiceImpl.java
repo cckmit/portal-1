@@ -7,9 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -31,9 +29,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 
@@ -43,8 +39,8 @@ import static ru.protei.portal.core.model.helper.StringUtils.join;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
-    private String ADMIN_PROJECT_NAME, PORTAL_URL;
-    private boolean YOUTRACK_INTEGRATION_ENABLED;
+    private static String ADMIN_PROJECT_NAME, PORTAL_URL;
+    private static boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
@@ -273,7 +269,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person, Boolean needToChangeAccount) {
+    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount) {
         if (person == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -288,7 +284,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (needToChangeAccount != null && needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
+        if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
             createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
@@ -378,7 +374,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 "\n" +
                 "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).getData();
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
 
     private boolean removeWorkerEntry(Long personId){

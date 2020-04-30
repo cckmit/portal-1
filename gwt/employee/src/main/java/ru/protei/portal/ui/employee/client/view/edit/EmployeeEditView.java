@@ -44,8 +44,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workerPositionSelector.setAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
 
         birthDay.setMandatory(false);
-        changeAccountVisibility().setVisible(false);
-
     }
 
     @Override
