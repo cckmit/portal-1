@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -22,14 +23,14 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import javax.annotation.PostConstruct;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 
 /**
@@ -38,6 +39,8 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
+    private static String ADMIN_PROJECT_NAME, PORTAL_URL;
+    private static boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
@@ -68,6 +71,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    YoutrackService youtrackService;
+
+    @PostConstruct
+    public void setYoutrackConst() {
+        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+    }
 
     @Override
     public EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull) {
@@ -253,13 +269,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person) {
+    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount) {
         if (person == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Person oldPerson = personDAO.get(person.getId());
+
+        if (oldPerson == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         if (!validatePerson(person) || person.getId() == null) {
             return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
+            createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
@@ -330,6 +356,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return ok(result);
+    }
+
+    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+        if (Objects.equals(lastName, oldLastName)) {
+            return;
+        }
+
+        String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
+        String employeeNewFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
+
+        String summary = "Смена фамилии сотрудника " + employeeOldFullName;
+
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
+                "Старое ФИО: " + employeeOldFullName + "\n" +
+                "Новое ФИО: " + employeeNewFullName + "\n" +
+                "\n" +
+                "Необходимо изменение учетной записи, почты.";
+
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
 
     private boolean removeWorkerEntry(Long personId){

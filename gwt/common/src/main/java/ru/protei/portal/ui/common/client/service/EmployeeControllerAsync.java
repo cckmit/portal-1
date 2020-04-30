@@ -41,8 +41,6 @@ public interface EmployeeControllerAsync {
 
     void createEmployeePerson(Person person, AsyncCallback<Person> async);
 
-    void updateEmployeePerson(Person person, AsyncCallback<Boolean> async);
-
     void createEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<WorkerEntry> async);
 
     void updateEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<Boolean> async);
@@ -52,4 +50,6 @@ public interface EmployeeControllerAsync {
     void getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query, AsyncCallback<SearchResult<EmployeeShortView>> async);
 
     void fireEmployee(Person person, AsyncCallback<Boolean> async);
+
+    void updateEmployeePerson(Person person, boolean needToChangeAccount, AsyncCallback<Boolean> async);
 }

@@ -1830,6 +1830,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String backToEmployees();
 
+    String employeeChangeAccount();
+
     String employeeRegistrations();
 
     String employeeRegistrationEmployeeFullNameColumnHeader();

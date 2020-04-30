@@ -5,6 +5,7 @@ public interface AbstractEmployeeEditActivity {
     void onCancelClicked();
     void onFireClicked();
     void validateLimitedFields();
+    void checkLastNameChanged();
     void onCompanySelected();
     void onGenderSelected();
 

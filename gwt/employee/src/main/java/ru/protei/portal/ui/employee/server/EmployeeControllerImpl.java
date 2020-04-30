@@ -113,7 +113,7 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public Boolean updateEmployeePerson(Person person) throws RequestFailedException {
+    public Boolean updateEmployeePerson(Person person, boolean needToChangeAccount) throws RequestFailedException {
 
         if (person == null || person.getId() == null) {
             log.warn("updateEmployeePerson(): null person or null id in request");
@@ -124,7 +124,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = employeeService.updateEmployeePerson( token, person );
+        Result<Boolean> response = employeeService.updateEmployeePerson( token, person, needToChangeAccount );
 
         log.info("updateEmployeePerson(): update person, result: {}", response.isOk() ? "ok" : response.getStatus());
 
