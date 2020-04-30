@@ -273,7 +273,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person) {
+    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person, Boolean needToChangeAccount) {
         if (person == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -288,7 +288,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (YOUTRACK_INTEGRATION_ENABLED) {
+        if (needToChangeAccount != null && needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
             createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 

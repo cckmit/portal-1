@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
@@ -215,6 +216,16 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     @Override
+    public void checkLastNameChanged() {
+        if (personId != null){
+            view.changeAccountVisibility().setVisible(!Objects.equals(personLastName, view.lastName().getValue()));
+            if (!Objects.equals(personLastName, view.lastName().getValue())) {
+                view.changeAccount().setValue(false);
+            }
+        }
+    }
+
+    @Override
     public void onCompanySelected() {
         boolean isValid = view.company().getValue() != null;
         view.companyValidator().setValid(isValid);
@@ -333,6 +344,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         checkGenderValid();
         view.firstName().setValue(employee.getFirstName());
         view.lastName().setValue(employee.getLastName());
+        personLastName = employee.getLastName();
         view.secondName().setText(employee.getSecondName());
         view.birthDay().setValue(employee.getBirthday());
         view.ipAddress().setValue(employee.getIpAddress());
@@ -375,6 +387,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         if (employee.isFired()) {
             setAllFieldsEnabled(false);
         }
+        view.changeAccount().setValue(false);
+        view.changeAccountVisibility().setVisible(false);
     }
 
     private void setPersonFieldsEnabled (boolean isEnabled) {
@@ -425,14 +439,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void updatePersonAndCreateWorker(WorkerEntry worker){
-        employeeService.updateEmployeePerson(applyChangesEmployee(), new FluentCallback<Boolean>()
+        employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
                 .withSuccess(success -> {
                     createEmployeeWorker(worker);
                 }));
     }
 
     private void updatePersonAndUpdateWorker(WorkerEntry worker){
-        employeeService.updateEmployeePerson(applyChangesEmployee(), new FluentCallback<Boolean>()
+        employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
                 .withSuccess(success -> {
                     updateEmployeeWorker(worker);
                 }));
@@ -497,6 +511,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     private List<EntityOption> companiesWithoutSync = new ArrayList<>();
     private Person employee = new Person();
     private Long personId;
+    private String personLastName;
     private boolean isEditablePerson;
     private Long workerId;
     private AppEvents.InitDetails initDetails;

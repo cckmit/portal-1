@@ -50,7 +50,7 @@ public interface EmployeeService {
 
     @Auditable(En_AuditType.EMPLOYEE_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
-    Result<Boolean> updateEmployeePerson(AuthToken token, Person person);
+    Result<Boolean> updateEmployeePerson(AuthToken token, Person person, Boolean needToChangeAccount);
 
     @Auditable(En_AuditType.WORKER_CREATE)
     @Privileged(En_Privilege.EMPLOYEE_CREATE)

@@ -44,6 +44,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workerPositionSelector.setAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
 
         birthDay.setMandatory(false);
+        changeAccountVisibility().setVisible(false);
 
     }
 
@@ -298,6 +299,14 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public HasValue<Boolean> changeAccount() { return changeAccount; }
+
+    @Override
+    public HasVisibility changeAccountVisibility() {
+        return changeAccount;
+    }
+
+    @Override
     public void updateCompanyDepartments(Long companyId) {
         companyDepartmentSelector.updateCompanyDepartments(companyId);
     }
@@ -421,6 +430,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     LabelElement workEmailLabel;
 
+    @UiField
+    CheckBox changeAccount;
+
     @Inject
     @UiField(provided = true)
     CompanyDepartmentSelector companyDepartmentSelector;
@@ -445,6 +457,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         public void run() {
             if (activity != null) {
                 activity.validateLimitedFields();
+                activity.checkLastNameChanged();
             }
         }
     };
