@@ -1665,9 +1665,11 @@ public class WorkerController {
 
         String summary = "Смена фамилии на " + lastName + " у пользователя " + employeeOldFullName;
 
-        String description = "Предыдущее ФИО: " + employeeOldFullName + "\n" +
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
+                             "Старое ФИО: " + employeeOldFullName + "\n" +
                              "Новое ФИО: " + employeeNewFullName + "\n" +
-                             "Анкета: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employees/employee:id=" + employeeId + ")";
+                             "\n" +
+                             "Необходимо изменение логина, почты.";
 
         return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).getData();
     }
