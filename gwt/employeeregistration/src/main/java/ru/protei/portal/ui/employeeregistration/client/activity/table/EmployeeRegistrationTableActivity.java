@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.EmployeeRegistrationShortView;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -98,7 +99,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
 
     @Override
     public void onEditClicked(EmployeeRegistration value) {
-
+        fireEvent(new EmployeeRegistrationEvents.Edit(value.getId()));
     }
 
     private void loadTable() {

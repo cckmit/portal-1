@@ -7,10 +7,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -108,6 +105,43 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
 
         return ok(id);
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> updateEmployeeRegistration(AuthToken token, EmployeeRegistrationShortView employeeRegistrationShortView) {
+        if (employeeRegistrationShortView == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
+
+        if (!isEmployeeRegistrationChanged(employeeRegistration, employeeRegistrationShortView)) {
+            return ok(employeeRegistration.getId());
+        }
+
+        employeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
+        employeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
+
+        employeeRegistrationDAO.partialMerge(employeeRegistration, "employment_date", "curators");
+
+        return ok(employeeRegistration.getId());
+    }
+
+    private boolean isEmployeeRegistrationChanged(EmployeeRegistration employeeRegistration, EmployeeRegistrationShortView employeeRegistrationShortView) {
+        if (!Objects.equals(employeeRegistration.getEmploymentDate(), employeeRegistrationShortView.getEmploymentDate())) {
+            return true;
+        }
+
+        if (!Objects.equals(employeeRegistration.getCuratorsIds().size(), employeeRegistrationShortView.getCuratorIds().size())) {
+            return true;
+        }
+
+        if (!employeeRegistration.getCuratorsIds().containsAll(employeeRegistrationShortView.getCuratorIds())) {
+            return true;
+        }
+
+        return false;
     }
 
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
