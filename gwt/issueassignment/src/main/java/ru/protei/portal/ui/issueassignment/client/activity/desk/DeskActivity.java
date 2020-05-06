@@ -91,6 +91,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private void hideView() {
         view.tableViewVisibility().setVisible(false);
+        view.notificationVisibility().setVisible(false);
     }
 
     private void hideLoader() {
@@ -132,6 +133,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                     hideLoader();
                     hideError();
                     showDesk(userCaseAssignmentTable);
+                    showNotification(userCaseAssignmentTable);
                     fireEvent(new IssueAssignmentEvents.DeskPeopleChanged(new ArrayList<>(people)));
                 });
     }
@@ -186,6 +188,17 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         popup.getPopup().getChildContainer().clear();
         popup.fill();
         popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+    }
+
+    private void showNotification(UserCaseAssignmentTable userCaseAssignmentTable) {
+        long limit = userCaseAssignmentTable.getCaseShortViewsLimit();
+        boolean isOverflow = userCaseAssignmentTable.isCaseShortViewsLimitOverflow();
+        if (isOverflow) {
+            view.notificationText().setValue(lang.issueAssignmentDeskOverflow(limit));
+            view.notificationVisibility().setVisible(true);
+        } else {
+            view.notificationVisibility().setVisible(false);
+        }
     }
 
     private void showDesk(UserCaseAssignmentTable userCaseAssignmentTable) {

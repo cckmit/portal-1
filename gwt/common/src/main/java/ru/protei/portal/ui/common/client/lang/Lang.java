@@ -2573,4 +2573,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errRoomReservationHasIntersections();
 
     String buttonReload();
+
+    String issueAssignmentDeskOverflow(long limit);
 }

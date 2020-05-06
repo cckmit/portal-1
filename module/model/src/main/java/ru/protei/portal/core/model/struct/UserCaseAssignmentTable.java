@@ -10,13 +10,10 @@ public class UserCaseAssignmentTable implements Serializable {
 
     private List<UserCaseAssignment> userCaseAssignments;
     private List<CaseShortView> caseShortViews;
+    private long caseShortViewsLimit;
+    private boolean caseShortViewsLimitOverflow;
 
     public UserCaseAssignmentTable() {}
-
-    public UserCaseAssignmentTable(List<UserCaseAssignment> userCaseAssignments, List<CaseShortView> caseShortViews) {
-        this.userCaseAssignments = userCaseAssignments;
-        this.caseShortViews = caseShortViews;
-    }
 
     public List<UserCaseAssignment> getUserCaseAssignments() {
         return userCaseAssignments;
@@ -34,11 +31,29 @@ public class UserCaseAssignmentTable implements Serializable {
         this.caseShortViews = caseShortViews;
     }
 
+    public long getCaseShortViewsLimit() {
+        return caseShortViewsLimit;
+    }
+
+    public void setCaseShortViewsLimit(long caseShortViewsLimit) {
+        this.caseShortViewsLimit = caseShortViewsLimit;
+    }
+
+    public boolean isCaseShortViewsLimitOverflow() {
+        return caseShortViewsLimitOverflow;
+    }
+
+    public void setCaseShortViewsLimitOverflow(boolean caseShortViewsLimitOverflow) {
+        this.caseShortViewsLimitOverflow = caseShortViewsLimitOverflow;
+    }
+
     @Override
     public String toString() {
         return "UserCaseAssignmentTable{" +
                 "userCaseAssignments=" + userCaseAssignments +
                 ", caseShortViews=" + caseShortViews +
+                ", caseShortViewsLimit=" + caseShortViewsLimit +
+                ", caseShortViewsLimitOverflow=" + caseShortViewsLimitOverflow +
                 '}';
     }
 }

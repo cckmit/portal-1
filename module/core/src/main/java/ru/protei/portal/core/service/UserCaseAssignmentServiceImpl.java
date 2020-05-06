@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserCaseAssignmentDAO;
@@ -98,19 +99,48 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     }
 
     private UserCaseAssignmentTable getUserCaseAssignmentTable(AuthToken token, long loginId) {
+        UserCaseAssignmentTable table = new UserCaseAssignmentTable();
+        withUserCaseAssignments(table, loginId);
+        withCaseViews(table);
+        withCaseViewTags(table, token);
+        return table;
+    }
+
+    private void withUserCaseAssignments(UserCaseAssignmentTable table, long loginId) {
         List<UserCaseAssignment> userCaseAssignments = userCaseAssignmentDAO.findByLoginId(loginId);
         fillPersonShortViews(userCaseAssignments);
-        CaseQuery caseQuery = makeCaseQuery(userCaseAssignments);
-        List<CaseShortView> caseShortViews = caseQuery == null
-                ? new ArrayList<>()
-                : caseShortViewDAO.getSearchResult(caseQuery).getResults();
+        table.setUserCaseAssignments(userCaseAssignments);
+    }
+
+    private void withCaseViews(UserCaseAssignmentTable table) {
+        CaseQuery caseQuery = makeCaseQuery(table.getUserCaseAssignments());
+        long limit = config.data().getUiConfig().getIssueAssignmentDeskLimit();
+        boolean isOverflow = false;
+        List<CaseShortView> caseShortViews;
+        if (caseQuery == null) {
+            caseShortViews = new ArrayList<>();
+        } else {
+            Long total = caseShortViewDAO.count(caseQuery);
+            if (total > limit) {
+                caseQuery.setLimit(caseQuery.getOffset() + (int) limit);
+                isOverflow = true;
+            }
+            caseShortViews = caseShortViewDAO.getSearchResult(caseQuery).getResults();
+        }
+        table.setCaseShortViews(caseShortViews);
+        table.setCaseShortViewsLimit(limit);
+        table.setCaseShortViewsLimitOverflow(isOverflow);
+    }
+
+    private void withCaseViewTags(UserCaseAssignmentTable table, AuthToken token) {
+        List<CaseShortView> caseShortViews = table.getCaseShortViews();
         List<Long> caseIds = stream(caseShortViews)
                 .map(CaseShortView::getId)
                 .collect(Collectors.toList());
         caseTagService.getCaseObjectTags(token, caseIds)
                 .ifError(result -> log.warn("Failed to fetch case tags | status='{}', message='{}'", result.getStatus(), result.getMessage()))
                 .ifOk(tags -> assignTagsToCases(caseShortViews, tags));
-        return new UserCaseAssignmentTable(userCaseAssignments, caseShortViews);
+        table.setCaseShortViews(caseShortViews);
     }
 
     private void fillPersonShortViews(List<UserCaseAssignment> userCaseAssignments) {
@@ -235,6 +265,8 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     CaseShortViewDAO caseShortViewDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    PortalConfig config;
 
     private final static Logger log = LoggerFactory.getLogger(UserCaseAssignmentServiceImpl.class);
 }

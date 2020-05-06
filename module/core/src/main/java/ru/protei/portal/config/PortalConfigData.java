@@ -33,6 +33,7 @@ public class PortalConfigData {
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
     private final MarkupHelpLink markupHelpLink;
+    private final UiConfig uiConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -56,6 +57,7 @@ public class PortalConfigData {
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
         markupHelpLink = new MarkupHelpLink(wrapper);
+        uiConfig = new UiConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -128,6 +130,10 @@ public class PortalConfigData {
 
     public MarkupHelpLink getMarkupHelpLink() {
         return markupHelpLink;
+    }
+
+    public UiConfig getUiConfig() {
+        return uiConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -647,6 +653,18 @@ public class PortalConfigData {
 
         public String getJiraMarkup() {
             return jiraMarkup;
+        }
+    }
+
+    public static class UiConfig {
+        private final Long issueAssignmentDeskLimit;
+
+        public UiConfig(PropertiesWrapper properties) {
+            issueAssignmentDeskLimit = properties.getProperty("ui.issue-assignment.desk.limit", Long.class, 200L);
+        }
+
+        public Long getIssueAssignmentDeskLimit() {
+            return issueAssignmentDeskLimit;
         }
     }
 
