@@ -99,6 +99,7 @@ public class CrmConstants {
         long HOME_COMPANY_ID = 1L;
         long MAIN_HOME_COMPANY_ID = 3084L;
         String MAIN_HOME_COMPANY_NAME = "Протей";
+        String COMPANY_NAME_ILLEGAL_CHARS_MASK = ".*[<>/]+.*";
     }
 
     public interface LocaleTags {

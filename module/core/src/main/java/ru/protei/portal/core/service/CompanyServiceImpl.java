@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -373,6 +374,7 @@ public class CompanyServiceImpl implements CompanyService {
     private boolean isValidCompany(Company company) {
         return company != null
                 && company.getCname() != null
+                && !company.getCname().matches(CrmConstants.Company.COMPANY_NAME_ILLEGAL_CHARS_MASK)
                 && !company.getCname().trim().isEmpty()
                 && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
                 /*&& isValidContactInfo(company)*/

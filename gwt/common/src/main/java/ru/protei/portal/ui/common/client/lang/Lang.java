@@ -292,6 +292,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companySubscriptionGroupQuantity();
 
+    String errCompanyNameExists();
+
+    String errCompanyNameContainsIllegalChars();
+
+    String errCompanyFieldsFill();
+
     String contacts();
 
     String contactShowFired();

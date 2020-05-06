@@ -26,6 +26,11 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasText webSite();
     HasText comment();
+
+    HasText companyNameErrorLabel();
+
+    HasVisibility companyNameErrorLabelVisibility();
+
     HasValue<EntityOption> parentCompany();
 
     HasValue<En_CompanyCategory> companyCategory();

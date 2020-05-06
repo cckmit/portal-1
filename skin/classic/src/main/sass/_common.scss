@@ -3652,6 +3652,12 @@ table {
   }
 }
 
+.company-name-container {
+  .verifiable {
+    top: 28px;
+  }
+}
+
 .thumbnail-photo{
   object-fit: cover;
   object-position: 0px 25%;
@@ -3896,6 +3902,10 @@ table {
 }
 
 .text-danger.size-error {
+  font-size: 75% !important;
+}
+
+.text-danger.name-error {
   font-size: 75% !important;
 }
 
