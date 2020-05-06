@@ -318,7 +318,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withCaseType(En_CaseType.CRM_SUPPORT));
 
         fireEvent( new CaseTagEvents.Show( view.getTagsContainer(), En_CaseType.CRM_SUPPORT,
-                policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT )));
+                policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ), (Long) null, false));
 
         view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         unlockSave();

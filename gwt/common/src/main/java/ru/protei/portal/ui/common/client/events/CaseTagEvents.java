@@ -5,24 +5,33 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 
+import java.util.List;
+
 public class CaseTagEvents {
 
     public static class Show {
         public Show() {}
-
-        public Show( HasWidgets parent, En_CaseType caseType, boolean isEditTagEnabled ) {
-            this(parent, caseType, isEditTagEnabled, null, false);
-        }
 
         public Show( HasWidgets parent, En_CaseType caseType, boolean isEditTagEnabled, Long caseId, boolean isReadOnly ) {
             this.parent = parent;
             this.caseType = caseType;
             this.isEditTagEnabled = isEditTagEnabled;
             this.caseId = caseId;
+            this.caseTags = null;
+            this.isReadOnly = isReadOnly;
+        }
+
+        public Show( HasWidgets parent, En_CaseType caseType, boolean isEditTagEnabled, List<CaseTag> caseTags, boolean isReadOnly ) {
+            this.parent = parent;
+            this.caseType = caseType;
+            this.isEditTagEnabled = isEditTagEnabled;
+            this.caseId = null;
+            this.caseTags = caseTags;
             this.isReadOnly = isReadOnly;
         }
 
         public HasWidgets parent;
+        public List<CaseTag> caseTags;
         public Long caseId;
         public En_CaseType caseType;
         public boolean isReadOnly = false;

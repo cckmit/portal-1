@@ -1651,12 +1651,13 @@ a {
 
 .case-tag {
   display: inline-block;
-  font-size: 12px;
+  font-size: 0.9em;
   margin-right: 4px;
+  margin-bottom: 4px;
   white-space: nowrap;
   padding: 4px 8px;
   border-radius: 4px;
-  line-height: 1em;
+  line-height: 0.9em;
 
   .case-tag-close {
     color: inherit;

@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import static java.util.Collections.replaceAll;
@@ -32,7 +33,7 @@ public abstract class   CaseTagListActivity
         view.setActivity( this );
     }
 
-    @Event
+    @Override // not event listener
     public void onShow(CaseTagEvents.Show event) {
         this.show = event;
 
@@ -45,12 +46,19 @@ public abstract class   CaseTagListActivity
         view.setType(show.caseType);
         hideOrShowIfNoTags();
 
-        tags = new ArrayList<>();
-        if (isCaseCreationMode()) {
-            return;
+        if (event.caseTags != null) {
+            tags = event.caseTags;
+            fillView(tags);
+        } else {
+            tags = new ArrayList<>();
+            if (isCaseCreationMode()) {
+                return;
+            }
+            requestTags(show.caseId, caseTags -> {
+                tags = caseTags;
+                fillView(tags);
+            });
         }
-
-        requestsTags(show.caseId);
     }
 
     @Event
@@ -171,15 +179,12 @@ public abstract class   CaseTagListActivity
         view.getTagsContainer().add(itemWidget.asWidget());
     }
 
-    private void requestsTags(Long caseId) {
+    private void requestTags(Long caseId, Consumer<List<CaseTag>> onRequested) {
         CaseTagQuery query = new CaseTagQuery();
         query.setCaseType(En_CaseType.CRM_SUPPORT);
         query.setCaseId(caseId);
         controller.getTags(query, new FluentCallback<List<CaseTag>>()
-                .withSuccess( links -> {
-                    tags = links;
-                    fillView( tags );
-                } )
+                .withSuccess(onRequested)
         );
     }
 

@@ -11,9 +11,11 @@ import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
 import ru.protei.portal.ui.common.client.activity.caselink.list.CaseLinkListActivity;
+import ru.protei.portal.ui.common.client.activity.casetag.CaseTagActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditView;
 import ru.protei.portal.ui.common.client.activity.casetag.edit.CaseTagEditActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.item.AbstractCaseTagItemView;
+import ru.protei.portal.ui.common.client.activity.casetag.list.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.list.AbstractCaseTagListView;
 import ru.protei.portal.ui.common.client.activity.casetag.list.CaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditView;
@@ -132,9 +134,10 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractCaseLinkItemView.class ).to( CaseLinkItemView.class );
         bind( AbstractCaseLinkListView.class ).to( CaseLinkListView.class ).in( Singleton.class );
 
-        bind( CaseTagListActivity.class ).asEagerSingleton();
+        bind( CaseTagActivity.class ).asEagerSingleton();
+        bind( AbstractCaseTagListActivity.class ).to( CaseTagListActivity.class );
         bind( AbstractCaseTagItemView.class ).to( CaseTagItemView.class );
-        bind( AbstractCaseTagListView.class ).to( CaseTagListView.class ).in( Singleton.class );
+        bind( AbstractCaseTagListView.class ).to( CaseTagListView.class );
         bind( CaseTagEditActivity.class ).asEagerSingleton();
         bind( CompanyDepartmentEditActivity.class ).asEagerSingleton();
         bind( WorkerPositionEditActivity.class ).asEagerSingleton();

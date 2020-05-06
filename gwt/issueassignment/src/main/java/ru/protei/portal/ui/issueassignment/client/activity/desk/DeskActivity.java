@@ -11,14 +11,17 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.UserCaseAssignment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -358,7 +361,6 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private Widget buildIssuesCell(List<CaseShortView> cellIssues) {
         AbstractDeskRowIssueView rowIssueView = rowIssueViewProvider.get();
-        rowIssueView.setIssues(cellIssues);
         rowIssueView.setHandler(new AbstractDeskRowIssueView.Handler() {
             @Override
             public void onOpenIssue(CaseShortView issue) {
@@ -383,7 +385,18 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                             }));
                 });
             }
+            @Override
+            public void showTags(HasWidgets parent, List<CaseTag> caseTags) {
+                fireEvent(new CaseTagEvents.Show(
+                        parent,
+                        En_CaseType.CRM_SUPPORT,
+                        false,
+                        caseTags,
+                        true
+                ));
+            }
         });
+        rowIssueView.setIssues(cellIssues);
         HTMLPanel td = new HTMLPanel("td", "");
         td.add(rowIssueView.asWidget());
         return td;
