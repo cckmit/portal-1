@@ -90,6 +90,7 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
 
         if (response.isOk()) {
             log.info("employee registration successfully updated. id = {}", response.getData());
+            return response.getData();
         }
 
         log.warn("updateEmployeeRegistration: status = {}", response.getStatus());

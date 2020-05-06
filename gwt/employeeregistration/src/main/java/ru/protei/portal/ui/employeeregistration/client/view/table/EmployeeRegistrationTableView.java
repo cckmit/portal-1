@@ -83,6 +83,13 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         columnProvider.setSelectedValue(null);
     }
 
+    @Override
+    public void updateRow(EmployeeRegistration employeeRegistration) {
+        if (employeeRegistration != null) {
+            table.updateRow(employeeRegistration);
+        }
+    }
+
     private void initTable() {
         ClickColumn<EmployeeRegistration> state = new ClickColumn<EmployeeRegistration>() {
             @Override

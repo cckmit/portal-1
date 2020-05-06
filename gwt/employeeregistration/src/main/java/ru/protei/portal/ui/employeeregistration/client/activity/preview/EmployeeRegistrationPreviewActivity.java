@@ -16,7 +16,10 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
@@ -61,6 +64,17 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         fullScreenContainer.add( view.asWidget() );
         loadDetails(event.id);
         view.showFullScreen(true);
+    }
+
+    @Event
+    public void onEmployeeRegistrationChanged(EmployeeRegistrationEvents.ChangeEmployeeRegistration event) {
+        if (!Objects.equals(event.employeeRegistrationId, this.employeeRegistrationId)) {
+            return;
+        }
+
+        employeeRegistrationController.getEmployeeRegistration(event.employeeRegistrationId, new FluentCallback<EmployeeRegistration>()
+                .withSuccess(this::fillView)
+        );
     }
 
     @Override

@@ -68,6 +68,13 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         fireEvent(new EmployeeRegistrationEvents.Create());
     }
 
+    @Event
+    public void onEmployeeRegistrationChanged(EmployeeRegistrationEvents.ChangeEmployeeRegistration event) {
+        employeeRegistrationService.getEmployeeRegistration(event.employeeRegistrationId, new FluentCallback<EmployeeRegistration>()
+                .withSuccess(view::updateRow)
+        );
+    }
+
     @Override
     public void onItemClicked(EmployeeRegistration value) {
         showPreview(value);

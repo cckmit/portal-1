@@ -10,9 +10,9 @@ import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class EmployeeRegistrationEditActivity implements AbstractEmployeeRegistrationEditActivity, AbstractDialogDetailsActivity, Activity {
@@ -38,9 +38,10 @@ public abstract class EmployeeRegistrationEditActivity implements AbstractEmploy
         );
     }
 
-    private void fillView(EmployeeRegistrationShortView employeeRegistration) {
+    private void fillView(final EmployeeRegistrationShortView employeeRegistration) {
         view.employmentDate().setValue(employeeRegistration.getEmploymentDate());
         view.curators().setValue(employeeRegistration.getCurators());
+        view.setCuratorsFilter(personShortView -> !personShortView.isFired() && !Objects.equals(personShortView.getId(), employeeRegistration.getHeadOfDepartmentId()));
 
         dialogDetailsView.removeButtonVisibility().setVisible(false);
         dialogDetailsView.setHeader(lang.employeeRegistrationEditHeader());
@@ -58,13 +59,10 @@ public abstract class EmployeeRegistrationEditActivity implements AbstractEmploy
         employeeRegistrationShortView.setCurators(view.curators().getValue());
 
         employeeRegistrationService.updateEmployeeRegistration(employeeRegistrationShortView, new FluentCallback<Long>()
-                .withError(throwable -> {
-                    dialogDetailsView.hidePopup();
-                    defaultErrorHandler.accept(throwable);
-                })
                 .withSuccess(employeeRegistrationId -> {
                     dialogDetailsView.hidePopup();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new EmployeeRegistrationEvents.ChangeEmployeeRegistration(employeeRegistrationId));
                 })
         );
     }
@@ -85,9 +83,6 @@ public abstract class EmployeeRegistrationEditActivity implements AbstractEmploy
 
     @Inject
     Lang lang;
-
-    @Inject
-    static DefaultErrorHandler defaultErrorHandler;
 
     private EmployeeRegistrationShortView employeeRegistrationShortView;
 }

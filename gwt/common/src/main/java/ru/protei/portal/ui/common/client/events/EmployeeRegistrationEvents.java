@@ -45,4 +45,12 @@ public class EmployeeRegistrationEvents {
         public Long id;
         public HasWidgets parent;
     }
+
+    public static class ChangeEmployeeRegistration {
+        public ChangeEmployeeRegistration(Long employeeRegistrationId) {
+            this.employeeRegistrationId = employeeRegistrationId;
+        }
+
+        public Long employeeRegistrationId;
+    }
 }

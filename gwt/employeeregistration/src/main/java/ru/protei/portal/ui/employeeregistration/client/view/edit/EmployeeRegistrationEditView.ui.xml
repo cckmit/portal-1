@@ -22,7 +22,7 @@
                         <ui:text from="{lang.employeeRegistrationCurators}"/>
                     </label>
 
-                    <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="curators"/>
+                    <person:EmployeeMultiSelector ui:field="curators"/>
                 </div>
             </div>
         </div>

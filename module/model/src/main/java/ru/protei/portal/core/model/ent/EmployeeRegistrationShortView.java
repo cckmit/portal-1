@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EmployeeRegistrationShortView extends AuditableObject {
-    public static final String AUDIT_TYPE = "EmployeeRegistrationEditRequest";
+    public static final String AUDIT_TYPE = "EmployeeRegistrationShortView";
 
     private Long id;
 
@@ -18,6 +18,8 @@ public class EmployeeRegistrationShortView extends AuditableObject {
     private Set<PersonShortView> curators;
 
     private Set<Long> curatorIds;
+
+    private Long headOfDepartmentId;
 
     public EmployeeRegistrationShortView() {}
 
@@ -55,6 +57,14 @@ public class EmployeeRegistrationShortView extends AuditableObject {
         this.curatorIds = curatorIds;
     }
 
+    public Long getHeadOfDepartmentId() {
+        return headOfDepartmentId;
+    }
+
+    public void setHeadOfDepartmentId(Long headOfDepartmentId) {
+        this.headOfDepartmentId = headOfDepartmentId;
+    }
+
     public static EmployeeRegistrationShortView fromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         if (employeeRegistration == null) {
             return null;
@@ -62,7 +72,9 @@ public class EmployeeRegistrationShortView extends AuditableObject {
 
         EmployeeRegistrationShortView employeeRegistrationShortView = new EmployeeRegistrationShortView();
         employeeRegistrationShortView.setId(employeeRegistration.getId());
-        employeeRegistrationShortView.setCurators(CollectionUtils.emptyIfNull(employeeRegistration.getCurators()).stream().map(Person::toFullNameShortView).collect(Collectors.toSet()));
+        employeeRegistrationShortView.setCurators(CollectionUtils.emptyIfNull(employeeRegistration.getCurators()).stream().map(Person::toShortNameShortView).collect(Collectors.toSet()));
+        employeeRegistrationShortView.setEmploymentDate(employeeRegistration.getEmploymentDate());
+        employeeRegistrationShortView.setHeadOfDepartmentId(employeeRegistration.getHeadOfDepartmentId());
 
         return employeeRegistrationShortView;
     }
@@ -79,6 +91,7 @@ public class EmployeeRegistrationShortView extends AuditableObject {
                 ", employmentDate=" + employmentDate +
                 ", curators=" + curators +
                 ", curatorIds=" + curatorIds +
+                ", headOfDepartmentId=" + headOfDepartmentId +
                 '}';
     }
 }

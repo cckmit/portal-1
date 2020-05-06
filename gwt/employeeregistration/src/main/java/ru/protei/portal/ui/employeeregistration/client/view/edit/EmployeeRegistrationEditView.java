@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmployeeRegistrationEditActivity;
@@ -36,6 +37,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Override
     public HasValue<Set<PersonShortView>> curators() {
         return curators;
+    }
+
+    @Override
+    public void setCuratorsFilter(Selector.SelectorFilter<PersonShortView> curatorsFilter) {
+        curators.setFilter(curatorsFilter);
     }
 
     @Inject
