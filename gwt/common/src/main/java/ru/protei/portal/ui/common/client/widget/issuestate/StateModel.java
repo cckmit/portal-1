@@ -108,7 +108,7 @@ public abstract class StateModel implements Activity {
     private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            if (currentCaseState.isTerminalState()) {
+            if (currentCaseState != null && currentCaseState.isTerminalState()) {
                 return Collections.singletonList(currentCaseState);
             } else {
                 return caseStatesList.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect(Collectors.toList());
