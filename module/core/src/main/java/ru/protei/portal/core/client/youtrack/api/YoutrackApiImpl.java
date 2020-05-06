@@ -42,7 +42,7 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
-    public Result<YtEnumBundleElement> updateCompanyName(String companyId, YtEnumBundleElement company) {
+    public Result<YtEnumBundleElement> updateCompany(String companyId, YtEnumBundleElement company) {
         return update(new YoutrackRequest<>(YtEnumBundleElement.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).fieldDefaultsValue(config.data().youtrack().getYoutrackCustomFieldCompanyId(), companyId))
                 .save(company));

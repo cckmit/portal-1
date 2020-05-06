@@ -8,4 +8,5 @@ import ru.protei.portal.core.model.youtrack.dto.YtDto;
 public abstract class YtBundleElement extends YtDto {
     public String name;
     public String description;
+    public Boolean archived;
 }

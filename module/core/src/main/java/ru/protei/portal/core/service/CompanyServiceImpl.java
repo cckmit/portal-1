@@ -147,6 +147,14 @@ public class CompanyServiceImpl implements CompanyService {
         company.setArchived(isDeprecated);
 
         if (companyDAO.updateState(company)) {
+            if (YOUTRACK_INTEGRATION_ENABLED) {
+                youtrackService.getCompanyByName(company.getCname())
+                        .flatMap(companyIdByName -> youtrackService.updateCompanyArchived(companyIdByName, isDeprecated)
+                            .ifOk(youtrackCompanyId -> log.info("updateState(): updated company state in youtrack. YoutrackCompanyId = {}", youtrackCompanyId))
+                            .ifError(errorResult -> log.warn("updateState(): Can't update company state in youtrack. {}", errorResult)))
+                        .ifError(errorResult -> log.warn("getCompanyByName(): Can't get company in youtrack. {}", errorResult)
+                        );
+            }
             return ok();
         } else {
             return error(En_ResultStatus.INTERNAL_ERROR);
@@ -267,7 +275,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
             youtrackService.getCompanyByName(oldName)
-                    .flatMap(companyIdByName -> youtrackService.updateCompany(companyIdByName, company.getCname())
+                    .flatMap(companyIdByName -> youtrackService.updateCompanyName(companyIdByName, company.getCname())
                             .ifOk(companyId -> log.info("updateCompany(): updated company in youtrack. YoutrackCompanyId = {}", companyId))
                             .ifError(errorResult -> log.warn("updateCompany(): Can't update company in youtrack. {}", errorResult)))
                     .ifError(errorResult -> log.warn("getCompanyByName(): Can't get company in youtrack. {}", errorResult)

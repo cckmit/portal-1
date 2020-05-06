@@ -82,17 +82,26 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createCompany(String companyName) {
         log.info("createCompany(): companyName={}", companyName);
 
-        YtEnumBundleElement company = makeBundleElement(companyName);
+        YtEnumBundleElement company = makeBundleElement(companyName, null);
         return api.createCompany(company)
                 .map(enumBundleElement -> enumBundleElement.id);
     }
 
     @Override
-    public Result<String> updateCompany(String companyId, String companyName) {
-        log.info("updateCompany(): companyId={}, companyName={}", companyId, companyName);
+    public Result<String> updateCompanyName(String companyId, String companyName) {
+        log.info("updateCompanyName(): companyId={}, companyName={}", companyId, companyName);
 
-        YtEnumBundleElement companyToUpdate = makeBundleElement(companyName);
-        return api.updateCompanyName(companyId, companyToUpdate)
+        YtEnumBundleElement companyToUpdate = makeBundleElement(companyName, null);
+        return api.updateCompany(companyId, companyToUpdate)
+                .map(enumBundleElement -> enumBundleElement.id);
+    }
+
+    @Override
+    public Result<String> updateCompanyArchived(String companyId, Boolean archived) {
+        log.info("updateCompanyArchived(): companyId={}, archived={}", companyId, archived);
+
+        YtEnumBundleElement companyToUpdate = makeBundleElement(null, archived);
+        return api.updateCompany(companyId, companyToUpdate)
                 .map(enumBundleElement -> enumBundleElement.id);
     }
 
@@ -259,9 +268,10 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issueStateChange;
     }
 
-    private YtEnumBundleElement makeBundleElement(String elementName) {
+    private YtEnumBundleElement makeBundleElement(String elementName, Boolean isArchived) {
         YtEnumBundleElement element = new YtEnumBundleElement();
         element.name = elementName;
+        element.archived = isArchived;
         return element;
     }
 

@@ -11,6 +11,7 @@ public class YtStateBundleElement extends YtLocalizableBundleElement {
     public String toString() {
         return "YtStateBundleElement{" +
                 "isResolved=" + isResolved +
+                ", archived=" + archived +
                 ", localizedName='" + localizedName + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
