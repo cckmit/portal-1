@@ -48,6 +48,8 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
 
     @Override
     public EmployeeRegistrationShortView getEmployeeRegistrationShortView(Long id) throws RequestFailedException {
+        log.info(" get employee registration short view, id: {}", id);
+
         return EmployeeRegistrationShortView.fromEmployeeRegistration(getEmployeeRegistration(id));
     }
 

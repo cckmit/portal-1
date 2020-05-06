@@ -8,7 +8,11 @@ import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
+import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -25,7 +29,10 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
-    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME, PHONE_PROJECT_NAME,PORTAL_URL;
+    private String EQUIPMENT_PROJECT_NAME;
+    private String ADMIN_PROJECT_NAME;
+    private String PHONE_PROJECT_NAME;
+    private String PORTAL_URL;
     private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
@@ -120,12 +127,32 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return ok(employeeRegistration.getId());
         }
 
+        boolean isEmploymentDateChanged = !Objects.equals(employeeRegistrationShortView.getEmploymentDate(), employeeRegistration.getEmploymentDate());
+
         employeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
         employeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
 
         employeeRegistrationDAO.partialMerge(employeeRegistration, "employment_date", "curators");
 
+        if (YOUTRACK_INTEGRATION_ENABLED && isEmploymentDateChanged) {
+            updateYouTrackEmploymentDate(employeeRegistration.getId(), employeeRegistration.getEmploymentDate());
+        }
+
         return ok(employeeRegistration.getId());
+    }
+
+    private void updateYouTrackEmploymentDate(Long employeeRegistrationId, Date employmentDate) {
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setCaseId(employeeRegistrationId);
+
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(query);
+
+        for (CaseLink nextLink : CollectionUtils.emptyIfNull(listByQuery)) {
+            youtrackService.addIssueSystemComment(
+                    nextLink.getRemoteId(),
+                    "Дата приема на работу была изменена: " + new SimpleDateFormat("dd.MM.yyyy").format(employmentDate)
+            );
+        }
     }
 
     private boolean isEmployeeRegistrationChanged(EmployeeRegistration employeeRegistration, EmployeeRegistrationShortView employeeRegistrationShortView) {
@@ -172,6 +199,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
                 (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() ),
+                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
+                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
                 "\n", "Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
@@ -242,6 +271,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
+                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
+                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
                 "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
         ).toString();
 

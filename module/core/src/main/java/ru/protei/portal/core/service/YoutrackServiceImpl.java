@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
+import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -165,6 +166,28 @@ public class YoutrackServiceImpl implements YoutrackService {
                     }
                     return ok(convertYtIssue(issue));
                 });
+    }
+
+    @Override
+    public Result<YouTrackIssueInfo> addIssueSystemComment(String issueId, String text) {
+        if (issueId == null || text == null) {
+            log.warn("addIssueSystemComment(): Can't add system comment. All arguments are mandatory issueId={} text={}", issueId, text);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        YtUser commentAuthor = new YtUser();
+        commentAuthor.login = config.data().youtrack().getLogin();
+
+        YtIssueComment comment = new YtIssueComment();
+        comment.author = commentAuthor;
+        comment.text = text;
+
+        YtIssue issue = new YtIssue();
+        issue.comments = new ArrayList<>();
+        issue.comments.add(comment);
+
+        return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
+                .map(this::convertYtIssue);
     }
 
     @Async(BACKGROUND_TASKS)
