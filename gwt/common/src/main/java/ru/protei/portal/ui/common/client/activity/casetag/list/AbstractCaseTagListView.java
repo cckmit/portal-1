@@ -4,6 +4,9 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseTag;
+
+import java.util.List;
 
 /**
  * Представление списка тегов
@@ -18,7 +21,7 @@ public interface AbstractCaseTagListView extends IsWidget {
 
     HasVisibility getTagsContainerVisibility();
 
-    void setType(En_CaseType type);
+    void setTags(List<CaseTag> tags);
 
     void setTagsAddButtonEnabled(boolean enabled);
 

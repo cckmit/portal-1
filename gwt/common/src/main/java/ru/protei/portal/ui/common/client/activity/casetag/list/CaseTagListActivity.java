@@ -43,7 +43,9 @@ public abstract class   CaseTagListActivity
         view.getTagsContainer().clear();
         view.setTagsAddButtonEnabled(event.isEditTagEnabled);
         view.setTagsEditButtonEnabled(event.isEditTagEnabled);
-        view.setType(show.caseType);
+        if (event.isEditTagEnabled || !event.isReadOnly) {
+            refreshTagSelector();
+        }
         hideOrShowIfNoTags();
 
         if (event.caseTags != null) {
@@ -198,8 +200,10 @@ public abstract class   CaseTagListActivity
     }
 
     private void refreshTagSelector() {
-        if(!view.isAttached()) return;
-        view.setType(show.caseType);
+        CaseTagQuery query = new CaseTagQuery();
+        query.setCaseType(show.caseType);
+        controller.getTags(query, new FluentCallback<List<CaseTag>>()
+                .withSuccess(tags -> view.setTags(tags)));
     }
 
     private static final Logger log = Logger.getLogger( CaseTagListActivity.class.getName() );

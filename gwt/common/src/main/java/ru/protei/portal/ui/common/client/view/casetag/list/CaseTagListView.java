@@ -5,11 +5,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casetag.list.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.list.AbstractCaseTagListView;
 import ru.protei.portal.ui.common.client.widget.casetag.popup.CaseTagSelector;
+
+import java.util.List;
 
 public class CaseTagListView
         extends Composite
@@ -46,8 +48,8 @@ public class CaseTagListView
     }
 
     @Override
-    public void setType(En_CaseType type) {
-        caseTagSelector.init(type);
+    public void setTags(List<CaseTag> tags) {
+        caseTagSelector.setTags(tags);
     }
 
     @Override
