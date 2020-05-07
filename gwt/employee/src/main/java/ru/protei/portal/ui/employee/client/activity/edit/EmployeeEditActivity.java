@@ -169,6 +169,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             if (isEditablePerson){
                 updatePersonAndCreateWorker(worker);
             } else {
+                worker.setActiveFlag(0);
                 createEmployeeWorker(worker);
             }
             return;
