@@ -54,4 +54,12 @@
         </insert>
     </changeSet>
 
+    <changeSet id="correct-redmine-workflow-selector-link" author="porubov">
+        <update tableName="case_state_workflow_link">
+            <column name="state_to" value="16"/>
+            <where>workflow_id=2 and state_from=33 and state_to=2</where>
+        </update>
+    </changeSet>
+
+
 </databaseChangeLog>
