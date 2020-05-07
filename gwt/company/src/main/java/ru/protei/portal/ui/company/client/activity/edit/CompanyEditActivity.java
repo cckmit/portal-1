@@ -121,7 +121,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             return false;
         }
 
-        boolean containsIllegalChars = companyName.matches(CrmConstants.Company.COMPANY_NAME_ILLEGAL_CHARS_MASK);
+        boolean containsIllegalChars = companyName.matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS);
         view.companyNameErrorLabel().setText(containsIllegalChars ? lang.errCompanyNameContainsIllegalChars() : "");
         view.companyNameErrorLabelVisibility().setVisible(containsIllegalChars);
 
@@ -140,7 +140,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     private boolean validateFieldsAndGetResult() {
         return view.companyNameValidator().isValid()
                 && view.companySubscriptionsValidator().isValid()
-                && !view.companyName().getValue().trim().matches(CrmConstants.Company.COMPANY_NAME_ILLEGAL_CHARS_MASK);
+                && !view.companyName().getValue().trim().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS);
     }
 
     private void resetValidationStatus() {

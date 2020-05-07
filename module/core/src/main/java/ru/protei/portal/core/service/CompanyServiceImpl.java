@@ -374,7 +374,7 @@ public class CompanyServiceImpl implements CompanyService {
     private boolean isValidCompany(Company company) {
         return company != null
                 && company.getCname() != null
-                && !company.getCname().matches(CrmConstants.Company.COMPANY_NAME_ILLEGAL_CHARS_MASK)
+                && !company.getCname().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS)
                 && !company.getCname().trim().isEmpty()
                 && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
                 /*&& isValidContactInfo(company)*/

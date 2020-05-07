@@ -57,6 +57,7 @@ public class CrmConstants {
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+        String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
     }
 
     public interface Time {
@@ -99,7 +100,6 @@ public class CrmConstants {
         long HOME_COMPANY_ID = 1L;
         long MAIN_HOME_COMPANY_ID = 3084L;
         String MAIN_HOME_COMPANY_NAME = "Протей";
-        String COMPANY_NAME_ILLEGAL_CHARS_MASK = ".*[<>/]+.*";
     }
 
     public interface LocaleTags {

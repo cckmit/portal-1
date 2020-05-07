@@ -11,6 +11,7 @@ public class YtEnumBundleElement extends YtLocalizableBundleElement {
                 "localizedName='" + localizedName + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", archived=" + archived + '\'' +
                 '}';
     }
 }
