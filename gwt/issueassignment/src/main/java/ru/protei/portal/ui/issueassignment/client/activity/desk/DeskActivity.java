@@ -400,13 +400,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             }
             @Override
             public void showTags(HasWidgets parent, List<CaseTag> caseTags) {
-                fireEvent(new CaseTagEvents.Show(
-                        parent,
-                        En_CaseType.CRM_SUPPORT,
-                        false,
-                        caseTags,
-                        true
-                ));
+                fireEvent(new CaseTagEvents.ShowList(parent, caseTags, true, null));
             }
         });
         rowIssueView.setIssues(cellIssues);
