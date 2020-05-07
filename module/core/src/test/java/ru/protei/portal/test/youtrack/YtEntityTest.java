@@ -33,14 +33,14 @@ public class YtEntityTest {
     @Test
     public void testIssueWithFieldsCommentsAttachments() {
         String fields = getMapper().getFields(YtIssue.class, true, YtIssueComment.class, YtIssueAttachment.class, YtUser.class, YtIssueCustomField.class);
-        String expected = "$type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),comments($type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),author($type,avatarUrl,email,fullName,id,login),created,deleted,id,text,textPreview,updated,usesMarkdown),customFields($type,id,name,value($type,description,id,isResolved,localizedName,name)),description,id,idReadable,reporter($type,avatarUrl,email,fullName,id,login),summary,updater($type,avatarUrl,email,fullName,id,login)";
+        String expected = "$type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),comments($type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),author($type,avatarUrl,email,fullName,id,login),created,deleted,id,text,textPreview,updated,usesMarkdown),customFields($type,id,name,value($type,archived,description,id,isResolved,localizedName,name)),description,id,idReadable,reporter($type,avatarUrl,email,fullName,id,login),summary,updater($type,avatarUrl,email,fullName,id,login)";
         Assert.assertEquals(expected, fields);
     }
 
     @Test
     public void testCustomFieldActivityItem() {
         String fields = getMapper().getFields(YtActivityItem.class, true, YtFilterField.class, YtBundleElement.class, YtUser.class);
-        String expected = "$type,added($type,description,id,isResolved,localizedName,name),author($type,avatarUrl,email,fullName,id,login),field($type,id,name,presentation),id,markup,removed($type,description,id,isResolved,localizedName,name),timestamp";
+        String expected = "$type,added($type,archived,description,id,isResolved,localizedName,name),author($type,avatarUrl,email,fullName,id,login),field($type,id,name,presentation),id,markup,removed($type,archived,description,id,isResolved,localizedName,name),timestamp";
         Assert.assertEquals(expected, fields);
     }
 
