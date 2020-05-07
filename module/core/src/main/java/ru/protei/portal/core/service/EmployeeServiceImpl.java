@@ -341,7 +341,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        personFromDb.setFired(true);
+        personFromDb.setFired(new Date());
 
         boolean result = personDAO.merge(personFromDb);
 
