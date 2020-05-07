@@ -39,6 +39,22 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
+    public Result<Long> updateAbsence(AuthToken token, PersonAbsence absence) {
+
+        if (!validateFields(absence)) {
+            return error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (checkExists(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId()))
+            return error(En_ResultStatus.ALREADY_EXIST);
+
+        if (!personAbsenceDAO.merge(absence))
+            return error(En_ResultStatus.NOT_UPDATED);
+
+        return ok(absence.getId());
+    }
+
+    @Override
     public Result<Boolean> isExistsAbsence(Long employeeId, Date dateFrom, Date dateTill, Long excludeId) {
         boolean isExist = checkExists(employeeId, dateFrom, dateTill, excludeId);
         return ok(isExist);

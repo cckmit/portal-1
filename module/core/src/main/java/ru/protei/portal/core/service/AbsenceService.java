@@ -16,5 +16,9 @@ public interface AbsenceService {
     @Auditable(En_AuditType.ABSENCE_CREATE)
     Result<Long> createAbsence(AuthToken token, PersonAbsence personAbsence);
 
+    @Privileged({En_Privilege.ABSENCE_EDIT})
+    @Auditable(En_AuditType.ABSENCE_MODIFY)
+    Result<Long> updateAbsence(AuthToken token, PersonAbsence personAbsence);
+
     Result<Boolean> isExistsAbsence(Long employeeId, Date dateFrom, Date dateTill, Long excludeId);
 }

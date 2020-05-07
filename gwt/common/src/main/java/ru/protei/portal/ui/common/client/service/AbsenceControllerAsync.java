@@ -11,9 +11,9 @@ import java.util.Date;
 public interface AbsenceControllerAsync {
 
     /**
-     * Создание отсутствия
+     * Сохранение отсутствия
      */
-    void createAbsence(PersonAbsence absence, AsyncCallback<Long> callback);
+    void saveAbsence(PersonAbsence absence, AsyncCallback<Long> callback);
 
     /**
      * Проверка на существование отсутствия

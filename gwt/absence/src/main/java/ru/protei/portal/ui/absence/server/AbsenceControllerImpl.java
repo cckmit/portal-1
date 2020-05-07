@@ -24,8 +24,8 @@ import java.util.Date;
 public class AbsenceControllerImpl implements AbsenceController {
 
     @Override
-    public Long createAbsence(PersonAbsence absence) throws RequestFailedException {
-        log.info("createAbsence(): absence={} ", absence);
+    public Long saveAbsence(PersonAbsence absence) throws RequestFailedException {
+        log.info("saveAbsence(): absence={} ", absence);
 
         if (absence == null) {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
@@ -36,8 +36,14 @@ public class AbsenceControllerImpl implements AbsenceController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Long> response = absenceService.createAbsence(token, absence);
-        log.info("createAbsence(): result={}", response.isOk() ? "ok" : response.getStatus());
+        Result<Long> response;
+        if (absence.getId() == null) {
+            response = absenceService.createAbsence(token, absence);
+        } else {
+            response = absenceService.updateAbsence(token, absence);
+        }
+
+        log.info("saveAbsence(): result={}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
             return response.getData();

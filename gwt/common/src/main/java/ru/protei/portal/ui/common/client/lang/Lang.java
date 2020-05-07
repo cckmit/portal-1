@@ -2343,4 +2343,12 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceReasonRemoteWork();
 
     String selectAbsenceReason();
+
+    String absenceUpdated();
+
+    String absenceValidationEmployee();
+
+    String absenceValidationDateRange();
+
+    String absenceValidationReason();
 }

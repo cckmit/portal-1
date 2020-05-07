@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.client.view.create;
+package ru.protei.portal.ui.absence.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
@@ -10,19 +10,16 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.absence.client.activity.create.AbstractAbsenceCreateActivity;
-import ru.protei.portal.ui.absence.client.activity.create.AbstractAbsenceCreateView;
+import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditActivity;
+import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
 import ru.protei.portal.ui.absence.client.widget.selector.AbsenceReasonButtonSelector;
-import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditActivity;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 
-public class AbsenceCreateView extends Composite implements AbstractAbsenceCreateView {
+public class AbsenceEditView extends Composite implements AbstractAbsenceEditView {
 
     @Inject
     public void onInit() {
@@ -31,7 +28,7 @@ public class AbsenceCreateView extends Composite implements AbstractAbsenceCreat
     }
 
     @Override
-    public void setActivity(AbstractAbsenceCreateActivity activity) {
+    public void setActivity(AbstractAbsenceEditActivity activity) {
         this.activity = activity;
     }
 
@@ -82,8 +79,8 @@ public class AbsenceCreateView extends Composite implements AbstractAbsenceCreat
     @UiField
     AutoResizeTextArea comment;
 
-    private AbstractAbsenceCreateActivity activity;
+    private AbstractAbsenceEditActivity activity;
 
     private static AbsenceCreateViewUiBinder ourUiBinder = GWT.create(AbsenceCreateViewUiBinder.class);
-    interface AbsenceCreateViewUiBinder extends UiBinder<HTMLPanel, AbsenceCreateView> {}
+    interface AbsenceCreateViewUiBinder extends UiBinder<HTMLPanel, AbsenceEditView> {}
 }
