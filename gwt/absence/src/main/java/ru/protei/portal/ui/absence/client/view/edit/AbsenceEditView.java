@@ -1,12 +1,14 @@
 package ru.protei.portal.ui.absence.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -52,6 +54,11 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
         return comment;
     }
 
+    @Override
+    public HasVisibility contentVisibility() {
+        return content;
+    }
+
     private void ensureDebugIds() {
         absenceEmployeeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.Absence.LABEL.EMPLOYEE);
         absenceDateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.Absence.LABEL.DATE_RANGE);
@@ -78,6 +85,8 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     AbsenceReasonButtonSelector reason;
     @UiField
     AutoResizeTextArea comment;
+    @UiField
+    HTMLPanel content;
 
     private AbstractAbsenceEditActivity activity;
 

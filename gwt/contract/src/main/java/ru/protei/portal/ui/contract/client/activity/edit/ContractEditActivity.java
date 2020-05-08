@@ -43,11 +43,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
 
         initDetails.parent.clear();
-
-        if ( !policyService.hasAnyPrivilegeOf( En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT )) {
-            return;
-        }
-
         initDetails.parent.add(view.asWidget());
 
         if(event.id == null) {

@@ -12,14 +12,14 @@ import java.util.Date;
  */
 @RemoteServiceRelativePath( "springGwtServices/AbsenceController" )
 public interface AbsenceController extends RemoteService {
+
     /**
-     * Сохранение отсутствия
+     * Получение записи об отсутствии
+     */
+    PersonAbsence getAbsence(Long id) throws RequestFailedException;
+
+    /**
+     * Сохранение записи об отсутствии
      */
     Long saveAbsence(PersonAbsence absence) throws RequestFailedException;
-
-    /**
-     * Проверка на существование отсутствия
-     */
-    Boolean isExistsAbsence(Long employeeId, Date dateFrom, Date dateTill, Long excludeId) throws RequestFailedException;
-
 }

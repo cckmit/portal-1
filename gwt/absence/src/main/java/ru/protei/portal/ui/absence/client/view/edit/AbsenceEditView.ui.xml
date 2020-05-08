@@ -7,7 +7,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="card card-transparent no-margin">
-        <div class="card-body">
+        <g:HTMLPanel ui:field="content" visible="false" class="card-body">
             <div class="row">
                 <div class="form-group col-md-12">
                     <label ui:field="absenceEmployeeLabel"><ui:text from="{lang.absenceEmployee}"/></label>
@@ -29,6 +29,6 @@
                                                            styleName="form-control"/>
                 </div>
             </div>
-        </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

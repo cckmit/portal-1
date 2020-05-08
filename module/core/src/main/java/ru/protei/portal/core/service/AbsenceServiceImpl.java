@@ -16,7 +16,18 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Autowired
     PersonAbsenceDAO personAbsenceDAO;
-    
+
+    @Override
+    public Result<PersonAbsence> getAbsence(AuthToken token, Long id) {
+        PersonAbsence absence = personAbsenceDAO.get(id);
+
+        if (absence == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        return ok(absence);
+    }
+
     @Override
     public Result<Long> createAbsence(AuthToken token, PersonAbsence absence) {
 
@@ -52,12 +63,6 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error(En_ResultStatus.NOT_UPDATED);
 
         return ok(absence.getId());
-    }
-
-    @Override
-    public Result<Boolean> isExistsAbsence(Long employeeId, Date dateFrom, Date dateTill, Long excludeId) {
-        boolean isExist = checkExists(employeeId, dateFrom, dateTill, excludeId);
-        return ok(isExist);
     }
 
     private boolean validateFields(PersonAbsence absence) {

@@ -64,6 +64,16 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         return save;
     }
 
+    @Override
+    public HasEnabled removeButtonEnabled() {
+        return remove;
+    }
+
+    @Override
+    public HasEnabled saveButtonEnabled() {
+        return save;
+    }
+
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
     }
@@ -77,6 +87,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     public void addStyleName(String value) {
         this.modalDialog.addClassName(value);
     }
+
 
     @UiHandler( "save" )
     public void onSaveClicked( ClickEvent event ) {

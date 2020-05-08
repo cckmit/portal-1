@@ -11,12 +11,12 @@ import java.util.Date;
 public interface AbsenceControllerAsync {
 
     /**
-     * Сохранение отсутствия
+     * Получение записи об отсутствии
      */
-    void saveAbsence(PersonAbsence absence, AsyncCallback<Long> callback);
+    void getAbsence(Long id, AsyncCallback<PersonAbsence> callback);
 
     /**
-     * Проверка на существование отсутствия
+     * Сохранение записи об отсутствии
      */
-    void isExistsAbsence(Long employeeId, Date dateFrom, Date dateTill, Long excludeId, AsyncCallback<Boolean> callback);
+    void saveAbsence(PersonAbsence absence, AsyncCallback<Long> callback);
 }
