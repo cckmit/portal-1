@@ -62,7 +62,7 @@ public class ReportCaseTest extends BaseServiceTest {
         List<En_ImportanceLevel> importances = listOf( BASIC, IMPORTANT, CRITICAL );
 
         List<CaseObject> initCases = initData();
-        List<CaseObject> cases = filterToList( initCases, caseObject -> importances.contains( caseObject.importanceLevel() ));
+        List<CaseObject> cases = filterToList( initCases, caseObject -> importances.contains( caseObject.getImportanceLevel() ));
 
         CaseQuery caseQuery = makeCaseQuery();
         caseQuery.setCheckImportanceHistory(false);
