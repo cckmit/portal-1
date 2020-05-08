@@ -93,6 +93,7 @@ public enum En_Privilege {
     ABSENCE_VIEW(ABSENCE, VIEW),
     ABSENCE_CREATE(ABSENCE, CREATE),
     ABSENCE_EDIT(ABSENCE, EDIT),
+    ABSENCE_REMOVE(ABSENCE, REMOVE),
 
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),

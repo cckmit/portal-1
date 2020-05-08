@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.absence.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -15,4 +16,8 @@ public interface AbstractAbsenceEditView extends IsWidget {
     HasValue<En_AbsenceReason> reason();
     HasValue<String> comment();
     HasVisibility contentVisibility();
+    HasEnabled employeeEnabled();
+    HasEnabled dateRangeEnabled();
+    HasEnabled reasonEnabled();
+    HasEnabled commentEnabled();
 }

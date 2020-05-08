@@ -24,6 +24,9 @@ public class PersonAbsence implements Serializable {
     @JdbcColumn(name = "person_id")
     private Long personId;
 
+    @JdbcJoinedObject(localColumn="person_id")
+    private Person person;
+
     @JdbcColumn(name = "reason_id")
     @JdbcEnumerated(EnumType.ID)
     private En_AbsenceReason reason;
@@ -71,6 +74,15 @@ public class PersonAbsence implements Serializable {
 
     public void setPersonId(Long personId) {
         this.personId = personId;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+        this.personId = person == null ? null : person.getId();
     }
 
     public En_AbsenceReason getReason() {

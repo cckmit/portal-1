@@ -5,10 +5,7 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -57,6 +54,26 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     @Override
     public HasVisibility contentVisibility() {
         return content;
+    }
+
+    @Override
+    public HasEnabled employeeEnabled() {
+        return employee;
+    }
+
+    @Override
+    public HasEnabled dateRangeEnabled() {
+        return dateRange;
+    }
+
+    @Override
+    public HasEnabled reasonEnabled() {
+        return reason;
+    }
+
+    @Override
+    public HasEnabled commentEnabled() {
+        return comment;
     }
 
     private void ensureDebugIds() {
