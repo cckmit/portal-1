@@ -29,6 +29,7 @@
                 <span class="desk-issue-company" ui:field="company"/>
                 <span class="desk-issue-person" ui:field="person"/>
             </div>
+            <g:HTMLPanel styleName="desk-issue-tags" ui:field="tagsContainer"/>
             <div class="desk-issue-separator-h"/>
             <div class="desk-issue-time">
                 <span class="far fa-sm fa-clock"/>

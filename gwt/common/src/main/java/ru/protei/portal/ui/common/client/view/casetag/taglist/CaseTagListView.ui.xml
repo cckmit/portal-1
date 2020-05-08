@@ -1,5 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel ui:field="tagsContainer" tag="ul" styleName="case-tags-container pull-left"/>
+    <g:HTMLPanel ui:field="tagsContainer" tag="ul" styleName="case-tags-container m-b-0"/>
 </ui:UiBinder>

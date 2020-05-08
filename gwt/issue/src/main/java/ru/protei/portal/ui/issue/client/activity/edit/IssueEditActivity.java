@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -212,7 +213,8 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onAddTagClicked(IsWidget target) {
-        fireEvent(new CaseTagEvents.ShowTagSelector(target));
+        boolean isCanEditTags = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
+        fireEvent(new CaseTagEvents.ShowSelector(target.asWidget(), ISSUE_CASE_TYPE, isCanEditTags, tagListActivity));
     }
 
     @Override
@@ -270,9 +272,7 @@ public abstract class IssueEditActivity implements
         boolean readOnly = isReadOnly();
         boolean isEditTagEnabled = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
         view.addTagButtonVisibility().setVisible(isEditTagEnabled);
-        fireEvent(new CaseTagEvents.Show( view.getTagsContainer(), En_CaseType.CRM_SUPPORT, isEditTagEnabled,
-                issue.getId(), readOnly
-        ));
+        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), issue.getId(), readOnly, a -> tagListActivity = a));
     }
 
     private void showMeta(CaseObject issue) {
@@ -429,6 +429,7 @@ public abstract class IssueEditActivity implements
 
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
+    private AbstractCaseTagListActivity tagListActivity;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());

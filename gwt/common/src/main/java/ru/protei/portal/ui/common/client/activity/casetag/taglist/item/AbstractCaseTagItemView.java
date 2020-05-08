@@ -1,7 +1,6 @@
-package ru.protei.portal.ui.common.client.activity.casetag.item;
+package ru.protei.portal.ui.common.client.activity.casetag.taglist.item;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.CaseTag;
 
 /**
  * Представление тега
@@ -12,9 +11,7 @@ public interface AbstractCaseTagItemView extends IsWidget {
 
     void setEnabled(boolean enabled);
 
-    void setNameAndColor(String name, String color);
+    void setName(String name);
 
-    void setCaseTag( CaseTag caseTag);
-
-    CaseTag getCaseTag();
+    void setColor(String color);
 }
