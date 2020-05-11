@@ -12,11 +12,9 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AbsenceEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
-import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -36,7 +34,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
 
     @Event
     public void onShow(AbsenceEvents.Edit event) {
-        if (!hasCreateAccess() && !hasEditAccess()) {
+        if (!hasAccessCreate() && !hasAccessEdit()) {
             return;
         }
 
@@ -70,11 +68,11 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         dialogView.hidePopup();
     }
 
-    private boolean hasCreateAccess() {
+    private boolean hasAccessCreate() {
         return isNew() && policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE);
     }
 
-    private boolean hasEditAccess() {
+    private boolean hasAccessEdit() {
         return !isNew() && (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW) || policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT));
     }
 
@@ -102,10 +100,9 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
     private void fillView(PersonAbsence absence) {
         this.absence = absence;
 
-        boolean isAllowedCreate = hasCreateAccess();
-        boolean isAllowedEdit = hasAccess(En_Privilege.ABSENCE_EDIT);
+        boolean isAllowedCreate = hasAccessCreate();
+        boolean isAllowedModify = isAllowedCreate || hasAccess(En_Privilege.ABSENCE_EDIT);
         boolean isAllowedRemove = hasAccess(En_Privilege.ABSENCE_REMOVE);
-        boolean isAllowedModify = isAllowedCreate || isAllowedEdit;
 
         PersonShortView currentPerson = new PersonShortView(policyService.getProfile().getFullName(), policyService.getProfile().getId());
         view.employee().setValue(absence.getPerson() == null ? currentPerson : absence.getPerson().toFullNameShortView());
