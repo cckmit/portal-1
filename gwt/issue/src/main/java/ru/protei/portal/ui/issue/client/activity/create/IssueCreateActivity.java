@@ -10,9 +10,11 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -30,16 +32,13 @@ import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
-import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -198,7 +197,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         initiatorSelectorAllowAddNew(companyOption.getId());
 
-        issueMetaView.platform().setValue(null);
+        fillPlatformValue(companyOption.getId());
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         companyService.getCompanyWithParentCompanySubscriptions(
@@ -229,11 +228,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
             issueMetaView.setInitiator(initiator);
         }
-
-        requestSla(
-                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
-        );
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
@@ -268,9 +262,42 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
     }
 
+    @Override
+    public void onPauseDateChanged() {
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime()));
+    }
+
+    @Override
+    public void onStateChange() {
+        issueMetaView.pauseDate().setValue(null);
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
+
+        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
+        issueMetaView.setPauseDateValid(stateValid);
+    }
+
+    private void fillPlatformValue(Long companyId){
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+
+        siteFolderController.getPlatformsOptionList(query, new FluentCallback<List<PlatformOption>>()
+                .withError(throwable -> {
+                    issueMetaView.platform().setValue(null);
+                    onPlatformChanged();
+                })
+                .withSuccess( result -> {
+                    if(result != null && result.size() == 1){
+                        issueMetaView.platform().setValue(result.get(0));
+                    } else {
+                        issueMetaView.platform().setValue(null);
+                    }
+                    onPlatformChanged();
+                } ));
+    }
+
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.description().setValue(
-                addImageInMessage(view.description().getValue(), strPosition, attach));
+                addImageInMessage(En_TextMarkup.MARKDOWN, view.description().getValue(), strPosition, attach));
     }
 
     private void fillView() {
@@ -316,6 +343,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
+        issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
@@ -396,6 +426,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setPrivateCase(view.isPrivate().getValue());
         caseObject.setStateId(issueMetaView.state().getValue().getId());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
+        caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 
         caseObject.setInitiatorCompany(issueMetaView.getCompany());
         caseObject.setInitiator(issueMetaView.getInitiator());
@@ -452,10 +483,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
+        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
+            fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         boolean isFieldsValid = view.nameValidator().isValid() &&
                 issueMetaView.stateValidator().isValid() &&
-                        issueMetaView.importanceValidator().isValid() &&
-                        issueMetaView.companyValidator().isValid();
+                issueMetaView.importanceValidator().isValid() &&
+                issueMetaView.companyValidator().isValid();
 
         if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
@@ -523,6 +559,18 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE);
     }
 
+    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
+        if (!En_CaseState.PAUSED.equals(currentState)) {
+            return true;
+        }
+
+        if (pauseDate != null && pauseDate > System.currentTimeMillis()) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -549,6 +597,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CompanyControllerAsync companyService;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    SiteFolderControllerAsync siteFolderController;
 
     private boolean saving;
     private AppEvents.InitDetails init;

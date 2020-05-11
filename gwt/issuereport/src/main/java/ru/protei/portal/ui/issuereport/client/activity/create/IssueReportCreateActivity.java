@@ -37,6 +37,8 @@ public abstract class IssueReportCreateActivity implements Activity,
         issueFilterWidget.addAdditionalFilterValidate(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
         issueFilterWidget.getIssueFilterParams().setModel(this);
+        issueFilterWidget.clearFooterStyle();
+        projectFilterView.clearFooterStyle();
     }
 
     @Event
@@ -123,6 +125,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         } else {
             issueFilterWidget.updateFilterType(filterType);
             applyIssueFilterVisibilityByPrivileges();
+            issueFilterWidget.setCheckImportanceHistoryVisibility(filterType == En_CaseFilterType.CASE_OBJECTS);
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(issueFilterWidget.asWidget());
         }

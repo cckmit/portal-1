@@ -55,6 +55,9 @@ public class StringUtils {
         return isEmpty(s) ? null : s;
     }
 
+    /**
+     * null - не выводится
+     */
     public static StringBuilder join(CharSequence... str) {
         return join(null, str);
     }

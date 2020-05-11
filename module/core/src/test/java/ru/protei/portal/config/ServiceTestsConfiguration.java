@@ -283,6 +283,15 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public IpReservationService getIpReservationService() { return new IpReservationServiceImpl(); }
+
+    @Bean
+    public RoomReservationService getRoomReservationService() {
+        return new RoomReservationServiceImpl();
+    }
+
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }

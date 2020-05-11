@@ -78,6 +78,9 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String SUBNET = "sidebar-menu-subnet";
+        String RESERVED_IP = "sidebar-menu-reserved-ip";
+        String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String ICON_SUFFIX = "-icon";
     }
 
@@ -145,6 +148,7 @@ public class DebugIds {
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
+        String ISSUE_IMPORTANCE_CHECK_HISTORY ="filter-issue-importance-check-history";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
         String CREATOR_SELECTOR = "filter-creator-selector";
         String CREATOR_ADD_BUTTON = "filter-creator-add-button";
@@ -249,6 +253,7 @@ public class DebugIds {
         String ADD_TAG_BUTTON = "issue-add-tag-button";
         String TAGS_CONTAINER = "issue-tags-container";
         String STATE_SELECTOR = "issue-state-selector";
+        String PAUSE_DATE_CONTAINER = "issue-pause-date-container";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
         String PLATFORM_SELECTOR = "issue-platform-selector";
         String COMPANY_SELECTOR = "issue-company-selector";
@@ -780,5 +785,30 @@ public class DebugIds {
         interface LINK {
             String PLATFORM = "sitefolder-link-platform";
         }
+    }
+
+    public interface SUBNET {
+        String ADDRESS_INPUT = "subnet-address-input";
+        String MASK_INPUT = "subnet-mask-input";
+        String COMMENT_INPUT = "subnet-comment-input";
+        String SAVE_BUTTON = "subnet-save-button";
+        String CANCEL_BUTTON = "subnet-cancel-button";
+    }
+
+    public interface RESERVED_IP {
+        String MODE_TOGGLE = "reservedip-mode-toggle";
+        String IP_ADDRESS_INPUT = "reservedip-address-input";
+        String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
+        String NUMBER_INPUT = "reservedip-number-input";
+        String SUBNET_SELECTOR = "reservedip-subnet-selector";
+        String OWNER_SELECTOR = "reservedip-owner-selector";
+        String USE_RANGE_TYPED_TOGGLE = "reservedip-use-range-typed-toggle";
+        String USE_RANGE_TYPED_INPUT = "reservedip-use-range-typed-input";
+        String USE_RANGE_TYPED_BUTTON = "reservedip-use-range-typed-button";
+        String USE_RANGE_INPUT = "reservedip-use-range-input";
+        String USE_RANGE_BUTTON = "reservedip-use-range-button";
+        String COMMENT_INPUT = "reservedip-comment-input";
+        String SAVE_BUTTON = "reservedip-save-button";
+        String CANCEL_BUTTON = "reservedip-cancel-button";
     }
 }

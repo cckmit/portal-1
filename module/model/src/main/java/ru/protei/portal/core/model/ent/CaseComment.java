@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -43,9 +44,6 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name="reply_to")
     private Long replyTo;
-
-//    @JdbcColumn(name="vroom")
-//    private Long vroomId;
 
     @JdbcColumn(name="comment_text")
     private String text;
@@ -160,6 +158,15 @@ public class CaseComment extends AuditableObject {
         this.caseImpLevel = caseImpLevel;
     }
 
+    public void setCaseImportance( En_ImportanceLevel caseImportance ) {
+        if(caseImportance == null) caseImpLevel = null;
+        this.caseImpLevel = caseImportance.getId();
+    }
+
+    public En_ImportanceLevel getCaseImportance() {
+        return En_ImportanceLevel.getById( caseImpLevel );
+    }
+
     public Long getCaseManagerId() {
         return caseManagerId;
     }
@@ -183,14 +190,6 @@ public class CaseComment extends AuditableObject {
     public void setReplyTo(Long replyTo) {
         this.replyTo = replyTo;
     }
-
-//    public Long getVroomId() {
-//        return vroomId;
-//    }
-//
-//    public void setVroomId(Long vroomId) {
-//        this.vroomId = vroomId;
-//    }
 
     public String getText() {
         return text;
@@ -318,16 +317,15 @@ public class CaseComment extends AuditableObject {
     public String toString() {
         return "CaseComment{" +
                 "id=" + id +
+                ", caseId=" + caseId +
+                ", caseImpLevel=" + caseImpLevel +
+                ", caseStateId=" + caseStateId +
                 ", created=" + created +
                 ", clientIp='" + clientIp + '\'' +
-                ", caseId=" + caseId +
                 ", author=" + author +
-                ", caseStateId=" + caseStateId +
-                ", caseImpLevel=" + caseImpLevel +
                 ", caseManagerId=" + caseManagerId +
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", replyTo=" + replyTo +
-//                ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
                 ", caseAttachments=" + caseAttachments +

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -114,5 +113,15 @@ public class CrmConstants {
 
     public interface Redmine {
         String NO_CONTENT_TYPE = "application/octet-stream";
+    }
+
+    public interface IpReservation {
+        String SUBNET_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
+        String IP_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
+        String MAC_ADDRESS = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
+        String NUMBER = "^\\d{1,3}$";
+
+        int MIN_IPS_COUNT = 1;
+        int MAX_IPS_COUNT = 255;
     }
 }

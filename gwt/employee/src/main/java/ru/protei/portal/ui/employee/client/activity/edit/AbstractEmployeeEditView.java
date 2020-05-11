@@ -110,6 +110,10 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
+    HasValue<Boolean> changeAccount();
+
+    HasVisibility changeAccountVisibility();
+
     void updateCompanyDepartments(Long companyId);
 
     void setAddButtonCompanyDepartmentVisible(boolean isVisible);

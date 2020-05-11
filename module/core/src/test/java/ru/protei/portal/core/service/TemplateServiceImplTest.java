@@ -40,7 +40,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static ru.protei.portal.core.event.AssembledEventFactory.makeAssembledEvent;
 import static ru.protei.portal.core.event.AssembledEventFactory.makeComment;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;

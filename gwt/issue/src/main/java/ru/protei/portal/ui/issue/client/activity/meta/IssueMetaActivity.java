@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -21,6 +22,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.SLAControllerAsync;
+import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -84,7 +86,21 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             metaView.state().setValue(meta.getState());
             return;
         }
+
         meta.setStateId(metaView.state().getValue().getId());
+
+        meta.setPauseDate((!En_CaseState.PAUSED.equals(meta.getState()) || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
+        metaView.pauseDate().setValue(!En_CaseState.PAUSED.equals(meta.getState()) ? null : metaView.pauseDate().getValue());
+
+        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(meta.getState()));
+
+        if (!isPauseDateValid(meta.getState(), meta.getPauseDate())) {
+            metaView.setPauseDateValid(false);
+            return;
+        }
+
+        metaView.setPauseDateValid(true);
+
         onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
     }
 
@@ -127,6 +143,19 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onTimeElapsedChanged() {
         meta.setTimeElapsed(metaView.getTimeElapsed());
         onCaseMetaChanged( meta );
+    }
+
+    @Override
+    public void onPauseDateChanged() {
+        if (!isPauseDateValid(meta.getState(), metaView.pauseDate().getValue() == null ? null : metaView.pauseDate().getValue().getTime())) {
+            metaView.setPauseDateValid(false);
+            return;
+        }
+
+        meta.setPauseDate(metaView.pauseDate().getValue().getTime());
+        metaView.setPauseDateValid(true);
+
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
@@ -210,9 +239,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         Long selectedCompanyId = company.getId();
 
-        metaView.platform().setValue(null);
         metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
-        meta.setPlatform(null);
 
         companyService.getCompanyWithParentCompanySubscriptions(
                 selectedCompanyId,
@@ -250,9 +277,28 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setInitiator(initiator);
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-        requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
 
-        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(selectedCompanyId);
+
+        siteFolderController.getPlatformsOptionList(query, new FluentCallback<List<PlatformOption>>()
+                .withError(throwable -> {
+                    metaView.platform().setValue(null);
+                    meta.setPlatform(null);
+                    requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+                    onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
+                })
+                .withSuccess( result -> {
+                    if(result != null && result.size() == 1){
+                        metaView.platform().setValue(result.get(0));
+                        meta.setPlatform(result.get(0));
+                    } else {
+                        metaView.platform().setValue(null);
+                        meta.setPlatform(null);
+                    }
+                    requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+                    onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
+                } ));
     }
 
     @Override
@@ -315,6 +361,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue( meta.getState() );
+        metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
+        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(meta.getState()));
+        metaView.setPauseDateValid(isPauseDateValid(meta.getState(), meta.getPauseDate()));
 
         metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
@@ -480,6 +529,18 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return caseMetaJira != null;
     }
 
+    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
+        if (!En_CaseState.PAUSED.equals(currentState)) {
+            return true;
+        }
+
+        if (pauseDate != null && pauseDate > System.currentTimeMillis()) {
+            return true;
+        }
+
+        return false;
+    }
+
     private boolean isSystemScope() {
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
     }
@@ -500,6 +561,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     CaseStateFilterProvider caseStateFilter;
     @Inject
     SLAControllerAsync slaService;
+    @Inject
+    SiteFolderControllerAsync siteFolderController;
 
     @ContextAware
     CaseObjectMeta meta;

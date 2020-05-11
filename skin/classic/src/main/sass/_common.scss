@@ -586,7 +586,7 @@ label.bordered:after {
     color: black;
     vertical-align: bottom;
   }
-  .edit, .remove, .copy {
+  .edit, .remove, .copy, .refresh {
     width: 45px;
   }
 }
@@ -3303,6 +3303,91 @@ label {
   }
 }
 
+.subnet {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 16px;
+    }
+  }
+}
+
+.reserved-ip {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .ip-address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 16px;
+    }
+  }
+  .ip-use-range {
+    width: 15%;
+  }
+  .ip-owner {
+  }
+  .ip-comment {
+  }
+  .ip-last-check {
+  }
+}
+
+.short-table-view {
+  .reserved-ip {
+    .ip-owner {
+      display: none;
+    }
+
+    .ip-comment {
+      display: none;
+    }
+
+    .ip-last-check {
+      display: none;
+    }
+  }
+}
+
 .preview-value-label {
   margin-top: 4px !important;
 }
@@ -4086,6 +4171,21 @@ table {
 }
 
 .form-group {
+  &.form-group-default.pause-date {
+    height: 54px !important;
+
+    .form-control {
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
+    }
+
+    .has-error {
+      .form-control {
+        border: 1px solid $error_color;
+      }
+    }
+  }
+
   .form-control {
     &.sla-input-time {
       border: 1px solid rgba(0, 0, 0, 0.07);
@@ -4115,4 +4215,15 @@ table {
 
 .max-z-index {
   z-index: 9999 !important;
+}
+
+.pause-status-expired-date {
+  border: 2px solid $error_color;
+}
+
+.reserved-ip-info {
+  max-height: 4.26em;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

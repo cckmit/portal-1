@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.projectfilter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -99,6 +100,11 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         headManagers.setValue(new HashSet<>());
         caseMembers.setValue(new HashSet<>());
         onlyMineProjects.setValue( false );
+    }
+
+    @Override
+    public void clearFooterStyle() {
+        footer.removeClassName("card-footer");
     }
 
     @UiHandler( "resetBtn" )
@@ -219,6 +225,8 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
 
     @UiField
     CheckBox onlyMineProjects;
+    @UiField
+    DivElement footer;
 
     AbstractProjectFilterActivity activity;
 

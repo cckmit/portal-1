@@ -66,6 +66,10 @@ public class En_ResultStatusLang {
             case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
             case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
             case EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY: return lang.errEmployeeNotFiredFromThisCompany();
+            case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
+            case ROOM_RESERVATION_OUTDATED: return lang.errRoomReservationOutdated();
+            case ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE: return lang.errRoomReservationRoomNotAccessible();
+            case ROOM_RESERVATION_HAS_INTERSECTIONS: return lang.errRoomReservationHasIntersections();
             default: return lang.errUnknownResult();
         }
     }
