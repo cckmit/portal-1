@@ -429,7 +429,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("TransliterationUtils", new TransliterationUtils());
         templateModel.put("EnumLangUtil", enumLangUtil);
-        templateModel.put("TimeFormatter", new WorkTimeFormatter());
+        templateModel.put("TimeFormatter", new WorkTimeFormatter(true));
         templateModel.put("TextUtils", new TextUtils());
 
         templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
