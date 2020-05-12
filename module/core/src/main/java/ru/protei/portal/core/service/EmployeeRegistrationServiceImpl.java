@@ -4,15 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
-import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -75,7 +73,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
-            employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
+            employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName", "displayname" ) );
         }
         return ok(employeeRegistration);
     }
@@ -103,7 +101,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if(employeeRegistration == null)
             return error(En_ResultStatus.INTERNAL_ERROR);
 
-        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+        employeeRegistration.setCurators(personDAO.partialGetListByKeys(employeeRegistration.getCuratorsIds(), "id", "displayname"));
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
             String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
@@ -111,7 +109,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return ok(id);
+        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
     }
 
     @Override
@@ -121,24 +119,27 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
+        EmployeeRegistration oldEmployeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
+        oldEmployeeRegistration.setCurators(personDAO.partialGetListByKeys(oldEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
 
-        if (!isEmployeeRegistrationChanged(employeeRegistration, employeeRegistrationShortView)) {
-            return ok(employeeRegistration.getId());
+        if (!isEmployeeRegistrationChanged(oldEmployeeRegistration, employeeRegistrationShortView)) {
+            return ok(oldEmployeeRegistration.getId());
         }
 
-        boolean isEmploymentDateChanged = !Objects.equals(employeeRegistrationShortView.getEmploymentDate(), employeeRegistration.getEmploymentDate());
+        EmployeeRegistration newEmployeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
+        newEmployeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
+        newEmployeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
 
-        employeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
-        employeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
+        employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators");
+        newEmployeeRegistration.setCurators(personDAO.partialGetListByKeys(newEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
 
-        employeeRegistrationDAO.partialMerge(employeeRegistration, "employment_date", "curators");
+        boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate(), newEmployeeRegistration.getEmploymentDate());
 
         if (YOUTRACK_INTEGRATION_ENABLED && isEmploymentDateChanged) {
-            updateYouTrackEmploymentDate(employeeRegistration.getId(), employeeRegistration.getEmploymentDate());
+            updateYouTrackEmploymentDate(oldEmployeeRegistration.getId(), oldEmployeeRegistration.getEmploymentDate());
         }
 
-        return ok(employeeRegistration.getId());
+        return ok(oldEmployeeRegistration.getId()).publishEvent(new AssembledEmployeeRegistrationEvent(this, oldEmployeeRegistration, newEmployeeRegistration));
     }
 
     private void updateYouTrackEmploymentDate(Long employeeRegistrationId, Date employmentDate) {

@@ -72,7 +72,7 @@ public class EmployeeRegistrationShortView extends AuditableObject {
 
         EmployeeRegistrationShortView employeeRegistrationShortView = new EmployeeRegistrationShortView();
         employeeRegistrationShortView.setId(employeeRegistration.getId());
-        employeeRegistrationShortView.setCurators(CollectionUtils.emptyIfNull(employeeRegistration.getCurators()).stream().map(Person::toShortNameShortView).collect(Collectors.toSet()));
+        employeeRegistrationShortView.setCurators(CollectionUtils.emptyIfNull(employeeRegistration.getCurators()).stream().map(Person::toFullNameShortView).collect(Collectors.toSet()));
         employeeRegistrationShortView.setEmploymentDate(employeeRegistration.getEmploymentDate());
         employeeRegistrationShortView.setHeadOfDepartmentId(employeeRegistration.getHeadOfDepartmentId());
 

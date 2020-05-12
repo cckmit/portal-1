@@ -1,10 +1,7 @@
 package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.AssembledProjectEvent;
-import ru.protei.portal.core.event.RoomReservationNotificationEvent;
-import ru.protei.portal.core.event.UserLoginUpdateEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -24,7 +21,7 @@ public interface TemplateService {
 
     PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson );
 
-    PreparedTemplate getEmployeeRegistrationEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients);
+    PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients);
 
     PreparedTemplate getEmployeeRegistrationEmailNotificationSubject( EmployeeRegistration employeeRegistration);
 

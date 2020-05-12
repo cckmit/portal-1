@@ -8,7 +8,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -370,7 +370,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     }
 
     private void fireEmployeeRegistrationEvent(EmployeeRegistration employeeRegistration) {
-        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+        publisherService.publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
     }
 
     private List<CaseComment> makeCaseCommentListWithoutDuplicates(List<CaseComment> caseComments) {

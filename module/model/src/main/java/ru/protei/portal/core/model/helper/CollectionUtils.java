@@ -305,4 +305,23 @@ public class CollectionUtils {
     public static <T> Predicate<T> not(Predicate<T> predicate) {
         return predicate.negate();
     }
+
+
+    /**
+     * Равенство коллекций, без учета пордяка элементов
+     */
+    public static <T> boolean equals(Collection<T> firstCollection, Collection<T> secondCollection) {
+        firstCollection = emptyIfNull(firstCollection);
+        secondCollection = emptyIfNull(secondCollection);
+
+        if (firstCollection.size() != secondCollection.size()) {
+            return false;
+        }
+
+        if (!firstCollection.containsAll(secondCollection)) {
+            return false;
+        }
+
+        return true;
+    }
 }
