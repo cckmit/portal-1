@@ -14,9 +14,8 @@ import java.util.List;
 public class IssueStateButtonSelector extends ButtonSelector<CaseState> implements SelectorWithModel<CaseState> {
 
     @Inject
-    public void init(StateModel model, En_CaseStateLang lang) {
+    public void init(StateModel model) {
         this.model = model;
-        this.lang = lang;
     }
 
     @Override
@@ -71,10 +70,9 @@ public class IssueStateButtonSelector extends ButtonSelector<CaseState> implemen
     }
 
     private String makeCaseStateName(CaseState caseState) {
-        return caseState == null ? defaultValue : lang.getStateName(caseState);
+        return caseState == null ? defaultValue : caseState.getState();
     }
 
-    private En_CaseStateLang lang;
     private En_CaseStateWorkflow workflow;
     private StateModel model;
     private String defaultValue;

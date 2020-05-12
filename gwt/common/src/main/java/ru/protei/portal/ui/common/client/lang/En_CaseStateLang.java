@@ -9,13 +9,6 @@ import ru.protei.portal.core.model.ent.CaseState;
  */
 public class En_CaseStateLang {
 
-    public String getStateName(CaseState state){
-        if(state == null)
-            return lang.errUnknownResult();
-
-        return state.getState();
-    }
-
     public String getStateName(En_CaseState state){
         if(state == null)
             return lang.errUnknownResult();

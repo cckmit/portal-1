@@ -17,9 +17,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 public class NumberColumn extends ClickColumn<CaseShortView> {
 
     @Inject
-    public NumberColumn( Lang lang, En_CaseStateLang caseStateLang) {
+    public NumberColumn( Lang lang ) {
         this.lang = lang;
-        this.caseStateLang = caseStateLang;
         setStopPropogationElementClassName("number-size");
     }
 
@@ -52,7 +51,7 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );
         stateElement.addClassName( "label label-" +
                 value.getState().getState().replaceAll("[.-]", "_").toLowerCase() );
-        stateElement.setInnerText( caseStateLang.getStateName( value.getState() ) );
+        stateElement.setInnerText( value.getState().getState() );
 
         if (!isPauseDateValid(En_CaseState.getById(value.getStateId()), value.getPauseDate())) {
             stateElement.addClassName("pause-status-expired-date");
@@ -78,5 +77,4 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
     }
 
     private Lang lang;
-    private En_CaseStateLang caseStateLang;
 }

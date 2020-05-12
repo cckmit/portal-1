@@ -119,7 +119,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
 
         ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
 
-        NumberColumn number = new NumberColumn(lang, caseStateLang);
+        NumberColumn number = new NumberColumn(lang);
         table.addColumn(number.header, number.values);
         number.setHandler(activity);
         number.setColumnProvider(columnProvider);

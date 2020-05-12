@@ -96,7 +96,7 @@ public abstract class CaseStatePreviewActivity
     }
 
     private void fillView(CaseState state) {
-        view.setName(caseStateLang.getStateName(state));
+        view.setName(state.getState());
         view.description().setValue(defaultString(state.getInfo(), ""));
         view.usageInCompanies().setValue(state.getUsageInCompanies());
         view.companiesVisibility().setVisible(SELECTED.equals(state.getUsageInCompanies()));
@@ -131,8 +131,6 @@ public abstract class CaseStatePreviewActivity
 
     @Inject
     Lang lang;
-    @Inject
-    En_CaseStateLang caseStateLang;
     @Inject
     AbstractCaseStatePreviewView view;
     @Inject

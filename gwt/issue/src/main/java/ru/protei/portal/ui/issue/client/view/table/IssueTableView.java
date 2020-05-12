@@ -135,7 +135,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     private void initTable () {
         attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT) );
-        issueNumber = new NumberColumn( lang, caseStateLang );
+        issueNumber = new NumberColumn( lang );
         contact = new ContactColumn( lang );
         manager = new ManagerColumn( lang );
         info = new InfoColumn( lang );

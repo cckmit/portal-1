@@ -18,5 +18,7 @@ public enum En_Scope {
     /**
      * Область видимости – все сущности системы
      */
-    SYSTEM
+    SYSTEM,
+
+    USER
 }
