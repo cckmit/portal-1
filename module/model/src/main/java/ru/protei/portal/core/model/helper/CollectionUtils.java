@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
@@ -292,6 +293,20 @@ public class CollectionUtils {
             }
         }
         return result;
+    }
+
+    public static <T> Set<T> nullIfEmpty( Set set) {
+        if(isEmpty( set )) {
+            return null;
+        }
+        return set;
+    }
+
+    public static <T> List<T> nullIfEmpty( List list) {
+        if(isEmpty( list )) {
+            return null;
+        }
+        return list;
     }
 
     private static <T> T getSame( Collection<T> second, T entry ) {
