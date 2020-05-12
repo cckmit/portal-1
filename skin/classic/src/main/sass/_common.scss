@@ -4102,6 +4102,18 @@ table {
   margin: 0 0 5px 5px;
 }
 
+.employee-image-container {
+
+  &.upload-enabled {
+    cursor: pointer;
+  }
+
+  .employee-edit-image {
+    height: 260px;
+    margin: 0 0 5px 0;
+  }
+}
+
 .top-brass {
   .top-brass-containers {
     text-align: center;

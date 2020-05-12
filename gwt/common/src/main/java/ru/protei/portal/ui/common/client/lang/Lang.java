@@ -1834,6 +1834,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeTopBrassLabel();
 
+    String employeeAvatarLabelEnabled();
+
+    String employeeAvatarLabelDisabled();
+
+    String employeeAvatarUploadSuccessful();
+
     String backToEmployees();
 
     String employeeChangeAccount();

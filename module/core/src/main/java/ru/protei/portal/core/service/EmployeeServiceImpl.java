@@ -291,7 +291,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
 
-        boolean success = personDAO.partialMerge(person,  "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
+        person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+        boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
 
         if (success) {
             return ok(true);

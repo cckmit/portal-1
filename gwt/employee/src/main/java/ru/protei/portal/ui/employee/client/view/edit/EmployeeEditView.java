@@ -2,8 +2,10 @@ package ru.protei.portal.ui.employee.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -11,6 +13,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -44,6 +47,10 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workerPositionSelector.setAddHandler(addEvent -> activity.onAddWorkerPositionClicked());
 
         birthDay.setMandatory(false);
+
+        form.setEncoding(FormPanel.ENCODING_MULTIPART);
+        form.setMethod(FormPanel.METHOD_POST);
+        fileUpload.getElement().setAttribute("accept", AttachmentType.JPEG.mimeType);
     }
 
     @Override
@@ -324,6 +331,39 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workerPositionSelector.setAddButtonVisible(isVisible);
     }
 
+    @Override
+    public HandlerRegistration addChangeHandler(ChangeHandler changeHandler) {
+        return fileUpload.addChangeHandler(changeHandler);
+    }
+
+    @Override
+    public void submitAvatar(String url){
+        if(!fileUpload.getFilename().isEmpty()) {
+            form.setAction(url);
+            form.submit();
+        }
+    }
+
+    @Override
+    public void setFileUploadEnabled(boolean isEnabled){
+        fileUpload.setEnabled(isEnabled);
+        imageContainer.setStyleName("upload-enabled", isEnabled);
+    }
+
+    @Override
+    public HandlerRegistration addSubmitCompleteHandler(FormPanel.SubmitCompleteHandler submitCompleteHandler) {
+        return form.addSubmitCompleteHandler(submitCompleteHandler);
+    }
+
+    @Override
+    public void setAvatarUrl(String url) {
+        image.setUrl(url);
+    }
+
+    @Override
+    public void setAvatarLabelText(String text){
+        imageLabel.setText(text);
+    }
 
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
@@ -449,6 +489,21 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     HTMLPanel employeeFired;
+
+    @UiField
+    Image image;
+
+    @UiField
+    Label imageLabel;
+
+    @UiField
+    HTMLPanel imageContainer;
+
+    @UiField
+    FormPanel form;
+
+    @UiField
+    FileUpload fileUpload;
 
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override

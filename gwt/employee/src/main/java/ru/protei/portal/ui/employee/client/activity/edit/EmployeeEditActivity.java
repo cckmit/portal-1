@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -19,6 +20,7 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -50,6 +52,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
+
+        setAvatarHandlers();
+
         personId = null;
         workerId = null;
 
@@ -72,6 +77,26 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                         }));
     }
 
+    private void setAvatarHandlers() {
+        if (changeAvatarHandlerRegistration != null){
+            changeAvatarHandlerRegistration.removeHandler();
+        }
+
+        changeAvatarHandlerRegistration = view.addChangeHandler(changeEvent -> {
+            if (personId != null){
+                view.submitAvatar(AvatarUtils.setAvatarUrl(personId));
+            }
+        });
+
+        if (submitAvatarHandlerRegistration != null){
+            submitAvatarHandlerRegistration.removeHandler();
+        }
+
+        submitAvatarHandlerRegistration = view.addSubmitCompleteHandler(submitCompleteEvent -> {
+            view.setAvatarUrl(AvatarUtils.getPhotoUrl(personId));
+            fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+        });
+    }
 
 
     @Event
@@ -340,6 +365,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(EmployeeShortView employee){
+        setAvatar(employee.getId());
         this.employee.setFired(employee.isFired());
         view.gender().setValue(employee.getGender());
         checkGenderValid();
@@ -382,7 +408,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
 
         boolean isEnabled = (employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0) || (isEmployeeInSyncCompanies && employee.getWorkerEntries().size() == 1);
-        view.fireBtnVisibility().setVisible(personId!= null & isEnabled & !employee.isFired());
+        view.fireBtnVisibility().setVisible(personId != null & isEnabled & !employee.isFired());
 
         setPersonFieldsEnabled (isEnabled);
         if (employee.isFired()) {
@@ -390,6 +416,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         }
         view.changeAccount().setValue(false);
         view.changeAccountVisibility().setVisible(false);
+    }
+
+    private void setAvatar(Long employeeId) {
+        view.setAvatarUrl(AvatarUtils.getPhotoUrl(employeeId));
+        view.setAvatarLabelText(employeeId == null ? lang.employeeAvatarLabelDisabled() : lang.employeeAvatarLabelEnabled());
+        view.setFileUploadEnabled(employeeId != null);
     }
 
     private void setPersonFieldsEnabled (boolean isEnabled) {
@@ -508,7 +540,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Inject
     PolicyService policyService;
 
-
+private HandlerRegistration changeAvatarHandlerRegistration;
+private HandlerRegistration submitAvatarHandlerRegistration;
     private List<EntityOption> companiesWithoutSync = new ArrayList<>();
     private Person employee = new Person();
     private Long personId;
