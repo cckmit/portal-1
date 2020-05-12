@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
@@ -50,7 +49,7 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );
         stateElement.addClassName( "label label-" +
-                value.getState().getState().replaceAll("[.-]", "_").toLowerCase() );
+                value.getState().getState() );
         stateElement.setInnerText( value.getState().getState() );
 
         if (!isPauseDateValid(En_CaseState.getById(value.getStateId()), value.getPauseDate())) {

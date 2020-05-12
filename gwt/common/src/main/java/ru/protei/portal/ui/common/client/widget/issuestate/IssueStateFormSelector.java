@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
@@ -56,7 +55,7 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
     private DisplayOptionCreator<CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
             return caseState -> new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" +
-                    caseState.getState().replaceAll("[.-]", "_").toLowerCase());
+                    caseState.getState());
         }
         return new DisplayOptionCreator<CaseState>() {
             @Override

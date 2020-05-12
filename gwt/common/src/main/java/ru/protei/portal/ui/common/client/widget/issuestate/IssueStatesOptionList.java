@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.test.client.DebugIdsHelper;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.optionlist.list.OptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
@@ -24,7 +23,7 @@ public class IssueStatesOptionList extends OptionList<CaseState> implements Sele
         clearOptions();
         states.forEach(state -> {
             addOption( state.getState(), state, "inline m-r-5 option-" +
-                    state.getState().replaceAll("[.-]", "_").toLowerCase() );
+                    state.getState() );
             setEnsureDebugId(state, DebugIdsHelper.ISSUE_STATE.byId(state.getId()));
         });
     }
