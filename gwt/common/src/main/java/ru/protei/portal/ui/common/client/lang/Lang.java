@@ -1840,6 +1840,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeAvatarUploadSuccessful();
 
+    String employeeAvatarUploadingFailed();
+
     String backToEmployees();
 
     String employeeChangeAccount();

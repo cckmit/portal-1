@@ -1,11 +1,14 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
@@ -14,6 +17,7 @@ import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
@@ -94,7 +98,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         submitAvatarHandlerRegistration = view.addSubmitCompleteHandler(submitCompleteEvent -> {
             view.setAvatarUrl(AvatarUtils.getPhotoUrl(personId));
-            fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+
+            UploadResult result = parseUploadResult(submitCompleteEvent.getResults());
+
+            if (En_FileUploadStatus.OK.equals(result.getStatus())) {
+                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+            } else {
+                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadingFailed(), NotifyEvents.NotifyType.ERROR));
+            }
         });
     }
 
@@ -527,6 +538,26 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     private void checkGenderValid(){
         boolean isValid = !view.gender().getValue().equals(En_Gender.UNDEFINED);
         view.genderValidator().setValid(isValid);
+    }
+
+    private UploadResult parseUploadResult(String json){
+        UploadResult result;
+
+        if (json == null || json.isEmpty()) {
+            result = new UploadResult(En_FileUploadStatus.PARSE_ERROR, "");
+        } else {
+            result = new UploadResult();
+            try {
+                JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
+                result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
+                result.setDetails(jsonObj.get("details").isString().stringValue());
+            } catch (Exception e){
+                result.setStatus(En_FileUploadStatus.PARSE_ERROR);
+                result.setDetails(json);
+            }
+        }
+
+        return result;
     }
 
     @Inject
