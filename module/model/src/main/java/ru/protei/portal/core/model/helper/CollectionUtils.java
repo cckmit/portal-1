@@ -70,6 +70,20 @@ public class CollectionUtils {
         return map == null ? Collections.<K, V>emptyMap() : map;
     }
 
+    public static <T> Set<T> nullIfEmpty( Set<T> set) {
+        if(isEmpty( set )) {
+            return null;
+        }
+        return set;
+    }
+
+    public static <T> List<T> nullIfEmpty( List<T> list) {
+        if(isEmpty( list )) {
+            return null;
+        }
+        return list;
+    }
+
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
                                          final Function<? super I, ? extends O> mapper ) {
         if ( iterable == null || mapper == null || output == null ) {
