@@ -8,5 +8,6 @@
   <include file="2020-04-16-dropnotnullconstraint-in-company_dep-and-worker_entry-and-add-field-sync_1c.xml" relativeToChangelogFile="true" />
   <include file="2020-04-17-set-linked_equipment_id-equipment-fk.xml" relativeToChangelogFile="true" />
   <include file="2020-04-20-add-pause_date-to-case_object.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-13-update-state-name.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
