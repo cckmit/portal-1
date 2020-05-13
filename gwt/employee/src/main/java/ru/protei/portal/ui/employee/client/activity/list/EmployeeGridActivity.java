@@ -49,6 +49,10 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         ));
 
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(lang.absenceButtonCreate(), "", UiConstants.ActionBarIdentity.ABSENCE));
+        }
     }
 
     @Event
@@ -76,6 +80,21 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
         fireEvent(new ActionBarEvents.Clear());
         fireEvent(new EmployeeEvents.ShowTopBrass());
+    }
+
+    @Event
+    public void onAbsenceCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.ABSENCE.equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
+            fireEvent(new ForbiddenEvents.Show());
+            return;
+        }
+
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new AbsenceEvents.Edit());
     }
 
     @Override

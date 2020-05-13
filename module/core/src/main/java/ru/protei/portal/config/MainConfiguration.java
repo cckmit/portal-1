@@ -792,6 +792,10 @@ public class MainConfiguration {
         return new UserCaseAssignmentServiceImpl();
     }
 
+    @Bean
+    public AbsenceService getAbsenceService() {
+        return new AbsenceServiceImpl();
+    }
 
     @Bean
     public ReportCase getReportCase() {

@@ -2355,4 +2355,6 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceCreation();
 
     String absenceEditing();
+
+    String absenceButtonCreate();
 }
