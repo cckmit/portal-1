@@ -58,7 +58,7 @@ public abstract class ProjectPage
         }
 
         fireSelectTab();
-        fireEvent( new ProjectEvents.Show( true ) );
+        fireEvent( new ProjectEvents.Show() );
     }
 
     private void fireSelectTab() {
