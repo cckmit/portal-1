@@ -51,10 +51,6 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 
-    public void setCheckImportanceHistoryVisibility( boolean isCheckImportanceHistoryVisible ) {
-        issueFilterParamView.setCheckImportanceHistoryVisibility(isCheckImportanceHistoryVisible);
-    }
-
     @Override
     protected void onAttach() {
         super.onAttach();

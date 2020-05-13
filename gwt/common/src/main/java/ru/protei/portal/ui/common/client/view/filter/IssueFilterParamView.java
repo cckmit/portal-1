@@ -209,7 +209,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setValue(null);
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
-        checkImportanceHistory.setValue( false );
 
         model.onUserFilterChanged();
     }
@@ -296,7 +295,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
                 query.setImportances( nullIfEmpty(importance.getValue()));
-                query.setCheckImportanceHistory( checkImportanceHistory.getValue() );
                 query.setStates(nullIfEmpty( state.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setCaseTagsIds( nullIfEmpty( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ) );
@@ -339,11 +337,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
         initiators.setCompaniesSupplier(collectionSupplier);
-    }
-
-    @Override
-    public void setCheckImportanceHistoryVisibility( boolean isCheckImportanceHistoryVisible ) {
-        checkImportanceHistoryContainer.setVisible( isCheckImportanceHistoryVisible );
     }
 
     @UiHandler("search")
@@ -481,7 +474,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
         labelSearchPrivate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.PRIVACY_LABEL);
         labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
-        checkImportanceHistory.ensureDebugId(DebugIds.FILTER.ISSUE_IMPORTANCE_CHECK_HISTORY);
         labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
         creators.ensureDebugId(DebugIds.FILTER.CREATOR_SELECTOR);
         creators.setAddEnsureDebugId(DebugIds.FILTER.CREATOR_ADD_BUTTON);
@@ -744,10 +736,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     DivElement importanceContainer;
     @UiField
     DivElement stateContainer;
-    @UiField
-    Switcher checkImportanceHistory;
-    @UiField
-    HTMLPanel checkImportanceHistoryContainer;
 
     @Inject
     PolicyService policyService;

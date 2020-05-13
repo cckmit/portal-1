@@ -85,7 +85,6 @@ public abstract class IssueTableFilterActivity
         view.getPagerContainer().add( pagerView.asWidget() );
 
         filterView.showUserFilterControls();
-        filterView.setCheckImportanceHistoryVisibility( false );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :

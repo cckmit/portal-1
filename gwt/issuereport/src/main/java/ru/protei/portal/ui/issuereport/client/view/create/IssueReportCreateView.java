@@ -11,6 +11,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportScheduledTypeButtonSelector;
@@ -23,6 +25,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -52,15 +55,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public void reset() {
-        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
-        scheduledType.setValue(En_ReportScheduledType.NONE);
-        scheduledType.setVisible(false);
-        scheduledTypeLabel.setVisible(false);
-        name.setValue(null);
-    }
-
-    @Override
     public HasWidgets getIssueFilterContainer() {
         return issueFilterWidgetContainer;
     }
@@ -71,11 +65,23 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         scheduledType.setEnabled(options.size() > 1);
     }
 
+    @Override
+    public HasVisibility scheduledTypeContainerVisibility() {
+        return scheduledTypeContainer;
+    }
+
+    @Override
+    public HasVisibility checkImportanceHistoryContainerVisibility() {
+        return checkImportanceHistoryContainer;
+    }
+
+    @Override
+    public HasValue<Boolean> checkImportanceHistory() {
+        return checkImportanceHistory;
+    }
+
     @UiHandler("reportType")
     public void onReportTypeChanged(ValueChangeEvent<En_ReportType> event) {
-        scheduledType.setValue(En_ReportScheduledType.NONE);
-        scheduledType.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(event.getValue()));
-        scheduledTypeLabel.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(event.getValue()));
         if (activity != null) {
             activity.onReportTypeChanged(En_CaseFilterType.valueOf(reportType.getValue().name()));
         }
@@ -95,16 +101,24 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         }
     }
 
+    private void ensureDebugIds() {
+        checkImportanceHistory.ensureDebugId(DebugIds.FILTER.ISSUE_IMPORTANCE_CHECK_HISTORY);
+    }
+
     @Inject
     @UiField(provided = true)
     ReportTypeButtonSelector reportType;
     @UiField
     TextBox name;
-    @UiField
-    Label scheduledTypeLabel;
     @Inject
     @UiField(provided = true)
     ReportScheduledTypeButtonSelector scheduledType;
+    @UiField
+    HTMLPanel scheduledTypeContainer;
+    @UiField
+    HTMLPanel checkImportanceHistoryContainer;
+    @UiField
+    Switcher checkImportanceHistory;
     @UiField
     HTMLPanel issueFilterWidgetContainer;
     @UiField

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public abstract class IssueReportCreateActivity implements Activity,
@@ -65,7 +66,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         initDetails.parent.add(view.asWidget());
 
         isSaving = false;
-        view.reset();
+        resetView();
 
         if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
             issueFilterWidget.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
@@ -83,6 +84,7 @@ public abstract class IssueReportCreateActivity implements Activity,
             query = getProjectQuery().toCaseQuery(policyService.getProfile().getId());
         } else {
             query = issueFilterWidget.getFilterFieldsByFilterType();
+            query.setCheckImportanceHistory(view.checkImportanceHistory().getValue());
         }
 
         if (!validateQuery(reportType, query)) {
@@ -118,6 +120,10 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Override
     public void onReportTypeChanged(En_CaseFilterType filterType) {
+        view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+        view.scheduledTypeContainerVisibility().setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(view.reportType().getValue()));
+        view.checkImportanceHistory().setValue(false);
+
         if (filterType == En_CaseFilterType.PROJECT) {
             projectFilterView.resetFilter();
             view.getIssueFilterContainer().clear();
@@ -125,7 +131,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         } else {
             issueFilterWidget.updateFilterType(filterType);
             applyIssueFilterVisibilityByPrivileges();
-            issueFilterWidget.setCheckImportanceHistoryVisibility(filterType == En_CaseFilterType.CASE_OBJECTS);
+            view.checkImportanceHistoryContainerVisibility().setVisible(filterType == En_CaseFilterType.CASE_OBJECTS);
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(issueFilterWidget.asWidget());
         }
@@ -203,6 +209,14 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setOnlyMineProjects(projectFilterView.onlyMineProjects().getValue());
         return  query;
+    }
+
+    private void resetView() {
+        view.name().setValue(null);
+        view.reportType().setValue(En_ReportType.CASE_OBJECTS, true);
+        view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+        view.scheduledTypeContainerVisibility().setVisible(false);
+        view.checkImportanceHistory().setValue(false);
     }
 
     @Inject
