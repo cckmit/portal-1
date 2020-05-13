@@ -59,6 +59,11 @@ public abstract class StateModel implements Activity {
         refreshData();
     }
 
+    public CaseState getById(long id) {
+        return caseStatesList.stream().filter(caseState -> caseState.getId() == id)
+                .findAny().orElse(new CaseState(id));
+    }
+
     private void refreshData() {
         if (isRefreshing) {
             return;
@@ -122,11 +127,11 @@ public abstract class StateModel implements Activity {
 
         if (caseStateWorkflow.isPresent()) {
             for (CaseStateWorkflowLink caseStateWorkflowLink : caseStateWorkflow.get().getCaseStateWorkflowLinks()) {
-                if (!caseStateWorkflowLink.getCaseStateFrom().equals(currentCaseState)) {
+                if (caseStateWorkflowLink.getCaseStateFromId() != currentCaseState.getId()) {
                     continue;
                 }
 
-                Optional<CaseState> caseState = caseStatesList.stream().filter(state -> state.equals(caseStateWorkflowLink.getCaseStateTo())).findFirst();
+                Optional<CaseState> caseState = caseStatesList.stream().filter(state -> state.getId() == caseStateWorkflowLink.getCaseStateToId()).findFirst();
 
                 if (caseState.isPresent()) {
                     nextCaseStates.add(caseState.get());

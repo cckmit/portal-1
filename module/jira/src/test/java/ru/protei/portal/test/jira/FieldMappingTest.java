@@ -17,18 +17,18 @@ public class FieldMappingTest {
 
     @Test
     public void testStatusMapping () {
-        Map<String, CaseState> expectedMapping = new HashMap<>();
-        expectedMapping.put("Authorized", new CaseState((long)En_CaseState.CREATED.getId()));
-        expectedMapping.put("Studying", new CaseState((long)En_CaseState.OPENED.getId()));
-        expectedMapping.put("Postpone", new CaseState((long)En_CaseState.PAUSED.getId()));
-        expectedMapping.put("Soft Close", new CaseState((long)En_CaseState.DONE.getId()));
-        expectedMapping.put("Nothing to change", new CaseState((long)En_CaseState.VERIFIED.getId()));
-        expectedMapping.put("Request to customer", new CaseState((long)En_CaseState.CUST_REQUEST.getId()));
-        expectedMapping.put("Request to NX", new CaseState((long)En_CaseState.NX_REQUEST.getId()));
+        Map<String, Long> expectedMapping = new HashMap<>();
+        expectedMapping.put("Authorized", (long)En_CaseState.CREATED.getId());
+        expectedMapping.put("Studying", (long)En_CaseState.OPENED.getId());
+        expectedMapping.put("Postpone", (long)En_CaseState.PAUSED.getId());
+        expectedMapping.put("Soft Close", (long)En_CaseState.DONE.getId());
+        expectedMapping.put("Nothing to change", (long)En_CaseState.VERIFIED.getId());
+        expectedMapping.put("Request to customer", (long)En_CaseState.CUST_REQUEST.getId());
+        expectedMapping.put("Request to NX", (long)En_CaseState.NX_REQUEST.getId());
 
-        expectedMapping.forEach((key,state) -> {
-            Assert.assertEquals(state, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key));
-            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, state));
+        expectedMapping.forEach((key,stateId) -> {
+            Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key).getId());
+            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, stateId));
         });
     }
 }

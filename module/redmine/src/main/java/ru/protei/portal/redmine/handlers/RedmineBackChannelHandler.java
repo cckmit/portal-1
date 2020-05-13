@@ -93,7 +93,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
                 || !issueAndCompanyIds[0].matches("^[0-9]+$")
                 || !issueAndCompanyIds[1].matches("^[0-9]+$")) {
 
-            return error(En_ResultStatus.INTERNAL_ERROR, String.format("case has invalid ext-app-id : {}", extAppId));
+            return error(En_ResultStatus.INTERNAL_ERROR, String.format("case has invalid ext-app-id : %s", extAppId));
         }
         return ok(issueAndCompanyIds);
     }
@@ -135,10 +135,12 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
         if (event.isCaseStateChanged()) {
             final long statusMapId = endpoint.getStatusMapId();
-            logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
-            RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId).getData();
+            logger.debug("Trying to get redmine status id matching with portal: {} -> {}",
+                    event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
+            RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(
+                    event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId(), statusMapId).getData();
             if (redmineStatusMapEntry != null
-                    && !En_CaseState.VERIFIED.isEquals(event.getLastCaseMeta().getState())) {
+                    && En_CaseState.VERIFIED.getId() != event.getLastCaseMeta().getStateId()) {
                 logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
                 issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
             } else {

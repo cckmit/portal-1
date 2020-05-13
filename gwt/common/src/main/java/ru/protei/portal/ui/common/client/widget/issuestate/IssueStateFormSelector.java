@@ -54,8 +54,10 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
 
     private DisplayOptionCreator<CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseState -> new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" +
-                    caseState.getState());
+            return caseState -> {
+                String name = makeCaseStateName(caseState);
+                return new DisplayOption(name, "", "fas fa-circle m-r-5 state-" + name);
+            };
         }
         return new DisplayOptionCreator<CaseState>() {
             @Override
@@ -70,7 +72,13 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
     }
 
     private String makeCaseStateName(CaseState caseState) {
-        return caseState == null ? defaultValue : caseState.getState();
+        if (caseState == null) {
+            return defaultValue;
+        } else if (caseState.getState() != null) {
+            return caseState.getState();
+        } else {
+            return model.getById(caseState.getId()).getState();
+        }
     }
 
     private En_CaseStateWorkflow workflow;

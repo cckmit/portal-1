@@ -79,20 +79,20 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onStateChange() {
-        if (En_CaseState.CREATED.isEquals(metaView.state().getValue()) && meta.getManager() != null){
+        if (En_CaseState.CREATED.getId() == metaView.state().getValue().getId() && meta.getManager() != null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
-            metaView.state().setValue(meta.getState());
+            metaView.state().setValue(new CaseState(meta.getStateId()));
             return;
         }
 
         meta.setStateId(metaView.state().getValue().getId());
 
-        meta.setPauseDate((!En_CaseState.PAUSED.isEquals(meta.getState()) || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
-        metaView.pauseDate().setValue(!En_CaseState.PAUSED.isEquals(meta.getState()) ? null : metaView.pauseDate().getValue());
+        meta.setPauseDate((En_CaseState.PAUSED.getId() != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
+        metaView.pauseDate().setValue(En_CaseState.PAUSED.getId() != meta.getStateId() ? null : metaView.pauseDate().getValue());
 
-        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.isEquals(meta.getState()));
+        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == meta.getStateId());
 
-        if (!isPauseDateValid(meta.getState(), meta.getPauseDate())) {
+        if (!isPauseDateValid(meta.getStateId(), meta.getPauseDate())) {
             metaView.setPauseDateValid(false);
             return;
         }
@@ -145,7 +145,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onPauseDateChanged() {
-        if (!isPauseDateValid(meta.getState(), metaView.pauseDate().getValue() == null ? null : metaView.pauseDate().getValue().getTime())) {
+        if (!isPauseDateValid(meta.getStateId(), metaView.pauseDate().getValue() == null ? null : metaView.pauseDate().getValue().getTime())) {
             metaView.setPauseDateValid(false);
             return;
         }
@@ -341,10 +341,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
-        metaView.state().setValue( meta.getState() );
+        metaView.state().setValue( new CaseState(meta.getStateId()) );
         metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
-        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(meta.getState()));
-        metaView.setPauseDateValid(isPauseDateValid(meta.getState(), meta.getPauseDate()));
+        metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == meta.getStateId());
+        metaView.setPauseDateValid(isPauseDateValid(meta.getStateId(), meta.getPauseDate()));
 
         metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
@@ -439,10 +439,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         boolean companyIsValid = caseMeta.getInitiatorCompany() != null;
         metaView.companyValidator().setValid(companyIsValid);
 
-        boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getState());
+        boolean managerIsValid = caseMeta.getManager() != null || !isStateWithRestrictions(caseMeta.getStateId());
         metaView.managerValidator().setValid(managerIsValid);
 
-        boolean productIsValid = caseMeta.getProduct() != null || caseMeta.getManager() == null && !isStateWithRestrictions(caseMeta.getState());
+        boolean productIsValid = caseMeta.getProduct() != null || caseMeta.getManager() == null && !isStateWithRestrictions(caseMeta.getStateId());
         metaView.productValidator().setValid(productIsValid);
 
         boolean isFieldsValid =
@@ -497,9 +497,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed( meta.isPrivateCase()));
     }
 
-    private boolean isStateWithRestrictions(CaseState caseState) {
-        return !En_CaseState.CREATED.isEquals(caseState) &&
-                !En_CaseState.CANCELED.isEquals(caseState);
+    private boolean isStateWithRestrictions(long caseStateId) {
+        return En_CaseState.CREATED.getId() != caseStateId &&
+                En_CaseState.CANCELED.getId() != caseStateId;
     }
 
     private String transliteration(String input) {
@@ -510,8 +510,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return caseMetaJira != null;
     }
 
-    private boolean isPauseDateValid(CaseState currentState, Long pauseDate) {
-        if (!En_CaseState.PAUSED.isEquals(currentState)) {
+    private boolean isPauseDateValid(long currentStateId, Long pauseDate) {
+        if (En_CaseState.PAUSED.getId() != currentStateId) {
             return true;
         }
 

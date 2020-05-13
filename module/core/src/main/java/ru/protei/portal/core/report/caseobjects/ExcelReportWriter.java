@@ -4,6 +4,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.report.ReportWriter;
@@ -16,6 +17,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 
@@ -29,14 +31,17 @@ public class ExcelReportWriter implements
     private final TimeFormatter timeFormatter;
     private final boolean isNotRestricted;
     private final String locale;
+    private final Map<Long, CaseState> idToCaseState;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter, boolean isRestricted) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter,
+                             boolean isRestricted, Map<Long, CaseState> idToCaseState) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
         this.timeFormatter = timeFormatter;
         this.isNotRestricted = !isRestricted;
         this.locale = localizedLang.getLanguageTag();
+        this.idToCaseState = idToCaseState;
     }
 
     @Override
@@ -144,7 +149,8 @@ public class ExcelReportWriter implements
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
         values.add(issue.getImpLevel() != null ? lang.get("importance_" + issue.getImpLevel()) : "");
-        values.add(issue.getState() != null ? issue.getState().getState() : "");
+        CaseState caseState = idToCaseState.get(issue.getStateId());
+        values.add(caseState != null ? caseState.getState() : "");
         values.add(created != null ? dateFormat.format(created) : "");
         values.add(opened != null ? dateFormat.format(opened) : "");
         values.add(workaround != null ? dateFormat.format(workaround) : "");

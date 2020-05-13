@@ -158,7 +158,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         final CaseObject object = event.getCaseObject();
 
         if (event.isCaseStateChanged()) {
-            String newJiraStatus = statusMapEntryDAO.getJiraStatus(endpoint.getStatusMapId(), object.getState());
+            String newJiraStatus = statusMapEntryDAO.getJiraStatus(endpoint.getStatusMapId(), object.getStateId());
             logger.debug("send change state, new jira-state: {}", newJiraStatus);
 
             Map<String,Integer> stateTransitions = new HashMap<>();

@@ -66,7 +66,7 @@ public class BaseServiceTest {
         CaseObject caseObject = new CaseObject();
         caseObject.setName( "Test_Case_Name" );
         caseObject.setCaseNumber( caseNo );
-        caseObject.setState( new CaseState(En_CaseState.CREATED) );
+        caseObject.setStateId( En_CaseState.CREATED.getId() );
         caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
@@ -296,4 +296,6 @@ public class BaseServiceTest {
     protected UserRoleDAO userRoleDAO;
     @Autowired
     protected ProjectService projectService;
+    @Autowired
+    protected CaseStateDAO caseStateDAO;
 }

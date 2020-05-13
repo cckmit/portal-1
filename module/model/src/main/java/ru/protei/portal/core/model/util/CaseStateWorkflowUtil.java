@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 
 public class CaseStateWorkflowUtil {
 
-    public static boolean isCaseStateTransitionValid(CaseStateWorkflow workflow, CaseState caseStateFrom, CaseState caseStateTo) {
+    public static boolean isCaseStateTransitionValid(CaseStateWorkflow workflow, long caseStateFromId, long caseStateToId) {
 
-        if (caseStateFrom == caseStateTo) {
+        if (caseStateFromId == caseStateToId) {
             return true;
         }
 
@@ -26,8 +26,8 @@ public class CaseStateWorkflowUtil {
 
         List<CaseStateWorkflowLink> links = workflow.getCaseStateWorkflowLinks();
         for (CaseStateWorkflowLink link : links) {
-            if (link.getCaseStateFrom().equals(caseStateFrom)
-                    && link.getCaseStateTo().equals(caseStateTo)) {
+            if (link.getCaseStateFromId() == caseStateFromId
+                    && link.getCaseStateToId() == caseStateToId) {
                 return true;
             }
         }

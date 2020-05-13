@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.ent.JiraStatusMapEntry;
 
 public interface JiraStatusMapEntryDAO extends PortalBaseDAO<JiraStatusMapEntry> {
 
-    String getJiraStatus(long mapId, CaseState state);
+    String getJiraStatus(long mapId, long stateId);
 
     CaseState getByJiraStatus(long mapId, String statusId);
 }

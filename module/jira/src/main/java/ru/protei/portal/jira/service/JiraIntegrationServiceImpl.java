@@ -167,10 +167,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
         caseObj.setLocal(0);
 
-        CaseState oldState = caseObj.getState();
+        long oldStateId = caseObj.getStateId();
         CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
-        newState = newState == null ? caseObj.getState() : newState;
-        caseObj.setState(newState);
+        long newStateId = newState == null ? caseObj.getStateId() : newState.getId();
+        caseObj.setStateId(newStateId);
 
         En_ImportanceLevel oldImportance = En_ImportanceLevel.getById(caseObj.getImpLevel());
         En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
@@ -187,8 +187,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObjectDAO.merge(caseObj);
 
-        if (!newState.equals(oldState)) {
-            persistStateComment(authorId, caseObj.getId(), newState);
+        if (newStateId != oldStateId) {
+            persistStateComment(authorId, caseObj.getId(), newStateId);
         }
 
         if (!newImportance.equals(oldImportance)) {
@@ -219,7 +219,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName() );
         logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getStateId(), newState);
-        caseObj.setState(newState == null ? new CaseState(En_CaseState.CREATED) : newState);
+        caseObj.setStateId(newState == null ? En_CaseState.CREATED.getId() : newState.getId());
 
         En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
         logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.importanceLevel(), newImportance);
@@ -230,7 +230,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObjectDAO.insertCase(caseObj);
 
-        persistStateComment(authorId, caseObj.getId(), caseObj.getState());
+        persistStateComment(authorId, caseObj.getId(), caseObj.getStateId());
         persistImportanceComment(authorId, caseObj.getId(), caseObj.getImpLevel());
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
@@ -500,12 +500,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return En_ImportanceLevel.getById(jiraPriorityEntry.getLocalPriorityId());
     }
 
-    private Long persistStateComment(Long authorId, Long caseId, CaseState state){
+    private Long persistStateComment(Long authorId, Long caseId, long stateId){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseStateId(state.getId());
+        stateChangeMessage.setCaseStateId(stateId);
         return commentDAO.persist(stateChangeMessage);
     }
 

@@ -16,11 +16,11 @@ public class CaseStateWorkflowLink implements Serializable {
     @JdbcEnumerated(EnumType.ID)
     private En_CaseStateWorkflow caseStateWorkflow;
 
-    @JdbcJoinedObject(localColumn = "state_from", table = "case_state", remoteColumn = "id")
-    private CaseState caseStateFrom;
+    @JdbcColumn(name = "state_from")
+    private long caseStateFromId;
 
-    @JdbcJoinedObject(localColumn = "state_to", table = "case_state", remoteColumn = "id")
-    private CaseState caseStateTo;
+    @JdbcColumn(name = "state_to")
+    private long caseStateToId;
 
     public CaseStateWorkflowLink() {}
 
@@ -40,20 +40,20 @@ public class CaseStateWorkflowLink implements Serializable {
         this.caseStateWorkflow = caseStateWorkflow;
     }
 
-    public CaseState getCaseStateFrom() {
-        return caseStateFrom;
+    public long getCaseStateFromId() {
+        return caseStateFromId;
     }
 
-    public void setCaseStateFrom(CaseState caseStateFrom) {
-        this.caseStateFrom = caseStateFrom;
+    public void setCaseStateFromId(long caseStateFromId) {
+        this.caseStateFromId = caseStateFromId;
     }
 
-    public CaseState getCaseStateTo() {
-        return caseStateTo;
+    public long getCaseStateToId() {
+        return caseStateToId;
     }
 
-    public void setCaseStateTo(CaseState caseStateTo) {
-        this.caseStateTo = caseStateTo;
+    public void setCaseStateToId(long caseStateToId) {
+        this.caseStateToId = caseStateToId;
     }
 
     @Override
@@ -62,13 +62,13 @@ public class CaseStateWorkflowLink implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         CaseStateWorkflowLink that = (CaseStateWorkflowLink) o;
         return caseStateWorkflow == that.caseStateWorkflow &&
-                caseStateFrom.equals(that.caseStateFrom) &&
-                caseStateTo.equals(that.caseStateTo);
+                caseStateFromId == that.caseStateFromId &&
+                caseStateToId == that.caseStateToId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(caseStateWorkflow, caseStateFrom, caseStateTo);
+        return Objects.hash(caseStateWorkflow, caseStateFromId, caseStateToId);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class CaseStateWorkflowLink implements Serializable {
         return "CaseStateWorkflowLink{" +
                 "id=" + id +
                 ", caseStateWorkflow=" + caseStateWorkflow +
-                ", caseStateFrom=" + caseStateFrom +
-                ", caseStateTo=" + caseStateTo +
+                ", caseStateFrom=" + caseStateFromId +
+                ", caseStateTo=" + caseStateToId +
                 '}';
     }
 }

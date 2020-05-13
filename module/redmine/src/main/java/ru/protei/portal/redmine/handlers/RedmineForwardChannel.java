@@ -356,7 +356,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             obj.setStateId(redmineStatusMapEntry.getLocalStatusId());
         } else {
             logger.warn("Object status was not found, setting default");
-            obj.setState(new CaseState(En_CaseState.CREATED));
+            obj.setStateId(En_CaseState.CREATED.getId());
         }
 
         obj.setName(issue.getSubject());

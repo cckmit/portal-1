@@ -1,12 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @JdbcEntity(table = "case_object")
@@ -142,14 +140,6 @@ public class CaseObjectMeta extends AuditableObject {
 
     public void setStateId(long stateId) {
         this.stateId = stateId;
-    }
-
-    public CaseState getState() {
-        return new CaseState(En_CaseState.getById(stateId));
-    }
-
-    public void setState(CaseState state) {
-        setStateId(state.getId());
     }
 
     public Integer getImpLevel() {

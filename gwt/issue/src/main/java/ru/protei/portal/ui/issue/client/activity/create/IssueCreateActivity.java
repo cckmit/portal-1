@@ -267,7 +267,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPauseDateChanged() {
-        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(),
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue().getId(),
                 issueMetaView.pauseDate().getValue() == null ? null
                         : issueMetaView.pauseDate().getValue().getTime()));
     }
@@ -275,9 +275,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
-        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == issueMetaView.state().getValue().getId());
 
-        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
+        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
     }
 
@@ -328,10 +328,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
-        issueMetaView.state().setValue( caseObjectMeta.getState() );
+        issueMetaView.state().setValue( new CaseState(caseObjectMeta.getStateId()) );
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
-        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.isEquals(caseObjectMeta.getState()));
-        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == caseObjectMeta.getStateId());
+        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
@@ -383,7 +383,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
-        caseObjectMeta.setState(new CaseState(En_CaseState.CREATED));
+        caseObjectMeta.setStateId(En_CaseState.CREATED.getId());
         caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 
@@ -459,17 +459,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
-        if (issueMetaView.getManager() == null && isStateWithRestrictions(issueMetaView.state().getValue())) {
+        if (issueMetaView.getManager() == null && isStateWithRestrictions(issueMetaView.state().getValue().getId())) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (issueMetaView.getProduct() == null && isStateWithRestrictions(issueMetaView.state().getValue())) {
+        if (issueMetaView.getProduct() == null && isStateWithRestrictions(issueMetaView.state().getValue().getId())) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
+        if (!isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
             fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -532,9 +532,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
     }
 
-    private boolean isStateWithRestrictions(CaseState caseState) {
-        return !En_CaseState.CREATED.isEquals(caseState) &&
-                !En_CaseState.CANCELED.isEquals(caseState);
+    private boolean isStateWithRestrictions(long caseStateId) {
+        return En_CaseState.CREATED.getId() != caseStateId &&
+                En_CaseState.CANCELED.getId() != caseStateId;
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -545,8 +545,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE);
     }
 
-    private boolean isPauseDateValid(CaseState currentState, Long pauseDate) {
-        if (!En_CaseState.PAUSED.isEquals(currentState)) {
+    private boolean isPauseDateValid(long currentStateId, Long pauseDate) {
+        if (En_CaseState.PAUSED.getId() != currentStateId) {
             return true;
         }
 

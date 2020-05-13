@@ -2,7 +2,6 @@ package ru.protei.portal.redmine.service;
 
 import com.taskadapter.redmineapi.bean.Journal;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
@@ -52,7 +51,7 @@ public interface CommonService {
     Result<RedminePriorityMapEntry> getByPortalPriorityId( Integer impLevel, long priorityMapId );
 
     Result<RedmineToCrmEntry> getLocalStatus( long statusMapId, Integer statusId );
-    Result<RedmineStatusMapEntry> getRedmineStatus( CaseState initState, CaseState lastState, long statusMapId );
+    Result<RedmineStatusMapEntry> getRedmineStatus(long initStateId, long lastStateId, long statusMapId );
 
 
     Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint );

@@ -110,7 +110,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = new CaseObject();
         caseObject.setType(En_CaseType.EMPLOYEE_REGISTRATION);
-        caseObject.setState(new CaseState(En_CaseState.CREATED));
+        caseObject.setStateId(En_CaseState.CREATED.getId());
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.EMPLOYEE_REGISTRATION));
         caseObject.setCreated(new Date());
 

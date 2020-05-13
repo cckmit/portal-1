@@ -7,8 +7,8 @@ import ru.protei.portal.core.model.ent.JiraStatusMapEntry;
 public class JiraStatusMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraStatusMapEntry> implements JiraStatusMapEntryDAO {
 
     @Override
-    public String getJiraStatus(long mapId, CaseState state) {
-        JiraStatusMapEntry entry = getByCondition("map_id=? and LOCAL_status_id=?", mapId, state.getId());
+    public String getJiraStatus(long mapId, long stateId) {
+        JiraStatusMapEntry entry = getByCondition("map_id=? and LOCAL_status_id=?", mapId, stateId);
         return entry == null ? null : entry.getJiraStatusName();
     }
 

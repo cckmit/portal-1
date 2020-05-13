@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dict;
 
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.winter.core.utils.enums.HasId;
 
 /**
@@ -82,10 +81,6 @@ public enum En_CaseState implements HasId {
 
     public boolean isTerminalState() {
         return isTerminalState;
-    }
-
-    public boolean isEquals(CaseState caseState) {
-        return (caseState != null) ? id == caseState.getId() : false;
     }
 
     private int id;

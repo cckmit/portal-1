@@ -125,24 +125,14 @@ public class FilterColumn extends StaticColumn<Report> {
                 managerElement.setInnerText(lang.issueState() + ": " +
                         caseQuery.getStateIds()
                                 .stream()
-                                .map(id -> En_RegionState.forId(Long.valueOf(id)))
+                                .map(id -> En_RegionState.forId(id))
                                 .map(regionStateLang::getStateName)
                                 .collect(Collectors.joining(", "))
                 );
                 element.appendChild(managerElement);
             }
-        } else {
-            if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
-                Element managerElement = DOM.createElement("p");
-                managerElement.setInnerText(lang.issueState() + ": " +
-                        caseQuery.getStateIds()
-                                .stream()
-                                .map(id -> En_CaseState.getById(Long.valueOf(id)))
-                                .map(caseStateLang::getStateName)
-                                .collect(Collectors.joining(", "))
-                );
-                element.appendChild(managerElement);
-            }
+        } else if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
+            element.appendChild(makeArraySelectedElement(lang.issueState(), caseQuery.getStateIds()));
         }
 
         // companies

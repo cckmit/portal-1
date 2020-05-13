@@ -128,7 +128,7 @@ public class CaseServiceImpl implements CaseService {
                 caseObject.setTimeElapsed(null);
             }
         } else {
-            caseObject.setState(new CaseState(En_CaseState.CREATED));
+            caseObject.setStateId(En_CaseState.CREATED.getId());
             caseObject.setTimeElapsed(null);
         }
 
@@ -141,7 +141,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getState());
+        Long stateMessageId = createAndPersistStateMessage(token.getPersonId(), caseId, caseObject.getStateId());
         if (stateMessageId == null) {
             log.error("State message for the issue {} not saved!", caseId);
         }
@@ -297,17 +297,17 @@ public class CaseServiceImpl implements CaseService {
         }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(oldState.getExtAppType());
-        boolean isStateTransitionValidByWorkflow = isCaseStateTransitionValid(workflow, oldCaseMeta.getState(), caseMeta.getState());
+        boolean isStateTransitionValidByWorkflow = isCaseStateTransitionValid(workflow, oldCaseMeta.getStateId(), caseMeta.getStateId());
         if (!isStateTransitionValidByWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
-                    caseMeta.getId(), oldCaseMeta.getState(), caseMeta.getState(), workflow);
+                    caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId(), workflow);
             throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
         }
 
         boolean isStateTransitionValidNoWorkflow = workflow != En_CaseStateWorkflow.NO_WORKFLOW || !isStateReopenNotAllowed(token, oldCaseMeta, caseMeta);
         if (!isStateTransitionValidNoWorkflow) {
             log.info("Wrong state transition for the issue {}: {} -> {}",
-                    caseMeta.getId(), oldCaseMeta.getState(), caseMeta.getState());
+                    caseMeta.getId(), oldCaseMeta.getStateId(), caseMeta.getStateId());
             throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
         }
 
@@ -320,8 +320,8 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        if (!Objects.equals(oldCaseMeta.getState(), caseMeta.getState())) {
-            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getState());
+        if (oldCaseMeta.getStateId() != caseMeta.getStateId()) {
+            Long messageId = createAndPersistStateMessage(token.getPersonId(), caseMeta.getId(), caseMeta.getStateId());
             if (messageId == null) {
                 log.error("State message for the issue {} isn't saved!", caseMeta.getId());
             }
@@ -620,12 +620,12 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistStateMessage(Long authorId, Long caseId, CaseState state) {
+    private Long createAndPersistStateMessage(Long authorId, long caseId, long stateId) {
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthorId(authorId);
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
-        stateChangeMessage.setCaseStateId(state.getId());
+        stateChangeMessage.setCaseStateId(stateId);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -677,7 +677,7 @@ public class CaseServiceImpl implements CaseService {
         return     !Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 || !Objects.equals(co1.getProductId(), co2.getProductId())
-                || !Objects.equals(co1.getState(), co2.getState())
+                || !Objects.equals(co1.getStateId(), co2.getStateId())
                 || !Objects.equals(co1.getPauseDate(), co2.getPauseDate())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
@@ -709,8 +709,8 @@ public class CaseServiceImpl implements CaseService {
 
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
-        return En_CaseState.VERIFIED.isEquals(oldMeta.getState()) &&
-                !En_CaseState.VERIFIED.isEquals(newMeta.getState())  &&
+        return En_CaseState.VERIFIED.getId() == oldMeta.getStateId() &&
+                En_CaseState.VERIFIED.getId() != newMeta.getStateId()  &&
                 !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
     }
 
@@ -746,17 +746,17 @@ public class CaseServiceImpl implements CaseService {
     private void applyStateBasedOnManager(CaseObject caseObject) {
         CaseObjectMeta caseMeta = new CaseObjectMeta(caseObject);
         applyStateBasedOnManager(caseMeta);
-        caseObject.setState(caseMeta.getState());
+        caseObject.setStateId(caseMeta.getStateId());
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
-        if (En_CaseState.CREATED.isEquals(caseMeta.getState()) && caseMeta.getManager() != null) {
-            caseMeta.setState(new CaseState(En_CaseState.OPENED));
+        if (En_CaseState.CREATED.getId() == caseMeta.getStateId() && caseMeta.getManager() != null) {
+            caseMeta.setStateId(En_CaseState.OPENED.getId());
         }
     }
 
-    private boolean isCaseStateTransitionValid(En_CaseStateWorkflow workflow, CaseState caseStateFrom, CaseState caseStateTo) {
-        if (caseStateFrom == caseStateTo) {
+    private boolean isCaseStateTransitionValid(En_CaseStateWorkflow workflow, long caseStateFromId, long caseStateToId) {
+        if (caseStateFromId == caseStateToId) {
             return true;
         }
         Result<CaseStateWorkflow> response = caseStateWorkflowService.getWorkflow(workflow);
@@ -764,7 +764,7 @@ public class CaseServiceImpl implements CaseService {
             log.error("Failed to get case state workflow, status={}", response.getStatus());
             return false;
         }
-        return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
+        return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFromId, caseStateToId);
     }
 
     private boolean validateFieldsOfNew(CaseObject caseObject) {
@@ -787,7 +787,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta.getImpLevel() == null) return false;
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
         if (En_CaseState.getById( caseMeta.getStateId() ) == null) return false;
-        if (!isStateValid(caseMeta.getState(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
+        if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
             return false;
@@ -802,13 +802,13 @@ public class CaseServiceImpl implements CaseService {
         return persons.stream().anyMatch( person -> personId.equals( person.getId() ) );
     }
 
-    private boolean isStateValid(CaseState caseState, Long managerId, Long pauseDate) {
+    private boolean isStateValid(long caseStateId, Long managerId, Long pauseDate) {
         if (!(listOf(En_CaseState.CREATED.getId(), En_CaseState.CANCELED.getId())
-                .contains(caseState.getId().intValue())) && managerId == null) {
+                .contains((int)caseStateId)) && managerId == null) {
             return false;
         }
 
-        if (En_CaseState.PAUSED.isEquals(caseState)) {
+        if (En_CaseState.PAUSED.getId() == caseStateId) {
             return pauseDate != null && (System.currentTimeMillis() < pauseDate);
         }
 

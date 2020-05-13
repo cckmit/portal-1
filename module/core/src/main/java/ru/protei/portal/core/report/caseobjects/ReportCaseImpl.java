@@ -7,7 +7,10 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -21,6 +24,9 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ReportCaseImpl implements ReportCase {
 
@@ -34,6 +40,8 @@ public class ReportCaseImpl implements ReportCase {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
@@ -41,10 +49,12 @@ public class ReportCaseImpl implements ReportCase {
         int count = caseObjectDAO.countByQuery(report.getCaseQuery());
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+        Map<Long, CaseState> idToCaseState = getIdToCaseState();
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted());
+            ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(
+                    localizedLang, dateFormat, timeFormatter, report.isRestricted(), idToCaseState);
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -57,7 +67,8 @@ public class ReportCaseImpl implements ReportCase {
 
         log.debug("writeReport : reportId={} has {} case objects to procees", report.getId(), count);
 
-        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted());
+        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(
+                localizedLang, dateFormat, timeFormatter, report.isRestricted(), idToCaseState);
 
         int sheetNumber = writer.createSheet();
 
@@ -103,5 +114,11 @@ public class ReportCaseImpl implements ReportCase {
             data.add(new CaseObjectComments(caseObject, caseComments));
         });
         writer.write(sheetNumber, data);
+    }
+
+    private Map<Long, CaseState> getIdToCaseState() {
+        List<CaseState> allByCaseType = caseStateDAO.getAllByCaseType(En_CaseType.CRM_SUPPORT);
+        return allByCaseType.stream()
+                .collect(Collectors.toMap(CaseState::getId, Function.identity(), (caseState1, caseState2) -> caseState1));
     }
 }

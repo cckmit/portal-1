@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
@@ -10,7 +8,10 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 19.05.16.
@@ -444,14 +445,6 @@ public class CaseObject extends AuditableObject {
 
     public void setExtAppType(String extAppType) {
         this.extAppType = extAppType;
-    }
-
-    public CaseState getState () {
-        return new CaseState(En_CaseState.getById(stateId));
-    }
-
-    public void setState (CaseState state) {
-        this.stateId = state.getId();
     }
 
     public En_ImportanceLevel importanceLevel () {
