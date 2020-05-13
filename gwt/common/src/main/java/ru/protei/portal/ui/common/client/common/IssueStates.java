@@ -1,75 +1,91 @@
 package ru.protei.portal.ui.common.client.common;
 
+import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
-import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.core.model.ent.CaseState;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Статусы обращений
  */
 public abstract class IssueStates implements Activity{
 
-    @Event
-    public void onInit( AuthEvents.Init event ) {
-
-        states = new ArrayList<>(14);
-        states.add(En_CaseState.CREATED);
-        states.add(En_CaseState.OPENED);
-        states.add(En_CaseState.ACTIVE);
-        states.add(En_CaseState.INFO_REQUEST);
-        states.add(En_CaseState.NX_REQUEST);
-        states.add(En_CaseState.CUST_REQUEST);
-        states.add(En_CaseState.WORKAROUND);
-        states.add(En_CaseState.TEST_LOCAL);
-        states.add(En_CaseState.CUST_PENDING);
-        states.add(En_CaseState.DONE);
-        states.add(En_CaseState.TEST_CUST);
-        states.add(En_CaseState.PAUSED);
-        states.add(En_CaseState.VERIFIED);
-        states.add(En_CaseState.CANCELED);
-
-        activeStates = new ArrayList<>(10);
-        activeStates.add(En_CaseState.CREATED);
-        activeStates.add(En_CaseState.OPENED);
-        activeStates.add(En_CaseState.ACTIVE);
-        activeStates.add(En_CaseState.TEST_LOCAL);
-        activeStates.add(En_CaseState.WORKAROUND);
-        activeStates.add(En_CaseState.INFO_REQUEST);
-        activeStates.add(En_CaseState.NX_REQUEST);
-        activeStates.add(En_CaseState.CUST_REQUEST);
-        activeStates.add(En_CaseState.CUST_PENDING);
-        activeStates.add(En_CaseState.TEST_CUST);
-
-        inactiveStates = new ArrayList<>(3);
-        inactiveStates.add(En_CaseState.DONE);
-        inactiveStates.add(En_CaseState.VERIFIED);
-        inactiveStates.add(En_CaseState.CANCELED);
-
-
-        states = Collections.unmodifiableList(states);
-        activeStates = Collections.unmodifiableList(activeStates);
-        inactiveStates = Collections.unmodifiableList(inactiveStates);
+    private static Set<CaseState> EnCaseStatesToCaseStateSet(Collection<En_CaseState> enCaseStates) {
+        return enCaseStates.stream().map(CaseState::new).collect(Collectors.toSet());
     }
 
-    public List<En_CaseState> getAllStates(){
-        return states;
+    @Inject
+    public void onInit() {
+        dashboardActiveStateIds = new ArrayList<>(10);
+        dashboardActiveStateIds.add((long)En_CaseState.CREATED.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.OPENED.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.ACTIVE.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.TEST_LOCAL.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.WORKAROUND.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.INFO_REQUEST.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.NX_REQUEST.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.CUST_REQUEST.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.CUST_PENDING.getId());
+        dashboardActiveStateIds.add((long)En_CaseState.TEST_CUST.getId());
+
+        dashboardNewIssueStatesIds = new ArrayList<>(3);
+        dashboardNewIssueStatesIds.add((long)En_CaseState.CREATED.getId());
+        dashboardNewIssueStatesIds.add((long)En_CaseState.OPENED.getId());
+        dashboardNewIssueStatesIds.add((long)En_CaseState.ACTIVE.getId());
+
+        List<En_CaseState> issueFilterWidgetActiveEnStates = new ArrayList<>(8);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.CREATED);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.OPENED);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.ACTIVE);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.TEST_LOCAL);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.WORKAROUND);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.INFO_REQUEST);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.NX_REQUEST);
+        issueFilterWidgetActiveEnStates.add(En_CaseState.CUST_REQUEST);
+
+        issueFilterWidgetActiveStates = EnCaseStatesToCaseStateSet(issueFilterWidgetActiveEnStates);
+
+        tableDefaultQueryStateIds = new ArrayList<>(3);
+        tableDefaultQueryStateIds.add((long)En_CaseState.CREATED.getId());
+        tableDefaultQueryStateIds.add((long)En_CaseState.OPENED.getId());
+        tableDefaultQueryStateIds.add((long)En_CaseState.ACTIVE.getId());
+
+        employeeRegistrationEnState  = new ArrayList<>(3);
+        employeeRegistrationEnState.add(En_CaseState.ACTIVE);
+        employeeRegistrationEnState.add(En_CaseState.CREATED);
+        employeeRegistrationEnState.add(En_CaseState.DONE);
+
     }
 
-    public List<En_CaseState> getActiveStates(){
-        return activeStates;
+    public List<Long> getDashboardActiveStateIds() {
+        return dashboardActiveStateIds;
     }
 
-    public List<En_CaseState> getInactiveStates(){
-        return inactiveStates;
+    public List<Long> getDashboardNewIssueStatesIds() {
+        return dashboardNewIssueStatesIds;
     }
 
-    private List<En_CaseState> states;
-    private List<En_CaseState> activeStates;
-    private List<En_CaseState> inactiveStates;
+    public Set<CaseState> getIssueFilterWidgetActiveStates() {
+        return issueFilterWidgetActiveStates;
+    }
 
+    public List<Long> getTableDefaultQueryStateIds() {
+        return tableDefaultQueryStateIds;
+    }
+
+    public List<En_CaseState> getEmployeeRegistrationEnState() {
+        return employeeRegistrationEnState;
+    }
+
+    private List<Long> dashboardActiveStateIds;
+    private List<Long> dashboardNewIssueStatesIds;
+    private Set<CaseState> issueFilterWidgetActiveStates;
+    private List<Long> tableDefaultQueryStateIds;
+    private List<En_CaseState> employeeRegistrationEnState;
 }

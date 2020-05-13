@@ -78,14 +78,17 @@ public class IssueFilterUtils {
         return states;
     }
 
-    public static List< CaseState > getStateList( Set< CaseState > stateSet ) {
+    public static List< Long > getStateIdList( Set< CaseState > stateSet ) {
 
         if ( stateSet == null || stateSet.isEmpty() ) {
             return null;
         }
-        List< CaseState > list = new ArrayList<>(  );
-        list.addAll( stateSet );
-        return list;
+
+        List< Long > stateIds = new ArrayList<>();
+        for ( CaseState caseState : stateSet ) {
+            stateIds.add( caseState.getId() );
+        }
+        return stateIds;
     }
 
     public static List< Long > getCompaniesIdList( Set< EntityOption > companySet ) {
@@ -212,6 +215,5 @@ public class IssueFilterUtils {
         }
 
         return null;
-
     }
 }

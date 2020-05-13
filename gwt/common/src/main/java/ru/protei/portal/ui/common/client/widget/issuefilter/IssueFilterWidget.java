@@ -12,28 +12,24 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
+import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.EnCaseStatesToCaseStateSet;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
@@ -82,7 +78,7 @@ public class IssueFilterWidget extends Composite {
 
         setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
-            issueFilterParamView.states().setValue(new HashSet<>(activeStates));
+            issueFilterParamView.states().setValue(issueStates.getIssueFilterWidgetActiveStates());
         }
     }
 
@@ -318,16 +314,13 @@ public class IssueFilterWidget extends Composite {
     PersonModel personModel;
     @Inject
     InitiatorModel initiatorModel;
+    @Inject
+    IssueStates issueStates;
 
     AbstractIssueFilterWidgetModel model;
 
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
-    private Set<CaseState> activeStates = EnCaseStatesToCaseStateSet(Arrays.asList(
-            En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE,
-            En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND, En_CaseState.INFO_REQUEST,
-            En_CaseState.NX_REQUEST, En_CaseState.CUST_REQUEST));
-
     private static IssueFilterWidget.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterWidget.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterWidget> {}
 }

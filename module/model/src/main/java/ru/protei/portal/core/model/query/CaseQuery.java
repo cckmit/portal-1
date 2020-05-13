@@ -213,15 +213,6 @@ public class CaseQuery extends BaseQuery {
 
     public void setStateIds(List<Long> stateIds) { this.stateIds = stateIds; }
 
-    @JsonIgnore
-    public void setStates(List<CaseState> states) {
-        List<Long> stateIds = null;
-        if (states != null && !states.isEmpty()){
-            stateIds = states.stream().map(CaseState::getId).collect(Collectors.toList());
-        }
-        this.setStateIds(stateIds);
-    }
-
     public List<Integer> getImportanceIds() { return importanceIds; }
 
     public void setImportanceIds(List<Integer> importanceIds) { this.importanceIds = importanceIds; }

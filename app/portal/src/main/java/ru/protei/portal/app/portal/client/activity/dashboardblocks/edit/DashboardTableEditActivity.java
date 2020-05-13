@@ -26,8 +26,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.EnCaseStatesToCaseState;
-
 public abstract class DashboardTableEditActivity implements Activity, AbstractDashboardTableEditActivity, AbstractDialogDetailsActivity {
 
     @PostConstruct
@@ -159,14 +157,14 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(EnCaseStatesToCaseState(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE)));
+        query.setStateIds(issueStates.getDashboardNewIssueStatesIds());
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
 
     private CaseQuery generateQueryActiveIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(EnCaseStatesToCaseState(issueStates.getActiveStates()));
+        query.setStateIds(issueStates.getDashboardActiveStateIds());
         List<Long> productIds = null;
         if (policyService.getProfile() != null) {
             productIds = new ArrayList<>();

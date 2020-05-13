@@ -297,7 +297,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
                 query.setImportanceIds(getImportancesIdList(importance.getValue()));
-                query.setStates(getStateList(state.getValue()));
+                query.setStateIds(getStateIdList(state.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setCaseTagsIds( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
                 query.setCreatorIds(toList(creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId()));
@@ -319,7 +319,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setCaseTagsIds( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
                 query.setImportanceIds(getImportancesIdList(importance.getValue()));
-                query.setStates(getStateList(state.getValue()));
+                query.setStateIds(getStateIdList(state.getValue()));
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 break;
         }

@@ -1,16 +1,11 @@
 package ru.protei.portal.core.model.util;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class CaseStateWorkflowUtil {
 
@@ -43,13 +38,5 @@ public class CaseStateWorkflowUtil {
         }
 
         return En_CaseStateWorkflow.NO_WORKFLOW;
-    }
-
-    public static List<CaseState> EnCaseStatesToCaseState(Collection<En_CaseState> enCaseStates) {
-        return enCaseStates.stream().map(CaseState::new).collect(Collectors.toList());
-    }
-
-    public static Set<CaseState> EnCaseStatesToCaseStateSet(Collection<En_CaseState> enCaseStates) {
-        return enCaseStates.stream().map(en_caseState -> new CaseState((long)en_caseState.getId())).collect(Collectors.toSet());
     }
 }
