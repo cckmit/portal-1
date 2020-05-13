@@ -17,6 +17,8 @@ public interface YoutrackService {
 
     Result<String> createIssue( String projectName, String summary, String description);
 
+    Result<String> createFireWorkerIssue(String summary, String description);
+
     Result<String> createCompany(String companyName);
 
     Result<String> updateCompanyName(String companyId, String companyName);

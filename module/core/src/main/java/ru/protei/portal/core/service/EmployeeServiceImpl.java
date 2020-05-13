@@ -285,7 +285,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
-            createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
+            createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
@@ -356,10 +356,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             userLoginDAO.removeByPersonId(personFromDb.getId());
         }
 
+        if (YOUTRACK_INTEGRATION_ENABLED) {
+            createFireEmployeeYoutrackIssue(personFromDb);
+        }
+
         return ok(result);
     }
 
-    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+    private void createChangeLastNameYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }
@@ -376,6 +380,17 @@ public class EmployeeServiceImpl implements EmployeeService {
                 "Необходимо изменение учетной записи, почты.";
 
         youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
+    }
+
+    private void createFireEmployeeYoutrackIssue(Person person) {
+
+        String employeeFullName = person.getLastName() + " " + person.getFirstName() + " " + (person.getSecondName() != null ? person.getSecondName() : "");
+
+        String summary = "Увольнение сотрудника " + employeeFullName;
+
+        String description = "Карточка сотрудника: " + "[" + employeeFullName + "](" + PORTAL_URL + "#employee_preview:id=" + person.getId() + ")";
+
+        youtrackService.createFireWorkerIssue(summary, description );
     }
 
     private boolean removeWorkerEntry(Long personId){
