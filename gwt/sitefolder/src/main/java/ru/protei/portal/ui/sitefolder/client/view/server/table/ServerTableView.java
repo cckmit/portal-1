@@ -142,6 +142,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private ClickColumn<Server> nameColumn = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("server-name");
             columnHeader.setInnerText(lang.siteFolderName());
         }
         @Override
@@ -153,7 +154,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private ClickColumn<Server> ip = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.addClassName("column-hidable");
+            columnHeader.addClassName("server-ip column-hidable");
             columnHeader.setInnerText(lang.siteFolderIP());
         }
         @Override
@@ -166,7 +167,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private ClickColumn<Server> accessParams = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.addClassName("column-hidable");
+            columnHeader.addClassName("server-access-params column-hidable");
             columnHeader.setInnerText(lang.serverAccessParamsColumn());
         }
         @Override
@@ -178,6 +179,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private ClickColumn<Server> platformColumn = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("server-platform");
             columnHeader.setInnerText(lang.siteFolderPlatform());
         }
 
@@ -189,6 +191,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private ClickColumn<Server> appsColumn = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("server-apps");
             columnHeader.setInnerText(lang.siteFolderApps());
         }
 

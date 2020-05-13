@@ -3915,6 +3915,110 @@ table {
 }
 
 .site-folder .table {
+  tbody {
+    tr {
+      td {
+        height: 40px;
+      }
+    }
+  }
+
+  .platform-name {
+    width: 65%;
+  }
+
+  .platform-manager {
+    width: 15%;
+  }
+
+  .platform-server {
+    width: 10%;
+  }
+
+  .edit {
+    width: 5%;
+  }
+
+  .remove {
+    width: 5%;
+  }
+
+  word-break: break-word;
+}
+
+.server .table {
+  tbody {
+    tr {
+      td {
+        height: 40px;
+      }
+    }
+  }
+
+  .server-name {
+    width: 12%;
+  }
+
+  .server-platform {
+    width: 24%;
+  }
+
+  .server-ip {
+    width: 14%;
+  }
+
+  .server-apps {
+    width: 15%;
+  }
+
+  .server-access-params {
+    width: 20%;
+  }
+
+  .copy {
+    width: 5%;
+  }
+
+  .edit {
+    width: 5%;
+  }
+
+  .remove {
+    width: 5%;
+  }
+
+  word-break: break-word;
+}
+
+.application .table {
+  tbody {
+    tr {
+      td {
+        height: 40px;
+      }
+    }
+  }
+
+  .application-name {
+    width: 30%;
+  }
+
+  .application-server {
+    width: 30%;
+  }
+
+  .application-paths {
+    width: 30%;
+  }
+
+  .edit {
+    width: 5%;
+  }
+
+  .remove {
+    width: 5%;
+  }
+
   word-break: break-word;
 }
 
