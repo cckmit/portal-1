@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -57,7 +58,7 @@ public abstract class ProjectTableActivity
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( ProjectEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -247,7 +248,7 @@ public abstract class ProjectTableActivity
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Show());
+                    fireEvent(new ProjectEvents.Show(false));
                 })
         );
     }
