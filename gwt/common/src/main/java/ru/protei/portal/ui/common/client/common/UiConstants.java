@@ -30,6 +30,8 @@ public class UiConstants {
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
         String CONTRACT = "fa fa-file-signature";
+        String IP_RESERVATION = "fa fa-sitemap";
+        String ROOM_RESERVATION = "fas fa-calendar-day";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
@@ -68,6 +70,11 @@ public class UiConstants {
         String CONTRACT = "contract";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
         String TOP_BRASS = "top_brass";
+        String EMPLOYEE_CREATE = "employee_create";
+        String SUBNET = "subnet";
+        String SUBNET_CREATE = "subnet_create";
+        String RESERVED_IP = "reserved_ip";
+        String RESERVED_IP_CREATE = "reserved_ip_create";
         String ABSENCE = "absence";
     }
 

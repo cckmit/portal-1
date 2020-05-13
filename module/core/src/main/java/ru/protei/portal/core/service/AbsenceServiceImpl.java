@@ -11,6 +11,7 @@ import java.util.Date;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class AbsenceServiceImpl implements AbsenceService {
 
@@ -35,8 +36,9 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (checkExists(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId()))
+        if (checkExists(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
             return error(En_ResultStatus.ALREADY_EXIST);
+        }
 
         absence.setCreated(new Date());
         absence.setCreatorId(token.getPersonId());
@@ -56,8 +58,9 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (checkExists(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId()))
+        if (checkExists(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
             return error(En_ResultStatus.ALREADY_EXIST);
+        }
 
         if (!personAbsenceDAO.merge(absence))
             return error(En_ResultStatus.NOT_UPDATED);
@@ -70,6 +73,10 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     private boolean checkExists(Long employeeId, Date dateFrom, Date dateTill, Long excludeId) {
-        return true;
+        return stream(personAbsenceDAO.listByEmployeeAndDateBounds(
+                employeeId,
+                dateFrom,
+                dateTill
+        )).anyMatch(r -> excludeId != r.getId());
     }
 }

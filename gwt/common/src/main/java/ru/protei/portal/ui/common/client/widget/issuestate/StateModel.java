@@ -108,18 +108,22 @@ public abstract class StateModel implements Activity {
     private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseStatesList.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList());
+            if (currentCaseState != null && currentCaseState.isTerminalState()) {
+                return Collections.singletonList(currentCaseState);
+            } else {
+                return caseStatesList.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect(Collectors.toList());
+            }
         }
-
-        Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
-                .filter(csw -> csw.isMatched(workflow))
-                .findFirst();
 
         Set<CaseState> nextCaseStates = new HashSet<>();
         Optional<CaseState> currentState = caseStatesList.stream().filter(state -> En_CaseState.getById(state.getId()) == currentCaseState).findFirst();
         if (currentState.isPresent()) {
             nextCaseStates.add(currentState.get());
         }
+
+        Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
+                .filter(csw -> csw.isMatched(workflow))
+                .findFirst();
 
         if (caseStateWorkflow.isPresent()) {
             for (CaseStateWorkflowLink caseStateWorkflowLink : caseStateWorkflow.get().getCaseStateWorkflowLinks()) {
@@ -128,14 +132,13 @@ public abstract class StateModel implements Activity {
                 }
 
                 Optional<CaseState> caseState = caseStatesList.stream().filter(state -> En_CaseState.getById(state.getId()) == caseStateWorkflowLink.getCaseStateTo()).findFirst();
-
                 if (caseState.isPresent()) {
                     nextCaseStates.add(caseState.get());
                 }
             }
         }
 
-        return nextCaseStates.stream().sorted(Comparator.comparingInt(CaseState::getViewOrder)).map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList());
+        return nextCaseStates.stream().sorted(Comparator.comparingInt(CaseState::getViewOrder)).map(caseState -> En_CaseState.getById(caseState.getId())).collect(Collectors.toList());
     }
 
     @Inject

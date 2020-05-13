@@ -25,6 +25,8 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPosition( String value );
 
+    void setCompany( String value );
+
     void setIP( String value );
 
     void setFireDate (String value );

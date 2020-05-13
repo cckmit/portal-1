@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -134,6 +135,15 @@ public class CaseObject extends AuditableObject {
 
     @JdbcColumn(name = "technical_support_validity")
     private Date technicalSupportValidity;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
+            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
+    }, mappedColumn = "name")
+    private String regionName;
+
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
 
     // not db column
     private List<EntityOption> contracts;
@@ -427,7 +437,6 @@ public class CaseObject extends AuditableObject {
         this.members = members;
     }
 
-
     public String getExtAppType() {
         return extAppType;
     }
@@ -444,8 +453,7 @@ public class CaseObject extends AuditableObject {
         this.stateId = state.getId();
     }
 
-
-    public En_ImportanceLevel importanceLevel () {
+    public En_ImportanceLevel getImportanceLevel() {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
@@ -550,19 +558,28 @@ public class CaseObject extends AuditableObject {
         this.technicalSupportValidity = technicalSupportValidity;
     }
 
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
     @Override
     public String toString() {
         return "CaseObject{" +
                 "id=" + id +
                 ", type=" + type +
                 ", caseNumber=" + caseNumber +
+                ", impLevel=" + impLevel +
                 ", created=" + created +
                 ", modified=" + modified +
                 ", name='" + name + '\'' +
                 ", extId='" + extId + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
-                ", impLevel=" + impLevel +
+
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
                 ", creatorIp='" + creatorIp + '\'' +
@@ -592,6 +609,8 @@ public class CaseObject extends AuditableObject {
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
                 ", technicalSupportValidity=" + technicalSupportValidity +
+                ", regionName='" + regionName + '\'' +
+                ", pauseDate=" + pauseDate +
                 ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +

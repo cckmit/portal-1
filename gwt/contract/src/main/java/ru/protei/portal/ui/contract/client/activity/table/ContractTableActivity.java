@@ -10,9 +10,11 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -29,9 +31,9 @@ import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilte
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getCompaniesIdList;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getManagersIdList;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
         AbstractContractFilterActivity, AbstractPagerActivity, Activity {
@@ -186,6 +188,29 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
             event.clearScroll = false;
             this.scrollTop = null;
         }
+    }
+
+    public static List< Long > getCompaniesIdList( Set<EntityOption> companySet ) {
+
+        if ( companySet == null || companySet.isEmpty() ) {
+            return null;
+        }
+        return companySet
+                .stream()
+                .map( EntityOption::getId )
+                .collect( Collectors.toList() );
+    }
+
+    public static List< Long > getManagersIdList( Set<PersonShortView> personSet ) {
+
+        if ( personSet == null || personSet.isEmpty() ) {
+            return null;
+        }
+
+        return personSet
+                .stream()
+                .map( PersonShortView::getId )
+                .collect( Collectors.toList() );
     }
 
     @Inject

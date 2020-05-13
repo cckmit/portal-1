@@ -210,12 +210,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.childCompanies = childCompanies;
     }
 
-    public Boolean getHideden() {
+    public Boolean getHidden() {
         return isHidden;
     }
 
-    public void setHideden(Boolean hideden) {
-        isHidden = hideden;
+    public void setHidden(Boolean hidden) {
+        isHidden = hidden;
     }
 
     public boolean isArchived() {

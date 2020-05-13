@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.dto.Project;
@@ -9,6 +10,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.Map;
@@ -29,9 +31,9 @@ public interface RegionController extends RemoteService {
 
     Project getProject(Long id) throws RequestFailedException;
 
-    Project saveProject(Project project) throws RequestFailedException;
+    UiResult<Project> saveProject(Project project) throws RequestFailedException;
 
-    List<Project> getProjectList(ProjectQuery query) throws RequestFailedException;
+    SearchResult<Project> getProjects(ProjectQuery query) throws RequestFailedException;
 
     List<EntityOption> getProjectOptionList(ProjectQuery query) throws RequestFailedException;
 

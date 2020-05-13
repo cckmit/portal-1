@@ -50,6 +50,11 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
              * сообщения удаленной стороне
              **/
 
+            if (commonService.getExternalAppId(caseId).isError()) {
+                logger.debug("case {} has no ext-app-id", caseId);
+                return;
+            }
+
             commonService.getExternalCaseAppData(caseId)
                     .flatMap(this::findEndpointAndIssueId)
                     .flatMap(endpointAndIssueId -> proceedUpdate(endpointAndIssueId.IssueId, event, endpointAndIssueId.endpoint))
@@ -132,7 +137,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             final long statusMapId = endpoint.getStatusMapId();
             logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
             RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId).getData();
-            if (redmineStatusMapEntry != null && event.getLastCaseMeta().getState() != En_CaseState.VERIFIED) {
+            if (redmineStatusMapEntry != null) {
                 logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
                 issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
             } else {

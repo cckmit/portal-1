@@ -5,7 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -32,6 +36,13 @@ public class EmployeeControllerImpl implements EmployeeController {
         log.info("getEmployees(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
+    }
+
+    @Override
+    public SearchResult<EmployeeShortView> getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query) throws RequestFailedException {
+        log.info("getEmployeesWithChangedHiddenCompanyNames(): query={}", query);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.employeeListWithChangedHiddenCompanyNames(token, query));
     }
 
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
@@ -61,6 +72,121 @@ public class EmployeeControllerImpl implements EmployeeController {
         log.info("getDepartmentHead(): departmentId={}", departmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getDepartmentHead(token, departmentId));
+    }
+
+    @Override
+    public EmployeeShortView getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
+        log.info("getEmployeeShortViewWithChangedHiddenCompanyNames(): employeeId={}", employeeId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeWithChangedHiddenCompanyNames(token, employeeId));
+    }
+
+
+    @Override
+    public Person createEmployeePerson(Person person) throws RequestFailedException {
+
+        if (person == null) {
+            log.warn("createEmployeePerson(): null person in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        log.info("createEmployeePerson(): create person, id: {} ", HelperFunc.nvl(person.getId(), "new"));
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Person> response = employeeService.createEmployeePerson( token, person );
+
+        log.info("createEmployeePerson(): create person, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            log.info("createEmployeePerson(): create person, applied id: {}", response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Boolean updateEmployeePerson(Person person, boolean needToChangeAccount) throws RequestFailedException {
+
+        if (person == null || person.getId() == null) {
+            log.warn("updateEmployeePerson(): null person or null id in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        log.info("updateEmployeePerson(): update person, id: {} ", HelperFunc.nvl(person.getId()));
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.updateEmployeePerson( token, person, needToChangeAccount );
+
+        log.info("updateEmployeePerson(): update person, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public WorkerEntry createEmployeeWorker(WorkerEntry worker) throws RequestFailedException {
+
+        if (worker == null) {
+            log.warn("createEmployeeWorker(): null worker in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        log.info("createEmployeeWorker(): create worker, id: {} ", HelperFunc.nvl(worker.getId(), "new"));
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<WorkerEntry> response = employeeService.createEmployeeWorker( token, worker );
+
+        log.info("createEmployeeWorker(): create worker, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            log.info("createEmployeeWorker(): create worker, applied id: {}", response.getData().getId());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Boolean updateEmployeeWorker(WorkerEntry worker) throws RequestFailedException {
+
+        if (worker == null || worker.getId() == null) {
+            log.warn("updateEmployeeWorker(): null worker or null worker id in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        log.info("updateEmployeeWorker(): update worker, id: {} ", HelperFunc.nvl(worker.getId()));
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.updateEmployeeWorker( token, worker );
+
+        log.info("updateEmployeeWorker(): update worker, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public boolean fireEmployee(Person person) throws RequestFailedException {
+        log.info("fire employee, id: {}", person.getId());
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.fireEmployee(token, person);
+
+        log.info("fire employee, id: {} -> {} ", person.getId(), response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
+
+        return response.isOk() ? response.getData() : false;
     }
 
     @Autowired

@@ -19,8 +19,8 @@ import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
-import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
@@ -78,11 +78,18 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         fireEvent(new EmployeeEvents.Show());
     }
 
+    @Override
+    public void onEditClicked() {
+        fireEvent(new EmployeeEvents.Edit(employeeId));
+    }
+
     private void fillView(Long employeeId) {
-        employeeService.getEmployee(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee) {
+
+        view.editIconVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT));
 
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
@@ -144,6 +151,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         itemView.setPosition(workerEntry.getPositionName());
+        itemView.setCompany(workerEntry.getCompanyName());
 
         return itemView;
     }

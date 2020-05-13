@@ -63,12 +63,12 @@ public class PersonControllerImpl implements PersonController {
     }
 
     @Override
-    public Person getPerson(Long id) throws RequestFailedException {
+    public PersonShortView getPersonShortView(Long id) throws RequestFailedException {
         log.info("getPersonShortView: id={}", id);
 
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Person> result = personService.getPerson(authToken, id);
+        Result<PersonShortView> result = personService.getPersonShortView(authToken, id);
 
         log.info("result status: {}, data: {}", result.getStatus(), result.getData());
 

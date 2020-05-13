@@ -5,4 +5,6 @@ public interface AbstractDocumentPreviewActivity {
     void onBackClicked();
 
     void onUploadDocFileClicked();
+
+    void onFullScreenClicked();
 }

@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.issueassignment.client.view.desk.rowissue.issue;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -112,6 +112,11 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
         this.modified.setInnerHTML(modified);
     }
 
+    @Override
+    public HasWidgets getTagsContainer() {
+        return tagsContainer;
+    }
+
     @UiHandler("openButton")
     public void openButtonClick(ClickEvent event) {
         if (handler != null) {
@@ -164,6 +169,8 @@ public class DeskIssueView extends Composite implements AbstractDeskIssueView {
     SpanElement created;
     @UiField
     SpanElement modified;
+    @UiField
+    HTMLPanel tagsContainer;
 
     private List<String> actions = new ArrayList<>();
     private StringSelectPopup popup = new StringSelectPopup();

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -10,7 +11,7 @@ import java.util.Date;
  * Created by michael on 05.07.16.
  */
 @JdbcEntity(table = "person_absence")
-public class PersonAbsence implements Serializable {
+public class PersonAbsence extends AuditableObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -24,7 +25,7 @@ public class PersonAbsence implements Serializable {
     @JdbcColumn(name = "person_id")
     private Long personId;
 
-    @JdbcJoinedObject(localColumn="person_id")
+    @JdbcJoinedObject(localColumn="person_id", remoteColumn = "id")
     private Person person;
 
     @JdbcColumn(name = "reason_id")
@@ -115,5 +116,10 @@ public class PersonAbsence implements Serializable {
 
     public void setUserComment(String userComment) {
         this.userComment = userComment;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 }

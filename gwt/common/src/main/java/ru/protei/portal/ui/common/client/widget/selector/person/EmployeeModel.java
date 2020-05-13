@@ -76,12 +76,12 @@ public abstract class EmployeeModel implements Activity,
         };
     }
 
-    private void requestCurrentPerson( Long myId ) {
+    private void requestCurrentPerson(Long myId) {
         if(currentPerson!=null && Objects.equals(currentPerson.getId(), myId)){
             return;
         }
         currentPerson = null;
-        personService.getPerson(myId, new FluentCallback<Person>().withSuccess( r->currentPerson=r.toFullNameShortView() ) );
+        personService.getPersonShortView(myId, new FluentCallback<PersonShortView>().withSuccess(r->currentPerson=r));
     }
 
     private List<PersonShortView> transliteration(List<PersonShortView> options) {

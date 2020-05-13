@@ -185,6 +185,7 @@ public class Project extends AuditableObject {
 
     public void setCreator(Person creator) {
         this.creator = creator;
+        this.creatorId = creator == null ? null : creator.getId();
     }
 
     public List<PersonProjectMemberView> getTeam() {
@@ -291,69 +292,70 @@ public class Project extends AuditableObject {
         this.projectSlas = projectSlas;
     }
 
-    public static Project fromCaseObject(CaseObject project ) {
-        if (project == null)
+    public static Project fromCaseObject(CaseObject caseObject) {
+        if (caseObject == null) {
             return null;
+        }
 
-        Project projectInfo = new Project();
-        projectInfo.setId( project.getId() );
-        projectInfo.setName( project.getName() );
-        projectInfo.setCreator(project.getCreator());
-        projectInfo.setDescription(project.getInfo());
-        projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
-        projectInfo.setDeleted(project.isDeleted());
-        if ( project.getProduct() != null ) {
-            projectInfo.setProductDirection( new EntityOption(
-                project.getProduct().getName(), project.getProduct().getId()
+        Project project = new Project();
+        project.setId( caseObject.getId() );
+        project.setName( caseObject.getName() );
+        project.setCreator(caseObject.getCreator());
+        project.setDescription(caseObject.getInfo());
+        project.setState( En_RegionState.forId( caseObject.getStateId() ) );
+        project.setDeleted(caseObject.isDeleted());
+        if ( caseObject.getProduct() != null ) {
+            project.setProductDirection( new EntityOption(
+                caseObject.getProduct().getName(), caseObject.getProduct().getId()
             ) );
         }
 
-        projectInfo.setCustomerType(En_CustomerType.find(project.getLocal()));
-        projectInfo.setCustomer(project.getInitiatorCompany());
+        project.setCustomerType(En_CustomerType.find(caseObject.getLocal()));
+        project.setCustomer(caseObject.getInitiatorCompany());
 
-        projectInfo.setTeam(new ArrayList<>());
-        if (project.getMembers() != null) {
+        project.setTeam(new ArrayList<>());
+        if (caseObject.getMembers() != null) {
             List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
-            project.getMembers().stream()
+            caseObject.getMembers().stream()
                     .filter(member -> projectRoles.contains(member.getRole()))
-                    .map(member -> PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()))
-                    .forEach(projectInfo::addTeamMember);
+                    .map(member -> PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()))
+                    .forEach(project::addTeamMember);
         }
 
-        projectInfo.setCreated( project.getCreated() );
+        project.setCreated( caseObject.getCreated() );
 
-        List<CaseLocation> locations = project.getLocations();
+        List<CaseLocation> locations = caseObject.getLocations();
         if ( locations != null && !locations.isEmpty() ) {
-            projectInfo.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
+            project.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
         }
 
-        if (project.getProducts() != null) {
-            projectInfo.setProducts( project.getProducts().stream()
+        if (caseObject.getProducts() != null) {
+            project.setProducts( caseObject.getProducts().stream()
                                         .map(ProductShortView::fromProduct)
                                         .collect(Collectors.toSet()) );
         }
 
-        projectInfo.setContracts(project.getContracts());
+        project.setContracts(caseObject.getContracts());
 
-        if (project.getManager() != null) {
-            projectInfo.setManager(new EntityOption(project.getManager().getDisplayShortName(), project.getManagerId()));
+        if (caseObject.getManager() != null) {
+            project.setManager(new EntityOption(caseObject.getManager().getDisplayShortName(), caseObject.getManagerId()));
         }
 
-        if (project.getInitiatorCompany() != null) {
-            projectInfo.setContragent(new EntityOption(project.getInitiatorCompany().getCname(), project.getInitiatorCompanyId()));
+        if (caseObject.getInitiatorCompany() != null) {
+            project.setContragent(new EntityOption(caseObject.getInitiatorCompany().getCname(), caseObject.getInitiatorCompanyId()));
         }
 
-        if (project.getPlatformId() != null){
-            projectInfo.setPlatformId(project.getPlatformId());
-            projectInfo.setPlatformName(project.getPlatformName());
+        if (caseObject.getPlatformId() != null){
+            project.setPlatformId(caseObject.getPlatformId());
+            project.setPlatformName(caseObject.getPlatformName());
 
         }
 
-        projectInfo.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
+        project.setTechnicalSupportValidity(caseObject.getTechnicalSupportValidity());
 
-        projectInfo.setProjectSlas(project.getProjectSlas());
+        project.setProjectSlas(caseObject.getProjectSlas());
 
-        return projectInfo;
+        return project;
     }
 
     @Override

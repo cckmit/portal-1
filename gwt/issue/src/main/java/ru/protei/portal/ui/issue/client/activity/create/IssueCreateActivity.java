@@ -10,19 +10,21 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -35,8 +37,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
-import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.addImageInMessage;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -110,14 +113,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Event
     public void onAddLink(CaseLinkEvents.Added event) {
-        if (lang.issues().equals(event.pageId)) {
+        if (ISSUE_CASE_TYPE.equals(event.caseType)) {
             createRequest.addLink(event.caseLink);
         }
     }
 
     @Event
     public void onRemoveLink(CaseLinkEvents.Removed event) {
-        if (lang.issues().equals(event.pageId)) {
+        if (ISSUE_CASE_TYPE.equals(event.caseType)) {
             createRequest.getLinks().remove(event.caseLink);
         }
     }
@@ -135,24 +138,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         lockSave();
-        issueService.createIssue(createRequest, new FluentCallback<Long>()
-                .withError(throwable -> {
+        issueService.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
+                .withError(throwable -> unlockSave())
+                .withSuccess(createIssueResult -> {
                     unlockSave();
-                    if (throwable instanceof RequestFailedException){
-                        En_ResultStatus resultStatus = ((RequestFailedException)throwable).status;
-                        if (En_ResultStatus.SOME_LINKS_NOT_ADDED.equals(resultStatus)){
-                            fireEvent(new IssueEvents.Show(true));
-                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        }
-                        defaultErrorHandler.accept(throwable);
+                    if (SOME_LINKS_NOT_SAVED.equals(createIssueResult.getMessage())) {
+                        fireEvent(new NotifyEvents.Show(lang.caseLinkSomeNotAdded(), NotifyEvents.NotifyType.INFO));
                     }
-                    else {
-                        fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-                    }
-
-                })
-                .withSuccess(caseId -> {
-                    unlockSave();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.Show(true));
                 })
@@ -166,12 +158,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onAddTagClicked(IsWidget target) {
-        fireEvent(new CaseTagEvents.ShowTagSelector(target));
+        boolean isCanEditTags = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
+        fireEvent(new CaseTagEvents.ShowSelector(target.asWidget(), ISSUE_CASE_TYPE, isCanEditTags, tagListActivity));
     }
 
     @Override
     public void onAddLinkClicked(IsWidget target) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, lang.issues()));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(target, ISSUE_CASE_TYPE));
     }
 
     @Override
@@ -206,7 +199,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         initiatorSelectorAllowAddNew(companyOption.getId());
 
-        issueMetaView.platform().setValue(null);
+        fillPlatformValue(companyOption.getId());
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         companyService.getCompanyWithParentCompanySubscriptions(
@@ -237,11 +230,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             Person initiator = Person.fromPersonFullNameShortView(new PersonShortView(transliteration(profile.getFullName()), profile.getId(), profile.isFired()));
             issueMetaView.setInitiator(initiator);
         }
-
-        requestSla(
-                issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
-        );
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
@@ -276,9 +264,42 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()));
     }
 
+    @Override
+    public void onPauseDateChanged() {
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime()));
+    }
+
+    @Override
+    public void onStateChange() {
+        issueMetaView.pauseDate().setValue(null);
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
+
+        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
+        issueMetaView.setPauseDateValid(stateValid);
+    }
+
+    private void fillPlatformValue(Long companyId){
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+
+        siteFolderController.getPlatformsOptionList(query, new FluentCallback<List<PlatformOption>>()
+                .withError(throwable -> {
+                    issueMetaView.platform().setValue(null);
+                    onPlatformChanged();
+                })
+                .withSuccess( result -> {
+                    if(result != null && result.size() == 1){
+                        issueMetaView.platform().setValue(result.get(0));
+                    } else {
+                        issueMetaView.platform().setValue(null);
+                    }
+                    onPlatformChanged();
+                } ));
+    }
+
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.description().setValue(
-                addImageInMessage(view.description().getValue(), strPosition, attach));
+                addImageInMessage(En_TextMarkup.MARKDOWN, view.description().getValue(), strPosition, attach));
     }
 
     private void fillView() {
@@ -298,8 +319,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withPageId(lang.issues())
                 .withCaseType(En_CaseType.CRM_SUPPORT));
 
-        fireEvent( new CaseTagEvents.Show( view.getTagsContainer(), En_CaseType.CRM_SUPPORT,
-                policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT )));
+        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), (Long) null, false, a -> tagListActivity = a));
 
         view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         unlockSave();
@@ -324,6 +344,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue( caseObjectMeta.getState() );
+        issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
@@ -331,11 +354,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setProduct(caseObjectMeta.getProduct());
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
 
-        issueMetaView.slaContainerVisibility().setVisible(true);
+        issueMetaView.slaContainerVisibility().setVisible(isSystemScope());
         requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
     }
 
     private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
+        if (!isSystemScope()) {
+            return;
+        }
+
         if (platformId == null) {
             slaList = DefaultSlaValues.getList();
             issueMetaView.setValuesContainerWarning(true);
@@ -400,6 +427,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         caseObject.setPrivateCase(view.isPrivate().getValue());
         caseObject.setStateId(issueMetaView.state().getValue().getId());
         caseObject.setImpLevel(issueMetaView.importance().getValue().getId());
+        caseObject.setPauseDate(issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
 
         caseObject.setInitiatorCompany(issueMetaView.getCompany());
         caseObject.setInitiator(issueMetaView.getInitiator());
@@ -456,10 +484,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
+        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
+            fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         boolean isFieldsValid = view.nameValidator().isValid() &&
                 issueMetaView.stateValidator().isValid() &&
-                        issueMetaView.importanceValidator().isValid() &&
-                        issueMetaView.companyValidator().isValid();
+                issueMetaView.importanceValidator().isValid() &&
+                issueMetaView.companyValidator().isValid();
 
         if (!isFieldsValid) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
@@ -523,6 +556,22 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_CREATE_PREVIEW_DISPLAYED + "_" + key, "false" ) );
     }
 
+    private boolean isSystemScope() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE);
+    }
+
+    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
+        if (!En_CaseState.PAUSED.equals(currentState)) {
+            return true;
+        }
+
+        if (pauseDate != null && pauseDate > System.currentTimeMillis()) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -550,7 +599,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Inject
     IssueControllerAsync issueService;
     @Inject
-    DefaultErrorHandler defaultErrorHandler;
+    SiteFolderControllerAsync siteFolderController;
 
     private boolean saving;
     private AppEvents.InitDetails init;
@@ -558,4 +607,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
     private List<ProjectSla> slaList = new ArrayList<>();
+    private AbstractCaseTagListActivity tagListActivity;
+    private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 }

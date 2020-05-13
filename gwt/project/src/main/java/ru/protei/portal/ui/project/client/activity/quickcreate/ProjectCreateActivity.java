@@ -4,10 +4,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
-
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
@@ -54,12 +54,12 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         }
 
         fillProject();
-        regionService.saveProject(project, new FluentCallback<Project>()
+        regionService.saveProject(project, new FluentCallback<UiResult<Project>>()
                 .withErrorMessage(lang.errNotSaved())
                 .withSuccess(project -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Set(new EntityOption(project.getName(), project.getId())));
+                    fireEvent(new ProjectEvents.Set(new EntityOption(project.getData().getName(), project.getData().getId())));
                     initialView(new Project());
                 }));
     }

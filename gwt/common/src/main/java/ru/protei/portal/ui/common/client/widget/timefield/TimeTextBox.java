@@ -61,5 +61,9 @@ public class TimeTextBox extends ValidableTextBox implements HasTime, KeyUpHandl
         return addHandler(handler, AddEvent.getType());
     }
 
-    WorkTimeFormatter workTimeFormatter;
+    public void setFullDayTime(boolean isFullDayTime) {
+        workTimeFormatter.setFullDayTime(isFullDayTime);
+    }
+
+    private WorkTimeFormatter workTimeFormatter;
 }

@@ -51,6 +51,11 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     }
 
     @Override
+    public void setCompany( String position ) {
+        this.company.setInnerText( position );
+    }
+
+    @Override
     public void setDepartmentHead(String departmentHead, String link) {
         this.departmentHead.setHref(link);
         this.departmentHead.setInnerText(departmentHead);
@@ -64,6 +69,9 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
 
     @UiField
     SpanElement position;
+
+    @UiField
+    SpanElement company;
 
     @UiField
     AnchorElement departmentHead;

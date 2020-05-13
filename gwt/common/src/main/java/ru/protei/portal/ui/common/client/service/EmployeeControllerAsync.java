@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -34,4 +36,18 @@ public interface EmployeeControllerAsync {
      * @return сокращенное представление руководителя
      */
     void getDepartmentHead(Long departmentId, AsyncCallback<PersonShortView> async);
+
+    void createEmployeePerson(Person person, AsyncCallback<Person> async);
+
+    void createEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<WorkerEntry> async);
+
+    void updateEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<Boolean> async);
+
+    void getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId, AsyncCallback<EmployeeShortView> async);
+
+    void getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query, AsyncCallback<SearchResult<EmployeeShortView>> async);
+
+    void fireEmployee(Person person, AsyncCallback<Boolean> async);
+
+    void updateEmployeePerson(Person person, boolean needToChangeAccount, AsyncCallback<Boolean> async);
 }

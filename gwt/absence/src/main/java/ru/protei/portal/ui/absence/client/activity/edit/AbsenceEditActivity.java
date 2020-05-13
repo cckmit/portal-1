@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.absence.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -44,8 +45,9 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
 
         if (event.id == null) {
             showForm(new PersonAbsence());
+        } else {
+            loadAbsence(event.id, this::showForm);
         }
-        loadAbsence(event.id, this::showForm);
     }
 
     @Override
@@ -73,7 +75,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
     }
 
     private boolean hasAccessEdit() {
-        return !isNew() && (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW) || policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT));
+        return !isNew() && policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW) || policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT);
     }
 
     private void hideForm() {
@@ -102,7 +104,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
 
         boolean isAllowedCreate = hasAccessCreate();
         boolean isAllowedModify = isAllowedCreate || hasAccess(En_Privilege.ABSENCE_EDIT);
-        boolean isAllowedRemove = hasAccess(En_Privilege.ABSENCE_REMOVE);
+        boolean isAllowedRemove = !isNew() && hasAccess(En_Privilege.ABSENCE_REMOVE);
 
         PersonShortView currentPerson = new PersonShortView(policyService.getProfile().getFullName(), policyService.getProfile().getId());
         view.employee().setValue(absence.getPerson() == null ? currentPerson : absence.getPerson().toFullNameShortView());
@@ -177,7 +179,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
                 .withSuccess(result -> {
                     enableButtons(true);
                     onCancelClicked();
-                    fireEvent(new NotifyEvents.Show(lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(isNew() ? lang.absenceCreated() : lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
                 }));
     }
 
@@ -187,7 +189,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
     }
 
     private boolean isNew() {
-        return absence.getId() == null;
+        return absence == null || absence.getId() == null;
     }
 
     @Inject

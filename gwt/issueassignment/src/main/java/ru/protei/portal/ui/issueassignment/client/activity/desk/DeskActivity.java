@@ -11,13 +11,17 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.UserCaseAssignment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -39,6 +43,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
@@ -84,6 +91,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private void hideView() {
         view.tableViewVisibility().setVisible(false);
+        view.notificationVisibility().setVisible(false);
     }
 
     private void hideLoader() {
@@ -125,6 +133,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                     hideLoader();
                     hideError();
                     showDesk(userCaseAssignmentTable);
+                    showNotification(userCaseAssignmentTable);
                     fireEvent(new IssueAssignmentEvents.DeskPeopleChanged(new ArrayList<>(people)));
                 });
     }
@@ -181,15 +190,26 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
     }
 
+    private void showNotification(UserCaseAssignmentTable userCaseAssignmentTable) {
+        long limit = userCaseAssignmentTable.getCaseShortViewsLimit();
+        boolean isOverflow = userCaseAssignmentTable.isCaseShortViewsLimitOverflow();
+        if (isOverflow) {
+            view.notificationText().setValue(lang.issueAssignmentDeskOverflow(limit));
+            view.notificationVisibility().setVisible(true);
+        } else {
+            view.notificationVisibility().setVisible(false);
+        }
+    }
+
     private void showDesk(UserCaseAssignmentTable userCaseAssignmentTable) {
         List<UserCaseAssignment> assignments = CollectionUtils.emptyIfNull(userCaseAssignmentTable.getUserCaseAssignments());
         List<UserCaseAssignment> columns = assignments.stream()
                 .filter(c -> c.getTableEntity() == En_TableEntity.COLUMN)
-                .filter(c -> CollectionUtils.isNotEmpty(c.getStates()))
+                .filter(c -> isNotEmpty(c.getStates()))
                 .collect(Collectors.toList());
         List<UserCaseAssignment> rows = assignments.stream()
                 .filter(c -> c.getTableEntity() == En_TableEntity.ROW)
-                .filter(c -> CollectionUtils.isNotEmpty(c.getPersonShortViews()))
+                .filter(c -> isNotEmpty(c.getPersonShortViews()))
                 .collect(Collectors.toList());
         List<CaseShortView> issues = CollectionUtils.emptyIfNull(userCaseAssignmentTable.getCaseShortViews());
 
@@ -209,22 +229,22 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         int columnsSize = columns.isEmpty()
                 ? 2
                 : columns.size() + 1;
-        Map<UserCaseAssignment, Boolean> expandedState = new HashMap<>();
 
         thead.add(buildHeaderRow(columns, issues));
         for (UserCaseAssignment row : rows) {
-            expandedState.put(row, true);
             List<Long> people = row.getPersons();
-            List<CaseShortView> rowIssues = CollectionUtils.stream(issues)
+            List<CaseShortView> rowIssues = stream(issues)
                     .filter(issue -> people.contains(issue.getManagerId()))
                     .collect(Collectors.toList());
+            boolean isRowExpanded = isPersonRowExpanded(row.getPersons());
             Widget issuesRow = buildIssuesRow(columns, rowIssues);
-            Widget personsRow = buildPersonRow(rows, row, columnsSize, rowIssues.size(), () -> {
-                boolean isExpanded = !expandedState.getOrDefault(row, true);
-                issuesRow.setVisible(isExpanded);
-                expandedState.put(row, isExpanded);
-                return isExpanded;
+            Widget personsRow = buildPersonRow(rows, row, columnsSize, rowIssues.size(), isRowExpanded, () -> {
+                boolean isRowWillBeExpanded = !isPersonRowExpanded(row.getPersons());
+                issuesRow.setVisible(isRowWillBeExpanded);
+                setPersonRowExpanded(row.getPersons(), isRowWillBeExpanded);
+                return isRowWillBeExpanded;
             });
+            issuesRow.setVisible(isRowExpanded);
             tbody.add(personsRow);
             tbody.add(issuesRow);
         }
@@ -246,7 +266,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         tr.addStyleName("table-desk-row-header");
         for (UserCaseAssignment column : columns) {
             List<En_CaseState> states = column.getStates();
-            List<CaseShortView> columnIssues =  CollectionUtils.stream(issues)
+            List<CaseShortView> columnIssues =  stream(issues)
                     .filter(issue -> states.contains(En_CaseState.getById(issue.getStateId())))
                     .collect(Collectors.toList());
             tr.add(buildHeaderStateCell(columns, column, columnIssues.size()));
@@ -291,16 +311,17 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         return th;
     }
 
-    private Widget buildPersonRow(List<UserCaseAssignment> rows, UserCaseAssignment row, int columnsCount, int issuesCount, Supplier<Boolean> onToggle) {
+    private Widget buildPersonRow(List<UserCaseAssignment> rows, UserCaseAssignment row, int columnsCount, int issuesCount, boolean isRowExpanded, Supplier<Boolean> onToggle) {
         HTMLPanel tr = new HTMLPanel("tr", "");
         tr.addStyleName("table-desk-row-person");
-        tr.add(buildPersonCell(rows, row, columnsCount, issuesCount, onToggle));
+        tr.add(buildPersonCell(rows, row, columnsCount, issuesCount, isRowExpanded, onToggle));
         return tr;
     }
 
-    private Widget buildPersonCell(List<UserCaseAssignment> rows, UserCaseAssignment row, int columnsCount, int issuesCount, Supplier<Boolean> onToggle) {
+    private Widget buildPersonCell(List<UserCaseAssignment> rows, UserCaseAssignment row, int columnsCount, int issuesCount, boolean isRowExpanded, Supplier<Boolean> onToggle) {
         AbstractDeskRowPersonView rowPersonView = rowPersonViewProvider.get();
         rowPersonView.setPeople(row.getPersonShortViews(), issuesCount);
+        rowPersonView.setIconExpanded(isRowExpanded);
         rowPersonView.setHandler(new AbstractDeskRowPersonView.Handler() {
             @Override
             public void onEdit() {
@@ -342,7 +363,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         tr.addStyleName("table-desk-row-issues");
         for (UserCaseAssignment column : columns) {
             List<En_CaseState> states = column.getStates();
-            List<CaseShortView> cellIssues =  CollectionUtils.stream(rowIssues)
+            List<CaseShortView> cellIssues = stream(rowIssues)
                     .filter(issue -> states.contains(En_CaseState.getById(issue.getStateId())))
                     .collect(Collectors.toList());
             tr.add(buildIssuesCell(cellIssues));
@@ -353,7 +374,6 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private Widget buildIssuesCell(List<CaseShortView> cellIssues) {
         AbstractDeskRowIssueView rowIssueView = rowIssueViewProvider.get();
-        rowIssueView.setIssues(cellIssues);
         rowIssueView.setHandler(new AbstractDeskRowIssueView.Handler() {
             @Override
             public void onOpenIssue(CaseShortView issue) {
@@ -378,7 +398,12 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                             }));
                 });
             }
+            @Override
+            public void showTags(HasWidgets parent, List<CaseTag> caseTags) {
+                fireEvent(new CaseTagEvents.ShowList(parent, caseTags, true, null));
+            }
         });
+        rowIssueView.setIssues(cellIssues);
         HTMLPanel td = new HTMLPanel("td", "");
         td.add(rowIssueView.asWidget());
         return td;
@@ -400,6 +425,55 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                 .collect(Collectors.toList());
     }
 
+    private boolean isPersonRowExpanded(List<Long> personIds) {
+        return stream(getPersonRowCollapseState())
+            .allMatch(entry -> diffCollection(entry, personIds).hasDifferences());
+    }
+
+    private void setPersonRowExpanded(List<Long> personIds, boolean isExpanded) {
+        List<List<Long>> state = stream(getPersonRowCollapseState())
+            .filter(entry -> diffCollection(entry, personIds).hasDifferences())
+            .collect(Collectors.toList());
+        if (!isExpanded) {
+            state.add(personIds);
+        }
+        savePersonCollapseState(state);
+    }
+
+    private void savePersonCollapseState(List<List<Long>> state) {
+        String value = stream(state)
+            .map(entry -> join(entry, ","))
+            .collect(Collectors.joining("#"));
+        if (value.isEmpty()) {
+            localStorageService.remove(DESK_PERSON_COLLAPSE_STATE_KEY);
+        } else {
+            localStorageService.set(DESK_PERSON_COLLAPSE_STATE_KEY, value);
+        }
+    }
+
+    private List<List<Long>> getPersonRowCollapseState() {
+        try {
+            String value = localStorageService.getOrDefault(DESK_PERSON_COLLAPSE_STATE_KEY, "");
+            return stream(Arrays.asList(value.split("#")))
+                .filter(not(String::isEmpty))
+                .map(entry -> stream(Arrays.asList(entry.split(",")))
+                    .map(personId -> {
+                        try {
+                            return Long.parseLong(personId);
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList())
+                )
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            localStorageService.remove(DESK_PERSON_COLLAPSE_STATE_KEY);
+            return new ArrayList<>();
+        }
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -408,6 +482,8 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
     UserCaseAssignmentControllerAsync userCaseAssignmentController;
     @Inject
     IssueControllerAsync issueController;
+    @Inject
+    LocalStorageService localStorageService;
     @Inject
     AbstractDeskView view;
     @Inject
@@ -426,4 +502,5 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
     private List<PersonShortView> people = new ArrayList<>();
 
     private static final int COLUMN_MIN_WIDTH_PX = 200;
+    private final static String DESK_PERSON_COLLAPSE_STATE_KEY = "issue_assignment_desk_person_collapse_state";
 }

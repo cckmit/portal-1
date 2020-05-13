@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.time.DateUtils;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.ent.RoomReservation;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,9 +17,16 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
 
     private static Calendar calendar = Calendar.getInstance();
 
-    private Date from;
-    private Date till;
-
+    @Override
+    public List<PersonAbsence> listByEmployeeAndDateBounds(Long absenceId, Date from, Date till) {
+        return getListByCondition("person_absence.person_id = ? AND (" +
+                "(? < person_absence.from_time AND person_absence.from_time < ?) OR " +
+                "(? < person_absence.till_time AND person_absence.till_time < ?) OR " +
+                "(person_absence.from_time < ? AND ? < person_absence.till_time) OR " +
+                "(person_absence.from_time < ? AND ? < person_absence.till_time) OR " +
+                "(person_absence.from_time = ? AND person_absence.till_time = ?)" +
+                ")", absenceId, from, till, from, till, from, from, till, till, from, till);
+    }
 
     public List<PersonAbsence> getForRange (Long personId, Date from, Date till) {
 

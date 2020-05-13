@@ -21,6 +21,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -70,6 +71,7 @@ public class ReportServiceImpl implements ReportService {
             switch (report.getReportType()) {
                 case CASE_OBJECTS: langKey = "report_case_objects_at"; break;
                 case CASE_TIME_ELAPSED: langKey = "report_case_time_elapsed_at"; break;
+                case PROJECT: langKey = "report_project_at"; break;
             }
             Lang.LocalizedLang localizedLang = getLang().getFor(Locale.forLanguageTag(report.getLocale()));
             report.setName(localizedLang.get(langKey) + " " + dateFormat.format(now));
@@ -177,7 +179,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void applyFilterByScope( AuthToken token, Report report) {
-        if (!hasGrantAccessForReport(token)) {
+        if (report.getReportType() != En_ReportType.PROJECT && !hasGrantAccessForReport(token)) {
             report.setReportType( En_ReportType.CASE_OBJECTS);
             CaseQuery query = report.getCaseQuery();
             query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));

@@ -6,5 +6,11 @@
 
   <include file="01-init-database.xml" relativeToChangelogFile="true" />
   <include file="2020-04-13-create-person_absence-table.xml" relativeToChangelogFile="true" />
+  <include file="2020-04-16-dropnotnullconstraint-in-company_dep-and-worker_entry-and-add-field-sync_1c.xml" relativeToChangelogFile="true" />
+  <include file="2020-04-17-set-linked_equipment_id-equipment-fk.xml" relativeToChangelogFile="true" />
+  <include file="2020-04-20-add-pause_date-to-case_object.xml" relativeToChangelogFile="true" />
+  <include file="2020-03-18-ip-reservation.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-17-add-room-reservation-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-30-add-redmine-workflow.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

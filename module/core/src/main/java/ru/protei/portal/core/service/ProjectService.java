@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public interface ProjectService {
     Result<Map<String, List<Project>>> listProjectsByRegions(AuthToken token, ProjectQuery query);
 
     @Privileged(En_Privilege.PROJECT_VIEW)
-    Result<List<Project>> listProjects(AuthToken token, ProjectQuery query);
+    Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query);
 
     Result<List<EntityOption>> listOptionProjects(AuthToken token, ProjectQuery query);
 

@@ -586,7 +586,7 @@ label.bordered:after {
     color: black;
     vertical-align: bottom;
   }
-  .edit, .remove, .copy {
+  .edit, .remove, .copy, .refresh {
     width: 45px;
   }
 }
@@ -786,10 +786,10 @@ label.bordered:after {
     tbody {
       tr {
         td {
-          height: 56px;
+          height: 92px;
           > div {
-            height: 56px;
-            max-height: 56px;
+            height: 75px;
+            max-height: 75px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1651,12 +1651,13 @@ a {
 
 .case-tag {
   display: inline-block;
-  font-size: 12px;
+  font-size: 0.9em;
   margin-right: 4px;
+  margin-bottom: 4px;
   white-space: nowrap;
   padding: 4px 8px;
   border-radius: 4px;
-  line-height: 1em;
+  line-height: 0.9em;
 
   .case-tag-close {
     color: inherit;
@@ -1786,6 +1787,27 @@ a {
         font-weight: bold;
       }
     }
+  }
+}
+
+/**** item with edit ****/
+
+.item-with-edit {
+  display: flex;
+  cursor: pointer;
+  &:hover{
+    color: #262626;
+    text-decoration: none;
+    background-color: whitesmoke;
+  }
+
+  .item-with-edit-text {
+    flex-grow: 1;
+    padding: 3px 20px;
+  }
+
+  .item-with-edit-icon {
+    padding: 8px 10px 5px 10px;
   }
 }
 
@@ -2134,6 +2156,59 @@ a {
 }
 
 /**** PROJECTS ****/
+.projects {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .status {
+      width: 45px;
+    }
+
+    .number {
+      width: 8%;
+    }
+    .customers {
+      width: 12%;
+    }
+    .managers {
+      width: 15%;
+    }
+    .info {
+    }
+  }
+}
+
 
 .project-main-info {
   display: flex;
@@ -2645,6 +2720,21 @@ div.select2-container {
 }
 
 .issue-filter {
+  padding-top: 0px !important;
+
+  .user-filter {
+    background: #f5f5f51a;
+    border-bottom: 2px solid #dee4e5;
+    padding: 15px;
+  }
+
+  .resize-md-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.project-filter {
   padding-top: 0px !important;
 
   .user-filter {
@@ -3214,6 +3304,91 @@ label {
   }
 }
 
+.subnet {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 16px;
+    }
+  }
+}
+
+.reserved-ip {
+  td {
+    small {
+      font-size: 85%;
+    }
+
+    p {
+      margin: 0;
+      font-size: 85%;
+      line-height: 1.3em;
+    }
+
+    label {
+      font-weight: 600;
+      line-height: 1.2em;
+      vertical-align: inherit;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+  }
+
+  .ip-address {
+    width: 15%;
+    text-align: center;
+    .address-size {
+      font-size: 16px;
+    }
+  }
+  .ip-use-range {
+    width: 15%;
+  }
+  .ip-owner {
+  }
+  .ip-comment {
+  }
+  .ip-last-check {
+  }
+}
+
+.short-table-view {
+  .reserved-ip {
+    .ip-owner {
+      display: none;
+    }
+
+    .ip-comment {
+      display: none;
+    }
+
+    .ip-last-check {
+      display: none;
+    }
+  }
+}
+
 .preview-value-label {
   margin-top: 4px !important;
 }
@@ -3478,6 +3653,12 @@ table {
   }
 }
 
+.company-name-container {
+  .verifiable {
+    top: 28px;
+  }
+}
+
 .thumbnail-photo{
   object-fit: cover;
   object-position: 0px 25%;
@@ -3722,6 +3903,10 @@ table {
 }
 
 .text-danger.size-error {
+  font-size: 75% !important;
+}
+
+.text-danger.name-error {
   font-size: 75% !important;
 }
 
@@ -3997,6 +4182,21 @@ table {
 }
 
 .form-group {
+  &.form-group-default.pause-date {
+    height: 54px !important;
+
+    .form-control {
+      border-top-right-radius: 3px;
+      border-bottom-right-radius: 3px;
+    }
+
+    .has-error {
+      .form-control {
+        border: 1px solid $error_color;
+      }
+    }
+  }
+
   .form-control {
     &.sla-input-time {
       border: 1px solid rgba(0, 0, 0, 0.07);
@@ -4026,4 +4226,15 @@ table {
 
 .max-z-index {
   z-index: 9999 !important;
+}
+
+.pause-status-expired-date {
+  border: 2px solid $error_color;
+}
+
+.reserved-ip-info {
+  max-height: 4.26em;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

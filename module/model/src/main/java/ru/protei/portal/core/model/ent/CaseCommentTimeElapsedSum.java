@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -192,6 +193,10 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     public Integer getCaseImpLevel() {
         return caseImpLevel;
+    }
+
+    public En_ImportanceLevel getImportanceLevel() {
+        return En_ImportanceLevel.getById(this.caseImpLevel);
     }
 
     public long getCaseStateId() {

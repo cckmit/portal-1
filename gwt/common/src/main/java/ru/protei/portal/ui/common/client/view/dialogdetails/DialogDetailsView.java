@@ -88,6 +88,10 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         this.modalDialog.addClassName(value);
     }
 
+    @Override
+    public void setSaveOnEnterClick(boolean isSaveOnEnterClick) {
+        this.isSaveOnEnterClick = isSaveOnEnterClick;
+    }
 
     @UiHandler( "save" )
     public void onSaveClicked( ClickEvent event ) {
@@ -112,9 +116,11 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         super.onPreviewNativeEvent( event );
 
         if ( event.getTypeInt() == Event.ONKEYDOWN ) {
-            if ( event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE ) {
+            boolean isEscapeClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE;
+            boolean isEnterClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;
+            if (isEscapeClicked) {
                 fireCancelClicked();
-            } else if ( event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER ) {
+            } else if (isEnterClicked && isSaveOnEnterClick) {
                 fireSaveClicked();
             }
         }
@@ -166,6 +172,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
 
     private DialogAnimation dialogAnimation;
     private boolean isSaveEnabled;
+    private boolean isSaveOnEnterClick = true;
 
     interface DetailsViewUiBinder extends UiBinder<HTMLPanel, DialogDetailsView> {}
     private static DetailsViewUiBinder ourUiBinder = GWT.create( DetailsViewUiBinder.class );

@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface PersonAbsenceDAO extends PortalBaseDAO<PersonAbsence> {
 
+    List<PersonAbsence> listByEmployeeAndDateBounds(Long absenceId, Date from, Date till);
+
     public List<PersonAbsence> getForRange (Long person, Date from, Date till);
 
     public List<PersonAbsence> getCurrentAbsences (Date now);

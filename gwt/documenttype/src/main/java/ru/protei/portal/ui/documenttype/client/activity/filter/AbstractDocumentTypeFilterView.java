@@ -3,7 +3,6 @@ package ru.protei.portal.ui.documenttype.client.activity.filter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 
 import java.util.Set;

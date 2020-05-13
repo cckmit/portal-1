@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -77,6 +78,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                         fireEvent(new CompanyEvents.ChangeModel());
                     })
             );
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.errCompanyFieldsFill(), NotifyEvents.NotifyType.ERROR));
         }
     }
 
@@ -89,11 +92,10 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     public void onChangeCompanyName() {
         String value = view.companyName().getValue().trim();
 
-        //isCompanyNameExists не принимает пустые строки!
-        if (value.isEmpty()) {
-            view.setCompanyNameStatus(NameStatus.NONE);
+        if (!validateCompanyName(value)){
             return;
         }
+
         companyService.isCompanyNameExists(
                 value,
                 tempCompany.getId(),
@@ -105,9 +107,30 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                     @Override
                     public void onSuccess(Boolean isExists) {
                         view.setCompanyNameStatus(isExists ? NameStatus.ERROR : NameStatus.SUCCESS);
+                        view.companyNameErrorLabel().setText(isExists ? lang.errCompanyNameExists() : "");
+                        view.companyNameErrorLabelVisibility().setVisible(isExists);
                     }
                 }
         );
+    }
+
+    private boolean validateCompanyName (String companyName) {
+        //isCompanyNameExists не принимает пустые строки!
+        if (companyName.isEmpty()) {
+            view.setCompanyNameStatus(NameStatus.NONE);
+            return false;
+        }
+
+        boolean containsIllegalChars = companyName.matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS);
+        view.companyNameErrorLabel().setText(containsIllegalChars ? lang.errCompanyNameContainsIllegalChars() : "");
+        view.companyNameErrorLabelVisibility().setVisible(containsIllegalChars);
+
+        if (containsIllegalChars){
+            view.setCompanyNameStatus(NameStatus.ERROR);
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isNew(Company company) {
@@ -116,7 +139,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private boolean validateFieldsAndGetResult() {
         return view.companyNameValidator().isValid()
-                && view.companySubscriptionsValidator().isValid();
+                && view.companySubscriptionsValidator().isValid()
+                && !view.companyName().getValue().trim().matches(CrmConstants.Masks.COMPANY_NAME_ILLEGAL_CHARS);
     }
 
     private void resetValidationStatus() {

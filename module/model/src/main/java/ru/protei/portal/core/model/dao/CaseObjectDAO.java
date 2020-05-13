@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     Map<Long,Long> getNumberToIdMap (En_CaseType caseType);
 
     List<CaseObject> getCases( CaseQuery query );
+
+    SearchResult<CaseObject> getSearchResult(CaseQuery query);
 
     Long insertCase (CaseObject object);
 

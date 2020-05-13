@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
@@ -123,6 +124,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Override
     public HasWidgets documents() {
         return documents;
+    }
+
+    @Override
+    public void setLinkedEquipmentFilter(Selector.SelectorFilter<EquipmentShortView> filter) {
+        linkedEquipment.setFilter(filter);
     }
 
     @UiHandler( "saveButton" )

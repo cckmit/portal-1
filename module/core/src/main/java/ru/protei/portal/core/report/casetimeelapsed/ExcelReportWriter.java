@@ -12,6 +12,8 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.List;
 
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+
 public class ExcelReportWriter implements
         ReportWriter<CaseCommentTimeElapsedSum>,
         JXLSHelper.ReportBook.Writer<CaseCommentTimeElapsedSum> {
@@ -20,12 +22,14 @@ public class ExcelReportWriter implements
     private final Lang.LocalizedLang lang;
     private final DateFormat dateFormat;
     private final TimeFormatter timeFormatter;
+    private final String locale;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
         this.timeFormatter = timeFormatter;
+        this.locale = localizedLang.getLanguageTag();
     }
 
     @Override
@@ -94,11 +98,11 @@ public class ExcelReportWriter implements
                 "CRM-" + object.getCaseNumber(),
                 lang.get(object.isCasePrivateCase() ? "yes" : "no"),
                 HelperFunc.isNotEmpty(object.getCaseName()) ? object.getCaseName() : "",
-                HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? object.getCaseCompanyName() : "",
+                HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? transliterate(object.getCaseCompanyName(), locale) : "",
                 HelperFunc.isNotEmpty(object.getProductName()) ? object.getProductName() : "",
-                HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? object.getAuthorDisplayName() : "",
-                HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? object.getCaseManagerDisplayName() : "",
-                object.getCaseImpLevel() != null ? lang.get("importance_" + object.getCaseImpLevel()) : "",
+                HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "",
+                HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "",
+                object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "",
                 object.getCaseState() != null ? object.getCaseState().getName() : "",
                 object.getCaseCreated() != null ? dateFormat.format(object.getCaseCreated()) : "",
                 timeFormatter.formatHourMinutes(object.getTimeElapsedNone()),

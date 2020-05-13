@@ -2,10 +2,14 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.event.RoomReservationNotificationEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.utils.LinkData;
+import ru.protei.portal.core.utils.EnumLangUtil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -60,4 +64,11 @@ public interface TemplateService {
 
     String getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject() throws IOException, TemplateException;
 
+    PreparedTemplate getMailProjectSubject(Project project, Person initiator);
+
+    PreparedTemplate getMailProjectBody(AssembledProjectEvent event, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil roleTypeLang);
+
+    PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action);
+
+    PreparedTemplate getRoomReservationNotificationBody(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action, Collection<String> recipients);
 }

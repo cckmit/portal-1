@@ -7,34 +7,38 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ReportScheduledType;
-import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
+import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterView;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
+
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractIssueFilterModel {
+        AbstractIssueReportCreateActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.getIssueFilterContainer().add(filterView.asWidget());
-        filterView.addAdditionalFilterValidate(
+        issueFilterWidget.addAdditionalFilterValidate(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
-        filterView.getIssueFilterParams().setModel(this);
+        issueFilterWidget.getIssueFilterParams().setModel(this);
+        issueFilterWidget.clearFooterStyle();
+        projectFilterView.clearFooterStyle();
     }
 
     @Event
@@ -46,6 +50,8 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onAuthSuccess(AuthEvents.Success event) {
         view.fillReportTypes(makeReportTypeList());
         view.fillReportScheduledTypes(Arrays.asList(En_ReportScheduledType.values()));
+
+        projectFilterView.resetFilter();
     }
 
     @Event(Type.FILL_CONTENT)
@@ -62,7 +68,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.reset();
 
         if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
-            filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            issueFilterWidget.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
         }
     }
 
@@ -71,12 +77,17 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         En_ReportType reportType = view.reportType().getValue();
         En_ReportScheduledType scheduledType = view.reportScheduledType().getValue();
-        CaseQuery query = filterView.getFilterFieldsByFilterType();
+
+        CaseQuery query;
+        if (reportType == En_ReportType.PROJECT) {
+            query = getProjectQuery().toCaseQuery(policyService.getProfile().getId());
+        } else {
+            query = issueFilterWidget.getFilterFieldsByFilterType();
+        }
 
         if (!validateQuery(reportType, query)) {
             return;
         }
-
         Report report = new Report();
         report.setReportType(reportType);
         report.setScheduledType(scheduledType);
@@ -107,8 +118,17 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Override
     public void onReportTypeChanged(En_CaseFilterType filterType) {
-        filterView.updateFilterType(filterType);
-        applyIssueFilterVisibilityByPrivileges();
+        if (filterType == En_CaseFilterType.PROJECT) {
+            projectFilterView.resetFilter();
+            view.getIssueFilterContainer().clear();
+            view.getIssueFilterContainer().add(projectFilterView.asWidget());
+        } else {
+            issueFilterWidget.updateFilterType(filterType);
+            applyIssueFilterVisibilityByPrivileges();
+            issueFilterWidget.setCheckImportanceHistoryVisibility(filterType == En_CaseFilterType.CASE_OBJECTS);
+            view.getIssueFilterContainer().clear();
+            view.getIssueFilterContainer().add(issueFilterWidget.asWidget());
+        }
     }
 
     @Override
@@ -116,7 +136,12 @@ public abstract class IssueReportCreateActivity implements Activity,
         ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
-    private boolean validateQuery( En_CaseFilterType filterType, CaseQuery query) {
+    @Override
+    public void onProjectFilterChanged()  {
+        ; // ничего не делаем, мы используем фильтр при создании отчета
+    }
+
+    private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
         return validateQuery(En_ReportType.valueOf(filterType.name()), query);
     }
 
@@ -141,7 +166,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
-        AbstractIssueFilterParamView issueFilterParams = filterView.getIssueFilterParams();
+        AbstractIssueFilterParamView issueFilterParams = issueFilterWidget.getIssueFilterParams();
         if (issueFilterParams.productsVisibility().isVisible()) {
             issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
         }
@@ -160,6 +185,26 @@ public abstract class IssueReportCreateActivity implements Activity,
         return Arrays.asList(En_ReportType.CASE_OBJECTS);
     }
 
+    private ProjectQuery getProjectQuery() {
+        ProjectQuery query = new ProjectQuery();
+
+        String searchString = projectFilterView.searchPattern().getValue();
+        query.setCaseIds(searchCaseNumber(searchString, false));
+        if (query.getCaseIds() == null) {
+            query.setSearchString(isBlank(searchString) ? null : searchString);
+        }
+
+        query.setStates(projectFilterView.states().getValue());
+        query.setRegions(projectFilterView.regions().getValue());
+        query.setHeadManagers(projectFilterView.headManagers().getValue());
+        query.setCaseMembers(projectFilterView.caseMembers().getValue());
+        query.setDirections(projectFilterView.direction().getValue());
+        query.setSortField(projectFilterView.sortField().getValue());
+        query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setOnlyMineProjects(projectFilterView.onlyMineProjects().getValue());
+        return  query;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -170,7 +215,9 @@ public abstract class IssueReportCreateActivity implements Activity,
     PolicyService policyService;
 
     @Inject
-    IssueFilterWidget filterView;
+    IssueFilterWidget issueFilterWidget;
+    @Inject
+    ProjectFilterView projectFilterView;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

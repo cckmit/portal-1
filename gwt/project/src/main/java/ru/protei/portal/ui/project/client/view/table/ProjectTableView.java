@@ -1,16 +1,13 @@
 package ru.protei.portal.ui.project.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
@@ -53,6 +50,9 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
+
+        table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
     
     @Override
@@ -72,31 +72,45 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public void clearRecords() {
+        table.clearCache();
         table.clearRows();
     }
 
     @Override
-    public void addRow( Project row ) {
-        table.addRow( row );
-    }
-
-    @Override
-    public void addSeparator( String text ) {
-        Element elem = DOM.createDiv();
-        SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-        safeHtmlBuilder.appendHtmlConstant( "<b>" ).appendEscapedLines( text ).appendHtmlConstant( "</b>" );
-        elem.setInnerSafeHtml( safeHtmlBuilder.toSafeHtml() );
-        table.addCustomRow( elem, "region", null );
-    }
-
-    @Override
     public void updateRow( Project project ) {
-        table.updateRow( project );
+        if(project != null) {
+            table.updateRow(project);
+        }
+    }
+
+    @Override
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
     }
 
     private void initTable () {
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT) );
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_EDIT) );
         columns.add(editClickColumn);
 
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE) && !v.isDeleted() );
@@ -109,17 +123,27 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirection(), "number",
                 value -> {
                     StringBuilder content = new StringBuilder();
-                    content.append("<b>").append(value.getId()).append("</b>");
+                    content.append("<b>").append(value.getId()).append("</b>").append("<br/>");
 
                     if (value.getProductDirection() != null) {
-                        content.append("<br/>").append(value.getProductDirection().getDisplayText());
-                    }
-                    if (value.getCustomerType() != null) {
-                        content.append("<br/><i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>");
+                        content.append(value.getProductDirection().getDisplayText());
                     }
                     return content.toString();
                 });
         columns.add(numberColumn);
+
+        DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomerType(), "customers",
+                value -> {
+                    StringBuilder content = new StringBuilder();
+                    if (value.getCustomerType() != null) {
+                        content.append("<i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>").append("<br/>");
+                    }
+                    if ( value.getRegion() != null && value.getRegion().getDisplayText() != null) {
+                        content.append(value.getRegion().getDisplayText());
+                    }
+                    return content.toString();
+                });
+        columns.add(customerColumn);
 
         DynamicColumn<Project> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
                 value -> "<b>" + value.getName() + "</b>" + (value.getDescription() == null ? "" : "<br/><small>" + value.getDescription() + "</small>"));
@@ -149,6 +173,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
         table.addColumn( statusColumn.header, statusColumn.values );
         table.addColumn( numberColumn.header, numberColumn.values );
+        table.addColumn( customerColumn.header, customerColumn.values );
         table.addColumn( infoColumn.header, infoColumn.values );
         table.addColumn( managerColumn.header, managerColumn.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
@@ -158,13 +183,15 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @UiField
     Lang lang;
     @UiField
-    TableWidget<Project> table;
+    InfiniteTableWidget<Project> table;
     @UiField
     HTMLPanel tableContainer;
     @UiField
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     En_RegionStateLang regionStateLang;
