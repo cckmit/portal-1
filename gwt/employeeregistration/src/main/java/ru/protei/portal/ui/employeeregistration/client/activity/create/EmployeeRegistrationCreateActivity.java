@@ -166,31 +166,28 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     }
 
 
-    private EmployeeRegistration fillDto(EmployeeRegistration q) {
+    private EmployeeRegistration fillDto(EmployeeRegistration employeeRegistration) {
 
-        q.setEmployeeFullName(view.fullName().getValue());
-        q.setComment(view.comment().getValue());
-        q.setWorkplace(view.workplace().getValue());
-        q.setPosition(view.position().getValue());
-        q.setEmploymentDate(view.employmentDate().getValue());
-        if (view.headOfDepartment().getValue() == null)
-            q.setHeadOfDepartmentId(null);
-        else
-            q.setHeadOfDepartmentId(view.headOfDepartment().getValue().getId());
-        q.setEquipmentList(view.equipmentList().getValue());
-        q.setResourceList(view.resourcesList().getValue());
-        q.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
-        q.setWithRegistration(view.withRegistration().getValue());
-        q.setEmploymentType(view.employmentType().getValue());
+        employeeRegistration.setEmployeeFullName(view.fullName().getValue());
+        employeeRegistration.setComment(view.comment().getValue());
+        employeeRegistration.setWorkplace(view.workplace().getValue());
+        employeeRegistration.setPosition(view.position().getValue());
+        employeeRegistration.setEmploymentDate(view.employmentDate().getValue());
+        employeeRegistration.setHeadOfDepartmentId(view.headOfDepartment().getValue() == null ? null : view.headOfDepartment().getValue().getId());
+        employeeRegistration.setEquipmentList(view.equipmentList().getValue());
+        employeeRegistration.setResourceList(view.resourcesList().getValue());
+        employeeRegistration.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
+        employeeRegistration.setWithRegistration(view.withRegistration().getValue());
+        employeeRegistration.setEmploymentType(view.employmentType().getValue());
 
-        q.setProbationPeriodMonth( view.probationPeriod().getValue() );
-        q.setResourceComment( view.resourceComment().getValue() );
-        q.setOperatingSystem( view.operatingSystem().getValue() );
-        q.setAdditionalSoft( view.additionalSoft().getValue() );
-        q.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
-        q.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
+        employeeRegistration.setProbationPeriodMonth( view.probationPeriod().getValue() );
+        employeeRegistration.setResourceComment( view.resourceComment().getValue() );
+        employeeRegistration.setOperatingSystem( view.operatingSystem().getValue() );
+        employeeRegistration.setAdditionalSoft( view.additionalSoft().getValue() );
+        employeeRegistration.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
+        employeeRegistration.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
 
-        return q;
+        return employeeRegistration;
     }
 
     private void clearView() {

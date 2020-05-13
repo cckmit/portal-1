@@ -408,6 +408,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", resourceList=" + resourceList +
                 ", phoneOfficeTypeList=" + phoneOfficeTypeList +
                 ", creatorId=" + creatorId +
+                ", creatorShortName='" + creatorShortName + '\'' +
                 ", headOfDepartmentId=" + headOfDepartmentId +
                 ", headOfDepartmentShortName='" + headOfDepartmentShortName + '\'' +
                 ", comment='" + comment + '\'' +
@@ -421,6 +422,8 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", curatorsIds=" + curatorsIds +
                 ", curators=" + curators +
                 ", person=" + person +
+                ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
                 '}';
     }
 }
