@@ -143,6 +143,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     private ClickColumn<Platform> nameColumn = new ClickColumn<Platform>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("platform-name");
             columnHeader.setInnerText(lang.siteFolderName());
         }
         @Override
@@ -153,6 +154,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     private ClickColumn<Platform> managerColumn = new ClickColumn<Platform>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("platform-manager");
             columnHeader.setInnerText(lang.siteFolderManager());
         }
         @Override
@@ -169,6 +171,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     private ClickColumn<Platform> serversColumn = new ClickColumn<Platform>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("platform-server");
             columnHeader.setInnerText(lang.siteFolderServers());
         }
 

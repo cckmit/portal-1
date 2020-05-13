@@ -135,6 +135,7 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     private ClickColumn<Application> nameColumn = new ClickColumn<Application>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("application-name");
             columnHeader.setInnerText(lang.siteFolderName());
         }
         @Override
@@ -145,6 +146,7 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     private ClickColumn<Application> serverColumn = new ClickColumn<Application>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("application-server");
             columnHeader.setInnerText(lang.siteFolderServer());
         }
 
@@ -156,6 +158,7 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     private ClickColumn<Application> pathsColumn = new ClickColumn<Application>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("application-paths");
             columnHeader.setInnerText(lang.siteFolderPaths());
         }
 
