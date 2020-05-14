@@ -343,22 +343,23 @@ public class MailNotificationProcessor {
     // -----------------------
 
     @EventListener
-    public void onEmployeeRegistrationEvent(EmployeeRegistrationEvent event) {
-        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
-        if (employeeRegistration == null) {
-            log.info("Failed to send employee registration notification: employee registration is null");
+    public void onEmployeeRegistrationEvent(AssembledEmployeeRegistrationEvent event) {
+        if (!isSendEmployeeRegistrationNotification(event)) {
             return;
         }
 
+        EmployeeRegistration employeeRegistration = event.getNewState();
+
         Set<NotificationEntry> notifiers = subscriptionService.subscribers(event);
-        if (CollectionUtils.isEmpty(notifiers))
+        if (CollectionUtils.isEmpty(notifiers)) {
             return;
+        }
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
         String urlTemplate = getEmployeeRegistrationUrl();
 
-        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
+        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(event, urlTemplate, recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for employeeRegistrationId={}", employeeRegistration.getId());
             return;
@@ -836,6 +837,30 @@ public class MailNotificationProcessor {
                 || event.isSlaChanged()
                 || event.isCommentsChanged()
                 || event.isLinksChanged();
+    }
+
+    private boolean isSendEmployeeRegistrationNotification(AssembledEmployeeRegistrationEvent event) {
+        if (!event.isEditEvent()) {
+            return true;
+        }
+
+        if (isEmployeeRegistrationChanged(event)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isEmployeeRegistrationChanged(AssembledEmployeeRegistrationEvent event) {
+        if (event.isEmploymentDateChanged()) {
+            return true;
+        }
+
+        if (event.isCuratorsChanged()) {
+            return true;
+        }
+
+        return false;
     }
 
     private String getCrmProjectUrl() {

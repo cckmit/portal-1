@@ -3,6 +3,7 @@ package ru.protei.portal.ui.employeeregistration.client.activity.table;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 public interface AbstractEmployeeRegistrationTableView extends IsWidget {
@@ -21,4 +22,6 @@ public interface AbstractEmployeeRegistrationTableView extends IsWidget {
     HTMLPanel getFilterContainer();
 
     void clearSelection();
+
+    void updateRow(EmployeeRegistration employeeRegistration);
 }

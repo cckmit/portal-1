@@ -2581,4 +2581,6 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonReload();
 
     String issueAssignmentDeskOverflow(long limit);
+
+    String employeeRegistrationEditHeader();
 }
