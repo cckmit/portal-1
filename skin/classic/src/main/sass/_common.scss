@@ -3919,6 +3919,14 @@ table {
     tr {
       td {
         height: 40px;
+
+        div {
+          height: 40px;
+          max-height: 40px;
+          white-space: pre-line;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
     }
   }
@@ -3951,6 +3959,14 @@ table {
     tr {
       td {
         height: 40px;
+
+        div {
+          height: 40px;
+          max-height: 40px;
+          white-space: pre-line;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
     }
   }
@@ -3995,6 +4011,14 @@ table {
     tr {
       td {
         height: 40px;
+
+        div {
+          height: 40px;
+          max-height: 40px;
+          white-space: pre-line;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
     }
   }
