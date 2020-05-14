@@ -102,7 +102,12 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     private void ensureDebugIds() {
-        checkImportanceHistory.ensureDebugId(DebugIds.FILTER.ISSUE_IMPORTANCE_CHECK_HISTORY);
+        name.ensureDebugId(DebugIds.ISSUE_REPORT.NAME_INPUT);
+        reportType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_TYPE);
+        scheduledType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_SCHEDULED_TYPE);
+        checkImportanceHistory.ensureDebugId(DebugIds.ISSUE_REPORT.IMPORTANCE_CHECK_HISTORY);
+        createButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.ISSUE_REPORT.CANCEL_BUTTON);
     }
 
     @Inject

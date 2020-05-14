@@ -148,7 +148,6 @@ public class DebugIds {
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
-        String ISSUE_IMPORTANCE_CHECK_HISTORY ="filter-issue-importance-check-history";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
         String CREATOR_SELECTOR = "filter-creator-selector";
         String CREATOR_ADD_BUTTON = "filter-creator-add-button";
@@ -296,6 +295,15 @@ public class DebugIds {
             String ATTACHMENTS = "issue-label-attachments";
             String TIME_ELAPSED_TYPE = "issue-label-time-elapsed-type";
         }
+    }
+
+    public interface ISSUE_REPORT {
+        String NAME_INPUT = "issue-report-name-input";
+        String REPORT_TYPE = "issue-report-type";
+        String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
+        String IMPORTANCE_CHECK_HISTORY ="issue-report-importance-check-history";
+        String CREATE_BUTTON = "issue-report-create-button";
+        String CANCEL_BUTTON = "issue-report-cancel-button";
     }
 
     public interface CASE_COMMENT {
