@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -73,6 +74,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getPagerContainer().add( pagerView.asWidget() );
         view.getFilterContainer().add(event.filter);
 
+        this.preScroll = event.preScroll;
+
         requestEmployees( 0 );
     }
 
@@ -113,10 +116,20 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                         }
                         r.getResults().forEach( fillViewer );
                         view.showLoader( false );
+                        restoreScroll();
                     }
                 } ) );
     }
 
+    private void restoreScroll() {
+        if (!preScroll) {
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
+    }
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
@@ -161,6 +174,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         if(employee.isFired())
             itemView.setFireDate(DateFormatter.formatDateOnly(employee.getFireDate()));
 
+        itemView.addClickHandler(event -> persistScroll());
+
         return itemView;
     }
 
@@ -175,6 +190,10 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
     };
 
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
     @Inject
     AbstractEmployeeListView view;
     @Inject
@@ -186,11 +205,10 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     @Inject
     AbstractPagerView pagerView;
 
-    @Inject
-    Lang lang;
-
     private long marker;
     private AppEvents.InitDetails init;
+    private Integer scrollTo = 0;
+    private boolean preScroll;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

@@ -5,10 +5,14 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.internal.cglib.core.$ClassNameReader;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
@@ -21,8 +25,14 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
+    @Override
     public void setActivity( AbstractEmployeeItemActivity activity ) {
         this.activity = activity;
+    }
+
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addHandler(handler, ClickEvent.getType());
     }
 
     @Override
@@ -93,6 +103,10 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
+    @UiHandler("name")
+    public void onNameClicked(ClickEvent event) {
+        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
+    }
 
     @UiField
     Anchor name;

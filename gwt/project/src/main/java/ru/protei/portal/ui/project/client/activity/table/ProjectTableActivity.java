@@ -76,8 +76,6 @@ public abstract class ProjectTableActivity
 
         this.preScroll = event.preScroll;
 
-//        clearScroll(event);
-
         loadTable();
     }
 
@@ -114,7 +112,6 @@ public abstract class ProjectTableActivity
     @Override
     public void onEditClicked( Project value ) {
         scrollTo = Window.getScrollTop();
-//        persistScrollTopPosition();
         fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
@@ -162,10 +159,8 @@ public abstract class ProjectTableActivity
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-//                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
-
-                    restoreScroll();
                 }
             }
         } );
@@ -184,11 +179,13 @@ public abstract class ProjectTableActivity
 
     private void restoreScroll() {
         if (!preScroll) {
+            view.clearSelection();
             return;
         }
 
-        preScroll = false;
         Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void showPreview ( Project value ) {
@@ -199,22 +196,6 @@ public abstract class ProjectTableActivity
             fireEvent( new ProjectEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
         }
     }
-
-//    private void persistScrollTopPosition() {
-//        scrollTop = Window.getScrollTop();
-//    }
-//
-//    private void restoreScrollTopPositionOrClearSelection() {
-//        if (scrollTop == null) {
-//            view.clearSelection();
-//            return;
-//        }
-//        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-//        if (scrollTop <= trh) {
-//            Window.scrollTo(0, scrollTop);
-//            scrollTop = null;
-//        }
-//    }
 
     private ProjectQuery getQuery() {
         ProjectQuery query = new ProjectQuery();
@@ -235,13 +216,6 @@ public abstract class ProjectTableActivity
         query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());
         return query;
     }
-
-//    private void clearScroll(ProjectEvents.Show event) {
-//        if (event.clearScroll) {
-//            event.clearScroll = false;
-//            this.scrollTop = null;
-//        }
-//    }
 
     private Runnable removeAction(Long projectId) {
         return () -> regionService.removeProject(projectId, new FluentCallback<Boolean>()
@@ -278,7 +252,6 @@ public abstract class ProjectTableActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
-    private Integer scrollTop;
     private Integer scrollTo = 0;
     private boolean preScroll;
 }

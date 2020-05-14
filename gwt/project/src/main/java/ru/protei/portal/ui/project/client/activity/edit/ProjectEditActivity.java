@@ -53,7 +53,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return;
         }
 
-        clearParentContainer(initDetails.parent);
+        initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
         if (event.id == null) {
@@ -63,14 +64,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             resetView();
             requestProject(event.id, this::fillView);
         }
-    }
-
-    private void clearParentContainer(HasWidgets parent) {
-        parent.clear();
-
-//        При переходе с таблицы, сохраняется положение скролла таблицы
-
-        Window.scrollTo(0, 0);
     }
 
     @Override

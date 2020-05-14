@@ -19,8 +19,12 @@ public class EmployeeEvents {
     @Url( value = "employees", primary = true )
     public static class Show {
 
-        public Show () {}
+        public Show() {}
+        public Show(Boolean preScroll) {
+            this.preScroll = preScroll;
+        }
 
+        public Boolean preScroll;
     }
 
     /**
@@ -52,15 +56,17 @@ public class EmployeeEvents {
     }
 
     public static class ShowDefinite {
-        public ShowDefinite (ViewType type, Widget filter, EmployeeQuery query) {
+        public ShowDefinite (ViewType type, Widget filter, EmployeeQuery query, Boolean preScroll) {
             this.viewType = type;
             this.filter = filter;
             this.query = query;
+            this.preScroll = preScroll;
         }
 
         public ViewType viewType;
         public Widget filter;
         public EmployeeQuery query;
+        public Boolean preScroll;
     }
 
     /**

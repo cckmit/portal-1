@@ -75,7 +75,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new EmployeeEvents.Show());
+        fireEvent(new EmployeeEvents.Show(true));
     }
 
     @Override
