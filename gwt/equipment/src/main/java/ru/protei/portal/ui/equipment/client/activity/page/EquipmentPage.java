@@ -32,7 +32,7 @@ public abstract class EquipmentPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT, ТAB, DebugIds.SIDEBAR_MENU.EQUIPMENT ) );
-            fireEvent( new AppEvents.InitPage( new EquipmentEvents.Show( true ) ) );
+            fireEvent( new AppEvents.InitPage( new EquipmentEvents.Show( false ) ) );
         }
     }
 
@@ -58,7 +58,7 @@ public abstract class EquipmentPage
         }
 
         fireSelectTab();
-        fireEvent( new EquipmentEvents.Show( true ) );
+        fireEvent( new EquipmentEvents.Show( false ) );
     }
 
     private void fireSelectTab() {
@@ -76,6 +76,5 @@ public abstract class EquipmentPage
     PolicyService policyService;
 
     private String ТAB;
-    private Profile profile;
 }
 
