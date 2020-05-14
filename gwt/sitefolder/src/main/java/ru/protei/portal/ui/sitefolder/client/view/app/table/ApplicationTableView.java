@@ -3,6 +3,7 @@ package ru.protei.portal.ui.sitefolder.client.view.app.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -140,7 +141,11 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
         }
         @Override
         public void fillColumnValue(Element cell, Application value) {
-            cell.setInnerText(value.getName());
+            Element element = DOM.createDiv();
+
+            element.setInnerText(value.getName());
+
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Application> serverColumn = new ClickColumn<Application>() {
@@ -152,7 +157,11 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
 
         @Override
         public void fillColumnValue(Element cell, Application value) {
-            cell.setInnerText(value.getServer() == null ? "?" : value.getServer().getName());
+            Element element = DOM.createDiv();
+
+            element.setInnerText(value.getServer() == null ? "?" : value.getServer().getName());
+
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Application> pathsColumn = new ClickColumn<Application>() {
@@ -164,7 +173,11 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
 
         @Override
         public void fillColumnValue(Element cell, Application value) {
-            cell.setInnerText((value.getPaths() == null || value.getPaths().getPaths() == null ? "0" : String.valueOf(value.getPaths().getPaths().size())) + " " + lang.amountShort());
+            Element element = DOM.createDiv();
+
+            element.setInnerText((value.getPaths() == null || value.getPaths().getPaths() == null ? "0" : String.valueOf(value.getPaths().getPaths().size())) + " " + lang.amountShort());
+
+            cell.appendChild(element);
         }
     };
     private Collection<ClickColumn<Application>> columns = new LinkedList<>();

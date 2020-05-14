@@ -148,7 +148,11 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         }
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText(value.getName());
+            Element element = DOM.createDiv();
+
+            element.setInnerText(value.getName());
+
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Platform> managerColumn = new ClickColumn<Platform>() {
@@ -159,13 +163,16 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         }
         @Override
         public void fillColumnValue(Element cell, Platform value) {
+            Element element = DOM.createDiv();
+
             if (value.getProjectId() != null) {
-                cell.setInnerText(value.getCaseManagerShortName() == null ? "" : value.getCaseManagerShortName());
+                element.setInnerText(value.getCaseManagerShortName() == null ? "" : value.getCaseManagerShortName());
             }
             else {
-                cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+                element.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
             }
 
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Platform> serversColumn = new ClickColumn<Platform>() {
@@ -177,12 +184,16 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
 
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " + lang.amountShort());
+            Element element = DOM.createDiv();
+
+            element.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " + lang.amountShort());
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref("#");
             a.addClassName("m-l-5 fa fa-share cell-inline-icon");
             a.setTitle(lang.siteFolderServers());
-            cell.appendChild(a);
+            element.appendChild(a);
+
+            cell.appendChild(element);
         }
     };
     private Collection<ClickColumn<Platform>> columns = new LinkedList<>();

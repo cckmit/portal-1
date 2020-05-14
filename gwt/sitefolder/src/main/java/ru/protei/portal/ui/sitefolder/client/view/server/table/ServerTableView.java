@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.view.server.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -147,7 +148,9 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         }
         @Override
         public void fillColumnValue(Element cell, Server value) {
-            cell.setInnerText(value.getName());
+            Element element = DOM.createDiv();
+            element.setInnerText(value.getName());
+            cell.appendChild(element);
         }
     };
 
@@ -159,8 +162,12 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         }
         @Override
         public void fillColumnValue(Element cell, Server value) {
-            cell.addClassName("column-hidable");
-            cell.setInnerText(value.getIp());
+            Element element = DOM.createDiv();
+
+            element.addClassName("column-hidable");
+            element.setInnerText(value.getIp());
+
+            cell.appendChild(element);
         }
     };
 
@@ -172,8 +179,12 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         }
         @Override
         public void fillColumnValue(Element cell, Server value) {
-            cell.addClassName("column-hidable");
-            cell.setInnerText(value.getParams());
+            Element element = DOM.createDiv();
+
+            element.addClassName("column-hidable");
+            element.setInnerText(value.getParams());
+
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Server> platformColumn = new ClickColumn<Server>() {
@@ -185,7 +196,11 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
         @Override
         public void fillColumnValue(Element cell, Server value) {
-            cell.setInnerText(value.getPlatform() == null ? "?" : value.getPlatform().getName());
+            Element element = DOM.createDiv();
+
+            element.setInnerText(value.getPlatform() == null ? "?" : value.getPlatform().getName());
+
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Server> appsColumn = new ClickColumn<Server>() {
@@ -197,12 +212,16 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
         @Override
         public void fillColumnValue(Element cell, Server value) {
-            cell.setInnerText((value.getApplicationsCount() == null ? "0" : String.valueOf(value.getApplicationsCount())) + " " +lang.amountShort());
+            Element element = DOM.createDiv();
+
+            element.setInnerText((value.getApplicationsCount() == null ? "0" : String.valueOf(value.getApplicationsCount())) + " " +lang.amountShort());
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref("#");
             a.addClassName("fa fa-share cell-inline-icon");
             a.setTitle(lang.siteFolderApps());
-            cell.appendChild(a);
+            element.appendChild(a);
+
+            cell.appendChild(element);
         }
     };
     private Collection<ClickColumn<Server>> columns = new LinkedList<>();
