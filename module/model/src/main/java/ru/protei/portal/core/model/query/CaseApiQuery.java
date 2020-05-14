@@ -15,7 +15,7 @@ public class CaseApiQuery extends BaseQuery {
 
     private List<Long> companyIds;
 
-    private List<String> states;
+    private List<Long> states;
 
     @JsonIgnore
     private En_CaseType type;
@@ -41,8 +41,8 @@ public class CaseApiQuery extends BaseQuery {
         this.type = type;
     }
 
-    public List<String> getStates() { return states; }
-    public void setStates(List<String> states) { this.states = states; }
+    public List<Long> getStates() { return states; }
+    public void setStates(List<Long> states) { this.states = states; }
 
     public String getCreatedFrom() { return createdFrom; }
     public void setCreatedFrom(String createdFrom) { this.createdFrom = createdFrom; }

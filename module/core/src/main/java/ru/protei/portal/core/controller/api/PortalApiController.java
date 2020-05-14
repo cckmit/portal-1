@@ -327,7 +327,7 @@ public class PortalApiController {
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         // optional
-        query.setStateIds(getCaseStateIdList(apiQuery.getStates()));
+        query.setStateIds(apiQuery.getStates());
         query.setManagerIds(apiQuery.getManagerIds());
         query.setCompanyIds(apiQuery.getCompanyIds());
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
@@ -356,19 +356,6 @@ public class PortalApiController {
         query.setOffset(apiQuery.getOffset());
 
         return query;
-    }
-
-    private List<Long> getCaseStateIdList(List<String> states) {
-        List<CaseState> allByCaseType = caseStateDAO.getAllByCaseType(En_CaseType.CRM_SUPPORT);
-
-        List<Long> stateIds = null;
-        if (CollectionUtils.isNotEmpty(states)) {
-            stateIds = allByCaseType.stream()
-                    .filter(state -> states.contains(state.getState()))
-                    .map(CaseState::getId)
-                    .collect(Collectors.toList());
-        }
-        return stateIds;
     }
 
     private Date parseDate(String date) {
