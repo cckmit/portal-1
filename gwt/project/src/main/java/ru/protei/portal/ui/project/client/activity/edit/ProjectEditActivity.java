@@ -87,7 +87,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(isNew(project) ? new ProjectEvents.Show(false) : new Back());
+                    fireEvent(new ProjectEvents.Show(!isNew(project)));
                 })
         );
     }
@@ -108,7 +108,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new ProjectEvents.Show(true));
+        fireEvent(new ProjectEvents.Show(!isNew(project)));
     }
 
     @Override

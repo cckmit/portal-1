@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -49,6 +50,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
         origin = event.origin;
@@ -107,7 +109,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         public void onSuccess(Boolean result) {
                             fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new PersonEvents.PersonCreated(person, origin));
-                            fireEvent(isNew(contact) ? new ContactEvents.Show(true) : new Back());
+                            fireEvent(new ContactEvents.Show(!isNew(contact)));
                         }
                     });
                 }
@@ -144,7 +146,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new ContactEvents.Show(!isNew(contact)));
     }
 
     @Override
