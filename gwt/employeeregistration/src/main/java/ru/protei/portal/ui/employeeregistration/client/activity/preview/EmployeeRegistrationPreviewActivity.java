@@ -111,9 +111,9 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
         view.setCreatedBy(lang.createBy(value.getCreatorShortName(), DateFormatter.formatDateTime(value.getCreated())));
-        view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
-        view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
-        view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
+        view.setEquipmentList( join(value.getEquipmentList(), equipment -> equipmentLang.getName(equipment), ", "));
+        view.setResourceList( join(value.getResourceList(), resource -> resourceLang.getName(resource), ", "));
+        view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeType -> phoneOfficeTypeLang.getName(phoneOfficeType), ", "));
         view.setCurators( join( value.getCurators(), Person::getDisplayShortName, "," ) );
         view.setPosition(value.getPosition());
         view.setProbationPeriodMonth(value.getProbationPeriodMonth() == null ?
