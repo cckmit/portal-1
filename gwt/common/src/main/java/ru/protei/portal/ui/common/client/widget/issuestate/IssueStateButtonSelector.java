@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -70,7 +69,13 @@ public class IssueStateButtonSelector extends ButtonSelector<CaseState> implemen
     }
 
     private String makeCaseStateName(CaseState caseState) {
-        return caseState == null ? defaultValue : caseState.getState();
+        if (caseState == null) {
+            return defaultValue;
+        } else if (caseState.getState() != null) {
+            return caseState.getState();
+        } else {
+            return model.getById(caseState.getId()).getState();
+        }
     }
 
     private En_CaseStateWorkflow workflow;

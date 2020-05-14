@@ -37,8 +37,8 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "STATE")
     private long stateId;
 
-    @JdbcJoinedObject(localColumn = "STATE", remoteColumn = "id")
-    private CaseState state;
+    @JdbcJoinedColumn(mappedColumn = "STATE", table = "case_state", localColumn = "STATE", remoteColumn = "id" )
+    private String stateName;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
@@ -274,8 +274,8 @@ public class CaseShortView implements Serializable {
         this.pauseDate = pauseDate;
     }
 
-    public CaseState getState() {
-        return state;
+    public String getStateName() {
+        return stateName;
     }
 
     @Override
@@ -297,6 +297,7 @@ public class CaseShortView implements Serializable {
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
+                ", stateName=" + stateName +
                 ", impLevel=" + impLevel +
                 ", privateCase=" + privateCase +
                 ", initiatorId=" + initiatorId +

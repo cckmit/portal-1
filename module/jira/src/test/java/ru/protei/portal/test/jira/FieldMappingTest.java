@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class FieldMappingTest {
         expectedMapping.put("Request to NX", (long)En_CaseState.NX_REQUEST.getId());
 
         expectedMapping.forEach((key,stateId) -> {
-            Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key).getId());
+            Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatusId(FIRST_MAP_ID, key));
             Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, stateId));
         });
     }

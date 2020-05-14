@@ -465,16 +465,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<List<CaseState>> stateList( En_CaseType caseType ) {
-        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
-
-        if (states == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        return ok(states);
-    }
-
-    @Override
     public Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType) {
         List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 

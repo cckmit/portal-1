@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcJoinedColumn;
@@ -20,7 +19,7 @@ public final class JiraStatusMapEntry implements Serializable {
     private String jiraStatusName;
 
     @JdbcColumn(name = "LOCAL_status_id")
-    private int localStatusId;
+    private Long localStatusId;
 
     @JdbcColumn(name = "LOCAL_status_name")
     private String localStatusName;
@@ -48,11 +47,11 @@ public final class JiraStatusMapEntry implements Serializable {
         this.jiraStatusName = jiraStatusName;
     }
 
-    public int getLocalStatusId() {
+    public Long getLocalStatusId() {
         return localStatusId;
     }
 
-    public void setLocalStatusId(int localStatusId) {
+    public void setLocalStatusId(Long localStatusId) {
         this.localStatusId = localStatusId;
     }
 
@@ -63,11 +62,7 @@ public final class JiraStatusMapEntry implements Serializable {
     public void setLocalStatusName(String localStatusName) {
         this.localStatusName = localStatusName;
     }
-
-    public CaseState getLocalStatus() {
-        return new CaseState((long) localStatusId);
-    }
-
+    
     public String getInfo() {
         return info;
     }

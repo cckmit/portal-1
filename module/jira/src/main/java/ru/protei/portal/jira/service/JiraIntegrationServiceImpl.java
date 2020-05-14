@@ -168,8 +168,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setLocal(0);
 
         long oldStateId = caseObj.getStateId();
-        CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
-        long newStateId = newState == null ? caseObj.getStateId() : newState.getId();
+        Long newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
+        long newStateId = newState == null ? caseObj.getStateId() : newState;
         caseObj.setStateId(newStateId);
 
         En_ImportanceLevel oldImportance = En_ImportanceLevel.getById(caseObj.getImpLevel());
@@ -217,9 +217,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
-        CaseState newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName() );
+        Long newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName() );
         logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getStateId(), newState);
-        caseObj.setStateId(newState == null ? En_CaseState.CREATED.getId() : newState.getId());
+        caseObj.setStateId(newState == null ? En_CaseState.CREATED.getId() : newState);
 
         En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
         logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.importanceLevel(), newImportance);
@@ -472,12 +472,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
     }
 
-    private CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
+    private Long getNewCaseState(Long statusMapId, String issueStatusName) {
 
-        CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(statusMapId, issueStatusName);
+        Long state = jiraStatusMapEntryDAO.getByJiraStatusId(statusMapId, issueStatusName);
         if (state == null){
             logger.error("unable to map jira-status " + issueStatusName + " to portal case-state");
-            return null;
         }
 
         return state;
