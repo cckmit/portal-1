@@ -70,7 +70,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new ProductEvents.Show());
+        fireEvent(new ProductEvents.Show(true));
     }
 
     private void loadDetails(Long productId) {

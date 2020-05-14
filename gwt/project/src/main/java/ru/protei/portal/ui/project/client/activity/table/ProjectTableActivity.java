@@ -105,13 +105,13 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onItemClicked( Project value ) {
-        scrollTo = Window.getScrollTop();
+        persistScroll();
         showPreview( value );
     }
 
     @Override
     public void onEditClicked( Project value ) {
-        scrollTo = Window.getScrollTop();
+        persistScroll();
         fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
@@ -175,6 +175,10 @@ public abstract class ProjectTableActivity
     @Override
     public void onPageSelected(int page) {
         view.scrollTo(page);
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
     private void restoreScroll() {
@@ -253,5 +257,5 @@ public abstract class ProjectTableActivity
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
-    private boolean preScroll;
+    private Boolean preScroll = false;
 }
