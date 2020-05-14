@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -95,6 +96,7 @@ public abstract class IssueEditActivity implements
         }
         viewModeIsPreview(false);
         container.clear();
+        Window.scrollTo(0, 0);
         requestIssue(event.caseNumber, container);
     }
 
@@ -224,7 +226,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onBackClicked() {
-        fireEvent(new Back());
+        fireEvent(new IssueEvents.Show(true));
     }
 
     public void fireSuccessCopyNotify() {

@@ -19,23 +19,23 @@ public class IssueEvents {
 
         public Show () {}
 
-        public Show (Boolean clearScroll) {
-            this.clearScroll = clearScroll;
+        public Show (Boolean preScroll) {
+            this.preScroll = preScroll;
         }
 
         public Show (CaseQuery query) {
             this.query = query;
         }
 
-        public Show (CaseQuery query, Boolean clearScroll) {
+        public Show (CaseQuery query, Boolean preScroll) {
             this.query = query;
-            this.clearScroll = clearScroll;
+            this.preScroll = preScroll;
         }
 
         @Omit
         public CaseQuery query;
         @Omit
-        public Boolean clearScroll = false;
+        public Boolean preScroll = false;
     }
 
     /**
