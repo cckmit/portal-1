@@ -56,8 +56,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Event
     public void onShow(CompanyEvents.Edit event) {
         initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
         Window.scrollTo(0, 0);
+        initDetails.parent.add(view.asWidget());
         view.tableContainer().clear();
         view.siteFolderContainer().clear();
 

@@ -98,9 +98,8 @@ public abstract class ProjectTableActivity
     @Event
     public void onChangeRow( ProjectEvents.ChangeProject event ) {
         regionService.getProject(event.id, new FluentCallback<Project>()
-                .withSuccess(result -> {
-                    view.updateRow(result);
-                }));
+                .withSuccess(view::updateRow)
+        );
     }
 
     @Override

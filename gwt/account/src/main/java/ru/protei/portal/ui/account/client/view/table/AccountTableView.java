@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_AdminState;
@@ -60,6 +61,9 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
         removeClickColumn.setHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
         removeClickColumn.setColumnProvider( columnProvider );
+
+        table.setLoadHandler(activity);
+        table.setPagerListener(activity);
     }
 
     @Override
@@ -84,13 +88,34 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     }
 
     @Override
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
     public void clearRecords() {
+        table.clearCache();
         table.clearRows();
     }
 
     @Override
     public void clearSelection() {
         columnProvider.setSelectedValue(null);
+    }
+
+    @Override
+    public void scrollTo( int page ) {
+        table.scrollToPage( page );
     }
 
     private void initTable () {
@@ -196,7 +221,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     }
 
     @UiField
-    TableWidget< UserLogin > table;
+    InfiniteTableWidget< UserLogin > table;
 
     @UiField
     HTMLPanel tableContainer;

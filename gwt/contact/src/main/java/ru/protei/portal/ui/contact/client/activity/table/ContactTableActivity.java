@@ -9,10 +9,8 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -29,7 +27,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 /**
  * Активность таблицы контактов
  */
@@ -96,13 +93,13 @@ public abstract class ContactTableActivity
 
     @Override
     public void onItemClicked(Person value) {
-        persistScrollTopPosition();
+        persistScrollPosition();
         showPreview(value);
     }
 
     @Override
     public void onEditClicked(Person value ) {
-        persistScrollTopPosition();
+        persistScrollPosition();
         fireEvent(ContactEvents.Edit.byId(value.getId()));
     }
 
@@ -161,7 +158,7 @@ public abstract class ContactTableActivity
         scrollTo = 0;
     }
 
-    private void persistScrollTopPosition() {
+    private void persistScrollPosition() {
         scrollTo = Window.getScrollTop();
     }
 

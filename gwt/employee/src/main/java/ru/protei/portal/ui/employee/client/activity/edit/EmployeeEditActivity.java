@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -54,6 +55,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         workerId = null;
 
         initDetails.parent.clear();
+        Window.scrollTo(0,0);
         initDetails.parent.add(view.asWidget());
 
         companyService.getCompanyOptionList(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
@@ -186,7 +188,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EmployeeEvents.Show(true));
     }
 
     @Override
@@ -426,7 +428,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employeeService.updateEmployeeWorker(worker, new FluentCallback<Boolean>()
                 .withSuccess(workerEntry -> {
                     fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
+                    fireEvent(new EmployeeEvents.Show(true));
                 }));
     }
 

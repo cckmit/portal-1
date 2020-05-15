@@ -132,13 +132,13 @@ public abstract class IssueTableFilterActivity
 
     @Override
     public void onItemClicked( CaseShortView value ) {
-        persistScroll();
+        persistScrollPosition();
         showPreview( value );
     }
 
     @Override
     public void onEditClicked( CaseShortView value ) {
-        persistScroll();
+        persistScrollPosition();
         fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
     }
 
@@ -235,7 +235,7 @@ public abstract class IssueTableFilterActivity
         view.triggerTableLoad();
     }
 
-    private void persistScroll() {
+    private void persistScrollPosition() {
         scrollTo = Window.getScrollTop();
     }
 

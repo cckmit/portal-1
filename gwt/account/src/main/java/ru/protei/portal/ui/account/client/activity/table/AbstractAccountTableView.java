@@ -15,6 +15,13 @@ public interface AbstractAccountTableView extends IsWidget {
     void setAnimation ( TableAnimation animation );
 
     void addRecords( List< UserLogin > accounts );
+
+    void triggerTableLoad();
+
+    void setTotalRecords(int totalRecords);
+
+    int getPageCount();
+
     void clearRecords();
 
     HasWidgets getPreviewContainer ();
@@ -22,4 +29,6 @@ public interface AbstractAccountTableView extends IsWidget {
     HasWidgets getPagerContainer();
 
     void clearSelection();
+
+    void scrollTo(int page);
 }

@@ -1,9 +1,11 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -36,8 +38,9 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
 
     @Event
     public void onShow( EmployeeEvents.ShowDefinite event ) {
-        if(event.viewType != ViewType.TABLE)
+        if(event.viewType != ViewType.TABLE) {
             return;
+        }
 
         view.getFilterContainer().clear();
         view.getPagerContainer().clear();
@@ -48,6 +51,8 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         view.getFilterContainer().add(event.filter);
 
         this.query = event.query;
+        this.preScroll = event.preScroll;
+
         loadTable();
     }
 
@@ -72,11 +77,14 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
 
     @Override
     public void onItemClicked(EmployeeShortView value) {
+        persistScrollPosition();
         showPreview(value);
     }
 
     @Override
     public void onEditClicked(EmployeeShortView value) {
+        persistScrollPosition();
+        fireEvent(new EmployeeEvents.Edit(value.getId()));
     }
 
     private void showPreview (EmployeeShortView value ) {
@@ -105,6 +113,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScroll();
                     }
                 }));
     }
@@ -113,6 +122,21 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         animation.closeDetails();
         view.clearRecords();
         view.triggerTableLoad();
+    }
+
+    private void persistScrollPosition() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     @Inject
@@ -128,4 +152,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
 
     private AppEvents.InitDetails init;
     private EmployeeQuery query;
+
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

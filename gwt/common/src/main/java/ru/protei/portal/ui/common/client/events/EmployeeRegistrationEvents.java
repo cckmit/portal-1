@@ -1,13 +1,19 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 
 public class EmployeeRegistrationEvents {
 
     @Url( value = "employee_registrations", primary = true )
     public static class Show {
+        @Omit
+        public Boolean preScroll = false;
         public Show () {}
+        public Show(Boolean preScroll) {
+            this.preScroll = preScroll;
+        }
     }
 
     @Url( value = "employee_registration")
