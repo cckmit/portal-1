@@ -22,8 +22,7 @@ public class IssueStatesOptionList extends OptionList<CaseState> implements Sele
     public void fillOptions( List< CaseState > states ) {
         clearOptions();
         states.forEach(state -> {
-            addOption( state.getState(), state, "inline m-r-5 option-" +
-                    state.getState() );
+            addOption(state.getState(), state, "inline m-r-5 option-" + state.getState());
             setEnsureDebugId(state, DebugIdsHelper.ISSUE_STATE.byId(state.getId()));
         });
     }

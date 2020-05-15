@@ -79,7 +79,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.putAll(makeTemplateModelUtils());
-        templateModel.putAll(makeTemplateModelMeta(event, getIdToCaseState()));
+        templateModel.putAll(makeTemplateModelMeta(event));
 
 //        templateModel.put( "case", newState );
 //        templateModel.put( "oldCase", oldState );
@@ -130,7 +130,7 @@ public class TemplateServiceImpl implements TemplateService {
         return templateModel;
     }
 
-    private Map<String, Object> makeTemplateModelMeta(AssembledCaseEvent event, Map<Long, CaseState> idToCaseType) {
+    private Map<String, Object> makeTemplateModelMeta(AssembledCaseEvent event) {
         Map<String, Object> templateModel = new HashMap<>();
         CaseObjectMeta newMetaState = event.getCaseMeta();
         CaseObjectMeta oldMetaState = event.getInitCaseMeta() == null ? null : newMetaState.equals(event.getInitCaseMeta()) ? null : event.getInitCaseMeta();
@@ -140,8 +140,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportance() == null ? null : oldMetaState.getImportance().getCode());
 
         templateModel.put("caseChanged", event.isCaseStateChanged());
-        templateModel.put("caseState", idToCaseType.get(newMetaState.getStateId()));
-        templateModel.put("oldCaseState", oldMetaState == null ? null : idToCaseType.get(oldMetaState.getStateId()));
+        templateModel.put("caseState", newMetaState.getStateName());
+        templateModel.put("oldCaseState", oldMetaState == null ? null : oldMetaState.getStateName());
 
         templateModel.put("isPausedState", En_CaseState.PAUSED.getId() == newMetaState.getStateId());
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
@@ -177,15 +177,13 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson ) {
-        Map<Long, CaseState> idToCaseState = getIdToCaseState();
-
         CaseObject caseObject = event.getCaseObject();
         CaseObjectMeta caseMeta = event.getCaseMeta();
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put( "TranslitUtils", new TransliterationUtils() );
         templateModel.put( "author", currentPerson );
         templateModel.put( "caseNumber", caseObject.getCaseNumber() );
-        templateModel.put( "caseState", idToCaseState.get(caseMeta.getStateId()) );
+        templateModel.put( "caseState", caseMeta.getStateName());
         templateModel.put( "importanceLevel", caseMeta.getImportance() == null ? null : caseMeta.getImportance().getCode() );
         templateModel.put( "productName", caseMeta.getProduct() == null ? null : caseMeta.getProduct().getName() );
 
@@ -614,11 +612,5 @@ public class TemplateServiceImpl implements TemplateService {
         if (!isEmpty( mergeLinks.getAddedEntries() )) return true;
         if (!isEmpty( mergeLinks.getRemovedEntries() )) return true;
         return false;
-    }
-
-    private Map<Long, CaseState> getIdToCaseState() {
-        List<CaseState> allByCaseType = caseStateDAO.getAllByCaseType(En_CaseType.CRM_SUPPORT);
-        return allByCaseType.stream()
-                .collect(Collectors.toMap(CaseState::getId, Function.identity(), (caseState1, caseState2) -> caseState1));
     }
 }

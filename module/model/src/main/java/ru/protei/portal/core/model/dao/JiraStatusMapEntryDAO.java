@@ -6,5 +6,5 @@ public interface JiraStatusMapEntryDAO extends PortalBaseDAO<JiraStatusMapEntry>
 
     String getJiraStatus(long mapId, long stateId);
 
-    Long getByJiraStatusId(long mapId, String statusId);
+    Long getByJiraStatus(long mapId, String statusId);
 }

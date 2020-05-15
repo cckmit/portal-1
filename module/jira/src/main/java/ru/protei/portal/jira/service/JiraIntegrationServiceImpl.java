@@ -217,7 +217,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
-        Long newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName() );
+        Long newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
         logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getStateId(), newState);
         caseObj.setStateId(newState == null ? En_CaseState.CREATED.getId() : newState);
 
@@ -474,7 +474,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private Long getNewCaseState(Long statusMapId, String issueStatusName) {
 
-        Long state = jiraStatusMapEntryDAO.getByJiraStatusId(statusMapId, issueStatusName);
+        Long state = jiraStatusMapEntryDAO.getByJiraStatus(statusMapId, issueStatusName);
         if (state == null){
             logger.error("unable to map jira-status " + issueStatusName + " to portal case-state");
         }

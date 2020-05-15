@@ -49,12 +49,11 @@ public class ReportCaseImpl implements ReportCase {
         int count = caseObjectDAO.countByQuery(report.getCaseQuery());
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        Map<Long, CaseState> idToCaseState = getIdToCaseState();
 
         if (count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
             ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(
-                    localizedLang, dateFormat, timeFormatter, report.isRestricted(), idToCaseState);
+                    localizedLang, dateFormat, timeFormatter, report.isRestricted());
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -68,7 +67,7 @@ public class ReportCaseImpl implements ReportCase {
         log.debug("writeReport : reportId={} has {} case objects to procees", report.getId(), count);
 
         ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(
-                localizedLang, dateFormat, timeFormatter, report.isRestricted(), idToCaseState);
+                localizedLang, dateFormat, timeFormatter, report.isRestricted());
 
         int sheetNumber = writer.createSheet();
 
@@ -114,11 +113,5 @@ public class ReportCaseImpl implements ReportCase {
             data.add(new CaseObjectComments(caseObject, caseComments));
         });
         writer.write(sheetNumber, data);
-    }
-
-    private Map<Long, CaseState> getIdToCaseState() {
-        List<CaseState> allByCaseType = caseStateDAO.getAllByCaseType(En_CaseType.CRM_SUPPORT);
-        return allByCaseType.stream()
-                .collect(Collectors.toMap(CaseState::getId, Function.identity(), (caseState1, caseState2) -> caseState1));
     }
 }

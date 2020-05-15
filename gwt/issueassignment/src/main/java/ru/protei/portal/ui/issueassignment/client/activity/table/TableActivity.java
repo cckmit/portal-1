@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.common.IssueStatesService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -145,7 +145,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     private CaseQuery makeDefaultQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStateIds(issueStates.getTableDefaultQueryStateIds());
+        query.setStateIds(issueStatesService.getNewStateIds());
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
@@ -195,7 +195,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
     @Inject
     LocalStorageService localStorageService;
     @Inject
-    IssueStates issueStates;
+    IssueStatesService issueStatesService;
 
     private List<PersonShortView> people = new ArrayList<>();
 

@@ -23,7 +23,7 @@ public class JiraStatusMapEntryDAO_ImplMock extends JiraStatusMapEntryDAO_Impl {
     }
 
     @Override
-    public Long getByJiraStatusId(long mapId, String statusName) {
+    public Long getByJiraStatus(long mapId, String statusName) {
         if (statusMap == null) buildStatusMap();
         return statusName == null ? null : statusMap.get(statusName);
     }

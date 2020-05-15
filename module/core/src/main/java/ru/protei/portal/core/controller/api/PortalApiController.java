@@ -324,7 +324,7 @@ public class PortalApiController {
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         // optional
-        query.setStateIds(apiQuery.getStates());
+        query.setStateIds(apiQuery.getStateIds());
         query.setManagerIds(apiQuery.getManagerIds());
         query.setCompanyIds(apiQuery.getCompanyIds());
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());

@@ -19,7 +19,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
-import ru.protei.portal.ui.common.client.common.IssueStates;
+import ru.protei.portal.ui.common.client.common.IssueStatesService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
@@ -78,7 +78,7 @@ public class IssueFilterWidget extends Composite {
 
         setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
-            issueFilterParamView.states().setValue(issueStates.getIssueFilterWidgetActiveStates());
+            issueFilterParamView.states().setValue(issueStatesService.getFilterCaseResolutionTimeActiveStates());
         }
     }
 
@@ -315,7 +315,7 @@ public class IssueFilterWidget extends Composite {
     @Inject
     InitiatorModel initiatorModel;
     @Inject
-    IssueStates issueStates;
+    IssueStatesService issueStatesService;
 
     AbstractIssueFilterWidgetModel model;
 

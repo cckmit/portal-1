@@ -341,7 +341,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
-        metaView.state().setValue( new CaseState(meta.getStateId()) );
+        metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
         metaView.pauseDate().setValue(meta.getPauseDate() == null ? null : new Date(meta.getPauseDate()));
         metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == meta.getStateId());
         metaView.setPauseDateValid(isPauseDateValid(meta.getStateId(), meta.getPauseDate()));

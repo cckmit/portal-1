@@ -72,13 +72,7 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
     }
 
     private String makeCaseStateName(CaseState caseState) {
-        if (caseState == null) {
-            return defaultValue;
-        } else if (caseState.getState() != null) {
-            return caseState.getState();
-        } else {
-            return model.getById(caseState.getId()).getState();
-        }
+        return caseState == null ? defaultValue : caseState.getState();
     }
 
     private En_CaseStateWorkflow workflow;

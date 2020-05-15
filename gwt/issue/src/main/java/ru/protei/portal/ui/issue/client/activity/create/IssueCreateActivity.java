@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
+import ru.protei.portal.ui.common.client.common.IssueStatesService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
@@ -326,9 +327,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setCaseMetaNotifiers(null);
 
         issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
-        issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
+        issueMetaView.importance().setValue(caseObjectMeta.getImportance());
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
-        issueMetaView.state().setValue( new CaseState(caseObjectMeta.getStateId()) );
+        issueMetaView.state().setValue(issueStatesService.getCreatedCaseState());
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
         issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == caseObjectMeta.getStateId());
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
@@ -583,6 +584,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CompanyControllerAsync companyService;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    IssueStatesService issueStatesService;
 
     private boolean saving;
     private AppEvents.InitDetails init;

@@ -47,6 +47,9 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "STATE")
     private long stateId;
 
+    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String stateName;
+
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
@@ -254,6 +257,14 @@ public class CaseObject extends AuditableObject {
 
     public void setStateId(long stateId) {
         this.stateId = stateId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public Integer getImpLevel() {

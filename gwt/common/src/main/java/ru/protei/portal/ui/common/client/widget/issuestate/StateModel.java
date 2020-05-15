@@ -139,7 +139,7 @@ public abstract class StateModel implements Activity {
             }
         }
 
-        return nextCaseStates.stream().sorted(Comparator.comparingInt(CaseState::getViewOrder)).collect( Collectors.toList());
+        return nextCaseStates.stream().sorted(Comparator.comparingInt(CaseState::getViewOrder)).collect(Collectors.toList());
     }
 
     @Inject

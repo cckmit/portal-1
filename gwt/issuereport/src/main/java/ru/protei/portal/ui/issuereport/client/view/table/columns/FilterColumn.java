@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issuereport.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_ReportType;
@@ -22,12 +21,11 @@ public class FilterColumn extends StaticColumn<Report> {
 
     @Inject
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
-                        En_CaseImportanceLang caseImportanceLang, En_CaseStateLang caseStateLang, En_RegionStateLang regionStateLang) {
+                        En_CaseImportanceLang caseImportanceLang, En_RegionStateLang regionStateLang) {
         this.lang = lang;
         this.sortFieldLang = sortFieldLang;
         this.sortDirLang = sortDirLang;
         this.caseImportanceLang = caseImportanceLang;
-        this.caseStateLang = caseStateLang;
         this.regionStateLang = regionStateLang;
     }
 
@@ -190,6 +188,5 @@ public class FilterColumn extends StaticColumn<Report> {
     private En_SortFieldLang sortFieldLang;
     private En_SortDirLang sortDirLang;
     private En_CaseImportanceLang caseImportanceLang;
-    private En_CaseStateLang caseStateLang;
     private En_RegionStateLang regionStateLang;
 }

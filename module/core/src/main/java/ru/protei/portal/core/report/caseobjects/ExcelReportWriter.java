@@ -31,17 +31,15 @@ public class ExcelReportWriter implements
     private final TimeFormatter timeFormatter;
     private final boolean isNotRestricted;
     private final String locale;
-    private final Map<Long, CaseState> idToCaseState;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter,
-                             boolean isRestricted, Map<Long, CaseState> idToCaseState) {
+                             boolean isRestricted) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
         this.timeFormatter = timeFormatter;
         this.isNotRestricted = !isRestricted;
         this.locale = localizedLang.getLanguageTag();
-        this.idToCaseState = idToCaseState;
     }
 
     @Override
@@ -149,8 +147,7 @@ public class ExcelReportWriter implements
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
         values.add(issue.getImpLevel() != null ? lang.get("importance_" + issue.getImpLevel()) : "");
-        CaseState caseState = idToCaseState.get(issue.getStateId());
-        values.add(caseState != null ? caseState.getState() : "");
+        values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         values.add(created != null ? dateFormat.format(created) : "");
         values.add(opened != null ? dateFormat.format(opened) : "");
         values.add(workaround != null ? dateFormat.format(workaround) : "");

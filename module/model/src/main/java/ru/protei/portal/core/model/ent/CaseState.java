@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -34,9 +33,9 @@ public class CaseState implements Serializable {
         this.id = id;
     }
 
-    public CaseState(En_CaseState en_caseState) {
-        this.id = (long)en_caseState.getId();
-        this.state = en_caseState.getName();
+    public CaseState(Long id, String state) {
+        this.id = id;
+        this.state = state;
     }
 
     public Long getId() {
@@ -86,11 +85,6 @@ public class CaseState implements Serializable {
     public CaseState withViewOrder(int viewOrder) {
         this.viewOrder = viewOrder;
         return this;
-    }
-
-    public static En_CaseState asState(CaseState state) {
-        if (state == null || state.getId() == null) return null;
-        return En_CaseState.getById(state.getId());
     }
 
     @Override
