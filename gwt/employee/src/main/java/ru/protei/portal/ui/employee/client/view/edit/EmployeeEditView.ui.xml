@@ -13,7 +13,7 @@
     <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
 
         <div class="card-body no-padding">
-            <div class="container-fluid padding-15">
+            <div class="container-fluid p-t-15 p-l-15 p-r-15">
                 <div class="card card-transparent no-margin">
                     <div class="card-header">
                         <div class="card-title">
@@ -56,11 +56,9 @@
                                         <g:Label ui:field="secondNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                                     </div>
 
-
-
-                                    <div class="form-group col-md-12">
+                                    <g:HTMLPanel ui:field="changeAccountContainer" styleName="form-group col-md-12">
                                         <g:CheckBox ui:field="changeAccount" styleName="checkbox" text="{lang.employeeChangeAccount}"/>
-                                    </div>
+                                    </g:HTMLPanel>
 
                                     <div class="form-group col-md-4">
                                         <label class="">
@@ -75,27 +73,44 @@
                                         </label>
                                         <dict:GenderButtonSelector ui:field="gender" validation="false"/>
                                     </div>
+                                </div>
 
+                                <div class="block-header">
+                                    <div class="block-title">
+                                        <ui:text from="{lang.employeeContactInfoTitle}"/>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label ui:field="workEmailLabel">
+                                            <ui:text from="{lang.workEmail}"/>
+                                        </label>
+                                        <validatefield:ValidableTextBox ui:field="workEmail"
+                                                                        notNull="true"
+                                                                        styleName="form-control"/>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label ui:field="ipAddressLabel">
+                                            <ui:text from="{lang.employeeIPAddress}"/>
+                                        </label>
+                                        <validatefield:ValidableTextBox ui:field="ipAddress"
+                                                                        notNull="true"
+                                                                        styleName="form-control"/>
+                                    </div>
                                     <div class="form-group col-md-6">
                                         <label>
-                                            <ui:text from="{lang.company}"/>
+                                            <ui:text from="{lang.workPhone}"/>
                                         </label>
-                                        <homecompanyselector:HomeCompanyButtonSelector ui:field="company" validation="true" synchronizeWith1C="false"/>
+                                        <g:TextBox ui:field="workPhone" styleName="form-control"/>
                                     </div>
-
-                                    <div class="form-group col-md-6">
-                                        <label>
-                                            <ui:text from="{lang.employeePosition}"/>
-                                        </label>
-                                        <workerposition:WorkerPositionSelector ui:field="workerPositionSelector" validation="true"/>
-                                    </div>
-
                                     <div class="form-group col-md-6">
                                         <label class="">
-                                            <ui:text from="{lang.department}"/>
+                                            <ui:text from="{lang.mobilePhone}"/>
                                         </label>
-                                        <companydepartment:CompanyDepartmentSelector ui:field="companyDepartmentSelector" validation="true"/>
+                                        <g:TextBox ui:field="mobilePhone" styleName="form-control"/>
                                     </div>
+
                                 </div>
                             </div>
 
@@ -116,48 +131,47 @@
                                     </g:HTMLPanel>
                                 </g:FormPanel>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="container-fluid padding-15  bg-white">
+            <div class="container-fluid p-b-15 p-l-15 p-r-15  bg-white">
                 <div class="card card-transparent no-margin">
                     <div class="card-header">
                         <div class="card-title">
-                            <ui:text from="{lang.employeeContactInfoTitle}"/>
+                            <ui:text from="{lang.employeePositions}"/>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="form-group col-md-6">
-                                <label ui:field="workEmailLabel">
-                                    <ui:text from="{lang.workEmail}"/>
-                                </label>
-                                <validatefield:ValidableTextBox ui:field="workEmail"
-                                                                notNull="true"
-                                                                styleName="form-control"/>
+
+                            <div class="form-group col-md-12">
+                                <g:HTMLPanel ui:field="positionsContainer"/>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label ui:field="ipAddressLabel">
-                                    <ui:text from="{lang.employeeIPAddress}"/>
-                                </label>
-                                <validatefield:ValidableTextBox ui:field="ipAddress"
-                                                                notNull="true"
-                                                                styleName="form-control"/>
-                            </div>
-                            <div class="form-group col-md-6">
+
+                            <div class="form-group col-md-3">
                                 <label>
-                                    <ui:text from="{lang.workPhone}"/>
+                                    <ui:text from="{lang.company}"/>
                                 </label>
-                                <g:TextBox ui:field="workPhone" styleName="form-control"/>
+                                <homecompanyselector:HomeCompanyButtonSelector ui:field="company" synchronizeWith1C="false"/>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label class="">
-                                    <ui:text from="{lang.mobilePhone}"/>
+
+                            <div class="form-group col-md-4">
+                                <label>
+                                    <ui:text from="{lang.department}"/>
                                 </label>
-                                <g:TextBox ui:field="mobilePhone" styleName="form-control"/>
+                                <companydepartment:CompanyDepartmentSelector ui:field="companyDepartmentSelector"/>
+                            </div>
+
+                            <div class="form-group col-md-4">
+                                <label>
+                                    <ui:text from="{lang.employeePosition}"/>
+                                </label>
+                                <workerposition:WorkerPositionSelector ui:field="workerPositionSelector"/>
+                            </div>
+
+                            <div class="form-group col-md-1">
+                                <g:Button ui:field="addPositionBtn" text="{lang.employeePositionAddButton}" styleName="btn btn-info btn-xs add-position-button"/>
                             </div>
 
                         </div>

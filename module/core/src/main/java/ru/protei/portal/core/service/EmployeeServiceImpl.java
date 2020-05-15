@@ -307,7 +307,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean result = workerEntryDAO.partialMerge(worker, "dep_id", "companyId", "positionId");
+        if (isSyncCompanyWorker(worker)){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = workerEntryDAO.partialMerge(worker, "dep_id", "companyId", "positionId", "active");
 
         if (result) {
             return ok(true);
@@ -321,6 +325,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        if (isSyncCompanyWorker(worker)){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         worker.setCreated(new Date());
         Long workerId = workerEntryDAO.persist(worker);
 
@@ -347,10 +356,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         boolean result = personDAO.merge(personFromDb);
 
         if (result) {
-            boolean isRemoved = removeWorkerEntry(personFromDb.getId());
+            boolean isRemoved = removeWorkerEntriesByPersonId(personFromDb.getId());
 
             if (!isRemoved){
-                return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY);
+                return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
             
             userLoginDAO.removeByPersonId(personFromDb.getId());
@@ -361,6 +370,98 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return ok(result);
+    }
+
+    @Transactional
+    @Override
+    public Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> newWorkerEntries){
+        if (newWorkerEntries == null || newWorkerEntries.isEmpty() || newWorkerEntries.get(0).getPersonId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        checkActiveFlag(newWorkerEntries);
+
+        final int TO_CREATE = 1;
+        final int TO_UPDATE = 2;
+        final int TO_REMOVE = 3;
+
+        WorkerEntryQuery query = new WorkerEntryQuery(newWorkerEntries.get(0).getPersonId());
+        List<WorkerEntry> oldWorkerEntries = workerEntryDAO.getWorkers(query);
+
+        Map<WorkerEntry, Integer> finalWorkersMap = new HashMap<>();
+
+        Iterator<WorkerEntry> workerEntryIterator = newWorkerEntries.iterator();
+
+        while (workerEntryIterator.hasNext()) {
+            WorkerEntry workerEntry = workerEntryIterator.next();
+            if (workerEntry.getId() == null){
+                finalWorkersMap.put(workerEntry, TO_CREATE);
+                workerEntryIterator.remove();
+                continue;
+            }
+
+            if (isSyncCompanyWorker(workerEntry)){
+                workerEntryIterator.remove();
+            }
+        }
+
+        for (WorkerEntry worker : oldWorkerEntries) {
+            boolean isActualWorkerEntry = false;
+
+            if (isSyncCompanyWorker(worker)){
+                continue;
+            }
+
+           workerEntryIterator = newWorkerEntries.iterator();
+            while (workerEntryIterator.hasNext()){
+                WorkerEntry workerEntry = workerEntryIterator.next();
+
+                if (worker.getId().equals(workerEntry.getId())){
+                    finalWorkersMap.put(workerEntry, TO_UPDATE);
+                    isActualWorkerEntry = true;
+                    workerEntryIterator.remove();
+                    break;
+                }
+            }
+
+            if(!isActualWorkerEntry){
+                finalWorkersMap.put(worker, TO_REMOVE);
+            }
+        }
+
+        for (Map.Entry<WorkerEntry, Integer> entry : finalWorkersMap.entrySet()) {
+            switch (entry.getValue()){
+                case TO_CREATE :
+                    Result createResult  = createEmployeeWorker(token, entry.getKey());
+                    if (createResult.isError()){
+                        return error(createResult.getStatus());
+                    }
+                    break;
+                case TO_UPDATE :
+                    Result updateStatus  = updateEmployeeWorker(token, entry.getKey());
+                    if (updateStatus.isError()){
+                        return error(updateStatus.getStatus());
+                    }
+                    break;
+                case TO_REMOVE :
+                    Result removeStatus  = removeWorkerEntry(entry.getKey());
+                    if (removeStatus.isError()){
+                        return error(removeStatus.getStatus());
+                    }
+                    break;
+            }
+        }
+
+       return ok(true);
+    }
+
+    private void checkActiveFlag(List<WorkerEntry> newWorkerEntries) {
+        boolean isFlagSet = newWorkerEntries.stream()
+                .anyMatch(workerEntry -> workerEntry.getActiveFlag() > 0);
+
+        if (!isFlagSet){
+            newWorkerEntries.get(0).setActiveFlag(1);
+        }
     }
 
     private void createChangeLastNameYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
@@ -393,19 +494,38 @@ public class EmployeeServiceImpl implements EmployeeService {
         youtrackService.createFireWorkerIssue(summary, description );
     }
 
-    private boolean removeWorkerEntry(Long personId){
+    private boolean removeWorkerEntriesByPersonId(Long personId){
         WorkerEntryQuery workerEntryQuery = new WorkerEntryQuery(personId);
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(workerEntryQuery);
 
-        if (workers.size() != 1){
-            return false;
+        for (WorkerEntry worker : workers) {
+            if (isSyncCompanyWorker(worker)){
+                return false;
+            }
         }
 
-        if (!companyDAO.getAllHomeCompanyIdsWithoutSync().contains(workers.get(0).getCompanyId())){
-            return false;
+        boolean isSuccess = true;
+        for (WorkerEntry worker : workers) {
+            if (!workerEntryDAO.remove(worker)){
+                isSuccess = false;
+            }
         }
 
-        return workerEntryDAO.remove(workers.get(0));
+        return isSuccess;
+    }
+
+    private Result<Boolean> removeWorkerEntry (WorkerEntry worker){
+        if (isSyncCompanyWorker(worker)){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = workerEntryDAO.remove(worker);
+
+        return result ? ok(result) : error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    private boolean isSyncCompanyWorker (WorkerEntry worker){
+        return !companyDAO.getAllHomeCompanyIdsWithoutSync().contains(worker.getCompanyId());
     }
 
     private boolean checkExistEmployee (Person person){

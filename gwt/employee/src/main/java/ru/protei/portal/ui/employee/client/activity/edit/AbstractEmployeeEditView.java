@@ -59,8 +59,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasValue<En_Gender> gender ();
 
-    HasValidable companyValidator();
-
     HasValidable firstNameValidator();
 
     HasValidable lastNameValidator();
@@ -68,10 +66,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
     void companyDepartmentSelectorReload();
 
     void workerPositionSelectorReload();
-
-    HasValidable companyDepartmentValidator();
-
-    HasValidable workerPositionValidator();
 
     HasValidable genderValidator();
 
@@ -114,6 +108,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasValue<Boolean> changeAccount();
 
     HasVisibility changeAccountVisibility();
+
+    HasWidgets getPositionsContainer();
 
     void updateCompanyDepartments(Long companyId);
 

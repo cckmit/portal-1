@@ -174,11 +174,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasValidable companyValidator() {
-        return company;
-    }
-
-    @Override
     public HasValidable firstNameValidator(){
         return firstName;
     }
@@ -206,16 +201,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public void workerPositionSelectorReload(){
         workerPositionSelector.reload();
-    }
-
-    @Override
-    public HasValidable companyDepartmentValidator(){
-        return companyDepartmentSelector;
-    }
-
-    @Override
-    public HasValidable workerPositionValidator(){
-        return workerPositionSelector;
     }
 
     @Override
@@ -308,7 +293,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @Override
     public HasVisibility changeAccountVisibility() {
-        return changeAccount;
+        return changeAccountContainer;
+    }
+
+    @Override
+    public HasWidgets getPositionsContainer() {
+        return positionsContainer;
     }
 
     @Override
@@ -383,6 +373,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     public void onFireClicked( ClickEvent event ) {
         if (activity != null) {
             activity.onFireClicked();
+        }
+    }
+
+    @UiHandler("addPositionBtn")
+    public void onAddPositionClicked( ClickEvent event ) {
+        if (activity != null) {
+            activity.onAddPositionBtnClicked();
         }
     }
 
@@ -471,6 +468,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     CheckBox changeAccount;
 
+    @UiField
+    HTMLPanel changeAccountContainer;
+
     @Inject
     @UiField(provided = true)
     CompanyDepartmentSelector companyDepartmentSelector;
@@ -491,6 +491,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     HTMLPanel employeeFired;
 
     @UiField
+    HTMLPanel positionsContainer;
+
+    @UiField
     Image image;
 
     @UiField
@@ -504,6 +507,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     FileUpload fileUpload;
+
+    @UiField
+    Button addPositionBtn;
 
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override
