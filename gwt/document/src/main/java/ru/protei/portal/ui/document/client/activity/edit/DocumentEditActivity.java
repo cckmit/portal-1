@@ -186,7 +186,7 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onCancelClicked() {
-       fireEvent(new Back());
+       fireEvent(new DocumentEvents.Show(!isNew(document)));
     }
 
     @Override
@@ -222,6 +222,7 @@ public abstract class DocumentEditActivity
 
     private void placeView(HasWidgets container) {
         container.clear();
+        Window.scrollTo(0, 0);
         container.add(view.asWidget());
     }
 
@@ -338,14 +339,14 @@ public abstract class DocumentEditActivity
             uploadDoc(() ->
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
+                            boolean isNew = isNew(this.document);
                             this.document = doc;
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             if (stayOnPage){
                                 fillView(makeDocumentToContinue());
-                            }
-                            else {
-                                fireEvent(new Back());
+                            } else {
+                                fireEvent(new DocumentEvents.Show(!isNew));
                             }
                         }
         ))));
@@ -497,7 +498,7 @@ public abstract class DocumentEditActivity
     }
 
     private void fillView(Document document) {
-        boolean isNew = document.getId() == null;
+        boolean isNew = isNew(document);
 
         view.setDownloadCloudsVisible(!isNew);
         view.name().setValue(document.getName());
@@ -583,6 +584,10 @@ public abstract class DocumentEditActivity
     }
     private Boolean isEnableDecimalNumberByApproved(Document doc) {
         return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
+    }
+
+    private boolean isNew(Document document) {
+        return document.getId() == null;
     }
 
     @Inject
