@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.app.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -16,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.sitefolder.client.activity.app.table.ApplicationTableActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,10 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+
+        this.source = event.source;
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.appId == null) {
@@ -91,14 +96,32 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
             public void onSuccess(Application result) {
                 fireEvent(new SiteFolderAppEvents.ChangeModel());
                 fireEvent(new SiteFolderAppEvents.Changed(result));
-                fireEvent(new Back());
+                fireBackEvent(application, source);
             }
         });
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireBackEvent(application, source);
+    }
+
+    private void fireBackEvent(Application application, Object source) {
+        if (isNew(application)) {
+            fireEvent(new Back());
+            return;
+        }
+
+        if (!(source instanceof ApplicationTableActivity)) {
+            fireEvent(new Back());
+            return;
+        }
+
+        fireEvent(new SiteFolderAppEvents.Show(application.getServerId(), true));
+    }
+
+    private boolean isNew(Application application) {
+        return application.getId() == null;
     }
 
     private void fillView(Application application) {
@@ -152,4 +175,6 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
 
     private Application application;
     private AppEvents.InitDetails initDetails;
+
+    private Object source;
 }

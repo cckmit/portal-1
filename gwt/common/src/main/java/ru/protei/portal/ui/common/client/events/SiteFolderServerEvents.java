@@ -15,11 +15,14 @@ public class SiteFolderServerEvents {
     public static class Show {
         @Name("platform")
         public Long platformId;
+        @Omit
+        public Boolean preScroll;
         public Show() {
-            this(null);
+            this(null, false);
         }
-        public Show (Long platformId) {
+        public Show (Long platformId, Boolean preScroll) {
             this.platformId = platformId;
+            this.preScroll = preScroll;
         }
     }
 
@@ -31,6 +34,8 @@ public class SiteFolderServerEvents {
         public Long serverIdToBeCloned;
         @Omit
         public Platform platform;
+        @Omit
+        public Object source;
         public Edit() {
             this(null);
         }
@@ -46,6 +51,10 @@ public class SiteFolderServerEvents {
             Edit edit = new Edit();
             edit.serverIdToBeCloned = serverIdToBeCloned;
             return edit;
+        }
+        public Edit withSource(Object source) {
+            this.source = source;
+            return this;
         }
     }
 

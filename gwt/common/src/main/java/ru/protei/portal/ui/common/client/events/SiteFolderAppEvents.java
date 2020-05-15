@@ -15,11 +15,14 @@ public class SiteFolderAppEvents {
     public static class Show {
         @Name("server")
         public Long serverId;
+        @Omit
+        public Boolean preScroll;
         public Show() {
-            this(null);
+            this(null, false);
         }
-        public Show(Long serverId) {
+        public Show(Long serverId, Boolean preScroll) {
             this.serverId = serverId;
+            this.preScroll = preScroll;
         }
     }
 
@@ -29,6 +32,8 @@ public class SiteFolderAppEvents {
         public Long appId;
         @Omit
         public Server server;
+        @Omit
+        public Object source;
         public Edit() {
             this(null);
         }
@@ -39,6 +44,10 @@ public class SiteFolderAppEvents {
             Edit edit = new Edit();
             edit.server = server;
             return edit;
+        }
+        public Edit withSource(Object source) {
+            this.source = source;
+            return this;
         }
     }
 

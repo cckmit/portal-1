@@ -28,4 +28,6 @@ public interface AbstractApplicationTableView extends IsWidget {
     HasWidgets getFilterContainer();
 
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

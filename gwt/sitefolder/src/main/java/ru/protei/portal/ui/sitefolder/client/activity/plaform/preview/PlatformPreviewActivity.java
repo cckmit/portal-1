@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -62,7 +63,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     @Override
     public void onOpenServersClicked() {
         if (platformId != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platformId));
+            fireEvent(new SiteFolderServerEvents.Show(platformId, false));
         }
     }
 
@@ -151,4 +152,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
     private Long platformId;
     private AppEvents.InitDetails initDetails;
+
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

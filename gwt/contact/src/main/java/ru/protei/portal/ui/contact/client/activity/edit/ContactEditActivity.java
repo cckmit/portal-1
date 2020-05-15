@@ -109,7 +109,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         public void onSuccess(Boolean result) {
                             fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new PersonEvents.PersonCreated(person, origin));
-                            fireEvent(isNew(contact) ? new ContactEvents.Show(false) : new Back());
+                            fireEvent(isNew(contact) ? new Back() : new ContactEvents.Show(true));
                         }
                     });
                 }
@@ -146,7 +146,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(isNew(contact) ? new Back() : new ContactEvents.Show(true));
     }
 
     @Override
