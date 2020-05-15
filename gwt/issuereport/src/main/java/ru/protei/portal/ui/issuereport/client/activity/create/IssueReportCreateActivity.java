@@ -119,19 +119,19 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onReportTypeChanged(En_CaseFilterType filterType) {
-        view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
-        view.scheduledTypeContainerVisibility().setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(view.reportType().getValue()));
-        view.checkImportanceHistory().setValue(false);
-
-        if (filterType == En_CaseFilterType.PROJECT) {
+    public void onReportTypeChanged() {
+        En_ReportType reportType = view.reportType().getValue();
+        if (reportType == En_ReportType.PROJECT) {
             projectFilterView.resetFilter();
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(projectFilterView.asWidget());
         } else {
-            issueFilterWidget.updateFilterType(filterType);
+            view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+            view.checkImportanceHistory().setValue(false);
+            view.scheduledTypeContainerVisibility().setVisible(reportType == En_ReportType.CASE_TIME_ELAPSED);
+            view.checkImportanceHistoryContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+            issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
             applyIssueFilterVisibilityByPrivileges();
-            view.checkImportanceHistoryContainerVisibility().setVisible(filterType == En_CaseFilterType.CASE_OBJECTS);
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(issueFilterWidget.asWidget());
         }

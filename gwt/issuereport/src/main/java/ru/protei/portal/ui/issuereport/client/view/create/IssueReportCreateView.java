@@ -83,7 +83,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @UiHandler("reportType")
     public void onReportTypeChanged(ValueChangeEvent<En_ReportType> event) {
         if (activity != null) {
-            activity.onReportTypeChanged(En_CaseFilterType.valueOf(reportType.getValue().name()));
+            activity.onReportTypeChanged();
         }
     }
 
