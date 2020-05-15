@@ -437,7 +437,6 @@ public class CaseObject extends AuditableObject {
         this.members = members;
     }
 
-
     public String getExtAppType() {
         return extAppType;
     }
@@ -454,8 +453,7 @@ public class CaseObject extends AuditableObject {
         this.stateId = state.getId();
     }
 
-
-    public En_ImportanceLevel importanceLevel () {
+    public En_ImportanceLevel getImportanceLevel() {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 

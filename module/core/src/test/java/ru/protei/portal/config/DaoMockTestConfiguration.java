@@ -333,4 +333,14 @@ public class DaoMockTestConfiguration {
 
     @Bean
     public ReservedIpDAO getReservedIpAO() { return mock(ReservedIpDAO.class); }
+
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return mock(RoomReservableDAO.class);
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return mock(RoomReservationDAO.class);
+    }
 }

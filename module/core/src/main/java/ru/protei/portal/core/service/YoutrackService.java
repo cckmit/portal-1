@@ -4,6 +4,7 @@ import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.ent.YouTrackIssueStateChange;
+import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,9 @@ public interface YoutrackService {
 
     Result<String> createCompany(String companyName);
 
-    Result<String> updateCompany(String companyId, String companyName);
+    Result<String> updateCompanyName(String companyId, String companyName);
+
+    Result<String> updateCompanyArchived(String companyId, Boolean isArchived);
 
     Result<String> getCompanyByName(String companyName);
 
@@ -38,6 +41,8 @@ public interface YoutrackService {
      * (Не затирать историю изменений youtrack)
      */
     Result<YouTrackIssueInfo> removeIssueCrmNumberIfSame(String youtrackId, Long caseNumber);
+
+    Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
 
     @Async(BACKGROUND_TASKS)
     void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed );

@@ -79,6 +79,14 @@ public class ExternalReservedIp implements LegacyEntity {
 
     public void setComment(String comment) { this.comment = comment; }
 
+    public Date getDtReserve() { return dtReserve; }
+
+    public void setDtReserve(Date dtReserve) { this.dtReserve = dtReserve; }
+
+    public Date getDtRelease() { return dtRelease; }
+
+    public void setDtRelease(Date dtRelease) { this.dtRelease = dtRelease; }
+
     public boolean isForLongTime() { return forLongTime; }
 
     public void setForLongTime(boolean forLongTime) { this.forLongTime = forLongTime; }

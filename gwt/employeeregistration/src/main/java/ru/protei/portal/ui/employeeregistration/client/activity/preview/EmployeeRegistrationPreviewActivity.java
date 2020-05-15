@@ -10,12 +10,16 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
@@ -62,6 +66,17 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.showFullScreen(true);
     }
 
+    @Event
+    public void onEmployeeRegistrationChanged(EmployeeRegistrationEvents.ChangeEmployeeRegistration event) {
+        if (!Objects.equals(event.employeeRegistrationId, this.employeeRegistrationId)) {
+            return;
+        }
+
+        employeeRegistrationController.getEmployeeRegistration(event.employeeRegistrationId, new FluentCallback<EmployeeRegistration>()
+                .withSuccess(this::fillView)
+        );
+    }
+
     @Override
     public void onFullScreenPreviewClicked () {
         fireEvent( new EmployeeRegistrationEvents.ShowFullScreen( employeeRegistrationId ) );
@@ -96,9 +111,9 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
         view.setCreatedBy(lang.createBy(value.getCreatorShortName(), DateFormatter.formatDateTime(value.getCreated())));
-        view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
-        view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
-        view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
+        view.setEquipmentList( join(value.getEquipmentList(), equipment -> equipmentLang.getName(equipment), ", "));
+        view.setResourceList( join(value.getResourceList(), resource -> resourceLang.getName(resource), ", "));
+        view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeType -> phoneOfficeTypeLang.getName(phoneOfficeType), ", "));
         view.setCurators( join( value.getCurators(), Person::getDisplayShortName, "," ) );
         view.setPosition(value.getPosition());
         view.setProbationPeriodMonth(value.getProbationPeriodMonth() == null ?
@@ -109,6 +124,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setResourceComment(value.getResourceComment());
         view.setAdditionalSoft(value.getAdditionalSoft());
         view.setHeadOfDepartment(value.getHeadOfDepartment() == null ? "" : value.getHeadOfDepartment().getName());
+        view.setCompany(StringUtils.emptyIfNull(value.getCompanyName()));
 
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");

@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -47,6 +48,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -292,12 +294,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
-                query.setImportances(importance.getValue());
-                query.setCheckImportanceHistory( checkImportanceHistory.getValue() );
-                query.setStates(state.getValue());
+                query.setImportances( nullIfEmpty(importance.getValue()));
+                query.setStates(nullIfEmpty( state.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCaseTagsIds( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
-                query.setCreatorIds(toList(creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId()));
+                query.setCaseTagsIds( nullIfEmpty( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ) );
+                query.setCreatorIds( nullIfEmpty( toList( creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId() ) ) );
 
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 query = fillModifiedInterval(query, dateModifiedRange.getValue());
@@ -314,9 +315,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
-                query.setCaseTagsIds( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) );
-                query.setImportances(importance.getValue());
-                query.setStates(state.getValue());
+                query.setCaseTagsIds(nullIfEmpty( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ));
+                query.setImportances(nullIfEmpty(importance.getValue()));
+                query.setStates(nullIfEmpty(state.getValue()));
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 break;
         }
@@ -473,7 +474,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
         labelSearchPrivate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.PRIVACY_LABEL);
         labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
-        checkImportanceHistory.ensureDebugId(DebugIds.FILTER.ISSUE_IMPORTANCE_CHECK_HISTORY);
         labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
         creators.ensureDebugId(DebugIds.FILTER.CREATOR_SELECTOR);
         creators.setAddEnsureDebugId(DebugIds.FILTER.CREATOR_ADD_BUTTON);
@@ -736,8 +736,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     DivElement importanceContainer;
     @UiField
     DivElement stateContainer;
-    @UiField
-    Switcher checkImportanceHistory;
 
     @Inject
     PolicyService policyService;

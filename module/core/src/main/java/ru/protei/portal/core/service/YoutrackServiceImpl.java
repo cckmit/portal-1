@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
+import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -82,17 +83,26 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createCompany(String companyName) {
         log.info("createCompany(): companyName={}", companyName);
 
-        YtEnumBundleElement company = makeBundleElement(companyName);
+        YtEnumBundleElement company = makeBundleElement(companyName, null);
         return api.createCompany(company)
                 .map(enumBundleElement -> enumBundleElement.id);
     }
 
     @Override
-    public Result<String> updateCompany(String companyId, String companyName) {
-        log.info("updateCompany(): companyId={}, companyName={}", companyId, companyName);
+    public Result<String> updateCompanyName(String companyId, String companyName) {
+        log.info("updateCompanyName(): companyId={}, companyName={}", companyId, companyName);
 
-        YtEnumBundleElement companyToUpdate = makeBundleElement(companyName);
-        return api.updateCompanyName(companyId, companyToUpdate)
+        YtEnumBundleElement companyToUpdate = makeBundleElement(companyName, null);
+        return api.updateCompany(companyId, companyToUpdate)
+                .map(enumBundleElement -> enumBundleElement.id);
+    }
+
+    @Override
+    public Result<String> updateCompanyArchived(String companyId, Boolean archived) {
+        log.info("updateCompanyArchived(): companyId={}, archived={}", companyId, archived);
+
+        YtEnumBundleElement companyToUpdate = makeBundleElement(null, archived);
+        return api.updateCompany(companyId, companyToUpdate)
                 .map(enumBundleElement -> enumBundleElement.id);
     }
 
@@ -165,6 +175,28 @@ public class YoutrackServiceImpl implements YoutrackService {
                     }
                     return ok(convertYtIssue(issue));
                 });
+    }
+
+    @Override
+    public Result<YouTrackIssueInfo> addIssueSystemComment(String issueId, String text) {
+        if (issueId == null || text == null) {
+            log.warn("addIssueSystemComment(): Can't add system comment. All arguments are mandatory issueId={} text={}", issueId, text);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        YtUser commentAuthor = new YtUser();
+        commentAuthor.login = config.data().youtrack().getLogin();
+
+        YtIssueComment comment = new YtIssueComment();
+        comment.author = commentAuthor;
+        comment.text = text;
+
+        YtIssue issue = new YtIssue();
+        issue.comments = new ArrayList<>();
+        issue.comments.add(comment);
+
+        return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
+                .map(this::convertYtIssue);
     }
 
     @Async(BACKGROUND_TASKS)
@@ -259,9 +291,10 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issueStateChange;
     }
 
-    private YtEnumBundleElement makeBundleElement(String elementName) {
+    private YtEnumBundleElement makeBundleElement(String elementName, Boolean isArchived) {
         YtEnumBundleElement element = new YtEnumBundleElement();
         element.name = elementName;
+        element.archived = isArchived;
         return element;
     }
 

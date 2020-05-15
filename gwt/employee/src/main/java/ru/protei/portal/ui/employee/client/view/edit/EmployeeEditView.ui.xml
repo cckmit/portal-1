@@ -44,6 +44,7 @@
                                                                  notNull="true"/>
                                 <g:Label ui:field="firstNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
+
                             <div class="form-group col-md-4">
                                 <label ui:field="secondNameLabel">
                                     <ui:text from="{lang.secondName}"/>
@@ -51,11 +52,16 @@
                                 <validablefield:ValidableTextBox ui:field="secondName" styleName="form-control" notNull="false"/>
                                 <g:Label ui:field="secondNameErrorLabel" styleName="text-danger size-error" visible="false"/>
                             </div>
+
+                            <div class="form-group col-md-12">
+                                <g:CheckBox ui:field="changeAccount" styleName="checkbox" text="{lang.employeeChangeAccount}"/>
+                            </div>
+
                             <div class="form-group col-md-4">
                                 <label class="">
                                     <ui:text from="{lang.birthday}"/>
                                 </label>
-                                <single:SinglePicker ui:field="birthDay" formatValue="dd.MM.yyyy" mandatory="false"/>
+                                <single:SinglePicker ui:field="birthDay" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
                             </div>
 
                             <div class="form-group col-md-2">

@@ -52,6 +52,8 @@ public class En_PrivilegeEntityLang {
                 return lang.subnet();
             case RESERVED_IP:
                 return lang.ipReservation();
+            case ROOM_RESERVATION:
+                return lang.roomReservation();
             default:
                 return lang.unknownField();
         }

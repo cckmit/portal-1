@@ -214,6 +214,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String searchNoMatchesFound();
 
+    String searchTerminalState();
+
     String emptySelectorList();
 
     String company();
@@ -289,6 +291,12 @@ public interface Lang extends Messages, ContactItemLang {
     String companySubscriptionGroupAnyValueProduct();
 
     String companySubscriptionGroupQuantity();
+
+    String errCompanyNameExists();
+
+    String errCompanyNameContainsIllegalChars();
+
+    String errCompanyFieldsFill();
 
     String contacts();
 
@@ -1352,7 +1360,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String scopeCompany();
 
-    String scopeRole();
+    String scopeUser();
 
     String roleScope();
 
@@ -1618,8 +1626,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueReportsType();
 
-    String reportTypeProject();
-
     String caseStates();
 
     String privilegeCaseStates();
@@ -1829,6 +1835,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeTopBrassLabel();
 
     String backToEmployees();
+
+    String employeeChangeAccount();
 
     String employeeRegistrations();
 
@@ -2121,6 +2129,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reportTypeCaseTimeElapsedWorkAutor();
 
     String reportTypeCaseTimeElapsedPeriod();
+
+    String reportTypeProject();
 
     String reportScheduledType();
 
@@ -2465,4 +2475,112 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpCreateBy();
 
     String errSaveReservedIpSubnetDoesNotExist();
+
+    String january();
+
+    String february();
+
+    String march();
+
+    String april();
+
+    String may();
+
+    String june();
+
+    String july();
+
+    String august();
+
+    String september();
+
+    String october();
+
+    String november();
+
+    String december();
+
+    String monday();
+
+    String tuesday();
+
+    String wednesday();
+
+    String thursday();
+
+    String friday();
+
+    String saturday();
+
+    String sunday();
+
+    String mondayShort();
+
+    String tuesdayShort();
+
+    String wednesdayShort();
+
+    String thursdayShort();
+
+    String fridayShort();
+
+    String saturdayShort();
+
+    String sundayShort();
+
+    String roomReservation();
+
+    String roomReservationReasonValue0();
+
+    String roomReservationReasonValue1();
+
+    String roomReservationReasonValue2();
+
+    String roomReservationReasonValue3();
+
+    String roomReservationReasonValue4();
+
+    String roomReservationShowTodayButton();
+
+    String roomReservationHourStartButton();
+
+    String roomReservationCreation();
+
+    String roomReservationEditing();
+
+    String roomReservationPersonResponsible();
+
+    String roomReservationRoom();
+
+    String roomReservationDates();
+
+    String roomReservationDatesCreateAddWeek();
+
+    String roomReservationDatesCreateAddDay();
+
+    String roomReservationReason();
+
+    String roomReservationCoffeeBreakCount();
+
+    String roomReservationNotifiers();
+
+    String roomReservationComment();
+
+    String roomReservationSaved();
+
+    String roomReservationUpdated();
+
+    String roomReservationRemoved();
+
+    String errRoomReservationOutdated();
+
+    String errRoomReservationRoomNotAccessible();
+
+    String errRoomReservationHasIntersections();
+
+    String buttonReload();
+
+    String issueAssignmentDeskOverflow(long limit);
+
+    String employeeRegistrationEditHeader();
 }

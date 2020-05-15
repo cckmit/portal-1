@@ -5,15 +5,13 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
-import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
@@ -31,6 +29,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 
@@ -250,15 +249,38 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients) {
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
-        templateModel.put( "er", employeeRegistration );
-        templateModel.put( "recipients", recipients );
+        EmployeeRegistration newState = event.getNewState();
+        EmployeeRegistration oldState = event.getOldState();
 
-        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.body.%s.ftl" );
-        template.setModel( templateModel );
-        template.setTemplateConfiguration( templateConfiguration );
+        templateModel.put("TransliterationUtils", new TransliterationUtils());
+
+        templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
+        templateModel.put("employeeFullName", newState.getEmployeeFullName());
+        templateModel.put("headOfDepartmentShortName", newState.getHeadOfDepartmentShortName());
+        templateModel.put("employmentType", newState.getEmploymentType().name());
+        templateModel.put("withRegistration", newState.isWithRegistration());
+        templateModel.put("position", newState.getPosition());
+        templateModel.put("state", newState.getState().getName());
+        templateModel.put("employmentDateChanged", event.isEmploymentDateChanged());
+        templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
+        templateModel.put("newEmploymentDate", newState.getEmploymentDate());
+        templateModel.put("created", newState.getCreated());
+        templateModel.put("workplace", newState.getWorkplace());
+        templateModel.put("equipmentList", newState.getEquipmentList());
+        templateModel.put("operatingSystem", newState.getOperatingSystem());
+        templateModel.put("additionalSoft", newState.getAdditionalSoft());
+        templateModel.put("resourceList", newState.getResourceList());
+        templateModel.put("resourceComment", newState.getResourceComment());
+        templateModel.put("phoneOfficeTypeList", newState.getPhoneOfficeTypeList());
+        templateModel.put("comment", newState.getComment());
+        templateModel.put("recipients", recipients);
+        templateModel.put("curatorsDiff", event.getCuratorsDiff());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/employee.registration.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 
@@ -427,7 +449,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("TransliterationUtils", new TransliterationUtils());
         templateModel.put("EnumLangUtil", enumLangUtil);
-        templateModel.put("TimeFormatter", new WorkTimeFormatter());
+        templateModel.put("TimeFormatter", new WorkTimeFormatter(true));
         templateModel.put("TextUtils", new TextUtils());
 
         templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
@@ -487,6 +509,58 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
 
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == RoomReservationNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
+        templateModel.put("room", roomReservation.getRoom() != null
+                ? roomReservation.getRoom().getName()
+                : "?");
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getRoomReservationNotificationBody(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == RoomReservationNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
+        templateModel.put("person_responsible", roomReservation.getPersonResponsible() != null
+                ? roomReservation.getPersonResponsible().getDisplayName()
+                : "?");
+        templateModel.put("room", roomReservation.getRoom() != null
+                ? roomReservation.getRoom().getName()
+                : "?");
+        templateModel.put("date", roomReservation.getDateFrom() != null
+                ? new SimpleDateFormat("dd.MM.yyyy").format(roomReservation.getDateFrom())
+                : "?");
+        templateModel.put("time",
+                (roomReservation.getDateFrom() != null
+                        ? new SimpleDateFormat("HH:mm").format(roomReservation.getDateFrom())
+                        : "?") +
+                " - " +
+                (roomReservation.getDateUntil() != null
+                        ? new SimpleDateFormat("HH:mm").format(roomReservation.getDateUntil())
+                        : "?"));
+        templateModel.put("reason", roomReservation.getReason() != null
+                ? roomReservation.getReason().getId()
+                : "?");
+        templateModel.put("coffee_break_count", roomReservation.getCoffeeBreakCount());
+        templateModel.put("comment", roomReservation.getComment());
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 

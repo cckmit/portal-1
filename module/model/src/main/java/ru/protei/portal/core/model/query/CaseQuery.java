@@ -383,7 +383,7 @@ public class CaseQuery extends BaseQuery {
         this.caseMemberIds = caseMemberIds;
     }
 
-    public void setCheckImportanceHistory( boolean isCheckImportanceHistory ) {
+    public void setCheckImportanceHistory( Boolean isCheckImportanceHistory ) {
         this.isCheckImportanceHistory = isCheckImportanceHistory;
     }
 

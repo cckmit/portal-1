@@ -12,6 +12,7 @@ import ru.protei.winter.core.utils.enums.HasId;
 public enum En_CaseStateWorkflow implements HasId {
     NO_WORKFLOW(0),
     NX_JIRA(1),
+    REDMINE(2),
     ;
 
     En_CaseStateWorkflow(int id) {

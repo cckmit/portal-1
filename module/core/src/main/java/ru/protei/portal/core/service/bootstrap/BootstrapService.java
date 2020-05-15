@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.SVNException;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
@@ -12,10 +13,15 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
-import ru.protei.portal.tools.migrate.sybase.LegacyEntityDAO;
+import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
+import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -332,11 +338,78 @@ if(true) return; //TODO remove
 
     private void migrateIpReservation() {
         log.info("Migrate subnets and reservedIps started");
-        /*
-          @todo
-            get from old_portal
-            save to new_portal
-         */
+
+        try {
+            List<Subnet> subnets = subnetDAO.listByQuery(
+                    new ReservedIpQuery(null, En_SortField.address, En_SortDir.ASC));
+            if (CollectionUtils.isNotEmpty(subnets)) {
+                log.info("Need no to migrate IP reservation data cause some data is already exist");
+                return;
+            }
+
+            List<ExternalSubnet> extSubnets = legacySystemDAO.getExternalSubnets();
+
+            if (CollectionUtils.isEmpty(extSubnets)) {
+                log.info("Need no to migrate IP reservation data cause source is empty");
+                return;
+            }
+            List<ExternalReservedIp> extReservedIps = legacySystemDAO.getExternalReservedIps();
+
+            extSubnets.forEach( extSubnet -> {
+
+                Subnet subnet = new Subnet();
+                subnet.setId(extSubnet.getId());
+                subnet.setCreated(extSubnet.getCreated());
+
+                Long subnetCreatorId = 288L;
+                try {
+                    EmployeeQuery query = new EmployeeQuery();
+                    query.setLastName(extSubnet.getCreator().substring(0, extSubnet.getCreator().indexOf(" ")));
+                    SearchResult<Person> searchResult = personDAO.getEmployeesSearchResult(query);
+                    subnetCreatorId = searchResult.getResults().get(0).getId();
+                } catch (Exception e ) {}
+
+                subnet.setCreatorId(subnetCreatorId);
+                subnet.setAddress(extSubnet.getSubnetAddress());
+                subnet.setMask(CrmConstants.IpReservation.SUBNET_MASK);
+                subnet.setComment(extSubnet.getComment());
+
+                boolean subnetCreateResult = subnetDAO.saveOrUpdate(subnet);
+                if (subnetCreateResult) {
+
+                    extReservedIps.forEach( extReservedIp -> {
+                        ReservedIp reservedIp = new ReservedIp();
+                        reservedIp.setId(reservedIp.getId());
+
+                        Long ownerId = personDAO.getEmployeeByOldId(extReservedIp.getCustomerID()).getId();
+                        Long ipCreatorId = ownerId;
+                        try {
+                            EmployeeQuery query = new EmployeeQuery();
+                            query.setLastName(extReservedIp.getCreator().substring(0, extReservedIp.getCreator().indexOf(" ")));
+                            SearchResult<Person> searchResult = personDAO.getEmployeesSearchResult(query);
+                            ipCreatorId = searchResult.getResults().get(0).getId();
+                        } catch (Exception e ) {}
+
+                        reservedIp.setCreatorId(ipCreatorId);
+                        reservedIp.setOwnerId(ownerId);
+                        reservedIp.setCreated(extReservedIp.getCreated());
+                        reservedIp.setSubnetId(extSubnet.getId());
+                        reservedIp.setIpAddress(extReservedIp.getIpAddress());
+                        reservedIp.setReserveDate(extReservedIp.getDtReserve());
+                        if (!extReservedIp.isForLongTime()) {
+                            reservedIp.setReleaseDate(extReservedIp.getDtRelease());
+                        }
+                        reservedIp.setComment(extReservedIp.getComment());
+
+                        boolean reservedCreateResult = reservedIpDAO.saveOrUpdate(reservedIp);
+                    });
+                }
+            });
+
+        } catch (Exception e) {
+            log.warn("Unable to get IP reservation data from prod DB", e);
+        }
+
         log.info("Migrate subnets and reservedIps ended");
     }
 
@@ -383,8 +456,12 @@ if(true) return; //TODO remove
     DocumentSvnApi documentSvnApi;
     @Autowired
     DocumentStorageIndex documentStorageIndex;
-/*    @Autowired
-    LegacyEntityDAO legacyEnitityDAO;*/
+    @Autowired
+    LegacySystemDAO legacySystemDAO;
+    @Autowired
+    SubnetDAO subnetDAO;
+    @Autowired
+    ReservedIpDAO reservedIpDAO;
     @Autowired
     PortalConfig config;
 }

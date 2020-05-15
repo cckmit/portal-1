@@ -1,10 +1,12 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Сокращенное представление кейса
@@ -84,6 +86,9 @@ public class CaseShortView implements Serializable {
 
     @JdbcColumn(name = "pause_date")
     private Long pauseDate;
+
+    // ManyToMany via CaseTagService
+    private List<CaseTag> tags;
 
     public CaseShortView() {
 
@@ -274,6 +279,14 @@ public class CaseShortView implements Serializable {
         this.pauseDate = pauseDate;
     }
 
+    public List<CaseTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<CaseTag> tags) {
+        this.tags = tags;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -308,6 +321,7 @@ public class CaseShortView implements Serializable {
                 ", isAttachmentExists=" + isAttachmentExists +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", pauseDate=" + pauseDate +
+                ", tags=" + tags +
                 '}';
     }
 }

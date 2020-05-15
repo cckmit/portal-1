@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service.events;
 
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 
@@ -14,7 +14,7 @@ public interface CaseSubscriptionService {
 
     Set<NotificationEntry> subscribers(CaseObjectMeta caseMeta);
 
-    Set<NotificationEntry> subscribers(EmployeeRegistrationEvent event);
+    Set<NotificationEntry> subscribers(AssembledEmployeeRegistrationEvent event);
 
     Set<NotificationEntry> subscribers(List<Long> personIds);
 }

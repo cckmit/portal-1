@@ -158,7 +158,7 @@ public class ExcelReportWriter implements
         values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
-        values.add(issue.getImpLevel() != null ? lang.get("importance_" + issue.getImpLevel()) : "");
+        values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
         values.add(issue.getState() != null ? issue.getState().getName() : "");
         values.add(created != null ? dateFormat.format(created) : "");
         values.add(opened != null ? dateFormat.format(opened) : "");

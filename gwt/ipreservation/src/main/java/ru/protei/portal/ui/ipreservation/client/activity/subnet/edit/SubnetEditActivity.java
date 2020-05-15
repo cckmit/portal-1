@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
@@ -99,7 +100,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
             subnet = new Subnet();
         }
         view.address().setValue(subnet.getAddress());
-        view.mask().setValue("0/24");
+        view.mask().setValue(CrmConstants.IpReservation.SUBNET_MASK);
         view.comment().setText(subnet.getComment());
 
         view.addressEnabled().setEnabled(subnet.getId() == null);

@@ -70,6 +70,20 @@ public class CollectionUtils {
         return map == null ? Collections.<K, V>emptyMap() : map;
     }
 
+    public static <T> Set<T> nullIfEmpty( Set<T> set) {
+        if(isEmpty( set )) {
+            return null;
+        }
+        return set;
+    }
+
+    public static <T> List<T> nullIfEmpty( List<T> list) {
+        if(isEmpty( list )) {
+            return null;
+        }
+        return list;
+    }
+
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
                                          final Function<? super I, ? extends O> mapper ) {
         if ( iterable == null || mapper == null || output == null ) {
@@ -304,5 +318,24 @@ public class CollectionUtils {
 
     public static <T> Predicate<T> not(Predicate<T> predicate) {
         return predicate.negate();
+    }
+
+
+    /**
+     * Равенство коллекций, без учета пордяка элементов
+     */
+    public static <T> boolean equals(Collection<T> firstCollection, Collection<T> secondCollection) {
+        firstCollection = emptyIfNull(firstCollection);
+        secondCollection = emptyIfNull(secondCollection);
+
+        if (firstCollection.size() != secondCollection.size()) {
+            return false;
+        }
+
+        if (!firstCollection.containsAll(secondCollection)) {
+            return false;
+        }
+
+        return true;
     }
 }

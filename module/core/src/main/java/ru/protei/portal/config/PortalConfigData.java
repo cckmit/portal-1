@@ -33,6 +33,7 @@ public class PortalConfigData {
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
     private final MarkupHelpLink markupHelpLink;
+    private final UiConfig uiConfig;
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -56,6 +57,7 @@ public class PortalConfigData {
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
         markupHelpLink = new MarkupHelpLink(wrapper);
+        uiConfig = new UiConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -130,6 +132,10 @@ public class PortalConfigData {
         return markupHelpLink;
     }
 
+    public UiConfig getUiConfig() {
+        return uiConfig;
+    }
+
     public boolean isTaskSchedulerEnabled() {
         return taskSchedulerEnabled;
     }
@@ -172,17 +178,18 @@ public class PortalConfigData {
         private final String crmDocumentPreviewUrl;
         private final String crmEmployeeRegistrationUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
+        private final String[] crmRoomReservationNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
             crmProjectUrl = properties.getProperty("crm.project.url", "#project_preview:id=%d");
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
-            crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview");
+            crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview", "#doc_preview:id=%d");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
+            crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
         }
-
 
         public String getCrmCaseUrl() {
             return crmCaseUrl;
@@ -206,6 +213,10 @@ public class PortalConfigData {
 
         public String[] getCrmEmployeeRegistrationNotificationsRecipients() {
             return crmEmployeeRegistrationNotificationsRecipients;
+        }
+
+        public String[] getCrmRoomReservationNotificationsRecipients() {
+            return crmRoomReservationNotificationsRecipients;
         }
     }
 
@@ -314,7 +325,7 @@ public class PortalConfigData {
 
         public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
             this.jdbcDriver = properties.getProperty("syb.jdbc.driver", "net.sourceforge.jtds.jdbc.Driver");
-            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
+            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.101.140:2642/RESV3");
             this.login = properties.getProperty("syb.jdbc.login", "dba");
             this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
 
@@ -372,6 +383,7 @@ public class PortalConfigData {
         private final boolean redmineBackchannelEnabled;
         private final boolean youtrackEnabled;
         private final boolean youtrackCompanySyncEnabled;
+        private final boolean youtrackEmployeeSyncEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -382,6 +394,7 @@ public class PortalConfigData {
             redmineBackchannelEnabled = properties.getProperty("integration.redmine.backchannel", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
+            youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -402,6 +415,9 @@ public class PortalConfigData {
 
         public boolean isYoutrackCompanySyncEnabled() {
             return youtrackCompanySyncEnabled;
+        }
+        public boolean isYoutrackEmployeeSyncEnabled() {
+            return youtrackEmployeeSyncEnabled;
         }
 
         public boolean isJiraEnabled() {
@@ -526,6 +542,7 @@ public class PortalConfigData {
 
     public static class YoutrackConfig {
         private final String apiBaseUrl;
+        private final String login;
         private final String authToken;
         private final String employeeRegistrationSyncSchedule;
         private final String equipmentProject;
@@ -536,6 +553,7 @@ public class PortalConfigData {
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
+            login = properties.getProperty("youtrack.api.login", "portal");
             authToken = properties.getProperty("youtrack.api.auth_token");
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
@@ -547,6 +565,10 @@ public class PortalConfigData {
 
         public String getApiBaseUrl() {
             return apiBaseUrl;
+        }
+
+        public String getLogin() {
+            return login;
         }
 
         public String getAuthToken() {
@@ -637,6 +659,18 @@ public class PortalConfigData {
 
         public String getJiraMarkup() {
             return jiraMarkup;
+        }
+    }
+
+    public static class UiConfig {
+        private final Long issueAssignmentDeskLimit;
+
+        public UiConfig(PropertiesWrapper properties) {
+            issueAssignmentDeskLimit = properties.getProperty("ui.issue-assignment.desk.limit", Long.class, 200L);
+        }
+
+        public Long getIssueAssignmentDeskLimit() {
+            return issueAssignmentDeskLimit;
         }
     }
 
