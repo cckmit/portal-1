@@ -31,11 +31,6 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return addHandler(handler, ClickEvent.getType());
-    }
-
-    @Override
     public void setName( String name, String link ) {
         this.name.setText( name );
         this.name.setTitle( name );
@@ -101,11 +96,6 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     @Override
     public void setPhoto( String url ) {
         photo.setUrl( url );
-    }
-
-    @UiHandler("name")
-    public void onNameClicked(ClickEvent event) {
-        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
     }
 
     @UiField

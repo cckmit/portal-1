@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 /**
  * Представление сотрудника
  */
-public interface AbstractEmployeeItemView extends IsWidget, HasClickHandlers {
+public interface AbstractEmployeeItemView extends IsWidget {
 
     void setActivity( AbstractEmployeeItemActivity activity );
 

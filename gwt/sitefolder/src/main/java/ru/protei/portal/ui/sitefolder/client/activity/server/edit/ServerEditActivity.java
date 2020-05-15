@@ -81,14 +81,14 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
                     serverIdOfAppsToBeCloned = null;
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
                     fireEvent(new SiteFolderServerEvents.Changed(result));
-                    fireEvent(new SiteFolderServerEvents.Show(server.getPlatformId(), !isNew(server)));
+                    fireEvent(new Back());
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new SiteFolderServerEvents.Show(server.getPlatformId(), !isNew(server)));
+        fireEvent(new Back());
     }
 
     @Override

@@ -15,17 +15,11 @@ public class SiteFolderServerEvents {
     public static class Show {
         @Name("platform")
         public Long platformId;
-        @Omit
-        public Boolean preScroll;
         public Show() {
-            this(null, false);
+            this(null);
         }
-        public Show(Boolean preScroll) {
-            this(null, preScroll);
-        }
-        public Show (Long platformId, Boolean preScroll) {
+        public Show (Long platformId) {
             this.platformId = platformId;
-            this.preScroll = preScroll;
         }
     }
 

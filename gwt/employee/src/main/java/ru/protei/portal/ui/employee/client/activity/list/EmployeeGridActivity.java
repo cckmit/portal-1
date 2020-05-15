@@ -52,7 +52,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
         }
 
-        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
+        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
     @Event
@@ -62,7 +62,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         currentViewType = currentViewType == ViewType.TABLE ? ViewType.LIST : ViewType.TABLE;
-        onShow(new EmployeeEvents.Show(false));
+        onShow(new EmployeeEvents.Show());
 
         localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
     }

@@ -62,7 +62,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     @Override
     public void onOpenServersClicked() {
         if (platformId != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platformId, false));
+            fireEvent(new SiteFolderServerEvents.Show(platformId));
         }
     }
 

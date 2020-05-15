@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -19,7 +18,6 @@ import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -31,7 +29,9 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -74,8 +74,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getPagerContainer().add( pagerView.asWidget() );
         view.getFilterContainer().add(event.filter);
 
-        this.preScroll = event.preScroll;
-
         requestEmployees( 0 );
     }
 
@@ -116,19 +114,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                         }
                         r.getResults().forEach( fillViewer );
                         view.showLoader( false );
-                        restoreScroll();
                     }
                 } ) );
-    }
-
-    private void restoreScroll() {
-        if (!preScroll) {
-            return;
-        }
-
-        Window.scrollTo(0, scrollTo);
-        preScroll = false;
-        scrollTo = 0;
     }
 
     private EmployeeQuery makeQuery() {
@@ -174,8 +161,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         if(employee.isFired())
             itemView.setFireDate(DateFormatter.formatDateOnly(employee.getFireDate()));
 
-        itemView.addClickHandler(event -> persistScroll());
-
         return itemView;
     }
 
@@ -190,10 +175,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
     };
 
-    private void persistScroll() {
-        scrollTo = Window.getScrollTop();
-    }
-
     @Inject
     AbstractEmployeeListView view;
     @Inject
@@ -207,8 +188,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private long marker;
     private AppEvents.InitDetails init;
-    private Integer scrollTo = 0;
-    private boolean preScroll;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

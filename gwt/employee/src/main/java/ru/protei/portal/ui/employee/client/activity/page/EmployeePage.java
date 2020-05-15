@@ -75,5 +75,5 @@ public abstract class EmployeePage implements Activity {
     PolicyService policyService;
 
     private String ТAB;
-    private EmployeeEvents.Show show = new EmployeeEvents.Show(false);
+    private EmployeeEvents.Show show = new EmployeeEvents.Show();
 }
