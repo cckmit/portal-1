@@ -23,7 +23,7 @@ public class PlatformFormSelector extends FormPopupSingleSelector<PlatformOption
     private String makeStringFromValue(PlatformOption value) {
         String name = value == null ? defaultValue : value.getDisplayText();
         if (value != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW)) {
-            name = " <a class=\"fa fa-share m-r-5\" href=\"" + LinkUtils.makeLink(Platform.class, value.getId()) + "\" target=\"_blank\" id=\"" + DebugIds.SITE_FOLDER.LINK.PLATFORM + "\"></a>" + name;
+            name = " <a class=\"fa fa-share m-r-5\" href=\"" + LinkUtils.makePreviewLink(Platform.class, value.getId()) + "\" target=\"_blank\" id=\"" + DebugIds.SITE_FOLDER.LINK.PLATFORM + "\"></a>" + name;
         }
 
         return name;
