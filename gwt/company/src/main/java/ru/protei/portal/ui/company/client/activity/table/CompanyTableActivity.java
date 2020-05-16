@@ -172,6 +172,9 @@ public abstract class CompanyTableActivity implements
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
                 filterView.showDeprecated().getValue());
 
+        cq.setHomeGroupFlag(null);
+        cq.setShowHidden(false);
+
         if(filterView.categories().getValue() != null)
             cq.setCategoryIds(
                     filterView.categories().getValue()
