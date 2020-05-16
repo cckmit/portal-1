@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
@@ -77,6 +78,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    LegacySystemDAO migrationManager;
 
     @PostConstruct
     public void setYoutrackConst() {
@@ -365,6 +369,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             userLoginDAO.removeByPersonId(personFromDb.getId());
         }
 
+        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+            if (!migrateToOldPortal(person.getId())) {
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        }
+
         if (YOUTRACK_INTEGRATION_ENABLED) {
             createFireEmployeeYoutrackIssue(personFromDb);
         }
@@ -385,7 +395,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         final int TO_UPDATE = 2;
         final int TO_REMOVE = 3;
 
-        WorkerEntryQuery query = new WorkerEntryQuery(newWorkerEntries.get(0).getPersonId());
+        Long personId = newWorkerEntries.get(0).getPersonId();
+
+        hireEmployeeIfNeed(personId);
+
+        WorkerEntryQuery query = new WorkerEntryQuery(personId);
         List<WorkerEntry> oldWorkerEntries = workerEntryDAO.getWorkers(query);
 
         Map<WorkerEntry, Integer> finalWorkersMap = new HashMap<>();
@@ -452,7 +466,36 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
+        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+            if (!migrateToOldPortal(personId)) {
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        }
+
        return ok(true);
+    }
+
+    private void hireEmployeeIfNeed(Long personId) {
+        Person person = personDAO.get(personId);
+
+        if (person != null && person.isFired()){
+            person.setFired(false, null);
+            personDAO.merge(person);
+        }
+    }
+
+    private boolean migrateToOldPortal(Long personId) {
+        List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
+
+        WorkerEntry activeWorker = workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
+
+        Person person = personDAO.get(personId);
+
+        if (activeWorker == null || person == null){
+            return false;
+        }
+
+        return migrationManager.saveExternalEmployee(person, activeWorker.getDepartmentName(), activeWorker.getPositionName()).equals(En_ResultStatus.OK);
     }
 
     private void checkActiveFlag(List<WorkerEntry> newWorkerEntries) {

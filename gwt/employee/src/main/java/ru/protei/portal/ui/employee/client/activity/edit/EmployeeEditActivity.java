@@ -179,14 +179,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onSaveClicked() {
-        if (employee.isFired()){
-            fireEvent(new Back());
-            return;
-        }
-
         String errorMsg = validate();
 
         if (errorMsg != null) {
+            if (employee.isFired()){
+                fireEvent(new Back());
+                return;
+            }
+
             fireErrorMessage(errorMsg);
             return;
         }
