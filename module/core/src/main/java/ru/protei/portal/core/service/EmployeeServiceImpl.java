@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -16,6 +17,8 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.struct.AuditObject;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
@@ -25,6 +28,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,6 +86,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     LegacySystemDAO migrationManager;
+
+    @Autowired
+    AuditObjectDAO auditObjectDAO;
 
     @PostConstruct
     public void setYoutrackConst() {
@@ -389,76 +397,32 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        checkActiveFlag(newWorkerEntries);
-
-        final int TO_CREATE = 1;
-        final int TO_UPDATE = 2;
-        final int TO_REMOVE = 3;
-
         Long personId = newWorkerEntries.get(0).getPersonId();
+        final int TO_CREATE = 1;
+        final int TO_REMOVE = 2;
 
+        checkActiveFlag(newWorkerEntries);
         hireEmployeeIfNeed(personId);
 
         WorkerEntryQuery query = new WorkerEntryQuery(personId);
         List<WorkerEntry> oldWorkerEntries = workerEntryDAO.getWorkers(query);
 
         Map<WorkerEntry, Integer> finalWorkersMap = new HashMap<>();
-
-        Iterator<WorkerEntry> workerEntryIterator = newWorkerEntries.iterator();
-
-        while (workerEntryIterator.hasNext()) {
-            WorkerEntry workerEntry = workerEntryIterator.next();
-            if (workerEntry.getId() == null){
-                finalWorkersMap.put(workerEntry, TO_CREATE);
-                workerEntryIterator.remove();
-                continue;
-            }
-
-            if (isSyncCompanyWorker(workerEntry)){
-                workerEntryIterator.remove();
-            }
-        }
-
-        for (WorkerEntry worker : oldWorkerEntries) {
-            boolean isActualWorkerEntry = false;
-
-            if (isSyncCompanyWorker(worker)){
-                continue;
-            }
-
-           workerEntryIterator = newWorkerEntries.iterator();
-            while (workerEntryIterator.hasNext()){
-                WorkerEntry workerEntry = workerEntryIterator.next();
-
-                if (worker.getId().equals(workerEntry.getId())){
-                    finalWorkersMap.put(workerEntry, TO_UPDATE);
-                    isActualWorkerEntry = true;
-                    workerEntryIterator.remove();
-                    break;
-                }
-            }
-
-            if(!isActualWorkerEntry){
-                finalWorkersMap.put(worker, TO_REMOVE);
-            }
-        }
+        fillMapWorkersToCreate(finalWorkersMap, newWorkerEntries, TO_CREATE);
+        fillMapWorkersToRemove(finalWorkersMap, newWorkerEntries, oldWorkerEntries, TO_REMOVE);
 
         for (Map.Entry<WorkerEntry, Integer> entry : finalWorkersMap.entrySet()) {
             switch (entry.getValue()){
                 case TO_CREATE :
                     Result createResult  = createEmployeeWorker(token, entry.getKey());
+                    makeAudit(entry.getKey(), En_AuditType.WORKER_CREATE, token);
                     if (createResult.isError()){
                         return error(createResult.getStatus());
                     }
                     break;
-                case TO_UPDATE :
-                    Result updateStatus  = updateEmployeeWorker(token, entry.getKey());
-                    if (updateStatus.isError()){
-                        return error(updateStatus.getStatus());
-                    }
-                    break;
                 case TO_REMOVE :
                     Result removeStatus  = removeWorkerEntry(entry.getKey());
+                    makeAudit(entry.getKey(), En_AuditType.WORKER_REMOVE, token);
                     if (removeStatus.isError()){
                         return error(removeStatus.getStatus());
                     }
@@ -473,6 +437,65 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
        return ok(true);
+    }
+
+    private void fillMapWorkersToRemove(Map<WorkerEntry, Integer> finalWorkersMap, List<WorkerEntry> newWorkerEntries, List<WorkerEntry> oldWorkerEntries, int TO_REMOVE) {
+        for (WorkerEntry worker : oldWorkerEntries) {
+            boolean isActualWorkerEntry = false;
+
+            if (isSyncCompanyWorker(worker)){
+                continue;
+            }
+
+            Iterator<WorkerEntry> workerEntryIterator = newWorkerEntries.iterator();
+            while (workerEntryIterator.hasNext()){
+                WorkerEntry workerEntry = workerEntryIterator.next();
+
+                if (worker.getId().equals(workerEntry.getId())){
+                    isActualWorkerEntry = true;
+                    workerEntryIterator.remove();
+                    break;
+                }
+            }
+
+            if(!isActualWorkerEntry){
+                finalWorkersMap.put(worker, TO_REMOVE);
+            }
+        }
+    }
+
+    private void fillMapWorkersToCreate(Map<WorkerEntry, Integer> finalWorkersMap, List<WorkerEntry> newWorkerEntries, int TO_CREATE) {
+        Iterator<WorkerEntry> workerEntryIterator = newWorkerEntries.iterator();
+
+        while (workerEntryIterator.hasNext()) {
+            WorkerEntry workerEntry = workerEntryIterator.next();
+            if (workerEntry.getId() == null){
+                finalWorkersMap.put(workerEntry, TO_CREATE);
+                workerEntryIterator.remove();
+                continue;
+            }
+
+            if (isSyncCompanyWorker(workerEntry)){
+                workerEntryIterator.remove();
+            }
+        }
+    }
+
+    private void makeAudit(AuditableObject object, En_AuditType type, AuthToken token){
+        AuditObject auditObject = new AuditObject();
+        auditObject.setCreated( new Date() );
+        auditObject.setType(type);
+        auditObject.setCreatorId( token.getPersonId() );
+        try {
+            auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
+        } catch (UnknownHostException e) {
+            log.warn("makeAudit(): fail to setCreatorIp, UnknownHostException");
+            auditObject.setCreatorIp("0.0.0.0");;
+        }
+        auditObject.setCreatorShortName(token.getPersonDisplayShortName());
+        auditObject.setEntryInfo(object);
+
+        auditObjectDAO.insertAudit(auditObject);
     }
 
     private void hireEmployeeIfNeed(Long personId) {

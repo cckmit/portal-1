@@ -65,7 +65,6 @@ public interface EmployeeService {
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> fireEmployee(AuthToken token, Person person);
 
-    @Auditable(En_AuditType.WORKER_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> workerEntryList);
 }
