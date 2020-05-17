@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -335,6 +336,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.secondName().setText(person.getSecondName());
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
+        view.setBirthDayTimeZone(TimeZone.createTimeZone(person.getBirthday().getTimezoneOffset()));
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
 
