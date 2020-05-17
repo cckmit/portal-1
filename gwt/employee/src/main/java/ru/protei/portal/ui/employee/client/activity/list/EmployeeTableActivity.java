@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -94,6 +96,9 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         boolean isFirstChunk = offset == 0;
         query.setOffset(offset);
         query.setLimit(limit);
+        query.setSortField(En_SortField.person_full_name);
+        query.setSortDir(En_SortDir.ASC);
+
         employeeService.getEmployeesWithChangedHiddenCompanyNames(query, new FluentCallback<SearchResult<EmployeeShortView>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
