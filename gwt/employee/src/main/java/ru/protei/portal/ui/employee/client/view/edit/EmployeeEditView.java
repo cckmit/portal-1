@@ -160,16 +160,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasEnabled companyDepartmentEnabled() {
-        return companyDepartmentSelector;
-    }
-
-    @Override
-    public HasEnabled workerPositionEnabled() {
-        return workerPositionSelector;
-    }
-
-    @Override
     public HasValue<EntityOption> company() {
         return company;
     }
@@ -212,16 +202,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValidable genderValidator(){
         return gender;
-    }
-
-    @Override
-    public HasVisibility saveVisibility() {
-        return saveButton;
-    }
-
-    @Override
-    public HasEnabled companyEnabled () {
-        return company;
     }
 
     @Override

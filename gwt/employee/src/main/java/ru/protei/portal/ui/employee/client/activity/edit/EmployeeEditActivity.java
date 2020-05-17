@@ -63,8 +63,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         setAvatarHandlers();
 
-        personId = null;
-
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
@@ -75,6 +73,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                             companiesWithoutSync.addAll(companies);
 
                             if (event.id == null) {
+                                personId = null;
                                 fillView(new EmployeeShortView());
                             } else {
                                 personId = event.id;
@@ -82,34 +81,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                             }
 
                         }));
-    }
-
-    private void setAvatarHandlers() {
-        if (changeAvatarHandlerRegistration != null){
-            changeAvatarHandlerRegistration.removeHandler();
-        }
-
-        changeAvatarHandlerRegistration = view.addChangeHandler(changeEvent -> {
-            if (personId != null){
-                view.submitAvatar(AvatarUtils.setAvatarUrl(personId));
-            }
-        });
-
-        if (submitAvatarHandlerRegistration != null){
-            submitAvatarHandlerRegistration.removeHandler();
-        }
-
-        submitAvatarHandlerRegistration = view.addSubmitCompleteHandler(submitCompleteEvent -> {
-            view.setAvatarUrl(AvatarUtils.getPhotoUrl(personId));
-
-            UploadResult result = parseUploadResult(submitCompleteEvent.getResults());
-
-            if (En_FileUploadStatus.OK.equals(result.getStatus())) {
-                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadSuccessful(), NotifyEvents.NotifyType.SUCCESS));
-            } else {
-                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadingFailed(), NotifyEvents.NotifyType.ERROR));
-            }
-        });
     }
 
 
@@ -177,7 +148,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         fireEvent(new WorkerPositionEvents.Edit(workerPosition));
     }
 
-
     @Override
     public void onSaveClicked() {
         String errorMsg = validate();
@@ -192,18 +162,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return;
         }
 
-        List<WorkerEntry> workers = new ArrayList<>();
-
-        for (WorkerEntryShortView value : positionMap.values()) {
-            WorkerEntry worker = new WorkerEntry();
-            worker.setPositionId(value.getPositionId());
-            worker.setDepartmentId(value.getDepId());
-            worker.setCompanyId(value.getCompanyId());
-            worker.setId(value.getId());
-            worker.setPersonId(personId);
-            worker.setActiveFlag(value.getActiveFlag());
-            workers.add(worker);
-        }
+        List<WorkerEntry> workers = fillWorkers();
 
         if (personId == null) {
             createPersonAndUpdateWorkers(workers);
@@ -317,6 +276,51 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         view.getPositionsContainer().remove(positionItem.asWidget());
         positionMap.remove(positionItem);
+    }
+
+    private List<WorkerEntry> fillWorkers () {
+        List<WorkerEntry> workers = new ArrayList<>();
+
+        for (WorkerEntryShortView value : positionMap.values()) {
+            WorkerEntry worker = new WorkerEntry();
+            worker.setPositionId(value.getPositionId());
+            worker.setDepartmentId(value.getDepId());
+            worker.setCompanyId(value.getCompanyId());
+            worker.setId(value.getId());
+            worker.setPersonId(personId);
+            worker.setActiveFlag(value.getActiveFlag());
+            workers.add(worker);
+        }
+
+        return workers;
+    }
+
+    private void setAvatarHandlers() {
+        if (changeAvatarHandlerRegistration != null){
+            changeAvatarHandlerRegistration.removeHandler();
+        }
+
+        changeAvatarHandlerRegistration = view.addChangeHandler(changeEvent -> {
+            if (personId != null){
+                view.submitAvatar(AvatarUtils.setAvatarUrl(personId));
+            }
+        });
+
+        if (submitAvatarHandlerRegistration != null){
+            submitAvatarHandlerRegistration.removeHandler();
+        }
+
+        submitAvatarHandlerRegistration = view.addSubmitCompleteHandler(submitCompleteEvent -> {
+            view.setAvatarUrl(AvatarUtils.getPhotoUrl(personId));
+
+            UploadResult result = parseUploadResult(submitCompleteEvent.getResults());
+
+            if (En_FileUploadStatus.OK.equals(result.getStatus())) {
+                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+            } else {
+                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadingFailed(), NotifyEvents.NotifyType.ERROR));
+            }
+        });
     }
 
     private boolean validateSaveButton() {
@@ -511,9 +515,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.mobilePhoneEnabled().setEnabled(isEnabled);
         view.workPhoneEnabled().setEnabled(isEnabled);
         view.ipAddressEnabled().setEnabled(isEnabled);
-        view.companyEnabled().setEnabled(true);
-        view.companyDepartmentEnabled().setEnabled(true);
-        view.workerPositionEnabled().setEnabled(true);
     }
 
     private void updateEmployeeWorkers (List<WorkerEntry> workers){

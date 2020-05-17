@@ -54,10 +54,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasValue<EntityOption> companyDepartment();
 
-    HasEnabled companyDepartmentEnabled();
-
-    HasEnabled workerPositionEnabled();
-
     HasValue<EntityOption> company();
 
     HasValue<En_Gender> gender ();
@@ -71,10 +67,6 @@ public interface AbstractEmployeeEditView extends IsWidget {
     void workerPositionSelectorReload();
 
     HasValidable genderValidator();
-
-    HasVisibility saveVisibility();
-
-    HasEnabled companyEnabled ();
 
     HasVisibility fireBtnVisibility();
 
