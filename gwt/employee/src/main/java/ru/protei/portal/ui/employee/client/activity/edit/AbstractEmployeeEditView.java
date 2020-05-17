@@ -2,6 +2,7 @@ package ru.protei.portal.ui.employee.client.activity.edit;
 
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -38,6 +39,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasText secondName();
 
     HasValue<Date> birthDay ();
+
+    void setBirthDayTimeZone (TimeZone timeZone);
 
     HasText workPhone ();
 

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -412,6 +413,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.lastName().setValue(employee.getLastName());
         personLastName = employee.getLastName();
         view.secondName().setText(employee.getSecondName());
+        view.setBirthDayTimeZone(TimeZone.createTimeZone(employee.getBirthday().getTimezoneOffset()));
         view.birthDay().setValue(employee.getBirthday());
         view.ipAddress().setValue(employee.getIpAddress());
 

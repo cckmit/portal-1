@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -121,6 +122,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValue<Date> birthDay() {
         return birthDay;
+    }
+
+    @Override
+    public void setBirthDayTimeZone (TimeZone timeZone) {
+        birthDay.setTimeZone(timeZone);
     }
 
     @Override
