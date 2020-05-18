@@ -152,9 +152,11 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("managerChanged", event.isManagerChanged());
         templateModel.put("manager", newMetaState.getManager() == null ? null : newMetaState.getManager().getDisplayName());
-        templateModel.put("managerCompany", newMetaState.getManager() == null || newMetaState.getManager().getCompany() == null ? null : newMetaState.getManager().getCompany().getCname());
         templateModel.put("oldManager", oldMetaState == null || oldMetaState.getManager() == null ? null : oldMetaState.getManager().getDisplayName());
-        templateModel.put("oldManagerCompany", oldMetaState == null || oldMetaState.getManager() == null || oldMetaState.getManager().getCompany() == null ? null : oldMetaState.getManager().getCompany().getCname());
+
+        templateModel.put("managerCompanyChanged", event.isManagerCompanyChanged());
+        templateModel.put("managerCompany", newMetaState.getManagerCompanyName());
+        templateModel.put("oldManagerCompany", oldMetaState == null ? null : oldMetaState.getManagerCompanyName());
 
         templateModel.put("platformChanged", event.isPlatformChanged());
         templateModel.put("platform", newMetaState.getPlatformName());

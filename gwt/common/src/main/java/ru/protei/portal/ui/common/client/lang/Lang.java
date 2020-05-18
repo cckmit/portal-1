@@ -520,6 +520,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueInitiatorInfo();
 
+    String issueManagerInfo();
+
     String issueEdit();
 
     String newIssue();
@@ -825,6 +827,8 @@ public interface Lang extends Messages, ContactItemLang {
     String requestNXCaseState();
 
     String requestCustomerCaseState();
+
+    String notProteiResponsibilityState();
 
     String criticalImportance();
 

@@ -47,7 +47,8 @@ public enum En_CaseState implements HasId {
         public String getComment() {
             return "Не забывать переводить в этот статус, в противном случае Заказчик ждёт реакции от нас";
         }
-    };
+    },
+    NOT_PROTEI_RESPONSIBILITY(37, "not protei area of responsibility", false);
 
     public static En_CaseState getById(Long id) {
         if(id == null)

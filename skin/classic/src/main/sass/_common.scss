@@ -731,7 +731,7 @@ label.bordered:after {
       }
     }
     .number {
-      width: 10%;
+      width: 14%;
       text-align: center;
       .number-size {
         font-size: 22px;
@@ -1352,7 +1352,8 @@ td.info {
 }
 
 .state-canceled,
-.state-paused {
+.state-paused,
+.state-not_protei_responsibility {
   color: #868686 !important;
 }
 
@@ -1480,8 +1481,10 @@ td.info {
 
 .label-canceled,
 .label-paused,
+.label-not_protei_responsibility,
 .option-canceled .option-name,
-.option-paused .option-name {
+.option-paused .option-name,
+.option-not_protei_responsibility .option-name {
   background-color: #868686;
 }
 
@@ -4365,4 +4368,9 @@ table {
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.form-group-attached > div:not(:last-child) .add-border-bottom .form-group-default,
+.form-group-attached > div:not(:last-child).add-border-bottom .form-group-default {
+  border-bottom-color: rgba(0, 0, 0, 0.07);
 }

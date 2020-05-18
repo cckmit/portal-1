@@ -18,4 +18,17 @@
                                  referencedTableName="company" referencedColumnNames="id"
                                  onDelete="SET NULL"/>
     </changeSet>
+
+    <changeSet id="update-manager_company_id-values" author="fomin">
+        <sql>
+            UPDATE case_object
+            SET manager_company_id = (SELECT person.company_id FROM person WHERE person.id = case_object.MANAGER)
+            WHERE CASE_TYPE = 4
+        </sql>
+        <sql>
+            UPDATE case_object
+            SET manager_company_id = 1
+            WHERE CASE_TYPE = 4 AND case_object.MANAGER IS NULL
+        </sql>
+    </changeSet>
 </databaseChangeLog>

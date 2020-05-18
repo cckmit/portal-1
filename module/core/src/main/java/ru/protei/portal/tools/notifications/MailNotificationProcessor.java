@@ -803,6 +803,7 @@ public class MailNotificationProcessor {
                 || assembledCaseEvent.isPauseDateChanged()
                 || assembledCaseEvent.isInitiatorChanged()
                 || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerCompanyChanged()
                 || assembledCaseEvent.isManagerChanged()
                 || assembledCaseEvent.getName().hasDifferences()
                 || assembledCaseEvent.getInfo().hasDifferences()

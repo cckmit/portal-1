@@ -680,6 +680,7 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getState(), co2.getState())
                 || !Objects.equals(co1.getPauseDate(), co2.getPauseDate())
                 || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
+                || !Objects.equals(co1.getManagerCompanyId(), co2.getManagerCompanyId())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId());
     }
@@ -788,6 +789,8 @@ public class CaseServiceImpl implements CaseService {
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
         if (En_CaseState.getById( caseMeta.getStateId() ) == null) return false;
         if (!isStateValid(caseMeta.getState(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
+        if (caseMeta.getManagerCompanyId() == null) return false;
+        if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
             return false;

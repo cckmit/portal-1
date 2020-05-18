@@ -229,6 +229,7 @@ public class DebugIds {
         String CUST_PENDING = "issue-state-cust-pending";
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
+        String NOT_PROTEI_RESPONSIBILITY = "issue-state-not-protei-responsibility";
     }
 
     public interface ISSUE {
@@ -256,6 +257,7 @@ public class DebugIds {
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
         String PLATFORM_SELECTOR = "issue-platform-selector";
         String COMPANY_SELECTOR = "issue-company-selector";
+        String MANAGER_COMPANY_SELECTOR = "issue-manager-company-selector";
         String INITIATOR_SELECTOR = "issue-initiator-selector";
         String PRODUCT_SELECTOR = "issue-product-selector";
         String MANAGER_SELECTOR = "issue-manager-selector";
@@ -284,6 +286,7 @@ public class DebugIds {
             String IMPORTANCE = "issue-label-importance";
             String PLATFORM = "issue-label-platform";
             String COMPANY = "issue-label-company";
+            String MANAGER_COMPANY = "issue-label-manager-company";
             String CONTACT = "issue-label-contact";
             String PRODUCT = "issue-label-product";
             String MANAGER = "issue-label-manager";

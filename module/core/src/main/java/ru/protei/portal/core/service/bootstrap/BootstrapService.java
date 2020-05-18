@@ -53,7 +53,6 @@ public class BootstrapService {
         //createProjectsForContracts();
         documentBuildFullIndex();
         //fillImportanceLevels();
-        addManagerCompaniesToIssues();
     }
 
     private void fillImportanceLevels() {
@@ -327,10 +326,6 @@ if(true) return; //TODO remove
         }
 
         log.info("Document index full build has ended");
-    }
-
-    private void addManagerCompaniesToIssues() {
-        caseObjectDAO.updateManagerCompanyIdColumn(En_CaseType.CRM_SUPPORT);
     }
 
     @Inject

@@ -142,6 +142,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEventMeta() && !lastMetaState.getImpLevel().equals(initMetaState.getImpLevel());
     }
 
+    public boolean isManagerCompanyChanged() {
+        return isUpdateEventMeta() && !lastMetaState.getManagerCompanyId().equals(initMetaState.getManagerCompanyId());
+    }
+
     public boolean isManagerChanged() {
         return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getManagerId(), initMetaState.getManagerId());
     }

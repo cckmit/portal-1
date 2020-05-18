@@ -140,19 +140,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return getByCondition("CASE_NAME like ?", "%" + name + "%");
     }
 
-    @Override
-    public int updateManagerCompanyIdColumn(En_CaseType caseType) {
-        String tableName = getTableName();
-
-        String sql =
-                "UPDATE " + tableName + " " +
-                "SET manager_company_id = " +
-                "(SELECT person.company_id FROM person WHERE person.id = " + tableName + ".MANAGER)" +
-                "WHERE CASE_TYPE = " + caseType.getId();
-
-        return jdbcTemplate.update(sql);
-    }
-
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition (CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);

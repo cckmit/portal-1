@@ -19,6 +19,8 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     List<Long> getAllHomeCompanyIdsWithoutSync();
 
+    List<Company> getAllHomeCompanies();
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition(CompanyQuery query);
 

@@ -13,5 +13,6 @@
   <include file="2020-04-30-add-redmine-workflow.xml" relativeToChangelogFile="true"/>
   <include file="2020-04-28-add-company_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-05-16-add-manager_company_id-column-to-case_object-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-05-18-add-not_protei_responsibility-state.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

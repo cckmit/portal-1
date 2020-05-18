@@ -311,6 +311,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public Result<List<Company>> getAllHomeCompanies(AuthToken token) {
+        return ok(companyDAO.getAllHomeCompanies());
+    }
+
+    @Override
     public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
