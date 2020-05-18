@@ -358,7 +358,6 @@ if(true) return; //TODO remove
             extSubnets.forEach( extSubnet -> {
 
                 Subnet subnet = new Subnet();
-                subnet.setId(extSubnet.getId());
                 subnet.setCreated(extSubnet.getCreated());
 
                 Long subnetCreatorId = 288L;
@@ -374,35 +373,35 @@ if(true) return; //TODO remove
                 subnet.setMask(CrmConstants.IpReservation.SUBNET_MASK);
                 subnet.setComment(extSubnet.getComment());
 
-                boolean subnetCreateResult = subnetDAO.saveOrUpdate(subnet);
-                if (subnetCreateResult) {
+                Long subnetId = subnetDAO.persist(subnet);
+                if (subnetId != null) {
+                    extReservedIps.stream().filter( extReservedIp ->
+                            extReservedIp.getSubnetId().equals(extSubnet.getId()))
+                            .forEach( extReservedIp -> {
+                                ReservedIp reservedIp = new ReservedIp();
 
-                    extReservedIps.forEach( extReservedIp -> {
-                        ReservedIp reservedIp = new ReservedIp();
-                        reservedIp.setId(reservedIp.getId());
+                                Long ownerId = personDAO.getEmployeeByOldId(extReservedIp.getCustomerID()).getId();
+                                Long ipCreatorId = ownerId;
+                                try {
+                                    EmployeeQuery query = new EmployeeQuery();
+                                    query.setLastName(extReservedIp.getCreator().substring(0, extReservedIp.getCreator().indexOf(" ")));
+                                    SearchResult<Person> searchResult = personDAO.getEmployeesSearchResult(query);
+                                    ipCreatorId = searchResult.getResults().get(0).getId();
+                                } catch (Exception e ) {}
 
-                        Long ownerId = personDAO.getEmployeeByOldId(extReservedIp.getCustomerID()).getId();
-                        Long ipCreatorId = ownerId;
-                        try {
-                            EmployeeQuery query = new EmployeeQuery();
-                            query.setLastName(extReservedIp.getCreator().substring(0, extReservedIp.getCreator().indexOf(" ")));
-                            SearchResult<Person> searchResult = personDAO.getEmployeesSearchResult(query);
-                            ipCreatorId = searchResult.getResults().get(0).getId();
-                        } catch (Exception e ) {}
+                                reservedIp.setCreatorId(ipCreatorId);
+                                reservedIp.setOwnerId(ownerId);
+                                reservedIp.setCreated(extReservedIp.getCreated());
+                                reservedIp.setSubnetId(subnetId);
+                                reservedIp.setIpAddress(extReservedIp.getIpAddress());
+                                reservedIp.setReserveDate(extReservedIp.getDtReserve());
+                                if (!extReservedIp.isForLongTime()) {
+                                    reservedIp.setReleaseDate(extReservedIp.getDtRelease());
+                                }
+                                reservedIp.setComment(extReservedIp.getComment());
 
-                        reservedIp.setCreatorId(ipCreatorId);
-                        reservedIp.setOwnerId(ownerId);
-                        reservedIp.setCreated(extReservedIp.getCreated());
-                        reservedIp.setSubnetId(extSubnet.getId());
-                        reservedIp.setIpAddress(extReservedIp.getIpAddress());
-                        reservedIp.setReserveDate(extReservedIp.getDtReserve());
-                        if (!extReservedIp.isForLongTime()) {
-                            reservedIp.setReleaseDate(extReservedIp.getDtRelease());
-                        }
-                        reservedIp.setComment(extReservedIp.getComment());
-
-                        boolean reservedCreateResult = reservedIpDAO.saveOrUpdate(reservedIp);
-                    });
+                                reservedIpDAO.persist(reservedIp);
+                            });
                 }
             });
 
