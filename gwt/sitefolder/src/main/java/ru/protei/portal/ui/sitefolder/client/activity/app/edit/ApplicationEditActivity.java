@@ -159,5 +159,5 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
 
     private Application application;
     private AppEvents.InitDetails initDetails;
-    private Runnable fireBackEvent;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

@@ -182,5 +182,5 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     private Server server;
     private Long serverIdOfAppsToBeCloned;
     private AppEvents.InitDetails initDetails;
-    private Runnable fireBackEvent;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }
