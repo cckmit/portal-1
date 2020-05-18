@@ -12,7 +12,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.test.client.DebugIds;
@@ -21,6 +20,7 @@ import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseC
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.StateUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -88,19 +88,20 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setStatus( En_CaseState value ) {
-        if ( root.getStyleName().contains( "right" ) ) {
-            owner.removeClassName( "name" );
-            owner.addClassName( "status" );
-            owner.addClassName( "case-" + value.name().toLowerCase() );
-            owner.setInnerText( stateLang.getStateName( value ) );
+    public void setStatus(String value) {
+        String styleName = StateUtils.makeStyleName(value);
+        if ( root.getStyleName().contains("right")) {
+            owner.removeClassName("name");
+            owner.addClassName("status");
+            owner.addClassName("case-" + styleName);
+            owner.setInnerText(value);
             info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName( "hide" );
+            info.removeClassName("hide");
         } else {
-            status.addClassName( "case-" + value.name().toLowerCase() );
-            status.setInnerText( stateLang.getStateName( value ) );
+            this.status.addClassName("case-" + styleName);
+            this.status.setInnerText(value);
             info.setInnerText(lang.issueCommentChangeStatusTo());
-            info.removeClassName( "hide" );
+            info.removeClassName("hide");
         }
     }
 

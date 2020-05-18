@@ -3,8 +3,8 @@ package ru.protei.portal.ui.common.client.common;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
@@ -22,36 +22,36 @@ public abstract class IssueStatesService implements Activity {
     @Inject
     public void onInit() {
         activeStateIds = new ArrayList<>(10);
-        activeStateIds.add((long)En_CaseState.CREATED.getId());
-        activeStateIds.add((long)En_CaseState.OPENED.getId());
-        activeStateIds.add((long)En_CaseState.ACTIVE.getId());
-        activeStateIds.add((long)En_CaseState.TEST_LOCAL.getId());
-        activeStateIds.add((long)En_CaseState.WORKAROUND.getId());
-        activeStateIds.add((long)En_CaseState.INFO_REQUEST.getId());
-        activeStateIds.add((long)En_CaseState.NX_REQUEST.getId());
-        activeStateIds.add((long)En_CaseState.CUST_REQUEST.getId());
-        activeStateIds.add((long)En_CaseState.CUST_PENDING.getId());
-        activeStateIds.add((long)En_CaseState.TEST_CUST.getId());
+        activeStateIds.add((long)CrmConstants.State.CREATED);
+        activeStateIds.add((long)CrmConstants.State.OPENED);
+        activeStateIds.add((long)CrmConstants.State.ACTIVE);
+        activeStateIds.add((long)CrmConstants.State.TEST_LOCAL);
+        activeStateIds.add((long)CrmConstants.State.WORKAROUND);
+        activeStateIds.add((long)CrmConstants.State.INFO_REQUEST);
+        activeStateIds.add((long)CrmConstants.State.NX_REQUEST);
+        activeStateIds.add((long)CrmConstants.State.CUST_REQUEST);
+        activeStateIds.add((long)CrmConstants.State.CUST_PENDING);
+        activeStateIds.add((long)CrmConstants.State.TEST_CUST);
 
         newStateIds = new ArrayList<>(3);
-        newStateIds.add((long)En_CaseState.CREATED.getId());
-        newStateIds.add((long)En_CaseState.OPENED.getId());
-        newStateIds.add((long)En_CaseState.ACTIVE.getId());
+        newStateIds.add((long)CrmConstants.State.CREATED);
+        newStateIds.add((long)CrmConstants.State.OPENED);
+        newStateIds.add((long)CrmConstants.State.ACTIVE);
 
         filterCaseResolutionTimeActiveStateIds = new ArrayList<>(8);
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.CREATED.getId());
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.OPENED.getId());
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.ACTIVE.getId());
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.TEST_LOCAL.getId());
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.WORKAROUND.getId());
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.INFO_REQUEST.getId());
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.NX_REQUEST.getId());
-        filterCaseResolutionTimeActiveStateIds.add((long)En_CaseState.CUST_REQUEST.getId());
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.CREATED);
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.OPENED);
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.ACTIVE);
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.TEST_LOCAL);
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.WORKAROUND);
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.INFO_REQUEST);
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.NX_REQUEST);
+        filterCaseResolutionTimeActiveStateIds.add((long)CrmConstants.State.CUST_REQUEST);
     }
 
     @Event
     public void authEvent(AuthEvents.Success event) {
-        caseStateController.getCaseState((long)En_CaseState.CREATED.getId(), new FluentCallback<CaseState>()
+        caseStateController.getCaseState((long)CrmConstants.State.CREATED, new FluentCallback<CaseState>()
                 .withSuccess(this::setCreatedCaseState));
     }
 

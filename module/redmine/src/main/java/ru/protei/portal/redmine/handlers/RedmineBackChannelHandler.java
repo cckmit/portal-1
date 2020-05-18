@@ -8,10 +8,10 @@ import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.service.RedmineService;
 
@@ -140,7 +140,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(
                     event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId(), statusMapId).getData();
             if (redmineStatusMapEntry != null
-                    && En_CaseState.VERIFIED.getId() != event.getLastCaseMeta().getStateId()) {
+                    && CrmConstants.State.VERIFIED != event.getLastCaseMeta().getStateId()) {
                 logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
                 issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
             } else {

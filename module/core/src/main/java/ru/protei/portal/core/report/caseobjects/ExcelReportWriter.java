@@ -1,12 +1,11 @@
 package ru.protei.portal.core.report.caseobjects;
 
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -17,7 +16,6 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 
@@ -117,17 +115,17 @@ public class ExcelReportWriter implements
                 verified = null;
 
         for (CaseComment comment : comments) {
-            En_CaseState state = En_CaseState.getById(comment.getCaseStateId());
-            if (state == null) {
+            Long stateId = comment.getCaseStateId();
+            if (stateId == null) {
                 continue;
             }
-            switch (state) {
-                case CREATED: created = comment.getCreated(); break;
-                case OPENED: opened = comment.getCreated(); break;
-                case WORKAROUND: workaround = comment.getCreated(); break;
-                case TEST_CUST: customerTest = comment.getCreated(); break;
-                case DONE: done = comment.getCreated(); break;
-                case VERIFIED: verified = comment.getCreated(); break;
+            switch (stateId.intValue()) {
+                case CrmConstants.State.CREATED: created = comment.getCreated(); break;
+                case CrmConstants.State.OPENED: opened = comment.getCreated(); break;
+                case CrmConstants.State.WORKAROUND: workaround = comment.getCreated(); break;
+                case CrmConstants.State.TEST_CUST: customerTest = comment.getCreated(); break;
+                case CrmConstants.State.DONE: done = comment.getCreated(); break;
+                case CrmConstants.State.VERIFIED: verified = comment.getCreated(); break;
             }
         }
 

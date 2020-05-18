@@ -12,7 +12,6 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -156,7 +155,7 @@ public final class CommonServiceImpl implements CommonService {
 
         object.setStateId( redmineStatusEntry.getLocalStatusId() );
         caseObjectDAO.merge( object );
-        logger.debug( "Updated case state for case with id {}, old={}, new={}", object.getId(), En_CaseState.getById( oldMeta.getStateId() ), En_CaseState.getById( object.getStateId() ) );
+        logger.debug( "Updated case state for case with id {}, old={}, new={}", object.getId(), oldMeta.getStateId(), object.getStateId());
 
         Result<Long> stateCommentId = createAndStoreStateComment( creationOn, author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId() );
         if (stateCommentId.isError()) {

@@ -1,8 +1,7 @@
 package ru.protei.portal.test.jira.mock;
 
 import ru.protei.portal.core.model.dao.impl.JiraStatusMapEntryDAO_Impl;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +12,13 @@ public class JiraStatusMapEntryDAO_ImplMock extends JiraStatusMapEntryDAO_Impl {
 
     private synchronized static void buildStatusMap() {
         statusMap = new HashMap<>();
-        statusMap.put("Authorized", (long)En_CaseState.CREATED.getId());
-        statusMap.put("Studying", (long)En_CaseState.OPENED.getId());
-        statusMap.put("Postpone", (long)En_CaseState.PAUSED.getId());
-        statusMap.put("Soft Close", (long)En_CaseState.DONE.getId());
-        statusMap.put("Nothing to change", (long)En_CaseState.VERIFIED.getId());
-        statusMap.put("Request to customer", (long)En_CaseState.CUST_REQUEST.getId());
-        statusMap.put("Request to NX", (long)En_CaseState.NX_REQUEST.getId());
+        statusMap.put("Authorized", (long) CrmConstants.State.CREATED);
+        statusMap.put("Studying", (long)CrmConstants.State.OPENED);
+        statusMap.put("Postpone", (long)CrmConstants.State.PAUSED);
+        statusMap.put("Soft Close", (long)CrmConstants.State.DONE);
+        statusMap.put("Nothing to change", (long)CrmConstants.State.VERIFIED);
+        statusMap.put("Request to customer", (long)CrmConstants.State.CUST_REQUEST);
+        statusMap.put("Request to NX", (long)CrmConstants.State.NX_REQUEST);
     }
 
     @Override

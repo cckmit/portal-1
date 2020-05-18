@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.ui.common.client.util.StateUtils;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
@@ -55,8 +56,7 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
     private DisplayOptionCreator<CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
             return caseState -> {
-                String name = makeCaseStateName(caseState);
-                return new DisplayOption(name, "", "fas fa-circle m-r-5 state-" + name);
+                return new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + makeCaseStateStyle(caseState));
             };
         }
         return new DisplayOptionCreator<CaseState>() {
@@ -73,6 +73,10 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
 
     private String makeCaseStateName(CaseState caseState) {
         return caseState == null ? defaultValue : caseState.getState();
+    }
+
+    private String makeCaseStateStyle(CaseState caseState) {
+        return caseState == null ? "" : StateUtils.makeStyleName(caseState.getState());
     }
 
     private En_CaseStateWorkflow workflow;

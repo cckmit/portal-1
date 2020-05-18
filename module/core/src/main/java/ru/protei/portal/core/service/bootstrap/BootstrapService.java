@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -133,7 +134,7 @@ public class BootstrapService {
                 caseObject.setCaseNumber(platform.getId());
                 caseObject.setCreated(new Date());
                 caseObject.setName(platform.getName());
-                caseObject.setStateId(En_CaseState.CREATED.getId());
+                caseObject.setStateId(CrmConstants.State.CREATED);
                 Long caseId = caseObjectDAO.persist(caseObject);
                 platform.setCaseId(caseId);
                 platformDAO.partialMerge(platform, "case_id");

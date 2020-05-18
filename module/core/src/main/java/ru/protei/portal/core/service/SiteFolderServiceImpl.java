@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -14,6 +13,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -398,7 +398,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         caseObject.setCaseNumber(platformId);
         caseObject.setCreated(new Date());
         caseObject.setName(name);
-        caseObject.setStateId(En_CaseState.CREATED.getId());
+        caseObject.setStateId(CrmConstants.State.CREATED);
         return caseObject;
     }
 

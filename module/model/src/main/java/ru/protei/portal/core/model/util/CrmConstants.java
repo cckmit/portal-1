@@ -115,4 +115,21 @@ public class CrmConstants {
     public interface Redmine {
         String NO_CONTENT_TYPE = "application/octet-stream";
     }
+
+    public interface State {
+        int CREATED = 1;
+        int OPENED = 2;
+        int WORKAROUND = 30;
+        int TEST_CUST = 20;
+        int DONE = 17;
+        int VERIFIED = 5;
+        int PAUSED = 4;
+        int CANCELED = 33;
+        int ACTIVE = 16;
+        int TEST_LOCAL = 19;
+        int INFO_REQUEST = 31;
+        int NX_REQUEST = 35;
+        int CUST_REQUEST = 36;
+        int CUST_PENDING = 34;
+    }
 }

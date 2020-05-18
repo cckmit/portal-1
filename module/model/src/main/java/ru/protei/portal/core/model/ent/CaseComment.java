@@ -32,6 +32,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="cstate_id")
     private Long caseStateId;
 
+    @JdbcJoinedColumn(localColumn = "cstate_id", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String caseStateName;
+
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
 
@@ -150,6 +153,14 @@ public class CaseComment extends AuditableObject {
 
     public void setCaseStateId(Long caseStateId) {
         this.caseStateId = caseStateId;
+    }
+
+    public String getCaseStateName() {
+        return caseStateName;
+    }
+
+    public void setCaseStateName(String caseStateName) {
+        this.caseStateName = caseStateName;
     }
 
     public Integer getCaseImpLevel() {

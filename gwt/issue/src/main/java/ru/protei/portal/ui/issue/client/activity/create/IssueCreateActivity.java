@@ -276,7 +276,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
-        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == issueMetaView.state().getValue().getId());
+        issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == issueMetaView.state().getValue().getId());
 
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
@@ -331,7 +331,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue(issueStatesService.getCreatedCaseState());
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
-        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.getId() == caseObjectMeta.getStateId());
+        issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == caseObjectMeta.getStateId());
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
@@ -384,7 +384,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
-        caseObjectMeta.setStateId(En_CaseState.CREATED.getId());
+        caseObjectMeta.setStateId(CrmConstants.State.CREATED);
         caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 
@@ -534,8 +534,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean isStateWithRestrictions(long caseStateId) {
-        return En_CaseState.CREATED.getId() != caseStateId &&
-                En_CaseState.CANCELED.getId() != caseStateId;
+        return CrmConstants.State.CREATED != caseStateId &&
+                CrmConstants.State.CANCELED != caseStateId;
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -547,7 +547,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean isPauseDateValid(long currentStateId, Long pauseDate) {
-        if (En_CaseState.PAUSED.getId() != currentStateId) {
+        if (CrmConstants.State.PAUSED != currentStateId) {
             return true;
         }
 

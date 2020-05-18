@@ -32,8 +32,6 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -128,7 +126,7 @@ public class CaseServiceImpl implements CaseService {
                 caseObject.setTimeElapsed(null);
             }
         } else {
-            caseObject.setStateId(En_CaseState.CREATED.getId());
+            caseObject.setStateId(CrmConstants.State.CREATED);
             caseObject.setTimeElapsed(null);
         }
 
@@ -699,8 +697,8 @@ public class CaseServiceImpl implements CaseService {
 
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
-        return En_CaseState.VERIFIED.getId() == oldMeta.getStateId() &&
-                En_CaseState.VERIFIED.getId() != newMeta.getStateId()  &&
+        return CrmConstants.State.VERIFIED == oldMeta.getStateId() &&
+                CrmConstants.State.VERIFIED != newMeta.getStateId()  &&
                 !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
     }
 
@@ -740,8 +738,8 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyStateBasedOnManager(CaseObjectMeta caseMeta) {
-        if (En_CaseState.CREATED.getId() == caseMeta.getStateId() && caseMeta.getManager() != null) {
-            caseMeta.setStateId(En_CaseState.OPENED.getId());
+        if (CrmConstants.State.CREATED == caseMeta.getStateId() && caseMeta.getManager() != null) {
+            caseMeta.setStateId(CrmConstants.State.OPENED);
         }
     }
 
@@ -776,7 +774,6 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta == null) return false;
         if (caseMeta.getImpLevel() == null) return false;
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
-        if (En_CaseState.getById( caseMeta.getStateId() ) == null) return false;
         if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
@@ -793,12 +790,12 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean isStateValid(long caseStateId, Long managerId, Long pauseDate) {
-        if (!(listOf(En_CaseState.CREATED.getId(), En_CaseState.CANCELED.getId())
+        if (!(listOf(CrmConstants.State.CREATED, CrmConstants.State.CANCELED)
                 .contains((int)caseStateId)) && managerId == null) {
             return false;
         }
 
-        if (En_CaseState.PAUSED.getId() == caseStateId) {
+        if (CrmConstants.State.PAUSED == caseStateId) {
             return pauseDate != null && (System.currentTimeMillis() < pauseDate);
         }
 

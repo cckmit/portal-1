@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.test.client.DebugIdsHelper;
+import ru.protei.portal.ui.common.client.util.StateUtils;
 import ru.protei.portal.ui.common.client.widget.optionlist.list.OptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
@@ -14,15 +15,15 @@ import java.util.List;
 public class IssueStatesOptionList extends OptionList<CaseState> implements SelectorWithModel<CaseState> {
 
     @Inject
-    public void init( StateModel stateModel) {
+    public void init(StateModel stateModel) {
         stateModel.subscribeNoWorkflow(this);
     }
 
     @Override
-    public void fillOptions( List< CaseState > states ) {
+    public void fillOptions(List<CaseState> states) {
         clearOptions();
         states.forEach(state -> {
-            addOption(state.getState(), state, "inline m-r-5 option-" + state.getState());
+            addOption(state.getState(), state, "inline m-r-5 option-" + StateUtils.makeStyleName(state.getState()));
             setEnsureDebugId(state, DebugIdsHelper.ISSUE_STATE.byId(state.getId()));
         });
     }

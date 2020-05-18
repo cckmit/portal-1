@@ -378,8 +378,7 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isStateChangeComment ) {
-            En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
-            itemView.setStatus( caseState );
+            itemView.setStatus( value.getCaseStateName() );
         }
 
         if ( isImportanceChangeComment ) {

@@ -8,16 +8,15 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
@@ -36,7 +35,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -143,7 +141,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("caseState", newMetaState.getStateName());
         templateModel.put("oldCaseState", oldMetaState == null ? null : oldMetaState.getStateName());
 
-        templateModel.put("isPausedState", En_CaseState.PAUSED.getId() == newMetaState.getStateId());
+        templateModel.put("isPausedState", CrmConstants.State.PAUSED == newMetaState.getStateId());
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
         templateModel.put("pauseDate", newMetaState.getPauseDate() == null ? null : new Date(newMetaState.getPauseDate()));
         templateModel.put("oldPauseDate", (oldMetaState == null || oldMetaState.getPauseDate() == null) ? null : new Date(oldMetaState.getPauseDate()));
@@ -513,7 +511,7 @@ public class TemplateServiceImpl implements TemplateService {
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
+                    mailComment.put( "caseState", comment.getCaseStateName() );
                     mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
                     mailComment.put( "caseManager", comment.getCaseManagerShortName() );
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
