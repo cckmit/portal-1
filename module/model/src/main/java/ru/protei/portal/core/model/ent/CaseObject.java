@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -10,7 +9,10 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 19.05.16.
@@ -144,6 +146,12 @@ public class CaseObject extends AuditableObject {
 
     @JdbcColumn(name = "pause_date")
     private Long pauseDate;
+
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
+
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String managerCompanyName;
 
     // not db column
     private List<EntityOption> contracts;
@@ -537,15 +545,6 @@ public class CaseObject extends AuditableObject {
         this.projectSlas = projectSlas;
     }
 
-    @Override
-    public String getAuditType() {
-        return "CaseObject";
-    }
-
-    public interface Columns {
-        String EXT_APP = "EXT_APP";
-    }
-
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
     }
@@ -566,20 +565,44 @@ public class CaseObject extends AuditableObject {
         this.pauseDate = pauseDate;
     }
 
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
+    }
+
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseObject";
+    }
+
+    public interface Columns {
+        String EXT_APP = "EXT_APP";
+    }
+
     @Override
     public String toString() {
         return "CaseObject{" +
                 "id=" + id +
                 ", type=" + type +
                 ", caseNumber=" + caseNumber +
-                ", impLevel=" + impLevel +
                 ", created=" + created +
                 ", modified=" + modified +
                 ", name='" + name + '\'' +
                 ", extId='" + extId + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
-
+                ", impLevel=" + impLevel +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
                 ", creatorIp='" + creatorIp + '\'' +
@@ -611,6 +634,8 @@ public class CaseObject extends AuditableObject {
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", regionName='" + regionName + '\'' +
                 ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +

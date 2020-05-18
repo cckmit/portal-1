@@ -39,6 +39,8 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     CaseObject getByCaseNameLike(String name);
 
+    int updateManagerCompanyIdColumn(En_CaseType caseType);
+
     @SqlConditionBuilder
     SqlCondition caseQueryCondition (CaseQuery query);
 

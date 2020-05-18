@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-manager_company_id-column-to-case_object-table" author="fomin">
+        <addColumn tableName="case_object">
+            <column name="manager_company_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-manager_company_id-at-company-constraint" author="fomin">
+        <addForeignKeyConstraint constraintName="FK_CASE_MANAGER_COMPANY_ID"
+                                 baseTableName="case_object" baseColumnNames="manager_company_id"
+                                 referencedTableName="company" referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+</databaseChangeLog>
