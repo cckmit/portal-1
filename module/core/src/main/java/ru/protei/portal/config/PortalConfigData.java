@@ -325,7 +325,7 @@ public class PortalConfigData {
 
         public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
             this.jdbcDriver = properties.getProperty("syb.jdbc.driver", "net.sourceforge.jtds.jdbc.Driver");
-            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
+            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.101.140:2642/RESV3");
             this.login = properties.getProperty("syb.jdbc.login", "dba");
             this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
 

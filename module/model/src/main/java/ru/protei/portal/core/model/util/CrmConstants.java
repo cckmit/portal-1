@@ -122,6 +122,8 @@ public class CrmConstants {
         String MAC_ADDRESS = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
         String NUMBER = "^\\d{1,3}$";
 
+        String SUBNET_MASK = "0/24";
+
         int MIN_IPS_COUNT = 1;
         int MAX_IPS_COUNT = 255;
     }

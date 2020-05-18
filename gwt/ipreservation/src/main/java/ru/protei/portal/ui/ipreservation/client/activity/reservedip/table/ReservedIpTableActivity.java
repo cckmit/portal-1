@@ -29,6 +29,7 @@ import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.Abstr
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -262,23 +263,17 @@ public abstract class ReservedIpTableActivity
     }
 
     private boolean hasEditPrivileges(Long ownerId) {
-        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
-            || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
-                && policyService.getProfile().getId().equals(ownerId))) {
-            return true;
-        }
-
-        return false;
+        boolean isAdmin = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_EDIT);
+        boolean isUserWithAccess = policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
+                && Objects.equals(ownerId, policyService.getProfile().getId());
+        return isAdmin || isUserWithAccess;
     }
 
     private boolean hasRemovePrivileges(Long ownerId) {
-        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
-                || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)
-                && ownerId.equals(policyService.getProfile().getId()))) {
-            return true;
-        }
-
-        return false;
+        boolean isAdmin = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_REMOVE);
+        boolean isUserWithAccess = policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)
+                && Objects.equals(ownerId, policyService.getProfile().getId());
+        return isAdmin || isUserWithAccess;
     }
 
     private void showError(String error) {
