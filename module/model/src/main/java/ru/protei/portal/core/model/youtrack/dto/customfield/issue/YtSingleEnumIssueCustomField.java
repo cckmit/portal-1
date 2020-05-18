@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.youtrack.dto.customfield.issue;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.youtrack.annotation.YtAlwaysInclude;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
@@ -12,7 +13,8 @@ public class YtSingleEnumIssueCustomField extends YtSingleValueIssueCustomField 
     @YtAlwaysInclude
     public YtEnumBundleElement value;
 
-    public String getValue() {
+    @JsonIgnore
+    public String getValueAsString() {
         if (value == null) {
             return null;
         }
@@ -24,7 +26,6 @@ public class YtSingleEnumIssueCustomField extends YtSingleValueIssueCustomField 
         }
         return null;
     }
-
 
     @Override
     public String toString() {

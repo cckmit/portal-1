@@ -125,4 +125,8 @@ public class CrmConstants {
         int MIN_IPS_COUNT = 1;
         int MAX_IPS_COUNT = 255;
     }
+
+    public interface Youtrack {
+        String REQUEST_TYPE_VALUE = "Удаление пользователей";
+    }
 }

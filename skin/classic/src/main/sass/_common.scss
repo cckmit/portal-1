@@ -1306,6 +1306,12 @@ td.info {
   height: 35px;
 }
 
+.add-position-button {
+  position: absolute;
+  bottom: 0;
+  height: 35px;
+}
+
 .subscription-group {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -4231,6 +4237,18 @@ table {
   margin: 0 0 5px 5px;
 }
 
+.employee-image-container {
+
+  &.upload-enabled {
+    cursor: pointer;
+  }
+
+  .employee-edit-image {
+    height: 260px;
+    margin: 0 0 5px 0;
+  }
+}
+
 .top-brass {
   .top-brass-containers {
     text-align: center;
@@ -4365,4 +4383,32 @@ table {
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.block-header {
+  background: 0 0;
+  border-radius: 0;
+  border-bottom: 0;
+  padding: 20px 0 7px;
+  position: relative;
+  z-index: 3;
+  min-height: 48px;
+
+  .block-title {
+    font-family: montserrat;
+    text-transform: uppercase;
+    display: inline-block;
+    letter-spacing: .06em;
+    font-size: 10.5px;
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-text-stroke: 0;
+    filter: alpha(opacity=40);
+    -webkit-transition: opacity .3s ease;
+    transition: opacity .3s ease;
+  }
 }

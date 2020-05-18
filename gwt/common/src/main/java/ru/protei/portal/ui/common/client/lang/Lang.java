@@ -248,7 +248,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeAlreadyExist();
 
-    String errEmployeeNotFiredFromThisCompany();
+    String errEmployeeNotFiredFromTheseCompanies();
 
     String errDepartmentAlreadyExistInThisCompany();
 
@@ -1833,6 +1833,22 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeTopBrassBtn();
 
     String employeeTopBrassLabel();
+
+    String employeeAvatarLabelEnabled();
+
+    String employeeAvatarLabelDisabled();
+
+    String employeeAvatarUploadSuccessful();
+
+    String employeeAvatarUploadingFailed();
+
+    String employeePositionAddButton();
+
+    String errEmployeePositionEmpty();
+
+    String employeePositions();
+
+    String errEmployeePositionAlreadeyAdded();
 
     String backToEmployees();
 

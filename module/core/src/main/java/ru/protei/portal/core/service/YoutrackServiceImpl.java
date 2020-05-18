@@ -13,12 +13,12 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.Pair;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.customfield.YtCustomFieldActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
-import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
-import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSimpleIssueCustomField;
+import ru.protei.portal.core.model.youtrack.dto.customfield.issue.*;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
@@ -63,18 +63,23 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createIssue(String projectName, String summary, String description) {
         log.info("createIssue(): projectName={}, summary={}, description={}", projectName, summary, description);
 
-        Result<String> projectResult = api.getProjectIdByName(projectName)
-                .flatMap(projects -> {
-                    if (projects.size() == 1) return ok(projects.get(0));
-                    return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one project: " + projects.size());
-                })
-                .map(project -> project.id);
-        if (projectResult.isError()) {
-            log.info("createIssue(): projectName={}, summary={}, description={} | failed to get project", projectName, summary, description);
-            return error(projectResult.getStatus(), projectResult.getMessage());
-        }
+        Result<String> projectResult = getProjectIdByName(projectName);
 
         YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
+        return api.createIssueAndReturnId(issue)
+                .map(ytIssue -> ytIssue.idReadable);
+    }
+
+    @Override
+    public Result<String> createFireWorkerIssue(String summary, String description) {
+        log.info("createFireWorkerIssue(): summary={}, description={}", summary, description);
+
+        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getAdminProject());
+
+        YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
+        YtIssueCustomField requestType = makeRequestTypeCustomField();
+        issue.customFields = new ArrayList<>();
+        issue.customFields.add(requestType);
         return api.createIssueAndReturnId(issue)
                 .map(ytIssue -> ytIssue.idReadable);
     }
@@ -151,7 +156,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getCrmNumberField();
+                    YtSimpleIssueCustomField field = (YtSimpleIssueCustomField) issue.getCrmNumberField();
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
                         return ok(convertYtIssue(issue));
@@ -168,7 +173,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getCrmNumberField();
+                    YtSimpleIssueCustomField field = (YtSimpleIssueCustomField) issue.getCrmNumberField();
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
                         return removeCrmNumber(issue.idReadable);
@@ -210,6 +215,21 @@ public class YoutrackServiceImpl implements YoutrackService {
         for (String youtrackId : emptyIfNull( added)) {
             setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
         }
+    }
+
+    private Result<String> getProjectIdByName (String projectName){
+        Result<String> projectResult = api.getProjectIdByName(projectName)
+                .flatMap(projects -> {
+                    if (projects.size() == 1) return ok(projects.get(0));
+                    return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one project: " + projects.size());
+                })
+                .map(project -> project.id);
+        if (projectResult.isError()) {
+            log.info("getProjectIdByName(): projectName={} | failed to get project", projectName);
+            return error(projectResult.getStatus(), projectResult.getMessage());
+        }
+
+        return projectResult;
     }
 
     private Result<YouTrackIssueInfo> setCrmNumber(String issueId, Long caseNumber) {
@@ -315,16 +335,25 @@ public class YoutrackServiceImpl implements YoutrackService {
         return cf;
     }
 
+    private YtIssueCustomField makeRequestTypeCustomField(){
+        YtSingleEnumIssueCustomField singleEnum = new YtSingleEnumIssueCustomField();
+        singleEnum.name = YtIssue.CustomFieldNames.requestType;
+        YtEnumBundleElement bundleElement = new YtEnumBundleElement();
+        bundleElement.name = CrmConstants.Youtrack.REQUEST_TYPE_VALUE;
+        singleEnum.value = bundleElement;
+        return singleEnum;
+    }
+
     private String dateToYtString(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").format(date);
     }
 
     private String getIssuePriority(YtIssue issue) {
-        YtIssueCustomField field = issue.getPriorityField();
+        YtSingleEnumIssueCustomField field = (YtSingleEnumIssueCustomField) issue.getPriorityField();
         if (field == null) {
             return null;
         }
-        return field.getValue();
+        return field.getValueAsString();
     }
 
     private String getIssueState(YtIssue issue) {
@@ -332,7 +361,16 @@ public class YoutrackServiceImpl implements YoutrackService {
         if (field == null) {
             return null;
         }
-        return field.getValue();
+
+        if (field instanceof YtStateIssueCustomField){
+            return ((YtStateIssueCustomField) field).getValueAsString();
+        }
+
+        if (field instanceof YtStateMachineIssueCustomField){
+            return ((YtStateMachineIssueCustomField) field).getValueAsString();
+        }
+
+        return null;
     }
 
     @Autowired

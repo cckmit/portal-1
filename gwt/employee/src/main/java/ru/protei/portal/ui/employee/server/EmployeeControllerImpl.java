@@ -195,6 +195,23 @@ public class EmployeeControllerImpl implements EmployeeController {
         return response.isOk() ? response.getData() : false;
     }
 
+    @Override
+    public boolean updateEmployeeWorkers(List<WorkerEntry> workerEntryList) throws RequestFailedException {
+        log.info("updateEmployeeWorkers(): workerEntryList size: {}", workerEntryList.size());
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.updateEmployeeWorkers(token, workerEntryList);
+
+        log.info("updateEmployeeWorkers(): {} ",response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
     @Autowired
     SessionService sessionService;
     @Autowired
