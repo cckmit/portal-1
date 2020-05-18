@@ -336,7 +336,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.secondName().setText(person.getSecondName());
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
-        view.setBirthDayTimeZone(TimeZone.createTimeZone(person.getBirthday().getTimezoneOffset()));
+        if (person.getBirthday() != null ) {
+            view.setBirthDayTimeZone(TimeZone.createTimeZone(person.getBirthday().getTimezoneOffset()));
+        }
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
 
