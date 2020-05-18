@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.account.client.activity.table;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -12,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -76,7 +74,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
         this.preScroll = event.preScroll;
 
-        loadTable();
+        requestAccounts( this.page );
     }
 
     @Event
@@ -97,13 +95,12 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onItemClicked ( UserLogin value ) {
-        persistScrollPosition();
         showPreview( value );
     }
 
     @Override
     public void onEditClicked( UserLogin value ) {
-        persistScrollPosition();
+        persistScroll();
         fireEvent( new AccountEvents.Edit( value.getId() ) );
     }
 
@@ -116,38 +113,37 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onFilterChanged() {
-        loadTable();
-    }
-
-    @Override
-    public void onPageChanged(int page) {
-        pagerView.setCurrentPage(page);
+        this.page = 0;
+        requestAccounts( this.page );
     }
 
     @Override
     public void onPageSelected( int page ) {
-        view.scrollTo(page);
+        this.page = page;
+        requestAccounts( this.page );
     }
 
-    @Override
-    public void loadData(int offset, int limit, AsyncCallback<List<UserLogin>> asyncCallback) {
-        boolean isFirstChunk = offset == 0;
+    private void requestAccounts( int page ) {
+        view.clearRecords();
+        animation.closeDetails();
+
+        boolean isFirstChunk = page == 0;
         marker = new Date().getTime();
 
         AccountQuery query = makeQuery();
-        query.setOffset(offset);
-        query.setLimit(limit);
+        query.setOffset( page*PAGE_SIZE );
+        query.setLimit( PAGE_SIZE );
 
         accountService.getAccounts( query, new FluentCallback< SearchResult< UserLogin > >()
-                .withMarkedSuccess( marker, ( m, sr ) -> {
+                .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
-                        asyncCallback.onSuccess(sr.getResults());
-                        if (isFirstChunk) {
-                            view.setTotalRecords(sr.getTotalCount());
-                            pagerView.setTotalPages(view.getPageCount());
-                            pagerView.setTotalCount(sr.getTotalCount());
-                            restoreScroll();
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
                         }
+                        pagerView.setCurrentPage( page );
+                        view.addRecords( r.getResults() );
+                        restoreScroll();
                     }
                 } )
                 .withErrorMessage( lang.errGetList() ) );
@@ -184,7 +180,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         );
     }
 
-    private void persistScrollPosition() {
+    private void persistScroll() {
         scrollTo = Window.getScrollTop();
     }
 
@@ -197,12 +193,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         Window.scrollTo(0, scrollTo);
         preScroll = false;
         scrollTo = 0;
-    }
-
-    private void loadTable() {
-        animation.closeDetails();
-        view.clearRecords();
-        view.triggerTableLoad();
     }
 
     private Runnable removeAction(Long accountId) {
@@ -242,4 +232,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     private Integer scrollTo = 0;
 
     private Boolean preScroll = false;
+
+    private int page = 0;
 }

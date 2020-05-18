@@ -93,13 +93,13 @@ public abstract class ContactTableActivity
 
     @Override
     public void onItemClicked(Person value) {
-        persistScrollPosition();
+        persistScroll();
         showPreview(value);
     }
 
     @Override
     public void onEditClicked(Person value ) {
-        persistScrollPosition();
+        persistScroll();
         fireEvent(ContactEvents.Edit.byId(value.getId()));
     }
 
@@ -158,7 +158,7 @@ public abstract class ContactTableActivity
         scrollTo = 0;
     }
 
-    private void persistScrollPosition() {
+    private void persistScroll() {
         scrollTo = Window.getScrollTop();
     }
 

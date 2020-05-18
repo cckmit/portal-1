@@ -124,8 +124,8 @@ public abstract class DocumentTableActivity
     @Override
     public void onEditClicked(Document value) {
         if (!value.isDeprecatedUnit()) {
-            persistScrollPosition();
-            fireEvent(DocumentEvents.Edit.byId(value.getId()));
+            persistScroll();
+            fireEvent(new DocumentEvents.Edit(value.getId(), this));
         }
     }
 
@@ -137,7 +137,7 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onItemClicked(Document value) {
-        persistScrollPosition();
+        persistScroll();
         showPreview(value);
     }
 
@@ -205,7 +205,7 @@ public abstract class DocumentTableActivity
         );
     }
 
-    private void persistScrollPosition() {
+    private void persistScroll() {
         scrollTo = Window.getScrollTop();
     }
 

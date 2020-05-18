@@ -33,6 +33,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.core.model.helper.DocumentUtils;
+import ru.protei.portal.ui.document.client.activity.table.DocumentTableActivity;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -58,6 +59,7 @@ public abstract class DocumentEditActivity
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new DocumentEvents.Show(false));
         placeView(event.parent);
         view.drawInWizardContainer(true);
         this.document = new Document();
@@ -76,9 +78,12 @@ public abstract class DocumentEditActivity
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new Back());
+
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
         Document document = makeDocumentFromEvent(event);
+        this.document = document;
         requestEquipmentAndFillView(event.equipmentId, document);
     }
 
@@ -87,6 +92,12 @@ public abstract class DocumentEditActivity
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
+        }
+
+        if (event.source instanceof DocumentTableActivity) {
+            fireBackEvent = () -> fireEvent(new DocumentEvents.Show(true));
+        } else {
+            fireBackEvent = () -> fireEvent(new Back());
         }
 
         placeView(initDetails.parent);
@@ -186,7 +197,7 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onCancelClicked() {
-       fireEvent(new DocumentEvents.Show(!isNew(document)));
+        fireBackEvent.run();
     }
 
     @Override
@@ -339,14 +350,13 @@ public abstract class DocumentEditActivity
             uploadDoc(() ->
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
-                            boolean isNew = isNew(this.document);
                             this.document = doc;
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             if (stayOnPage){
                                 fillView(makeDocumentToContinue());
                             } else {
-                                fireEvent(new DocumentEvents.Show(!isNew));
+                                fireBackEvent.run();
                             }
                         }
         ))));
@@ -587,7 +597,7 @@ public abstract class DocumentEditActivity
     }
 
     private boolean isNew(Document document) {
-        return document.getId() == null;
+        return document == null || document.getId() == null;
     }
 
     @Inject
@@ -612,4 +622,5 @@ public abstract class DocumentEditActivity
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
     private AppEvents.InitDetails initDetails;
     private List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>(Arrays.asList(En_DocumentCategory.values()));
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

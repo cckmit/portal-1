@@ -220,7 +220,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private boolean isNew(Contract contract) {
-        return contract.getId() == null;
+        return contract == null || contract.getId() == null;
     }
 
     private Long getOptionIdOrNull(EntityOption option) {

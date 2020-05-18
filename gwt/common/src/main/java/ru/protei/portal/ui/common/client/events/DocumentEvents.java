@@ -45,14 +45,18 @@ public class DocumentEvents {
 
         public Long id;
 
+        @Omit
+        public Object source = new Object();
+
         public Edit() {}
 
         public Edit(Long id) {
             this.id = id;
         }
 
-        public static Edit byId(Long id) {
-            return new Edit(id);
+        public Edit(Long id, Object source) {
+            this.id = id;
+            this.source = source;
         }
     }
 

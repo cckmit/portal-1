@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.issue.client.activity.table.IssueTableFilterActivity;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
@@ -94,6 +95,13 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
+
+        if (event.source instanceof IssueTableFilterActivity || event.source instanceof IssueEditActivity) {
+            fireBackEvent = () -> fireEvent(new IssueEvents.Show(true));
+        } else {
+            fireBackEvent = () -> fireEvent(new Back());
+        }
+
         viewModeIsPreview(false);
         container.clear();
         Window.scrollTo(0, 0);
@@ -107,6 +115,8 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
+
+        fireBackEvent = () -> fireEvent(new IssueEvents.Show(true));
         viewModeIsPreview(true);
         container.clear();
         requestIssue(event.issueCaseNumber, container);
@@ -119,6 +129,8 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
+
+        fireBackEvent = () -> fireEvent(new IssueEvents.Show(true));
         viewModeIsPreview(false);
         container.clear();
         requestIssue(event.issueCaseNumber, container);
@@ -210,7 +222,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onOpenEditViewClicked() {
-        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()));
+        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withSource(this));
     }
 
     @Override
@@ -226,7 +238,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onBackClicked() {
-        fireEvent(new IssueEvents.Show(true));
+        fireBackEvent.run();
     }
 
     public void fireSuccessCopyNotify() {
@@ -432,6 +444,7 @@ public abstract class IssueEditActivity implements
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
     private AbstractCaseTagListActivity tagListActivity;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());

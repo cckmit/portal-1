@@ -89,13 +89,13 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
     @Override
     public void onItemClicked(Contract value) {
-        persistScrollPosition();
+        persistScroll();
         showPreview(value);
     }
 
     @Override
     public void onEditClicked(Contract value) {
-        persistScrollPosition();
+        persistScroll();
         fireEvent(new ContractEvents.Edit(value.getId()));
     }
 
@@ -166,7 +166,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         }
     }
 
-    private void persistScrollPosition() {
+    private void persistScroll() {
         scrollTo = Window.getScrollTop();
     }
 

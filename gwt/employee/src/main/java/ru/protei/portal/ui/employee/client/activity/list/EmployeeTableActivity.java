@@ -5,7 +5,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -77,13 +76,13 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
 
     @Override
     public void onItemClicked(EmployeeShortView value) {
-        persistScrollPosition();
+        persistScroll();
         showPreview(value);
     }
 
     @Override
     public void onEditClicked(EmployeeShortView value) {
-        persistScrollPosition();
+        persistScroll();
         fireEvent(new EmployeeEvents.Edit(value.getId()));
     }
 
@@ -124,7 +123,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         view.triggerTableLoad();
     }
 
-    private void persistScrollPosition() {
+    private void persistScroll() {
         scrollTo = Window.getScrollTop();
     }
 

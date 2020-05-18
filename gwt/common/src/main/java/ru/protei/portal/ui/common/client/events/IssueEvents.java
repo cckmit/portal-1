@@ -50,7 +50,6 @@ public class IssueEvents {
 
         public HasWidgets parent;
         public Long issueCaseNumber;
-
     }
 
     /**
@@ -69,10 +68,17 @@ public class IssueEvents {
     public static class Edit {
         @Name( "id" )
         public Long caseNumber;
+        @Omit
+        public Object source = new Object();
 
         public Edit() { this.caseNumber = null; }
         public Edit (Long caseNumber) {
             this.caseNumber = caseNumber;
+        }
+
+        public Edit withSource(Object source) {
+            this.source = source;
+            return this;
         }
     }
 

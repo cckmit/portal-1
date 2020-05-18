@@ -101,7 +101,7 @@ public abstract class PlatformTableActivity implements
 
     @Override
     public void onItemClicked(Platform value) {
-        persistScrollPosition();
+        persistScroll();
 
         if (value == null) {
             animation.closeDetails();
@@ -121,7 +121,7 @@ public abstract class PlatformTableActivity implements
             return;
         }
 
-        persistScrollPosition();
+        persistScroll();
         fireEvent(new SiteFolderPlatformEvents.Edit(value.getId()));
     }
 
@@ -211,7 +211,7 @@ public abstract class PlatformTableActivity implements
         return query;
     }
 
-    private void persistScrollPosition() {
+    private void persistScroll() {
         scrollTo = Window.getScrollTop();
     }
 

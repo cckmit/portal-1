@@ -152,7 +152,4 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
     private Long platformId;
     private AppEvents.InitDetails initDetails;
-
-    private Integer scrollTo = 0;
-    private Boolean preScroll = false;
 }
