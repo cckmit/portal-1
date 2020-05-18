@@ -122,7 +122,7 @@ public abstract class PlatformTableActivity implements
         }
 
         persistScroll();
-        fireEvent(new SiteFolderPlatformEvents.Edit(value.getId()));
+        fireEvent(new SiteFolderPlatformEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderPlatformEvents.Show(true))));
     }
 
     @Override

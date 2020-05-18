@@ -87,6 +87,8 @@ public class ContactEvents {
         @Omit
         public Company company;
         public String origin;
+        @Omit
+        public Runnable backEvent;
 
         public Edit() { this.id = null; }
         public Edit (Long id, Long companyId) {
@@ -105,6 +107,11 @@ public class ContactEvents {
 
         public static Edit newItem (EntityOption option) {
             return new Edit(null, option != null ? option.getId() : null);
+        }
+
+        public Edit withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
+            return this;
         }
     }
 }

@@ -52,7 +52,7 @@ public class SiteFolderServerEvents {
             edit.serverIdToBeCloned = serverIdToBeCloned;
             return edit;
         }
-        public Edit withFireBackEvent(Runnable backEvent) {
+        public Edit withBackEvent(Runnable backEvent) {
             this.backEvent = backEvent;
             return this;
         }

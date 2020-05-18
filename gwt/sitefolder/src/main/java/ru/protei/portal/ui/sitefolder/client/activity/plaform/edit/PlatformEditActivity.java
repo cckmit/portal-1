@@ -69,6 +69,11 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
+
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
             Platform platform = new Platform();
@@ -105,7 +110,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 .withSuccess(result -> {
                     fireEvent(new SiteFolderPlatformEvents.ChangeModel());
                     fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                    fireEvent(new SiteFolderPlatformEvents.Show(!isNew(platform)));
+                    fireBackEvent.run();
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
                 })
         );
@@ -113,7 +118,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new SiteFolderPlatformEvents.Show(!isNew(platform)));
+        fireBackEvent.run();
     }
 
     @Override
@@ -309,4 +314,5 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private Platform platform;
     private AppEvents.InitDetails initDetails;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

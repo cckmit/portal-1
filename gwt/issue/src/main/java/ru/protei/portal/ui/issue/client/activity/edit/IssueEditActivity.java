@@ -115,7 +115,6 @@ public abstract class IssueEditActivity implements
             return;
         }
 
-        fireBackEvent = () -> fireEvent(new IssueEvents.Show(true));
         viewModeIsPreview(true);
         container.clear();
         requestIssue(event.issueCaseNumber, container);

@@ -27,6 +27,8 @@ public class SiteFolderPlatformEvents {
         public Long platformId;
         @Omit
         public Company company;
+        @Omit
+        public Runnable backEvent;
         public Edit() {
             this(null);
         }
@@ -37,6 +39,10 @@ public class SiteFolderPlatformEvents {
             Edit edit = new Edit();
             edit.company = company;
             return edit;
+        }
+        public Edit withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
+            return this;
         }
     }
 

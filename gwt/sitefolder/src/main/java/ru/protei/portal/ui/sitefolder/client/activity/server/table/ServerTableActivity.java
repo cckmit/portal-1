@@ -124,7 +124,7 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()).withFireBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
+        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
     }
 
     @Override
@@ -139,7 +139,7 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderServerEvents.Edit(value.getId()).withFireBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
+        fireEvent(new SiteFolderServerEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
     }
 
     @Override

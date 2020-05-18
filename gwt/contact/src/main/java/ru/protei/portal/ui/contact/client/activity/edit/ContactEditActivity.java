@@ -54,6 +54,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         initDetails.parent.add(view.asWidget());
 
         origin = event.origin;
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         if (event.id == null) {
             Person newPerson = new Person();
@@ -109,7 +113,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                         public void onSuccess(Boolean result) {
                             fireEvent(new NotifyEvents.Show(lang.contactSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new PersonEvents.PersonCreated(person, origin));
-                            fireEvent(isNew(contact) ? new Back() : new ContactEvents.Show(true));
+                            fireBackEvent.run();
                         }
                     });
                 }
@@ -146,7 +150,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(isNew(contact) ? new Back() : new ContactEvents.Show(true));
+        fireBackEvent.run();
     }
 
     @Override
@@ -456,4 +460,5 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     private UserLogin account;
     private AppEvents.InitDetails initDetails;
     private String origin;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

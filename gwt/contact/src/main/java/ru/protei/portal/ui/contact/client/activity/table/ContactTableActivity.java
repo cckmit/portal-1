@@ -100,7 +100,7 @@ public abstract class ContactTableActivity
     @Override
     public void onEditClicked(Person value ) {
         persistScroll();
-        fireEvent(ContactEvents.Edit.byId(value.getId()));
+        fireEvent(ContactEvents.Edit.byId(value.getId()).withBackEvent(() -> fireEvent(new ContactEvents.Show(true))));
     }
 
     @Override
