@@ -11,4 +11,10 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="add-company_id-foreign-key-to-employee_registration-table" author="fomin">
+        <addForeignKeyConstraint baseTableName="employee_registration" baseColumnNames="company_id"
+                                 constraintName="employee_registration-company-id-fk" referencedTableName="company"
+                                 referencedColumnNames="id" onDelete="SET NULL"/>
+    </changeSet>
 </databaseChangeLog>
