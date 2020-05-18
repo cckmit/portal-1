@@ -29,7 +29,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ApplicationTableActivity implements
@@ -127,7 +126,7 @@ public abstract class ApplicationTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderAppEvents.Edit(value.getId()).withSource(this));
+        fireEvent(new SiteFolderAppEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderAppEvents.Show(value.getServerId(), true))));
     }
 
     @Override

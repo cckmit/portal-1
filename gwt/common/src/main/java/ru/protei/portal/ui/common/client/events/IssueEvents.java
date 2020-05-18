@@ -69,15 +69,15 @@ public class IssueEvents {
         @Name( "id" )
         public Long caseNumber;
         @Omit
-        public Object source = new Object();
+        public Runnable backEvent;
 
         public Edit() { this.caseNumber = null; }
         public Edit (Long caseNumber) {
             this.caseNumber = caseNumber;
         }
 
-        public Edit withSource(Object source) {
-            this.source = source;
+        public Edit withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
             return this;
         }
     }

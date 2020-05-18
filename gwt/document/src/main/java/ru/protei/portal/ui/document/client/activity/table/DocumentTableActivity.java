@@ -125,7 +125,7 @@ public abstract class DocumentTableActivity
     public void onEditClicked(Document value) {
         if (!value.isDeprecatedUnit()) {
             persistScroll();
-            fireEvent(new DocumentEvents.Edit(value.getId(), this));
+            fireEvent(new DocumentEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new DocumentEvents.Show(true))));
         }
     }
 

@@ -14,7 +14,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.sitefolder.client.activity.server.table.ServerTableActivity;
 
 import java.util.function.Consumer;
 
@@ -40,8 +39,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
-
-        this.source = event.source;
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         serverIdOfAppsToBeCloned = null;
 
@@ -84,14 +85,14 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
                     serverIdOfAppsToBeCloned = null;
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
                     fireEvent(new SiteFolderServerEvents.Changed(result));
-                    fireBackEvent(server, source);
+                    fireBackEvent.run();
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireBackEvent(server, source);
+        fireBackEvent.run();
     }
 
     @Override
@@ -113,20 +114,6 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         }
 
         fireEvent(SiteFolderAppEvents.Edit.withServer(server));
-    }
-
-    private void fireBackEvent(Server server, Object source) {
-        if (isNew(server)) {
-            fireEvent(new Back());
-            return;
-        }
-
-        if (!(source instanceof ServerTableActivity)) {
-            fireEvent(new Back());
-            return;
-        }
-
-        fireEvent(new SiteFolderServerEvents.Show(server.getPlatformId(), true));
     }
 
     private void requestServer(Long serverId, Consumer<Server> successConsumer) {
@@ -195,6 +182,5 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     private Server server;
     private Long serverIdOfAppsToBeCloned;
     private AppEvents.InitDetails initDetails;
-
-    private Object source;
+    private Runnable fireBackEvent;
 }

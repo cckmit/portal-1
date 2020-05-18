@@ -33,7 +33,7 @@ public class SiteFolderAppEvents {
         @Omit
         public Server server;
         @Omit
-        public Object source;
+        public Runnable backEvent;
         public Edit() {
             this(null);
         }
@@ -45,8 +45,8 @@ public class SiteFolderAppEvents {
             edit.server = server;
             return edit;
         }
-        public Edit withSource(Object source) {
-            this.source = source;
+        public Edit withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
             return this;
         }
     }

@@ -96,11 +96,10 @@ public abstract class IssueEditActivity implements
             return;
         }
 
-        if (event.source instanceof IssueTableFilterActivity || event.source instanceof IssueEditActivity) {
-            fireBackEvent = () -> fireEvent(new IssueEvents.Show(true));
-        } else {
-            fireBackEvent = () -> fireEvent(new Back());
-        }
+        fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         viewModeIsPreview(false);
         container.clear();
@@ -130,7 +129,8 @@ public abstract class IssueEditActivity implements
             return;
         }
 
-        fireBackEvent = () -> fireEvent(new IssueEvents.Show(true));
+        fireBackEvent = () -> fireEvent(new IssueEvents.Show(false));
+
         viewModeIsPreview(false);
         container.clear();
         requestIssue(event.issueCaseNumber, container);
@@ -222,7 +222,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onOpenEditViewClicked() {
-        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withSource(this));
+        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withBackEvent(() -> fireEvent(new IssueEvents.Show(true))));
     }
 
     @Override

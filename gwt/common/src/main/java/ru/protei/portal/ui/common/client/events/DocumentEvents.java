@@ -46,7 +46,7 @@ public class DocumentEvents {
         public Long id;
 
         @Omit
-        public Object source = new Object();
+        public Runnable backEvent;
 
         public Edit() {}
 
@@ -54,9 +54,9 @@ public class DocumentEvents {
             this.id = id;
         }
 
-        public Edit(Long id, Object source) {
-            this.id = id;
-            this.source = source;
+        public Edit withBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
+            return this;
         }
     }
 

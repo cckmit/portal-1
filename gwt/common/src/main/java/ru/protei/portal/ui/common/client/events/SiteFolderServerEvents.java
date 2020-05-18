@@ -35,7 +35,7 @@ public class SiteFolderServerEvents {
         @Omit
         public Platform platform;
         @Omit
-        public Object source;
+        public Runnable backEvent;
         public Edit() {
             this(null);
         }
@@ -52,8 +52,8 @@ public class SiteFolderServerEvents {
             edit.serverIdToBeCloned = serverIdToBeCloned;
             return edit;
         }
-        public Edit withSource(Object source) {
-            this.source = source;
+        public Edit withFireBackEvent(Runnable backEvent) {
+            this.backEvent = backEvent;
             return this;
         }
     }

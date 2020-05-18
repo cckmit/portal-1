@@ -94,11 +94,10 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        if (event.source instanceof DocumentTableActivity) {
-            fireBackEvent = () -> fireEvent(new DocumentEvents.Show(true));
-        } else {
-            fireBackEvent = () -> fireEvent(new Back());
-        }
+        fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);

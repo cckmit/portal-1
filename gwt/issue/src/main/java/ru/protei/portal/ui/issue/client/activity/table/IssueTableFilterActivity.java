@@ -139,7 +139,7 @@ public abstract class IssueTableFilterActivity
     @Override
     public void onEditClicked( CaseShortView value ) {
         persistScroll();
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber()).withSource(this));
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber()).withBackEvent(() -> fireEvent(new IssueEvents.Show(true))));
     }
 
     @Override
