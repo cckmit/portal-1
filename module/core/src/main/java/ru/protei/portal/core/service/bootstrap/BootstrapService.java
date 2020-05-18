@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.SVNException;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
@@ -360,13 +359,7 @@ if(true) return; //TODO remove
                 Subnet subnet = new Subnet();
                 subnet.setCreated(extSubnet.getCreated());
 
-                Long subnetCreatorId = 288L;
-                try {
-                    EmployeeQuery query = new EmployeeQuery();
-                    query.setLastName(extSubnet.getCreator().substring(0, extSubnet.getCreator().indexOf(" ")));
-                    SearchResult<Person> searchResult = personDAO.getEmployeesSearchResult(query);
-                    subnetCreatorId = searchResult.getResults().get(0).getId();
-                } catch (Exception e ) {}
+                Long subnetCreatorId = getEmployeeIdByFIO(extSubnet.getCreator(), 288L);
 
                 subnet.setCreatorId(subnetCreatorId);
                 subnet.setAddress(extSubnet.getSubnetAddress());
@@ -381,13 +374,7 @@ if(true) return; //TODO remove
                                 ReservedIp reservedIp = new ReservedIp();
 
                                 Long ownerId = personDAO.getEmployeeByOldId(extReservedIp.getCustomerID()).getId();
-                                Long ipCreatorId = ownerId;
-                                try {
-                                    EmployeeQuery query = new EmployeeQuery();
-                                    query.setLastName(extReservedIp.getCreator().substring(0, extReservedIp.getCreator().indexOf(" ")));
-                                    SearchResult<Person> searchResult = personDAO.getEmployeesSearchResult(query);
-                                    ipCreatorId = searchResult.getResults().get(0).getId();
-                                } catch (Exception e ) {}
+                                Long ipCreatorId = getEmployeeIdByFIO(extReservedIp.getCreator(), ownerId);
 
                                 reservedIp.setCreatorId(ipCreatorId);
                                 reservedIp.setOwnerId(ownerId);
@@ -410,6 +397,18 @@ if(true) return; //TODO remove
         }
 
         log.info("Migrate subnets and reservedIps ended");
+    }
+
+    private Long getEmployeeIdByFIO(String fio, Long defaultId) {
+        try {
+            EmployeeQuery query = new EmployeeQuery();
+            query.setLastName(fio.substring(0, fio.indexOf(" ")));
+            List<Person> employees = personDAO.getEmployees(query);
+            if (CollectionUtils.isNotEmpty(employees)) {
+                return employees.get(0).getId();
+            }
+        } catch (Exception e ) {}
+        return defaultId;
     }
 
     @Inject
