@@ -178,7 +178,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new EmployeeEvents.Show(true));
+        fireEvent(new EmployeeEvents.Show(!isNew(personId)));
     }
 
     @Override
@@ -525,7 +525,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
                 .withSuccess(workerEntryList -> {
                     fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new EmployeeEvents.Show(true));
+                    fireEvent(new EmployeeEvents.Show(!isNew(personId)));
                 }));
     }
 
@@ -610,6 +610,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         }
 
         return result;
+    }
+
+    private boolean isNew(Long personId) {
+        return personId == null;
     }
 
     @Inject
