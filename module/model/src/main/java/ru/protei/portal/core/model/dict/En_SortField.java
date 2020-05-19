@@ -123,7 +123,12 @@ public enum En_SortField {
     /**
      * project name
      */
-    project_name("CASE_NAME");
+    project_name("CASE_NAME"),
+
+    /**
+     * state order
+     */
+    state_order("VIEW_ORDER");
 
     private String fieldName;
     private String bundleKey;

@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -43,7 +42,7 @@ public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueV
     private AbstractDeskIssueView makeIssueView(CaseShortView issue) {
         AbstractDeskIssueView view = issueViewProvider.get();
         view.setImportance(En_ImportanceLevel.getById(issue.getImpLevel()));
-        view.setState(En_CaseState.getById(issue.getStateId()));
+        view.setState(issue.getStateName());
         view.setPrivacy(issue.isPrivateCase());
         view.setNumber(issue.getCaseNumber());
         view.setName(issue.getName());

@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.util.StateUtils;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
@@ -76,7 +76,7 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
     }
 
     private String makeCaseStateStyle(CaseState caseState) {
-        return caseState == null ? "" : StateUtils.makeStyleName(caseState.getState());
+        return caseState == null ? "" : CaseStateUtils.makeStyleName(caseState.getState());
     }
 
     private En_CaseStateWorkflow workflow;

@@ -9,9 +9,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewView;
 
@@ -89,13 +88,13 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setState(En_CaseState state) {
+    public void setState(String state) {
         if (state == null) {
             this.caseState.setClassName("");
             this.caseState.setInnerText("");
         } else {
-            this.caseState.setClassName("small label label-" + state.getName().toLowerCase());
-            this.caseState.setInnerText(caseStateLang.getStateName(state));
+            this.caseState.setClassName("small label label-" + CaseStateUtils.makeStyleName(state));
+            this.caseState.setInnerText(state);
         }
     }
 
@@ -203,9 +202,6 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     Element createdBy;
     @UiField
     HTMLPanel linksContainer;
-
-    @Inject
-    En_CaseStateLang caseStateLang;
 
     private AbstractEmployeeRegistrationPreviewActivity activity;
 

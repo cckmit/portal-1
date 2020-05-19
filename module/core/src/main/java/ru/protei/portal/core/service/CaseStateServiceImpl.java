@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.query.CaseStateQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.inject.Inject;
@@ -24,22 +25,23 @@ public class CaseStateServiceImpl implements CaseStateService {
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
-    public Result<List<CaseState>> caseStateList( AuthToken authToken) {
-        List<CaseState> list = caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT );
+    public Result<List<CaseState>> caseStateList(CaseStateQuery query, AuthToken authToken) {
+        List<CaseState> list = caseStateDAO.getListByQuery(query);
 
-        if ( list == null )
+        if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
         return ok(list);
     }
 
     @Override
-    public Result<List<CaseState>> getCaseStatesOmitPrivileges( AuthToken authToken) {
-        return caseStateList(authToken);
+    public Result<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken) {
+        CaseStateQuery query = new CaseStateQuery(En_CaseType.CRM_SUPPORT);
+        return caseStateList(query, authToken);
     }
 
     @Override
-    public Result<CaseState> getCaseState( AuthToken authToken, long id) {
+    public Result<CaseState> getCaseState(AuthToken authToken, long id) {
         CaseState state = caseStateDAO.get(id);
         if (state == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -53,7 +55,7 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     @Transactional
-    public Result saveCaseState( AuthToken authToken, CaseState state) {
+    public Result saveCaseState(AuthToken authToken, CaseState state) {
         if (state == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -70,7 +72,7 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     @Transactional
-    public Result<CaseState> updateCaseState( AuthToken authToken, CaseState state) {
+    public Result<CaseState> updateCaseState(AuthToken authToken, CaseState state) {
         if (state == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -84,11 +86,12 @@ public class CaseStateServiceImpl implements CaseStateService {
     }
 
     @Override
-    public Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges( Long companyId) {
+    public Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId) {
         if (companyId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        List<CaseState> caseStates = caseStateDAO.getCaseStatesForCompany(companyId);
+        CaseStateQuery query = new CaseStateQuery(companyId);
+        List<CaseState> caseStates = caseStateDAO.getListByQuery(query);
 
         return ok(caseStates);
     }

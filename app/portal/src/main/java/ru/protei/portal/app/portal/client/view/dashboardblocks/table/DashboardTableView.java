@@ -17,7 +17,6 @@ import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.Con
 import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.ManagerColumn;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
@@ -140,8 +139,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         manager.setColumnProvider(columnProvider);
     }
 
-    @Inject
-    En_CaseStateLang caseStateLang;
     @Inject
     @UiField
     Lang lang;

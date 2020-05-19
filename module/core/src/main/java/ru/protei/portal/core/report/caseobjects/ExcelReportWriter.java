@@ -119,14 +119,12 @@ public class ExcelReportWriter implements
             if (stateId == null) {
                 continue;
             }
-            switch (stateId.intValue()) {
-                case CrmConstants.State.CREATED: created = comment.getCreated(); break;
-                case CrmConstants.State.OPENED: opened = comment.getCreated(); break;
-                case CrmConstants.State.WORKAROUND: workaround = comment.getCreated(); break;
-                case CrmConstants.State.TEST_CUST: customerTest = comment.getCreated(); break;
-                case CrmConstants.State.DONE: done = comment.getCreated(); break;
-                case CrmConstants.State.VERIFIED: verified = comment.getCreated(); break;
-            }
+            if (stateId == CrmConstants.State.CREATED) created = comment.getCreated();
+            if (stateId == CrmConstants.State.OPENED) opened = comment.getCreated();
+            if (stateId == CrmConstants.State.WORKAROUND) workaround = comment.getCreated();
+            if (stateId == CrmConstants.State.TEST_CUST) customerTest = comment.getCreated();
+            if (stateId == CrmConstants.State.DONE) done = comment.getCreated();
+            if (stateId == CrmConstants.State.VERIFIED) verified = comment.getCreated();
         }
 
         if (created == null) {

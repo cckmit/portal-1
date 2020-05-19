@@ -1,33 +1,32 @@
 package ru.protei.portal.core.model.ent;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import ru.protei.portal.core.model.dict.En_CaseState;
 
 import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class YouTrackIssueStateChange implements Serializable {
 
-    private En_CaseState removed;
-    private En_CaseState added;
+    private Long removedId;
+    private Long addedId;
     private Long timestamp;
     private String authorLogin;
     private String authorFullName;
 
-    public En_CaseState getRemoved() {
-        return removed;
+    public Long getRemovedId() {
+        return removedId;
     }
 
-    public void setRemoved(En_CaseState removed) {
-        this.removed = removed;
+    public void setRemovedId(Long removedId) {
+        this.removedId = removedId;
     }
 
-    public En_CaseState getAdded() {
-        return added;
+    public Long getAddedId() {
+        return addedId;
     }
 
-    public void setAdded(En_CaseState added) {
-        this.added = added;
+    public void setAddedId(Long addedId) {
+        this.addedId = addedId;
     }
 
     public Long getTimestamp() {
@@ -57,8 +56,8 @@ public class YouTrackIssueStateChange implements Serializable {
     @Override
     public String toString() {
         return "YouTrackIssueStateChange{" +
-                "removed=" + removed +
-                ", added=" + added +
+                "removedId=" + removedId +
+                ", addedId=" + addedId +
                 ", timestamp=" + timestamp +
                 ", authorLogin='" + authorLogin + '\'' +
                 ", authorFullName='" + authorFullName + '\'' +

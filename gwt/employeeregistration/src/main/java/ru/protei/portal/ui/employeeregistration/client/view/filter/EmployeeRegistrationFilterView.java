@@ -14,8 +14,8 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateOptionList;
@@ -56,7 +56,7 @@ public class EmployeeRegistrationFilterView extends Composite implements Abstrac
     }
 
     @Override
-    public HasValue<Set<En_CaseState>> states() {
+    public HasValue<Set<CaseState>> states() {
         return states;
     }
 
@@ -106,7 +106,7 @@ public class EmployeeRegistrationFilterView extends Composite implements Abstrac
     }
 
     @UiHandler("states")
-    public void onStatesChanged(ValueChangeEvent<Set<En_CaseState>> event) {
+    public void onStatesChanged(ValueChangeEvent<Set<CaseState>> event) {
         restartChangeTimer();
     }
 

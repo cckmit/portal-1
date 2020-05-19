@@ -10,13 +10,13 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
 import ru.protei.portal.core.model.ent.UserCaseAssignment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
@@ -152,8 +152,8 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
     }
 
     private void showStateMultiSelector(UIObject relative, List<UserCaseAssignment> columns, UserCaseAssignment column) {
-        List<En_CaseState> states = column.getStates();
-        List<En_CaseState> existingStates = fetchAllStates(columns);
+        List<EntityOption> states = column.getStateEntityOptions();
+        List<EntityOption> existingStates = fetchAllStates(columns);
         existingStates.removeAll(states);
         DeskStateMultiPopup statePopup = statePopupProvider.get();
         statePopup.setValue(new HashSet<>(states));
@@ -161,9 +161,9 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             if (CollectionUtils.isEmpty(value)) {
                 return;
             }
-            List<En_CaseState> newStates = new ArrayList<>(value);
+            List<EntityOption> newStates = new ArrayList<>(value);
             if (CollectionUtils.diffCollection(states, newStates).hasDifferences()) {
-                column.setStates(newStates);
+                column.setStateEntityOptions(newStates);
                 saveTableEntity(column);
             }
         });
@@ -249,9 +249,9 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         HTMLPanel tr = new HTMLPanel("tr", "");
         tr.addStyleName("table-desk-row-header");
         for (UserCaseAssignment column : columns) {
-            List<En_CaseState> states = column.getStates();
+            List<Long> states = column.getStates();
             List<CaseShortView> columnIssues =  stream(issues)
-                    .filter(issue -> states.contains(En_CaseState.getById(issue.getStateId())))
+                    .filter(issue -> states.contains(issue.getStateId()))
                     .collect(Collectors.toList());
             tr.add(buildHeaderStateCell(columns, column, columnIssues.size()));
         }
@@ -264,7 +264,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private Widget buildHeaderStateCell(List<UserCaseAssignment> columns, UserCaseAssignment column, int issuesCount) {
         AbstractDeskRowStateView rowStateView = rowStateViewProvider.get();
-        rowStateView.setStates(column.getStates(), issuesCount);
+        rowStateView.setStates(column.getStateEntityOptions(), issuesCount);
         rowStateView.setHandler(new AbstractDeskRowStateView.Handler() {
             @Override
             public void onEdit() {
@@ -346,9 +346,9 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         HTMLPanel tr = new HTMLPanel("tr", "");
         tr.addStyleName("table-desk-row-issues");
         for (UserCaseAssignment column : columns) {
-            List<En_CaseState> states = column.getStates();
+            List<Long> states = column.getStates();
             List<CaseShortView> cellIssues = stream(rowIssues)
-                    .filter(issue -> states.contains(En_CaseState.getById(issue.getStateId())))
+                    .filter(issue -> states.contains(issue.getStateId()))
                     .collect(Collectors.toList());
             tr.add(buildIssuesCell(cellIssues));
         }
@@ -397,9 +397,9 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
             .collect(Collectors.toList());
     }
 
-    private List<En_CaseState> fetchAllStates(List<UserCaseAssignment> assignments) {
+    private List<EntityOption> fetchAllStates(List<UserCaseAssignment> assignments) {
         return assignments.stream()
-                .map(UserCaseAssignment::getStates)
+                .map(UserCaseAssignment::getStateEntityOptions)
                 .flatMap(Collection::stream) // flatten
                 .distinct()
                 .collect(Collectors.toList());

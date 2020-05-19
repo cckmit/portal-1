@@ -74,7 +74,7 @@ public class EmployeeRegistrationDAO_Impl extends PortalBaseJdbcDAO<EmployeeRegi
 
             if (CollectionUtils.isNotEmpty(query.getStates())) {
                 condition.append(" and CO.state in ");
-                condition.append(HelperFunc.makeInArg(query.getStates(), s -> String.valueOf(s.getId())));
+                condition.append(HelperFunc.makeInArg(query.getStates(), false));
             }
 
             if (query.getCreatedFrom() != null) {

@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -20,13 +21,12 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public abstract class EmployeeRegistrationTableActivity implements AbstractEmployeeRegistrationTableActivity,
         AbstractEmployeeRegistrationFilterActivity, Activity {
@@ -109,7 +109,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         query.searchString = filterView.searchString().getValue();
         query.setCreatedFrom(filterView.dateRange().getValue().from);
         query.setCreatedTo(filterView.dateRange().getValue().to);
-        query.setStates(filterView.states().getValue());
+        query.setStates(filterView.states().getValue() == null ? null : filterView.states().getValue().stream().map(CaseState::getId).collect(Collectors.toSet()));
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;

@@ -17,13 +17,13 @@ public class FieldMappingTest {
     @Test
     public void testStatusMapping () {
         Map<String, Long> expectedMapping = new HashMap<>();
-        expectedMapping.put("Authorized", (long)CrmConstants.State.CREATED);
-        expectedMapping.put("Studying", (long)CrmConstants.State.OPENED);
-        expectedMapping.put("Postpone", (long)CrmConstants.State.PAUSED);
-        expectedMapping.put("Soft Close", (long)CrmConstants.State.DONE);
-        expectedMapping.put("Nothing to change", (long)CrmConstants.State.VERIFIED);
-        expectedMapping.put("Request to customer", (long)CrmConstants.State.CUST_REQUEST);
-        expectedMapping.put("Request to NX", (long)CrmConstants.State.NX_REQUEST);
+        expectedMapping.put("Authorized", CrmConstants.State.CREATED);
+        expectedMapping.put("Studying", CrmConstants.State.OPENED);
+        expectedMapping.put("Postpone", CrmConstants.State.PAUSED);
+        expectedMapping.put("Soft Close", CrmConstants.State.DONE);
+        expectedMapping.put("Nothing to change", CrmConstants.State.VERIFIED);
+        expectedMapping.put("Request to customer", CrmConstants.State.CUST_REQUEST);
+        expectedMapping.put("Request to NX", CrmConstants.State.NX_REQUEST);
 
         expectedMapping.forEach((key,stateId) -> {
             Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key));

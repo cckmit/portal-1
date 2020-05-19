@@ -15,11 +15,11 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.IssueStatesService;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
@@ -157,14 +157,14 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStateIds(issueStatesService.getNewStateIds());
+        query.setStateIds(CaseStateUtils.getNewStateIds());
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
     }
 
     private CaseQuery generateQueryActiveIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStateIds(issueStatesService.getActiveStateIds());
+        query.setStateIds(CaseStateUtils.getActiveStateIds());
         List<Long> productIds = null;
         if (policyService.getProfile() != null) {
             productIds = new ArrayList<>();
@@ -184,8 +184,6 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     UserLoginControllerAsync userLoginController;
     @Inject
     IssueFilterControllerAsync filterController;
-    @Inject
-    IssueStatesService issueStatesService;
     @Inject
     PolicyService policyService;
 

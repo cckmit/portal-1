@@ -18,9 +18,8 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.StateUtils;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -89,7 +88,7 @@ public class CaseCommentItemView
 
     @Override
     public void setStatus(String value) {
-        String styleName = StateUtils.makeStyleName(value);
+        String styleName = CaseStateUtils.makeStyleName(value);
         if ( root.getStyleName().contains("right")) {
             owner.removeClassName("name");
             owner.addClassName("status");
@@ -313,8 +312,6 @@ public class CaseCommentItemView
     Lang lang;
     @UiField
     DivElement messageContainer;
-    @Inject
-    En_CaseStateLang stateLang;
     @Inject
     En_CaseImportanceLang importanceLang;
 

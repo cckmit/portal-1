@@ -3,8 +3,8 @@ package ru.protei.portal.ui.issue.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
@@ -51,7 +51,7 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         stateElement.addClassName( "label label-" + value.getStateName() );
         stateElement.setInnerText( value.getStateName() );
 
-        if (!isPauseDateValid(En_CaseState.getById(value.getStateId()), value.getPauseDate())) {
+        if (!isPauseDateValid(value.getStateId(), value.getPauseDate())) {
             stateElement.addClassName("pause-status-expired-date");
         } else {
             stateElement.removeClassName("pause-status-expired-date");
@@ -62,8 +62,8 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         cell.appendChild( divElement );
     }
 
-    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
-        if (!En_CaseState.PAUSED.equals(currentState)) {
+    private boolean isPauseDateValid(Long currentStateId, Long pauseDate) {
+        if (CrmConstants.State.PAUSED != currentStateId) {
             return true;
         }
 

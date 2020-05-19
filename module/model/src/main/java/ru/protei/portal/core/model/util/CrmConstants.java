@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,19 +116,21 @@ public class CrmConstants {
     }
 
     public interface State {
-        int CREATED = 1;
-        int OPENED = 2;
-        int WORKAROUND = 30;
-        int TEST_CUST = 20;
-        int DONE = 17;
-        int VERIFIED = 5;
-        int PAUSED = 4;
-        int CANCELED = 33;
-        int ACTIVE = 16;
-        int TEST_LOCAL = 19;
-        int INFO_REQUEST = 31;
-        int NX_REQUEST = 35;
-        int CUST_REQUEST = 36;
-        int CUST_PENDING = 34;
+        long CREATED = 1L;
+        long OPENED = 2L;
+        long WORKAROUND = 30L;
+        long TEST_CUST = 20L;
+        long DONE = 17L;
+        long VERIFIED = 5L;
+        long PAUSED = 4L;
+        long CANCELED = 33L;
+        long ACTIVE = 16L;
+        long TEST_LOCAL = 19L;
+        long INFO_REQUEST = 31L;
+        long NX_REQUEST = 35L;
+        long CUST_REQUEST = 36L;
+        long CUST_PENDING = 34L;
+        long CLOSED = 3L;
+        long IGNORED = 10L;
     }
 }

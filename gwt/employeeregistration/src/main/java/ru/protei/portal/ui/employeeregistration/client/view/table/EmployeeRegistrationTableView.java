@@ -15,8 +15,8 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableView;
 
@@ -87,18 +87,18 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
 
             @Override
             public void fillColumnValue(Element cell, EmployeeRegistration value) {
-                if (value.getState() == null) {
+                if (value.getStateId() == null) {
                     cell.setInnerText("");
                     return;
                 }
 
                 cell.addClassName("number");
-                cell.setInnerHTML( StringUtils.join(
+                cell.setInnerHTML(StringUtils.join(
                         "<div>",
-                        "<p class='number-size'>", String.valueOf( value.getId() ), "</p>",
-                        "<p class='label label-", value.getState().toString().toLowerCase(), "'>", caseStateLang.getStateName( value.getState() ), "</p>",
+                        "<p class='number-size'>", String.valueOf(value.getId()), "</p>",
+                        "<p class='label label-", CaseStateUtils.makeStyleName(value.getStateName()), "'>", value.getStateName(), "</p>",
                         "</div>"
-                ).toString() );
+                ).toString());
             }
         };
 
@@ -165,9 +165,6 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    En_CaseStateLang caseStateLang;
 
     private ClickColumnProvider<EmployeeRegistration> columnProvider = new ClickColumnProvider<>();
 

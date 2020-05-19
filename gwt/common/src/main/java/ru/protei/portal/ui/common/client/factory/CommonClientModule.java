@@ -43,7 +43,6 @@ import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPosi
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.common.IssueStatesService;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
@@ -111,7 +110,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( AbstractPagerView.class ).to( PagerView.class );
 
-        bind( IssueStatesService.class ).asEagerSingleton();
         bind( AbstractAttachmentView.class ).to( AttachmentView.class );
 
         bind( ConfirmDialogActivity.class ).asEagerSingleton();

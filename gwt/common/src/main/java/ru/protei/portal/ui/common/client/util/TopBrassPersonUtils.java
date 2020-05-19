@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TopBrassPersonIdsUtil {
+public class TopBrassPersonUtils {
     private static final List<Long> topIds;
     private static final List<Long> bottomIds;
     private static final List<Long> personIds;

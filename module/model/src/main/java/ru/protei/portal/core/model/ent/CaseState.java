@@ -24,6 +24,9 @@ public class CaseState implements Serializable {
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
     public List<Company> companies;
 
+    @JdbcColumn(name = "terminal")
+    private boolean terminal;
+
     private int viewOrder;
 
     public CaseState() {
@@ -85,6 +88,14 @@ public class CaseState implements Serializable {
     public CaseState withViewOrder(int viewOrder) {
         this.viewOrder = viewOrder;
         return this;
+    }
+
+    public boolean isTerminal() {
+        return terminal;
+    }
+
+    public void setTerminal(boolean terminal) {
+        this.terminal = terminal;
     }
 
     @Override

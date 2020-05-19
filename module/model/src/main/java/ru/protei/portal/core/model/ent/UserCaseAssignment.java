@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_TableEntity;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -24,14 +24,16 @@ public class UserCaseAssignment implements Serializable {
     private En_TableEntity tableEntity;
 
     @JdbcColumnCollection(name = "states", separator = ",")
-    @JdbcEnumerated(EnumType.ID)
-    private List<En_CaseState> states;
+    private List<Long> states;
 
     @JdbcColumnCollection(name = "persons", separator = ",")
     private List<Long> persons;
 
     // not db column, sync with 'persons'
     private List<PersonShortView> personShortViews;
+
+    // not db column, sync with 'states'
+    private List<EntityOption> stateEntityOptions;
 
     public UserCaseAssignment() {}
 
@@ -59,12 +61,15 @@ public class UserCaseAssignment implements Serializable {
         this.tableEntity = tableEntity;
     }
 
-    public List<En_CaseState> getStates() {
+    public List<Long> getStates() {
         return states;
     }
 
-    public void setStates(List<En_CaseState> states) {
+    public void setStates(List<Long> states) {
         this.states = states;
+        this.stateEntityOptions = states == null
+                ? new ArrayList<>()
+                : states.stream().map(EntityOption::new).collect(Collectors.toList());
     }
 
     public List<Long> getPersons() {
@@ -87,6 +92,17 @@ public class UserCaseAssignment implements Serializable {
         this.persons = personShortViews == null
                 ? new ArrayList<>()
                 : personShortViews.stream().map(PersonShortView::getId).collect(Collectors.toList());
+    }
+
+    public List<EntityOption> getStateEntityOptions() {
+        return stateEntityOptions;
+    }
+
+    public void setStateEntityOptions(List<EntityOption> stateEntityOptions) {
+        this.stateEntityOptions = stateEntityOptions;
+        this.states = stateEntityOptions == null
+                ? new ArrayList<>()
+                : stateEntityOptions.stream().map(EntityOption::getId).collect(Collectors.toList());
     }
 
     @Override

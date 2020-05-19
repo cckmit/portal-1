@@ -7,13 +7,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -46,10 +47,10 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
     }
 
     @Override
-    public void setState(En_CaseState value) {
+    public void setState(CaseState value) {
         if (value == null) return;
-        state.addClassName("state-" + value.name().toLowerCase());
-        if ( value.isTerminalState() ) {
+        state.addClassName("state-" + CaseStateUtils.makeStyleName(value.getState()));
+        if ( value.isTerminal() ) {
             addStyleName("case-link-completed");
         }
     }

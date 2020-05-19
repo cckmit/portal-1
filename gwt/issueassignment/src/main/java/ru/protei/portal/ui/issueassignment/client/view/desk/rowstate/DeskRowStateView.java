@@ -10,9 +10,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 import ru.protei.portal.ui.issueassignment.client.activity.desk.rowstate.AbstractDeskRowStateView;
@@ -50,9 +49,9 @@ public class DeskRowStateView extends Composite implements AbstractDeskRowStateV
     }
 
     @Override
-    public void setStates(List<En_CaseState> states, int issuesCount) {
+    public void setStates(List<EntityOption> states, int issuesCount) {
         String value = CollectionUtils.stream(states)
-                .map(state -> caseStateLang.getStateName(state))
+                .map(EntityOption::getDisplayText)
                 .collect(Collectors.joining(", "));
         value += " (" + issuesCount + ")";
         label.setInnerText(value);
@@ -74,8 +73,6 @@ public class DeskRowStateView extends Composite implements AbstractDeskRowStateV
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    En_CaseStateLang caseStateLang;
 
     @UiField
     SpanElement label;

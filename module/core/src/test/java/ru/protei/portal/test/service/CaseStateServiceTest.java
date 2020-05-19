@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.query.CaseStateQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
@@ -61,7 +62,7 @@ public class CaseStateServiceTest {
     public void getCaseStateForCrmDAOTest() throws Exception {
         assertNotNull(caseStateDAO);
 
-        List<CaseState> all = caseStateDAO.getAllByCaseType(En_CaseType.CRM_SUPPORT);
+        List<CaseState> all = caseStateDAO.getListByQuery(new CaseStateQuery(En_CaseType.CRM_SUPPORT));
 
         for (CaseState caseState: all) {
             jdbcManyRelationsHelper.fill(caseState, "companies");
@@ -77,7 +78,7 @@ public class CaseStateServiceTest {
 
     @Test
     public void getCaseStateFromServiceTest() throws Exception {
-        Result<List<CaseState>> response = caseStateService.caseStateList(TEST_AUTH_TOKEN);
+        Result<List<CaseState>> response = caseStateService.caseStateList(new CaseStateQuery(En_CaseType.CRM_SUPPORT), TEST_AUTH_TOKEN);
 
         if (response.isError()) {
             fail("Expected list of CaseState");
@@ -145,8 +146,8 @@ public class CaseStateServiceTest {
         assertTrue("Not all states",caseStates.containsAll(expectedStates));
     }
 
-    private CaseState makeCaseState(int state) {
-        return new CaseState(new Long(state));
+    private CaseState makeCaseState(Long state) {
+        return new CaseState(state);
     }
 
 

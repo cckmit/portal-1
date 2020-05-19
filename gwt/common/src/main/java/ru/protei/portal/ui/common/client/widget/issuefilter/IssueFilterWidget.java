@@ -19,8 +19,8 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
-import ru.protei.portal.ui.common.client.common.IssueStatesService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -78,7 +78,7 @@ public class IssueFilterWidget extends Composite {
 
         setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
-            issueFilterParamView.states().setValue(issueStatesService.getFilterCaseResolutionTimeActiveStates());
+            issueFilterParamView.states().setValue(CaseStateUtils.getFilterCaseResolutionTimeActiveStates());
         }
     }
 
@@ -314,8 +314,6 @@ public class IssueFilterWidget extends Composite {
     PersonModel personModel;
     @Inject
     InitiatorModel initiatorModel;
-    @Inject
-    IssueStatesService issueStatesService;
 
     AbstractIssueFilterWidgetModel model;
 

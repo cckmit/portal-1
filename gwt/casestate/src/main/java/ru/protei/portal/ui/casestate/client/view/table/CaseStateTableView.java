@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -35,11 +34,9 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
     private AbstractCaseStateTableActivity activity;
 
     @Inject
-    public void onInit(En_CaseStateLang caseStateLang,
-                       En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang,
+    public void onInit(En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang,
                        EditClickColumn< CaseState > editClickColumn
     ) {
-        this.caseStateLang = caseStateLang;
         this.caseStateUsageInCompaniesLang = caseStateUsageInCompaniesLang;
         this.editClickColumn = editClickColumn;
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -161,8 +158,6 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
     @Inject
     PolicyService policyService;
-
-    En_CaseStateLang caseStateLang;
 
     private ClickColumnProvider<CaseState> columnProvider = new ClickColumnProvider<>();
     private List<ClickColumn> columns = new ArrayList<>();

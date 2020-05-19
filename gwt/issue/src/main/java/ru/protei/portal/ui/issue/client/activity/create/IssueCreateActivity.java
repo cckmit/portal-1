@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
-import ru.protei.portal.ui.common.client.common.IssueStatesService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
@@ -65,6 +64,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 fireEvent(new NotifyEvents.Show(En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+    }
+
+    @Event
+    public void authEvent(AuthEvents.Success event) {
+        caseStateController.getCaseState(CrmConstants.State.CREATED, new FluentCallback<CaseState>()
+                .withSuccess(this::setCreatedCaseState));
     }
 
     @Event
@@ -329,7 +334,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
         issueMetaView.importance().setValue(caseObjectMeta.getImportance());
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
-        issueMetaView.state().setValue(issueStatesService.getCreatedCaseState());
+        issueMetaView.state().setValue(createdCaseState);
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
         issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == caseObjectMeta.getStateId());
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
@@ -558,6 +563,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return false;
     }
 
+    private void setCreatedCaseState(CaseState createdCaseState) {
+        this.createdCaseState = createdCaseState;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -585,7 +594,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Inject
     IssueControllerAsync issueService;
     @Inject
-    IssueStatesService issueStatesService;
+    CaseStateControllerAsync caseStateController;
 
     private boolean saving;
     private AppEvents.InitDetails init;
@@ -593,5 +602,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
     private List<ProjectSla> slaList = new ArrayList<>();
+    private CaseState createdCaseState;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 }
