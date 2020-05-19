@@ -89,7 +89,7 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
             @Override
             public void onSuccess(Boolean result) {
                 if (result) {
-                    fireEvent(new ContactEvents.Show());
+                    fireEvent(new ContactEvents.Show(false));
                     fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));

@@ -76,7 +76,7 @@ public abstract class CompanyTableActivity implements
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.COMPANY));
         }
 
-        clearScroll(event);
+        this.preScroll = event.preScroll;
 
         loadTable();
     }
@@ -116,7 +116,7 @@ public abstract class CompanyTableActivity implements
     @Override
     public void onEditClicked(Company value) {
         if (!value.isArchived()) {
-            persistScrollTopPosition();
+            scrollTo = Window.getScrollTop();
             fireEvent(new CompanyEvents.Edit(value.getId()));
         }
     }
@@ -161,9 +161,20 @@ public abstract class CompanyTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
                 }));
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private CompanyQuery makeQuery() {
@@ -192,29 +203,6 @@ public abstract class CompanyTableActivity implements
         view.triggerTableLoad();
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
-    }
-
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
-            view.clearSelection();
-            return;
-        }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }
-
-    private void clearScroll(CompanyEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-        }
-    }
-
     @Inject
     AbstractCompanyTableView view;
     @Inject
@@ -230,7 +218,8 @@ public abstract class CompanyTableActivity implements
     @Inject
     PolicyService policyService;
 
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll;
     private AppEvents.InitDetails init;
     private CompanyQuery query;
 }

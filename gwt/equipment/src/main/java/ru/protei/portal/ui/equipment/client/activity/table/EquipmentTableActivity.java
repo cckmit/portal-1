@@ -2,7 +2,6 @@ package ru.protei.portal.ui.equipment.client.activity.table;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -12,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -74,9 +72,9 @@ public abstract class EquipmentTableActivity
                 new ActionBarEvents.Clear()
         );
 
-        clearScroll(event);
-
         query = makeQuery();
+
+        this.preScroll = event.preScroll;
 
         loadTable();
     }
@@ -97,13 +95,14 @@ public abstract class EquipmentTableActivity
     public void onItemClicked ( Equipment value ) {
         if (selectedEquipment != null) view.removeSelection(selectedEquipment);
         selectedEquipment = value;
+        persistScroll();
         showPreview( value );
     }
 
     @Override
     public void onEditClicked(Equipment value ) {
         selectedEquipment = value;
-        persistScrollTopPosition();
+        persistScroll();
         fireEvent(EquipmentEvents.Edit.byId(value.getId()));
     }
 
@@ -143,7 +142,7 @@ public abstract class EquipmentTableActivity
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
                 }));
     }
@@ -154,19 +153,19 @@ public abstract class EquipmentTableActivity
         view.triggerTableLoad();
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
+    private void restoreScroll() {
+        if (!preScroll) {
             view.clearSelection();
             return;
         }
-        if (scrollTop <= RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight()) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void showPreview ( Equipment value ) {
@@ -185,13 +184,6 @@ public abstract class EquipmentTableActivity
         return new EquipmentQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir,
                 filterView.organizationCodes().getValue(), filterView.types().getValue(),
                 filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId, equipmentId );
-    }
-
-    private void clearScroll(EquipmentEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-        }
     }
 
     private boolean validateFields() {
@@ -226,6 +218,7 @@ public abstract class EquipmentTableActivity
     private Equipment selectedEquipment;
     private AppEvents.InitDetails init;
     private EquipmentQuery query;
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
     private static String CREATE_ACTION;
 }

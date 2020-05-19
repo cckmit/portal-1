@@ -29,4 +29,6 @@ public interface AbstractEmployeeTableView extends IsWidget {
     void updateRow(EmployeeShortView item);
 
     void setAnimation(TableAnimation animation);
+
+    void clearSelection();
 }

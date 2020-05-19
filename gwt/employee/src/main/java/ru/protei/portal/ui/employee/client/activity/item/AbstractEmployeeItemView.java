@@ -1,6 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.item;
 
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
 /**
  * Представление сотрудника

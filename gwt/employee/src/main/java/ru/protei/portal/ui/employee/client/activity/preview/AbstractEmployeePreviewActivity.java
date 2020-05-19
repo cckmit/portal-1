@@ -6,5 +6,4 @@ package ru.protei.portal.ui.employee.client.activity.preview;
 public interface AbstractEmployeePreviewActivity {
     void onFullScreenClicked();
     void onBackButtonClicked();
-    void onEditClicked();
 }

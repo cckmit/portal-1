@@ -5,6 +5,7 @@ import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.context.client.events.Back;
@@ -64,6 +65,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         setAvatarHandlers();
 
         initDetails.parent.clear();
+        Window.scrollTo(0,0);
         initDetails.parent.add(view.asWidget());
 
         companyService.getCompanyOptionList(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
@@ -176,7 +178,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EmployeeEvents.Show(true));
     }
 
     @Override
@@ -523,7 +525,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
                 .withSuccess(workerEntryList -> {
                     fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
+                    fireEvent(new EmployeeEvents.Show(true));
                 }));
     }
 

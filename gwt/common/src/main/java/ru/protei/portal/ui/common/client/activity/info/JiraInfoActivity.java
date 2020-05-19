@@ -36,7 +36,7 @@ public abstract class JiraInfoActivity implements AbstractJiraInfoActivity, Acti
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new IssueEvents.Show());
+        fireEvent(new IssueEvents.Show(false));
     }
 
     private void fillView() {

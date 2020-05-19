@@ -15,6 +15,7 @@ public interface AbstractAccountTableView extends IsWidget {
     void setAnimation ( TableAnimation animation );
 
     void addRecords( List< UserLogin > accounts );
+
     void clearRecords();
 
     HasWidgets getPreviewContainer ();
