@@ -73,7 +73,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     @Override
     public void onGoToContractsClicked() {
-        fireEvent(new ContractEvents.Show());
+        fireEvent(new ContractEvents.Show(true));
     }
 
     private void loadDetails(Long id) {

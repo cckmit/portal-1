@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employeeregistration.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -53,7 +54,8 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
                 new ActionBarEvents.Clear()
         );
 
-        filterView.resetFilter();
+        this.preScroll = event.preScroll;
+
         loadTable();
     }
 
@@ -77,6 +79,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
 
     @Override
     public void onItemClicked(EmployeeRegistration value) {
+        persistScroll();
         showPreview(value);
     }
 
@@ -100,6 +103,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
                     asyncCallback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
+                        restoreScroll();
                     }
                 }));
     }
@@ -107,6 +111,21 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     @Override
     public void onEditClicked(EmployeeRegistration value) {
         fireEvent(new EmployeeRegistrationEvents.Edit(value.getId()));
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void loadTable() {
@@ -149,4 +168,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
 
     private AppEvents.InitDetails init;
+
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

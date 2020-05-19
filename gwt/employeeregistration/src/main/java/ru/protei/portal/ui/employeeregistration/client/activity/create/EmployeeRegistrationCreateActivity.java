@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employeeregistration.client.activity.create;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -51,6 +52,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         clearView();
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
     }
 

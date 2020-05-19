@@ -146,7 +146,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                         fireEvent(new NotifyEvents.Show(lang.caseLinkSomeNotAdded(), NotifyEvents.NotifyType.INFO));
                     }
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.Show(true));
+                    fireEvent(new IssueEvents.Show(false));
                 })
         );
     }

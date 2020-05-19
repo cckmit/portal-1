@@ -637,12 +637,20 @@ label.bordered:after {
         }
       }
     }
+
+    .company {
+      width: 25%;
+    }
   }
 }
 
 .short-table-view {
-  .equipment table .equipment-number-column {
-    width: 40%;
+  .equipment {
+    table {
+      .column-hidable {
+        display: none;
+      }
+    }
   }
 }
 
@@ -650,10 +658,22 @@ label.bordered:after {
   table {
     thead {
       .equipment-type-column {
-        width: 90px;
+        width: 5%;
+      }
+      .equipment-name-column {
+        width: 20%;
       }
       .equipment-number-column {
-        min-width: 175px;
+        width: 20%;
+      }
+      .equipment-comment {
+        width: 20%;
+      }
+      .equipment-project {
+        width: 15%;
+      }
+      .edit {
+        width: 5%;
       }
     }
     tbody {

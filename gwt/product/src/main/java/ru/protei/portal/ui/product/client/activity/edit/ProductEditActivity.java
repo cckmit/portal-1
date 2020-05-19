@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -55,6 +55,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         }
 
         init.parent.clear();
+        Window.scrollTo(0, 0);
         init.parent.add(view.asWidget());
 
         productId = event.productId;
@@ -91,14 +92,14 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             public void onSuccess(DevUnit result) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
-                fireEvent(isNew(product) ? new ProductEvents.Show(true) : new Back());
+                fireEvent(new ProductEvents.Show(!isNew(product)));
             }
         });
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new ProductEvents.Show(!isNew(product)));
     }
 
     @Override

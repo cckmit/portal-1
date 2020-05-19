@@ -2,7 +2,6 @@ package ru.protei.portal.ui.sitefolder.client.activity.plaform.table;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -15,7 +14,6 @@ import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -30,7 +28,6 @@ import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPla
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,7 +74,7 @@ public abstract class PlatformTableActivity implements
             fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
         }
 
-        clearScroll(event);
+        this.preScroll = event.preScroll;
 
         loadTable();
     }
@@ -104,6 +101,8 @@ public abstract class PlatformTableActivity implements
 
     @Override
     public void onItemClicked(Platform value) {
+        persistScroll();
+
         if (value == null) {
             animation.closeDetails();
         } else {
@@ -122,8 +121,8 @@ public abstract class PlatformTableActivity implements
             return;
         }
 
-        persistScrollTopPosition();
-        fireEvent(new SiteFolderPlatformEvents.Edit(value.getId()));
+        persistScroll();
+        fireEvent(new SiteFolderPlatformEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderPlatformEvents.Show(true))));
     }
 
     @Override
@@ -142,7 +141,7 @@ public abstract class PlatformTableActivity implements
     @Override
     public void onOpenServersClicked(Platform value) {
         if (value != null) {
-            fireEvent(new SiteFolderServerEvents.Show(value.getId()));
+            fireEvent(new SiteFolderServerEvents.Show(value.getId(), false));
         }
     }
 
@@ -163,7 +162,7 @@ public abstract class PlatformTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
                 }));
     }
@@ -212,27 +211,19 @@ public abstract class PlatformTableActivity implements
         return query;
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
+    private void restoreScroll() {
+        if (!preScroll) {
             view.clearSelection();
             return;
         }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }
 
-    private void clearScroll(SiteFolderPlatformEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-        }
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private Runnable removeAction(Long platformId) {
@@ -245,7 +236,7 @@ public abstract class PlatformTableActivity implements
             @Override
             public void onSuccess(Boolean result) {
                 if (result) {
-                    fireEvent(new SiteFolderPlatformEvents.Show());
+                    fireEvent(new SiteFolderPlatformEvents.Show(false));
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -269,6 +260,7 @@ public abstract class PlatformTableActivity implements
     @Inject
     AbstractPagerView pagerView;
 
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
     private AppEvents.InitDetails initDetails;
 }

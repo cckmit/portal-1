@@ -7,6 +7,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @JdbcEntity(table = "application")
 public class Application extends AuditableObject {
@@ -122,6 +123,19 @@ public class Application extends AuditableObject {
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Application that = (Application) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

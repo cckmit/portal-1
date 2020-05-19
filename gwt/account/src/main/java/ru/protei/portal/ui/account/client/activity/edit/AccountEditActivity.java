@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.account.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -46,6 +47,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
         if( event.id == null ) {
@@ -84,7 +86,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
             @Override
             public void onSuccess( UserLogin userLogin ) {
-                fireEvent( isNew( account ) ? new AccountEvents.Show( true ) : new Back() );
+                fireEvent(new AccountEvents.Show(!isNew(account)));
             }
         } );
     }
@@ -115,7 +117,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent( new Back() );
+        fireEvent(new AccountEvents.Show(!isNew(account)));
     }
 
     private boolean isNew(UserLogin userLogin) {

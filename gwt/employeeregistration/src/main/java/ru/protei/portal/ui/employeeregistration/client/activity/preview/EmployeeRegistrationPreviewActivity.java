@@ -84,7 +84,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new EmployeeRegistrationEvents.Show());
+        fireEvent(new EmployeeRegistrationEvents.Show(true));
     }
 
     private void loadDetails(Long id) {

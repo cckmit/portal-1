@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.company.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -55,6 +56,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Event
     public void onShow(CompanyEvents.Edit event) {
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
         view.tableContainer().clear();
         view.siteFolderContainer().clear();
@@ -73,7 +75,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
             companyService.saveCompany(tempCompany, new FluentCallback<Boolean>()
                     .withSuccess(result -> {
-                        fireEvent(isNew(tempCompany) ? new CompanyEvents.Show(true) : new Back());
+                        fireEvent(new CompanyEvents.Show(!isNew(tempCompany)));
                         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                         fireEvent(new CompanyEvents.ChangeModel());
                     })
@@ -85,7 +87,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new CompanyEvents.Show(!isNew(tempCompany)));
     }
 
     @Override

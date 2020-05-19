@@ -119,14 +119,14 @@ public abstract class EquipmentEditActivity
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
-                    fireEvent(isNew(this.equipment) ? new EquipmentEvents.Show(true) : new Back());
+                    fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
     }
 
     @Override

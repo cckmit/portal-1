@@ -31,7 +31,9 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -117,7 +119,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                     }
                 } ) );
     }
-
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,

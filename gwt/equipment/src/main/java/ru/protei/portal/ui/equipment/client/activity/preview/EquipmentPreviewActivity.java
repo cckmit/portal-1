@@ -138,7 +138,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
 
     private Runnable removeAction(Long equipmentId) {
         return () -> equipmentService.removeEquipment( equipmentId, new FluentCallback<Boolean>().withSuccess(result -> {
-            fireEvent( new EquipmentEvents.Show() );
+            fireEvent( new EquipmentEvents.Show(true) );
             fireEvent( new NotifyEvents.Show( lang.equipmentRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
         }));
     }

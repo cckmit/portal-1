@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -30,6 +31,7 @@ import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.issue.client.activity.table.IssueTableFilterActivity;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
@@ -93,8 +95,15 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
+
+        fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
+
         viewModeIsPreview(false);
         container.clear();
+        Window.scrollTo(0, 0);
         requestIssue(event.caseNumber, container);
     }
 
@@ -105,6 +114,7 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
+
         viewModeIsPreview(true);
         container.clear();
         requestIssue(event.issueCaseNumber, container);
@@ -117,6 +127,9 @@ public abstract class IssueEditActivity implements
             fireEvent(new ForbiddenEvents.Show(container));
             return;
         }
+
+        fireBackEvent = () -> fireEvent(new IssueEvents.Show(false));
+
         viewModeIsPreview(false);
         container.clear();
         requestIssue(event.issueCaseNumber, container);
@@ -208,7 +221,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onOpenEditViewClicked() {
-        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()));
+        fireEvent(new IssueEvents.Edit(issue.getCaseNumber()).withBackEvent(() -> fireEvent(new IssueEvents.Show(true))));
     }
 
     @Override
@@ -224,7 +237,7 @@ public abstract class IssueEditActivity implements
 
     @Override
     public void onBackClicked() {
-        fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     public void fireSuccessCopyNotify() {
@@ -430,6 +443,7 @@ public abstract class IssueEditActivity implements
     private Profile authProfile;
     private AppEvents.InitDetails initDetails;
     private AbstractCaseTagListActivity tagListActivity;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());

@@ -71,7 +71,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Override
     public void onGoToProjectClicked() {
-        fireEvent(new ProjectEvents.Show());
+        fireEvent(new ProjectEvents.Show(true));
     }
 
     @Override
