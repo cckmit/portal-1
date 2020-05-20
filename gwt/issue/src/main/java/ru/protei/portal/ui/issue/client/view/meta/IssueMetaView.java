@@ -2,7 +2,6 @@ package ru.protei.portal.ui.issue.client.view.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -33,9 +32,8 @@ import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -165,7 +163,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public void initiatorUpdateCompany(Company company) {
-        initiator.updateCompanies(InitiatorModel.makeCompanyIds(company));
+        initiator.updateCompanies(PersonModel.makeCompanyIds(company));
     }
 
     @Override

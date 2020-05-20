@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
@@ -165,7 +165,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
             view.company().setValue( new EntityOption(userLogin.getCompanyName(), userLogin.getCompanyId()) );
             view.person().setValue( new PersonShortView(userLogin.getDisplayName(), userLogin.getPersonId()), userLogin.isFired() );
         }
-        view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : InitiatorModel.makeCompanyIds(userLogin.getCompanyId()));
+        view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : PersonModel.makeCompanyIds(userLogin.getCompanyId()));
         view.password().setText( "" );
         view.confirmPassword().setText( "" );
         view.roles().setValue( userLogin.getRoles() );

@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -35,16 +34,14 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -77,14 +74,18 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setInitiatorModel(InitiatorModel initiatorModel) {
-        initiators.setInitiatorModel(initiatorModel);
-        managers.setInitiatorModel(initiatorModel);
+    public void setInitiatorsModel(PersonModel personModel) {
+        initiators.setPersonModel(personModel);
     }
 
     @Override
-    public void setCreatorModel(PersonModel personModel) {
-        creators.setPersonModel(personModel);
+    public void setManagersModel(PersonModel personModel) {
+        managers.setPersonModel(personModel);
+    }
+
+    @Override
+    public void setCreatorModel(AsyncPersonModel asyncPersonModel) {
+        creators.setAsyncPersonModel(asyncPersonModel);
     }
 
     @Override

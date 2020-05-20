@@ -5,7 +5,6 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -22,8 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Селектор контактов
  */
-public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView> implements Refreshable
-{
+public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView> implements Refreshable {
     @Inject
     public void init(Lang lang) {
         this.lang = lang;
@@ -38,7 +36,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
 
     @Override
     public void onShowPopupClicked(ClickEvent event) {
-        if (initiatorModel == null) {
+        if (personModel == null) {
             super.onShowPopupClicked(event);
             return;
         }
@@ -59,7 +57,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     public void refresh() {
         Set<PersonShortView> value = getValue();
         if (!CollectionUtils.isEmpty( value )) {
-            value.retainAll( initiatorModel.getValues() );
+            value.retainAll( personModel.getValues() );
         }
         setValue( value );
     }
@@ -78,7 +76,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     }
 
     public void updateCompanies() {
-        if (initiatorModel == null || companiesSupplier == null) {
+        if (personModel == null || companiesSupplier == null) {
             return;
         }
         Set<Long> companyIds = null;
@@ -89,7 +87,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             companyIds = companies.stream().map(EntityOption::getId).collect(Collectors.toSet());
         }
 
-        initiatorModel.updateCompanies(this, companyIds, null);
+        personModel.updateCompanies(this, companyIds, null);
 
     }
 
@@ -97,12 +95,12 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         this.companiesSupplier = companiesSupplier;
     }
 
-    public void setInitiatorModel(InitiatorModel model) {
-        this.initiatorModel = model;
+    public void setPersonModel(PersonModel model) {
+        this.personModel = model;
         setModel( model );
     }
 
-    public void setPersonModel(PersonModel model) {
+    public void setAsyncPersonModel(AsyncPersonModel model) {
         setAsyncSearchModel(model);
     }
 
@@ -115,7 +113,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     }
 
     Lang lang;
-    private InitiatorModel initiatorModel;
+    private PersonModel personModel;
     private String selectCompanyMessage;
 
     private Supplier<Set<EntityOption>> companiesSupplier = () -> Collections.EMPTY_SET;

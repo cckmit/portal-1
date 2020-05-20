@@ -23,8 +23,8 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -45,8 +45,9 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setInitiatorModel(initiatorModel);
-        issueFilterParamView.setCreatorModel(personModel);
+        issueFilterParamView.setInitiatorsModel(personModel);
+        issueFilterParamView.setManagersModel(personModel);
+        issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 
@@ -314,9 +315,9 @@ public class IssueFilterWidget extends Composite {
     DivElement footer;
 
     @Inject
-    PersonModel personModel;
+    AsyncPersonModel asyncPersonModel;
     @Inject
-    InitiatorModel initiatorModel;
+    PersonModel personModel;
 
     AbstractIssueFilterWidgetModel model;
 
