@@ -85,7 +85,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @Override
     public void setCreatorModel(AsyncPersonModel asyncPersonModel) {
-        creators.setAsyncPersonModel(asyncPersonModel);
+        creators.setAsyncSearchModel(asyncPersonModel);
     }
 
     @Override
@@ -483,6 +483,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     public String validateMultiSelectorsTotalCount() {
+        if (managerCompanies.getValue().size() > 50) {
+            setManagerCompaniesErrorStyle(true);
+            return lang.errTooMuchCompanies();
+        } else {
+            setCompaniesErrorStyle(false);
+        }
         if (companies.getValue().size() > 50){
             setCompaniesErrorStyle(true);
             return lang.errTooMuchCompanies();
@@ -542,6 +548,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companies.setClearEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_CLEAR_BUTTON);
         companies.setItemContainerEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ITEM_CONTAINER);
         companies.setLabelEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_LABEL);
+        managerCompanies.setAddEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_ADD_BUTTON);
+        managerCompanies.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_CLEAR_BUTTON);
+        managerCompanies.setItemContainerEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_ITEM_CONTAINER);
+        managerCompanies.setLabelEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_LABEL);
         products.setAddEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ADD_BUTTON);
         products.setClearEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_CLEAR_BUTTON);
         products.setItemContainerEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ITEM_CONTAINER);
@@ -599,6 +609,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             companies.addStyleName(REQUIRED);
         } else {
             companies.removeStyleName(REQUIRED);
+        }
+    }
+
+    private void setManagerCompaniesErrorStyle(boolean hasError) {
+        if (hasError) {
+            managerCompanies.addStyleName(REQUIRED);
+        } else {
+            managerCompanies.removeStyleName(REQUIRED);
         }
     }
 

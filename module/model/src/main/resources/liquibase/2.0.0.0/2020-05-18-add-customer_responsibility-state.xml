@@ -4,10 +4,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="add-not_protei_responsibility-state" author="fomin">
+    <changeSet id="add-customer_responsibility-state" author="fomin">
         <insert tableName="case_state">
             <column name="ID" value="37" />
-            <column name="STATE" value="not-protei-responsibility" />
+            <column name="STATE" value="customer_responsibility" />
             <column name="INFO" value="Задача не входит в зону ответственности Протей" />
         </insert>
         <insert tableName="case_state_matrix">

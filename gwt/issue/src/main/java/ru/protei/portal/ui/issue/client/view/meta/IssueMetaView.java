@@ -167,7 +167,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void managerUpdateCompany(Long managerCompanyId) {
+    public void updateManagersCompanyFilter(Long managerCompanyId) {
         manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
     }
 
@@ -316,18 +316,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public HasVisibility platformVisibility() {
-        return new HasVisibility() {
-            @Override
-            public boolean isVisible() {
-                return platform.isVisible();
-            }
+        return platform;
+    }
 
-            @Override
-            public void setVisible(boolean visible) {
-                platform.setVisible(visible);
-                initiatorContainer.setStyleName("add-border-bottom", !visible);
-            }
-        };
+    @Override
+    public void setInitiatorBorderBottomVisible(boolean isVisible) {
+        initiatorContainer.setStyleName("add-border-bottom", isVisible);
     }
 
     @Override

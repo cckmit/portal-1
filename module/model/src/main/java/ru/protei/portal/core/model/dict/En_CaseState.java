@@ -48,7 +48,7 @@ public enum En_CaseState implements HasId {
             return "Не забывать переводить в этот статус, в противном случае Заказчик ждёт реакции от нас";
         }
     },
-    NOT_PROTEI_RESPONSIBILITY(37, "not Protei responsibility", false);
+    CUSTOMER_RESPONSIBILITY(37, "customer responsibility", false);
 
     public static En_CaseState getById(Long id) {
         if(id == null)

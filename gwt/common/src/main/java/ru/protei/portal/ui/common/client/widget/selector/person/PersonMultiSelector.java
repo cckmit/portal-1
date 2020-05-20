@@ -100,14 +100,6 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         setModel( model );
     }
 
-    public void setAsyncPersonModel(AsyncPersonModel model) {
-        setAsyncSearchModel(model);
-    }
-
-    public void setNullItem(Supplier<PersonShortView> nullItemSupplier) {
-        super.setNullItem(nullItemSupplier);
-    }
-
     public void setSelectCompanyMessage(String selectCompanyMessage) {
         this.selectCompanyMessage = selectCompanyMessage;
     }

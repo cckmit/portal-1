@@ -47,7 +47,7 @@ public class En_CaseStateLang {
             case CANCELED: return lang.canceledCaseState();
             case NX_REQUEST: return lang.requestNXCaseState();
             case CUST_REQUEST: return lang.requestCustomerCaseState();
-            case NOT_PROTEI_RESPONSIBILITY: return lang.notProteiResponsibilityState();
+            case CUSTOMER_RESPONSIBILITY: return lang.customerResponsibilityState();
             default:
                 return lang.errUnknownResult();
         }

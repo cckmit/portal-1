@@ -127,6 +127,10 @@ public class DebugIds {
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
         String COMPANY_SELECTOR_ITEM_CONTAINER = "filter-company-selector-item-container";
         String COMPANY_SELECTOR_LABEL = "filter-company-selector-label";
+        String MANAGER_COMPANY_SELECTOR_ADD_BUTTON = "filter-manager-company-selector-add-button";
+        String MANAGER_COMPANY_SELECTOR_CLEAR_BUTTON = "filter-manager-company-selector-clear-button";
+        String MANAGER_COMPANY_SELECTOR_ITEM_CONTAINER = "filter-manager-company-selector-item-container";
+        String MANAGER_COMPANY_SELECTOR_LABEL = "filter-manager-company-selector-label";
         String PRODUCT_SELECTOR_ADD_BUTTON = "filter-product-selector-add-button";
         String PRODUCT_SELECTOR_CLEAR_BUTTON = "filter-product-selector-clear-button";
         String PRODUCT_SELECTOR_ITEM_CONTAINER = "filter-product-selector-item-container";
@@ -229,7 +233,7 @@ public class DebugIds {
         String CUST_PENDING = "issue-state-cust-pending";
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
-        String NOT_PROTEI_RESPONSIBILITY = "issue-state-not-protei-responsibility";
+        String CUSTOMER_RESPONSIBILITY = "issue-state-customer-responsibility";
     }
 
     public interface ISSUE {

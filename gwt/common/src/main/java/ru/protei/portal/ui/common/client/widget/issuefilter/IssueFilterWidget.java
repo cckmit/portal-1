@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseFilter;
@@ -45,8 +46,8 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setInitiatorsModel(personModel);
-        issueFilterParamView.setManagersModel(personModel);
+        issueFilterParamView.setInitiatorsModel(personModelProvider.get());
+        issueFilterParamView.setManagersModel(personModelProvider.get());
         issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
@@ -317,7 +318,7 @@ public class IssueFilterWidget extends Composite {
     @Inject
     AsyncPersonModel asyncPersonModel;
     @Inject
-    PersonModel personModel;
+    Provider<PersonModel> personModelProvider;
 
     AbstractIssueFilterWidgetModel model;
 

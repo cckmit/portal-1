@@ -39,7 +39,7 @@ public interface AbstractIssueMetaView extends IsWidget {
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
 
-    void managerUpdateCompany(Long managerCompanyId);
+    void updateManagersCompanyFilter(Long managerCompanyId);
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
@@ -76,6 +76,9 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility timeElapsedContainerVisibility();
     HasVisibility timeElapsedEditContainerVisibility();
     HasVisibility platformVisibility();
+
+    void setInitiatorBorderBottomVisible(boolean isVisible);
+
     HasVisibility jiraSlaSelectorVisibility();
 
     HasValue<En_TimeElapsedType> timeElapsedType();

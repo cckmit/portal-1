@@ -89,7 +89,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setStateId(metaView.state().getValue().getId());
         meta.setPauseDate((!En_CaseState.PAUSED.equals(meta.getState()) || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
 
-        metaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(metaView.state().getValue()));
+        setManagerCompanyEnabled(metaView, metaView.state().getValue());
         metaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(meta.getState()));
         metaView.pauseDate().setValue(!En_CaseState.PAUSED.equals(meta.getState()) ? null : metaView.pauseDate().getValue());
 
@@ -288,7 +288,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setManagerCompany(metaView.getManagerCompany());
 
         metaView.setManager(null);
-        metaView.managerUpdateCompany(metaView.getManagerCompany().getId());
+        metaView.updateManagersCompanyFilter(metaView.getManagerCompany().getId());
 
         metaView.managerValidator().setValid(false);
     }
@@ -383,7 +383,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setInitiator(meta.getInitiator());
 
         metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
-        metaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
+        setPlatformVisibility(metaView, policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
         companyService.getCompanyWithParentCompanySubscriptions(
                 meta.getInitiatorCompanyId(),
@@ -424,15 +424,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta, boolean isReadOnly) {
         issueMetaView.managerEnabled().setEnabled(!isReadOnly && policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(issueMetaView.state().getValue()));
+        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getState());
 
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
-            issueMetaView.managerUpdateCompany(caseObjectMeta.getManagerCompanyId());
+            issueMetaView.updateManagersCompanyFilter(caseObjectMeta.getManagerCompanyId());
         } else {
             homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
                 issueMetaView.setManagerCompany(company);
-                issueMetaView.managerUpdateCompany(company.getId());
+                issueMetaView.updateManagersCompanyFilter(company.getId());
             });
         }
 
@@ -570,6 +570,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private boolean isSystemScope() {
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+    }
+
+    private void setPlatformVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
+        issueMetaView.platformVisibility().setVisible(isVisible);
+        issueMetaView.setInitiatorBorderBottomVisible(!isVisible);
+    }
+
+    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, En_CaseState state) {
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && En_CaseState.CUSTOMER_RESPONSIBILITY.equals(state));
     }
 
     @Inject

@@ -105,7 +105,7 @@ public class DebugIdsHelper {
                 return DebugIds.ISSUE_STATE.CUST_REQUEST;
             }
             if (id == 37) {
-                return DebugIds.ISSUE_STATE.NOT_PROTEI_RESPONSIBILITY;
+                return DebugIds.ISSUE_STATE.CUSTOMER_RESPONSIBILITY;
             }
             return DebugIds.ISSUE_STATE.DEFAULT + id;
         }

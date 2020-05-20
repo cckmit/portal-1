@@ -832,7 +832,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String requestCustomerCaseState();
 
-    String notProteiResponsibilityState();
+    String customerResponsibilityState();
 
     String criticalImportance();
 

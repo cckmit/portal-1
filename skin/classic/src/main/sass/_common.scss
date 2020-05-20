@@ -1353,7 +1353,7 @@ td.info {
 
 .state-canceled,
 .state-paused,
-.state-not_protei_responsibility {
+.state-customer_responsibility {
   color: #868686 !important;
 }
 
@@ -1481,16 +1481,16 @@ td.info {
 
 .label-canceled,
 .label-paused,
-.label-not_protei_responsibility,
+.label-customer_responsibility,
 .option-canceled .option-name,
 .option-paused .option-name,
-.option-not_protei_responsibility .option-name {
+.option-customer_responsibility .option-name {
   background-color: #868686;
 }
 
 .case-canceled,
 .case-paused,
-.case-not_protei_responsibility {
+.case-customer_responsibility {
   color: #868686;
   font-weight: bold;
 }

@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
+import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
@@ -52,7 +53,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onInit() {
         view.setActivity(this);
         issueMetaView.setActivity(this);
-        view.getIssueMetaViewContainer().add(issueMetaView);
+        view.getIssueMetaViewContainer().add(issueMetaView.asWidget());
 
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
@@ -274,7 +275,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
         issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) && En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(issueMetaView.state().getValue()));
+        setManagerCompanyEnabled(issueMetaView, issueMetaView.state().getValue());
 
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
@@ -283,7 +284,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onManagerCompanyChanged() {
         issueMetaView.setManager(null);
-        issueMetaView.managerUpdateCompany(issueMetaView.getManagerCompany().getId());
+        issueMetaView.updateManagersCompanyFilter(issueMetaView.getManagerCompany().getId());
     }
 
     private void fillPlatformValue(Long companyId){
@@ -341,7 +342,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         issueMetaView.timeElapsedEditContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         issueMetaView.timeElapsedHeaderVisibility().setVisible(false);
-        issueMetaView.platformVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
+        setPlatformVisibility(issueMetaView, policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         issueMetaView.setStateWorkflow(En_CaseStateWorkflow.NO_WORKFLOW);//Обязательно сетить до установки значения
         issueMetaView.setTimeElapsedType(En_TimeElapsedType.NONE);
 
@@ -365,17 +366,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
     }
 
-    private void fillManagerInfoContainer(final IssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
+    private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
         issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(caseObjectMeta.getState()));
+        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getState());
 
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
-            issueMetaView.managerUpdateCompany(caseObjectMeta.getManagerCompanyId());
+            issueMetaView.updateManagersCompanyFilter(caseObjectMeta.getManagerCompanyId());
         } else {
             homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
                 issueMetaView.setManagerCompany(company);
-                issueMetaView.managerUpdateCompany(company.getId());
+                issueMetaView.updateManagersCompanyFilter(company.getId());
             });
         }
 
@@ -597,6 +598,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return false;
     }
 
+    private void setPlatformVisibility(AbstractIssueMetaView issueMetaView, boolean isVisible) {
+        issueMetaView.platformVisibility().setVisible(isVisible);
+        issueMetaView.setInitiatorBorderBottomVisible(!isVisible);
+    }
+
+    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, En_CaseState state) {
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && En_CaseState.CUSTOMER_RESPONSIBILITY.equals(state));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -609,7 +619,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Inject
     AbstractIssueCreateView view;
     @Inject
-    IssueMetaView issueMetaView;
+    AbstractIssueMetaView issueMetaView;
     @Inject
     SLAControllerAsync slaService;
 

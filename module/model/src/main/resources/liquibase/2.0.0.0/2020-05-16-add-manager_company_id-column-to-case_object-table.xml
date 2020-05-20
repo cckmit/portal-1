@@ -19,12 +19,15 @@
                                  onDelete="SET NULL"/>
     </changeSet>
 
-    <changeSet id="update-manager_company_id-values" author="fomin">
+    <changeSet id="update-case_object-manager_company_id-values" author="fomin">
         <sql>
             UPDATE case_object
             SET manager_company_id = (SELECT person.company_id FROM person WHERE person.id = case_object.MANAGER)
             WHERE CASE_TYPE = 4
         </sql>
+    </changeSet>
+
+    <changeSet id="update-case_object-without-manager-manager_company_id-values" author="fomin">
         <sql>
             UPDATE case_object
             SET manager_company_id = 1

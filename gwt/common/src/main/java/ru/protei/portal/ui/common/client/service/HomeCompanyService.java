@@ -25,20 +25,12 @@ public abstract class HomeCompanyService implements Activity {
 
     public void getHomeCompany(Long companyId, Consumer<EntityOption> successConsumer) {
         if (homeCompanies != null) {
-            homeCompanies
-                    .stream()
-                    .filter(company -> Objects.equals(company.getId(), companyId))
-                    .findAny()
-                    .ifPresent(successConsumer);
+            findCompanyById(companyId, homeCompanies, successConsumer);
         } else {
             companyService.getAllHomeCompanies(new FluentCallback<List<EntityOption>>()
                     .withSuccess(companies -> {
                         setHomeCompanies(companies);
-                        homeCompanies
-                                .stream()
-                                .filter(company -> Objects.equals(company.getId(), companyId))
-                                .findAny()
-                                .ifPresent(successConsumer);
+                        findCompanyById(companyId, companies, successConsumer);
                     })
             );
         }
@@ -59,6 +51,14 @@ public abstract class HomeCompanyService implements Activity {
 
     private void setHomeCompanies(List<EntityOption> homeCompanies) {
         this.homeCompanies = homeCompanies;
+    }
+
+    private void findCompanyById(Long companyId, List<EntityOption> homeCompanies, Consumer<EntityOption> successConsumer) {
+        homeCompanies
+                .stream()
+                .filter(company -> Objects.equals(company.getId(), companyId))
+                .findAny()
+                .ifPresent(successConsumer);
     }
 
     @Inject
