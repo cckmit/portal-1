@@ -16,15 +16,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseApiQuery;
-import ru.protei.portal.core.model.query.CaseCommentApiQuery;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.EmployeeApiQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
@@ -35,7 +33,9 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -257,6 +257,115 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data", hasSize(caseCommentByIdCount)));
     }
+    @Test
+    public void setYoutrackIdToInvalidCrmNumber() throws Exception {
+        final String YOUTRACK_ID = "TEST-1";
+        String numbers = "9999999" + ",\n" + "NOT_NUMBER,";
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertFalse("Error message must be not empty", accept.andReturn().getResponse().getContentAsString().isEmpty());
+    }
+
+    @Test
+    public void setYoutrackIdToUncreatedCrmNumber() throws Exception {
+        final String YOUTRACK_ID = "TEST-1";
+        String numbers = "9999999" + "," + "8888888";
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertTrue("Error message must contains wrong numbers", accept.andReturn().getResponse().getContentAsString().contains(numbers));
+    }
+
+    @Test
+    @Transactional
+    public void setYoutrackIdToCorrectCrmNumbers() throws Exception {
+        final String YOUTRACK_ID = "TEST-1";
+
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setInitiatorCompany( company );
+        ResultActions accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+        Long caseNumber1 = getCaseNumberFromResult(accept);
+
+        caseObject = createNewCaseObject(person);
+        caseObject.setInitiatorCompany( company );
+        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+        Long caseNumber2 = getCaseNumberFromResult(accept);
+
+        caseObject = createNewCaseObject(person);
+        caseObject.setInitiatorCompany( company );
+        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+        Long caseNumber3 = getCaseNumberFromResult(accept);
+
+        List<Long> caseNumbersCreated = new ArrayList<>();
+        caseNumbersCreated.add(caseNumber1);
+        caseNumbersCreated.add(caseNumber2);
+        caseNumbersCreated.add(caseNumber3);
+
+        String numbers = caseNumber1 + ",\n" + caseNumber2 + ",\n" + caseNumber3;
+
+        //Устанавливаем 3 корректных номера
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
+
+        numbers = caseNumber1 + ",\n" + caseNumber2;
+
+        caseNumbersCreated.clear();
+        caseNumbersCreated.add(caseNumber1);
+        caseNumbersCreated.add(caseNumber2);
+
+        //Устанавливаем 2 корректных номера (то есть один удалится)
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
+
+        removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
+    }
+
+    private boolean compareLists (List<Long> list1, List<Long> list2){
+        Collections.sort(list1);
+        Collections.sort(list2);
+        return list1.equals(list2);
+    }
+
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
+
+        return listByQuery.stream()
+                .map(CaseLink::getCaseId)
+                .map(caseObjectDAO::getCaseNumberById)
+                .collect(Collectors.toList());
+    }
+
+    private void removeCaseObjectsAndCaseLinks(List<Long> caseIds) {
+        caseIds.forEach(caseId -> {
+        CaseLinkQuery query = new CaseLinkQuery(caseId, false);
+        caseLinkDAO.getListByQuery(query)
+                .forEach(caseLink -> caseLinkDAO.remove(caseLink));
+        caseCommentDAO.getCaseComments(new CaseCommentQuery(caseId))
+                .forEach(caseComment -> caseCommentDAO.remove(caseComment));
+        caseObjectDAO.removeByKey(caseId);
+        });
+    }
+
+    private Long getCaseNumberFromResult (ResultActions resultActions) throws UnsupportedEncodingException {
+        String json = resultActions.andReturn().getResponse().getContentAsString();
+
+        int startIndex = json.indexOf("caseNumber")+12;
+        int endIndex = json.indexOf(",", startIndex);
+
+        return Long.parseLong(json.substring(startIndex, endIndex));
+    }
 
     @Test
     @Transactional
@@ -458,6 +567,20 @@ public class TestPortalApiController extends BaseServiceTest {
 
         if(obj!=null){
             builder.content(objectMapper.writeValueAsString(obj));
+        }
+
+        return mockMvc.perform( builder );
+    }
+
+    private <T> ResultActions createPostResultActionWithStringBody(String url, String body) throws Exception {
+        MockHttpServletRequestBuilder builder = post( url )
+                .header( "Accept", "application/json" )
+                .header( "authorization", "Basic " + Base64.getEncoder().encodeToString( (person.getFirstName() + ":fakePassword").getBytes() ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .characterEncoding("utf-8");
+
+        if(body!=null){
+            builder.content(body);
         }
 
         return mockMvc.perform( builder );

@@ -28,6 +28,7 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -80,33 +81,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
         return youtrackService.getIssueInfo( ytId );
-    }
-
-    @Override
-    @Transactional
-    public Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
-        Long caseId = caseObjectDAO.getCaseIdByNumber(caseNumber);
-
-        return  getYoutrackLinks(caseId).flatMap( caseLinks ->
-                findCaseLinkByRemoteId( caseLinks, youtrackId ) ).map(
-                CaseLink::getCaseId ).orElseGet( ignore ->
-                addCaseLinkOnToYoutrack( caseId, youtrackId ).flatMap( addedLink ->
-                        sendNotificationLinkAdded( authToken, caseId, addedLink )
-                )
-        );
-    }
-
-    @Override
-    @Transactional
-    public Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
-        Long caseId = caseObjectDAO.getCaseIdByNumber(caseNumber);
-
-        return getYoutrackLinks(caseId).flatMap( caseLinks ->
-                findCaseLinkByRemoteId( caseLinks, youtrackId ) ).flatMap(caseLink ->
-                removeCaseLinkOnToYoutrack( caseLink ).flatMap( removedLink ->
-                        sendNotificationLinkRemoved( authToken, caseId, removedLink )
-                )
-        );
     }
 
     @Override
@@ -285,6 +259,101 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) )
                 .map( Result::ok )
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
+    }
+
+    @Override
+    @Transactional
+    public Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList) {
+        if (youtrackId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
+
+        Result<List<Long>> newCaseIdsResult = getCaseIdsByCaseNumbers(caseNumberList);
+        if (newCaseIdsResult.isError()) {
+            return error(newCaseIdsResult.getStatus(), newCaseIdsResult.getMessage());
+        }
+
+        List<Long> currentCaseIds = findAllCaseIdsByYoutrackId(youtrackId);
+        List<Long> newCaseIds = newCaseIdsResult.getData();
+
+        List<Long> listCaseIdsToAdd = makeListCaseIdsToAddYoutrackLink(currentCaseIds, newCaseIds);
+        List<Long> listCaseIdsToRemove = makeListCaseIdsToRemoveYoutrackLink(currentCaseIds, newCaseIds);
+
+        for (Long caseId : listCaseIdsToAdd) {
+            Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
+            if (addResult.isError()){
+                return error(addResult.getStatus(), addResult.getMessage());
+            }
+        }
+
+        for (Long caseId : listCaseIdsToRemove) {
+            Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
+            if (removeResult.isError()){
+                return error(removeResult.getStatus(), removeResult.getMessage());
+            }
+        }
+
+        return ok("");
+
+    }
+
+    private Result<Long> addYoutrackLink( AuthToken authToken, Long caseId, String youtrackId ) {
+
+        return  getYoutrackLinks(caseId)
+                .flatMap( caseLinks -> findCaseLinkByRemoteId( caseLinks, youtrackId ) )
+                .map( CaseLink::getCaseId )
+                .orElseGet( ignore ->
+                        addCaseLinkOnToYoutrack( caseId, youtrackId )
+                                .flatMap( addedLink ->
+                                        sendNotificationLinkAdded( authToken, caseId, addedLink )
+                                )
+                );
+    }
+
+    private Result<Long> removeYoutrackLink( AuthToken authToken, Long caseId, String youtrackId ) {
+
+        return getYoutrackLinks(caseId)
+                .flatMap( caseLinks -> findCaseLinkByRemoteId( caseLinks, youtrackId ) )
+                .flatMap(caseLink -> removeCaseLinkOnToYoutrack( caseLink )
+                        .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink )
+                )
+        );
+    }
+
+    private List<Long> makeListCaseIdsToRemoveYoutrackLink(List<Long> currentCaseIds, List<Long> newCaseIds) {
+        List<Long> removeList = new ArrayList<>(currentCaseIds);
+        removeList.removeIf(currentCaseId -> newCaseIds.contains(currentCaseId));
+        return removeList;
+    }
+
+    private List<Long> makeListCaseIdsToAddYoutrackLink(List<Long> currentCaseIds, List<Long> newCaseIds) {
+        List<Long> addList = new ArrayList<>(newCaseIds);
+        addList.removeIf(newCaseId -> currentCaseIds.contains(newCaseId));
+        return addList;
+    }
+
+    private Result<List<Long>> getCaseIdsByCaseNumbers(List<Long> caseNumberList) {
+        List<Long> caseIds = new ArrayList<>();
+
+        String resultErrorMessage = "";
+
+        for (Long number : caseNumberList) {
+            Long caseId = caseObjectDAO.getCaseIdByNumber(number);
+            resultErrorMessage += caseId == null ? number + "," : "";
+            caseIds.add(caseId);
+        }
+
+        return resultErrorMessage.isEmpty() ? ok(caseIds) : error(En_ResultStatus.NOT_FOUND, "Не найдены задачи с номерами: " + resultErrorMessage);
+    }
+
+
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
+
+        return listByQuery.stream()
+                .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
     }
 
     private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseId, String youtrackId ) {

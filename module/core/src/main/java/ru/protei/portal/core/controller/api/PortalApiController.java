@@ -215,48 +215,54 @@ public class PortalApiController {
                         product, result ) );
     }
 
-
-    @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public Result<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                @PathVariable("caseNumber") Long caseNumber,
-                                                @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
-                .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
-                .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
-                        youtrackId, caseNumber, result ) );
-
-    }
-
-    @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public Result<Long> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                      @PathVariable("caseNumber") Long caseNumber,
-                                                      @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
-                .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
-                .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
-                        youtrackId, caseNumber, result ) );
-    }
-
-    @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
-    public Result<Long> changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
-                                                 @PathVariable("oldCaseNumber") Long oldCaseNumber,
-                                                 @PathVariable("newCaseNumber") Long newCaseNumber,
+    @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}")
+    public String updateYoutrackCrmNumbers( HttpServletRequest request, HttpServletResponse response,
+                                                 @RequestBody String crmNumbers,
                                                  @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
-        // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
-                caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
-                .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
-                .ifError( result -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
-                        youtrackId, oldCaseNumber, result ) );
+        log.info( "updateYoutrackCrmNumbers() crmNumbers={} youtrackId={}", crmNumbers, youtrackId );
+
+        List<Long> crmNumberList;
+
+        try {
+            crmNumberList = makeCrmNumberList(crmNumbers);
+
+            Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
+                    .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, crmNumberList ))
+                    .ifOk( linkId -> log.info( "updateYoutrackCrmNumbers(): OK" ) )
+                    .ifError( result -> log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
+                            youtrackId, crmNumbers, result ) );
+
+            if (updateResult.isOk()) {
+                log.info( "updateYoutrackCrmNumbers(): OK" );
+                return "";
+            } else {
+                log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
+                        youtrackId, crmNumbers, updateResult.getStatus() );
+                return updateResult.getMessage() == null || updateResult.getMessage().isEmpty() ? "Внутренняя ошибка на портале" : updateResult.getMessage();
+            }
+
+        } catch (NumberFormatException e) {
+            log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers", e);
+            return "Некорректно заданы номера обращений. Номера обращений должны содержать только цифры";
+        }
+    }
+
+    private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
+        List<Long> crmNumberList = new ArrayList<>();
+
+        crmNumbers = crmNumbers.replace("\n", "");
+        String[] numbers = crmNumbers.split(",");
+
+        for (String number : numbers) {
+            if (number.startsWith("[")){
+                crmNumberList.add(Long.parseLong(number.substring(1, number.indexOf("]"))));
+            } else {
+                crmNumberList.add(Long.parseLong(number));
+            }
+        }
+
+        return crmNumberList;
     }
 
     @PostMapping(value = "/comments")

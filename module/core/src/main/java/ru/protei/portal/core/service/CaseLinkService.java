@@ -24,12 +24,6 @@ public interface CaseLinkService {
 
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 
-    @Auditable(En_AuditType.LINK_CREATE)
-    Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
-
-    @Auditable(En_AuditType.LINK_REMOVE)
-    Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
-
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
     Result<Long> createLink(AuthToken authToken, CaseLink value, boolean createCrossLinks);
@@ -45,4 +39,7 @@ public interface CaseLinkService {
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
     Result deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
+
+    @Auditable(En_AuditType.LINK_CREATE)
+    Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList);
 }

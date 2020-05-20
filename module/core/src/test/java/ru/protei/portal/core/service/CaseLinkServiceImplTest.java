@@ -64,8 +64,7 @@ public class CaseLinkServiceImplTest {
         when( caseLinkDAO.getListByQuery( any( CaseLinkQuery.class ) ) ).thenReturn( Collections.EMPTY_LIST );
         when( caseLinkDAO.persist( any( CaseLink.class ) ) ).thenReturn( CASELINK_ID );
 
-        Long link_id = caseLinkService.addYoutrackLink( ((AuthServiceMock) authService).getAuthToken(), CASE_NUMBER, "YouTrack_ID" ).getData();
-        assertEquals( "Expected id of added lik", CASELINK_ID, link_id );
+        caseLinkService.setYoutrackIdToCaseNumbers( ((AuthServiceMock) authService).getAuthToken(), "YouTrack_ID", Collections.singletonList(CASE_NUMBER) );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }
