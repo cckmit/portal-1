@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -23,6 +24,10 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setActivity(AbstractIssueMetaActivity activity);
 
 
+    void setManagerCompany(EntityOption managerCompany);
+
+    EntityOption getManagerCompany();
+
     void setCaseMetaNotifiers(Set<Person> caseObjectMetaNotifiers);
     void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira);
     Set<Person> getCaseMetaNotifiers();
@@ -33,6 +38,9 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
+
+    void updateManagersCompanyFilter(Long managerCompanyId);
+
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
     void fillImportanceOptions(List<En_ImportanceLevel> options);
@@ -68,6 +76,9 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility timeElapsedContainerVisibility();
     HasVisibility timeElapsedEditContainerVisibility();
     HasVisibility platformVisibility();
+
+    void setInitiatorBorderBottomVisible(boolean isVisible);
+
     HasVisibility jiraSlaSelectorVisibility();
 
     HasValue<En_TimeElapsedType> timeElapsedType();
@@ -105,4 +116,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasValue<Date> pauseDate();
 
     void setPauseDateValid(boolean isValid);
+
+    HasEnabled managerCompanyEnabled();
 }

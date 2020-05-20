@@ -18,19 +18,20 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public interface AbstractIssueFilterParamView extends IsWidget {
     void setModel(AbstractIssueFilterModel model);
 
-    void setInitiatorModel(InitiatorModel initiatorModel);
+    void setInitiatorsModel(PersonModel personModel);
 
-    void setCreatorModel(PersonModel personModel);
+    void setManagersModel(PersonModel personModel);
+
+    void setCreatorModel(AsyncPersonModel asyncPersonModel);
 
     HasValue<String> searchPattern();
 
@@ -47,6 +48,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     HasValue<Set<ProductShortView>> products();
 
     HasValue<Set<EntityOption>> companies();
+
+    HasValue<Set<EntityOption>> managerCompanies();
 
     HasValue<Set<PersonShortView>> initiators();
 
@@ -78,6 +81,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     void presetCompany(Company company);
 
+    void presetManagerCompany(Company company);
+
     void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
     CaseQuery getFilterFields(En_CaseFilterType filterType);
@@ -85,8 +90,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter);
 
     void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList);
-
-    void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
 
     String validateMultiSelectorsTotalCount();
 

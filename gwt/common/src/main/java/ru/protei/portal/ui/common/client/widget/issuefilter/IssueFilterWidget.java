@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseFilter;
@@ -23,8 +24,8 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -45,9 +46,9 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setInitiatorModel(initiatorModel);
-        issueFilterParamView.setCreatorModel(personModel);
-        issueFilterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( issueFilterParamView.companies().getValue()));
+        issueFilterParamView.setInitiatorsModel(personModelProvider.get());
+        issueFilterParamView.setManagersModel(personModelProvider.get());
+        issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 
@@ -315,9 +316,9 @@ public class IssueFilterWidget extends Composite {
     DivElement footer;
 
     @Inject
-    PersonModel personModel;
+    AsyncPersonModel asyncPersonModel;
     @Inject
-    InitiatorModel initiatorModel;
+    Provider<PersonModel> personModelProvider;
 
     AbstractIssueFilterWidgetModel model;
 

@@ -751,7 +751,7 @@ label.bordered:after {
       }
     }
     .number {
-      width: 10%;
+      width: 14%;
       text-align: center;
       .number-size {
         font-size: 22px;
@@ -1378,7 +1378,8 @@ td.info {
 }
 
 .state-canceled,
-.state-paused {
+.state-paused,
+.state-customer_responsibility {
   color: #868686 !important;
 }
 
@@ -1506,13 +1507,16 @@ td.info {
 
 .label-canceled,
 .label-paused,
+.label-customer_responsibility,
 .option-canceled .option-name,
-.option-paused .option-name {
+.option-paused .option-name,
+.option-customer_responsibility .option-name {
   background-color: #868686;
 }
 
 .case-canceled,
-.case-paused {
+.case-paused,
+.case-customer_responsibility {
   color: #868686;
   font-weight: bold;
 }
@@ -4431,4 +4435,9 @@ table {
     -webkit-transition: opacity .3s ease;
     transition: opacity .3s ease;
   }
+}
+
+.form-group-attached > div:not(:last-child) .add-border-bottom .form-group-default,
+.form-group-attached > div:not(:last-child).add-border-bottom .form-group-default {
+  border-bottom-color: rgba(0, 0, 0, 0.07);
 }

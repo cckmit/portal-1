@@ -330,6 +330,7 @@ public class PortalApiController {
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
         query.setCreatedFrom(parseDate(apiQuery.getCreatedFrom()));
         query.setCreatedTo(parseDate(apiQuery.getCreatedTo()));
+        query.setManagerCompanyIds(apiQuery.getManagerCompanyIds());
         return query;
     }
 

@@ -486,6 +486,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueManager();
 
+    String issueManagerCompany();
+
     String issueHeader( String p0 );
 
     String issueCurrentStateHeader();
@@ -520,6 +522,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueInitiatorInfo();
 
+    String issueManagerInfo();
+
     String issueEdit();
 
     String newIssue();
@@ -553,6 +557,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFilterNotDefined();
 
     String initiatorSelectACompany();
+
+    String managerSelectACompany();
 
     String issueCommentAuthor();
 
@@ -825,6 +831,8 @@ public interface Lang extends Messages, ContactItemLang {
     String requestNXCaseState();
 
     String requestCustomerCaseState();
+
+    String customerResponsibilityState();
 
     String criticalImportance();
 

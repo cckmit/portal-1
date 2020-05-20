@@ -32,9 +32,8 @@ import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -114,6 +113,20 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setManagerCompany(EntityOption managerCompany) {
+        if (managerCompany != null) {
+            managerCompany.setDisplayText(transliteration(managerCompany.getDisplayText()));
+        }
+
+        this.managerCompany.setValue(managerCompany);
+    }
+
+    @Override
+    public EntityOption getManagerCompany() {
+        return this.managerCompany.getValue();
+    }
+
+    @Override
     public void setCaseMetaNotifiers( Set<Person> caseObjectMetaNotifiers) {
         notifiers.setValue(transliterateNotifiers(caseObjectMetaNotifiers));
     }
@@ -150,7 +163,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public void initiatorUpdateCompany(Company company) {
-        initiator.updateCompanies(InitiatorModel.makeCompanyIds(company));
+        initiator.updateCompanies(PersonModel.makeCompanyIds(company));
+    }
+
+    @Override
+    public void updateManagersCompanyFilter(Long managerCompanyId) {
+        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
     }
 
     @Override
@@ -302,6 +320,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setInitiatorBorderBottomVisible(boolean isVisible) {
+        initiatorContainer.setStyleName("add-border-bottom", isVisible);
+    }
+
+    @Override
     public HasVisibility jiraSlaSelectorVisibility() {
         return jiraSlaSelector;
     }
@@ -361,10 +384,16 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         pauseDate.markInputValid(isValid);
     }
 
+    @Override
+    public HasEnabled managerCompanyEnabled() {
+        return managerCompany;
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
         company.setDefaultValue(lang.selectIssueCompany());
+        managerCompany.setDefaultValue(lang.selectIssueCompany());
         companyModel.showDeprecated(false);
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
@@ -379,6 +408,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
         platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
+        managerCompany.setEnsureDebugId(DebugIds.ISSUE.MANAGER_COMPANY_SELECTOR);
         initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
         product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
         manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
@@ -392,6 +422,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
         platform.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PLATFORM);
         company.ensureLabelDebugId(DebugIds.ISSUE.LABEL.COMPANY);
+        managerCompany.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER_COMPANY);
         initiator.ensureLabelDebugId(DebugIds.ISSUE.LABEL.CONTACT);
         product.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PRODUCT);
         manager.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER);
@@ -480,6 +511,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         activity.onPauseDateChanged();
     }
 
+    @UiHandler("managerCompany")
+    public void onManagerCompanyChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onManagerCompanyChanged();
+    }
+
     @UiField
     @Inject
     Lang lang;
@@ -497,15 +533,22 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     @UiField(provided = true)
     DevUnitFormSelector product;
+    @UiField
+    HTMLPanel productContainer;
     @Inject
     @UiField(provided = true)
-    EmployeeFormSelector manager;
+    CompanyFormSelector managerCompany;
+    @Inject
+    @UiField(provided = true)
+    PersonFormSelector manager;
     @Inject
     @UiField(provided = true)
     CompanyFormSelector company;
     @Inject
     @UiField(provided = true)
     PersonFormSelector initiator;
+    @UiField
+    HTMLPanel initiatorContainer;
     @Inject
     @UiField(provided = true)
     PlatformFormSelector platform;

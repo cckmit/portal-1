@@ -52,5 +52,7 @@ public interface CompanyService {
 
     Result<List<Long>> getAllHomeCompanyIds(AuthToken token);
 
+    Result<List<Company>> getAllHomeCompanies(AuthToken token);
+
     Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId);
 }

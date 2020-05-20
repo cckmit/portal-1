@@ -24,7 +24,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 {
 
     @Inject
-    public void init(InitiatorModel model) {
+    public void init(PersonModel model) {
         this.model = model;
         setModel(model);
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
@@ -77,7 +77,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     @Inject
     Lang lang;
 
-    private InitiatorModel model;
+    private PersonModel model;
 
     private boolean fired = false;
     private Set<Long> companyIds;

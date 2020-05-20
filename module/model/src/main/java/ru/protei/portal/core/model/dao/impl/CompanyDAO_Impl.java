@@ -55,6 +55,12 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return jdbcTemplate.queryForList(query, Long.class);
     }
 
+    @Override
+    public List<Company> getAllHomeCompanies() {
+        String sql = "company.id IN (SELECT companyId FROM company_group_home)";
+        return getListByCondition(sql);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );

@@ -91,6 +91,7 @@ public abstract class IssueTableFilterActivity
 
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
         }
 
         this.preScroll = event.preScroll;
@@ -280,7 +281,6 @@ public abstract class IssueTableFilterActivity
 
     private void applyFilterViewPrivileges() {
         filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterView.getIssueFilterParams().managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
         filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
     }
 
