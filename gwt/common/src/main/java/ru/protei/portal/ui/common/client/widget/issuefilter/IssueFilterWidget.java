@@ -47,7 +47,6 @@ public class IssueFilterWidget extends Composite {
         ensureDebugIds();
         issueFilterParamView.setInitiatorModel(initiatorModel);
         issueFilterParamView.setCreatorModel(personModel);
-        issueFilterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( issueFilterParamView.companies().getValue()));
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 

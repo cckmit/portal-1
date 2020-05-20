@@ -65,6 +65,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
         initiators.setCompaniesSupplier(() -> new HashSet<>( companies.getValue()) );
+        managers.setCompaniesSupplier(() -> new HashSet<>(managerCompanies.getValue()));
+        managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         searchByCommentsWarning.setText(
                 lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
     }
@@ -77,6 +79,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setInitiatorModel(InitiatorModel initiatorModel) {
         initiators.setInitiatorModel(initiatorModel);
+        managers.setInitiatorModel(initiatorModel);
     }
 
     @Override
@@ -127,6 +130,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public HasValue<Set<EntityOption>> companies() {
         return companies;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> managerCompanies() {
+        return managerCompanies;
     }
 
     @Override
@@ -194,6 +202,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companies.setValue(null);
         products.setValue(null);
         managers.setValue(null);
+        managerCompanies.setValue(null);
         initiators.setValue(null);
         commentAuthors.setValue(null);
         creators.setValue(null);
@@ -219,6 +228,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companyIds.add(toEntityOption(company));
         companies.setValue(companyIds);
         updateInitiators();
+    }
+
+    @Override
+    public void presetManagerCompany(Company company) {
+        HashSet<EntityOption> managerCompanies = new HashSet<>();
+        managerCompanies.add(toEntityOption(company));
+        this.managerCompanies.setValue(managerCompanies);
+        updateManagers();
     }
 
     private void toggleMsgSearchThreshold() {
@@ -247,7 +264,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         importance.setValue(caseQuery.getImportances());
         state.setValue(setOf(caseQuery.getStates()));
 
-        companies.setValue(new HashSet<>(emptyIfNull(filter.getCompanyEntityOptions())));
+        companies.setValue(applyCompanies(filter, caseQuery.getCompanyIds()));
+        managerCompanies.setValue(applyCompanies(filter, caseQuery.getManagerCompanyIds()));
+
         updateInitiators();
 
         initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
@@ -299,6 +318,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setCaseTagsIds( nullIfEmpty( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ) );
                 query.setCreatorIds( nullIfEmpty( toList( creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId() ) ) );
+                query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
 
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 query = fillModifiedInterval(query, dateModifiedRange.getValue());
@@ -332,11 +352,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList) {
         importance.fillButtons(importanceLevelList);
-    }
-
-    @Override
-    public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
-        initiators.setCompaniesSupplier(collectionSupplier);
     }
 
     @UiHandler("search")
@@ -377,6 +392,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiHandler("companies")
     public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
         initiators.updateCompanies();
+        onFilterChanged();
+    }
+
+    @UiHandler("managerCompanies")
+    public void onManagerCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        managers.updateCompanies();
         onFilterChanged();
     }
 
@@ -428,10 +449,80 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortField.stopWatchForScrollOf(widget);
     }
 
+    public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
+        if (filterType == null) {
+            return;
+        }
+
+        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
+            modifiedRangeContainer.removeClassName(HIDE);
+            sortByContainer.removeClassName(HIDE);
+            labelCreated.setInnerText(lang.created());
+        } else {
+            modifiedRangeContainer.addClassName(HIDE);
+            sortByContainer.addClassName(HIDE);
+            labelCreated.setInnerText(lang.period());
+        }
+        creators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managerCompanies.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
+        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
+            importanceContainer.addClassName(HIDE);
+            stateContainer.addClassName(HIDE);
+        } else {
+            importanceContainer.removeClassName(HIDE);
+            stateContainer.removeClassName(HIDE);
+        }
+    }
+
+    public String validateMultiSelectorsTotalCount() {
+        if (companies.getValue().size() > 50){
+            setCompaniesErrorStyle(true);
+            return lang.errTooMuchCompanies();
+        } else {
+            setCompaniesErrorStyle(false);
+        }
+        if (products.getValue().size() > 50){
+            setProductsErrorStyle(true);
+            return lang.errTooMuchProducts();
+        } else {
+            setProductsErrorStyle(false);
+        }
+        if (managers.getValue().size() > 50){
+            setManagersErrorStyle(true);
+            return lang.errTooMuchManagers();
+        }
+        if (initiators.getValue().size() > 50){
+            setInitiatorsErrorStyle(true);
+            return lang.errTooMuchInitiators();
+        } else {
+            setManagersErrorStyle(false);
+        }
+        return null;
+    }
+
+    public boolean isSearchFieldCorrect(){
+        return !searchByComments.getValue() ||
+                search.getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
+    }
+
     private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> personIds) {
         return emptyIfNull(filter.getPersonShortViews()).stream()
                 .filter(personShortView ->
                         emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<EntityOption> applyCompanies(SelectorsParams filter, List<Long> companyIds) {
+        return emptyIfNull(filter.getCompanyEntityOptions()).stream()
+                .filter(company ->
+                        emptyIfNull(companyIds).stream().anyMatch(ids -> ids.equals(company.getId())))
                 .collect(Collectors.toSet());
     }
 
@@ -502,68 +593,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         timer.schedule(300);
     }
 
-    public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
-        if (filterType == null) {
-            return;
-        }
-
-        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
-            modifiedRangeContainer.removeClassName(HIDE);
-            sortByContainer.removeClassName(HIDE);
-            labelCreated.setInnerText(lang.created());
-        } else {
-            modifiedRangeContainer.addClassName(HIDE);
-            sortByContainer.addClassName(HIDE);
-            labelCreated.setInnerText(lang.period());
-        }
-        creators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
-        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
-        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
-            importanceContainer.addClassName(HIDE);
-            stateContainer.addClassName(HIDE);
-        } else {
-            importanceContainer.removeClassName(HIDE);
-            stateContainer.removeClassName(HIDE);
-        }
-    }
-
-    public String validateMultiSelectorsTotalCount() {
-        if (companies.getValue().size() > 50){
-            setCompaniesErrorStyle(true);
-            return lang.errTooMuchCompanies();
-        } else {
-            setCompaniesErrorStyle(false);
-        }
-        if (products.getValue().size() > 50){
-            setProductsErrorStyle(true);
-            return lang.errTooMuchProducts();
-        } else {
-            setProductsErrorStyle(false);
-        }
-        if (managers.getValue().size() > 50){
-            setManagersErrorStyle(true);
-            return lang.errTooMuchManagers();
-        }
-        if (initiators.getValue().size() > 50){
-            setInitiatorsErrorStyle(true);
-            return lang.errTooMuchInitiators();
-        } else {
-            setManagersErrorStyle(false);
-        }
-        return null;
-    }
-
-    public boolean isSearchFieldCorrect(){
-        return !searchByComments.getValue() ||
-                search.getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
-    }
-
     private void setCompaniesErrorStyle(boolean hasError) {
         if (hasError) {
             companies.addStyleName(REQUIRED);
@@ -600,7 +629,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         initiators.updateCompanies();
     }
 
-    public static Set< Long > getProductsIdList( Set< ProductShortView > productSet ) {
+    private void updateManagers() {
+        managers.updateCompanies();
+    }
+
+    private static Set< Long > getProductsIdList(Set<ProductShortView> productSet) {
 
         if ( productSet == null || productSet.isEmpty() ) {
             return null;
@@ -611,14 +644,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 .collect( Collectors.toSet() );
     }
 
-    public static CaseQuery fillCreatedInterval( CaseQuery query, DateInterval interval ) {
+    private static CaseQuery fillCreatedInterval(CaseQuery query, DateInterval interval) {
         if (interval != null) {
             query.setCreatedFrom(interval.from);
             query.setCreatedTo(interval.to);
         }
         return query;
     }
-    public static CaseQuery fillModifiedInterval( CaseQuery query, DateInterval interval ) {
+    private static CaseQuery fillModifiedInterval(CaseQuery query, DateInterval interval) {
         if (interval != null) {
             query.setModifiedFrom(interval.from);
             query.setModifiedTo(interval.to);
@@ -626,7 +659,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         return query;
     }
 
-    public static List< Long > getCompaniesIdList( Set< EntityOption > companySet ) {
+    private static List< Long > getCompaniesIdList(Set<EntityOption> companySet) {
 
         if ( companySet == null || companySet.isEmpty() ) {
             return null;
@@ -637,7 +670,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 .collect( Collectors.toList() );
     }
 
-    public static EntityOption toEntityOption( Company company ) {
+    private static EntityOption toEntityOption(Company company) {
         if ( company == null  ) {
             return null;
         }
@@ -647,7 +680,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         return option;
     }
 
-    public static List< Long > getManagersIdList( Set< PersonShortView > personSet ) {
+    private static List< Long > getManagersIdList(Set<PersonShortView> personSet) {
 
         if ( personSet == null || personSet.isEmpty() ) {
             return null;
@@ -693,7 +726,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     PersonMultiSelector initiators;
     @Inject
     @UiField(provided = true)
-    EmployeeMultiSelector managers;
+    CompanyMultiSelector managerCompanies;
+    @Inject
+    @UiField(provided = true)
+    PersonMultiSelector managers;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;

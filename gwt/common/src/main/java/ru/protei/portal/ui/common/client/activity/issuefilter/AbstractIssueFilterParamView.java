@@ -48,6 +48,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasValue<Set<EntityOption>> companies();
 
+    HasValue<Set<EntityOption>> managerCompanies();
+
     HasValue<Set<PersonShortView>> initiators();
 
     HasValue<Set<PersonShortView>> managers();
@@ -78,6 +80,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     void presetCompany(Company company);
 
+    void presetManagerCompany(Company company);
+
     void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
     CaseQuery getFilterFields(En_CaseFilterType filterType);
@@ -85,8 +89,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter);
 
     void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList);
-
-    void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
 
     String validateMultiSelectorsTotalCount();
 

@@ -486,6 +486,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueManager();
 
+    String issueManagerCompany();
+
     String issueHeader( String p0 );
 
     String issueCurrentStateHeader();
@@ -555,6 +557,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFilterNotDefined();
 
     String initiatorSelectACompany();
+
+    String managerSelectACompany();
 
     String issueCommentAuthor();
 

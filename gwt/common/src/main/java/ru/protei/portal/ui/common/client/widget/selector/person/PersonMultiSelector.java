@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -47,7 +48,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             super.onShowPopupClicked(event);
         } else {
             SelectorItem item = new SelectorItem();
-            item.setName(lang.initiatorSelectACompany());
+            item.setName(StringUtils.isEmpty(selectCompanyMessage) ? lang.initiatorSelectACompany() : selectCompanyMessage);
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
             getPopup().getChildContainer().add(item);
             getPopup().showNear( itemContainer );
@@ -105,8 +106,17 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         setAsyncSearchModel(model);
     }
 
+    public void setNullItem(Supplier<PersonShortView> nullItemSupplier) {
+        super.setNullItem(nullItemSupplier);
+    }
+
+    public void setSelectCompanyMessage(String selectCompanyMessage) {
+        this.selectCompanyMessage = selectCompanyMessage;
+    }
+
     Lang lang;
     private InitiatorModel initiatorModel;
+    private String selectCompanyMessage;
 
     private Supplier<Set<EntityOption>> companiesSupplier = () -> Collections.EMPTY_SET;
 }
