@@ -274,7 +274,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
         issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
-        issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT) || En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(issueMetaView.state().getValue()));
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) && En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(issueMetaView.state().getValue()));
 
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
@@ -367,7 +367,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillManagerInfoContainer(final IssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
         issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
-        issueMetaView.managerCompanyEnabled().setEnabled(En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(caseObjectMeta.getState()));
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && En_CaseState.NOT_PROTEI_RESPONSIBILITY.equals(caseObjectMeta.getState()));
 
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
