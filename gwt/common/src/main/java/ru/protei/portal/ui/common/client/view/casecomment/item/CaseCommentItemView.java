@@ -123,17 +123,17 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setManagerAndCompany(String managerShortName, String managerCompanyName) {
+    public void setManagerInfo(String managerInfo) {
         if (root.getStyleName().contains("right")) {
             owner.removeClassName("name");
             owner.addClassName("status");
             owner.addClassName("name");
-            owner.setInnerText(managerShortName + " (" + managerCompanyName + ")");
+            owner.setInnerText(managerInfo);
             info.setInnerText(lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         } else {
             status.addClassName("name");
-            status.setInnerText(managerShortName + " (" + managerCompanyName + ")");
+            status.setInnerText(managerInfo);
             info.setInnerText(lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         }

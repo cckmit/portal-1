@@ -31,7 +31,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setImportanceLevel( En_ImportanceLevel importance );
 
-    void setManagerAndCompany(String managerShortName, String managerCompanyName );
+    void setManagerInfo(String managerInfo );
 
     void enabledEdit( boolean isEnabled );
 

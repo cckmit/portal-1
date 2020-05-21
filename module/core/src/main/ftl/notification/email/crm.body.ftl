@@ -151,16 +151,16 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#assign newManager = (manager)???then(
-                        manager +' ('+ (managerCompany!'?') +')',
-                        (managerCompany)!'?'
-                        )>
+                                    manager +' ('+ (managerCompany!'?') +')',
+                                    (managerCompany)!'?'
+                                )>
                         <#if managerChanged>
                             <@changeTo
-                            old="${(oldInitiator)???then(
-                            TranslitUtils.transliterate(oldManager, lang) +' ('+ (TranslitUtils.transliterate(oldManagerCompany, lang)!'?') +')',
-                            (TranslitUtils.transliterate(oldManagerCompany, lang))!'?'
-                            )}"
-                            new="${TranslitUtils.transliterate(newManager, lang)}"
+                                old="${(oldInitiator)???then(
+                                    TranslitUtils.transliterate(oldManager, lang) +' ('+ (TranslitUtils.transliterate(oldManagerCompany, lang)!'?') +')',
+                                    (TranslitUtils.transliterate(oldManagerCompany, lang))!'?'
+                                )}"
+                                new="${TranslitUtils.transliterate(newManager, lang)}"
                             />
                         <#else>
                             ${TranslitUtils.transliterate(newManager, lang)}
