@@ -79,6 +79,12 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "private_flag")
     private boolean privateComment;
 
+    @JdbcJoinedColumn(mappedColumn = "cname", joinPath = {
+            @JdbcJoinPath(localColumn = "cmanager_id", remoteColumn = "id", table = "person"),
+            @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company")
+    })
+    private String managerCompanyName;
+
     // not db column
     private Date updated;
 
@@ -295,6 +301,14 @@ public class CaseComment extends AuditableObject {
         this.deleted = deleted;
     }
 
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -317,12 +331,12 @@ public class CaseComment extends AuditableObject {
     public String toString() {
         return "CaseComment{" +
                 "id=" + id +
-                ", caseId=" + caseId +
-                ", caseImpLevel=" + caseImpLevel +
-                ", caseStateId=" + caseStateId +
                 ", created=" + created +
                 ", clientIp='" + clientIp + '\'' +
+                ", caseId=" + caseId +
                 ", author=" + author +
+                ", caseStateId=" + caseStateId +
+                ", caseImpLevel=" + caseImpLevel +
                 ", caseManagerId=" + caseManagerId +
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", replyTo=" + replyTo +
@@ -337,6 +351,7 @@ public class CaseComment extends AuditableObject {
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 ", privateComment=" + privateComment +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", updated=" + updated +
                 ", deleted=" + deleted +
                 '}';

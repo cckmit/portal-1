@@ -388,7 +388,7 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isManagerChangeComment ) {
-            itemView.setManager(transliteration(value.getCaseManagerShortName()));
+            itemView.setManagerAndCompany(transliteration(value.getCaseManagerShortName()), transliteration(value.getManagerCompanyName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());

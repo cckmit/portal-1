@@ -306,11 +306,6 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<Long>> getAllHomeCompanyIds(AuthToken token) {
-        return ok(companyDAO.getAllHomeCompanyIds());
-    }
-
-    @Override
     public Result<List<Company>> getAllHomeCompanies(AuthToken token) {
         return ok(companyDAO.getAllHomeCompanies());
     }

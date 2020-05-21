@@ -154,7 +154,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("manager", newMetaState.getManager() == null ? null : newMetaState.getManager().getDisplayName());
         templateModel.put("oldManager", oldMetaState == null || oldMetaState.getManager() == null ? null : oldMetaState.getManager().getDisplayName());
 
-        templateModel.put("managerCompanyChanged", event.isManagerCompanyChanged());
         templateModel.put("managerCompany", newMetaState.getManagerCompanyName());
         templateModel.put("oldManagerCompany", oldMetaState == null ? null : oldMetaState.getManagerCompanyName());
 
@@ -584,7 +583,8 @@ public class TemplateServiceImpl implements TemplateService {
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
                     mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
-                    mailComment.put( "caseManager", comment.getCaseManagerShortName() );
+                    mailComment.put( "caseManager", comment.getCaseManagerId());
+                    mailComment.put( "caseManagerAndCompany", comment.getCaseManagerShortName() + " (" + comment.getManagerCompanyName() + ")");
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
                     mailComment.put( "added", isNew);
                     if (isChanged) {

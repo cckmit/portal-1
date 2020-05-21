@@ -44,12 +44,6 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     }
 
     @Override
-    public List<Long> getAllHomeCompanyIds() {
-        String query = "SELECT companyId FROM company_group_home";
-        return jdbcTemplate.queryForList(query, Long.class);
-    }
-
-    @Override
     public List<Long> getAllHomeCompanyIdsWithoutSync() {
         String query = "SELECT companyId FROM company_group_home where synchronize_with_1c = false ";
         return jdbcTemplate.queryForList(query, Long.class);

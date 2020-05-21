@@ -15,8 +15,6 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     Company getCompanyByName( String name );
 
-    List<Long> getAllHomeCompanyIds();
-
     List<Long> getAllHomeCompanyIdsWithoutSync();
 
     List<Company> getAllHomeCompanies();
