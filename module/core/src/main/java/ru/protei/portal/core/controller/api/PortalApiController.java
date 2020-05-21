@@ -227,6 +227,8 @@ public class PortalApiController {
         try {
             crmNumberList = makeCrmNumberList(crmNumbers);
 
+            removeDuplicates(crmNumberList);
+
             Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
                     .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, crmNumberList ))
                     .ifOk( linkId -> log.info( "updateYoutrackCrmNumbers(): OK" ) )
@@ -246,6 +248,12 @@ public class PortalApiController {
             log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers", e);
             return "Некорректно заданы номера обращений. Номера обращений должны содержать только цифры";
         }
+    }
+
+    private void removeDuplicates(List<Long> crmNumberList) {
+        Set<Long> set = new HashSet<>(crmNumberList);
+        crmNumberList.clear();
+        crmNumberList.addAll(set);
     }
 
     private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{

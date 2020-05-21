@@ -329,6 +329,45 @@ public class TestPortalApiController extends BaseServiceTest {
         removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
     }
 
+    @Test
+    @Transactional
+    public void setYoutrackIdToDuplicatedCrmNumbers() throws Exception {
+        final String YOUTRACK_ID = "TEST-1";
+
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setInitiatorCompany( company );
+        ResultActions accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+        Long caseNumber1 = getCaseNumberFromResult(accept);
+
+        caseObject = createNewCaseObject(person);
+        caseObject.setInitiatorCompany( company );
+        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+        Long caseNumber2 = getCaseNumberFromResult(accept);
+
+        caseObject = createNewCaseObject(person);
+        caseObject.setInitiatorCompany( company );
+        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+        Long caseNumber3 = getCaseNumberFromResult(accept);
+
+        List<Long> caseNumbersCreated = new ArrayList<>();
+        caseNumbersCreated.add(caseNumber1);
+        caseNumbersCreated.add(caseNumber2);
+        caseNumbersCreated.add(caseNumber3);
+
+        String numbers = caseNumber1 + ",\n" + caseNumber2 + ",\n" + caseNumber1 + ",\n" + caseNumber3;
+
+        //Устанавливаем 4 номера (один - дубликат)
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Duplicate are added!", compareLists(caseNumbersFromDB, caseNumbersCreated));
+
+        removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
+    }
+
     private boolean compareLists (List<Long> list1, List<Long> list2){
         Collections.sort(list1);
         Collections.sort(list2);
