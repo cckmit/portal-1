@@ -11,7 +11,6 @@ import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
@@ -24,6 +23,7 @@ import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
+import ru.protei.portal.core.model.youtrack.dto.value.YtTextFieldValue;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -149,36 +149,30 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public Result<YouTrackIssueInfo> setIssueCrmNumberIfDifferent(String issueId, Long caseNumber) {
+    public Result<YouTrackIssueInfo> addIssueCrmNumber(String issueId, Long caseNumber) {
         if (issueId == null || caseNumber == null) {
-            log.warn("setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber);
+            log.warn("addIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber);
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtSimpleIssueCustomField field = (YtSimpleIssueCustomField) issue.getCrmNumberField();
-                    Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
-                    if (Objects.equals(crmNumber, caseNumber)) {
-                        return ok(convertYtIssue(issue));
-                    }
-                    return setCrmNumber(issue.idReadable, caseNumber);
+                    YtTextIssueCustomField field = (YtTextIssueCustomField) issue.getCrmNumberField();
+                    String crmNumbers = field == null || field.getValue() == null ? null : field.getValue().text;
+                    return addCrmNumbers(issue.idReadable, caseNumber, crmNumbers);
                 });
     }
 
     @Override
-    public Result<YouTrackIssueInfo> removeIssueCrmNumberIfSame(String issueId, Long caseNumber) {
+    public Result<YouTrackIssueInfo> removeIssueCrmNumber(String issueId, Long caseNumber) {
         if (issueId == null || caseNumber == null) {
             log.warn("removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber);
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtSimpleIssueCustomField field = (YtSimpleIssueCustomField) issue.getCrmNumberField();
-                    Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
-                    if (Objects.equals(crmNumber, caseNumber)) {
-                        return removeCrmNumber(issue.idReadable);
-                    }
-                    return ok(convertYtIssue(issue));
+                    YtTextIssueCustomField field = (YtTextIssueCustomField) issue.getCrmNumberField();
+                    String crmNumbers = field == null || field.getValue() == null ? null : field.getValue().text;
+                    return removeCrmNumber(issue.idReadable, caseNumber, crmNumbers);
                 });
     }
 
@@ -209,11 +203,11 @@ public class YoutrackServiceImpl implements YoutrackService {
     public void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed ) {
 
         for (String youtrackId : emptyIfNull( removed )) {
-            removeIssueCrmNumberIfSame( youtrackId, caseNumber);
+            removeIssueCrmNumber( youtrackId, caseNumber);
         }
 
         for (String youtrackId : emptyIfNull( added)) {
-            setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
+            addIssueCrmNumber( youtrackId, caseNumber );
         }
     }
 
@@ -232,20 +226,20 @@ public class YoutrackServiceImpl implements YoutrackService {
         return projectResult;
     }
 
-    private Result<YouTrackIssueInfo> setCrmNumber(String issueId, Long caseNumber) {
-        log.info("setCrmNumber(): issueId={}, caseNumber={}", issueId, caseNumber);
+    private Result<YouTrackIssueInfo> addCrmNumbers(String issueId, Long caseNumber, String crmNumbers) {
+        log.info("setCrmNumbers(): issueId={}, caseNumber={}, crmNumbers={}", issueId, caseNumber, crmNumbers);
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
-        issue.customFields.add(makeCrmNumberCustomField(caseNumber));
+        issue.customFields.add(addCaseNumberToCrmNumbers(caseNumber, crmNumbers));
         return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
                 .map(this::convertYtIssue);
     }
 
-    private Result<YouTrackIssueInfo> removeCrmNumber(String issueId) {
-        log.info("removeCrmNumber(): issueId={}", issueId);
+    private Result<YouTrackIssueInfo> removeCrmNumber(String issueId, Long caseNumber, String crmNumbers) {
+        log.info("removeCrmNumber(): issueId={}, caseNumber={}, crmNumbers={}", issueId, caseNumber, crmNumbers);
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
-        issue.customFields.add(makeCrmNumberCustomField(null));
+        issue.customFields.add(removeCaseNumberFromCrmNumbers(caseNumber, crmNumbers));
         YtFieldDescriptor crmNumberField = new YtFieldDescriptor(YtSimpleIssueCustomField.class, "value");
         return api.removeIssueFieldAndReturnWithFieldsCommentsAttachments(issueId, issue, crmNumberField)
                 .map(this::convertYtIssue);
@@ -328,10 +322,48 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issue;
     }
 
-    private YtIssueCustomField makeCrmNumberCustomField(Long caseNumber) {
-        YtSimpleIssueCustomField cf = new YtSimpleIssueCustomField();
-        cf.name = YtIssue.CustomFieldNames.crmNumber;
-        cf.value = caseNumber == null ? null : String.valueOf(caseNumber);
+    private YtIssueCustomField addCaseNumberToCrmNumbers(Long caseNumber, String crmNumbers) {
+        YtTextIssueCustomField cf = new YtTextIssueCustomField();
+        YtTextFieldValue textFieldValue = new YtTextFieldValue();
+        cf.name = YtIssue.CustomFieldNames.crmNumbers;
+        cf.value = textFieldValue;
+
+        if (crmNumbers != null && crmNumbers.contains(caseNumber.toString())){
+            textFieldValue.text = crmNumbers;
+        } else {
+            textFieldValue.text = crmNumbers == null || crmNumbers.isEmpty() ? "" : crmNumbers + ",\n";
+            textFieldValue.text += "[" + caseNumber + "]" + "(" + config.data().getCaseLinkConfig().getLinkCrm().replace("%id%", caseNumber.toString()) + ")";
+        }
+
+        return cf;
+    }
+
+    private YtIssueCustomField removeCaseNumberFromCrmNumbers(Long caseNumber, String crmNumbers) {
+        YtTextIssueCustomField cf = new YtTextIssueCustomField();
+        YtTextFieldValue textFieldValue = new YtTextFieldValue();
+        cf.name = YtIssue.CustomFieldNames.crmNumbers;
+        cf.value = textFieldValue;
+
+        if (crmNumbers == null || crmNumbers.isEmpty() || !crmNumbers.contains(caseNumber.toString())) {
+            return cf;
+        }
+
+        crmNumbers = crmNumbers.replace("\n", "");
+        String[] lines = crmNumbers.split(",");
+
+        StringBuilder result = new StringBuilder();
+        for (String line : lines) {
+            if (!line.contains(caseNumber.toString())){
+                result.append(line).append(",\n");
+            }
+        }
+
+        if (result.toString().isEmpty()){
+            return cf;
+        }
+
+        textFieldValue.text = result.toString().substring(0, result.toString().length() - 2);
+
         return cf;
     }
 

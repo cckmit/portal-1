@@ -176,7 +176,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 }
 
                 // для YT-линков удаляем зеркальные на YT
-                youtrackService.removeIssueCrmNumberIfSame(link.getRemoteId(), caseNumber);
+                youtrackService.removeIssueCrmNumber(link.getRemoteId(), caseNumber);
         }
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
@@ -240,7 +240,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                         if (caseNumber == null) {
                             return error(En_ResultStatus.NOT_FOUND);
                         }
-                        youtrackService.setIssueCrmNumberIfDifferent(link.getRemoteId(), caseNumber);
+                        youtrackService.addIssueCrmNumber(link.getRemoteId(), caseNumber);
                 }
             }
             return ok(createdLinkId);
