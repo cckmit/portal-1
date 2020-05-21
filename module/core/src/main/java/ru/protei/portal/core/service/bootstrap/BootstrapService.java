@@ -11,12 +11,14 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.PhoneUtils;
+import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
 import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.api.struct.Result.error;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -60,6 +63,30 @@ public class BootstrapService {
         documentBuildFullIndex();
         //fillImportanceLevels();
         migrateIpReservation();
+       // transferYoutrackLinks();
+    }
+
+    private void transferYoutrackLinks() {
+        //Добавить проверку, что метод уже выполнялся
+        if (!config.data().youtrack().getAdminProject().equals("ACRM")
+                || !config.data().integrationConfig().isYoutrackEnabled()) {
+            return;
+        }
+
+        CaseLinkQuery query = new CaseLinkQuery(null, null);
+        query.setType(En_CaseLink.YT);
+
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(query);
+
+        listByQuery.forEach(caseLink -> {
+            Long caseNumber = caseObjectDAO.getCaseNumberById(caseLink.getCaseId());
+            String youtrackId = caseLink.getRemoteId();
+
+            //может надо добавить только если >= 1000000?
+            if (caseNumber != null) {
+                youtrackService.addIssueCrmNumber(youtrackId, caseNumber);
+            }
+        });
     }
 
     private void fillImportanceLevels() {
@@ -460,6 +487,10 @@ if(true) return; //TODO remove
     SubnetDAO subnetDAO;
     @Autowired
     ReservedIpDAO reservedIpDAO;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+    @Autowired
+    YoutrackService youtrackService;
     @Autowired
     PortalConfig config;
 }

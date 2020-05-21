@@ -250,29 +250,6 @@ public class PortalApiController {
         }
     }
 
-    private void removeDuplicates(List<Long> crmNumberList) {
-        Set<Long> set = new HashSet<>(crmNumberList);
-        crmNumberList.clear();
-        crmNumberList.addAll(set);
-    }
-
-    private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
-        List<Long> crmNumberList = new ArrayList<>();
-
-        crmNumbers = crmNumbers.replace("\n", "");
-        String[] numbers = crmNumbers.split(",");
-
-        for (String number : numbers) {
-            if (number.startsWith("[")){
-                crmNumberList.add(Long.parseLong(number.substring(1, number.indexOf("]"))));
-            } else {
-                crmNumberList.add(Long.parseLong(number));
-            }
-        }
-
-        return crmNumberList;
-    }
-
     @PostMapping(value = "/comments")
     public Result<List<CaseCommentShortView>> getCaseCommentList(
             @RequestBody CaseCommentApiQuery query,
@@ -399,5 +376,28 @@ public class PortalApiController {
         } catch (Throwable ex) {
             return null;
         }
+    }
+
+    private void removeDuplicates(List<Long> crmNumberList) {
+        Set<Long> set = new HashSet<>(crmNumberList);
+        crmNumberList.clear();
+        crmNumberList.addAll(set);
+    }
+
+    private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
+        List<Long> crmNumberList = new ArrayList<>();
+
+        crmNumbers = crmNumbers.replace("\n", "");
+        String[] numbers = crmNumbers.split(",");
+
+        for (String number : numbers) {
+            if (number.startsWith("[")){
+                crmNumberList.add(Long.parseLong(number.substring(1, number.indexOf("]"))));
+            } else {
+                crmNumberList.add(Long.parseLong(number));
+            }
+        }
+
+        return crmNumberList;
     }
 }
