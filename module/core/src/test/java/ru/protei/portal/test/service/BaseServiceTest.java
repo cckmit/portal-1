@@ -68,11 +68,12 @@ public class BaseServiceTest {
         caseObject.setName( "Test_Case_Name" );
         caseObject.setCaseNumber( caseNo );
         caseObject.setStateId( CrmConstants.State.CREATED );
+        caseObject.setStateName( "created" );
         caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
+        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
         return caseObject;
     }
 
