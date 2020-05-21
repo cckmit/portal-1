@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -169,6 +170,10 @@ public class CaseComment extends AuditableObject {
 
     public void setCaseImpLevel(Integer caseImpLevel) {
         this.caseImpLevel = caseImpLevel;
+    }
+
+    public En_ImportanceLevel getCaseImportance() {
+        return En_ImportanceLevel.getById(this.caseImpLevel);
     }
 
     public Long getCaseManagerId() {

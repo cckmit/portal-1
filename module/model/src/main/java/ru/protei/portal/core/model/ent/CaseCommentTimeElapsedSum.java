@@ -28,10 +28,10 @@ import java.util.Date;
         "from case_comment " +
         "left outer join person author on case_comment.author_id = author.id " +
         "left outer join case_object case_object on case_comment.case_id = case_object.id " +
+        "join case_state on case_object.STATE = case_state.id " +
         "left outer join company company on case_object.initiator_company = company.id " +
         "left outer join person manager on case_object.manager = manager.id " +
-        "left outer join dev_unit product on case_object.product_id = product.id" +
-        "left outer join case_state on case_object.state = case_state.id"
+        "left outer join dev_unit product on case_object.product_id = product.id "
 )
 public class CaseCommentTimeElapsedSum implements Serializable {
 

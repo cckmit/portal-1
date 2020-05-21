@@ -382,8 +382,7 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isImportanceChangeComment ) {
-            En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
-            itemView.setImportanceLevel(importance);
+            itemView.setImportanceLevel( value.getCaseImportance() );
         }
 
         if ( isManagerChangeComment ) {
