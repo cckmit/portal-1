@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 
 /**
  * Колонка "Номер"
@@ -47,9 +48,9 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         numberElement.setInnerText( value.getCaseNumber().toString() );
         divElement.appendChild( numberElement );
 
-        com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );
-        stateElement.addClassName( "label label-" + value.getStateName() );
-        stateElement.setInnerText( value.getStateName() );
+        com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
+        stateElement.addClassName("label label-" + CaseStateUtils.makeStyleName(value.getStateName()));
+        stateElement.setInnerText(value.getStateName());
 
         if (!isPauseDateValid(value.getStateId(), value.getPauseDate())) {
             stateElement.addClassName("pause-status-expired-date");

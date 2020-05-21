@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.client.util;
 
+import ru.protei.portal.core.model.util.CrmConstants;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,8 +12,13 @@ public class TopBrassPersonUtils {
     private static final List<Long> personIds;
 
     static {
-        topIds = Arrays.asList(29L, 4L);
-        bottomIds = Arrays.asList(20L, 45L, 25L);
+        topIds = Arrays.asList(
+                CrmConstants.TopBrassPerson.PINCHUK_PERSON_ID,
+                CrmConstants.TopBrassPerson.APOSTOLOVA_PERSON_ID);
+        bottomIds = Arrays.asList(
+                CrmConstants.TopBrassPerson.KOLOBKOV_PERSON_ID,
+                CrmConstants.TopBrassPerson.FREYKMAN_PERSON_ID,
+                CrmConstants.TopBrassPerson.MASLOV_PERSON_ID);
 
         List<Long> allPersonIds = new ArrayList<>();
         allPersonIds.addAll(topIds);

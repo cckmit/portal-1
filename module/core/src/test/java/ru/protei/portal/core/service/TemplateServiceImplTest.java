@@ -19,7 +19,6 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseStateQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
@@ -220,7 +219,7 @@ public class TemplateServiceImplTest {
 
         List<CaseState> caseStateList = new ArrayList<>();
         caseStateList.add(new CaseState(1L));
-        when( caseStateDAO.getListByQuery( new CaseStateQuery(En_CaseType.CRM_SUPPORT) ) ).thenReturn( caseStateList );
+        when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
                 assembled, assembled.getAllComments(), null, "url", Collections.EMPTY_LIST

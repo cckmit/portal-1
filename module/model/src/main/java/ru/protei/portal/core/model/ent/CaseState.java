@@ -24,7 +24,7 @@ public class CaseState implements Serializable {
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
     public List<Company> companies;
 
-    @JdbcColumn(name = "terminal")
+    @JdbcColumn(name = "is_terminal")
     private boolean terminal;
 
     private int viewOrder;

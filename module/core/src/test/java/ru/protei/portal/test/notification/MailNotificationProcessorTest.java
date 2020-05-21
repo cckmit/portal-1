@@ -15,7 +15,6 @@ import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseStateQuery;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.CompanyService;
@@ -122,7 +121,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         List<CaseState> caseStateList = new ArrayList<>();
         caseStateList.add(new CaseState(1L));
-        when( caseStateDAO.getListByQuery( new CaseStateQuery( En_CaseType.CRM_SUPPORT ) ) ).thenReturn( caseStateList );
+        when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
 
         Assert.assertTrue("CaseObject must be created",
                 caseService.createCaseObject(getAuthToken(), new CaseObjectCreateRequest(object)).isOk());
@@ -174,7 +173,7 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         List<CaseState> caseStateList = new ArrayList<>();
         caseStateList.add(new CaseState(1L));
-        when( caseStateDAO.getListByQuery( new CaseStateQuery( En_CaseType.CRM_SUPPORT ) ) ).thenReturn( caseStateList );
+        when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
 
         Assert.assertTrue( "CaseComment must be created",
                 caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );

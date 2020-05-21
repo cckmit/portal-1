@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.query.CaseStateQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.inject.Inject;
@@ -25,8 +24,8 @@ public class CaseStateServiceImpl implements CaseStateService {
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
-    public Result<List<CaseState>> caseStateList(CaseStateQuery query, AuthToken authToken) {
-        List<CaseState> list = caseStateDAO.getListByQuery(query);
+    public Result<List<CaseState>> caseStateList(AuthToken authToken, En_CaseType type) {
+        List<CaseState> list = caseStateDAO.getAllByCaseType(type);
 
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -36,8 +35,7 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     public Result<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken) {
-        CaseStateQuery query = new CaseStateQuery(En_CaseType.CRM_SUPPORT);
-        return caseStateList(query, authToken);
+        return caseStateList(authToken, En_CaseType.CRM_SUPPORT);
     }
 
     @Override
@@ -62,7 +60,7 @@ public class CaseStateServiceImpl implements CaseStateService {
         Long id = caseStateDAO.persist(state);
 
         if (id == null) {
-            throw new RuntimeException( "Can't create case state. DAO return null id." );
+            throw new RuntimeException("Can't create case state. DAO return null id.");
         }
 
         jdbcManyRelationsHelper.persist(state, "companies");
@@ -77,7 +75,7 @@ public class CaseStateServiceImpl implements CaseStateService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!caseStateDAO.merge(state)) {
-            throw new RuntimeException( "Can't update case state. DAO return false." );
+            throw new RuntimeException("Can't update case state. DAO return false.");
         }
 
         jdbcManyRelationsHelper.persist(state, "companies");
@@ -90,8 +88,7 @@ public class CaseStateServiceImpl implements CaseStateService {
         if (companyId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        CaseStateQuery query = new CaseStateQuery(companyId);
-        List<CaseState> caseStates = caseStateDAO.getListByQuery(query);
+        List<CaseState> caseStates = caseStateDAO.getCaseStatesForCompany(companyId);
 
         return ok(caseStates);
     }

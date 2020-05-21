@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.query.CaseStateQuery;
 import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.ui.common.client.service.CaseStateController;
 import ru.protei.portal.core.service.session.SessionService;
@@ -37,9 +37,9 @@ public class CaseStateControllerImpl implements CaseStateController {
     private CaseStateService caseStateService;
 
     @Override
-    public List<CaseState> getCaseStates(CaseStateQuery query) throws RequestFailedException {
+    public List<CaseState> getCaseStates(En_CaseType type) throws RequestFailedException {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(caseStateService.caseStateList(query, authToken));
+        return checkResultAndGetData(caseStateService.caseStateList(authToken,type));
     }
 
     @Override

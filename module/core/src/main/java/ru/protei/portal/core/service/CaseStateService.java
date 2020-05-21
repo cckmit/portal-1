@@ -2,16 +2,16 @@ package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.query.CaseStateQuery;
 
 import java.util.List;
 
 public interface CaseStateService {
     @Privileged({ En_Privilege.CASE_STATES_VIEW })
-    Result<List<CaseState>> caseStateList(CaseStateQuery query, AuthToken authToken);
+    Result<List<CaseState>> caseStateList(AuthToken authToken, En_CaseType type);
 
     Result<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken);
 

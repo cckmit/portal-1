@@ -44,6 +44,14 @@ public class CrmConstants {
         Long SYSTEM_USER_ID = 1L;
     }
 
+    public interface TopBrassPerson {
+        long PINCHUK_PERSON_ID = 29;
+        long APOSTOLOVA_PERSON_ID = 4;
+        long KOLOBKOV_PERSON_ID= 20;
+        long FREYKMAN_PERSON_ID = 45;
+        long MASLOV_PERSON_ID = 25;
+    }
+
     public interface Issue {
         String CREATE_CONTACT_IDENTITY = "issue-edit";
         int MIN_LENGTH_FOR_SEARCH_BY_COMMENTS = 3;
@@ -116,21 +124,21 @@ public class CrmConstants {
     }
 
     public interface State {
-        long CREATED = 1L;
-        long OPENED = 2L;
-        long WORKAROUND = 30L;
-        long TEST_CUST = 20L;
-        long DONE = 17L;
-        long VERIFIED = 5L;
-        long PAUSED = 4L;
-        long CANCELED = 33L;
-        long ACTIVE = 16L;
-        long TEST_LOCAL = 19L;
-        long INFO_REQUEST = 31L;
-        long NX_REQUEST = 35L;
-        long CUST_REQUEST = 36L;
-        long CUST_PENDING = 34L;
-        long CLOSED = 3L;
-        long IGNORED = 10L;
+        long CREATED = 1;
+        long OPENED = 2;
+        long WORKAROUND = 30;
+        long TEST_CUST = 20;
+        long DONE = 17;
+        long VERIFIED = 5;
+        long PAUSED = 4;
+        long CANCELED = 33;
+        long ACTIVE = 16;
+        long TEST_LOCAL = 19;
+        long INFO_REQUEST = 31;
+        long NX_REQUEST = 35;
+        long CUST_REQUEST = 36;
+        long CUST_PENDING = 34;
+        long CLOSED = 3;
+        long IGNORED = 10;
     }
 }

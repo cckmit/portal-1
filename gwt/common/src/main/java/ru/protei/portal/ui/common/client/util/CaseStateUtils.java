@@ -10,7 +10,6 @@ public class CaseStateUtils {
     private static List<Long> activeStateIds;
     private static List<Long> newStateIds;
     private static List<Long> filterCaseResolutionTimeActiveStateIds;
-    private static List<Long> employeeRegistrationStateIds;
     private static Map<Long, String> jiraStatusComments;
 
     static {
@@ -42,11 +41,6 @@ public class CaseStateUtils {
         filterCaseResolutionTimeActiveStateIds.add(CrmConstants.State.NX_REQUEST);
         filterCaseResolutionTimeActiveStateIds.add(CrmConstants.State.CUST_REQUEST);
 
-        employeeRegistrationStateIds = new ArrayList<>(3);
-        employeeRegistrationStateIds.add(CrmConstants.State.CREATED);
-        employeeRegistrationStateIds.add(CrmConstants.State.ACTIVE);
-        employeeRegistrationStateIds.add(CrmConstants.State.DONE);
-
         jiraStatusComments = new HashMap<>(3);
         jiraStatusComments.put(CrmConstants.State.VERIFIED, "Поскольку статус является терминальным, то в него переводим только после получения подтверждения от Заказчика, что тикет можно закрыть.\nВ противном случае ставим Request to customer или Request to NX.");
         jiraStatusComments.put(CrmConstants.State.NX_REQUEST, "Не забывать переводить в этот статус, в противном случае Заказчик ждёт реакции от нас.");
@@ -63,10 +57,6 @@ public class CaseStateUtils {
 
     public static Set<CaseState> getFilterCaseResolutionTimeActiveStates() {
         return IssueFilterUtils.getStates(filterCaseResolutionTimeActiveStateIds);
-    }
-
-    public static List<Long> getEmployeeRegistrationStateIds() {
-        return employeeRegistrationStateIds;
     }
 
     public static Map<Long, String> getJiraStatusComments() {

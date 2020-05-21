@@ -65,6 +65,7 @@ import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
+import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
@@ -103,6 +104,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
         bind( StateSelectorModel.class ).asEagerSingleton();
+        bind( EmployeeRegistrationStateModel.class ).asEagerSingleton();
 
         bind( HomeCompanyService.class ).asEagerSingleton();
 
