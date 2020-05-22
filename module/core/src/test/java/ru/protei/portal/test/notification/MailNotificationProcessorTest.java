@@ -24,8 +24,6 @@ import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.tools.notifications.NotificationConfiguration;
 
 import javax.mail.internet.MimeMessage;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -119,10 +117,6 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
         when( caseObjectMetaNotifiersDAO.get( CASE_ID ) ).thenReturn( metaNotifiers );
         when( personDAO.getPersons( any() ) ).thenReturn( listOf( initiator ) );
 
-        List<CaseState> caseStateList = new ArrayList<>();
-        caseStateList.add(new CaseState(1L));
-        when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
-
         Assert.assertTrue("CaseObject must be created",
                 caseService.createCaseObject(getAuthToken(), new CaseObjectCreateRequest(object)).isOk());
 
@@ -170,10 +164,6 @@ public class MailNotificationProcessorTest extends BaseServiceTest {
 
         when( caseCommentDAO.get( commentId ) ).thenReturn( comment );
         when( caseCommentDAO.persist( any() ) ).thenReturn( commentId );
-
-        List<CaseState> caseStateList = new ArrayList<>();
-        caseStateList.add(new CaseState(1L));
-        when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
 
         Assert.assertTrue( "CaseComment must be created",
                 caseCommentService.addCaseComment( getAuthToken(), En_CaseType.CRM_SUPPORT, comment ).isOk() );

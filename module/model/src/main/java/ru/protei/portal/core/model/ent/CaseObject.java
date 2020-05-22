@@ -583,6 +583,7 @@ public class CaseObject extends AuditableObject {
                 ", extId='" + extId + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
+                ", stateName=" + stateName +
                 ", impLevel=" + impLevel +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +

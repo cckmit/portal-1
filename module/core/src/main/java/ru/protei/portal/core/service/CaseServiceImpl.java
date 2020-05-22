@@ -791,7 +791,7 @@ public class CaseServiceImpl implements CaseService {
 
     private boolean isStateValid(long caseStateId, Long managerId, Long pauseDate) {
         if (!(listOf(CrmConstants.State.CREATED, CrmConstants.State.CANCELED)
-                .contains((int)caseStateId)) && managerId == null) {
+                .contains(caseStateId)) && managerId == null) {
             return false;
         }
 

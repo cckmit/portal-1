@@ -298,6 +298,4 @@ public class BaseServiceTest {
     protected UserRoleDAO userRoleDAO;
     @Autowired
     protected ProjectService projectService;
-    @Autowired
-    protected CaseStateDAO caseStateDAO;
 }
