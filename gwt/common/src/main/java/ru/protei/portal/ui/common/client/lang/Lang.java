@@ -764,6 +764,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String msgObjectSaved();
 
+    String reservedIpPartiallyCreated(int p0, int p1 );
+
     String msgStatusChanged();
 
     String msgOK();
@@ -2607,4 +2609,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueAssignmentDeskOverflow(long limit);
 
     String employeeRegistrationEditHeader();
+
+    String reservedIpAvailableCount();
 }

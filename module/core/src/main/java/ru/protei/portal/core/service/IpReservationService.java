@@ -25,6 +25,8 @@ public interface IpReservationService {
 
     Result<Boolean> isReservedIpAddressExists(String address, Long excludeId);
 
+    Result<Long> getFreeIpsCountBySubnets(AuthToken token, List<Long> subnetIds);
+
     @Privileged(En_Privilege.RESERVED_IP_VIEW)
     Result<SearchResult<ReservedIp>> getReservedIps(AuthToken token, ReservedIpQuery query);
 

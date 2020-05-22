@@ -60,6 +60,19 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
+    public Result<Long> getFreeIpsCountBySubnets(AuthToken token, List<Long> subnetIds) {
+        Map<Long, Long> map = reservedIpDAO.countBySubnetIds(subnetIds);
+
+        Long reservedIpCount = map.values().stream().reduce((s1, s2) -> s1 + s2).orElse(0L);
+        Long subnetCount = CollectionUtils.isEmpty(subnetIds) ?
+                subnetDAO.count(new ReservedIpQuery("", En_SortField.address, En_SortDir.ASC)) :
+                subnetIds.size();
+        Long potentialCount = subnetCount * new Long(CrmConstants.IpReservation.MAX_IPS_COUNT);
+
+        return ok(potentialCount - reservedIpCount);
+    }
+
+    @Override
     public Result<SearchResult<ReservedIp>> getReservedIps(AuthToken token, ReservedIpQuery query) {
         SearchResult<ReservedIp> sr = reservedIpDAO.getSearchResultByQuery(query);
         return ok(sr);
@@ -68,6 +81,21 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<SearchResult<Subnet>> getSubnets(AuthToken token, ReservedIpQuery query) {
         SearchResult<Subnet> sr = subnetDAO.getSearchResultByQuery(query);
+
+        if ( CollectionUtils.isEmpty(sr.getResults())) {
+            return ok(sr);
+        }
+
+        Map<Long, Long> map = reservedIpDAO.countBySubnetIds(sr.getResults().stream()
+                .map(Subnet::getId)
+                .collect(Collectors.toList()));
+
+        sr.getResults().forEach(subnet -> {
+            Long count = map.getOrDefault(subnet.getId(), 0L);
+            subnet.setReservedIPs(count);
+            subnet.setFreeIps(CrmConstants.IpReservation.MAX_IPS_COUNT - count);
+        });
+
         return ok(sr);
     }
 
@@ -491,7 +519,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             return null;
         }
 
-        for (int i=CrmConstants.IpReservation.MIN_IPS_COUNT; i < CrmConstants.IpReservation.MAX_IPS_COUNT; i++) {
+        for (int i=CrmConstants.IpReservation.MIN_IPS_COUNT; i <= CrmConstants.IpReservation.MAX_IPS_COUNT; i++) {
             String checkedIp = subnet.getAddress()+"."+i;
             if (!sr.getResults()
                     .stream()

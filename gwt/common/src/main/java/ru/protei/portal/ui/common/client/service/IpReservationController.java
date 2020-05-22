@@ -29,7 +29,7 @@ public interface IpReservationController extends RemoteService {
 
     Boolean isSubnetAddressExists(String address, Long exceptId) throws RequestFailedException;
 
-    Map<Subnet, List<ReservedIp>> getReservedIpsBySubnets(ReservedIpQuery query) throws RequestFailedException;
+    Long getFreeIpsCountBySubnets(List<Long> subnetIds) throws RequestFailedException;
 
     SearchResult<ReservedIp> getReservedIpList(ReservedIpQuery query) throws RequestFailedException;
 

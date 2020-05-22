@@ -5,9 +5,14 @@ import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.List;
+import java.util.Map;
+
 public interface ReservedIpDAO extends PortalBaseDAO<ReservedIp> {
 
     ReservedIp getReservedIpByAddress(String address);
+
+    Map<Long, Long> countBySubnetIds(List<Long> subnetIds);
 
     @SqlConditionBuilder
     SqlCondition createReservedIpSqlCondition(ReservedIpQuery query);

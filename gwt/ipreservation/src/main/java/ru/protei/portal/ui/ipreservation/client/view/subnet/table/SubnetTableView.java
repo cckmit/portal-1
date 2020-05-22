@@ -108,21 +108,20 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
             }
         };
 
-/*    ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.reservedIpState());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Subnet value) {
-            cell.setInnerText("Registered : " + value.getRegisteredIPs() + "  "
-                    + " Free : " + value.getFreeIps());
-        }
-    };*/
+        ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
+            @Override
+            protected void fillColumnHeader(Element columnHeader) { columnHeader.setInnerText(lang.reservedIpState()); }
+            @Override
+            public void fillColumnValue(Element cell, Subnet value) {
+                cell.addClassName("ip-count");
+                cell.setInnerText(value.getReservedIPs()+"/"+value.getFreeIps());
+            }
+        };
 
         columns.add(address);
         columns.add(creator);
         columns.add(comment);
+        columns.add(state);
         columns.add(editClickColumn);
         columns.add(refreshClickColumn);
         columns.add(removeClickColumn);
