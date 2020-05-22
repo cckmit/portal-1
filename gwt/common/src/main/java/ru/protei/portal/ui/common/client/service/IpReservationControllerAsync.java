@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Асинхронный сервис управления резервированием IP-адресов
@@ -26,7 +25,7 @@ public interface IpReservationControllerAsync {
 
     void isSubnetAddressExists(String address, Long id, AsyncCallback<Boolean> async);
 
-    void getReservedIpsBySubnets(ReservedIpQuery query, AsyncCallback<Map<Subnet, List<ReservedIp>>> async);
+    void getFreeIpsCountBySubnets(List<Long> subnetIds, AsyncCallback<Long> async);
 
     void getReservedIpList(ReservedIpQuery query, AsyncCallback<SearchResult<ReservedIp>> async);
 

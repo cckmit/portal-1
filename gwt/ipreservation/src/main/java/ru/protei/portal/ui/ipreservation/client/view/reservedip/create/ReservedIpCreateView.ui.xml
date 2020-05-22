@@ -23,6 +23,9 @@
                         <ui:text from="{lang.reservedIpNumber}"/>
                     </label>
                     <validablefield:ValidableTextBox ui:field="number" styleName="form-control"/>
+                    <div class="text-muted text-center" title="{lang.reservedIpAvailableCount}">
+                        <small ui:field="freeIpCountLabel"/>
+                    </div>
                 </div>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="exactIpContainer" styleName="row">

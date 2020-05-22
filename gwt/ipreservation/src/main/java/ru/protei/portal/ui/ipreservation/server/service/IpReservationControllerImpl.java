@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.core.service.IpReservationService;
@@ -91,22 +92,14 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public Map<Subnet, List<ReservedIp>> getReservedIpsBySubnets(ReservedIpQuery reservedIpQuery ) throws RequestFailedException {
+    public Long getFreeIpsCountBySubnets(List<Long> subnetIds) throws RequestFailedException {
 
-        log.info( "getReservedIpsBySubnets(): search={} | sortField={} | order={}",
-                reservedIpQuery.getSearchString(), reservedIpQuery.getSortField(), reservedIpQuery.getSortDir() );
+        log.info( "getFreeIpCountBySubnets(): selected subnets size={}",
+                CollectionUtils.isEmpty(subnetIds) ? 0 : subnetIds.size());
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(ipReservationService.getReservedIpsBySubnets(token, reservedIpQuery));
-
+        return ServiceUtils.checkResultAndGetData(ipReservationService.getFreeIpsCountBySubnets(token, subnetIds));
     }
-
-/*    @Override
-    public SearchResult<ReservedIp> getReservedIpsBySubnet(Long subnetId) throws RequestFailedException {
-        log.info("getReservedIpsBySubnet(): subnet_id={}", subnetId);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
-    }*/
 
     @Override
     public SearchResult<ReservedIp> getReservedIpList( ReservedIpQuery reservedIpQuery ) throws RequestFailedException {

@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -34,7 +33,7 @@ public class Subnet extends AuditableObject {
     @JdbcColumn(name="comment")
     private String comment;
 
-    private Long registeredIPs;
+    private Long reservedIPs;
 
     private Long freeIps;
 
@@ -69,9 +68,9 @@ public class Subnet extends AuditableObject {
 
     public void setComment(String comment) { this.comment = comment; }
 
-    public Long getRegisteredIPs() { return registeredIPs; }
+    public Long getReservedIPs() { return reservedIPs; }
 
-    public void setRegisteredIPs(Long registeredIPs) { this.registeredIPs = registeredIPs; }
+    public void setReservedIPs(Long reservedIPs) { this.reservedIPs = reservedIPs; }
 
     public Long getFreeIps() { return freeIps; }
 

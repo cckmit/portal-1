@@ -808,6 +808,7 @@ public class DebugIds {
         String IP_ADDRESS_INPUT = "reservedip-address-input";
         String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
         String NUMBER_INPUT = "reservedip-number-input";
+        String FREE_IP_COUNT_LABEL = "reservedip-free-ip-count-label";
         String SUBNET_SELECTOR = "reservedip-subnet-selector";
         String OWNER_SELECTOR = "reservedip-owner-selector";
         String USE_RANGE_TYPED_TOGGLE = "reservedip-use-range-typed-toggle";
