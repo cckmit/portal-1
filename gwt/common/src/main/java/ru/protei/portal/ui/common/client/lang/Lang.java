@@ -2631,4 +2631,10 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceButtonCreate();
 
     String absenceCreated();
+
+    String absences();
+
+    String absenceFromTime();
+
+    String absenceTillTime();
 }

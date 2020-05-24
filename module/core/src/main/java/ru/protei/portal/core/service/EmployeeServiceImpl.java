@@ -157,6 +157,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
+        jdbcManyRelationsHelper.fill(employeeShortView, "absenceEntries");
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
 

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -49,6 +50,9 @@ public class EmployeeShortView implements Serializable {
 
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
+
+    @JdbcOneToMany(table = "person_absence", localColumn = "id", remoteColumn = "personId")
+    private List<PersonAbsence> absenceEntries;
 
     public Long getId() {
         return id;
@@ -144,5 +148,13 @@ public class EmployeeShortView implements Serializable {
 
     public void setGender (En_Gender gender) {
         this.gender = gender.getCode();
+    }
+
+    public List<PersonAbsence> getAbsenceEntries() {
+        return absenceEntries;
+    }
+
+    public void setAbsenceEntries(List<PersonAbsence> absenceEntries) {
+        this.absenceEntries = absenceEntries;
     }
 }
