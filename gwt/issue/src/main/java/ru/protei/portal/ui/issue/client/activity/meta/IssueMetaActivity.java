@@ -527,13 +527,15 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private boolean isCompanyChangeAllowed(boolean isPrivateCase) {
-        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT) &&
-                (subscriptionsList == null || subscriptionsList.isEmpty() || isPrivateCase)
-        ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT)) {
+            return false;
+        }
+
+        if (subscriptionsList == null || subscriptionsList.isEmpty() || isPrivateCase) {
             return true;
         }
 
-        return subscriptionsList == null || subscriptionsList.stream()
+        return subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .allMatch(CompanySubscription::isProteiRecipient);
     }
