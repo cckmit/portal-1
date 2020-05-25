@@ -70,6 +70,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         if(!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)){
             issueFilterWidget.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            issueFilterWidget.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
         }
     }
 
@@ -175,9 +176,6 @@ public abstract class IssueReportCreateActivity implements Activity,
         AbstractIssueFilterParamView issueFilterParams = issueFilterWidget.getIssueFilterParams();
         if (issueFilterParams.productsVisibility().isVisible()) {
             issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-        }
-        if (issueFilterParams.managersVisibility().isVisible()) {
-            issueFilterParams.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
         }
         if (issueFilterParams.searchPrivateVisibility().isVisible()) {
             issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));

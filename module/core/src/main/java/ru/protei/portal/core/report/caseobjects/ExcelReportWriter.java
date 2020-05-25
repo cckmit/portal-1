@@ -73,7 +73,7 @@ public class ExcelReportWriter implements
         return isNotRestricted ?
                 new int[] {
                         3650, 3430, 8570,
-                        4590, 4200, 4200,
+                        4590, 4200, 4200, 4200,
                         6000, 3350, 4600,
                         4200, 5800, 5800,
                         5800, 5800, 5800,
@@ -81,7 +81,7 @@ public class ExcelReportWriter implements
                         5800, 5800, 5800 } :
                 new int[] {
                         3650, 8570,
-                        4590, 4200, 4200,
+                        4590, 4200, 4200, 4200,
                         6000, 3350, 4600,
                         4200, 5800, 5800,
                         5800, 5800, 5800,
@@ -94,7 +94,7 @@ public class ExcelReportWriter implements
         return isNotRestricted ?
                 new String[] {
                         "ir_caseno", "ir_private", "ir_name",
-                        "ir_company", "ir_initiator", "ir_manager",
+                        "ir_company", "ir_initiator", "ir_manager", "ir_manager_company",
                         "ir_product", "ir_importance", "ir_state",
                         "ir_date_created", "ir_date_opened", "ir_date_workaround",
                         "ir_date_customer_test", "ir_date_done", "ir_date_verify",
@@ -102,7 +102,7 @@ public class ExcelReportWriter implements
                         "ir_time_solution_first", "ir_time_solution_full", "ir_time_elapsed" } :
                 new String[] {
                         "ir_caseno", "ir_name",
-                        "ir_company", "ir_initiator", "ir_manager",
+                        "ir_company", "ir_initiator", "ir_manager", "ir_manager_company",
                         "ir_product", "ir_importance", "ir_state",
                         "ir_date_created", "ir_date_opened", "ir_date_workaround",
                         "ir_date_customer_test", "ir_date_done", "ir_date_verify",
@@ -157,6 +157,7 @@ public class ExcelReportWriter implements
         values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? transliterate(issue.getInitiatorCompany().getCname(), locale) : "");
         values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
+        values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
         values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
         values.add(issue.getState() != null ? issue.getState().getName() : "");

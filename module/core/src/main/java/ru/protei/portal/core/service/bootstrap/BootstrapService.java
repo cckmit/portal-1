@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -53,6 +54,7 @@ public class BootstrapService {
         //createProjectsForContracts();
         documentBuildFullIndex();
         //fillImportanceLevels();
+        updateManagerFiltersWithoutManagerCompany();
     }
 
     private void fillImportanceLevels() {
@@ -326,6 +328,21 @@ if(true) return; //TODO remove
         }
 
         log.info("Document index full build has ended");
+    }
+
+    private void updateManagerFiltersWithoutManagerCompany() {
+        List<CaseFilter> allFilters = caseFilterDAO.getAll();
+
+        for (CaseFilter nextFilter : CollectionUtils.emptyIfNull(allFilters)) {
+            CaseQuery params = nextFilter.getParams();
+
+            if (CollectionUtils.isEmpty(params.getManagerIds()) || CollectionUtils.isNotEmpty(params.getManagerCompanyIds())) {
+                continue;
+            }
+
+            params.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
+            caseFilterDAO.partialMerge(nextFilter, "params");
+        }
     }
 
     @Inject
