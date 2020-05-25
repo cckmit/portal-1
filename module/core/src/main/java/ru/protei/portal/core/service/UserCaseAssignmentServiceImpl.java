@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -230,6 +231,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         CaseQuery query = new CaseQuery();
         query.setStateIds(stateIds);
         query.setManagerIds(managerIds);
+        query.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
         return query;
     }
 

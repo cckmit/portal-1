@@ -335,7 +335,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             case CASE_RESOLUTION_TIME:
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
-                query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setCaseTagsIds(nullIfEmpty( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ));
                 query.setImportances(nullIfEmpty(importance.getValue()));
                 query.setStates(nullIfEmpty(state.getValue()));
