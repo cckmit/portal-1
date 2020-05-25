@@ -12,6 +12,8 @@ import java.util.Date;
 @JdbcEntity(table = "subnet")
 public class Subnet extends AuditableObject {
 
+    public static final String AUDIT_TYPE = "Subnet";
+
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTOINCREMENT)
     private Long id;
 
@@ -85,7 +87,7 @@ public class Subnet extends AuditableObject {
 
     @Override
     public String getAuditType() {
-        return "Subnet";
+        return AUDIT_TYPE;
     }
 
     @Override

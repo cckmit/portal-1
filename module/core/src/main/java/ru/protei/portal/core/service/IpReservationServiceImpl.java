@@ -301,11 +301,6 @@ public class IpReservationServiceImpl implements IpReservationService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            /*
-               @todo
-                 что делать, если в выбранных подсетях не хватает свободных IPшников
-             */
-
             while (reservedIps.size() < reservedIpRequest.getNumber()) {
                 ReservedIp reservedIp = ReservedIp.createByTemplate(templateIp);
 

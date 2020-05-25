@@ -42,6 +42,9 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = Application.class, name = Application.AUDIT_TYPE),
         @JsonSubTypes.Type(value = RoomReservation.class, name = RoomReservation.AUDIT_TYPE),
         @JsonSubTypes.Type(value = EmployeeRegistrationShortView.class, name = EmployeeRegistrationShortView.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = ReservedIpRequest.class, name = ReservedIpRequest.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = ReservedIp.class, name = ReservedIp.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = Subnet.class, name = Subnet.AUDIT_TYPE),
 })
 public abstract class AuditableObject implements Serializable {
 
