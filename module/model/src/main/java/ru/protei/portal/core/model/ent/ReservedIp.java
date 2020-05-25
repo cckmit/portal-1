@@ -12,6 +12,8 @@ import java.util.Date;
 @JdbcEntity(table = "reserved_ip")
 public class ReservedIp extends AuditableObject {
 
+    public static final String AUDIT_TYPE = "ReservedIp";
+
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTOINCREMENT)
     private Long id;
 
@@ -140,7 +142,7 @@ public class ReservedIp extends AuditableObject {
 
     @Override
     public String getAuditType() {
-        return "ReservedIp";
+        return AUDIT_TYPE;
     }
 
     @Override
