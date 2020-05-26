@@ -30,7 +30,7 @@ public abstract class CaseTagSelectorActivity implements Activity, AbstractCaseT
         refreshTagSelector();
         caseTagSelector.setAddTagsEnabled(event.isEditTagEnabled);
         caseTagSelector.setEditTagsEnabled(event.isEditTagEnabled);
-        caseTagSelector.showNear(event.relative);
+        caseTagSelector.showUnderLeft(event.relative, null);
     }
 
     @Event
