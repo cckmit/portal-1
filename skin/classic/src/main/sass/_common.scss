@@ -637,12 +637,20 @@ label.bordered:after {
         }
       }
     }
+
+    .company {
+      width: 25%;
+    }
   }
 }
 
 .short-table-view {
-  .equipment table .equipment-number-column {
-    width: 40%;
+  .equipment {
+    table {
+      .column-hidable {
+        display: none;
+      }
+    }
   }
 }
 
@@ -650,10 +658,22 @@ label.bordered:after {
   table {
     thead {
       .equipment-type-column {
-        width: 90px;
+        width: 5%;
+      }
+      .equipment-name-column {
+        width: 20%;
       }
       .equipment-number-column {
-        min-width: 175px;
+        width: 20%;
+      }
+      .equipment-comment {
+        width: 20%;
+      }
+      .equipment-project {
+        width: 15%;
+      }
+      .edit {
+        width: 5%;
       }
     }
     tbody {
@@ -1306,6 +1326,12 @@ td.info {
   height: 35px;
 }
 
+.add-position-button {
+  position: absolute;
+  bottom: 0;
+  height: 35px;
+}
+
 .subscription-group {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -1651,12 +1677,13 @@ a {
 
 .case-tag {
   display: inline-block;
-  font-size: 12px;
+  font-size: 0.9em;
   margin-right: 4px;
+  margin-bottom: 4px;
   white-space: nowrap;
   padding: 4px 8px;
   border-radius: 4px;
-  line-height: 1em;
+  line-height: 0.9em;
 
   .case-tag-close {
     color: inherit;
@@ -3331,6 +3358,9 @@ label {
       font-size: 16px;
     }
   }
+  .ip-count {
+    text-align: center;
+  }
 }
 
 .reserved-ip {
@@ -3652,6 +3682,12 @@ table {
   }
 }
 
+.company-name-container {
+  .verifiable {
+    top: 28px;
+  }
+}
+
 .thumbnail-photo{
   object-fit: cover;
   object-position: 0px 25%;
@@ -3899,11 +3935,143 @@ table {
   font-size: 75% !important;
 }
 
+.text-danger.name-error {
+  font-size: 75% !important;
+}
+
 .products .table {
   word-break: break-word;
 }
 
 .site-folder .table {
+  tbody {
+    tr {
+      td {
+        height: 40px;
+
+        div {
+          height: 40px;
+          max-height: 40px;
+          white-space: pre-line;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+
+  .platform-name {
+    width: 65%;
+  }
+
+  .platform-manager {
+    width: 15%;
+  }
+
+  .platform-server {
+    width: 10%;
+  }
+
+  .edit {
+    width: 5%;
+  }
+
+  .remove {
+    width: 5%;
+  }
+
+  word-break: break-word;
+}
+
+.server .table {
+  tbody {
+    tr {
+      td {
+        height: 40px;
+
+        div {
+          height: 40px;
+          max-height: 40px;
+          white-space: pre-line;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+
+  .server-name {
+    width: 12%;
+  }
+
+  .server-platform {
+    width: 24%;
+  }
+
+  .server-ip {
+    width: 14%;
+  }
+
+  .server-apps {
+    width: 15%;
+  }
+
+  .server-access-params {
+    width: 20%;
+  }
+
+  .copy {
+    width: 5%;
+  }
+
+  .edit {
+    width: 5%;
+  }
+
+  .remove {
+    width: 5%;
+  }
+
+  word-break: break-word;
+}
+
+.application .table {
+  tbody {
+    tr {
+      td {
+        height: 40px;
+
+        div {
+          height: 40px;
+          max-height: 40px;
+          white-space: pre-line;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+
+  .application-name {
+    width: 30%;
+  }
+
+  .application-server {
+    width: 30%;
+  }
+
+  .application-paths {
+    width: 30%;
+  }
+
+  .edit {
+    width: 5%;
+  }
+
+  .remove {
+    width: 5%;
+  }
+
   word-break: break-word;
 }
 
@@ -4092,6 +4260,18 @@ table {
   margin: 0 0 5px 5px;
 }
 
+.employee-image-container {
+
+  &.upload-enabled {
+    cursor: pointer;
+  }
+
+  .employee-edit-image {
+    height: 260px;
+    margin: 0 0 5px 0;
+  }
+}
+
 .top-brass {
   .top-brass-containers {
     text-align: center;
@@ -4226,4 +4406,32 @@ table {
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.block-header {
+  background: 0 0;
+  border-radius: 0;
+  border-bottom: 0;
+  padding: 20px 0 7px;
+  position: relative;
+  z-index: 3;
+  min-height: 48px;
+
+  .block-title {
+    font-family: montserrat;
+    text-transform: uppercase;
+    display: inline-block;
+    letter-spacing: .06em;
+    font-size: 10.5px;
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-text-stroke: 0;
+    filter: alpha(opacity=40);
+    -webkit-transition: opacity .3s ease;
+    transition: opacity .3s ease;
+  }
 }

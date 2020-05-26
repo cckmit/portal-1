@@ -43,7 +43,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new EmployeeEvents.Show());
+        fireEvent(new EmployeeEvents.Show(false));
     }
 
     private void fillView(SearchResult<EmployeeShortView> heads) {
@@ -65,7 +65,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
     private AbstractTopBrassItemView makeItem(EmployeeShortView head) {
         AbstractTopBrassItemView itemView = provider.get();
         itemView.setImage(AvatarUtils.getPhotoUrl(head.getId()));
-        itemView.setName(head.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, head.getId()));
+        itemView.setName(head.getDisplayName(), LinkUtils.makePreviewLink(EmployeeShortView.class, head.getId()));
         itemView.setPosition(head.getWorkerEntries().iterator().next().getPositionName());
 
         return itemView;

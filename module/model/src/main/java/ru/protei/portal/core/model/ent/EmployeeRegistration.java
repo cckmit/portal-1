@@ -155,6 +155,12 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "personemployee" )
     private Person person;
 
+    @JdbcColumn(name = "company_id")
+    private Long companyId;
+
+    @JdbcJoinedColumn(localColumn = "company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String companyName;
+
     public Person getPerson() {
         return person;
     }
@@ -353,6 +359,22 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
         this.creatorShortName = creatorShortName;
     }
 
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
     @Override
     public String getAuditType() {
         return "EmployeeRegistration";
@@ -386,6 +408,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", resourceList=" + resourceList +
                 ", phoneOfficeTypeList=" + phoneOfficeTypeList +
                 ", creatorId=" + creatorId +
+                ", creatorShortName='" + creatorShortName + '\'' +
                 ", headOfDepartmentId=" + headOfDepartmentId +
                 ", headOfDepartmentShortName='" + headOfDepartmentShortName + '\'' +
                 ", comment='" + comment + '\'' +
@@ -399,6 +422,8 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", curatorsIds=" + curatorsIds +
                 ", curators=" + curators +
                 ", person=" + person +
+                ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
                 '}';
     }
 }

@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -145,7 +146,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                         fireEvent(new NotifyEvents.Show(lang.caseLinkSomeNotAdded(), NotifyEvents.NotifyType.INFO));
                     }
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.Show(true));
+                    fireEvent(new IssueEvents.Show(false));
                 })
         );
     }
@@ -157,7 +158,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onAddTagClicked(IsWidget target) {
-        fireEvent(new CaseTagEvents.ShowTagSelector(target));
+        boolean isCanEditTags = policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT);
+        fireEvent(new CaseTagEvents.ShowSelector(target.asWidget(), ISSUE_CASE_TYPE, isCanEditTags, tagListActivity));
     }
 
     @Override
@@ -317,8 +319,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withPageId(lang.issues())
                 .withCaseType(En_CaseType.CRM_SUPPORT));
 
-        fireEvent( new CaseTagEvents.Show( view.getTagsContainer(), En_CaseType.CRM_SUPPORT,
-                policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT )));
+        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), (Long) null, false, a -> tagListActivity = a));
 
         view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         unlockSave();
@@ -606,5 +607,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private String subscriptionsListEmptyMessage;
     private CaseObjectCreateRequest createRequest;
     private List<ProjectSla> slaList = new ArrayList<>();
+    private AbstractCaseTagListActivity tagListActivity;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 }

@@ -1,11 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity(table = "case_object_tag")
 public class CaseObjectTag implements Serializable {
@@ -16,14 +14,14 @@ public class CaseObjectTag implements Serializable {
     @JdbcColumn(name = "case_id")
     private Long caseId;
 
-    @JdbcColumn(name = "tag_id")
-    private Long tagId;
+    @JdbcJoinedObject(localColumn = "tag_id")
+    private CaseTag tag;
 
     public CaseObjectTag() {}
 
     public CaseObjectTag(Long caseId, Long tagId) {
         this.caseId = caseId;
-        this.tagId = tagId;
+        this.tag = new CaseTag(tagId);
     }
 
     public Long getId() {
@@ -42,12 +40,12 @@ public class CaseObjectTag implements Serializable {
         this.caseId = caseId;
     }
 
-    public Long getTagId() {
-        return tagId;
+    public void setTag(CaseTag tag) {
+        this.tag = tag;
     }
 
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
+    public CaseTag getTag() {
+        return tag;
     }
 
     @Override
@@ -55,7 +53,7 @@ public class CaseObjectTag implements Serializable {
         return "CaseObjectTag{" +
                 "id=" + id +
                 ", caseId=" + caseId +
-                ", tagId=" + tagId +
+                ", tag=" + tag +
                 '}';
     }
 }

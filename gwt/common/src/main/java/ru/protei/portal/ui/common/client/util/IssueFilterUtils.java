@@ -2,16 +2,6 @@ package ru.protei.portal.ui.common.client.util;
 
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.*;
 import java.util.stream.Collectors;

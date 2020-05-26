@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.EmployeeRegistrationShortView;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.service.EmployeeRegistrationService;
@@ -46,6 +47,13 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
     }
 
     @Override
+    public EmployeeRegistrationShortView getEmployeeRegistrationShortView(Long id) throws RequestFailedException {
+        log.info(" get employee registration short view, id: {}", id);
+
+        return EmployeeRegistrationShortView.fromEmployeeRegistration(getEmployeeRegistration(id));
+    }
+
+    @Override
     public Long createEmployeeRegistration(EmployeeRegistration employeeRegistration) throws RequestFailedException {
         if (employeeRegistration == null) {
             log.warn("null employee registration in request");
@@ -65,6 +73,29 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
             log.info("create employee registration, applied id: {}", response.getData());
             return response.getData();
         }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public Long updateEmployeeRegistration(EmployeeRegistrationShortView employeeRegistration) throws RequestFailedException {
+        log.info("updateEmployeeRegistration: employeeRegistration = {}", employeeRegistration);
+
+        if (employeeRegistration == null) {
+            log.warn("null employee registration in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+
+        Result<Long> response = employeeRegistrationService.updateEmployeeRegistration(token, employeeRegistration);
+
+        if (response.isOk()) {
+            log.info("employee registration successfully updated. id = {}", response.getData());
+            return response.getData();
+        }
+
+        log.warn("updateEmployeeRegistration: status = {}", response.getStatus());
 
         throw new RequestFailedException(response.getStatus());
     }

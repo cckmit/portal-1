@@ -2,13 +2,16 @@ package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.internal.cglib.core.$ClassNameReader;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
@@ -21,6 +24,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
+    @Override
     public void setActivity( AbstractEmployeeItemActivity activity ) {
         this.activity = activity;
     }
@@ -93,9 +97,17 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
+    @Override
+    public void setEditIcon (String link) {
+        editIcon.setHref(link);
+        editIcon.setVisible(link != null && !link.isEmpty());
+    }
 
     @UiField
     Anchor name;
+
+    @UiField
+    Anchor editIcon;
 
     @UiField
     HTMLPanel birthdayContainer;
@@ -159,6 +171,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
 
     AbstractEmployeeItemActivity activity;
+
+    private Long employeeId;
 
     private static EmployeeItemViewUiBinder ourUiBinder = GWT.create( EmployeeItemViewUiBinder.class );
     interface EmployeeItemViewUiBinder extends UiBinder< HTMLPanel, EmployeeItemView > {}

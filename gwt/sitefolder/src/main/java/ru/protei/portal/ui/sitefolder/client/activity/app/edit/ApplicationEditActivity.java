@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.app.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -40,7 +41,13 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.appId == null) {
@@ -91,14 +98,14 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
             public void onSuccess(Application result) {
                 fireEvent(new SiteFolderAppEvents.ChangeModel());
                 fireEvent(new SiteFolderAppEvents.Changed(result));
-                fireEvent(new Back());
+                fireBackEvent.run();
             }
         });
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     private void fillView(Application application) {
@@ -152,4 +159,5 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
 
     private Application application;
     private AppEvents.InitDetails initDetails;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

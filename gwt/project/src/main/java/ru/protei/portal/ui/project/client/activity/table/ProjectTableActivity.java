@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -57,7 +58,7 @@ public abstract class ProjectTableActivity
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( ProjectEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -73,7 +74,7 @@ public abstract class ProjectTableActivity
             new ActionBarEvents.Clear()
         );
 
-        clearScroll(event);
+        this.preScroll = event.preScroll;
 
         loadTable();
     }
@@ -97,19 +98,19 @@ public abstract class ProjectTableActivity
     @Event
     public void onChangeRow( ProjectEvents.ChangeProject event ) {
         regionService.getProject(event.id, new FluentCallback<Project>()
-                .withSuccess(result -> {
-                    view.updateRow(result);
-                }));
+                .withSuccess(view::updateRow)
+        );
     }
 
     @Override
     public void onItemClicked( Project value ) {
+        persistScroll();
         showPreview( value );
     }
 
     @Override
     public void onEditClicked( Project value ) {
-        persistScrollTopPosition();
+        persistScroll();
         fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
@@ -157,7 +158,7 @@ public abstract class ProjectTableActivity
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
                 }
             }
@@ -175,28 +176,27 @@ public abstract class ProjectTableActivity
         view.scrollTo(page);
     }
 
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
+    }
+
     private void showPreview ( Project value ) {
         if ( value == null ) {
             animation.closeDetails();
         } else {
             animation.showDetails();
             fireEvent( new ProjectEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
-        }
-    }
-
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
-    }
-
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
-            view.clearSelection();
-            return;
-        }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
         }
     }
 
@@ -220,19 +220,12 @@ public abstract class ProjectTableActivity
         return query;
     }
 
-    private void clearScroll(ProjectEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-        }
-    }
-
     private Runnable removeAction(Long projectId) {
         return () -> regionService.removeProject(projectId, new FluentCallback<Boolean>()
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Show());
+                    fireEvent(new ProjectEvents.Show(false));
                 })
         );
     }
@@ -262,5 +255,6 @@ public abstract class ProjectTableActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

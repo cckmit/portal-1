@@ -1,25 +1,29 @@
-package ru.protei.portal.ui.common.client.view.casetag.item;
+package ru.protei.portal.ui.common.client.view.casetag.taglist.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.ent.CaseTag;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.activity.casetag.item.AbstractCaseTagItemActivity;
-import ru.protei.portal.ui.common.client.activity.casetag.item.AbstractCaseTagItemView;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.ColorUtils;
+import ru.protei.portal.ui.common.client.activity.casetag.taglist.item.AbstractCaseTagItemActivity;
+import ru.protei.portal.ui.common.client.activity.casetag.taglist.item.AbstractCaseTagItemView;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeSafeColor;
 
 public class CaseTagItemView extends Composite implements AbstractCaseTagItemView {
 
-    public CaseTagItemView() {
+    @Inject
+    public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initDebugIds();
+        ensureDebugIds();
     }
 
     @Override
@@ -33,40 +37,30 @@ public class CaseTagItemView extends Composite implements AbstractCaseTagItemVie
     }
 
     @Override
-    public void setNameAndColor(String name, String color) {
-        String backgroundColor = ColorUtils.makeSafeColor(color);
-        String textColor = ColorUtils.makeContrastColor(backgroundColor);
-
+    public void setName(String name) {
         text.setText(name);
+    }
 
+    @Override
+    public void setColor(String color) {
+        String backgroundColor = makeSafeColor(color);
+        String foregroundColor = makeContrastColor(backgroundColor);
         panel.getElement().getStyle().setProperty("backgroundColor", backgroundColor);
-        panel.getElement().getStyle().setProperty("color", textColor);
-    }
-
-    @Override
-    public void setCaseTag( CaseTag caseTag) {
-        this.caseTag = caseTag;
-    }
-
-    @Override
-    public CaseTag getCaseTag() {
-        return caseTag;
+        panel.getElement().getStyle().setProperty("color", foregroundColor);
     }
 
     @UiHandler("remove")
     public void closeClick(ClickEvent event) {
         event.preventDefault();
         event.stopPropagation();
-
-        activity.onDetachClicked(this);
+        if (activity != null) {
+            activity.onTagDetach();
+        }
     }
 
-    private void initDebugIds() {
+    private void ensureDebugIds() {
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.LINK_REMOVE_BUTTON);
     }
-
-    @UiField
-    Lang lang;
 
     @UiField
     HTMLPanel panel;
@@ -75,7 +69,6 @@ public class CaseTagItemView extends Composite implements AbstractCaseTagItemVie
     @UiField
     InlineLabel text;
 
-    private CaseTag caseTag;
     private AbstractCaseTagItemActivity activity;
 
     interface CaseLinkViewUiBinder extends UiBinder<HTMLPanel, CaseTagItemView> {}

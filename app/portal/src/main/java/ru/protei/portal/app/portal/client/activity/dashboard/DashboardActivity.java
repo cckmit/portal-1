@@ -172,7 +172,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onOpenClicked() {
-                fireEvent(new IssueEvents.Show(new CaseQuery(query), true));
+                fireEvent(new IssueEvents.Show(new CaseQuery(query), false));
             }
             @Override
             public void onEditClicked() {

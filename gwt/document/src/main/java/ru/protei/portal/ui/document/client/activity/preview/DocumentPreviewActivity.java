@@ -69,7 +69,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
 
     @Override
     public void onBackClicked() {
-        fireEvent(new DocumentEvents.Show());
+        fireEvent(new DocumentEvents.Show(true));
     }
 
     @Override

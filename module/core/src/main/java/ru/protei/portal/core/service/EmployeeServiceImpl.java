@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -16,14 +17,19 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.struct.AuditObject;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -77,6 +83,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    LegacySystemDAO migrationManager;
+
+    @Autowired
+    AuditObjectDAO auditObjectDAO;
 
     @PostConstruct
     public void setYoutrackConst() {
@@ -285,13 +297,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
-            createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
+            createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
 
-        boolean success = personDAO.partialMerge(person,  "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
+        person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+        boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "contactInfo", "displayname", "displayShortName");
 
         if (success) {
             return ok(true);
@@ -306,7 +319,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean result = workerEntryDAO.partialMerge(worker, "dep_id", "companyId", "positionId");
+        if (isSyncCompanyWorker(worker)){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = workerEntryDAO.partialMerge(worker, "dep_id", "companyId", "positionId", "active");
 
         if (result) {
             return ok(true);
@@ -320,6 +337,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        if (isSyncCompanyWorker(worker)){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         worker.setCreated(new Date());
         Long workerId = workerEntryDAO.persist(worker);
 
@@ -341,24 +363,174 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        personFromDb.setFired(true);
+        personFromDb.setFired(new Date());
 
         boolean result = personDAO.merge(personFromDb);
 
         if (result) {
-            boolean isRemoved = removeWorkerEntry(personFromDb.getId());
+            boolean isRemoved = removeWorkerEntriesByPersonId(personFromDb.getId());
 
             if (!isRemoved){
-                return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY);
+                return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
             
             userLoginDAO.removeByPersonId(personFromDb.getId());
         }
 
+        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+            if (!migrateToOldPortal(person.getId())) {
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        }
+
+        if (YOUTRACK_INTEGRATION_ENABLED) {
+            createFireEmployeeYoutrackIssue(personFromDb);
+        }
+
         return ok(result);
     }
 
-    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+    @Transactional
+    @Override
+    public Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> newWorkerEntries){
+        if (newWorkerEntries == null || newWorkerEntries.isEmpty() || newWorkerEntries.get(0).getPersonId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Long personId = newWorkerEntries.get(0).getPersonId();
+        final int TO_CREATE = 1;
+        final int TO_REMOVE = 2;
+
+        checkActiveFlag(newWorkerEntries);
+        hireEmployeeIfNeed(personId);
+
+        WorkerEntryQuery query = new WorkerEntryQuery(personId);
+        List<WorkerEntry> oldWorkerEntries = workerEntryDAO.getWorkers(query);
+
+        Map<WorkerEntry, Integer> finalWorkersMap = new HashMap<>();
+        fillMapWorkersToCreate(finalWorkersMap, newWorkerEntries, TO_CREATE);
+        fillMapWorkersToRemove(finalWorkersMap, newWorkerEntries, oldWorkerEntries, TO_REMOVE);
+
+        for (Map.Entry<WorkerEntry, Integer> entry : finalWorkersMap.entrySet()) {
+            switch (entry.getValue()){
+                case TO_CREATE :
+                    Result createResult  = createEmployeeWorker(token, entry.getKey());
+                    makeAudit(entry.getKey(), En_AuditType.WORKER_CREATE, token);
+                    if (createResult.isError()){
+                        return error(createResult.getStatus());
+                    }
+                    break;
+                case TO_REMOVE :
+                    Result removeStatus  = removeWorkerEntry(entry.getKey());
+                    makeAudit(entry.getKey(), En_AuditType.WORKER_REMOVE, token);
+                    if (removeStatus.isError()){
+                        return error(removeStatus.getStatus());
+                    }
+                    break;
+            }
+        }
+
+        if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
+            if (!migrateToOldPortal(personId)) {
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        }
+
+       return ok(true);
+    }
+
+    private void fillMapWorkersToRemove(Map<WorkerEntry, Integer> finalWorkersMap, List<WorkerEntry> newWorkerEntries, List<WorkerEntry> oldWorkerEntries, int TO_REMOVE) {
+        for (WorkerEntry worker : oldWorkerEntries) {
+            boolean isActualWorkerEntry = false;
+
+            if (isSyncCompanyWorker(worker)){
+                continue;
+            }
+
+            Iterator<WorkerEntry> workerEntryIterator = newWorkerEntries.iterator();
+            while (workerEntryIterator.hasNext()){
+                WorkerEntry workerEntry = workerEntryIterator.next();
+
+                if (worker.getId().equals(workerEntry.getId())){
+                    isActualWorkerEntry = true;
+                    workerEntryIterator.remove();
+                    break;
+                }
+            }
+
+            if(!isActualWorkerEntry){
+                finalWorkersMap.put(worker, TO_REMOVE);
+            }
+        }
+    }
+
+    private void fillMapWorkersToCreate(Map<WorkerEntry, Integer> finalWorkersMap, List<WorkerEntry> newWorkerEntries, int TO_CREATE) {
+        Iterator<WorkerEntry> workerEntryIterator = newWorkerEntries.iterator();
+
+        while (workerEntryIterator.hasNext()) {
+            WorkerEntry workerEntry = workerEntryIterator.next();
+            if (workerEntry.getId() == null){
+                finalWorkersMap.put(workerEntry, TO_CREATE);
+                workerEntryIterator.remove();
+                continue;
+            }
+
+            if (isSyncCompanyWorker(workerEntry)){
+                workerEntryIterator.remove();
+            }
+        }
+    }
+
+    private void makeAudit(AuditableObject object, En_AuditType type, AuthToken token){
+        AuditObject auditObject = new AuditObject();
+        auditObject.setCreated( new Date() );
+        auditObject.setType(type);
+        auditObject.setCreatorId( token.getPersonId() );
+        try {
+            auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
+        } catch (UnknownHostException e) {
+            log.warn("makeAudit(): fail to setCreatorIp, UnknownHostException");
+            auditObject.setCreatorIp("0.0.0.0");;
+        }
+        auditObject.setCreatorShortName(token.getPersonDisplayShortName());
+        auditObject.setEntryInfo(object);
+
+        auditObjectDAO.insertAudit(auditObject);
+    }
+
+    private void hireEmployeeIfNeed(Long personId) {
+        Person person = personDAO.get(personId);
+
+        if (person != null && person.isFired()){
+            person.setFired(false, null);
+            personDAO.merge(person);
+        }
+    }
+
+    private boolean migrateToOldPortal(Long personId) {
+        List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
+
+        WorkerEntry activeWorker = workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
+
+        Person person = personDAO.get(personId);
+
+        if (activeWorker == null || person == null){
+            return false;
+        }
+
+        return migrationManager.saveExternalEmployee(person, activeWorker.getDepartmentName(), activeWorker.getPositionName()).equals(En_ResultStatus.OK);
+    }
+
+    private void checkActiveFlag(List<WorkerEntry> newWorkerEntries) {
+        boolean isFlagSet = newWorkerEntries.stream()
+                .anyMatch(workerEntry -> workerEntry.getActiveFlag() > 0);
+
+        if (!isFlagSet){
+            newWorkerEntries.get(0).setActiveFlag(1);
+        }
+    }
+
+    private void createChangeLastNameYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }
@@ -377,19 +549,49 @@ public class EmployeeServiceImpl implements EmployeeService {
         youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
 
-    private boolean removeWorkerEntry(Long personId){
+    private void createFireEmployeeYoutrackIssue(Person person) {
+
+        String employeeFullName = person.getLastName() + " " + person.getFirstName() + " " + (person.getSecondName() != null ? person.getSecondName() : "");
+
+        String summary = "Увольнение сотрудника " + employeeFullName;
+
+        String description = "Карточка сотрудника: " + "[" + employeeFullName + "](" + PORTAL_URL + "#employee_preview:id=" + person.getId() + ")";
+
+        youtrackService.createFireWorkerIssue(summary, description );
+    }
+
+    private boolean removeWorkerEntriesByPersonId(Long personId){
         WorkerEntryQuery workerEntryQuery = new WorkerEntryQuery(personId);
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(workerEntryQuery);
 
-        if (workers.size() != 1){
-            return false;
+        for (WorkerEntry worker : workers) {
+            if (isSyncCompanyWorker(worker)){
+                return false;
+            }
         }
 
-        if (!companyDAO.getAllHomeCompanyIdsWithoutSync().contains(workers.get(0).getCompanyId())){
-            return false;
+        boolean isSuccess = true;
+        for (WorkerEntry worker : workers) {
+            if (!workerEntryDAO.remove(worker)){
+                isSuccess = false;
+            }
         }
 
-        return workerEntryDAO.remove(workers.get(0));
+        return isSuccess;
+    }
+
+    private Result<Boolean> removeWorkerEntry (WorkerEntry worker){
+        if (isSyncCompanyWorker(worker)){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = workerEntryDAO.remove(worker);
+
+        return result ? ok(result) : error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    private boolean isSyncCompanyWorker (WorkerEntry worker){
+        return !companyDAO.getAllHomeCompanyIdsWithoutSync().contains(worker.getCompanyId());
     }
 
     private boolean checkExistEmployee (Person person){

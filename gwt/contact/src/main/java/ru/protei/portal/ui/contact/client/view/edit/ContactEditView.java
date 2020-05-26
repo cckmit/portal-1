@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -90,6 +91,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public HasValue<Date> birthDay() {
         return birthDay;
+    }
+
+    @Override
+    public void setBirthDayTimeZone(TimeZone timeZone){
+        birthDay.setTimeZone(timeZone);
     }
 
     @Override

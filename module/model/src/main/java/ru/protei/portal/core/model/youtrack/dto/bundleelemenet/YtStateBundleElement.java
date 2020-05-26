@@ -14,6 +14,7 @@ public class YtStateBundleElement extends YtLocalizableBundleElement {
                 ", localizedName='" + localizedName + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", archived=" + archived + '\'' +
                 '}';
     }
 }

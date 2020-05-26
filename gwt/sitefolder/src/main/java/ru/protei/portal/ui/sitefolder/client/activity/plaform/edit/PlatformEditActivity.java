@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -65,7 +66,13 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
@@ -103,7 +110,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 .withSuccess(result -> {
                     fireEvent(new SiteFolderPlatformEvents.ChangeModel());
                     fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                    fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
+                    fireBackEvent.run();
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
                 })
         );
@@ -111,13 +118,13 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
     public void onOpenClicked() {
         if (platform != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platform.getId()));
+            fireEvent(new SiteFolderServerEvents.Show(platform.getId(), false));
         }
     }
 
@@ -307,4 +314,5 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private Platform platform;
     private AppEvents.InitDetails initDetails;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

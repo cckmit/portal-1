@@ -248,7 +248,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeAlreadyExist();
 
-    String errEmployeeNotFiredFromThisCompany();
+    String errEmployeeNotFiredFromTheseCompanies();
 
     String errDepartmentAlreadyExistInThisCompany();
 
@@ -291,6 +291,12 @@ public interface Lang extends Messages, ContactItemLang {
     String companySubscriptionGroupAnyValueProduct();
 
     String companySubscriptionGroupQuantity();
+
+    String errCompanyNameExists();
+
+    String errCompanyNameContainsIllegalChars();
+
+    String errCompanyFieldsFill();
 
     String contacts();
 
@@ -751,6 +757,8 @@ public interface Lang extends Messages, ContactItemLang {
     String msgHello();
 
     String msgObjectSaved();
+
+    String reservedIpPartiallyCreated(int p0, int p1 );
 
     String msgStatusChanged();
 
@@ -1828,6 +1836,22 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeTopBrassLabel();
 
+    String employeeAvatarLabelEnabled();
+
+    String employeeAvatarLabelDisabled();
+
+    String employeeAvatarUploadSuccessful();
+
+    String employeeAvatarUploadingFailed();
+
+    String employeePositionAddButton();
+
+    String errEmployeePositionEmpty();
+
+    String employeePositions();
+
+    String errEmployeePositionAlreadeyAdded();
+
     String backToEmployees();
 
     String employeeChangeAccount();
@@ -2573,4 +2597,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errRoomReservationHasIntersections();
 
     String buttonReload();
+
+    String issueAssignmentDeskOverflow(long limit);
+
+    String employeeRegistrationEditHeader();
+
+    String reservedIpAvailableCount();
 }
