@@ -115,6 +115,7 @@ public class CaseQuery extends BaseQuery {
         setCaseNumbers(query.getCaseNumbers());
         setCaseIds(query.getCaseIds());
         setCompanyIds(query.getCompanyIds());
+        setManagerCompanyIds(query.getManagerCompanyIds());
         setInitiatorIds(query.getInitiatorIds());
         setProductIds(query.getProductIds());
         setLocationIds(query.getLocationIds());

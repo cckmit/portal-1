@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -101,7 +102,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     private UserCaseAssignmentTable getUserCaseAssignmentTable(AuthToken token, long loginId) {
         UserCaseAssignmentTable table = new UserCaseAssignmentTable();
         withUserCaseAssignments(table, loginId);
-        withCaseViews(table);
+        withCaseViews(table, token);
         withCaseViewTags(table, token);
         return table;
     }
@@ -112,8 +113,8 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         table.setUserCaseAssignments(userCaseAssignments);
     }
 
-    private void withCaseViews(UserCaseAssignmentTable table) {
-        CaseQuery caseQuery = makeCaseQuery(table.getUserCaseAssignments());
+    private void withCaseViews(UserCaseAssignmentTable table, AuthToken token) {
+        CaseQuery caseQuery = makeCaseQuery(table.getUserCaseAssignments(), token);
         long limit = config.data().getUiConfig().getIssueAssignmentDeskLimit();
         boolean isOverflow = false;
         List<CaseShortView> caseShortViews;
@@ -207,7 +208,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         caseView.setTags(tags);
     }
 
-    private CaseQuery makeCaseQuery(List<UserCaseAssignment> userCaseAssignments) {
+    private CaseQuery makeCaseQuery(List<UserCaseAssignment> userCaseAssignments, AuthToken token) {
         if (CollectionUtils.isEmpty(userCaseAssignments)) {
             return null;
         }
@@ -230,6 +231,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         CaseQuery query = new CaseQuery();
         query.setStateIds(stateIds);
         query.setManagerIds(managerIds);
+        query.setManagerCompanyIds(Collections.singletonList(token.getCompanyId()));
         return query;
     }
 

@@ -46,11 +46,6 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
 
     @Override
     public void refresh() {
-        PersonShortView value = getValue();
-        if (value != null
-                && !contains( model.getValues(), value )) {
-            setValue( null );
-        }
     }
 
     public void updateCompanies(Set<Long> companyIds) {

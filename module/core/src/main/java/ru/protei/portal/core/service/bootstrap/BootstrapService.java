@@ -60,6 +60,7 @@ public class BootstrapService {
         documentBuildFullIndex();
         //fillImportanceLevels();
         migrateIpReservation();
+        updateManagerFiltersWithoutManagerCompany();
     }
 
     private void fillImportanceLevels() {
@@ -409,6 +410,21 @@ if(true) return; //TODO remove
             }
         } catch (Exception e ) {}
         return defaultId;
+    }
+
+    private void updateManagerFiltersWithoutManagerCompany() {
+        List<CaseFilter> allFilters = caseFilterDAO.getAll();
+
+        for (CaseFilter nextFilter : CollectionUtils.emptyIfNull(allFilters)) {
+            CaseQuery params = nextFilter.getParams();
+
+            if (CollectionUtils.isEmpty(params.getManagerIds()) || CollectionUtils.isNotEmpty(params.getManagerCompanyIds())) {
+                continue;
+            }
+
+            params.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
+            caseFilterDAO.partialMerge(nextFilter, "params");
+        }
     }
 
     @Inject

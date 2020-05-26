@@ -354,7 +354,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.importanceEnabled().setEnabled(!readOnly);
         metaView.productEnabled().setEnabled(!readOnly && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()) );
-        metaView.initiatorEnabled().setEnabled(!readOnly);
+        metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
 
         metaView.timeElapsedHeaderVisibility().setVisible(true);
@@ -527,15 +527,29 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private boolean isCompanyChangeAllowed(boolean isPrivateCase) {
-        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT) &&
-                (subscriptionsList == null || subscriptionsList.isEmpty() || isPrivateCase)
-        ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT)) {
+            return false;
+        }
+
+        if (subscriptionsList == null || subscriptionsList.isEmpty() || isPrivateCase) {
             return true;
         }
 
-        return subscriptionsList == null || subscriptionsList.stream()
+        return subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .allMatch(CompanySubscription::isProteiRecipient);
+    }
+
+    private boolean isInitiatorChangeAllowed(Long initiatorCompanyId) {
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT)) {
+            return true;
+        }
+
+        if (Objects.equals(initiatorCompanyId, policyService.getUserCompany().getId())) {
+            return true;
+        }
+
+        return false;
     }
 
     private void setSubscriptionEmails(String value) {
