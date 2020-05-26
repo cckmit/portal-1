@@ -450,6 +450,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     private void replaceImageLink(CaseComment caseComment,
                                   List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        logger.info("replaceImageLink");
         String text = caseComment.getText();
         Matcher matcher = jiraImagePattern.matcher(text);
         String resultText;
@@ -464,20 +465,24 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 mark = matcher.end();
                 String originalString = matcher.group(2);
                 Optional<String> imageString = Optional.ofNullable(parseImageNode(originalString))
-                        .flatMap(node -> attachments.stream()
-                                .filter(a -> a.getFileName().equals(node.filename) && a.getCreatorId().equals(caseComment.getAuthorId()))
-                                .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
-                                .map(attachment -> {
-                                    String imageString1 = makeJiraImageString(attachment.getExtLink(),
-                                            attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""));
-                                    List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
-                                    if (caseAttachments == null) {
-                                        caseAttachments = new ArrayList<>();
-                                    }
-                                    caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
-                                    caseComment.setCaseAttachments(caseAttachments);
-                                    return imageString1;
-                                }));
+                        .flatMap(node -> {
+                            logger.info("parseImageNode node = " + node);
+                            return attachments.stream()
+                                    .filter(a -> a.getFileName().equals(node.filename))
+                                    .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
+                                    .map(attachment -> {
+                                        logger.info("parseImageNode attachment = " + attachment);
+                                        String imageString1 = makeJiraImageString(attachment.getExtLink(),
+                                                attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""));
+                                        List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
+                                        if (caseAttachments == null) {
+                                            caseAttachments = new ArrayList<>();
+                                        }
+                                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
+                                        caseComment.setCaseAttachments(caseAttachments);
+                                        return imageString1;
+                                    });
+                        });
                 if (imageString.isPresent()) {
                     buffer.append(imageString.get());
                 } else {
@@ -487,6 +492,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             resultText = buffer.append(text, mark, text.length()).toString();
         }
+        logger.info("replaceImageLink end = " + resultText);
         caseComment.setText(resultText);
     }
 

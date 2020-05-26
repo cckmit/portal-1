@@ -14,7 +14,15 @@ public class temp {
     @Test
     public void testRegexp() {
         String extLink = "20200416/11777";
-        String str = "!картинке !\\home dir\\19_1020_duck.png|alt=atl_name! !ff.png|alt=1!";
+        String str = "! отсудой коммент !\n" +
+                "\n" +
+                "!min_creepy_duck.jpeg!\n" +
+                "\n" +
+                "!connected_duck.jpeg!\n" +
+                "\n" +
+                "!image.png!\n" +
+                "\n" +
+                "ААА !!! ААА";
 //        Pattern p = Pattern.compile("(^|\\s)![^!\\t\\n\\r]*[!]($|\\s)");
 //        Pattern p = Pattern.compile("![^!\\t\\n\\r(\\.|())]*!");
         Pattern p = Pattern.compile("((?<![\\p{L}\\p{Nd}\\\\])|(?<=inltokxyzkdtnhgnsbdfinltok))\\!([^\\s\\!]((?!\\!)[\\p{L}\\p{Nd}\\p{Z}\\p{S}\\p{M}\\p{P}]*?[^\\s\\!])?)(?<!\\\\)\\!((?![\\p{L}\\p{Nd}])|(?=inltokxyzkdtnhgnsbdfinltok))");
