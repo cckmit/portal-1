@@ -108,6 +108,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public CaseStateDAO getCaseStateDAO() {
+        return new CaseStateDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
     }
