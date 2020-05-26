@@ -14,5 +14,6 @@
   <include file="2020-04-28-add-company_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-05-16-add-manager_company_id-column-to-case_object-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-05-18-add-customer_responsibility-state.xml" relativeToChangelogFile="true"/>
-
+  <include file="2020-05-21-modify-case-state-table.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-21-add-states-to-employee_registration.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

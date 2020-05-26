@@ -8,7 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -115,7 +115,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null);
+                filterView.showTopBrass().getValue() ? TopBrassPersonUtils.getPersonIds() : null);
     }
 
 

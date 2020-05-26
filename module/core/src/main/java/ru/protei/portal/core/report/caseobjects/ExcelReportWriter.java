@@ -1,13 +1,12 @@
 package ru.protei.portal.core.report.caseobjects;
 
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -34,7 +33,8 @@ public class ExcelReportWriter implements
     private final boolean isNotRestricted;
     private final String locale;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter, boolean isRestricted) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter,
+                             boolean isRestricted) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
@@ -126,21 +126,20 @@ public class ExcelReportWriter implements
                 important = null;
 
         for (CaseComment comment : comments) {
+
             if (En_ImportanceLevel.IMPORTANT.equals( comment.getCaseImportance() )) important = comment.getCreated();
             if (En_ImportanceLevel.CRITICAL.equals( comment.getCaseImportance() )) critical = comment.getCreated();
 
-            En_CaseState state = En_CaseState.getById(comment.getCaseStateId());
-            if (state == null) {
+            Long stateId = comment.getCaseStateId();
+            if (stateId == null) {
                 continue;
             }
-            switch (state) {
-                case CREATED: created = comment.getCreated(); break;
-                case OPENED: opened = comment.getCreated(); break;
-                case WORKAROUND: workaround = comment.getCreated(); break;
-                case TEST_CUST: customerTest = comment.getCreated(); break;
-                case DONE: done = comment.getCreated(); break;
-                case VERIFIED: verified = comment.getCreated(); break;
-            }
+            if (stateId == CrmConstants.State.CREATED) created = comment.getCreated();
+            if (stateId == CrmConstants.State.OPENED) opened = comment.getCreated();
+            if (stateId == CrmConstants.State.WORKAROUND) workaround = comment.getCreated();
+            if (stateId == CrmConstants.State.TEST_CUST) customerTest = comment.getCreated();
+            if (stateId == CrmConstants.State.DONE) done = comment.getCreated();
+            if (stateId == CrmConstants.State.VERIFIED) verified = comment.getCreated();
         }
 
         if (created == null) {
@@ -160,7 +159,7 @@ public class ExcelReportWriter implements
         values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
         values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
         values.add(issue.getImportanceLevel() != null ? issue.getImportanceLevel().getCode() : "");
-        values.add(issue.getState() != null ? issue.getState().getName() : "");
+        values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         values.add(created != null ? dateFormat.format(created) : "");
         values.add(opened != null ? dateFormat.format(opened) : "");
         values.add(workaround != null ? dateFormat.format(workaround) : "");

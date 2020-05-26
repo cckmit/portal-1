@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -25,6 +24,9 @@ public class CaseState implements Serializable {
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
     public List<Company> companies;
 
+    @JdbcColumn(name = "is_terminal")
+    private boolean terminal;
+
     private int viewOrder;
 
     public CaseState() {
@@ -32,6 +34,11 @@ public class CaseState implements Serializable {
 
     public CaseState(Long id) {
         this.id = id;
+    }
+
+    public CaseState(Long id, String state) {
+        this.id = id;
+        this.state = state;
     }
 
     public Long getId() {
@@ -83,9 +90,12 @@ public class CaseState implements Serializable {
         return this;
     }
 
-    public static En_CaseState asState(CaseState state) {
-        if (state == null || state.getId() == null) return null;
-        return En_CaseState.getById(state.getId());
+    public boolean isTerminal() {
+        return terminal;
+    }
+
+    public void setTerminal(boolean terminal) {
+        this.terminal = terminal;
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
@@ -174,7 +175,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Set<En_CaseState>> states() {
+    public HasValue<Set<CaseState>> states() {
         return state;
     }
 
@@ -263,7 +264,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateCreatedRange.setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
         dateModifiedRange.setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
         importance.setValue(caseQuery.getImportances());
-        state.setValue(setOf(caseQuery.getStates()));
+        state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
         companies.setValue(applyCompanies(filter, caseQuery.getCompanyIds()));
         managerCompanies.setValue(applyCompanies(filter, caseQuery.getManagerCompanyIds()));
@@ -314,11 +315,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
-                query.setImportances( nullIfEmpty(importance.getValue()));
-                query.setStates(nullIfEmpty( state.getValue()));
+                query.setImportances(nullIfEmpty(importance.getValue()));
+                query.setStateIds(nullIfEmpty(toList(states().getValue(), state -> state.getId())));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCaseTagsIds( nullIfEmpty( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ) );
-                query.setCreatorIds( nullIfEmpty( toList( creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId() ) ) );
+                query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
+                query.setCreatorIds(nullIfEmpty(toList(creators.getValue(), personShortView -> personShortView == null ? null : personShortView.getId())));
                 query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
 
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
@@ -335,9 +336,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             case CASE_RESOLUTION_TIME:
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
-                query.setCaseTagsIds(nullIfEmpty( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ));
+                query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 query.setImportances(nullIfEmpty(importance.getValue()));
-                query.setStates(nullIfEmpty(state.getValue()));
+                query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 break;
         }
@@ -345,7 +346,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter) {
+    public void setStateFilter(Selector.SelectorFilter<CaseState> caseStateFilter) {
         state.setFilter(caseStateFilter);
     }
 
@@ -432,7 +433,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @UiHandler("state")
-    public void onStateSelected(ValueChangeEvent<Set<En_CaseState>> event) {
+    public void onStateSelected(ValueChangeEvent<Set<CaseState>> event) {
         onFilterChanged();
     }
 

@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
@@ -53,8 +52,6 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result< CaseObjectMetaJira > updateCaseObjectMetaJira( AuthToken token, CaseObjectMetaJira caseMetaJira );
-
-    Result<List<En_CaseState>> stateList(En_CaseType caseType);
 
     Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType);
 

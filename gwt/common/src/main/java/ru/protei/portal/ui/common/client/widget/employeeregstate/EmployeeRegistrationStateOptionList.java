@@ -1,27 +1,24 @@
 package ru.protei.portal.ui.common.client.widget.employeeregstate;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
+import ru.protei.portal.ui.common.client.widget.optionlist.base.ModelList;
 import ru.protei.portal.ui.common.client.widget.optionlist.list.OptionList;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class EmployeeRegistrationStateOptionList extends OptionList<En_CaseState> {
+public class EmployeeRegistrationStateOptionList extends OptionList<CaseState> implements ModelList<CaseState> {
 
     @Inject
-    public void init() {
-        fillOptions(Arrays.asList(En_CaseState.ACTIVE, En_CaseState.CREATED, En_CaseState.DONE));
+    public void init(EmployeeRegistrationStateModel model) {
+        setSelectorModel(model);
     }
 
-    public void fillOptions( List< En_CaseState > states ) {
+    public void fillOptions(List<CaseState> states) {
         clearOptions();
         states.forEach(state ->
-                addOption( lang.getStateName( state ), state,
-                        "inline m-r-5 option-" + state.toString().toLowerCase() ));
+                addOption(state.getState(), state,
+                        "inline m-r-5 option-" + CaseStateUtils.makeStyleName(state.getState())));
     }
-
-    @Inject
-    private En_CaseStateLang lang;
 }

@@ -1,13 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @JdbcEntity(table = "case_object")
@@ -23,6 +21,9 @@ public class CaseObjectMeta extends AuditableObject {
 
     @JdbcColumn(name = "STATE")
     private long stateId;
+
+    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String stateName;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
@@ -82,6 +83,7 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getId() != null) setId(co.getId());
         if (co.getModified() != null) setModified(co.getModified());
         if (co.getStateId() != 0) setStateId(co.getStateId());
+        if (co.getStateName() != null) setStateName(co.getStateName());
         if (co.getPauseDate() != null) setPauseDate(co.getPauseDate());
         if (co.getImpLevel() != null) setImpLevel(co.getImpLevel());
         if (co.getInitiator() != null) setInitiator(co.getInitiator());
@@ -106,6 +108,7 @@ public class CaseObjectMeta extends AuditableObject {
         if (getId() != null) co.setId(getId());
         if (getModified() != null) co.setModified(getModified());
         if (getStateId() != 0) co.setStateId(getStateId());
+        if (getStateName() != null) co.setStateName(getStateName());
         if (getPauseDate() != null) co.setPauseDate(getPauseDate());
         if (getImpLevel() != null) co.setImpLevel(getImpLevel());
         if (getInitiator() != null) co.setInitiator(getInitiator());
@@ -154,12 +157,12 @@ public class CaseObjectMeta extends AuditableObject {
         this.stateId = stateId;
     }
 
-    public En_CaseState getState() {
-        return En_CaseState.getById(getStateId());
+    public String getStateName() {
+        return stateName;
     }
 
-    public void setState(En_CaseState state) {
-        setStateId(state.getId());
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public Integer getImpLevel() {
@@ -331,6 +334,7 @@ public class CaseObjectMeta extends AuditableObject {
                 "id=" + id +
                 ", modified=" + modified +
                 ", stateId=" + stateId +
+                ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
                 ", initiatorId=" + initiatorId +
                 ", initiator=" + initiator +

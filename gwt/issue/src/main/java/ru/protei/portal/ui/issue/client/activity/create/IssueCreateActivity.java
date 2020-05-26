@@ -72,6 +72,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Event
+    public void authEvent(AuthEvents.Success event) {
+        caseStateController.getCaseState(CrmConstants.State.CREATED, new FluentCallback<CaseState>()
+                .withSuccess(this::setCreatedCaseState));
+    }
+
+    @Event
     public void onInit(AppEvents.InitDetails init) {
         this.init = init;
     }
@@ -268,16 +274,18 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPauseDateChanged() {
-        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime()));
+        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue().getId(),
+                issueMetaView.pauseDate().getValue() == null ? null
+                        : issueMetaView.pauseDate().getValue().getTime()));
     }
 
     @Override
     public void onStateChange() {
         issueMetaView.pauseDate().setValue(null);
-        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(issueMetaView.state().getValue()));
-        setManagerCompanyEnabled(issueMetaView, issueMetaView.state().getValue());
+        issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == issueMetaView.state().getValue().getId());
+        setManagerCompanyEnabled(issueMetaView, issueMetaView.state().getValue().getId());
 
-        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
+        boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
     }
 
@@ -349,12 +357,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setCaseMetaNotifiers(null);
 
         issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
-        issueMetaView.importance().setValue( caseObjectMeta.getImportance() );
+        issueMetaView.importance().setValue(caseObjectMeta.getImportance());
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
-        issueMetaView.state().setValue( caseObjectMeta.getState() );
+        issueMetaView.state().setValue(createdCaseState);
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
-        issueMetaView.pauseDateContainerVisibility().setVisible(En_CaseState.PAUSED.equals(caseObjectMeta.getState()));
-        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getState(), caseObjectMeta.getPauseDate()));
+        issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == caseObjectMeta.getStateId());
+        issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
@@ -368,7 +376,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
         issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
-        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getState());
+        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
 
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
@@ -423,7 +431,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
-        caseObjectMeta.setState(En_CaseState.CREATED);
+        caseObjectMeta.setStateId(CrmConstants.State.CREATED);
         caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 
@@ -500,17 +508,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
-        if (issueMetaView.getManager() == null && isStateWithRestrictions(issueMetaView.state().getValue())) {
+        if (issueMetaView.getManager() == null && isStateWithRestrictions(issueMetaView.state().getValue().getId())) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (issueMetaView.getProduct() == null && isStateWithRestrictions(issueMetaView.state().getValue())) {
+        if (issueMetaView.getProduct() == null && isStateWithRestrictions(issueMetaView.state().getValue().getId())) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (!isPauseDateValid(issueMetaView.state().getValue(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
+        if (!isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())) {
             fireEvent(new NotifyEvents.Show(lang.errPauseDateError(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -573,9 +581,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
     }
 
-    private boolean isStateWithRestrictions(En_CaseState caseState) {
-        return !En_CaseState.CREATED.equals(caseState) &&
-                !En_CaseState.CANCELED.equals(caseState);
+    private boolean isStateWithRestrictions(long caseStateId) {
+        return CrmConstants.State.CREATED != caseStateId &&
+                CrmConstants.State.CANCELED != caseStateId;
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -586,8 +594,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE);
     }
 
-    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
-        if (!En_CaseState.PAUSED.equals(currentState)) {
+    private boolean isPauseDateValid(long currentStateId, Long pauseDate) {
+        if (CrmConstants.State.PAUSED != currentStateId) {
             return true;
         }
 
@@ -603,8 +611,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setInitiatorBorderBottomVisible(!isVisible);
     }
 
-    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, En_CaseState state) {
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && En_CaseState.CUSTOMER_RESPONSIBILITY.equals(state));
+    private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
+    }
+
+    private void setCreatedCaseState(CaseState createdCaseState) {
+        this.createdCaseState = createdCaseState;
     }
 
     @Inject
@@ -635,6 +647,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     IssueControllerAsync issueService;
     @Inject
     SiteFolderControllerAsync siteFolderController;
+    @Inject
+    CaseStateControllerAsync caseStateController;
 
     private boolean saving;
     private AppEvents.InitDetails init;
@@ -643,5 +657,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private CaseObjectCreateRequest createRequest;
     private List<ProjectSla> slaList = new ArrayList<>();
     private AbstractCaseTagListActivity tagListActivity;
+    private CaseState createdCaseState;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 }

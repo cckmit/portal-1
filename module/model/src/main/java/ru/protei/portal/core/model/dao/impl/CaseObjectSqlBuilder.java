@@ -124,7 +124,7 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
-                condition.append(" and state in " + makeInArg(query.getStateIds(), false));
+                condition.append(" and case_object.state in " + makeInArg(query.getStateIds(), false));
             }
 
             if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {

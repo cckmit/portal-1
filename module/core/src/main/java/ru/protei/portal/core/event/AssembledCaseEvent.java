@@ -127,7 +127,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseStateChanged() {
-        return isUpdateEventMeta() && lastMetaState.getState() != initMetaState.getState();
+        return isUpdateEventMeta() && lastMetaState.getStateId() != initMetaState.getStateId();
     }
 
     public boolean isPauseDateChanged() {

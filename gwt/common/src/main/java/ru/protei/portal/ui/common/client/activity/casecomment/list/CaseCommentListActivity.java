@@ -378,13 +378,11 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isStateChangeComment ) {
-            En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
-            itemView.setStatus( caseState );
+            itemView.setStatus( value.getCaseStateName() );
         }
 
         if ( isImportanceChangeComment ) {
-            En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
-            itemView.setImportanceLevel(importance);
+            itemView.setImportanceLevel( value.getCaseImportance() );
         }
 
         if ( isManagerChangeComment ) {

@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -257,7 +258,8 @@ public class YoutrackServiceImpl implements YoutrackService {
         issueInfo.setId(issue.idReadable);
         issueInfo.setSummary(issue.summary);
         issueInfo.setDescription(issue.description);
-        issueInfo.setState(YoutrackConstansMapping.toCaseState(getIssueState(issue)));
+        Long stateId = YoutrackConstansMapping.toCaseState(getIssueState(issue));
+        issueInfo.setState(stateId == null ? null : caseStateDAO.get(stateId));
         issueInfo.setImportance(YoutrackConstansMapping.toCaseImportance(getIssuePriority(issue)));
         issueInfo.setComments(CollectionUtils.stream(issue.comments)
                 .map(this::convertYtIssueComment)
@@ -303,8 +305,8 @@ public class YoutrackServiceImpl implements YoutrackService {
                 ? null
                 : (YtStateBundleElement) activityItem.removed.get(0);
         YouTrackIssueStateChange issueStateChange = new YouTrackIssueStateChange();
-        issueStateChange.setAdded(YoutrackConstansMapping.toCaseState(added != null ? added.name : null));
-        issueStateChange.setRemoved(YoutrackConstansMapping.toCaseState(removed != null ? removed.name : null));
+        issueStateChange.setAddedCaseStateId(YoutrackConstansMapping.toCaseState(added != null ? added.name : null));
+        issueStateChange.setRemovedCaseStateId(YoutrackConstansMapping.toCaseState(removed != null ? removed.name : null));
         issueStateChange.setTimestamp(activityItem.timestamp);
         issueStateChange.setAuthorLogin(activityItem.author != null ? activityItem.author.login : null);
         issueStateChange.setAuthorFullName(activityItem.author != null ? activityItem.author.fullName : null);
@@ -377,6 +379,8 @@ public class YoutrackServiceImpl implements YoutrackService {
     YoutrackApi api;
     @Autowired
     PortalConfig config;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
 }

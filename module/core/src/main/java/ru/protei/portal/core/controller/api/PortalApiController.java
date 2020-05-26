@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
@@ -26,7 +25,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -324,7 +324,7 @@ public class PortalApiController {
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         // optional
-        query.setStateIds(getCaseStateIdList(apiQuery.getStates()));
+        query.setStateIds(apiQuery.getStateIds());
         query.setManagerIds(apiQuery.getManagerIds());
         query.setCompanyIds(apiQuery.getCompanyIds());
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
@@ -354,17 +354,6 @@ public class PortalApiController {
         query.setOffset(apiQuery.getOffset());
 
         return query;
-    }
-
-    private List<Integer> getCaseStateIdList(List<String> states) {
-        List<Integer> stateIds = null;
-        if (CollectionUtils.isNotEmpty(states)) {
-            stateIds = Arrays.asList(En_CaseState.values()).stream()
-                    .filter(state -> states.contains(state.name()))
-                    .map(En_CaseState::getId)
-                    .collect(Collectors.toList());
-        }
-        return stateIds;
     }
 
     private Date parseDate(String date) {

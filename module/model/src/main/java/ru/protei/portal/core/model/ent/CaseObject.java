@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
@@ -47,6 +46,9 @@ public class CaseObject extends AuditableObject {
 
     @JdbcColumn(name = "STATE")
     private long stateId;
+
+    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String stateName;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
@@ -263,6 +265,14 @@ public class CaseObject extends AuditableObject {
         this.stateId = stateId;
     }
 
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
     public Integer getImpLevel() {
         return impLevel;
     }
@@ -453,14 +463,6 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public En_CaseState getState () {
-        return En_CaseState.getById(this.stateId);
-    }
-
-    public void setState (En_CaseState state) {
-        this.stateId = state.getId();
-    }
-
     public En_ImportanceLevel getImportanceLevel() {
         return En_ImportanceLevel.getById(this.impLevel);
     }
@@ -602,6 +604,7 @@ public class CaseObject extends AuditableObject {
                 ", extId='" + extId + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
+                ", stateName=" + stateName +
                 ", impLevel=" + impLevel +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +

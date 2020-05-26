@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractTopBrassItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -53,7 +53,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
     private void fillView(EmployeeShortView head) {
         AbstractTopBrassItemView itemView = makeItem(head);
 
-        if (TopBrassPersonIdsUtil.getTopIds().contains(head.getId())) {
+        if (TopBrassPersonUtils.getTopIds().contains(head.getId())) {
             view.topContainer().add(itemView.asWidget());
             itemView.addRootStyle("col-md-6");
         } else {
@@ -80,7 +80,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
     @Inject
     Provider<AbstractTopBrassItemView> provider;
 
-    private final EmployeeQuery employeeQuery = new EmployeeQuery(TopBrassPersonIdsUtil.getPersonIds());
+    private final EmployeeQuery employeeQuery = new EmployeeQuery(TopBrassPersonUtils.getPersonIds());
 
     private AppEvents.InitDetails init;
 }

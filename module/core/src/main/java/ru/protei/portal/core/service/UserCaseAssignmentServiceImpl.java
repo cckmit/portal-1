@@ -6,18 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserCaseAssignmentDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserCaseAssignment;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
@@ -109,6 +113,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
 
     private void withUserCaseAssignments(UserCaseAssignmentTable table, long loginId) {
         List<UserCaseAssignment> userCaseAssignments = userCaseAssignmentDAO.findByLoginId(loginId);
+        fillStateEntityOptions(userCaseAssignments);
         fillPersonShortViews(userCaseAssignments);
         table.setUserCaseAssignments(userCaseAssignments);
     }
@@ -142,6 +147,42 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
                 .ifError(result -> log.warn("Failed to fetch case tags | status='{}', message='{}'", result.getStatus(), result.getMessage()))
                 .ifOk(tags -> assignTagsToCases(caseShortViews, tags));
         table.setCaseShortViews(caseShortViews);
+    }
+
+    private void fillStateEntityOptions(List<UserCaseAssignment> userCaseAssignments) {
+        String query = userCaseAssignments.stream()
+                .filter(c -> c.getTableEntity() == En_TableEntity.COLUMN)
+                .map(UserCaseAssignment::getStates)
+                .flatMap(Collection::stream) // flatten
+                .distinct()
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
+        if (StringUtils.isEmpty(query)) {
+            return;
+        }
+        Map<Long, EntityOption> stateMap = CollectionUtils.stream(
+                caseStateDAO.partialGetListByCondition(
+                        "id IN (" + query + ")",
+                        Collections.emptyList(),
+                        "id", "STATE")
+                )
+                .collect(Collectors.toMap(
+                        CaseState::getId,
+                        caseState -> new EntityOption(caseState.getState(), caseState.getId()))
+                );
+        for (UserCaseAssignment userCaseAssignment : userCaseAssignments) {
+            if (userCaseAssignment.getTableEntity() != En_TableEntity.COLUMN) {
+                continue;
+            }
+            List<EntityOption> stateList = new ArrayList<>();
+            for (Long id : userCaseAssignment.getStates()) {
+                EntityOption p = stateMap.get(id);
+                if (p != null) {
+                    stateList.add(p);
+                }
+            }
+            userCaseAssignment.setStateEntityOptions(stateList);
+        }
     }
 
     private void fillPersonShortViews(List<UserCaseAssignment> userCaseAssignments) {
@@ -212,11 +253,10 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         if (CollectionUtils.isEmpty(userCaseAssignments)) {
             return null;
         }
-        List<Integer> stateIds = userCaseAssignments.stream()
+        List<Long> stateIds = userCaseAssignments.stream()
                 .filter(c -> c.getTableEntity() == En_TableEntity.COLUMN)
                 .map(UserCaseAssignment::getStates)
                 .flatMap(Collection::stream) // flatten
-                .map(En_CaseState::getId)
                 .distinct()
                 .collect(Collectors.toList());
         List<Long> managerIds = userCaseAssignments.stream()
@@ -267,6 +307,8 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     CaseShortViewDAO caseShortViewDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
     @Autowired
     PortalConfig config;
 

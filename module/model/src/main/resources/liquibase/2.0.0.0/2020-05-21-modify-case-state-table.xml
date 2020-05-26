@@ -1,0 +1,62 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-is-terminal-to-case_state" author="turik">
+        <addColumn tableName="case_state">
+            <column name="is_terminal" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="update-case_state" author="turik">
+        <update tableName="case_state">
+            <column name="is_terminal" valueBoolean="true"/>
+            <where>id in (5,7,8,9,10,17,33)</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="solved: not a problem"/>
+            <where>id = 7</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="solved: fixed"/>
+            <where>id = 8</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="solved: duplicated"/>
+            <where>id = 9</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="local test"/>
+            <where>id = 19</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="customer test"/>
+            <where>id = 20</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="info request"/>
+            <where>id = 31</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="customer pending"/>
+            <where>id = 34</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="request to NX"/>
+            <where>id = 35</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="request to customer"/>
+            <where>id = 36</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="customer responsibility"/>
+            <where>id = 37</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseState;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public interface CaseStateControllerAsync {
 
-    void getCaseStates(AsyncCallback<List<CaseState>> callback);
+    void getCaseStates(En_CaseType type, AsyncCallback<List<CaseState>> callback);
 
     void getCaseState(Long id, AsyncCallback<CaseState> callback);
 

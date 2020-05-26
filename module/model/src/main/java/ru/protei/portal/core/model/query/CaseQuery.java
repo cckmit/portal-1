@@ -40,7 +40,7 @@ public class CaseQuery extends BaseQuery {
 
     private En_CaseType type;
 
-    private List<Integer> stateIds;
+    private List<Long> stateIds;
 
     private List<Integer> importanceIds;
 
@@ -214,20 +214,11 @@ public class CaseQuery extends BaseQuery {
         this.type = type;
     }
 
-    public List<Integer> getStateIds() {
+    public List<Long> getStateIds() {
         return stateIds;
     }
 
-    public void setStateIds(List<Integer> stateIds) { this.stateIds = stateIds; }
-
-    public List<En_CaseState> getStates() {
-        return stateIds == null ? null : toList( stateIds, id1 -> En_CaseState.getById( Long.valueOf( id1 ) ) );
-    }
-
-    @JsonIgnore
-    public void setStates( Iterable<En_CaseState> states ) {
-        this.stateIds = states == null ? null : toList( states, state -> state.getId() );
-    }
+    public void setStateIds(List<Long> stateIds) { this.stateIds = stateIds; }
 
     public List<Integer> getImportanceIds() { return importanceIds; }
 

@@ -3,13 +3,13 @@ package ru.protei.portal.ui.issue.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 
 /**
  * Колонка "Номер"
@@ -17,9 +17,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 public class NumberColumn extends ClickColumn<CaseShortView> {
 
     @Inject
-    public NumberColumn( Lang lang, En_CaseStateLang caseStateLang) {
+    public NumberColumn( Lang lang ) {
         this.lang = lang;
-        this.caseStateLang = caseStateLang;
         setStopPropogationElementClassName("number-size");
     }
 
@@ -49,11 +48,11 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         numberElement.setInnerText( value.getCaseNumber().toString() );
         divElement.appendChild( numberElement );
 
-        com.google.gwt.dom.client.Element stateElement = DOM.createElement( "p" );
-        stateElement.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() );
-        stateElement.setInnerText( caseStateLang.getStateName( En_CaseState.getById( value.getStateId() ) ) );
+        com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
+        stateElement.addClassName("label label-" + CaseStateUtils.makeStyleName(value.getStateName()));
+        stateElement.setInnerText(value.getStateName());
 
-        if (!isPauseDateValid(En_CaseState.getById(value.getStateId()), value.getPauseDate())) {
+        if (!isPauseDateValid(value.getStateId(), value.getPauseDate())) {
             stateElement.addClassName("pause-status-expired-date");
         } else {
             stateElement.removeClassName("pause-status-expired-date");
@@ -64,8 +63,8 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
         cell.appendChild( divElement );
     }
 
-    private boolean isPauseDateValid(En_CaseState currentState, Long pauseDate) {
-        if (!En_CaseState.PAUSED.equals(currentState)) {
+    private boolean isPauseDateValid(Long currentStateId, Long pauseDate) {
+        if (CrmConstants.State.PAUSED != currentStateId) {
             return true;
         }
 
@@ -77,5 +76,4 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
     }
 
     private Lang lang;
-    private En_CaseStateLang caseStateLang;
 }

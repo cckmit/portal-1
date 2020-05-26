@@ -25,7 +25,7 @@ public class DebugIdsHelper {
     }
 
     public static final class ISSUE_STATE {
-        public static String byId(int id) {
+        public static String byId(long id) {
             if (id == 1) {
                 return DebugIds.ISSUE_STATE.CREATED;
             }

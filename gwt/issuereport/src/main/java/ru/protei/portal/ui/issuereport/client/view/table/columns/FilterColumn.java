@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issuereport.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_ReportType;
@@ -22,12 +21,11 @@ public class FilterColumn extends StaticColumn<Report> {
 
     @Inject
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
-                        En_CaseImportanceLang caseImportanceLang, En_CaseStateLang caseStateLang, En_RegionStateLang regionStateLang) {
+                        En_CaseImportanceLang caseImportanceLang, En_RegionStateLang regionStateLang) {
         this.lang = lang;
         this.sortFieldLang = sortFieldLang;
         this.sortDirLang = sortDirLang;
         this.caseImportanceLang = caseImportanceLang;
-        this.caseStateLang = caseStateLang;
         this.regionStateLang = regionStateLang;
     }
 
@@ -125,24 +123,14 @@ public class FilterColumn extends StaticColumn<Report> {
                 managerElement.setInnerText(lang.issueState() + ": " +
                         caseQuery.getStateIds()
                                 .stream()
-                                .map(id -> En_RegionState.forId(Long.valueOf(id)))
+                                .map(id -> En_RegionState.forId(id))
                                 .map(regionStateLang::getStateName)
                                 .collect(Collectors.joining(", "))
                 );
                 element.appendChild(managerElement);
             }
-        } else {
-            if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
-                Element managerElement = DOM.createElement("p");
-                managerElement.setInnerText(lang.issueState() + ": " +
-                        caseQuery.getStateIds()
-                                .stream()
-                                .map(id -> En_CaseState.getById(Long.valueOf(id)))
-                                .map(caseStateLang::getStateName)
-                                .collect(Collectors.joining(", "))
-                );
-                element.appendChild(managerElement);
-            }
+        } else if (CollectionUtils.isNotEmpty(caseQuery.getStateIds())) {
+            element.appendChild(makeArraySelectedElement(lang.issueState(), caseQuery.getStateIds()));
         }
 
         // companies
@@ -200,6 +188,5 @@ public class FilterColumn extends StaticColumn<Report> {
     private En_SortFieldLang sortFieldLang;
     private En_SortDirLang sortDirLang;
     private En_CaseImportanceLang caseImportanceLang;
-    private En_CaseStateLang caseStateLang;
     private En_RegionStateLang regionStateLang;
 }

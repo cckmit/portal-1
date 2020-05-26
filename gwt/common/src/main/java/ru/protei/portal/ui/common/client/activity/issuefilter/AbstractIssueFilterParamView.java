@@ -6,9 +6,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
@@ -65,7 +65,7 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasValue<Set<En_ImportanceLevel>> importances();
 
-    HasValue<Set<En_CaseState>> states();
+    HasValue<Set<CaseState>> states();
 
     HasVisibility searchByCommentsWarningVisibility();
 
@@ -87,7 +87,7 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     CaseQuery getFilterFields(En_CaseFilterType filterType);
 
-    void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter);
+    void setStateFilter(Selector.SelectorFilter<CaseState> caseStateFilter);
 
     void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList);
 

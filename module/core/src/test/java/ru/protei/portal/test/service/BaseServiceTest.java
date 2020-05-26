@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -67,14 +68,15 @@ public class BaseServiceTest {
     public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
         CaseObject caseObject = new CaseObject();
         caseObject.setName( "Test_Case_Name" );
-        caseObject.setCaseNumber(caseNo);
-        caseObject.setState( En_CaseState.CREATED );
-        caseObject.setManagerCompanyId(person.getCompanyId());
+        caseObject.setCaseNumber( caseNo );
+        caseObject.setStateId( CrmConstants.State.CREATED );
+        caseObject.setStateName( "created" );
+        caseObject.setManagerCompanyId( person.getCompanyId() );
         caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
+        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
         return caseObject;
     }
 
