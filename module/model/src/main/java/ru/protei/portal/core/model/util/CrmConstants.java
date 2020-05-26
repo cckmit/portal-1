@@ -65,6 +65,7 @@ public class CrmConstants {
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+        String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
     }
 
     public interface Time {
@@ -123,6 +124,22 @@ public class CrmConstants {
         String NO_CONTENT_TYPE = "application/octet-stream";
     }
 
+    public interface IpReservation {
+        String SUBNET_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
+        String IP_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
+        String MAC_ADDRESS = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
+        String NUMBER = "^\\d{1,3}$";
+
+        String SUBNET_MASK = "0/24";
+
+        int MIN_IPS_COUNT = 1;
+        int MAX_IPS_COUNT = 255;
+    }
+
+    public interface Youtrack {
+        String REQUEST_TYPE_VALUE = "Удаление пользователей";
+    }
+
     public interface State {
         long CREATED = 1;
         long OPENED = 2;
@@ -140,5 +157,6 @@ public class CrmConstants {
         long CUST_PENDING = 34;
         long CLOSED = 3;
         long IGNORED = 10;
+        long CUSTOMER_RESPONSIBILITY = 37;
     }
 }

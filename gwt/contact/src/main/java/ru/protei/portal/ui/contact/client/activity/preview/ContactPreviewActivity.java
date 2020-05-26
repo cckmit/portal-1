@@ -69,7 +69,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new ContactEvents.Show());
+        fireEvent(new ContactEvents.Show(true));
     }
 
     private void fillView( Person value ) {

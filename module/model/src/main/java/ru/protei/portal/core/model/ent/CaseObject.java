@@ -149,6 +149,12 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "pause_date")
     private Long pauseDate;
 
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
+
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String managerCompanyName;
+
     // not db column
     private List<EntityOption> contracts;
 
@@ -449,7 +455,6 @@ public class CaseObject extends AuditableObject {
         this.members = members;
     }
 
-
     public String getExtAppType() {
         return extAppType;
     }
@@ -458,7 +463,7 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public En_ImportanceLevel importanceLevel () {
+    public En_ImportanceLevel getImportanceLevel() {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
@@ -542,15 +547,6 @@ public class CaseObject extends AuditableObject {
         this.projectSlas = projectSlas;
     }
 
-    @Override
-    public String getAuditType() {
-        return "CaseObject";
-    }
-
-    public interface Columns {
-        String EXT_APP = "EXT_APP";
-    }
-
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
     }
@@ -569,6 +565,31 @@ public class CaseObject extends AuditableObject {
 
     public void setPauseDate(Long pauseDate) {
         this.pauseDate = pauseDate;
+    }
+
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
+    }
+
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseObject";
+    }
+
+    public interface Columns {
+        String EXT_APP = "EXT_APP";
     }
 
     @Override
@@ -616,6 +637,8 @@ public class CaseObject extends AuditableObject {
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", regionName='" + regionName + '\'' +
                 ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +

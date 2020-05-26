@@ -7,6 +7,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Сокращенное представление Person
@@ -144,5 +145,18 @@ public class EmployeeShortView implements Serializable {
 
     public void setGender (En_Gender gender) {
         this.gender = gender.getCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EmployeeShortView that = (EmployeeShortView) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

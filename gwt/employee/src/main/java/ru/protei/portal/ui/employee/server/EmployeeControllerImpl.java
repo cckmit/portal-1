@@ -113,7 +113,7 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public Boolean updateEmployeePerson(Person person) throws RequestFailedException {
+    public Boolean updateEmployeePerson(Person person, boolean needToChangeAccount) throws RequestFailedException {
 
         if (person == null || person.getId() == null) {
             log.warn("updateEmployeePerson(): null person or null id in request");
@@ -124,7 +124,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Boolean> response = employeeService.updateEmployeePerson( token, person );
+        Result<Boolean> response = employeeService.updateEmployeePerson( token, person, needToChangeAccount );
 
         log.info("updateEmployeePerson(): update person, result: {}", response.isOk() ? "ok" : response.getStatus());
 
@@ -193,6 +193,23 @@ public class EmployeeControllerImpl implements EmployeeController {
         log.info("fire employee, id: {} -> {} ", person.getId(), response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
 
         return response.isOk() ? response.getData() : false;
+    }
+
+    @Override
+    public boolean updateEmployeeWorkers(List<WorkerEntry> workerEntryList) throws RequestFailedException {
+        log.info("updateEmployeeWorkers(): workerEntryList size: {}", workerEntryList.size());
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = employeeService.updateEmployeeWorkers(token, workerEntryList);
+
+        log.info("updateEmployeeWorkers(): {} ",response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Autowired

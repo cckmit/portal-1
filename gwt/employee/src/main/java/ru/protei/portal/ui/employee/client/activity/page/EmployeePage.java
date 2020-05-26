@@ -10,11 +10,8 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
-
-import java.util.logging.Logger;
 
 /**
  * Активность по работе с вкладкой "Сотрудники"
@@ -78,5 +75,5 @@ public abstract class EmployeePage implements Activity {
     PolicyService policyService;
 
     private String ТAB;
-    private EmployeeEvents.Show show = new EmployeeEvents.Show();
+    private EmployeeEvents.Show show = new EmployeeEvents.Show(false);
 }

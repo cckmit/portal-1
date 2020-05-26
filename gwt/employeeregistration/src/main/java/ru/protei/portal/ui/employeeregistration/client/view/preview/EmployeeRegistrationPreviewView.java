@@ -128,6 +128,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         this.additionalSoft.setInnerText( additionalSoft );
     }
 
+    @Override
+    public void setCompany(String company) {
+        this.company.setInnerText(company);
+    }
+
     @UiHandler( "fullName" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -187,6 +192,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     HTMLPanel commentContainer;
     @UiField
     SpanElement curators;
+    @UiField
+    SpanElement company;
     @UiField
     HTMLPanel previewWrapperContainer;
     @UiField

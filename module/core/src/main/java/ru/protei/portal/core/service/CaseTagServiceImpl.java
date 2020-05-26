@@ -17,11 +17,11 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Collections.singletonList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
@@ -100,13 +100,23 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
+    public Result<List<CaseObjectTag>> getCaseObjectTags(AuthToken token, List<Long> caseIds) {
+        List<Long> companyIds = null;
+        if (!policyService.hasGrantAccessFor(token.getRoles(), En_Privilege.ISSUE_VIEW)) {
+            companyIds = singletonList(token.getCompanyId());
+        }
+        List<CaseObjectTag> tags = caseObjectTagDAO.list(caseIds, null, companyIds);
+        return ok(tags);
+    }
+
+    @Override
     public Result<CaseTag> getTag(AuthToken token, Long tagId) {
         if (tagId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         CaseTagQuery query = new CaseTagQuery();
-        query.setIds(Collections.singletonList(tagId));
+        query.setIds(singletonList(tagId));
 
         Result<List<CaseTag>> tags = getTags(token, query);
 

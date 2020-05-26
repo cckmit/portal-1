@@ -3,8 +3,6 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.util.sqlcondition.Query;
-import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.List;
 import java.util.Set;

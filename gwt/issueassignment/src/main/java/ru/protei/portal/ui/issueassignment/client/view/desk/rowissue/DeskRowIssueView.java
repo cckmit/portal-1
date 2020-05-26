@@ -57,6 +57,9 @@ public class DeskRowIssueView extends Composite implements AbstractDeskRowIssueV
         view.setModified(issue.getModified() != null
                 ? DateFormatter.formatDateTime(issue.getModified())
                 : "");
+        if (handler != null) {
+            handler.showTags(view.getTagsContainer(), issue.getTags());
+        }
         if (isCardShouldBeHighlightedWarnLevel(issue)) {
             view.setWarningHighlight();
         }

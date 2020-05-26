@@ -12,6 +12,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.UserCaseAssignment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
@@ -19,6 +20,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -88,6 +90,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private void hideView() {
         view.tableViewVisibility().setVisible(false);
+        view.notificationVisibility().setVisible(false);
     }
 
     private void hideLoader() {
@@ -129,6 +132,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                     hideLoader();
                     hideError();
                     showDesk(userCaseAssignmentTable);
+                    showNotification(userCaseAssignmentTable);
                     fireEvent(new IssueAssignmentEvents.DeskPeopleChanged(new ArrayList<>(people)));
                 });
     }
@@ -183,6 +187,17 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         popup.getPopup().getChildContainer().clear();
         popup.fill();
         popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
+    }
+
+    private void showNotification(UserCaseAssignmentTable userCaseAssignmentTable) {
+        long limit = userCaseAssignmentTable.getCaseShortViewsLimit();
+        boolean isOverflow = userCaseAssignmentTable.isCaseShortViewsLimitOverflow();
+        if (isOverflow) {
+            view.notificationText().setValue(lang.issueAssignmentDeskOverflow(limit));
+            view.notificationVisibility().setVisible(true);
+        } else {
+            view.notificationVisibility().setVisible(false);
+        }
     }
 
     private void showDesk(UserCaseAssignmentTable userCaseAssignmentTable) {
@@ -358,7 +373,6 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
 
     private Widget buildIssuesCell(List<CaseShortView> cellIssues) {
         AbstractDeskRowIssueView rowIssueView = rowIssueViewProvider.get();
-        rowIssueView.setIssues(cellIssues);
         rowIssueView.setHandler(new AbstractDeskRowIssueView.Handler() {
             @Override
             public void onOpenIssue(CaseShortView issue) {
@@ -383,7 +397,12 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
                             }));
                 });
             }
+            @Override
+            public void showTags(HasWidgets parent, List<CaseTag> caseTags) {
+                fireEvent(new CaseTagEvents.ShowList(parent, caseTags, true, null));
+            }
         });
+        rowIssueView.setIssues(cellIssues);
         HTMLPanel td = new HTMLPanel("td", "");
         td.add(rowIssueView.asWidget());
         return td;

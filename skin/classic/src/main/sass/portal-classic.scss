@@ -193,3 +193,32 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
 .document-approval-date {
   height: 56px;
 }
+
+.fa.fa-clock-o {
+  font-weight: 400;
+
+  &:before {
+    content: "\f017";
+  }
+}
+
+// Pages calendar overrides
+.calendar {
+  padding-top: 1px; // fix margin offset
+
+  .weeks-wrapper .week:last-child {
+    padding-left: 30px;
+  }
+
+  .week-dragger.scroll-content {
+    overflow-x: auto;
+  }
+
+  .calendar-container .grid {
+    overflow: hidden;
+  }
+
+  .calendar-container .event-container {
+    min-height: 0 !important;
+  }
+}

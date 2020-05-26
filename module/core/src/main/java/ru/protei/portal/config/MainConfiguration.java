@@ -552,6 +552,26 @@ public class MainConfiguration {
         return new JiraCompanyGroupDAO_Impl();
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() {
+        return new SubnetDAO_Impl();
+    }
+
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() {
+        return new ReservedIpDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return new RoomReservableDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return new RoomReservationDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -795,6 +815,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public IpReservationService getIpReservationService() {
+        return new IpReservationServiceImpl();
+    }
+
+    @Bean
     public CaseStateWorkflowService getCaseStateWorkflowService() {
         return new CaseStateWorkflowServiceImpl();
     }
@@ -812,6 +837,11 @@ public class MainConfiguration {
     @Bean
     public UserCaseAssignmentService getUserCaseAssignmentService() {
         return new UserCaseAssignmentServiceImpl();
+    }
+
+    @Bean
+    public RoomReservationService getRoomReservationService() {
+        return new RoomReservationServiceImpl();
     }
 
 

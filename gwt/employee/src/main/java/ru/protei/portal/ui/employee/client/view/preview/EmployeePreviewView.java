@@ -89,11 +89,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         return emailContainer;
     }
 
-    @Override
-    public HasVisibility editIconVisibility() {
-        return editIcon;
-    }
-
     @UiHandler("backButton")
     public void onBackButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -107,15 +102,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
         if (activity != null) {
             activity.onFullScreenClicked();
-        }
-    }
-
-    @UiHandler("editIcon")
-    public void onEditClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onEditClicked();
         }
     }
 
@@ -136,9 +122,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     Anchor employeeName;
-
-    @UiField
-    Anchor editIcon;
 
     @UiField
     SpanElement birthday;

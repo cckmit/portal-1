@@ -29,7 +29,7 @@ public abstract class ContractPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.CONTRACT_VIEW) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.CONTRACT, ТAB, DebugIds.SIDEBAR_MENU.CONTRACT) );
-            fireEvent( new AppEvents.InitPage( new ContractEvents.Show( true ) ) );
+            fireEvent( new AppEvents.InitPage( new ContractEvents.Show( false ) ) );
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class ContractPage
         }
 
         fireSelectTab();
-        fireEvent( new ContractEvents.Show( true ) );
+        fireEvent( new ContractEvents.Show( false ) );
     }
 
     private void fireSelectTab() {

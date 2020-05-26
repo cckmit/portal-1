@@ -221,10 +221,12 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List<Long> getAllHomeCompanyIds() throws RequestFailedException {
-        log.info("getAllHomeCompanyIds()");
+    public List<EntityOption> getAllHomeCompanies() throws RequestFailedException {
+        log.info("getAllHomeCompanies()");
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
+        List<Company> companies = checkResultAndGetData(companyService.getAllHomeCompanies(authToken));
+
+        return companies.stream().map(company -> new EntityOption(company.getCname(), company.getId())).collect(Collectors.toList());
     }
 
     @Override

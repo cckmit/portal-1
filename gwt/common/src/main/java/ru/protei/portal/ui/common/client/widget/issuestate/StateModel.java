@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -59,11 +60,6 @@ public abstract class StateModel implements Activity {
         refreshData();
     }
 
-    public CaseState getById(long id) {
-        return caseStatesList.stream().filter(caseState -> caseState.getId() == id)
-                .findAny().orElse(new CaseState(id));
-    }
-
     private void refreshData() {
         if (isRefreshing) {
             return;
@@ -112,18 +108,22 @@ public abstract class StateModel implements Activity {
     private List<CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return new ArrayList<>(caseStatesList);
+            if (currentCaseState != null && CrmConstants.State.VERIFIED == currentCaseState.getId()) {
+                return Collections.singletonList(currentCaseState);
+            } else {
+                return new ArrayList<>(caseStatesList);
+            }
         }
-
-        Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
-                .filter(csw -> csw.isMatched(workflow))
-                .findFirst();
 
         Set<CaseState> nextCaseStates = new HashSet<>();
         Optional<CaseState> currentState = caseStatesList.stream().filter(state -> state.equals(currentCaseState)).findFirst();
         if (currentState.isPresent()) {
             nextCaseStates.add(currentState.get());
         }
+
+        Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
+                .filter(csw -> csw.isMatched(workflow))
+                .findFirst();
 
         if (caseStateWorkflow.isPresent()) {
             for (CaseStateWorkflowLink caseStateWorkflowLink : caseStateWorkflow.get().getCaseStateWorkflowLinks()) {
@@ -132,7 +132,6 @@ public abstract class StateModel implements Activity {
                 }
 
                 Optional<CaseState> caseState = caseStatesList.stream().filter(state -> state.getId() == caseStateWorkflowLink.getCaseStateToId()).findFirst();
-
                 if (caseState.isPresent()) {
                     nextCaseStates.add(caseState.get());
                 }

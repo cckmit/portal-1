@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -15,8 +16,7 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.UserLoginUpdateEvent;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 
@@ -157,9 +158,10 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("managerChanged", event.isManagerChanged());
         templateModel.put("manager", newMetaState.getManager() == null ? null : newMetaState.getManager().getDisplayName());
-        templateModel.put("managerCompany", newMetaState.getManager() == null || newMetaState.getManager().getCompany() == null ? null : newMetaState.getManager().getCompany().getCname());
         templateModel.put("oldManager", oldMetaState == null || oldMetaState.getManager() == null ? null : oldMetaState.getManager().getDisplayName());
-        templateModel.put("oldManagerCompany", oldMetaState == null || oldMetaState.getManager() == null || oldMetaState.getManager().getCompany() == null ? null : oldMetaState.getManager().getCompany().getCname());
+
+        templateModel.put("managerCompany", newMetaState.getManagerCompanyName());
+        templateModel.put("oldManagerCompany", oldMetaState == null ? null : oldMetaState.getManagerCompanyName());
 
         templateModel.put("platformChanged", event.isPlatformChanged());
         templateModel.put("platform", newMetaState.getPlatformName());
@@ -254,15 +256,38 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients) {
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
-        templateModel.put( "er", employeeRegistration );
-        templateModel.put( "recipients", recipients );
+        EmployeeRegistration newState = event.getNewState();
+        EmployeeRegistration oldState = event.getOldState();
 
-        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.body.%s.ftl" );
-        template.setModel( templateModel );
-        template.setTemplateConfiguration( templateConfiguration );
+        templateModel.put("TransliterationUtils", new TransliterationUtils());
+
+        templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
+        templateModel.put("employeeFullName", newState.getEmployeeFullName());
+        templateModel.put("headOfDepartmentShortName", newState.getHeadOfDepartmentShortName());
+        templateModel.put("employmentType", newState.getEmploymentType().name());
+        templateModel.put("withRegistration", newState.isWithRegistration());
+        templateModel.put("position", newState.getPosition());
+        templateModel.put("state", newState.getStateName());
+        templateModel.put("employmentDateChanged", event.isEmploymentDateChanged());
+        templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
+        templateModel.put("newEmploymentDate", newState.getEmploymentDate());
+        templateModel.put("created", newState.getCreated());
+        templateModel.put("workplace", newState.getWorkplace());
+        templateModel.put("equipmentList", newState.getEquipmentList());
+        templateModel.put("operatingSystem", newState.getOperatingSystem());
+        templateModel.put("additionalSoft", newState.getAdditionalSoft());
+        templateModel.put("resourceList", newState.getResourceList());
+        templateModel.put("resourceComment", newState.getResourceComment());
+        templateModel.put("phoneOfficeTypeList", newState.getPhoneOfficeTypeList());
+        templateModel.put("comment", newState.getComment());
+        templateModel.put("recipients", recipients);
+        templateModel.put("curatorsDiff", event.getCuratorsDiff());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/employee.registration.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 
@@ -431,7 +456,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("TransliterationUtils", new TransliterationUtils());
         templateModel.put("EnumLangUtil", enumLangUtil);
-        templateModel.put("TimeFormatter", new WorkTimeFormatter());
+        templateModel.put("TimeFormatter", new WorkTimeFormatter(true));
         templateModel.put("TextUtils", new TextUtils());
 
         templateModel.put("creator", newProjectState.getCreator().getDisplayShortName());
@@ -494,6 +519,58 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == RoomReservationNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
+        templateModel.put("room", roomReservation.getRoom() != null
+                ? roomReservation.getRoom().getName()
+                : "?");
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getRoomReservationNotificationBody(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == RoomReservationNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == RoomReservationNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == RoomReservationNotificationEvent.Action.REMOVED);
+        templateModel.put("person_responsible", roomReservation.getPersonResponsible() != null
+                ? roomReservation.getPersonResponsible().getDisplayName()
+                : "?");
+        templateModel.put("room", roomReservation.getRoom() != null
+                ? roomReservation.getRoom().getName()
+                : "?");
+        templateModel.put("date", roomReservation.getDateFrom() != null
+                ? new SimpleDateFormat("dd.MM.yyyy").format(roomReservation.getDateFrom())
+                : "?");
+        templateModel.put("time",
+                (roomReservation.getDateFrom() != null
+                        ? new SimpleDateFormat("HH:mm").format(roomReservation.getDateFrom())
+                        : "?") +
+                " - " +
+                (roomReservation.getDateUntil() != null
+                        ? new SimpleDateFormat("HH:mm").format(roomReservation.getDateUntil())
+                        : "?"));
+        templateModel.put("reason", roomReservation.getReason() != null
+                ? roomReservation.getReason().getId()
+                : "?");
+        templateModel.put("coffee_break_count", roomReservation.getCoffeeBreakCount());
+        templateModel.put("comment", roomReservation.getComment());
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
     }
@@ -509,10 +586,11 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > mailComment = new HashMap<>();
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
-                    mailComment.put( "text", escapeTextAndRenderHTML( comment.getText(), textMarkup ) );
+                    mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
                     mailComment.put( "caseState", comment.getCaseStateName() );
                     mailComment.put( "caseImportance", comment.getCaseImportance() == null ? null : comment.getCaseImportance().getCode() );
-                    mailComment.put( "caseManager", comment.getCaseManagerShortName() );
+                    mailComment.put( "caseManager", comment.getCaseManagerId());
+                    mailComment.put( "caseManagerAndCompany", comment.getCaseManagerShortName() + " (" + comment.getManagerCompanyName() + ")");
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
                     mailComment.put( "added", isNew);
                     if (isChanged) {
@@ -610,4 +688,6 @@ public class TemplateServiceImpl implements TemplateService {
         if (!isEmpty( mergeLinks.getRemovedEntries() )) return true;
         return false;
     }
+
+
 }

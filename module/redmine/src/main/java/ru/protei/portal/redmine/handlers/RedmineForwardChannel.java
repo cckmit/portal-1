@@ -219,6 +219,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
     }
 
     private void updateCaseObject(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
+        logger.trace( "issue(): {}", issue );
         CachedPersonMapper personMapper = commonService.getPersonMapper(endpoint);
 
         List<CaseComment> caseComments = commonService.getCaseComments( new CaseCommentQuery( object.getId() ) ).getData();

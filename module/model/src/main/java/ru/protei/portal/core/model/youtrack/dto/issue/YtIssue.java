@@ -74,6 +74,7 @@ public class YtIssue extends YtDto {
         String stateRus = "Состояние";
         String stateEquipmentRus = "Статус заказа";
         String stateAcrmRus = "Статус заявки";
+        String requestType = "Тип заявки";
     }
 
     @Override

@@ -11,6 +11,7 @@ import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -20,6 +21,8 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
@@ -27,6 +30,7 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -49,6 +53,8 @@ import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
+    private String ADMIN_PROJECT_NAME, PORTAL_URL;
+    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     private AuthService authService;
@@ -94,6 +100,19 @@ public class WorkerController {
 
     @Autowired
     AuditObjectDAO auditObjectDAO;
+
+    @Autowired
+    PortalConfig portalConfig;
+
+    @Autowired
+    YoutrackService youtrackService;
+
+    @PostConstruct
+    public void setYoutrackConst() {
+        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+    }
 
     /**
      * Получить данные о физическом лице
@@ -1467,6 +1486,7 @@ public class WorkerController {
                 try {
 
                     Person person = operationData.person();
+                    String personLastName = person.getLastName();
                     WorkerEntry worker = operationData.worker();
                     UserLogin userLogin = operationData.account();
                     EmployeeRegistration employeeRegistration = operationData.registration();
@@ -1506,6 +1526,10 @@ public class WorkerController {
                     }
 
                     mergePerson(person);
+
+                    /*if (YOUTRACK_INTEGRATION_ENABLED) {
+                        createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), personLastName);
+                    }*/
 
                     if (userLogin == null) userLogin = createLDAPAccount(person);
                     if (userLogin != null) {
@@ -1629,5 +1653,24 @@ public class WorkerController {
         }
 
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
+    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+        if (Objects.equals(lastName, oldLastName)) {
+            return;
+        }
+
+        String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
+        String employeeNewFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
+
+        String summary = "Смена фамилии сотрудника " + employeeOldFullName;
+
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
+                             "Старое ФИО: " + employeeOldFullName + "\n" +
+                             "Новое ФИО: " + employeeNewFullName + "\n" +
+                             "\n" +
+                             "Необходимо изменение учетной записи, почты.";
+
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
 }

@@ -14,16 +14,17 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.Pair;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.customfield.YtCustomFieldActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
-import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
-import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSimpleIssueCustomField;
+import ru.protei.portal.core.model.youtrack.dto.customfield.issue.*;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
+import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -63,18 +64,23 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createIssue(String projectName, String summary, String description) {
         log.info("createIssue(): projectName={}, summary={}, description={}", projectName, summary, description);
 
-        Result<String> projectResult = api.getProjectIdByName(projectName)
-                .flatMap(projects -> {
-                    if (projects.size() == 1) return ok(projects.get(0));
-                    return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one project: " + projects.size());
-                })
-                .map(project -> project.id);
-        if (projectResult.isError()) {
-            log.info("createIssue(): projectName={}, summary={}, description={} | failed to get project", projectName, summary, description);
-            return error(projectResult.getStatus(), projectResult.getMessage());
-        }
+        Result<String> projectResult = getProjectIdByName(projectName);
 
         YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
+        return api.createIssueAndReturnId(issue)
+                .map(ytIssue -> ytIssue.idReadable);
+    }
+
+    @Override
+    public Result<String> createFireWorkerIssue(String summary, String description) {
+        log.info("createFireWorkerIssue(): summary={}, description={}", summary, description);
+
+        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getAdminProject());
+
+        YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
+        YtIssueCustomField requestType = makeRequestTypeCustomField();
+        issue.customFields = new ArrayList<>();
+        issue.customFields.add(requestType);
         return api.createIssueAndReturnId(issue)
                 .map(ytIssue -> ytIssue.idReadable);
     }
@@ -83,17 +89,26 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createCompany(String companyName) {
         log.info("createCompany(): companyName={}", companyName);
 
-        YtEnumBundleElement company = makeBundleElement(companyName);
+        YtEnumBundleElement company = makeBundleElement(companyName, null);
         return api.createCompany(company)
                 .map(enumBundleElement -> enumBundleElement.id);
     }
 
     @Override
-    public Result<String> updateCompany(String companyId, String companyName) {
-        log.info("updateCompany(): companyId={}, companyName={}", companyId, companyName);
+    public Result<String> updateCompanyName(String companyId, String companyName) {
+        log.info("updateCompanyName(): companyId={}, companyName={}", companyId, companyName);
 
-        YtEnumBundleElement companyToUpdate = makeBundleElement(companyName);
-        return api.updateCompanyName(companyId, companyToUpdate)
+        YtEnumBundleElement companyToUpdate = makeBundleElement(companyName, null);
+        return api.updateCompany(companyId, companyToUpdate)
+                .map(enumBundleElement -> enumBundleElement.id);
+    }
+
+    @Override
+    public Result<String> updateCompanyArchived(String companyId, Boolean archived) {
+        log.info("updateCompanyArchived(): companyId={}, archived={}", companyId, archived);
+
+        YtEnumBundleElement companyToUpdate = makeBundleElement(null, archived);
+        return api.updateCompany(companyId, companyToUpdate)
                 .map(enumBundleElement -> enumBundleElement.id);
     }
 
@@ -142,7 +157,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getCrmNumberField();
+                    YtSimpleIssueCustomField field = (YtSimpleIssueCustomField) issue.getCrmNumberField();
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
                         return ok(convertYtIssue(issue));
@@ -159,13 +174,35 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return api.getIssueWithFieldsCommentsAttachments(issueId)
                 .flatMap(issue -> {
-                    YtIssueCustomField field = issue.getCrmNumberField();
+                    YtSimpleIssueCustomField field = (YtSimpleIssueCustomField) issue.getCrmNumberField();
                     Long crmNumber = field == null ? null : NumberUtils.parseLong(field.getValue());
                     if (Objects.equals(crmNumber, caseNumber)) {
                         return removeCrmNumber(issue.idReadable);
                     }
                     return ok(convertYtIssue(issue));
                 });
+    }
+
+    @Override
+    public Result<YouTrackIssueInfo> addIssueSystemComment(String issueId, String text) {
+        if (issueId == null || text == null) {
+            log.warn("addIssueSystemComment(): Can't add system comment. All arguments are mandatory issueId={} text={}", issueId, text);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        YtUser commentAuthor = new YtUser();
+        commentAuthor.login = config.data().youtrack().getLogin();
+
+        YtIssueComment comment = new YtIssueComment();
+        comment.author = commentAuthor;
+        comment.text = text;
+
+        YtIssue issue = new YtIssue();
+        issue.comments = new ArrayList<>();
+        issue.comments.add(comment);
+
+        return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
+                .map(this::convertYtIssue);
     }
 
     @Async(BACKGROUND_TASKS)
@@ -179,6 +216,21 @@ public class YoutrackServiceImpl implements YoutrackService {
         for (String youtrackId : emptyIfNull( added)) {
             setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
         }
+    }
+
+    private Result<String> getProjectIdByName (String projectName){
+        Result<String> projectResult = api.getProjectIdByName(projectName)
+                .flatMap(projects -> {
+                    if (projects.size() == 1) return ok(projects.get(0));
+                    return error(En_ResultStatus.INCORRECT_PARAMS, "Found more/less than one project: " + projects.size());
+                })
+                .map(project -> project.id);
+        if (projectResult.isError()) {
+            log.info("getProjectIdByName(): projectName={} | failed to get project", projectName);
+            return error(projectResult.getStatus(), projectResult.getMessage());
+        }
+
+        return projectResult;
     }
 
     private Result<YouTrackIssueInfo> setCrmNumber(String issueId, Long caseNumber) {
@@ -261,9 +313,10 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issueStateChange;
     }
 
-    private YtEnumBundleElement makeBundleElement(String elementName) {
+    private YtEnumBundleElement makeBundleElement(String elementName, Boolean isArchived) {
         YtEnumBundleElement element = new YtEnumBundleElement();
         element.name = elementName;
+        element.archived = isArchived;
         return element;
     }
 
@@ -284,16 +337,25 @@ public class YoutrackServiceImpl implements YoutrackService {
         return cf;
     }
 
+    private YtIssueCustomField makeRequestTypeCustomField(){
+        YtSingleEnumIssueCustomField singleEnum = new YtSingleEnumIssueCustomField();
+        singleEnum.name = YtIssue.CustomFieldNames.requestType;
+        YtEnumBundleElement bundleElement = new YtEnumBundleElement();
+        bundleElement.name = CrmConstants.Youtrack.REQUEST_TYPE_VALUE;
+        singleEnum.value = bundleElement;
+        return singleEnum;
+    }
+
     private String dateToYtString(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").format(date);
     }
 
     private String getIssuePriority(YtIssue issue) {
-        YtIssueCustomField field = issue.getPriorityField();
+        YtSingleEnumIssueCustomField field = (YtSingleEnumIssueCustomField) issue.getPriorityField();
         if (field == null) {
             return null;
         }
-        return field.getValue();
+        return field.getValueAsString();
     }
 
     private String getIssueState(YtIssue issue) {
@@ -301,7 +363,16 @@ public class YoutrackServiceImpl implements YoutrackService {
         if (field == null) {
             return null;
         }
-        return field.getValue();
+
+        if (field instanceof YtStateIssueCustomField){
+            return ((YtStateIssueCustomField) field).getValueAsString();
+        }
+
+        if (field instanceof YtStateMachineIssueCustomField){
+            return ((YtStateMachineIssueCustomField) field).getValueAsString();
+        }
+
+        return null;
     }
 
     @Autowired

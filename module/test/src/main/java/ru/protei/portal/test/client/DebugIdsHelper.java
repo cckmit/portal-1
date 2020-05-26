@@ -104,6 +104,9 @@ public class DebugIdsHelper {
             if (id == 36) {
                 return DebugIds.ISSUE_STATE.CUST_REQUEST;
             }
+            if (id == 37) {
+                return DebugIds.ISSUE_STATE.CUSTOMER_RESPONSIBILITY;
+            }
             return DebugIds.ISSUE_STATE.DEFAULT + id;
         }
     }

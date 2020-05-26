@@ -202,5 +202,27 @@ public enum En_ResultStatus {
     /**
      * Нельзя уволить сотрудника, работающего в текущих компаниях
      */
-    EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY
+    EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
+
+    /**
+     * Подсеть не существует
+     */
+    SUBNET_DOES_NOT_EXIST,
+
+    /**
+     * Резервирование комнат: событие уже началось/закончилось
+     */
+    ROOM_RESERVATION_OUTDATED,
+
+    /**
+     * Резервирование комнат: доступ к комнате отклонен
+     */
+    ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE,
+
+    /**
+     * Резервирование комнат: найдены пересечения с другими событиями
+     */
+    ROOM_RESERVATION_HAS_INTERSECTIONS,
+
+    ;
 }

@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -23,8 +24,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 
 import java.util.HashSet;
 import java.util.function.Function;
@@ -43,9 +44,9 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setInitiatorModel(initiatorModel);
-        issueFilterParamView.setCreatorModel(personModel);
-        issueFilterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( issueFilterParamView.companies().getValue()));
+        issueFilterParamView.setInitiatorsModel(personModelProvider.get());
+        issueFilterParamView.setManagersModel(personModelProvider.get());
+        issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 
@@ -75,6 +76,7 @@ public class IssueFilterWidget extends Composite {
         createBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
+//        setCheckImportanceHistoryVisibility(false);
 
         setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
@@ -130,6 +132,7 @@ public class IssueFilterWidget extends Composite {
         if (!isCreateFilterAction) {
             filledUserFilter.setId(userFilter.getValue().getId());
         }
+        filledUserFilter.getParams().setCheckImportanceHistory( null );//don`t save CheckImportanceHistory
 
         model.onOkSavingFilterClicked(filterName.getValue(), filledUserFilter,
                 filter -> {
@@ -311,9 +314,9 @@ public class IssueFilterWidget extends Composite {
     DivElement footer;
 
     @Inject
-    PersonModel personModel;
+    AsyncPersonModel asyncPersonModel;
     @Inject
-    InitiatorModel initiatorModel;
+    Provider<PersonModel> personModelProvider;
 
     AbstractIssueFilterWidgetModel model;
 

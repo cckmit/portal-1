@@ -78,6 +78,9 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String SUBNET = "sidebar-menu-subnet";
+        String RESERVED_IP = "sidebar-menu-reserved-ip";
+        String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String ICON_SUFFIX = "-icon";
     }
 
@@ -124,6 +127,10 @@ public class DebugIds {
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
         String COMPANY_SELECTOR_ITEM_CONTAINER = "filter-company-selector-item-container";
         String COMPANY_SELECTOR_LABEL = "filter-company-selector-label";
+        String MANAGER_COMPANY_SELECTOR_ADD_BUTTON = "filter-manager-company-selector-add-button";
+        String MANAGER_COMPANY_SELECTOR_CLEAR_BUTTON = "filter-manager-company-selector-clear-button";
+        String MANAGER_COMPANY_SELECTOR_ITEM_CONTAINER = "filter-manager-company-selector-item-container";
+        String MANAGER_COMPANY_SELECTOR_LABEL = "filter-manager-company-selector-label";
         String PRODUCT_SELECTOR_ADD_BUTTON = "filter-product-selector-add-button";
         String PRODUCT_SELECTOR_CLEAR_BUTTON = "filter-product-selector-clear-button";
         String PRODUCT_SELECTOR_ITEM_CONTAINER = "filter-product-selector-item-container";
@@ -226,6 +233,7 @@ public class DebugIds {
         String CUST_PENDING = "issue-state-cust-pending";
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
+        String CUSTOMER_RESPONSIBILITY = "issue-state-customer-responsibility";
     }
 
     public interface ISSUE {
@@ -253,6 +261,7 @@ public class DebugIds {
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
         String PLATFORM_SELECTOR = "issue-platform-selector";
         String COMPANY_SELECTOR = "issue-company-selector";
+        String MANAGER_COMPANY_SELECTOR = "issue-manager-company-selector";
         String INITIATOR_SELECTOR = "issue-initiator-selector";
         String PRODUCT_SELECTOR = "issue-product-selector";
         String MANAGER_SELECTOR = "issue-manager-selector";
@@ -281,6 +290,7 @@ public class DebugIds {
             String IMPORTANCE = "issue-label-importance";
             String PLATFORM = "issue-label-platform";
             String COMPANY = "issue-label-company";
+            String MANAGER_COMPANY = "issue-label-manager-company";
             String CONTACT = "issue-label-contact";
             String PRODUCT = "issue-label-product";
             String MANAGER = "issue-label-manager";
@@ -292,6 +302,15 @@ public class DebugIds {
             String ATTACHMENTS = "issue-label-attachments";
             String TIME_ELAPSED_TYPE = "issue-label-time-elapsed-type";
         }
+    }
+
+    public interface ISSUE_REPORT {
+        String NAME_INPUT = "issue-report-name-input";
+        String REPORT_TYPE = "issue-report-type";
+        String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
+        String IMPORTANCE_CHECK_HISTORY ="issue-report-importance-check-history";
+        String CREATE_BUTTON = "issue-report-create-button";
+        String CANCEL_BUTTON = "issue-report-cancel-button";
     }
 
     public interface CASE_COMMENT {
@@ -781,5 +800,31 @@ public class DebugIds {
         interface LINK {
             String PLATFORM = "sitefolder-link-platform";
         }
+    }
+
+    public interface SUBNET {
+        String ADDRESS_INPUT = "subnet-address-input";
+        String MASK_INPUT = "subnet-mask-input";
+        String COMMENT_INPUT = "subnet-comment-input";
+        String SAVE_BUTTON = "subnet-save-button";
+        String CANCEL_BUTTON = "subnet-cancel-button";
+    }
+
+    public interface RESERVED_IP {
+        String MODE_TOGGLE = "reservedip-mode-toggle";
+        String IP_ADDRESS_INPUT = "reservedip-address-input";
+        String MAC_ADDRESS_INPUT = "reservedip-mac-address-input";
+        String NUMBER_INPUT = "reservedip-number-input";
+        String FREE_IP_COUNT_LABEL = "reservedip-free-ip-count-label";
+        String SUBNET_SELECTOR = "reservedip-subnet-selector";
+        String OWNER_SELECTOR = "reservedip-owner-selector";
+        String USE_RANGE_TYPED_TOGGLE = "reservedip-use-range-typed-toggle";
+        String USE_RANGE_TYPED_INPUT = "reservedip-use-range-typed-input";
+        String USE_RANGE_TYPED_BUTTON = "reservedip-use-range-typed-button";
+        String USE_RANGE_INPUT = "reservedip-use-range-input";
+        String USE_RANGE_BUTTON = "reservedip-use-range-button";
+        String COMMENT_INPUT = "reservedip-comment-input";
+        String SAVE_BUTTON = "reservedip-save-button";
+        String CANCEL_BUTTON = "reservedip-cancel-button";
     }
 }

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -9,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -51,7 +51,7 @@ public interface EmployeeService {
 
     @Auditable(En_AuditType.EMPLOYEE_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
-    Result<Boolean> updateEmployeePerson(AuthToken token, Person person);
+    Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount);
 
     @Auditable(En_AuditType.WORKER_CREATE)
     @Privileged(En_Privilege.EMPLOYEE_CREATE)
@@ -64,4 +64,7 @@ public interface EmployeeService {
     @Auditable(En_AuditType.EMPLOYEE_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> fireEmployee(AuthToken token, Person person);
+
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> workerEntryList);
 }

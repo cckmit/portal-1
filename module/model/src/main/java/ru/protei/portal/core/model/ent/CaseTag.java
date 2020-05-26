@@ -36,6 +36,10 @@ public class CaseTag implements Serializable {
 
     public CaseTag() {}
 
+    public CaseTag(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

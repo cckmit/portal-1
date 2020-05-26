@@ -27,7 +27,7 @@ public interface YoutrackApi {
 
     Result<YtEnumBundleElement> createCompany (YtEnumBundleElement company);
 
-    Result<YtEnumBundleElement> updateCompanyName (String companyId, YtEnumBundleElement company);
+    Result<YtEnumBundleElement> updateCompany(String companyId, YtEnumBundleElement company);
 
     Result<List<YtEnumBundleElement>> getCompanyByName (String companyName);
 }

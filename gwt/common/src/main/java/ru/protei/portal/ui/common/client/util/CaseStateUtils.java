@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CaseStateUtils {
 
@@ -56,7 +57,7 @@ public class CaseStateUtils {
     }
 
     public static Set<CaseState> getFilterCaseResolutionTimeActiveStates() {
-        return IssueFilterUtils.getStates(filterCaseResolutionTimeActiveStateIds);
+        return filterCaseResolutionTimeActiveStateIds.stream().map(id -> new CaseState(id)).collect(Collectors.toSet());
     }
 
     public static Map<Long, String> getJiraStatusComments() {

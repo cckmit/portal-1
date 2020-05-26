@@ -73,7 +73,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     @Override
     public void onGoToContractsClicked() {
-        fireEvent(new ContractEvents.Show());
+        fireEvent(new ContractEvents.Show(true));
     }
 
     private void loadDetails(Long id) {
@@ -116,7 +116,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
-        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makeLink(Project.class, value.getProjectId()));
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
 
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)

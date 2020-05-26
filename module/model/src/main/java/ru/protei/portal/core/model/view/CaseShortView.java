@@ -2,10 +2,12 @@ package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Сокращенное представление кейса
@@ -49,7 +51,6 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
-    // Вариант 1: mappedColumn + table + localColumn + remoteColumn + опционально sqlTableAlias
     @JdbcJoinedColumn( mappedColumn = "displayname", table = "person", localColumn = "INITIATOR", remoteColumn = "ID" )
     private String initiatorName;
 
@@ -80,14 +81,17 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "MANAGER", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id" )
-    })
-    private String managerCompanyName;
-
     @JdbcColumn(name = "pause_date")
     private Long pauseDate;
+
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
+
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String managerCompanyName;
+
+    // ManyToMany via CaseTagService
+    private List<CaseTag> tags;
 
     public CaseShortView() {
 
@@ -278,6 +282,22 @@ public class CaseShortView implements Serializable {
         return stateName;
     }
 
+    public List<CaseTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<CaseTag> tags) {
+        this.tags = tags;
+    }
+
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -311,8 +331,10 @@ public class CaseShortView implements Serializable {
                 ", managerName='" + managerName + '\'' +
                 ", managerShortName='" + managerShortName + '\'' +
                 ", isAttachmentExists=" + isAttachmentExists +
-                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", tags=" + tags +
                 '}';
     }
 }

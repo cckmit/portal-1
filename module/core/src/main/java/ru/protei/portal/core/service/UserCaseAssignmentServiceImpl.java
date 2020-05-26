@@ -1,7 +1,10 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -12,10 +15,12 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserCaseAssignment;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.UserCaseAssignmentTable;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -25,6 +30,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService {
 
@@ -52,7 +59,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
                     : En_ResultStatus.NOT_UPDATED);
         }
 
-        UserCaseAssignmentTable table = getUserCaseAssignmentTable(loginId);
+        UserCaseAssignmentTable table = getUserCaseAssignmentTable(token, loginId);
         return ok(table);
     }
 
@@ -81,7 +88,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
             return error(En_ResultStatus.NOT_REMOVED);
         }
 
-        UserCaseAssignmentTable table = getUserCaseAssignmentTable(loginId);
+        UserCaseAssignmentTable table = getUserCaseAssignmentTable(token, loginId);
         return ok(table);
     }
 
@@ -93,19 +100,54 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         }
 
         Long loginId = token.getUserLoginId();
-        UserCaseAssignmentTable table = getUserCaseAssignmentTable(loginId);
+        UserCaseAssignmentTable table = getUserCaseAssignmentTable(token, loginId);
         return ok(table);
     }
 
-    private UserCaseAssignmentTable getUserCaseAssignmentTable(long loginId) {
+    private UserCaseAssignmentTable getUserCaseAssignmentTable(AuthToken token, long loginId) {
+        UserCaseAssignmentTable table = new UserCaseAssignmentTable();
+        withUserCaseAssignments(table, loginId);
+        withCaseViews(table, token);
+        withCaseViewTags(table, token);
+        return table;
+    }
+
+    private void withUserCaseAssignments(UserCaseAssignmentTable table, long loginId) {
         List<UserCaseAssignment> userCaseAssignments = userCaseAssignmentDAO.findByLoginId(loginId);
         fillStateEntityOptions(userCaseAssignments);
         fillPersonShortViews(userCaseAssignments);
-        CaseQuery caseQuery = makeCaseQuery(userCaseAssignments);
-        List<CaseShortView> caseShortViews = caseQuery == null
-                ? new ArrayList<>()
-                : caseShortViewDAO.getSearchResult(caseQuery).getResults();
-        return new UserCaseAssignmentTable(userCaseAssignments, caseShortViews);
+        table.setUserCaseAssignments(userCaseAssignments);
+    }
+
+    private void withCaseViews(UserCaseAssignmentTable table, AuthToken token) {
+        CaseQuery caseQuery = makeCaseQuery(table.getUserCaseAssignments(), token);
+        long limit = config.data().getUiConfig().getIssueAssignmentDeskLimit();
+        boolean isOverflow = false;
+        List<CaseShortView> caseShortViews;
+        if (caseQuery == null) {
+            caseShortViews = new ArrayList<>();
+        } else {
+            Long total = caseShortViewDAO.count(caseQuery);
+            if (total > limit) {
+                caseQuery.setLimit(caseQuery.getOffset() + (int) limit);
+                isOverflow = true;
+            }
+            caseShortViews = caseShortViewDAO.getSearchResult(caseQuery).getResults();
+        }
+        table.setCaseShortViews(caseShortViews);
+        table.setCaseShortViewsLimit(limit);
+        table.setCaseShortViewsLimitOverflow(isOverflow);
+    }
+
+    private void withCaseViewTags(UserCaseAssignmentTable table, AuthToken token) {
+        List<CaseShortView> caseShortViews = table.getCaseShortViews();
+        List<Long> caseIds = stream(caseShortViews)
+                .map(CaseShortView::getId)
+                .collect(Collectors.toList());
+        caseTagService.getCaseObjectTags(token, caseIds)
+                .ifError(result -> log.warn("Failed to fetch case tags | status='{}', message='{}'", result.getStatus(), result.getMessage()))
+                .ifOk(tags -> assignTagsToCases(caseShortViews, tags));
+        table.setCaseShortViews(caseShortViews);
     }
 
     private void fillStateEntityOptions(List<UserCaseAssignment> userCaseAssignments) {
@@ -155,7 +197,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         if (StringUtils.isEmpty(query)) {
             return;
         }
-        Map<Long, PersonShortView> personMap = CollectionUtils.stream(
+        Map<Long, PersonShortView> personMap = stream(
                 personDAO.partialGetListByCondition(
                     "id IN (" + query + ")",
                     Collections.emptyList(),
@@ -180,7 +222,35 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         }
     }
 
-    private CaseQuery makeCaseQuery(List<UserCaseAssignment> userCaseAssignments) {
+    private void assignTagsToCases(List<CaseShortView> caseViews, List<CaseObjectTag> tags) {
+        for (CaseObjectTag tag : emptyIfNull(tags)) {
+            CaseShortView caseView = findCaseView(caseViews, tag.getCaseId());
+            assignTag(caseView, tag);
+        }
+    }
+
+    private CaseShortView findCaseView(List<CaseShortView> caseViews, Long caseId) {
+        for (CaseShortView caseView : emptyIfNull(caseViews)) {
+            if (Objects.equals(caseView.getId(), caseId)) {
+                return caseView;
+            }
+        }
+        return null;
+    }
+
+    private void assignTag(CaseShortView caseView, CaseObjectTag caseTag) {
+        if (caseView == null) {
+            return;
+        }
+        List<CaseTag> tags = caseView.getTags();
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        tags.add(caseTag.getTag());
+        caseView.setTags(tags);
+    }
+
+    private CaseQuery makeCaseQuery(List<UserCaseAssignment> userCaseAssignments, AuthToken token) {
         if (CollectionUtils.isEmpty(userCaseAssignments)) {
             return null;
         }
@@ -202,6 +272,7 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         CaseQuery query = new CaseQuery();
         query.setStateIds(stateIds);
         query.setManagerIds(managerIds);
+        query.setManagerCompanyIds(Collections.singletonList(token.getCompanyId()));
         return query;
     }
 
@@ -230,6 +301,8 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     }
 
     @Autowired
+    CaseTagService caseTagService;
+    @Autowired
     UserCaseAssignmentDAO userCaseAssignmentDAO;
     @Autowired
     CaseShortViewDAO caseShortViewDAO;
@@ -237,4 +310,8 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     PersonDAO personDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    PortalConfig config;
+
+    private final static Logger log = LoggerFactory.getLogger(UserCaseAssignmentServiceImpl.class);
 }

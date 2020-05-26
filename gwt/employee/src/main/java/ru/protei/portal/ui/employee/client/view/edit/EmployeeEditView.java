@@ -2,8 +2,11 @@ package ru.protei.portal.ui.employee.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -11,6 +14,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -45,6 +49,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
         birthDay.setMandatory(false);
 
+        form.setEncoding(FormPanel.ENCODING_MULTIPART);
+        form.setMethod(FormPanel.METHOD_POST);
+        fileUpload.getElement().setAttribute("accept", AttachmentType.JPEG.mimeType);
     }
 
     @Override
@@ -118,6 +125,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public void setBirthDayTimeZone (TimeZone timeZone) {
+        birthDay.setTimeZone(timeZone);
+    }
+
+    @Override
     public HasText workPhone() {
         return workPhone;
     }
@@ -148,16 +160,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasEnabled companyDepartmentEnabled() {
-        return companyDepartmentSelector;
-    }
-
-    @Override
-    public HasEnabled workerPositionEnabled() {
-        return workerPositionSelector;
-    }
-
-    @Override
     public HasValue<EntityOption> company() {
         return company;
     }
@@ -165,11 +167,6 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasValue<En_Gender> gender() {
         return gender;
-    }
-
-    @Override
-    public HasValidable companyValidator() {
-        return company;
     }
 
     @Override
@@ -203,28 +200,8 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
-    public HasValidable companyDepartmentValidator(){
-        return companyDepartmentSelector;
-    }
-
-    @Override
-    public HasValidable workerPositionValidator(){
-        return workerPositionSelector;
-    }
-
-    @Override
     public HasValidable genderValidator(){
         return gender;
-    }
-
-    @Override
-    public HasVisibility saveVisibility() {
-        return saveButton;
-    }
-
-    @Override
-    public HasEnabled companyEnabled () {
-        return company;
     }
 
     @Override
@@ -298,6 +275,19 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public HasValue<Boolean> changeAccount() { return changeAccount; }
+
+    @Override
+    public HasVisibility changeAccountVisibility() {
+        return changeAccountContainer;
+    }
+
+    @Override
+    public HasWidgets getPositionsContainer() {
+        return positionsContainer;
+    }
+
+    @Override
     public void updateCompanyDepartments(Long companyId) {
         companyDepartmentSelector.updateCompanyDepartments(companyId);
     }
@@ -317,6 +307,39 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         workerPositionSelector.setAddButtonVisible(isVisible);
     }
 
+    @Override
+    public HandlerRegistration addChangeHandler(ChangeHandler changeHandler) {
+        return fileUpload.addChangeHandler(changeHandler);
+    }
+
+    @Override
+    public void submitAvatar(String url){
+        if(!fileUpload.getFilename().isEmpty()) {
+            form.setAction(url);
+            form.submit();
+        }
+    }
+
+    @Override
+    public void setFileUploadEnabled(boolean isEnabled){
+        fileUpload.setEnabled(isEnabled);
+        imageContainer.setStyleName("upload-enabled", isEnabled);
+    }
+
+    @Override
+    public HandlerRegistration addSubmitCompleteHandler(FormPanel.SubmitCompleteHandler submitCompleteHandler) {
+        return form.addSubmitCompleteHandler(submitCompleteHandler);
+    }
+
+    @Override
+    public void setAvatarUrl(String url) {
+        image.setUrl(url);
+    }
+
+    @Override
+    public void setAvatarLabelText(String text){
+        imageLabel.setText(text);
+    }
 
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
@@ -336,6 +359,13 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     public void onFireClicked( ClickEvent event ) {
         if (activity != null) {
             activity.onFireClicked();
+        }
+    }
+
+    @UiHandler("addPositionBtn")
+    public void onAddPositionClicked( ClickEvent event ) {
+        if (activity != null) {
+            activity.onAddPositionBtnClicked();
         }
     }
 
@@ -421,6 +451,12 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     LabelElement workEmailLabel;
 
+    @UiField
+    CheckBox changeAccount;
+
+    @UiField
+    HTMLPanel changeAccountContainer;
+
     @Inject
     @UiField(provided = true)
     CompanyDepartmentSelector companyDepartmentSelector;
@@ -440,11 +476,33 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     HTMLPanel employeeFired;
 
+    @UiField
+    HTMLPanel positionsContainer;
+
+    @UiField
+    Image image;
+
+    @UiField
+    Label imageLabel;
+
+    @UiField
+    HTMLPanel imageContainer;
+
+    @UiField
+    FormPanel form;
+
+    @UiField
+    FileUpload fileUpload;
+
+    @UiField
+    Button addPositionBtn;
+
     private Timer limitedFieldsValidationTimer = new Timer() {
         @Override
         public void run() {
             if (activity != null) {
                 activity.validateLimitedFields();
+                activity.checkLastNameChanged();
             }
         }
     };

@@ -35,7 +35,9 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -113,6 +115,7 @@ public class TestPortalApiController extends BaseServiceTest {
         makeCaseObject( person );
 
         CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setManagerCompanyIds(Collections.singletonList(person.getCompanyId()));
         caseApiQuery.setManagerIds(Collections.singletonList(person.getId()));
 
         ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);

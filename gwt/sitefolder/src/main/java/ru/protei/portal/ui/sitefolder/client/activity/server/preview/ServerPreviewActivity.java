@@ -39,7 +39,7 @@ public abstract class ServerPreviewActivity implements Activity, AbstractServerP
     @Override
     public void onOpenAppsClicked() {
         if (serverId != null) {
-            fireEvent(new SiteFolderAppEvents.Show(serverId));
+            fireEvent(new SiteFolderAppEvents.Show(serverId, false));
         }
     }
 

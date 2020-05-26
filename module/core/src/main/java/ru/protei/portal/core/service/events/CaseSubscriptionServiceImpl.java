@@ -4,8 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
@@ -64,9 +63,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     }
 
     @Override
-    public Set<NotificationEntry> subscribers(EmployeeRegistrationEvent event) {
+    public Set<NotificationEntry> subscribers(AssembledEmployeeRegistrationEvent event) {
         HashSet<NotificationEntry> notifiers = new HashSet<>(employeeRegistrationEventSubscribers);
-        Optional.ofNullable(event.getEmployeeRegistration())
+        Optional.ofNullable(event.getNewState())
                 .map(EmployeeRegistration::getCreatorId)
                 .map(personDAO::get)
                 .map(Person::getContactInfo)

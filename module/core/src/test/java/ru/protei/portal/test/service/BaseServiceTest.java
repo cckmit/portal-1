@@ -13,7 +13,9 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -69,6 +71,7 @@ public class BaseServiceTest {
         caseObject.setCaseNumber( caseNo );
         caseObject.setStateId( CrmConstants.State.CREATED );
         caseObject.setStateName( "created" );
+        caseObject.setManagerCompanyId( person.getCompanyId() );
         caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );

@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -26,7 +29,10 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
-    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME, PHONE_PROJECT_NAME,PORTAL_URL;
+    private String EQUIPMENT_PROJECT_NAME;
+    private String ADMIN_PROJECT_NAME;
+    private String PHONE_PROJECT_NAME;
+    private String PORTAL_URL;
     private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
@@ -69,7 +75,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
-            employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
+            employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName", "displayname" ) );
         }
         return ok(employeeRegistration);
     }
@@ -97,7 +103,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if(employeeRegistration == null)
             return error(En_ResultStatus.INTERNAL_ERROR);
 
-        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+        employeeRegistration.setCurators(personDAO.partialGetListByKeys(employeeRegistration.getCuratorsIds(), "id", "displayname"));
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
             String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
@@ -105,7 +111,67 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return ok(id);
+        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> updateEmployeeRegistration(AuthToken token, EmployeeRegistrationShortView employeeRegistrationShortView) {
+        if (employeeRegistrationShortView == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EmployeeRegistration oldEmployeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
+        oldEmployeeRegistration.setCurators(personDAO.partialGetListByKeys(oldEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
+
+        if (!isEmployeeRegistrationChanged(oldEmployeeRegistration, employeeRegistrationShortView)) {
+            return ok(oldEmployeeRegistration.getId());
+        }
+
+        EmployeeRegistration newEmployeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
+        newEmployeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
+        newEmployeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
+
+        employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators");
+        newEmployeeRegistration.setCurators(personDAO.partialGetListByKeys(newEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
+
+        boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate(), newEmployeeRegistration.getEmploymentDate());
+
+        if (YOUTRACK_INTEGRATION_ENABLED && isEmploymentDateChanged) {
+            updateYouTrackEmploymentDate(oldEmployeeRegistration.getId(), oldEmployeeRegistration.getEmploymentDate());
+        }
+
+        return ok(oldEmployeeRegistration.getId()).publishEvent(new AssembledEmployeeRegistrationEvent(this, oldEmployeeRegistration, newEmployeeRegistration));
+    }
+
+    private void updateYouTrackEmploymentDate(Long employeeRegistrationId, Date employmentDate) {
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setCaseId(employeeRegistrationId);
+
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(query);
+
+        for (CaseLink nextLink : CollectionUtils.emptyIfNull(listByQuery)) {
+            youtrackService.addIssueSystemComment(
+                    nextLink.getRemoteId(),
+                    "Дата приема на работу была изменена: " + new SimpleDateFormat("dd.MM.yyyy").format(employmentDate)
+            );
+        }
+    }
+
+    private boolean isEmployeeRegistrationChanged(EmployeeRegistration employeeRegistration, EmployeeRegistrationShortView employeeRegistrationShortView) {
+        if (!Objects.equals(employeeRegistration.getEmploymentDate(), employeeRegistrationShortView.getEmploymentDate())) {
+            return true;
+        }
+
+        if (!Objects.equals(employeeRegistration.getCuratorsIds().size(), employeeRegistrationShortView.getCuratorIds().size())) {
+            return true;
+        }
+
+        if (!employeeRegistration.getCuratorsIds().containsAll(employeeRegistrationShortView.getCuratorIds())) {
+            return true;
+        }
+
+        return false;
     }
 
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
@@ -136,6 +202,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
                 (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() ),
+                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
+                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
                 "\n", "Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
@@ -206,6 +274,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
+                "\n", employeeRegistration.getEmploymentDate() == null ? "" :
+                        "Дата приёма на работу: " +  new SimpleDateFormat("dd.MM.yyyy").format(employeeRegistration.getEmploymentDate()),
                 "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
         ).toString();
 

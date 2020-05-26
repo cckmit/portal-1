@@ -87,6 +87,13 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case REGION:
                 addOption( En_SortField.name );
                 break;
+            case SUBNET:
+                addOption( En_SortField.address );
+                break;
+            case RESERVED_IP:
+                addOption( En_SortField.ip_address );
+                addOption( En_SortField.check_date);
+                break;
         }
     }
 

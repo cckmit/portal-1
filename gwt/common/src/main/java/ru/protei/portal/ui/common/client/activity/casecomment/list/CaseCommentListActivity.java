@@ -386,7 +386,7 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isManagerChangeComment ) {
-            itemView.setManager(transliteration(value.getCaseManagerShortName()));
+            itemView.setManagerInfo(makeManagerInfo(value.getCaseManagerShortName(), value.getManagerCompanyName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
@@ -399,6 +399,10 @@ public abstract class CaseCommentListActivity
         itemViewToModel.put( itemView, value );
 
         return itemView;
+    }
+
+    private String makeManagerInfo(String managerShortName, String managerCompanyName) {
+        return transliteration(managerShortName + " (" + managerCompanyName + ")");
     }
 
     private void updateTimeElapsedType(En_TimeElapsedType type, CaseComment value, AbstractCaseCommentItemView itemView) {

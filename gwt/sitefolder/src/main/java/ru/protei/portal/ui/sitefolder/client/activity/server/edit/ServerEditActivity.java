@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.server.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -36,7 +37,12 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         serverIdOfAppsToBeCloned = null;
 
@@ -79,20 +85,20 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
                     serverIdOfAppsToBeCloned = null;
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
                     fireEvent(new SiteFolderServerEvents.Changed(result));
-                    fireEvent(new Back());
+                    fireBackEvent.run();
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
     public void onOpenClicked() {
         if (server != null) {
-            fireEvent(new SiteFolderAppEvents.Show(server.getId()));
+            fireEvent(new SiteFolderAppEvents.Show(server.getId(), false));
         }
     }
 
@@ -119,7 +125,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
     private void fillView(Server server) {
         this.server = server;
-        boolean isNotNew = server.getId() != null;
+        boolean isNew = isNew(server);
         boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         view.setCompanyId(server.getPlatform() == null ? null : server.getPlatform().getCompanyId());
         view.name().setValue(server.getName());
@@ -128,10 +134,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         view.parameters().setValue(server.getParams());
         view.comment().setValue(server.getComment());
         view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
-        view.openButtonVisibility().setVisible(isNotNew);
-        view.listContainerVisibility().setVisible(isNotNew);
-        view.listContainerHeaderVisibility().setVisible(isNotNew);
-        if (isNotNew) {
+        view.openButtonVisibility().setVisible(!isNew);
+        view.listContainerVisibility().setVisible(!isNew);
+        view.listContainerHeaderVisibility().setVisible(!isNew);
+        if (!isNew) {
             fireEvent(new SiteFolderAppEvents.ShowList(view.listContainer(), server.getId()));
         }
     }
@@ -160,6 +166,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         return false;
     }
 
+    private boolean isNew(Server server) {
+        return server.getId() == null;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -172,4 +182,5 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     private Server server;
     private Long serverIdOfAppsToBeCloned;
     private AppEvents.InitDetails initDetails;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

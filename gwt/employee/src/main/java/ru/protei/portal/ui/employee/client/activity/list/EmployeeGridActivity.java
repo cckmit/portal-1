@@ -3,6 +3,7 @@ package ru.protei.portal.ui.employee.client.activity.list;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -30,7 +31,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(EmployeeEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
             fireEvent(new ForbiddenEvents.Show());
@@ -52,7 +53,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
         }
 
-        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
+        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
     }
 
     @Event
@@ -62,7 +63,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         currentViewType = currentViewType == ViewType.TABLE ? ViewType.LIST : ViewType.TABLE;
-        onShow(new EmployeeEvents.Show());
+        onShow(new EmployeeEvents.Show(false));
 
         localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
     }
@@ -128,7 +129,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     PolicyService policyService;
 
     private ViewType currentViewType;
-    private boolean topBrassPage;
     private EmployeeQuery query;
     private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
 }

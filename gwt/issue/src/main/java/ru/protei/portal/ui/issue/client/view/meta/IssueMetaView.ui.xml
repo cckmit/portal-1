@@ -38,7 +38,7 @@
                     </div>
                 </div>
             </g:HTMLPanel>
-            <div class="row">
+            <g:HTMLPanel ui:field="productContainer" styleName="row">
                 <div class="col-md-12">
                     <devunit:DevUnitFormSelector ui:field="product"
                                                  validation="false"
@@ -46,14 +46,31 @@
                                                  hasNullValue="true"
                                                  mandatory="false"/>
                 </div>
+            </g:HTMLPanel>
+        </div>
+
+        <div class="form-group m-t-10 m-b-0">
+            <label><ui:text from="{lang.issueManagerInfo}"/></label>
+        </div>
+
+        <div class="form-group-attached form-group">
+            <div class="row">
+                <div class="col-md-12">
+                    <company:CompanyFormSelector ui:field="managerCompany"
+                                                 validation="false"
+                                                 header="{lang.issueCompany}"
+                                                 hasNullValue="false"
+                                                 mandatory="false"/>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <person:EmployeeFormSelector ui:field="manager"
-                                                 validation="false"
-                                                 header="{lang.issueManager}"
-                                                 hasNullValue="true"
-                                                 mandatory="false"/>
+                    <person:PersonFormSelector ui:field="manager"
+                                               validation="false"
+                                               header="{lang.issueManager}"
+                                               hasNullValue="true"
+                                               mandatory="false"
+                                               fired="false"/>
                 </div>
             </div>
         </div>
@@ -61,6 +78,7 @@
         <div class="form-group m-t-10 m-b-0">
             <label><ui:text from="{lang.issueInitiatorInfo}"/></label>
         </div>
+
         <div class="form-group-attached form-group">
             <div class="row">
                 <div class="col-md-12">
@@ -71,7 +89,7 @@
                                                  mandatory="false"/>
                 </div>
             </div>
-            <div class="row">
+            <g:HTMLPanel ui:field="initiatorContainer" styleName="row">
                 <div class="col-md-12">
                     <person:PersonFormSelector ui:field="initiator"
                                                validation="false"
@@ -80,15 +98,15 @@
                                                hasNullValue="true"
                                                fired="false"/>
                 </div>
-            </div>
-            <g:HTMLPanel ui:field="platformContainer" styleName="row">
+            </g:HTMLPanel>
+            <div class="row">
                 <div class="col-md-12">
                     <platform:PlatformFormSelector ui:field="platform"
                                                    validation="false"
                                                    header="{lang.siteFolderPlatform}"
                                                    mandatory="false"/>
                 </div>
-            </g:HTMLPanel>
+            </div>
         </div>
 
         <jirasla:JiraSLASelector ui:field="jiraSlaSelector" visible="false" styleName="jira-sla-selector form-group"/>
@@ -106,6 +124,7 @@
                                 <ui:text from="{lang.projectSlaReactionTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaReactionTime"
+                                                 fullDayTime="true"
                                                  styleName="inline m-l-10 small"/>
                         </div>
                         <div class="col-md-12">
@@ -113,6 +132,7 @@
                                 <ui:text from="{lang.projectSlaTemporaryTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaTemporarySolutionTime"
+                                                 fullDayTime="true"
                                                  styleName="inline m-l-10 small"/>
                         </div>
                         <div class="col-md-12">
@@ -120,6 +140,7 @@
                                 <ui:text from="{lang.projectSlaFullTime}"/>
                             </label>
                             <timefield:TimeLabel ui:field="slaFullSolutionTime"
+                                                 fullDayTime="true"
                                                  styleName="inline m-l-10 small"/>
                         </div>
                     </g:HTMLPanel>

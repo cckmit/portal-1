@@ -82,6 +82,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasText companyNameErrorLabel() {
+        return companyNameErrorLabel;
+    }
+
+    @Override
+    public HasVisibility companyNameErrorLabelVisibility() {
+        return companyNameErrorLabel;
+    }
+
+    @Override
     public HasValue<EntityOption> parentCompany() {
         return parentCompany;
     }
@@ -165,6 +175,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     ValidableTextBox companyName;
+
+    @UiField
+    Label companyNameErrorLabel;
 
     @UiField
     Element verifiableIcon;

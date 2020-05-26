@@ -5,8 +5,10 @@ public interface AbstractEmployeeEditActivity {
     void onCancelClicked();
     void onFireClicked();
     void validateLimitedFields();
+    void checkLastNameChanged();
     void onCompanySelected();
     void onGenderSelected();
+    void onAddPositionBtnClicked();
 
     void onAddCompanyDepartmentClicked();
     void onEditCompanyDepartmentClicked(Long id, String name);
