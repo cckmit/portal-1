@@ -349,21 +349,16 @@ public class TestPortalApiController extends BaseServiceTest {
         accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
         Long caseNumber3 = getCaseNumberFromResult(accept);
 
-        List<Long> caseNumbersCreated = new ArrayList<>();
-        caseNumbersCreated.add(caseNumber1);
-        caseNumbersCreated.add(caseNumber2);
-        caseNumbersCreated.add(caseNumber3);
-
         String numbers = caseNumber1 + ",\n" + caseNumber2 + ",\n" + caseNumber1 + ",\n" + caseNumber3;
 
         //Устанавливаем 4 номера (один - дубликат)
         accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
 
-        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+        Assert.assertTrue("Error message must contains duplicate numbers", accept.andReturn().getResponse().getContentAsString().contains(caseNumber1.toString()));
 
         List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
 
-        Assert.assertTrue("Duplicate are added!", compareLists(caseNumbersFromDB, caseNumbersCreated));
+        Assert.assertTrue("List with duplicate are added!", caseNumbersFromDB.isEmpty());
 
         removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
     }

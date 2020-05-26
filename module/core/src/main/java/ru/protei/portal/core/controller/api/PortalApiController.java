@@ -227,7 +227,11 @@ public class PortalApiController {
         try {
             crmNumberList = makeCrmNumberList(crmNumbers);
 
-            removeDuplicates(crmNumberList);
+            String duplicates = findDuplicates(crmNumberList);
+            if ( !duplicates.isEmpty() ){
+                log.warn( "updateYoutrackCrmNumbers(): find duplicates: {}", duplicates);
+                return "В списке найдены дубликаты: " + duplicates;
+            }
 
             Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
                     .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, crmNumberList ))
@@ -378,10 +382,25 @@ public class PortalApiController {
         }
     }
 
-    private void removeDuplicates(List<Long> crmNumberList) {
-        Set<Long> set = new HashSet<>(crmNumberList);
-        crmNumberList.clear();
-        crmNumberList.addAll(set);
+    private String findDuplicates(List<Long> crmNumberList) {
+        Map<Long, Integer> crmNumberMap = new HashMap<>();
+
+        crmNumberList.forEach(crmNumber -> {
+            if (crmNumberMap.containsKey(crmNumber)) {
+                crmNumberMap.put(crmNumber, crmNumberMap.get(crmNumber) + 1);
+            } else {
+                crmNumberMap.put(crmNumber, 1);
+            }
+        });
+
+        StringBuilder duplicateNumbers = new StringBuilder();
+
+        for (Map.Entry<Long, Integer> entry : crmNumberMap.entrySet()) {
+            duplicateNumbers.append(entry.getValue().equals(1) ? "" : entry.getKey());
+
+        }
+
+        return duplicateNumbers.toString();
     }
 
     private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
