@@ -227,7 +227,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private CaseComment parseStateChange(Long caseId, Long caseLinkId, YouTrackIssueStateChange issueStateChange) {
 
-        Long newState = issueStateChange.getAddedId();
+        Long newState = issueStateChange.getAddedCaseStateId();
         if (newState == null) {
             return null;
         }

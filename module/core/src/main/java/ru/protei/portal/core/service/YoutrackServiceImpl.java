@@ -305,8 +305,8 @@ public class YoutrackServiceImpl implements YoutrackService {
                 ? null
                 : (YtStateBundleElement) activityItem.removed.get(0);
         YouTrackIssueStateChange issueStateChange = new YouTrackIssueStateChange();
-        issueStateChange.setAddedId(YoutrackConstansMapping.toCaseState(added != null ? added.name : null));
-        issueStateChange.setRemovedId(YoutrackConstansMapping.toCaseState(removed != null ? removed.name : null));
+        issueStateChange.setAddedCaseStateId(YoutrackConstansMapping.toCaseState(added != null ? added.name : null));
+        issueStateChange.setRemovedCaseStateId(YoutrackConstansMapping.toCaseState(removed != null ? removed.name : null));
         issueStateChange.setTimestamp(activityItem.timestamp);
         issueStateChange.setAuthorLogin(activityItem.author != null ? activityItem.author.login : null);
         issueStateChange.setAuthorFullName(activityItem.author != null ? activityItem.author.fullName : null);
