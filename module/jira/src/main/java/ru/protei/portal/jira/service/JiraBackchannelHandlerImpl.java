@@ -117,18 +117,31 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
     private String replaceImageLink(String text, Long personId, Collection<Attachment> attachments) {
         Matcher matcher = jiraImagePattern.matcher(text);
-        String resultText = text;
-        while (matcher.find()) {
-            String group = matcher.group();
-            JiraUtils.ImageNode imageNode = parseImageNode(group.substring(1, group.length() - 1));
-            Optional<String> imageString = attachments.stream()
-                    .filter(a -> a.getExtLink().equals(imageNode.link) && a.getCreatorId().equals(personId))
-                    .max(Comparator.comparing(Attachment::getCreated))
-                    .map(attachment -> makeJiraImageString(attachment.getFileName(),
-                            imageNode.alt != null ? imageNode.alt : attachment.getFileName()));
-            if (imageString.isPresent()) {
-                resultText = resultText.replace(group, imageString.get());
-            }
+        String resultText;
+        if (!matcher.find()) {
+            resultText = text;
+        } else {
+            StringBuffer buffer = new StringBuffer();
+            int mark = 0;
+
+            do {
+                buffer.append(text, mark, matcher.start());
+                mark = matcher.end();
+                String originalString = matcher.group(2);
+                Optional<String> imageString = Optional.ofNullable(parseImageNode(originalString))
+                        .flatMap(node -> attachments.stream()
+                                .filter(a -> a.getExtLink().equals(node.filename) && a.getCreatorId().equals(personId))
+                                .max(Comparator.comparing(Attachment::getCreated))
+                                .map(attachment -> makeJiraImageString(attachment.getFileName(),
+                                        node.alt != null ? node.alt : attachment.getFileName())));
+                if (imageString.isPresent()) {
+                    buffer.append(imageString.get());
+                } else {
+                    buffer.append('!').append(originalString).append('!');
+                }
+            } while (matcher.find());
+
+            resultText =  buffer.append(text, mark, text.length()).toString();
         }
         return resultText;
     }

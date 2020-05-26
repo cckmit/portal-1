@@ -449,27 +449,45 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private void replaceImageLink(CaseComment caseComment,
-                                    List<ru.protei.portal.core.model.ent.Attachment> attachments) {
-        Matcher matcher = jiraImagePattern.matcher(caseComment.getText());
-        while (matcher.find()) {
-            String group = matcher.group();
-            JiraUtils.ImageNode imageNode = parseImageNode(group.substring(1, group.length() - 1));
-            attachments.stream()
-                    .filter(a -> a.getFileName().equals(imageNode.link) && a.getCreatorId().equals(caseComment.getAuthorId()))
-                    .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
-                    .ifPresent(attachment -> {
-                        String imageString = makeJiraImageString(attachment.getExtLink(),
-                                attachment.getFileName() + (imageNode.alt != null ? ", imageNode.alt" : ""));
-                        caseComment.setText(caseComment.getText().replace(group, imageString));
+                                  List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        String text = caseComment.getText();
+        Matcher matcher = jiraImagePattern.matcher(text);
+        String resultText;
+        if (!matcher.find()) {
+            resultText = text;
+        } else {
+            StringBuffer buffer = new StringBuffer();
+            int mark = 0;
 
-                        List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
-                        if (caseAttachments == null) {
-                            caseAttachments = new ArrayList<>();
-                        }
-                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
-                        caseComment.setCaseAttachments(caseAttachments);
-                    });
+            do {
+                buffer.append(text, mark, matcher.start());
+                mark = matcher.end();
+                String originalString = matcher.group(2);
+                Optional<String> imageString = Optional.ofNullable(parseImageNode(originalString))
+                        .flatMap(node -> attachments.stream()
+                                .filter(a -> a.getFileName().equals(node.filename) && a.getCreatorId().equals(caseComment.getAuthorId()))
+                                .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
+                                .map(attachment -> {
+                                    String imageString1 = makeJiraImageString(attachment.getExtLink(),
+                                            attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""));
+                                    List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
+                                    if (caseAttachments == null) {
+                                        caseAttachments = new ArrayList<>();
+                                    }
+                                    caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
+                                    caseComment.setCaseAttachments(caseAttachments);
+                                    return imageString1;
+                                }));
+                if (imageString.isPresent()) {
+                    buffer.append(imageString.get());
+                } else {
+                    buffer.append('!').append(originalString).append('!');
+                }
+            } while (matcher.find());
+
+            resultText = buffer.append(text, mark, text.length()).toString();
         }
+        caseComment.setText(resultText);
     }
 
     private En_CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
