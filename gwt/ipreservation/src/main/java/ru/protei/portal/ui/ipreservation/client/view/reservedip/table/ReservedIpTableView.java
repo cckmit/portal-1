@@ -119,9 +119,9 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     }
 
     private void initTable () {
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT) );
-        refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW) );
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE) );
+        editClickColumn.setEnabledPredicate(v -> activity.hasEditPrivileges(v.getOwnerId()) );
+        refreshClickColumn.setEnabledPredicate(v -> activity.hasRefreshPrivileges() );
+        removeClickColumn.setEnabledPredicate(v -> activity.hasRemovePrivileges(v.getOwnerId()) );
 
         address = new AddressColumn( lang );
         lastCheck = new LastCheckColumn( lang );
@@ -208,9 +208,6 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    PolicyService policyService;
 
     @Inject
     EditClickColumn<ReservedIp> editClickColumn;

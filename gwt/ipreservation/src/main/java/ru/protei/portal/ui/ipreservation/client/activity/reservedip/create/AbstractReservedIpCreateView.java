@@ -27,7 +27,7 @@ public interface AbstractReservedIpCreateView extends IsWidget {
     HasValue<DateIntervalWithType> useRange();
 
     void setFreeIpCountLabel(int count);
-
+    void setEnableUnlimited(boolean value);
     void setIpAddressStatus (NameStatus status);
 
     HasValidable ipAddressValidator();

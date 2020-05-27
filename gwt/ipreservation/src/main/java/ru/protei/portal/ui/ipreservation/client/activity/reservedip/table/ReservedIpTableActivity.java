@@ -262,18 +262,25 @@ public abstract class ReservedIpTableActivity
         }
     }
 
-    private boolean hasEditPrivileges(Long ownerId) {
+    @Override
+    public boolean hasEditPrivileges(Long ownerId) {
         boolean isAdmin = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_EDIT);
         boolean isUserWithAccess = policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
                 && Objects.equals(ownerId, policyService.getProfile().getId());
         return isAdmin || isUserWithAccess;
     }
 
-    private boolean hasRemovePrivileges(Long ownerId) {
+    @Override
+    public boolean hasRemovePrivileges(Long ownerId) {
         boolean isAdmin = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_REMOVE);
         boolean isUserWithAccess = policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)
                 && Objects.equals(ownerId, policyService.getProfile().getId());
         return isAdmin || isUserWithAccess;
+    }
+
+    @Override
+    public boolean hasRefreshPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW);
     }
 
     private void showError(String error) {

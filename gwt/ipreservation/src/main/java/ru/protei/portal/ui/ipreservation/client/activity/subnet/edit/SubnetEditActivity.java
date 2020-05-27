@@ -70,14 +70,14 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
 
     @Override
     public void onChangeAddress() {
-        String value = view.address().getValue().trim();
 
-        if (value.isEmpty()) {
+        if (!view.addressValidator().isValid()) {
             view.setAddressStatus(NameStatus.NONE);
             return;
         }
+
         ipReservationService.isSubnetAddressExists(
-                value,
+                view.address().getValue().trim(),
                 subnet.getId(),
                 new RequestCallback<Boolean>() {
                     @Override

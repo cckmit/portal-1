@@ -117,6 +117,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         this.freeIpCountLabel.setInnerText(String.valueOf(count));
     }
 
+    @Override
+    public void setEnableUnlimited(boolean value) { useRange.setEnableUnlimited(value); }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
