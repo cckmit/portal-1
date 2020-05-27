@@ -1,6 +1,7 @@
 package ru.protei.portal.test.service;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import java.util.Date;
 public class IpReservationServiceTest extends BaseServiceTest {
 
     @Test
+    @Ignore
     public void testCreateAndGetSubnet () {
 
         Subnet subnet = createTestSubnet("255.255.255");

@@ -283,24 +283,35 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             if (addResult.isError()){
                 return error(addResult.getStatus(), addResult.getMessage());
             }
-            makeAudit(caseId, En_AuditType.LINK_CREATE, token);
+            makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
         }
 
         for (Long caseId : listCaseIdsToRemove) {
+            makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
+
             Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());
             }
-            makeAudit(caseId, En_AuditType.LINK_REMOVE, token);
         }
 
         return ok("");
 
     }
 
-    private void makeAudit(Long caseLinkId, En_AuditType type, AuthToken token){
-        AuditableObject object = caseLinkDAO.get(caseLinkId);
+    private void makeAudit(Long caseId, String youtrackId, En_AuditType type, AuthToken token){
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setCaseId( caseId );
+        caseLinkQuery.setRemoteId(youtrackId);
+        caseLinkQuery.setType( En_CaseLink.YT );
+        List<CaseLink> linksList = caseLinkDAO.getListByQuery(caseLinkQuery);
 
+        if (linksList.size() != 1){
+            log.warn("makeAudit(): fail to find link with caseId={} and youtrackId={}", caseId, youtrackId);
+            return;
+        }
+
+        AuditableObject object = linksList.get(0);
         AuditObject auditObject = new AuditObject();
         auditObject.setCreated( new Date() );
         auditObject.setType(type);

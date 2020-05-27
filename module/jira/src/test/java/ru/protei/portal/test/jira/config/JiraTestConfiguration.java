@@ -211,6 +211,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
+    }
+
+    @Bean
     public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
         return new CaseStateWorkflowDAO_Impl();
     }
