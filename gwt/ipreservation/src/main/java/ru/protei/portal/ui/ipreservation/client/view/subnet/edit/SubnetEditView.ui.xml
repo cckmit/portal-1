@@ -11,7 +11,7 @@
             <div class="row">
                 <div class="form-group col-md-9">
                     <label>
-                        <ui:text from="{lang.reservedIpSubnetAddress}"/>
+                        <ui:text from="{lang.reservedIpIpAddress}"/>
                     </label>
                     <div class="verifiable">
                         <i ui:field="verifiableIcon"/>

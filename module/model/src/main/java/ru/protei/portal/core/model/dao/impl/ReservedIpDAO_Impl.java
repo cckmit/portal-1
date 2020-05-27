@@ -46,7 +46,10 @@ public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 String arg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                condition.append(" and (ip_address like ? or mac_address like ?)");
+                condition.append(" and (ip_address like ? or mac_address like ? or ")
+                         .append(getTableName())
+                         .append(".comment like ? )");
+                args.add(arg);
                 args.add(arg);
                 args.add(arg);
             }

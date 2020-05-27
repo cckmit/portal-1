@@ -99,6 +99,11 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     }
 
     @Override
+    public void onOwnerChanged() {
+        view.ownerValidator().setValid(view.owner().getValue() != null);
+    }
+
+    @Override
     public void onChangeIpAddress() {
 
         if (!view.ipAddressValidator().isValid()) {
@@ -170,6 +175,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 new DateInterval(new Date(), null), En_DateIntervalType.MONTH));
         view.comment().setText("");
 
+        view.ownerValidator().setValid(view.owner().getValue() != null);
         view.setEnableUnlimited(hasSystemPrivileges());
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(isCreateAvailable());
@@ -237,7 +243,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             }
         }
 
-        if(view.owner().getValue() == null){
+        if(!view.ownerValidator().isValid()){
             showError(lang.errSaveReservedIpNeedSelectOwner());
             return false;
         }

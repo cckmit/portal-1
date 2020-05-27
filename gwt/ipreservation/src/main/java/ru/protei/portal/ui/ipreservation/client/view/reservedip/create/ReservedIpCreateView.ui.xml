@@ -54,7 +54,8 @@
                     <person:EmployeeButtonSelector ui:field="ipOwner"
                                                    hasNullValue="false"
                                                    defaultValue="{lang.selectReservedIpOwner}"
-                                                   firedEmployeesVisible="false"/>
+                                                   firedEmployeesVisible="false"
+                                                   validation="true"/>
                 </div>
             </div>
             <div class="row">

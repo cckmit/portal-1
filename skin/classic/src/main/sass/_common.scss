@@ -3335,81 +3335,141 @@ label {
 }
 
 .subnet {
-  td {
-    small {
-      font-size: 85%;
+  table {
+    tbody {
+      tr {
+        td {
+          height: 35px;
+
+          > div {
+            height: 35px;
+            max-height: 35px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
     }
 
-    p {
-      margin: 0;
-      font-size: 85%;
-      line-height: 1.3em;
+    .address {
+      width: 15%;
+      text-align: center;
+
+      .address-size {
+        font-size: 16px;
+        padding: 7px 0;
+      }
     }
 
-    label {
-      font-weight: 600;
-      line-height: 1.2em;
-      vertical-align: inherit;
-      font-size: 0.9em;
-      cursor: pointer;
+    .creator {
+      width: 15%;
     }
-  }
 
-  .address {
-    width: 15%;
-    text-align: center;
-    .address-size {
-      font-size: 16px;
+    .ip-count {
+      text-align: center;
     }
-  }
-  .ip-count {
-    text-align: center;
+
+    .comment {
+      width: 35%;
+    }
   }
 }
 
 .reserved-ip {
-  td {
-    small {
-      font-size: 85%;
+  table {
+    tbody {
+      tr {
+        td {
+          height: 35px;
+
+          > div {
+            height: 35px;
+            max-height: 35px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
     }
 
-    p {
-      margin: 0;
-      font-size: 85%;
-      line-height: 1.3em;
+    .ip-address {
+      width: 15%;
+      text-align: center;
+
+      .address-size {
+        font-size: 16px;
+        padding: 7px 0;
+      }
     }
 
-    label {
-      font-weight: 600;
-      line-height: 1.2em;
-      vertical-align: inherit;
-      font-size: 0.9em;
-      cursor: pointer;
+    .ip-use-range {
+      width: 20%;
     }
-  }
 
-  .ip-address {
-    width: 15%;
-    text-align: center;
-    .address-size {
-      font-size: 16px;
+    .ip-owner {
+      width: 15%;
     }
-  }
-  .ip-use-range {
-    width: 15%;
-  }
-  .ip-owner {
-  }
-  .ip-comment {
-  }
-  .ip-last-check {
+
+    .ip-comment {
+      width: 30%;
+    }
+
+    .ip-last-check {
+      width: 20%;
+    }
   }
 }
 
 .short-table-view {
   .reserved-ip {
+    .ip-address {
+      width: 20%;
+    }
+
+    .ip-use-range {
+      width: 40%;
+    }
+
     .ip-owner {
-      display: none;
+      width: 20%;
     }
 
     .ip-comment {

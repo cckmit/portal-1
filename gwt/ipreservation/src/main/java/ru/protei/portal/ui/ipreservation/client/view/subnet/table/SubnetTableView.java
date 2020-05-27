@@ -92,18 +92,26 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
         ClickColumn<Subnet> creator = new ClickColumn<Subnet>() {
             @Override
-            protected void fillColumnHeader(Element columnHeader) { columnHeader.setInnerText(lang.reservedIpCreateBy()); }
+            protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("creator");
+                columnHeader.setInnerText(lang.reservedIpCreateBy());
+            }
             @Override
-            public void fillColumnValue(Element cell, Subnet value) { cell.setInnerText(value.getCreator()); }
+            public void fillColumnValue(Element cell, Subnet value) {
+                cell.addClassName("creator");
+                cell.setInnerText(value.getCreator());
+            }
         };
 
         ClickColumn<Subnet> comment = new ClickColumn<Subnet>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("comment");
                 columnHeader.setInnerText(lang.comment());
             }
             @Override
             public void fillColumnValue(Element cell, Subnet value) {
+                cell.addClassName("comment");
                 cell.setInnerText(value.getComment());
             }
         };

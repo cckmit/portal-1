@@ -132,7 +132,7 @@ public abstract class ReservedIpTableActivity
 
     @Override
     public void onEditClicked( ReservedIp value ) {
-        if ( !hasEditPrivileges(value == null ? null : value.getOwnerId())) {
+        if ( value != null && !hasEditPrivileges(value.getOwnerId())) {
             return;
         }
 

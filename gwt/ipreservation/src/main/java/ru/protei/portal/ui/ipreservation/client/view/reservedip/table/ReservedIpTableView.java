@@ -148,11 +148,13 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         ClickColumn<ReservedIp> ipOwner = new ClickColumn<ReservedIp>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName( "ip-owner" );
                 columnHeader.setInnerText(lang.reservedIpOwner());
             }
 
             @Override
             public void fillColumnValue(Element cell, ReservedIp value) {
+                cell.addClassName( "ip-owner" );
                 cell.setInnerText(value.getOwnerShortName());
             }
         };

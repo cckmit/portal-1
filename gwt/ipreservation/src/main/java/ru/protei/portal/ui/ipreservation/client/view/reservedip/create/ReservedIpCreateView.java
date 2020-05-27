@@ -83,6 +83,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasValue<PersonShortView> owner() { return ipOwner; }
 
     @Override
+    public HasValidable ownerValidator() { return ipOwner; }
+
+    @Override
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
     @Override
@@ -158,6 +161,13 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public void onSubnetSelected(ValueChangeEvent<Set<SubnetOption>> event)  {
         if ( activity != null ) {
             activity.checkCreateAvailable();
+        }
+    }
+
+    @UiHandler("ipOwner")
+    public void onOwnerSelected(ValueChangeEvent<PersonShortView> event)  {
+        if ( activity != null ) {
+            activity.onOwnerChanged();
         }
     }
 
