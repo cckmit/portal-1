@@ -162,7 +162,7 @@ public class IssueFilterWidget extends Composite {
         }
         model.onRemoveClicked(value.getId(), () -> {
             resetFilter();
-            issueFilterParamView.resetFilter();
+            issueFilterParamView.updateModel();
         });
     }
 
@@ -180,6 +180,7 @@ public class IssueFilterWidget extends Composite {
     private void onUserFilterChanged(CaseFilterShortView filter) {
         if (filter == null){
             resetFilter();
+            issueFilterParamView.updateModel();
             showUserFilterControls();
 
             return;
@@ -187,6 +188,7 @@ public class IssueFilterWidget extends Composite {
 
         model.onUserFilterChanged(filter.getId(), caseFilter -> {
             issueFilterParamView.fillFilterFields(caseFilter.getParams(), caseFilter.getSelectorsParams());
+            issueFilterParamView.updateModel();
             filterName.setValue( caseFilter.getName() );
             removeFilterBtnVisibility().setVisible( true );
             editBtnVisibility().setVisible( true );
@@ -236,6 +238,7 @@ public class IssueFilterWidget extends Composite {
         this.filterType = filterType;
         applyVisibilityByFilterType(filterType);
         resetFilter();
+        issueFilterParamView.updateModel();
         userFilter.updateFilterType(filterType);
     }
 
