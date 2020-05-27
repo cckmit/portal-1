@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Базовая логика селектора
@@ -147,7 +147,10 @@ public abstract class Selector<T>
             itemView.setImage(option.getImageSrc());
         }
         itemView.setIcon(option.getIcon());
-        itemView.setTitle(emptyIfNull(option.getTitle()));
+
+        if (isNotEmpty(option.getTitle())) {
+            itemView.setTitle(option.getTitle());
+        }
 
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);

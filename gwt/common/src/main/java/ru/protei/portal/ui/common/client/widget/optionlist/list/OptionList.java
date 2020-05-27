@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Список чекбоксов с заголовом
@@ -73,7 +73,11 @@ public class OptionList<T>
         itemView.setName( name );
         itemView.setInfo( info );
         itemView.setText( text );
-        itemView.setTitle(emptyIfNull(title));
+
+        if (isNotEmpty(title)) {
+            itemView.setTitle(title);
+        }
+
         itemView.addValueChangeHandler( this );
         itemView.setValue( selected.contains( value ) );
         itemView.setEnabled( isEnabled );
