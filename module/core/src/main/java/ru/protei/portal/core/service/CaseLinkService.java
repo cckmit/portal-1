@@ -40,6 +40,5 @@ public interface CaseLinkService {
     @Auditable(En_AuditType.LINK_REMOVE)
     Result deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
 
-    @Auditable(En_AuditType.LINK_CREATE)
     Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList);
 }

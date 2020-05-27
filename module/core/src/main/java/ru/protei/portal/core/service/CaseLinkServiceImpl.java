@@ -12,20 +12,22 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseLinkEvent;
 import ru.protei.portal.core.event.ProjectLinkEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
+import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.model.struct.AuditObject;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -42,19 +44,18 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private CaseLinkDAO caseLinkDAO;
     @Autowired
     private CaseObjectDAO caseObjectDAO;
-
     @Autowired
     private PolicyService policyService;
     @Autowired
     private PortalConfig portalConfig;
     @Autowired
     private YoutrackService youtrackService;
-
     @Autowired
     private LockService lockService;
-
     @Autowired
     private TransactionTemplate transactionTemplate;
+    @Autowired
+    AuditObjectDAO auditObjectDAO;
 
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
@@ -282,6 +283,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             if (addResult.isError()){
                 return error(addResult.getStatus(), addResult.getMessage());
             }
+            makeAudit(caseId, En_AuditType.LINK_CREATE, token);
         }
 
         for (Long caseId : listCaseIdsToRemove) {
@@ -289,10 +291,30 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());
             }
+            makeAudit(caseId, En_AuditType.LINK_REMOVE, token);
         }
 
         return ok("");
 
+    }
+
+    private void makeAudit(Long caseLinkId, En_AuditType type, AuthToken token){
+        AuditableObject object = caseLinkDAO.get(caseLinkId);
+
+        AuditObject auditObject = new AuditObject();
+        auditObject.setCreated( new Date() );
+        auditObject.setType(type);
+        auditObject.setCreatorId( token.getPersonId() );
+        try {
+            auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
+        } catch (UnknownHostException e) {
+            log.warn("makeAudit(): fail to setCreatorIp, UnknownHostException");
+            auditObject.setCreatorIp("0.0.0.0");
+        }
+        auditObject.setCreatorShortName(token.getPersonDisplayShortName());
+        auditObject.setEntryInfo(object);
+
+        auditObjectDAO.insertAudit(auditObject);
     }
 
     private Result<Long> addYoutrackLink( AuthToken authToken, Long caseId, String youtrackId ) {
