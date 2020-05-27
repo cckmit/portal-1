@@ -23,9 +23,13 @@ public class IssueStatesOptionList extends OptionList<CaseState> implements Sele
     public void fillOptions(List<CaseState> states) {
         clearOptions();
         states.forEach(state -> {
-            addOption(state.getState(), state, "inline m-r-5 option-" + CaseStateUtils.makeStyleName(state.getState()));
+            addOption(state.getState(), state, "inline m-r-5 option-" + CaseStateUtils.makeStyleName(state.getState()), makeCaseStateTitle(state));
             setEnsureDebugId(state, DebugIdsHelper.ISSUE_STATE.byId(state.getId()));
         });
+    }
+
+    private String makeCaseStateTitle(CaseState caseState) {
+        return caseState == null ? "" : caseState.getInfo();
     }
 
     @Override

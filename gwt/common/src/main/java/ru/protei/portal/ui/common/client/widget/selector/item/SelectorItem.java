@@ -55,6 +55,10 @@ public class SelectorItem
         image.setSrc( src );
     }
 
+    public void setTitle(String title) {
+        root.setTitle(title);
+    }
+
     @UiHandler( "anchor" )
     public void onAnchorClicked( ClickEvent event ) {
         event.preventDefault();
