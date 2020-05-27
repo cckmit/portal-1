@@ -19,6 +19,7 @@ public class AddressColumn extends ClickColumn<Subnet> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("address");
         columnHeader.setInnerText(lang.address());
     }
 

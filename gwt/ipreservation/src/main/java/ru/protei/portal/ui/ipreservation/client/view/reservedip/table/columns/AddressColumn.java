@@ -18,6 +18,7 @@ public class AddressColumn extends ClickColumn<ReservedIp> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("ip-address");
         columnHeader.setInnerText(lang.address());
     }
 

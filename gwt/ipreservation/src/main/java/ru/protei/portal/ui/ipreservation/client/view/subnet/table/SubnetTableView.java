@@ -110,7 +110,10 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
         ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
             @Override
-            protected void fillColumnHeader(Element columnHeader) { columnHeader.setInnerText(lang.reservedIpState()); }
+            protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("ip-count");
+                columnHeader.setInnerText(lang.reservedIpState());
+            }
             @Override
             public void fillColumnValue(Element cell, Subnet value) {
                 cell.addClassName("ip-count");
