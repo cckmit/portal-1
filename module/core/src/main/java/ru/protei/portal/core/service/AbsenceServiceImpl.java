@@ -6,8 +6,10 @@ import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.query.AbsenceQuery;
 
 import java.util.Date;
+import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -17,6 +19,12 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Autowired
     PersonAbsenceDAO personAbsenceDAO;
+
+    @Override
+    public Result<List<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query) {
+        List<PersonAbsence> result = personAbsenceDAO.listByQuery(query);
+        return ok(result);
+    }
 
     @Override
     public Result<PersonAbsence> getAbsence(AuthToken token, Long id) {

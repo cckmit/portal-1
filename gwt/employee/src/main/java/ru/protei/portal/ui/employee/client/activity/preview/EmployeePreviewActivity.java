@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
+import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
@@ -119,17 +120,21 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             view.phonesContainerVisibility().setVisible(true);
         }
 
-        view.getPositionsContainer().clear();
+        view.positionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
         entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
                     AbstractPositionItemView positionItemView = makePositionView(workerEntry, head);
-                    view.getPositionsContainer().add(positionItemView.asWidget());
+                    view.positionsContainer().add(positionItemView.asWidget());
                 })
         ));
 
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
+            fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employee.getId()));
+        }
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {

@@ -3,15 +3,21 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * Сервис управления отсутствиями
  */
 @RemoteServiceRelativePath( "springGwtServices/AbsenceController" )
 public interface AbsenceController extends RemoteService {
+
+    /**
+     * Получение записей об отсутствиях
+     */
+    List<PersonAbsence> getAbsences(AbsenceQuery query) throws RequestFailedException;
 
     /**
      * Получение записи об отсутствии

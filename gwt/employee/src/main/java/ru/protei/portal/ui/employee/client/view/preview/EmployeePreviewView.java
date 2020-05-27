@@ -5,16 +5,9 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewActivity;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewView;
 
@@ -44,19 +37,8 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public HasWidgets getPositionsContainer() {
-        return positionsContainer;
-    }
-
-    @Override
     public void setPhotoUrl(String url) {
         photo.setUrl(url);
-    }
-
-    @Override
-    public void showFullScreen(boolean isFullScreen) {
-        backButtonPanel.setVisible(isFullScreen);
-        rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
     @Override
@@ -99,6 +81,22 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         return editIcon;
     }
 
+    @Override
+    public HasWidgets positionsContainer() {
+        return positionsContainer;
+    }
+
+    @Override
+    public HasWidgets absencesContainer() {
+        return absencesContainer;
+    }
+
+    @Override
+    public void showFullScreen(boolean isFullScreen) {
+        backButtonPanel.setVisible(isFullScreen);
+        rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
     @UiHandler("backButton")
     public void onBackButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -123,58 +121,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
             activity.onEditClicked();
         }
     }
-
-    private void initTable() {
-
-    }
-
-    ClickColumn<PersonAbsence> reason = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceReason());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(reasonLang.getName(value.getReason()));
-        }
-    };
-
-    ClickColumn<PersonAbsence> fromTime = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceFromTime());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(DateFormatter.formatDateTime(value.getFromTime()));
-        }
-    };
-
-    ClickColumn<PersonAbsence> tillTime = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceTillTime());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(DateFormatter.formatDateTime(value.getTillTime()));
-        }
-    };
-
-    ClickColumn<PersonAbsence> comment = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceComment());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(value.getUserComment());
-        }
-    };
 
     @UiField
     HTMLPanel rootWrapper;
@@ -216,20 +162,13 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     HTMLPanel emailContainer;
 
     @UiField
+    HTMLPanel absencesContainer;
+
+    @UiField
     HTMLPanel backButtonPanel;
 
     @UiField
     Button backButton;
-
-    @UiField
-    TableWidget table;
-
-    @Inject
-    @UiField
-    Lang lang;
-
-    @Inject
-    En_AbsenceReasonLang reasonLang;
 
     AbstractEmployeePreviewActivity activity;
 

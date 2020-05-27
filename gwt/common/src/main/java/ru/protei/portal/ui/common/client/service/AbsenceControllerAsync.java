@@ -2,13 +2,19 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.query.AbsenceQuery;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * Асинхронный сервис управления отсутствиями
  */
 public interface AbsenceControllerAsync {
+
+    /**
+     * Получение записей об отсутствиях
+     */
+    void getAbsences(AbsenceQuery query, AsyncCallback<List<PersonAbsence>> async);
 
     /**
      * Получение записи об отсутствии

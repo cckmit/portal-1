@@ -7,10 +7,14 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.query.AbsenceQuery;
 
-import java.util.Date;
+import java.util.List;
 
 public interface AbsenceService {
+
+    @Privileged({En_Privilege.ABSENCE_VIEW})
+    Result<List<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query);
 
     @Privileged({En_Privilege.ABSENCE_VIEW})
     Result<PersonAbsence> getAbsence(AuthToken token, Long id);

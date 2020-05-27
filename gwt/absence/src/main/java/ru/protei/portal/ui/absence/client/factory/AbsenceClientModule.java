@@ -4,7 +4,10 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.absence.client.activity.edit.AbsenceEditActivity;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
+import ru.protei.portal.ui.absence.client.activity.table.AbsenceTableActivity;
+import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableView;
 import ru.protei.portal.ui.absence.client.view.edit.AbsenceEditView;
+import ru.protei.portal.ui.absence.client.view.table.AbsenceTableView;
 import ru.protei.portal.ui.absence.client.widget.selector.AbsenceReasonModel;
 
 /**
@@ -16,6 +19,9 @@ public class AbsenceClientModule extends AbstractGinModule {
     protected void configure() {
 
         bind(AbsenceReasonModel.class).asEagerSingleton();
+
+        bind(AbsenceTableActivity.class).asEagerSingleton();
+        bind(AbstractAbsenceTableView.class).to(AbsenceTableView.class).in(Singleton.class);
 
         bind(AbsenceEditActivity.class).asEagerSingleton();
         bind(AbstractAbsenceEditView.class).to(AbsenceEditView.class).in(Singleton.class);

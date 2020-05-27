@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.absence.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -9,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.absence.client.util.AccessUtil;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
@@ -75,7 +74,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
     }
 
     private boolean hasAccessEdit() {
-        return !isNew() && policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW) || policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT);
+        return !isNew() && policyService.hasPrivilegeFor(En_Privilege.ABSENCE_EDIT);
     }
 
     private void hideForm() {
@@ -103,8 +102,8 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         this.absence = absence;
 
         boolean isAllowedCreate = hasAccessCreate();
-        boolean isAllowedModify = isAllowedCreate || hasAccess(En_Privilege.ABSENCE_EDIT);
-        boolean isAllowedRemove = !isNew() && hasAccess(En_Privilege.ABSENCE_REMOVE);
+        boolean isAllowedModify = isAllowedCreate || AccessUtil.isAllowedEdit(policyService, absence);
+        boolean isAllowedRemove = !isNew() && AccessUtil.isAllowedRemove(policyService, absence);
 
         PersonShortView currentPerson = new PersonShortView(policyService.getProfile().getFullName(), policyService.getProfile().getId());
         view.employee().setValue(absence.getPerson() == null ? currentPerson : absence.getPerson().toFullNameShortView());
@@ -119,16 +118,6 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
 
         dialogView.saveButtonVisibility().setVisible(isAllowedModify);
         dialogView.removeButtonVisibility().setVisible(isAllowedRemove);
-    }
-
-    private boolean hasAccess(En_Privilege privilege) {
-        Long currentPersonId = policyService.getProfile().getId();
-        boolean isCreator = Objects.equals(absence.getCreatorId(), currentPersonId);
-        boolean isAbsent = Objects.equals(absence.getPersonId(), currentPersonId);
-        boolean isAdmin = policyService.hasSystemScopeForPrivilege(privilege);
-        boolean isPrivileged = policyService.hasPrivilegeFor(privilege);
-        boolean isUserWithAccess = isPrivileged && (isCreator || isAbsent);
-        return isAdmin || isUserWithAccess;
     }
 
     private boolean validateView() {

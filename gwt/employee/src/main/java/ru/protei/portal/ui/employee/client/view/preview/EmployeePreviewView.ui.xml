@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -42,11 +41,7 @@
             </div>
 
             <h5><ui:text from="{lang.absences}"/></h5>
-            <g:HTMLPanel styleName="row">
-                <div class="col-md-12">
-                    <table:TableWidget ui:field="table" styleName="table-hover"/>
-                </div>
-            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="absencesContainer"/>
         </div>
 
         <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">
