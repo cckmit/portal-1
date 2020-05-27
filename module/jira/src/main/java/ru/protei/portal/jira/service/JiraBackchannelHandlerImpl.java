@@ -21,11 +21,8 @@ import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
-import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
+import static ru.protei.portal.core.utils.JiraUtils.getTextWithReplacedImagesToJira;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
@@ -35,8 +32,6 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     PersonDAO personDAO;
     @Autowired
     FileStorage fileStorage;
-
-    private final Pattern jiraImagePattern = JiraUtils.getJiraImagePattern();
 
     @Override
     public void handle(AssembledCaseEvent event) {
@@ -111,39 +106,12 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
     private Comment convertComment (CaseComment ourComment, Person initiator, Collection<Attachment> attachments) {
         String text = TransliterationUtils.transliterate(initiator.getLastName() + " " + initiator.getFirstName()) + "\r\n" + ourComment.getText();
-        text = replaceImageLink(text, initiator.getId(), attachments);
+        text = replaceImageLink(text, attachments);
         return Comment.valueOf(text);
     }
 
-    private String replaceImageLink(String text, Long personId, Collection<Attachment> attachments) {
-        Matcher matcher = jiraImagePattern.matcher(text);
-        String resultText;
-        if (!matcher.find()) {
-            resultText = text;
-        } else {
-            StringBuffer buffer = new StringBuffer();
-            int mark = 0;
-
-            do {
-                buffer.append(text, mark, matcher.start());
-                mark = matcher.end();
-                String originalString = matcher.group(2);
-                Optional<String> imageString = Optional.ofNullable(parseImageNode(originalString))
-                        .flatMap(node -> attachments.stream()
-                                .filter(a -> a.getExtLink().equals(node.filename) && a.getCreatorId().equals(personId))
-                                .max(Comparator.comparing(Attachment::getCreated))
-                                .map(attachment -> makeJiraImageString(attachment.getFileName(),
-                                        node.alt != null ? node.alt : attachment.getFileName())));
-                if (imageString.isPresent()) {
-                    buffer.append(imageString.get());
-                } else {
-                    buffer.append('!').append(originalString).append('!');
-                }
-            } while (matcher.find());
-
-            resultText =  buffer.append(text, mark, text.length()).toString();
-        }
-        return resultText;
+    private String replaceImageLink(String text, Collection<Attachment> attachments) {
+        return getTextWithReplacedImagesToJira(text, attachments);
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {

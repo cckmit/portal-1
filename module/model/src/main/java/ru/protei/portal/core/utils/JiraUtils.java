@@ -1,5 +1,8 @@
 package ru.protei.portal.core.utils;
 
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseAttachment;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 
 import javax.activation.FileTypeMap;
@@ -7,9 +10,13 @@ import javax.activation.MimetypesFileTypeMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
 
 public class JiraUtils {
     private static FileTypeMap fileTypeMap;
@@ -77,16 +84,12 @@ public class JiraUtils {
         }
     }
 
-    public static Pattern getJiraImagePattern() {
-        return pattern;
-    }
-
-    public static class ImageNode {
+    static public class ImageNode {
         public String filename;
         public String alt;
     }
 
-    static public ImageNode parseImageNode(String originalString) {
+    static private ImageNode parseImageNode(String originalString) {
         ImageNode node = new ImageNode();
         // copypasta EmbeddedResourceParser.class
         if (originalString.length() >= 5 && originalString.charAt(0) != ')') {
@@ -141,5 +144,67 @@ public class JiraUtils {
         } else {
             return null;
         }
+    }
+
+    static public String getTextWithReplacedImages(String text, Collection<Attachment> attachments,
+                                                   BiPredicate<ImageNode, Attachment> attachmentFilter,
+                                                   BiFunction<ImageNode, Attachment, String> makeImageString) {
+        Matcher matcher = pattern.matcher(text);
+        String resultText;
+        if (!matcher.find()) {
+            resultText = text;
+        } else {
+            StringBuilder buffer = new StringBuilder();
+            int mark = 0;
+
+            do {
+                buffer.append(text, mark, matcher.start());
+                mark = matcher.end();
+                String originalString = matcher.group(2);
+                Optional<String> imageString = Optional.ofNullable(parseImageNode(originalString))
+                        .flatMap(node -> attachments.stream()
+                                .filter(attachment -> attachmentFilter.test(node, attachment))
+                                .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
+                                .map(attachment -> makeImageString.apply(node, attachment)));
+                if (imageString.isPresent()) {
+                    buffer.append(imageString.get());
+                } else {
+                    buffer.append('!').append(originalString).append('!');
+                }
+            } while (matcher.find());
+
+            resultText = buffer.append(text, mark, text.length()).toString();
+        }
+        return resultText;
+    }
+
+    static public void setTextWithReplacedImagesFromJira(CaseComment caseComment, Collection<Attachment> attachments) {
+        String textWithReplacedImages = getTextWithReplacedImages(
+                caseComment.getText(),
+                attachments,
+                (node, attachment) -> attachment.getFileName().equals(node.filename),
+                (node, attachment) -> {
+                    String imageString = makeJiraImageString(attachment.getExtLink(),
+                            attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""));
+
+                    List<CaseAttachment> caseAttachments = (caseComment.getCaseAttachments() != null ?
+                            caseComment.getCaseAttachments() : new ArrayList<>());
+                    caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
+                    caseComment.setCaseAttachments(caseAttachments);
+
+                    return imageString;
+                }
+        );
+        caseComment.setText(textWithReplacedImages);
+    }
+
+    static public String getTextWithReplacedImagesToJira(String text, Collection<Attachment> attachments) {
+        return getTextWithReplacedImages(
+                text,
+                attachments,
+                (node, attachment) -> attachment.getExtLink().equals(node.filename),
+                (node, attachment) -> makeJiraImageString(attachment.getFileName(),
+                        node.alt != null ? node.alt : attachment.getFileName())
+        );
     }
 }

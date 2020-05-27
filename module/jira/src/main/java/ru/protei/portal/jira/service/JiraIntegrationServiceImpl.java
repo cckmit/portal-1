@@ -25,7 +25,6 @@ import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.mapper.CachedPersonMapper;
@@ -39,15 +38,12 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
+import static ru.protei.portal.core.utils.JiraUtils.setTextWithReplacedImagesFromJira;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
@@ -93,8 +89,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
         return jiraEndpointCache;
     }
-
-    private final Pattern jiraImagePattern = JiraUtils.getJiraImagePattern();
 
     @Override
     public Result<JiraEndpoint> selectEndpoint( Issue issue, Long originalCompanyId ) {
@@ -448,52 +442,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return our;
     }
 
-    private void replaceImageLink(CaseComment caseComment,
-                                  List<ru.protei.portal.core.model.ent.Attachment> attachments) {
-        logger.info("replaceImageLink");
-        String text = caseComment.getText();
-        Matcher matcher = jiraImagePattern.matcher(text);
-        String resultText;
-        if (!matcher.find()) {
-            resultText = text;
-        } else {
-            StringBuffer buffer = new StringBuffer();
-            int mark = 0;
-
-            do {
-                buffer.append(text, mark, matcher.start());
-                mark = matcher.end();
-                String originalString = matcher.group(2);
-                Optional<String> imageString = Optional.ofNullable(parseImageNode(originalString))
-                        .flatMap(node -> {
-                            logger.info("parseImageNode node = " + node);
-                            return attachments.stream()
-                                    .filter(a -> a.getFileName().equals(node.filename))
-                                    .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
-                                    .map(attachment -> {
-                                        logger.info("parseImageNode attachment = " + attachment);
-                                        String imageString1 = makeJiraImageString(attachment.getExtLink(),
-                                                attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""));
-                                        List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
-                                        if (caseAttachments == null) {
-                                            caseAttachments = new ArrayList<>();
-                                        }
-                                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
-                                        caseComment.setCaseAttachments(caseAttachments);
-                                        return imageString1;
-                                    });
-                        });
-                if (imageString.isPresent()) {
-                    buffer.append(imageString.get());
-                } else {
-                    buffer.append('!').append(originalString).append('!');
-                }
-            } while (matcher.find());
-
-            resultText = buffer.append(text, mark, text.length()).toString();
-        }
-        logger.info("replaceImageLink end = " + resultText);
-        caseComment.setText(resultText);
+    private void replaceImageLink(CaseComment caseComment, List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        setTextWithReplacedImagesFromJira(caseComment, attachments);
     }
 
     private En_CaseState getNewCaseState(Long statusMapId, String issueStatusName) {
