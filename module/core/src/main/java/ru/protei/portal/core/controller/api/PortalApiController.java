@@ -217,7 +217,7 @@ public class PortalApiController {
 
     @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}")
     public String updateYoutrackCrmNumbers( HttpServletRequest request, HttpServletResponse response,
-                                                 @RequestBody String crmNumbers,
+                                                 @RequestBody (required = false) String crmNumbers,
                                                  @PathVariable("youtrackId") String youtrackId ) {
 
         log.info( "updateYoutrackCrmNumbers() crmNumbers={} youtrackId={}", crmNumbers, youtrackId );
@@ -405,6 +405,10 @@ public class PortalApiController {
 
     private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
         List<Long> crmNumberList = new ArrayList<>();
+
+        if (crmNumbers == null) {
+            return crmNumberList;
+        }
 
         crmNumbers = crmNumbers.replace("\n", "");
         String[] numbers = crmNumbers.split(",");

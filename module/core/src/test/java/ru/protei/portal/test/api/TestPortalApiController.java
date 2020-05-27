@@ -257,6 +257,36 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data", hasSize(caseCommentByIdCount)));
     }
+
+    @Test
+    public void setYoutrackIdToEmptyCrmNumber() throws Exception {
+        final String YOUTRACK_ID = "TEST-1";
+        String numbers = "";
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertTrue("Error message must be empty", accept.andReturn().getResponse().getContentAsString().isEmpty());
+
+        List<Long> crmNumbers = fillAndCreateCaseObjects(3);
+
+        numbers = crmNumbers.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        //Устанавливаем 3 корректных номера
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        numbers = "";
+        createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
+
+        removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
+    }
+
     @Test
     public void setYoutrackIdToInvalidCrmNumber() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
@@ -280,30 +310,14 @@ public class TestPortalApiController extends BaseServiceTest {
     public void setYoutrackIdToCorrectCrmNumbers() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
 
-        CaseObject caseObject = createNewCaseObject(person);
-        caseObject.setInitiatorCompany( company );
-        ResultActions accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
-        Long caseNumber1 = getCaseNumberFromResult(accept);
+        List<Long> caseNumbersCreated = fillAndCreateCaseObjects(3);
 
-        caseObject = createNewCaseObject(person);
-        caseObject.setInitiatorCompany( company );
-        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
-        Long caseNumber2 = getCaseNumberFromResult(accept);
-
-        caseObject = createNewCaseObject(person);
-        caseObject.setInitiatorCompany( company );
-        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
-        Long caseNumber3 = getCaseNumberFromResult(accept);
-
-        List<Long> caseNumbersCreated = new ArrayList<>();
-        caseNumbersCreated.add(caseNumber1);
-        caseNumbersCreated.add(caseNumber2);
-        caseNumbersCreated.add(caseNumber3);
-
-        String numbers = caseNumber1 + ",\n" + caseNumber2 + ",\n" + caseNumber3;
+        String numbers = caseNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
 
         //Устанавливаем 3 корректных номера
-        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
 
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
@@ -311,11 +325,9 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
 
-        numbers = caseNumber1 + ",\n" + caseNumber2;
+        numbers = caseNumbersCreated.get(0) + ",\n" + caseNumbersCreated.get(1);
 
-        caseNumbersCreated.clear();
-        caseNumbersCreated.add(caseNumber1);
-        caseNumbersCreated.add(caseNumber2);
+        caseNumbersCreated.remove(2);
 
         //Устанавливаем 2 корректных номера (то есть один удалится)
         accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
@@ -334,27 +346,18 @@ public class TestPortalApiController extends BaseServiceTest {
     public void setYoutrackIdToDuplicatedCrmNumbers() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
 
-        CaseObject caseObject = createNewCaseObject(person);
-        caseObject.setInitiatorCompany( company );
-        ResultActions accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
-        Long caseNumber1 = getCaseNumberFromResult(accept);
+        List<Long> caseNumbersCreated = fillAndCreateCaseObjects(3);
 
-        caseObject = createNewCaseObject(person);
-        caseObject.setInitiatorCompany( company );
-        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
-        Long caseNumber2 = getCaseNumberFromResult(accept);
+        String numbers = caseNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
 
-        caseObject = createNewCaseObject(person);
-        caseObject.setInitiatorCompany( company );
-        accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
-        Long caseNumber3 = getCaseNumberFromResult(accept);
-
-        String numbers = caseNumber1 + ",\n" + caseNumber2 + ",\n" + caseNumber1 + ",\n" + caseNumber3;
+        numbers += ",\n" + caseNumbersCreated.get(0);
 
         //Устанавливаем 4 номера (один - дубликат)
-        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
 
-        Assert.assertTrue("Error message must contains duplicate numbers", accept.andReturn().getResponse().getContentAsString().contains(caseNumber1.toString()));
+        Assert.assertTrue("Error message must contains duplicate numbers", accept.andReturn().getResponse().getContentAsString().contains(caseNumbersCreated.get(0).toString()));
 
         List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
 
@@ -624,6 +627,20 @@ public class TestPortalApiController extends BaseServiceTest {
         String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(contentAsString.substring(contentAsString.indexOf("\"data\":") + "\"data\":".length(), contentAsString.lastIndexOf("}")), clazz);
     }
+
+    private List<Long> fillAndCreateCaseObjects (int count) throws Exception {
+        List<Long> crmNumberList = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            CaseObject caseObject = createNewCaseObject(person);
+            caseObject.setInitiatorCompany( company );
+            ResultActions accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+            crmNumberList.add(getCaseNumberFromResult(accept));
+        }
+
+        return crmNumberList;
+    }
+
 
     @Autowired
     private void authService(AuthService authService) {
