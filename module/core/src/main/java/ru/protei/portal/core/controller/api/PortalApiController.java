@@ -215,7 +215,7 @@ public class PortalApiController {
                         product, result ) );
     }
 
-    @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}")
+    @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
     public String updateYoutrackCrmNumbers( HttpServletRequest request, HttpServletResponse response,
                                                  @RequestBody (required = false) String crmNumbers,
                                                  @PathVariable("youtrackId") String youtrackId ) {

@@ -611,9 +611,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
     private <T> ResultActions createPostResultActionWithStringBody(String url, String body) throws Exception {
         MockHttpServletRequestBuilder builder = post( url )
-                .header( "Accept", "application/json" )
                 .header( "authorization", "Basic " + Base64.getEncoder().encodeToString( (person.getFirstName() + ":fakePassword").getBytes() ) )
-                .contentType( MediaType.APPLICATION_JSON )
                 .characterEncoding("utf-8");
 
         if(body!=null){
