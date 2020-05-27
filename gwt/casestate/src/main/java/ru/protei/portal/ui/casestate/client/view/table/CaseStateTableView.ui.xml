@@ -9,7 +9,7 @@
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-md-12">
                 <div class="card card-default no-border">
                     <div class="card-body no-padding">
-                        <table:InfiniteTableWidget ui:field="table" styleName="table table-hover"/>
+                        <table:TableWidget ui:field="table" styleName="table table-hover"/>
                     </div>
                 </div>
             </g:HTMLPanel>
