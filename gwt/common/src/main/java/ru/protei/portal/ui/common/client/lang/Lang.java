@@ -2611,4 +2611,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationEditHeader();
 
     String reservedIpAvailableCount();
+
+    String companyAutoOpenIssues();
 }

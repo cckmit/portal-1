@@ -46,6 +46,10 @@
                                                          hasNullValue="true"/>
                             </div>
 
+                            <div class="form-group col-md-12 col-lg-6">
+                                <g:CheckBox ui:field="autoOpenIssues" styleName="checkbox" text="Автоматическое открытие обращений"/>
+                            </div>
+
                             <div class="form-group col-md-12 m-t-10">
                                 <label>
                                     <ui:text from="{lang.companySubscription}"/>
