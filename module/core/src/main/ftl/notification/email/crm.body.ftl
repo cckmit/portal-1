@@ -338,10 +338,11 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_changedImportanceTo} ${caseComment.caseImportance}
                     <#elseif caseComment.caseManager??>
                         ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManagerAndCompany, lang)}
-                    <#else>
+                    <#elseif caseComment.text??>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div class="markdown" style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                            <div class="markdown"
+                                 style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
                             <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
                         </#if>
