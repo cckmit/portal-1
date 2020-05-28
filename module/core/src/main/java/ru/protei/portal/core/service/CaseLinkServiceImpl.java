@@ -265,21 +265,31 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     @Transactional
     public Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList) {
+        log.debug("setYoutrackIdToCaseNumbers(): youtrackId={}, case list size={}, caseList={}", youtrackId, caseNumberList.size(), caseNumberList);
+
         if (youtrackId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
 
         Result<List<Long>> newCaseIdsResult = getCaseIdsByCaseNumbers(caseNumberList);
         if (newCaseIdsResult.isError()) {
+            log.warn("setYoutrackIdToCaseNumbers(): fail to get newCaseIds, status={}", newCaseIdsResult.getStatus());
             return error(newCaseIdsResult.getStatus(), newCaseIdsResult.getMessage());
         }
+
+        log.debug("setYoutrackIdToCaseNumbers(): newCaseIds={}", newCaseIdsResult.getData());
 
         List<Long> currentCaseIds = findAllCaseIdsByYoutrackId(youtrackId);
         List<Long> newCaseIds = newCaseIdsResult.getData();
 
+        log.debug("setYoutrackIdToCaseNumbers(): current case ids={}, new case ids={}", currentCaseIds, newCaseIds);
+
         List<Long> listCaseIdsToAdd = makeListCaseIdsToAddYoutrackLink(currentCaseIds, newCaseIds);
         List<Long> listCaseIdsToRemove = makeListCaseIdsToRemoveYoutrackLink(currentCaseIds, newCaseIds);
 
+        log.debug("setYoutrackIdToCaseNumbers(): listCaseIdsToAdd={}, listCaseIdsToRemove={}", listCaseIdsToAdd, listCaseIdsToRemove);
+
         for (Long caseId : listCaseIdsToAdd) {
             Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
+            log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, status=", caseId, addResult.getStatus());
             if (addResult.isError()){
                 return error(addResult.getStatus(), addResult.getMessage());
             }
@@ -290,6 +300,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
 
             Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
+            log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, status=", caseId, removeResult.getStatus());
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());
             }
@@ -369,7 +380,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         String resultErrorMessage = "";
 
         for (Long number : caseNumberList) {
+            log.debug("getCaseIdsByCaseNumbers(): case number={}", number);
             Long caseId = caseObjectDAO.getCaseIdByNumber(number);
+            log.debug("getCaseIdsByCaseNumbers(): case id={}", caseId);
             resultErrorMessage += caseId == null ? number + "," : "";
             caseIds.add(caseId);
         }
@@ -394,6 +407,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseId, String youtrackId ) {
+        log.debug("addCaseLinkOnToYoutrack(): caseId={}, youtrackId={}", caseId, youtrackId);
         CaseLink newLink = new CaseLink();
         newLink.setCaseId( caseId );
         newLink.setType( En_CaseLink.YT );
@@ -408,6 +422,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private Result<CaseLink> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
+        log.debug("removeCaseLinkOnToYoutrack(): caseLink={}", caseLink);
         if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
             log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
             throw new RollbackTransactionException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
