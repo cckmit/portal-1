@@ -409,23 +409,21 @@ public class PortalApiController {
     }
 
     private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
-        List<Long> crmNumberList = new ArrayList<>();
-
         if (crmNumbers == null) {
-            return crmNumberList;
+            return new ArrayList<>();
         }
-
         crmNumbers = crmNumbers.replace("\n", "");
-        String[] numbers = crmNumbers.split(",");
 
-        for (String number : numbers) {
-            if (number.startsWith("[")){
-                crmNumberList.add(Long.parseLong(number.substring(1, number.indexOf("]"))));
+        List<String> numberList = Arrays.asList(crmNumbers.split(","));
+
+        numberList.removeIf(Objects::isNull);
+
+        return numberList.stream().map(number -> {
+            if (number.startsWith("[")) {
+                return Long.parseLong(number.substring(1, number.indexOf("]")));
             } else {
-                crmNumberList.add(Long.parseLong(number));
+                return Long.parseLong(number);
             }
-        }
-
-        return crmNumberList;
+        }).collect(Collectors.toList());
     }
 }
