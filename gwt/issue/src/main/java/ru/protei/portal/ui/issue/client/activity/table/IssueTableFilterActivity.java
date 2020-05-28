@@ -68,6 +68,10 @@ public abstract class IssueTableFilterActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
+        if (!policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW )) {
+            return;
+        }
+
         filterView.resetFilter();
         filterView.presetFilterType();
         updateCaseStatesFilter();
