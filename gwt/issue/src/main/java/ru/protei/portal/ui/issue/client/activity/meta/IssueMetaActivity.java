@@ -82,7 +82,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onStateChange() {
         if (CrmConstants.State.CREATED == metaView.state().getValue().getId() && meta.getManager() != null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedUnselectManager(), NotifyEvents.NotifyType.ERROR));
-            metaView.state().setValue(new CaseState(meta.getStateId()));
+            metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
             return;
         }
 
