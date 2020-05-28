@@ -23,7 +23,8 @@
                         <ui:text from="{lang.reservedIpNumber}"/>
                     </label>
                     <validablefield:ValidableTextBox ui:field="number" styleName="form-control"/>
-                    <div class="text-muted text-center" title="{lang.reservedIpAvailableCount}">
+                    <div class="text-muted">
+                        <small><ui:text from="{lang.reservedIpAvailableCount}"/></small>
                         <small ui:field="freeIpCountLabel"/>
                     </div>
                 </div>
@@ -53,7 +54,8 @@
                     <person:EmployeeButtonSelector ui:field="ipOwner"
                                                    hasNullValue="false"
                                                    defaultValue="{lang.selectReservedIpOwner}"
-                                                   firedEmployeesVisible="false"/>
+                                                   firedEmployeesVisible="false"
+                                                   validation="true"/>
                 </div>
             </div>
             <div class="row">

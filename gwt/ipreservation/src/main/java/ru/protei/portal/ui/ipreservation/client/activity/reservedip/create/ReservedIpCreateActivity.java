@@ -44,7 +44,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Event
     public void onShow (IpReservationEvents.CreateReservedIp event) {
-        if (!hasPrivileges()) {
+        if (!hasCreatePrivileges()) {
             fireEvent(new ForbiddenEvents.Show());
             return;
         }
@@ -57,7 +57,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Override
     public void onSaveClicked() {
-        if (!hasPrivileges() || !validateView()) {
+        if (!hasCreatePrivileges() || !validateView()) {
             return;
         }
 
@@ -99,15 +99,20 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     }
 
     @Override
-    public void onChangeIpAddress() {
-        String value = view.ipAddress().getValue().trim();
+    public void onOwnerChanged() {
+        view.ownerValidator().setValid(view.owner().getValue() != null);
+    }
 
-        if (value.isEmpty()) {
+    @Override
+    public void onChangeIpAddress() {
+
+        if (!view.ipAddressValidator().isValid()) {
             view.setIpAddressStatus(NameStatus.NONE);
             return;
         }
+
         ipReservationService.isReservedIpAddressExists(
-                value,
+                view.ipAddress().getValue().trim(),
                 null,
                 new RequestCallback<Boolean>() {
                     @Override
@@ -151,7 +156,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.number().setValue(String.valueOf(CrmConstants.IpReservation.MIN_IPS_COUNT));
         checkCreateAvailable();
 
-        if (policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_CREATE)) {
+        if (hasSystemPrivileges()) {
             view.reservedMode().setValue(En_ReservedMode.EXACT_IP, true);
             view.reserveModeVisibility().setVisible(true);
             view.owner().setValue(null);
@@ -170,6 +175,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 new DateInterval(new Date(), null), En_DateIntervalType.MONTH));
         view.comment().setText("");
 
+        view.ownerValidator().setValid(view.owner().getValue() != null);
+        view.setEnableUnlimited(hasSystemPrivileges());
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(isCreateAvailable());
 
@@ -236,7 +243,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             }
         }
 
-        if(view.owner().getValue() == null){
+        if(!view.ownerValidator().isValid()){
             showError(lang.errSaveReservedIpNeedSelectOwner());
             return false;
         }
@@ -270,12 +277,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.setIpAddressStatus(NameStatus.NONE);
     }
 
-    private boolean hasPrivileges() {
-        if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE)) {
-            return true;
-        }
+    private boolean hasSystemPrivileges() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_CREATE);
+    }
 
-        return false;
+    private boolean hasCreatePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE);
     }
 
     private void showErrorFromServer(Throwable throwable) {

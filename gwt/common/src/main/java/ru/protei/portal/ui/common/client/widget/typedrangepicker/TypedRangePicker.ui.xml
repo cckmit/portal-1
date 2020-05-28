@@ -5,7 +5,7 @@
 
     <g:HTMLPanel>
         <group:ToggleBtnGroup ui:field="btnGroup" styleName="btn-group m-b-10 col-md-12 p-l-0 p-r-0"/>
-        <range:RangePicker ui:field="range" styleName="" hasUnlimitedDateTo="true"/>
+        <range:RangePicker ui:field="range" styleName="" hasUnlimitedDateTo="true" formatValue="dd.MM.yyyy"/>
     </g:HTMLPanel>
 
 </ui:UiBinder>
