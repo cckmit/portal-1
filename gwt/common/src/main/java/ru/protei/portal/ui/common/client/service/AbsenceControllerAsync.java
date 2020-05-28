@@ -25,4 +25,9 @@ public interface AbsenceControllerAsync {
      * Сохранение записи об отсутствии
      */
     void saveAbsence(PersonAbsence absence, AsyncCallback<Long> callback);
+
+    /**
+     * Удаление записи об отсутствии
+     */
+    void removeAbsence(Long id, AsyncCallback<Boolean> callback);
 }

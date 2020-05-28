@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.roomreservation.client.struct;
+package ru.protei.portal.ui.common.client.common;
 
 import java.io.Serializable;
 

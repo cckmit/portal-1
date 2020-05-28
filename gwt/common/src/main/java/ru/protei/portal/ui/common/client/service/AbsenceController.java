@@ -28,4 +28,9 @@ public interface AbsenceController extends RemoteService {
      * Сохранение записи об отсутствии
      */
     Long saveAbsence(PersonAbsence absence) throws RequestFailedException;
+
+    /**
+     * Удаление записи об отсутствии
+     */
+    Boolean removeAbsence(Long id) throws RequestFailedException;
 }

@@ -6,6 +6,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 05.07.16.
@@ -121,5 +122,18 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PersonAbsence person = (PersonAbsence) o;
+        return Objects.equals(id, person.id);
     }
 }

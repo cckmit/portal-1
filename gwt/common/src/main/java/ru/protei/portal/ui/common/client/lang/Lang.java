@@ -2637,4 +2637,8 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceFromTime();
 
     String absenceTillTime();
+
+    String absenceRemoveConfirmMessage();
+
+    String absenceRemoveSuccessful();
 }

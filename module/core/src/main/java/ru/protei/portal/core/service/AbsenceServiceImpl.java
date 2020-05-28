@@ -76,6 +76,16 @@ public class AbsenceServiceImpl implements AbsenceService {
         return ok(absence.getId());
     }
 
+    @Override
+    public Result<Boolean> removeAbsence(AuthToken token, Long absenceId) {
+
+        if (personAbsenceDAO.removeByKey(absenceId)) {
+            return ok(true);
+        }
+
+        return error(En_ResultStatus.NOT_REMOVED);
+    }
+
     private boolean validateFields(PersonAbsence absence) {
         return true;
     }

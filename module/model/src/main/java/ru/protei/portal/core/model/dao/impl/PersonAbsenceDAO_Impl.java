@@ -46,11 +46,14 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                         .append(makeSqlStringCollection(query.getEmployeeIds(), args, null));
             }
 
-            condition.append(" and person_absence.from_time >= ?");
-            args.add(query.getFromTime() == null ? new Date() : query.getFromTime());
+            if (query.getFromTime() != null) {
+                condition.append(" and (person_absence.from_time >= ? or person_absence.till_time >= ?)");
+                args.add(query.getFromTime());
+                args.add(query.getFromTime());
+            }
 
             if (query.getTillTime() != null) {
-                condition.append(" and person_absence.till_time <= ?");
+                condition.append(" and (person_absence.till_time <= ? or person_absence.from_time <= ?)");
                 args.add(query.getTillTime());
             }
         });

@@ -13,11 +13,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.ui.common.client.util.DateUtils.setBeginOfDay;
 
 public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivity, Activity {
 
@@ -35,7 +35,15 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
         event.parent.add(view.asWidget());
 
         if (event.employeeId != null) {
-            requestData(new AbsenceQuery(setOf(event.employeeId)));
+            AbsenceQuery query = makeQuery(event.employeeId);
+            requestData(query);
+        }
+    }
+
+    @Event
+    public void onUpdate(AbsenceEvents.Update event) {
+        if (event.absence != null) {
+            view.updateRecord(event.absence);
         }
     }
 
@@ -43,12 +51,19 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
     public void onItemClicked(PersonAbsence value) {}
 
     @Override
+    public void onEditClicked(PersonAbsence value) {
+        fireEvent(new AbsenceEvents.Edit(value.getId()));
+    }
+
+    @Override
     public void onRemoveClicked(PersonAbsence value) {
-/*
-        if (value != null) {
-            fireEvent(new ConfirmDialogEvents.Show(lang.absenceRemoveConfirmMessage(), removeAction(value.getId())));
-        }
-*/
+        fireEvent(new ConfirmDialogEvents.Show(lang.absenceRemoveConfirmMessage(), removeAction(value)));
+    }
+
+    private AbsenceQuery makeQuery(Long employeeId) {
+        AbsenceQuery query = new AbsenceQuery(setOf(employeeId));
+        query.setFromTime(setBeginOfDay(new Date()));
+        return query;
     }
 
     private void requestData(AbsenceQuery query) {
@@ -57,11 +72,13 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
                 .withSuccess(absences -> view.addRecords(absences)));
     }
 
-/*
-    private Runnable removeAction(Long absenceId) {
-        return () -> ;
+    private Runnable removeAction(PersonAbsence value) {
+        return () -> absenceController.removeAbsence(value.getId(), new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    view.removeRecord(value);
+                    fireEvent(new NotifyEvents.Show(lang.absenceRemoveSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+                }));
     }
-*/
 
     @Inject
     AbstractAbsenceTableView view;

@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AbsenceEvents;
+import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
@@ -39,7 +40,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         }
 
         hideForm();
-        dialogView.setHeader(isNew() ? lang.absenceCreation() : lang.absenceEditing());
+        dialogView.setHeader(event.id == null ? lang.absenceCreation() : lang.absenceEditing());
         dialogView.showPopup();
 
         if (event.id == null) {
@@ -167,8 +168,9 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         absenceController.saveAbsence(fillDTO(), new FluentCallback<Long>()
                 .withSuccess(result -> {
                     enableButtons(true);
-                    onCancelClicked();
                     fireEvent(new NotifyEvents.Show(isNew() ? lang.absenceCreated() : lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(isNew() ? (new EmployeeEvents.Show()) : (new AbsenceEvents.Update(absence)));
+                    onCancelClicked();
                 }));
     }
 

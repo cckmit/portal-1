@@ -1,7 +1,7 @@
-package ru.protei.portal.ui.roomreservation.client.util;
+package ru.protei.portal.ui.common.client.util;
 
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
+import ru.protei.portal.ui.common.client.common.YearMonthDay;
 
 import java.util.Date;
 import java.util.List;

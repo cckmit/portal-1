@@ -54,6 +54,15 @@ public class AbsenceControllerImpl implements AbsenceController {
         return checkResultAndGetData(result);
     }
 
+    @Override
+    public Boolean removeAbsence(Long id) throws RequestFailedException {
+        log.info("removeAbsence(): id={}", id);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<Boolean> result = absenceService.removeAbsence(token, id);
+        log.info("removeAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
+        return checkResultAndGetData(result);
+    }
+
     @Autowired
     AbsenceService absenceService;
 
