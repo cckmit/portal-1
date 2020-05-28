@@ -31,7 +31,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_privateComment" value="${privateComment}"/>
 <@set name="_platform" value="${issuePlatform}"/>
 
-<#--<#noparse>-->
+<#noparse>
 <#macro changeTo old, new>
     <span style="color:#bd1313;text-decoration:line-through;">${old}</span>
     <span style="margin:0 5px;">&rarr;</span>
@@ -338,7 +338,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_changedImportanceTo} ${caseComment.caseImportance}
                     <#elseif caseComment.caseManager??>
                         ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManagerAndCompany, lang)}
-                    <#else>
+                    <#elseif caseComment.text??>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
                             <div class="markdown"
@@ -364,4 +364,4 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </div>
 </body>
 </html>
-<#--</#noparse>-->
+</#noparse>
