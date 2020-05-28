@@ -63,28 +63,35 @@ public class BootstrapService {
         documentBuildFullIndex();
         //fillImportanceLevels();
         migrateIpReservation();
-       // transferYoutrackLinks();
+        transferYoutrackLinks();
     }
 
     private void transferYoutrackLinks() {
-        //Добавить проверку, что метод уже выполнялся
-        if (!config.data().youtrack().getAdminProject().equals("ACRM")
-                || !config.data().integrationConfig().isYoutrackEnabled()) {
+        if (!config.data().integrationConfig().isYoutrackLinksMigrationEnabled() || !config.data().getCommonConfig().isProductionServer()){
             return;
         }
+
+        log.debug("transferYoutrackLinks(): start transfer");
 
         CaseLinkQuery query = new CaseLinkQuery(null, null);
         query.setType(En_CaseLink.YT);
 
         List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(query);
 
-        listByQuery.forEach(caseLink -> {
-            Long caseNumber = caseObjectDAO.getCaseNumberById(caseLink.getCaseId());
-            String youtrackId = caseLink.getRemoteId();
+        log.debug("transferYoutrackLinks(): quantity of YT case links={}", listByQuery.size());
 
-            //может надо добавить только если >= 1000000?
-            if (caseNumber != null) {
-                youtrackService.addIssueCrmNumber(youtrackId, caseNumber);
+        listByQuery.forEach(caseLink -> {
+            try {
+                log.debug("transferYoutrackLinks(): transfer case link with id={}, case number={}, remote number={}", caseLink.getId(), caseLink.getCaseId(), caseLink.getRemoteId());
+                Long caseNumber = caseObjectDAO.getCaseNumberById(caseLink.getCaseId());
+                String youtrackId = caseLink.getRemoteId();
+
+                if (caseNumber != null) {
+                    youtrackService.addIssueCrmNumber(youtrackId, caseNumber);
+                }
+                log.debug("transferYoutrackLinks(): SUCCESS transfer case link with id={}", caseLink.getId());
+            } catch (Exception e){
+                log.error("transferYoutrackLinks(): ERROR transfer case link with id={}", caseLink.getId(), e);
             }
         });
     }
