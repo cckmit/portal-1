@@ -345,6 +345,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         cf.value = textFieldValue;
 
         if (crmNumbers == null || crmNumbers.isEmpty() || !crmNumbers.contains(caseNumber.toString())) {
+            textFieldValue.text = crmNumbers;
             return cf;
         }
 
@@ -361,7 +362,7 @@ public class YoutrackServiceImpl implements YoutrackService {
             return cf;
         }
 
-        textFieldValue.text = result.toString().substring(0, result.toString().length() - 2);
+        textFieldValue.text = result.toString().substring(0, result.toString().length() - 1);
 
         return cf;
     }
