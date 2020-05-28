@@ -11,7 +11,6 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_changedStateTo" value="${changed_state_to}"/>
 <@set name="_changedImportanceTo" value="${changed_importance_to}"/>
 <@set name="_changedManagerTo" value="${changed_manager_to}"/>
-<@set name="_resetManager" value="${reset_manager}"/>
 <@set name="_you" value="${you}"/>
 <@set name="_yourself" value="${yourself}"/>
 <@set name="_product" value="${product}"/>
@@ -31,7 +30,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_privateComment" value="${privateComment}"/>
 <@set name="_platform" value="${issuePlatform}"/>
 
-<#noparse>
+<#--<#noparse>-->
 <#macro changeTo old, new>
     <span style="color:#bd1313;text-decoration:line-through;">${old}</span>
     <span style="margin:0 5px;">&rarr;</span>
@@ -318,15 +317,14 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_changedImportanceTo} ${caseComment.caseImportance}
                     <#elseif caseComment.caseManager??>
                         ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManager, lang)}
-                    <#elseif caseComment.text??>
+                    <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div class="markdown" style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                            <div class="markdown"
+                                 style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
                             <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
                         </#if>
-                    <#else>
-                        ${_resetManager}
                     </#if>
                 </div>
             </#list>
@@ -345,4 +343,4 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </div>
 </body>
 </html>
-</#noparse>
+<#--</#noparse>-->

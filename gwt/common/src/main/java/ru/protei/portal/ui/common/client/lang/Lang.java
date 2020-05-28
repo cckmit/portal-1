@@ -2309,6 +2309,4 @@ public interface Lang extends Messages, ContactItemLang {
     String auditTypeApplicationRemove();
 
     String rolePrivilegesNote();
-
-    String issueCommentResetManager();
 }

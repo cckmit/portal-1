@@ -130,12 +130,12 @@ public class CaseCommentItemView
             owner.addClassName("status");
             owner.addClassName("name");
             owner.setInnerText(managerShortName);
-            info.setInnerText(StringUtils.isEmpty(managerShortName) ? lang.issueCommentResetManager() : lang.issueCommentChangeManagerTo());
+            info.setInnerText(lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         } else {
             status.addClassName("name");
             status.setInnerText(managerShortName);
-            info.setInnerText(StringUtils.isEmpty(managerShortName) ? lang.issueCommentResetManager() : lang.issueCommentChangeManagerTo());
+            info.setInnerText(lang.issueCommentChangeManagerTo());
             info.removeClassName("hide");
         }
     }
