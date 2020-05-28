@@ -331,7 +331,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         if (crmNumbers != null && crmNumbers.contains(caseNumber.toString())){
             textFieldValue.text = crmNumbers;
         } else {
-            textFieldValue.text = crmNumbers == null || crmNumbers.isEmpty() ? "" : crmNumbers + ",\n";
+            textFieldValue.text = crmNumbers == null || crmNumbers.isEmpty() ? "" : crmNumbers + "\n";
             textFieldValue.text += "[" + caseNumber + "]" + "(" + config.data().getCaseLinkConfig().getLinkCrm().replace("%id%", caseNumber.toString()) + ")";
         }
 
@@ -348,13 +348,12 @@ public class YoutrackServiceImpl implements YoutrackService {
             return cf;
         }
 
-        crmNumbers = crmNumbers.replace("\n", "");
-        String[] lines = crmNumbers.split(",");
+        String[] lines = crmNumbers.split("\n");
 
         StringBuilder result = new StringBuilder();
         for (String line : lines) {
             if (!line.contains(caseNumber.toString())){
-                result.append(line).append(",\n");
+                result.append(line).append("\n");
             }
         }
 

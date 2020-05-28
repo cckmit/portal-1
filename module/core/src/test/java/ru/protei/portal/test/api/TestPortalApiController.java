@@ -290,7 +290,7 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     public void setYoutrackIdToInvalidCrmNumber() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
-        String numbers = "9999999" + ",\n" + "NOT_NUMBER,";
+        String numbers = "NOT_NUMBER";
         ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
 
         Assert.assertFalse("Error message must be not empty", accept.andReturn().getResponse().getContentAsString().isEmpty());
