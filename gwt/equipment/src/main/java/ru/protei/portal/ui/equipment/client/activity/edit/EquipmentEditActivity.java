@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Активность карточки редактирования единицы оборудования
@@ -118,14 +119,14 @@ public abstract class EquipmentEditActivity
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
-                    fireEvent(isNew(this.equipment) ? new EquipmentEvents.Show(true) : new Back());
+                    fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
     }
 
     @Override
@@ -195,6 +196,11 @@ public abstract class EquipmentEditActivity
 
         view.createDocumentButtonEnabled().setEnabled(!isCreate);
         view.documentsVisibility().setVisible(!isCreate);
+
+        view.setLinkedEquipmentFilter(isCreate ?
+                        (equipmentShortView -> true) :
+                        (equipmentShortView -> !Objects.equals(equipmentShortView.getId(), equipment.getId()))
+        );
 
         fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }

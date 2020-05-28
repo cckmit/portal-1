@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issuereport.client.activity.create;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
@@ -18,11 +19,15 @@ public interface AbstractIssueReportCreateView extends IsWidget {
 
     HasValue<String> name();
 
-    void reset();
-
     void fillReportTypes(List<En_ReportType> options);
 
     void fillReportScheduledTypes(List<En_ReportScheduledType> options);
 
     HasWidgets getIssueFilterContainer();
+
+    HasVisibility scheduledTypeContainerVisibility();
+
+    HasVisibility checkImportanceHistoryContainerVisibility();
+
+    HasValue<Boolean> checkImportanceHistory();
 }

@@ -73,6 +73,6 @@ public abstract class EmployeeRegistrationPage
     PolicyService policyService;
 
     private String ТAB;
-    private EmployeeRegistrationEvents.Show show = new EmployeeRegistrationEvents.Show();
+    private EmployeeRegistrationEvents.Show show = new EmployeeRegistrationEvents.Show(false);
 }
 

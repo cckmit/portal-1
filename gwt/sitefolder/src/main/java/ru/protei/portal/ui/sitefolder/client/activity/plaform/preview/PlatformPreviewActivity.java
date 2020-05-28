@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -62,7 +63,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     @Override
     public void onOpenServersClicked() {
         if (platformId != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platformId));
+            fireEvent(new SiteFolderServerEvents.Show(platformId, false));
         }
     }
 
@@ -75,7 +76,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
     @Override
     public void onGoToIssuesClicked() {
-        fireEvent(new SiteFolderPlatformEvents.Show());
+        fireEvent(new SiteFolderPlatformEvents.Show(true));
     }
 
     private void platformRequest(Long platformId, Consumer<Platform> consumer) {
@@ -89,7 +90,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     private void fillProjectSpecificFields (ProjectInfo project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-        view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
+        view.setProject(project.getName(), LinkUtils.makePreviewLink(Project.class, project.getId()));
         view.setTechnicalSupportValidity(formatTechnicalSupportValidityOrErrorMsg(project));
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }

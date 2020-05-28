@@ -210,6 +210,14 @@ public class LegacySystemDAO {
         return runAction(transaction -> transaction.dao(ExternalPerson.class).get(id));
     }
 
+    public List<ExternalSubnet> getExternalSubnets () throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalSubnet.class).list());
+    }
+
+    public List<ExternalReservedIp> getExternalReservedIps () throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalReservedIp.class).list(""));
+    }
+
     public ExternalPersonInfoCollector personCollector (List<ExternalPerson> personList) {
         return new ExternalPersonInfoCollector().fromPersonSet(personList);
     }

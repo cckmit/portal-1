@@ -6,11 +6,19 @@ import ru.protei.portal.core.model.ent.CaseTag;
 public class EditEvent extends GwtEvent<EditHandler> {
     private static Type<EditHandler> TYPE;
     public CaseTag caseTag;
+    public Long id;
+    public String text;
     public boolean isReadOnly;
 
     public static <T> void fire(HasEditHandlers source, CaseTag caseTag, boolean isReadOnly) {
         if(TYPE != null) {
             source.fireEvent(new EditEvent(caseTag, isReadOnly));
+        }
+    }
+
+    public static <T> void fire(HasEditHandlers source, Long id, String text) {
+        if(TYPE != null) {
+            source.fireEvent(new EditEvent(id, text));
         }
     }
 
@@ -25,6 +33,11 @@ public class EditEvent extends GwtEvent<EditHandler> {
     protected EditEvent(CaseTag caseTag, boolean isReadOnly) {
         this.caseTag = caseTag;
         this.isReadOnly = isReadOnly;
+    }
+
+    public EditEvent(Long id, String text){
+        this.id = id;
+        this.text = text;
     }
 
     @Override

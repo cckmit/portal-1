@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
@@ -98,6 +99,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public SearchResult<CaseObject> getSearchResult(CaseQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
+    }
+
+    @Override
     public int countByQuery(CaseQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return JdbcHelper.getObjectsCount(this.getObjectMapper(), this.jdbcTemplate, parameters);
@@ -155,7 +162,9 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)) {
+        if (isSearchAtComments(query)
+            || (query.isCheckImportanceHistory()!=null && query.isCheckImportanceHistory())
+        ) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
         }

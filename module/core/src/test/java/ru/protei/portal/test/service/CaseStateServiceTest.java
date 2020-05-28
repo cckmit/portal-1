@@ -5,11 +5,11 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -77,7 +77,7 @@ public class CaseStateServiceTest {
 
     @Test
     public void getCaseStateFromServiceTest() throws Exception {
-        Result<List<CaseState>> response = caseStateService.caseStateList(TEST_AUTH_TOKEN);
+        Result<List<CaseState>> response = caseStateService.caseStateList(TEST_AUTH_TOKEN, En_CaseType.CRM_SUPPORT);
 
         if (response.isError()) {
             fail("Expected list of CaseState");
@@ -120,12 +120,12 @@ public class CaseStateServiceTest {
         company2.setId(companyDAO.persist(company2));
 
 
-        CaseState state = checkResultAndGetData( caseStateService.getCaseState(TEST_AUTH_TOKEN, En_CaseState.CREATED.getId()));
+        CaseState state = checkResultAndGetData( caseStateService.getCaseState(TEST_AUTH_TOKEN, CrmConstants.State.CREATED));
         state.setUsageInCompanies(En_CaseStateUsageInCompanies.SELECTED);
         state.setCompanies(Arrays.asList(company1, company2));
         checkResult( caseStateService.updateCaseState(TEST_AUTH_TOKEN, state));
 
-        state = checkResultAndGetData( caseStateService.getCaseState(TEST_AUTH_TOKEN, En_CaseState.CREATED.getId()));
+        state = checkResultAndGetData( caseStateService.getCaseState(TEST_AUTH_TOKEN, CrmConstants.State.CREATED));
         assertNotNull("Expected not nul companies", state.companies);
     }
 
@@ -133,7 +133,7 @@ public class CaseStateServiceTest {
     public void getCaseStatesByCompanyTest() throws Exception {
         Company company1 = new Company();
         company1.setCname("company1");
-        List<CaseState> expectedStates = Arrays.asList(makeCaseState(En_CaseState.OPENED), makeCaseState(En_CaseState.DONE));
+        List<CaseState> expectedStates = Arrays.asList(makeCaseState(CrmConstants.State.OPENED), makeCaseState(CrmConstants.State.DONE));
         company1.setCaseStates(expectedStates);
 
         company1.setId(companyDAO.persist(company1));
@@ -145,8 +145,8 @@ public class CaseStateServiceTest {
         assertTrue("Not all states",caseStates.containsAll(expectedStates));
     }
 
-    private CaseState makeCaseState(En_CaseState state) {
-        return new CaseState(new Long(state.getId()));
+    private CaseState makeCaseState(Long state) {
+        return new CaseState(state);
     }
 
 

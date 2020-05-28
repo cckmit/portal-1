@@ -10,16 +10,19 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
-import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
+import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableView;
@@ -29,8 +32,9 @@ import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableVi
  */
 public class EmployeeTableView extends Composite implements AbstractEmployeeTableView {
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn<EmployeeShortView> editClickColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        this.editClickColumn = editClickColumn;
         initTable();
     }
 
@@ -44,6 +48,11 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         contacts.setColumnProvider(columnProvider);
         department.setHandler(activity);
         department.setColumnProvider(columnProvider);
+
+        editClickColumn.setHandler(activity);
+        editClickColumn.setEditHandler(activity);
+        editClickColumn.setColumnProvider(columnProvider);
+
         table.setLoadHandler(activity);
         table.setPagerListener(activity);
     }
@@ -105,6 +114,11 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         animation.setContainers(tableContainer, previewContainer, filterContainer);
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
         name = new DynamicColumn<>(
                 lang.employeeEmployeeFullName(),
@@ -122,9 +136,12 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                 this::getEmployeeDepartmentBlock
         );
 
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT) );
+
         table.addColumn(name.header, name.values);
         table.addColumn(contacts.header, contacts.values);
         table.addColumn(department.header, department.values);
+        table.addColumn(editClickColumn.header, editClickColumn.values);
     }
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
@@ -186,11 +203,17 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         Element department;
         Element departmentParent;
         Element position;
+        Element company;
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
 
         if (mainEntry != null) {
+            company = LabelValuePairBuilder.make()
+                    .addIconValuePair(null, mainEntry.getCompanyName(), "contacts")
+                    .toElement();
+            employeeDepartment.appendChild(company);
+
             if (mainEntry.getDepartmentParentName() == null) {
                 department = LabelValuePairBuilder.make()
                         .addIconValuePair(null, mainEntry.getDepartmentName(), "contacts")
@@ -238,6 +261,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     HTMLPanel filterContainer;
     @UiField
     HTMLPanel pagerContainer;
+    @Inject
+    PolicyService policyService;
 
     @Inject
     @UiField
@@ -248,6 +273,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     DynamicColumn<EmployeeShortView> name;
     DynamicColumn<EmployeeShortView> contacts;
     DynamicColumn<EmployeeShortView> department;
+    EditClickColumn<EmployeeShortView> editClickColumn;
 
     AbstractEmployeeTableActivity activity;
 

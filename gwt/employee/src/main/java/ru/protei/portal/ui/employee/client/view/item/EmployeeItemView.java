@@ -2,13 +2,13 @@ package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Image;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
@@ -21,6 +21,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
+    @Override
     public void setActivity( AbstractEmployeeItemActivity activity ) {
         this.activity = activity;
     }
@@ -69,6 +70,12 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
+    public void setCompany( String value ) {
+        companyContainer.setVisible( value != null && !value.isEmpty() );
+        company.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
     public void setIP(String value) {
         ipContainer.setVisible( value != null && !value.isEmpty() );
         ip.setInnerText( value == null ? "" : value );
@@ -87,9 +94,17 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
+    @Override
+    public void setEditIcon (String link) {
+        editIcon.setHref(link);
+        editIcon.setVisible(link != null && !link.isEmpty());
+    }
 
     @UiField
     Anchor name;
+
+    @UiField
+    Anchor editIcon;
 
     @UiField
     HTMLPanel birthdayContainer;
@@ -111,6 +126,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     HTMLPanel positionContainer;
+
+    @UiField
+    HTMLPanel companyContainer;
 
     @UiField
     HTMLPanel ipContainer;
@@ -137,6 +155,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     SpanElement position;
 
     @UiField
+    SpanElement company;
+
+    @UiField
     SpanElement ip;
 
     @UiField
@@ -147,6 +168,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
 
     AbstractEmployeeItemActivity activity;
+
+    private Long employeeId;
 
     private static EmployeeItemViewUiBinder ourUiBinder = GWT.create( EmployeeItemViewUiBinder.class );
     interface EmployeeItemViewUiBinder extends UiBinder< HTMLPanel, EmployeeItemView > {}

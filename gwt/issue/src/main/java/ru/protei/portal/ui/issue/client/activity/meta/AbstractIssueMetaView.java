@@ -5,15 +5,18 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +24,10 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setActivity(AbstractIssueMetaActivity activity);
 
+
+    void setManagerCompany(EntityOption managerCompany);
+
+    EntityOption getManagerCompany();
 
     void setCaseMetaNotifiers(Set<Person> caseObjectMetaNotifiers);
     void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira);
@@ -32,7 +39,8 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
-    void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
+    void updateManagersCompanyFilter(Long managerCompanyId);
+    void setStateFilter(Selector.SelectorFilter<CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
     void fillImportanceOptions(List<En_ImportanceLevel> options);
 
@@ -69,8 +77,10 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility platformVisibility();
     HasVisibility jiraSlaSelectorVisibility();
 
+    void setInitiatorBorderBottomVisible(boolean isVisible);
+
     HasValue<En_TimeElapsedType> timeElapsedType();
-    HasValue<En_CaseState> state();
+    HasValue<CaseState> state();
     HasValue<En_ImportanceLevel> importance();
 
     void setProduct(DevUnit product);
@@ -98,4 +108,12 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setValuesContainerWarning(boolean isWarning);
 
     void setSlaTimesContainerTitle(String title);
+
+    HasVisibility pauseDateContainerVisibility();
+
+    HasValue<Date> pauseDate();
+
+    void setPauseDateValid(boolean isValid);
+
+    HasEnabled managerCompanyEnabled();
 }

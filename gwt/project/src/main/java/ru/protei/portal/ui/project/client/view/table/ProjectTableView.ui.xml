@@ -9,11 +9,12 @@
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-md-9">
                 <div class="card card-default no-border">
                     <div class="card-body no-padding">
-                        <table:TableWidget ui:field="table" styleName="table table-hover projects"/>
+                        <table:InfiniteTableWidget ui:field="table" styleName="table table-hover projects"/>
+                        <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container"/>
                     </div>
                 </div>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
+            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container project-filter col-md-3"/>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
         </div>
     </g:HTMLPanel>

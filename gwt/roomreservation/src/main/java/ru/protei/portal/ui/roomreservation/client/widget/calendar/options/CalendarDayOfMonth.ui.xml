@@ -1,0 +1,7 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel styleName="scroll-wrapper drager week-dragger m-t-20">
+        <g:HTMLPanel ui:field="container" styleName="drager week-dragger scroll-content"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

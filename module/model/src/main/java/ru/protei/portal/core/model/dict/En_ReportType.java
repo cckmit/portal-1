@@ -18,5 +18,10 @@ public enum En_ReportType {
     /**
      * Отчет по времени завершения
      */
-    CASE_RESOLUTION_TIME
+    CASE_RESOLUTION_TIME,
+
+    /**
+     * Фильтр проектам
+     */
+    PROJECT
 }

@@ -16,6 +16,7 @@ import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.*;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -40,7 +41,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static ru.protei.portal.core.event.AssembledEventFactory.makeAssembledEvent;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static ru.protei.portal.core.event.AssembledEventFactory.makeComment;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
@@ -57,6 +59,10 @@ public class TemplateServiceImplTest {
         @Bean
         public TemplateService getTemplateService() {
             return new TemplateServiceImpl();
+        }
+        @Bean
+        public CaseStateDAO getStateDAO() {
+            return mock( CaseStateDAO.class );
         }
     }
 
@@ -199,7 +205,8 @@ public class TemplateServiceImplTest {
         old.add( chang2 );
 
         CaseObjectCreateEvent caseObjectCreateEvent = new CaseObjectCreateEvent( new Object(), ServiceModule.GENERAL, person.getId(), lastState);
-        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent( new Object(), ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(lastState.getExtAppType()), null, new CaseObjectMeta(lastState) );
+        CaseObjectMetaEvent caseObjectMetaEvent = new CaseObjectMetaEvent(
+                new Object(), ServiceModule.GENERAL, person.getId(), En_ExtAppType.forCode(lastState.getExtAppType()), null, new CaseObjectMeta(lastState) );
         AssembledCaseEvent assembled = new AssembledCaseEvent(caseObjectCreateEvent);
         assembled.attachCaseObjectCreateEvent(caseObjectCreateEvent);
         assembled.attachCaseObjectMetaEvent( caseObjectMetaEvent );
@@ -209,6 +216,10 @@ public class TemplateServiceImplTest {
         assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, chang2, chang2new, rem2 ) );
         assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, add1, null ) );
         assembled.attachCommentEvent( new CaseCommentEvent( this, null, null, null, false, null, add2, null ) );
+
+        List<CaseState> caseStateList = new ArrayList<>();
+        caseStateList.add(new CaseState(1L));
+        when( caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT ) ).thenReturn( caseStateList );
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
                 assembled, assembled.getAllComments(), null, "url", Collections.EMPTY_LIST
@@ -277,6 +288,8 @@ public class TemplateServiceImplTest {
     TemplateService templateService;
     @Autowired
     HTMLRenderer htmlRenderer;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     private String commentTextWithBreaks = " ```\n" +
             "ls -l\n" +

@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.JdbcJoinedObject;
 
 import java.io.Serializable;
 
@@ -23,6 +24,9 @@ public class CaseInfo implements Serializable {
 
     @JdbcColumn(name = "STATE")
     private long stateId;
+
+    @JdbcJoinedObject(localColumn = "STATE", remoteColumn = "id", table = "case_state")
+    private CaseState state;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
@@ -84,5 +88,13 @@ public class CaseInfo implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public CaseState getState() {
+        return state;
+    }
+
+    public void setState(CaseState state) {
+        this.state = state;
     }
 }

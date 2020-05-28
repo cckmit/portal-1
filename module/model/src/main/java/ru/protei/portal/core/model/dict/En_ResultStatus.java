@@ -154,12 +154,6 @@ public enum En_ResultStatus {
     NOT_ALLOWED_LINK_ISSUE_TO_ITSELF,
 
     /**
-     * Некоторые ссылки не добавились
-     */
-
-    SOME_LINKS_NOT_ADDED,
-
-    /**
      * Эта ссылка уже привязана
      */
 
@@ -178,5 +172,57 @@ public enum En_ResultStatus {
     /**
      * Ошибка при использовании SVN
      */
-    SVN_ERROR
+    SVN_ERROR,
+
+    /**
+     * Существует сотрудник уже привязанный к данному отделу
+     */
+    WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST,
+
+    /**
+     * Существует сотрудник занимающий данную должность
+     */
+    WORKER_WITH_THIS_POSITION_ALREADY_EXIST,
+
+    /**
+     * Такой отдел уже существует
+     */
+    DEPARTMENT_ALREADY_EXIST,
+
+    /**
+     * Такая должность уже существует
+     */
+    POSITION_ALREADY_EXIST,
+
+    /**
+     * Такой сотрудник уже существует
+     */
+    EMPLOYEE_ALREADY_EXIST,
+
+    /**
+     * Нельзя уволить сотрудника, работающего в текущих компаниях
+     */
+    EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
+
+    /**
+     * Подсеть не существует
+     */
+    SUBNET_DOES_NOT_EXIST,
+
+    /**
+     * Резервирование комнат: событие уже началось/закончилось
+     */
+    ROOM_RESERVATION_OUTDATED,
+
+    /**
+     * Резервирование комнат: доступ к комнате отклонен
+     */
+    ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE,
+
+    /**
+     * Резервирование комнат: найдены пересечения с другими событиями
+     */
+    ROOM_RESERVATION_HAS_INTERSECTIONS,
+
+    ;
 }

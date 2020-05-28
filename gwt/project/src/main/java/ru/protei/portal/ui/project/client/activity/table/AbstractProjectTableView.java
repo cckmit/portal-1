@@ -16,11 +16,17 @@ public interface AbstractProjectTableView extends IsWidget {
     HasWidgets getPreviewContainer();
     HasWidgets getFilterContainer();
 
-    void addRow( Project row );
-
-    void addSeparator( String text );
-
     void updateRow( Project project );
 
     void clearSelection();
+
+    HasWidgets getPagerContainer();
+
+    void triggerTableLoad();
+
+    void setTotalRecords(int totalRecords);
+
+    int getPageCount();
+
+    void scrollTo( int page );
 }

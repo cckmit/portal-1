@@ -50,7 +50,8 @@
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.issueProduct}"
-                                                          addStyleNames="form-group col-md-4 resize-md-12"/>
+                                                          addStyleNames="form-group col-md-4 resize-md-12"
+                                                          hasNullValue="true"/>
 
             <companyselector:CompanyMultiSelector ui:field="companies"
                                                   header="{lang.issueCompany}"
@@ -58,12 +59,18 @@
 
             <person:PersonMultiSelector ui:field="initiators"
                                         header="{lang.issueInitiator}"
+                                        selectCompanyMessage="{lang.initiatorSelectACompany}"
                                         addStyleNames="form-group col-md-4 resize-md-12"/>
 
-            <person:EmployeeMultiSelector ui:field="managers"
-                                          header="{lang.issueManager}"
-                                          addStyleNames="form-group col-md-4 resize-md-12"
-                                          firedEmployeesVisible="true"/>
+            <companyselector:CompanyMultiSelector ui:field="managerCompanies"
+                                                  header="{lang.issueManagerCompany}"
+                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <person:PersonMultiSelector ui:field="managers"
+                                        header="{lang.issueManager}"
+                                        selectCompanyMessage="{lang.managerSelectACompany}"
+                                        addStyleNames="form-group col-md-4 resize-md-12"
+                                        hasNullValue="true"/>
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.reportTypeCaseTimeElapsedWorkAutor}"
@@ -74,23 +81,26 @@
                                           header="{lang.tags}"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
 
+        </div>
+        <div class="row">
             <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4 resize-md-12">
                 <label ui:field="labelSearchPrivate"><ui:text from="{lang.searchPrivate}"/></label>
                 <threestate:ThreeStateButton ui:field="searchPrivate"/>
             </g:HTMLPanel>
-        </div>
-
-        <div class="row">
-            <div ui:field="importanceContainer" class="form-group col-md-4 resize-md-12">
-                <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
-                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
-            </div>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>
             </div>
         </div>
+
+        <div class="row">
+            <div ui:field="importanceContainer" class="form-group col-md-4 resize-md-8">
+                <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
+                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
+            </div>
+        </div>
+
 
     </g:HTMLPanel>
 </ui:UiBinder>

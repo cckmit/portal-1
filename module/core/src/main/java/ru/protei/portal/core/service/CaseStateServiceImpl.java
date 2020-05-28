@@ -24,22 +24,22 @@ public class CaseStateServiceImpl implements CaseStateService {
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
-    public Result<List<CaseState>> caseStateList( AuthToken authToken) {
-        List<CaseState> list = caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT );
+    public Result<List<CaseState>> caseStateList(AuthToken authToken, En_CaseType type) {
+        List<CaseState> list = caseStateDAO.getAllByCaseType(type);
 
-        if ( list == null )
+        if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
         return ok(list);
     }
 
     @Override
-    public Result<List<CaseState>> getCaseStatesOmitPrivileges( AuthToken authToken) {
-        return caseStateList(authToken);
+    public Result<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken) {
+        return caseStateList(authToken, En_CaseType.CRM_SUPPORT);
     }
 
     @Override
-    public Result<CaseState> getCaseState( AuthToken authToken, long id) {
+    public Result<CaseState> getCaseState(AuthToken authToken, long id) {
         CaseState state = caseStateDAO.get(id);
         if (state == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -53,14 +53,14 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     @Transactional
-    public Result saveCaseState( AuthToken authToken, CaseState state) {
+    public Result saveCaseState(AuthToken authToken, CaseState state) {
         if (state == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         Long id = caseStateDAO.persist(state);
 
         if (id == null) {
-            throw new RuntimeException( "Can't create case state. DAO return null id." );
+            throw new RuntimeException("Can't create case state. DAO return null id.");
         }
 
         jdbcManyRelationsHelper.persist(state, "companies");
@@ -70,12 +70,12 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     @Transactional
-    public Result<CaseState> updateCaseState( AuthToken authToken, CaseState state) {
+    public Result<CaseState> updateCaseState(AuthToken authToken, CaseState state) {
         if (state == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         if (!caseStateDAO.merge(state)) {
-            throw new RuntimeException( "Can't update case state. DAO return false." );
+            throw new RuntimeException("Can't update case state. DAO return false.");
         }
 
         jdbcManyRelationsHelper.persist(state, "companies");
@@ -84,7 +84,7 @@ public class CaseStateServiceImpl implements CaseStateService {
     }
 
     @Override
-    public Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges( Long companyId) {
+    public Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId) {
         if (companyId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 

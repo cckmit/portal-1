@@ -336,6 +336,19 @@ public class DaoTestsConfiguration {
         return new CompanyImportanceItemDAO_Impl();
     }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() { return new SubnetDAO_Impl(); }
 
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() { return new ReservedIpDAO_Impl(); }
 
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return new RoomReservableDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return new RoomReservationDAO_Impl();
+    }
 }

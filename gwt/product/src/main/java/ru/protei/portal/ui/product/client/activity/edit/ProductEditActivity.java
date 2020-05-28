@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -29,8 +29,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CDR_DESCRIPTION;
-import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CONFIGURATION;
+import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.*;
 import static ru.protei.portal.ui.product.client.view.edit.ProductEditView.HISTORY_VERSION;
 
 /**
@@ -56,6 +55,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         }
 
         init.parent.clear();
+        Window.scrollTo(0, 0);
         init.parent.add(view.asWidget());
 
         productId = event.productId;
@@ -72,30 +72,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onNameChanged() {
-        String value = view.name().getValue().trim();
-
-        //isNameUnique не принимает пустые строки!
-        if ( value.isEmpty()) {
-            view.setNameStatus(NameStatus.NONE);
-            return;
-        }
-
-        productService.isNameUnique(
-                value,
-                currType,
-                productId,
-                new RequestCallback<Boolean>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        view.setNameStatus(NameStatus.ERROR);
-                    }
-
-                    @Override
-                    public void onSuccess(Boolean isUnique) {
-                        view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
-                        isNameUnique = isUnique;
-                    }
-                });
+        String name = view.name().getValue().trim();
+        checkName(name);
     }
 
     @Override
@@ -114,14 +92,14 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             public void onSuccess(DevUnit result) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
-                fireEvent(isNew(product) ? new ProductEvents.Show(true) : new Back());
+                fireEvent(new ProductEvents.Show(!isNew(product)));
             }
         });
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new ProductEvents.Show(!isNew(product)));
     }
 
     @Override
@@ -153,6 +131,33 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.directionVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
 
         view.setMutableState(type);
+        String trim = view.name().getValue().trim();
+        checkName(trim);
+    }
+
+    private void checkName(String name) {
+        //isNameUnique не принимает пустые строки!
+        if ( name.isEmpty()) {
+            view.setNameStatus(NameStatus.NONE);
+            return;
+        }
+
+        productService.isNameUnique(
+                name,
+                currType,
+                productId,
+                new RequestCallback<Boolean>() {
+                    @Override
+                    public void onError(Throwable throwable) {
+                        view.setNameStatus(NameStatus.ERROR);
+                    }
+
+                    @Override
+                    public void onSuccess(Boolean isUnique) {
+                        view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
+                        isNameUnique = isUnique;
+                    }
+                });
     }
 
     private boolean isNew(DevUnit product) {
@@ -189,6 +194,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
         view.setTypeImageVisibility(!isNew);
         view.setMutableState(currType);
+        isNameUnique = true;
 
         view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()
                 .map(Subscription::fromProductSubscription)
@@ -209,9 +215,10 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         view.wikiLink().setValue(devUnit.getWikiLink());
 
-        view.setHistoryVersionPreviewAllowing( makePreviewDisplaying(HISTORY_VERSION) );
-        view.setConfigurationPreviewAllowing( makePreviewDisplaying(CONFIGURATION) );
-        view.setCdrDescriptionPreviewAllowed( makePreviewDisplaying(CDR_DESCRIPTION) );
+        view.setHistoryVersionPreviewAllowing( isPreviewDisplayed(HISTORY_VERSION) );
+        view.setConfigurationPreviewAllowing( isPreviewDisplayed(CONFIGURATION) );
+        view.setCdrDescriptionPreviewAllowed( isPreviewDisplayed(CDR_DESCRIPTION) );
+        view.setInfoPreviewAllowed(isPreviewDisplayed(INFO));
 
         view.cdrDescription().setValue(devUnit.getCdrDescription());
         view.configuration().setValue(devUnit.getConfiguration());
@@ -221,8 +228,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.aliasesVisibility().setVisible(currType.equals(En_DevUnitType.PRODUCT));
     }
 
-    private boolean makePreviewDisplaying( String key ) {
-        return Boolean.parseBoolean( localStorageService.getOrDefault( PRODUCT + "_" + key, "false" ) );
+    private boolean isPreviewDisplayed(String key) {
+        return localStorageService.getBooleanOrDefault(PRODUCT + "_" + key, false);
     }
 
     private void fillDto(DevUnit product) {

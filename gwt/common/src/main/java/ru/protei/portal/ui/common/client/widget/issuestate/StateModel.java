@@ -3,13 +3,13 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -43,16 +43,16 @@ public abstract class StateModel implements Activity {
         notifySubscribers();
     }
 
-    public void subscribeNoWorkflow(SelectorWithModel<En_CaseState> selector) {
+    public void subscribeNoWorkflow(SelectorWithModel<CaseState> selector) {
         subscribe(selector, En_CaseStateWorkflow.NO_WORKFLOW, null);
     }
 
-    public void subscribe(SelectorWithModel<En_CaseState> selector, En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
+    public void subscribe(SelectorWithModel<CaseState> selector, En_CaseStateWorkflow workflow, CaseState currentCaseState) {
 
         subscriberMap.put(selector, new WorkflowWithState(workflow, currentCaseState));
 
         if (isDataLoaded()) {
-            List<En_CaseState> nextCaseStates = fetchNextCaseStatesForWorkflow(workflow, currentCaseState);
+            List<CaseState> nextCaseStates = fetchNextCaseStatesForWorkflow(workflow, currentCaseState);
             notifySubscriber(selector, nextCaseStates);
             return;
         }
@@ -90,52 +90,55 @@ public abstract class StateModel implements Activity {
     }
 
     private void notifySubscribers() {
-        for (Map.Entry<SelectorWithModel<En_CaseState>, WorkflowWithState> entry : subscriberMap.entrySet()) {
-            SelectorWithModel<En_CaseState> selector = entry.getKey();
+        for (Map.Entry<SelectorWithModel<CaseState>, WorkflowWithState> entry : subscriberMap.entrySet()) {
+            SelectorWithModel<CaseState> selector = entry.getKey();
             En_CaseStateWorkflow workflow = entry.getValue().workflow;
-            En_CaseState currentCaseState = entry.getValue().state;
+            CaseState currentCaseState = entry.getValue().state;
 
-            List<En_CaseState> nextCaseStates = fetchNextCaseStatesForWorkflow(workflow, currentCaseState);
+            List<CaseState> nextCaseStates = fetchNextCaseStatesForWorkflow(workflow, currentCaseState);
             notifySubscriber(selector, nextCaseStates);
         }
     }
 
-    private void notifySubscriber(SelectorWithModel<En_CaseState> selector, List<En_CaseState> caseStates) {
+    private void notifySubscriber(SelectorWithModel<CaseState> selector, List<CaseState> caseStates) {
         selector.fillOptions(caseStates);
         selector.refreshValue();
     }
 
-    private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
+    private List<CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseStatesList.stream().map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList());
+            if (currentCaseState != null && CrmConstants.State.VERIFIED == currentCaseState.getId()) {
+                return Collections.singletonList(currentCaseState);
+            } else {
+                return new ArrayList<>(caseStatesList);
+            }
+        }
+
+        Set<CaseState> nextCaseStates = new HashSet<>();
+        Optional<CaseState> currentState = caseStatesList.stream().filter(state -> state.equals(currentCaseState)).findFirst();
+        if (currentState.isPresent()) {
+            nextCaseStates.add(currentState.get());
         }
 
         Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
                 .filter(csw -> csw.isMatched(workflow))
                 .findFirst();
 
-        Set<CaseState> nextCaseStates = new HashSet<>();
-        Optional<CaseState> currentState = caseStatesList.stream().filter(state -> En_CaseState.getById(state.getId()) == currentCaseState).findFirst();
-        if (currentState.isPresent()) {
-            nextCaseStates.add(currentState.get());
-        }
-
         if (caseStateWorkflow.isPresent()) {
             for (CaseStateWorkflowLink caseStateWorkflowLink : caseStateWorkflow.get().getCaseStateWorkflowLinks()) {
-                if (caseStateWorkflowLink.getCaseStateFrom() != currentCaseState) {
+                if (caseStateWorkflowLink.getCaseStateFromId() != currentCaseState.getId()) {
                     continue;
                 }
 
-                Optional<CaseState> caseState = caseStatesList.stream().filter(state -> En_CaseState.getById(state.getId()) == caseStateWorkflowLink.getCaseStateTo()).findFirst();
-
+                Optional<CaseState> caseState = caseStatesList.stream().filter(state -> state.getId() == caseStateWorkflowLink.getCaseStateToId()).findFirst();
                 if (caseState.isPresent()) {
                     nextCaseStates.add(caseState.get());
                 }
             }
         }
 
-        return nextCaseStates.stream().sorted(Comparator.comparingInt(CaseState::getViewOrder)).map(caseState -> En_CaseState.getById(caseState.getId())).collect( Collectors.toList());
+        return nextCaseStates.stream().sorted(Comparator.comparingInt(CaseState::getViewOrder)).collect(Collectors.toList());
     }
 
     @Inject
@@ -146,12 +149,12 @@ public abstract class StateModel implements Activity {
     private boolean isRefreshing = false;
     private List<CaseState> caseStatesList = new ArrayList<>();
     private List<CaseStateWorkflow> caseStateWorkflowList = new ArrayList<>();
-    private Map<SelectorWithModel<En_CaseState>, WorkflowWithState> subscriberMap = new HashMap<>();
+    private Map<SelectorWithModel<CaseState>, WorkflowWithState> subscriberMap = new HashMap<>();
 
     private class WorkflowWithState {
         En_CaseStateWorkflow workflow;
-        En_CaseState state;
-        WorkflowWithState(En_CaseStateWorkflow workflow, En_CaseState state) {
+        CaseState state;
+        WorkflowWithState(En_CaseStateWorkflow workflow, CaseState state) {
             this.workflow = workflow;
             this.state = state;
         }

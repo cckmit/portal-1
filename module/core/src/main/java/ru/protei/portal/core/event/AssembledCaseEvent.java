@@ -127,7 +127,11 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseStateChanged() {
-        return isUpdateEventMeta() && lastMetaState.getState() != initMetaState.getState();
+        return isUpdateEventMeta() && lastMetaState.getStateId() != initMetaState.getStateId();
+    }
+
+    public boolean isPauseDateChanged() {
+        return isUpdateEventMeta() && !Objects.equals(lastMetaState.getPauseDate(), initMetaState.getPauseDate());
     }
 
     public boolean isTimeElapsedChanged() {
@@ -136,6 +140,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isCaseImportanceChanged() {
         return isUpdateEventMeta() && !lastMetaState.getImpLevel().equals(initMetaState.getImpLevel());
+    }
+
+    public boolean isManagerCompanyChanged() {
+        return isUpdateEventMeta() && !HelperFunc.equals(lastMetaState.getManagerCompanyId(), initMetaState.getManagerCompanyId());
     }
 
     public boolean isManagerChanged() {

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.ui.common.client.util.CaseCommentUtils.*;
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 
 /**
  * Активность списка комментариев
@@ -304,7 +304,7 @@ public abstract class CaseCommentListActivity
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.message().setValue(
-                addImageInMessage(view.message().getValue(), strPosition, attach));
+                addImageInMessage(textMarkup, view.message().getValue(), strPosition, attach));
     }
 
     private void addTempAttachment(Attachment attach) {
@@ -377,20 +377,16 @@ public abstract class CaseCommentListActivity
             itemView.hideOptions();
         }
 
-        itemView.enabledEdit(isModifyEnabled);
-
         if ( isStateChangeComment ) {
-            En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
-            itemView.setStatus( caseState );
+            itemView.setStatus( value.getCaseStateName() );
         }
 
         if ( isImportanceChangeComment ) {
-            En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
-            itemView.setImportanceLevel(importance);
+            itemView.setImportanceLevel( value.getCaseImportance() );
         }
 
         if ( isManagerChangeComment ) {
-            itemView.setManager(transliteration(value.getCaseManagerShortName()));
+            itemView.setManagerInfo(makeManagerInfo(value.getCaseManagerShortName(), value.getManagerCompanyName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
@@ -403,6 +399,10 @@ public abstract class CaseCommentListActivity
         itemViewToModel.put( itemView, value );
 
         return itemView;
+    }
+
+    private String makeManagerInfo(String managerShortName, String managerCompanyName) {
+        return transliteration(managerShortName + " (" + managerCompanyName + ")");
     }
 
     private void updateTimeElapsedType(En_TimeElapsedType type, CaseComment value, AbstractCaseCommentItemView itemView) {

@@ -120,7 +120,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         ValueChangeEvent.fire( this, value );
     }
 
-    protected void setNullItem(Supplier<T> selectorNullItem) {
+    public void setNullItem(Supplier<T> selectorNullItem) {
         getSelector().setNullItem(selectorNullItem);
     }
 

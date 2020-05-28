@@ -30,8 +30,8 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
-    public void setHeader(String header) {
-        this.header.setInnerText(header);
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber.setText(documentNumber);
     }
 
     @Override
@@ -170,8 +170,16 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
-    public HasVisibility footerVisibility() {
-        return footerContainer;
+    public void showFullScreen(boolean isShowFullScreen) {
+        footerContainer.setVisible(isShowFullScreen);
+        preview.setStyleName("card-with-fixable-footer", isShowFullScreen);
+    }
+
+    @UiHandler("documentNumber")
+    public void onDocumentNumberClicked(ClickEvent event) {
+        event.preventDefault();
+
+        activity.onFullScreenClicked();
     }
 
     @UiHandler("backButton")
@@ -199,7 +207,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         uploadDocFile.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.UPLOAD_DOC_FILE_BUTTON);
         backButton.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.BACK_BUTTON);
 
-        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.HEADER_LABEL);
+        documentNumber.ensureDebugId(DebugIds.DOCUMENT.PREVIEW.HEADER_LABEL);
         createdBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.CREATED_BY);
         annotation.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.ANNOTATION_LABEL);
         keyWordsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.KEY_WORDS_LABEL);
@@ -231,6 +239,9 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         documentDocUploadContainerLoading.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PREVIEW.DOC_UPLOAD_CONTAINER_LOADING);
     }
 
+
+    @UiField
+    HTMLPanel preview;
     @UiField
     Anchor downloadPdfButton;
     @UiField
@@ -238,7 +249,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     Anchor downloadApprovalSheetButton;
     @UiField
-    HeadingElement header;
+    Anchor documentNumber;
     @UiField
     Element version;
     @UiField
@@ -321,7 +332,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField
     Lang lang;
 
-    AbstractDocumentPreviewActivity activity;
+    private AbstractDocumentPreviewActivity activity;
 
     interface Binder extends UiBinder<HTMLPanel, DocumentPreviewView> {}
     private final Binder uiBinder = GWT.create(Binder.class);

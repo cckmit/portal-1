@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -63,7 +64,7 @@ public abstract class CaseStateTableActivity implements Activity,
     }
 
     private void requestRecords() {
-        caseStateService.getCaseStates(new RequestCallback<List<CaseState>>() {
+        caseStateService.getCaseStates(En_CaseType.CRM_SUPPORT, new RequestCallback<List<CaseState>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));

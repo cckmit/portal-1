@@ -83,7 +83,7 @@ public enum En_SortField {
     /**
      * region name
      */
-    region_name("region_name"),
+    region_name("location_region_name"),
 
     /**
      * equipment project
@@ -123,7 +123,27 @@ public enum En_SortField {
     /**
      * project name
      */
-    project_name("CASE_NAME");
+    project_name("CASE_NAME"),
+
+    /**
+     * ip address
+     */
+    ip_address("INET_ATON(ip_address)"),
+
+    /**
+     * subnet address
+     */
+    address("INET_ATON(address)"),
+
+    /**
+     * last active IP-address date
+     */
+    check_date("last_check_date"),
+
+    /**
+     * state order
+     */
+    state_order("VIEW_ORDER");
 
     private String fieldName;
     private String bundleKey;

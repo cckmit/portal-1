@@ -15,10 +15,10 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.AssemblerService;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.dto.JiraHookEventData;
@@ -134,7 +134,7 @@ public class JiraIntegrationServiceTest {
 
         caseEvent = jiraIntegrationService.updateOrCreate(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_UPDATED, issue));
         CaseObject object = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
-        Assert.assertEquals("Issue not updated", object.getState(), En_CaseState.OPENED);
+        Assert.assertEquals("Issue not updated", object.getStateId(), CrmConstants.State.OPENED);
     }
 
     @Test
@@ -164,7 +164,7 @@ public class JiraIntegrationServiceTest {
 
         for (CompletableFuture<AssembledCaseEvent> caseEvent : caseEvents) {
             CaseObject object = caseObjectDAO.get( caseEvent.get().getCaseObjectId() );
-            Assert.assertEquals( "Issue not updated", object.getState(), En_CaseState.OPENED );
+            Assert.assertEquals( "Issue not updated", object.getStateId(), CrmConstants.State.OPENED );
         }
     }
 

@@ -8,10 +8,10 @@ import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.service.RedmineService;
 
@@ -49,6 +49,11 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
              * А вообще такого быть не должно, здесь должна быть ТОЛЬКО отправка
              * сообщения удаленной стороне
              **/
+
+            if (commonService.getExternalAppId(caseId).isError()) {
+                logger.debug("case {} has no ext-app-id", caseId);
+                return;
+            }
 
             commonService.getExternalCaseAppData(caseId)
                     .flatMap(this::findEndpointAndIssueId)
@@ -88,7 +93,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
                 || !issueAndCompanyIds[0].matches("^[0-9]+$")
                 || !issueAndCompanyIds[1].matches("^[0-9]+$")) {
 
-            return error(En_ResultStatus.INTERNAL_ERROR, String.format("case has invalid ext-app-id : {}", extAppId));
+            return error(En_ResultStatus.INTERNAL_ERROR, String.format("case has invalid ext-app-id : %s", extAppId));
         }
         return ok(issueAndCompanyIds);
     }
@@ -131,8 +136,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         if (event.isCaseStateChanged()) {
             final long statusMapId = endpoint.getStatusMapId();
             logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
-            RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId).getData();
-            if (redmineStatusMapEntry != null && event.getLastCaseMeta().getState() != En_CaseState.VERIFIED) {
+            RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId(), statusMapId).getData();
+            if (redmineStatusMapEntry != null && event.getLastCaseMeta().getStateId() != CrmConstants.State.VERIFIED) {
                 logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
                 issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
             } else {

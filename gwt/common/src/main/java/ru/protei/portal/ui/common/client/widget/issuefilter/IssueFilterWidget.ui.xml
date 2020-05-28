@@ -13,7 +13,7 @@
 
         <filter:IssueFilterParamView ui:field="issueFilterParamView" styleName="card-body p-t-0 filter-content"/>
 
-        <div class="card-footer filter-content text-right">
+        <div ui:field="footer" class="card-footer filter-content text-right">
             <div class="user-filter-name hide" ui:field="filterNameContainer">
                 <label class="bold"><ui:text from="{lang.issueFilterName}"/></label>
                 <div class="input-group">

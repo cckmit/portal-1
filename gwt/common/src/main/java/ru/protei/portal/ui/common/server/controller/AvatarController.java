@@ -1,25 +1,36 @@
 package ru.protei.portal.ui.common.server.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.struct.UploadResult;
+import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.AvatarUtils;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @RestController
 public class AvatarController {
@@ -27,6 +38,9 @@ public class AvatarController {
     private static final String NOPHOTO_PATH = "./images/nophoto.png";
 
     private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
+
+    private ServletFileUpload upload = new ServletFileUpload();
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private PortalConfig portalConfig;
@@ -36,6 +50,16 @@ public class AvatarController {
 
     @Autowired
     private PersonDAO personDAO;
+
+    @Autowired
+    SessionService sessionService;
+
+
+    @PostConstruct
+    public void onInit(){
+        upload.setFileItemFactory(new DiskFileItemFactory());
+        upload.setHeaderEncoding(StandardCharsets.UTF_8.name());
+    }
 
     @RequestMapping( value = "/avatars/{gender}/{fileName:.+}" )
     public void getAvatar(
@@ -77,6 +101,60 @@ public class AvatarController {
         loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
 
+    @RequestMapping(
+            value = "/avatar-upload/{personId:[0-9]+}",
+            method = RequestMethod.POST
+    )
+    @ResponseBody
+    public String setAvatar(
+            HttpServletRequest request,
+            @PathVariable("personId") Long personId
+    )  {
+
+        logger.debug("setAvatar(): personId={}", personId);
+
+        AuthToken authToken = sessionService.getAuthToken(request);
+        if (authToken == null) {
+            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "AuthToken is null"));
+        }
+
+        UploadResult result = null;
+
+        String fileName = portalConfig.data().getEmployee().getAvatarPath() + personId + ".jpg";
+
+        try {
+            for (FileItem item : upload.parseRequest(request)) {
+                if (item.isFormField()) {
+                    continue;
+                }
+
+                logger.debug("setAvatar(): file size={}, file name={}", item.getSize(), item.getName());
+
+                if (item.getSize() == 0){
+                    result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "Empty file uploaded");
+                    logger.warn("setAvatar(): Empty file uploaded");
+                    break;
+                }
+
+                Files.write(Paths.get(fileName), item.get());
+
+                result = new UploadResult(En_FileUploadStatus.OK, "");
+                logger.debug("setAvatar(): Photo uploaded successfully");
+                break;
+            }
+        } catch (Exception e) {
+            logger.error("setAvatar():", e);
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "Exception caught");
+        }
+
+        if (result == null){
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
+            logger.warn("setAvatar(): UploadResult is null");
+        }
+
+        return uploadResultSerialize(result);
+    }
+
     private boolean loadFile( String pathname, HttpServletResponse response ) throws IOException {
 
         File file = new File( pathname );
@@ -98,5 +176,17 @@ public class AvatarController {
             }
         }
         return false;
+    }
+
+    private String uploadResultSerialize (UploadResult result){
+        try {
+            if (result == null)
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "Serialize error"));
+            return mapper.writeValueAsString(result);
+        }
+        catch (JsonProcessingException e){
+            logger.error("uploadResultSerialize( " + result + " ) ", e);
+            return null;
+        }
     }
 }

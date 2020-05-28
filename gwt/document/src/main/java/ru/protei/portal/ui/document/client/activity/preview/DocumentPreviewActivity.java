@@ -51,7 +51,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
         event.parent.clear();
         event.parent.add(view.asWidget());
-        view.footerVisibility().setVisible(false);
+        view.showFullScreen(false);
         loadDocument(event.documentId, this::fillView);
     }
 
@@ -63,13 +63,13 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         }
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        view.footerVisibility().setVisible(true);
+        view.showFullScreen(true);
         loadDocument(event.documentId, this::fillView);
     }
 
     @Override
     public void onBackClicked() {
-        fireEvent(new DocumentEvents.Show());
+        fireEvent(new DocumentEvents.Show(true));
     }
 
     @Override
@@ -95,6 +95,11 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         );
     }
 
+    @Override
+    public void onFullScreenClicked() {
+        fireEvent(new DocumentEvents.ShowPreviewFullScreen(document.getId()));
+    }
+
     private void loadDocument(Long documentId, Consumer<Document> onSuccess) {
         documentController.getDocument(documentId, new FluentCallback<Document>().withSuccess(onSuccess));
     }
@@ -104,7 +109,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         boolean hasAccessToPdf = hasAccessToPdf();
         boolean hasAccessToDoc = hasAccessToDoc(document);
         boolean hasAccessToDocModification = hasAccessToDocModification(document);
-        view.setHeader(document.getName() + " (#" + document.getId() + ")");
+        view.setDocumentNumber(document.getName() + " (#" + document.getId() + ")");
         view.setVersion(lang.documentVersion() + " " + document.getVersion());
         view.setCreatedBy(lang.createBy("", DateFormatter.formatDateTime(document.getCreated())));
         view.setType(document.getType().getName());

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -18,12 +17,10 @@ public class CaseStateWorkflowLink implements Serializable {
     private En_CaseStateWorkflow caseStateWorkflow;
 
     @JdbcColumn(name = "state_from")
-    @JdbcEnumerated(EnumType.ID)
-    private En_CaseState caseStateFrom;
+    private long caseStateFromId;
 
     @JdbcColumn(name = "state_to")
-    @JdbcEnumerated(EnumType.ID)
-    private En_CaseState caseStateTo;
+    private long caseStateToId;
 
     public CaseStateWorkflowLink() {}
 
@@ -43,20 +40,20 @@ public class CaseStateWorkflowLink implements Serializable {
         this.caseStateWorkflow = caseStateWorkflow;
     }
 
-    public En_CaseState getCaseStateFrom() {
-        return caseStateFrom;
+    public long getCaseStateFromId() {
+        return caseStateFromId;
     }
 
-    public void setCaseStateFrom(En_CaseState caseStateFrom) {
-        this.caseStateFrom = caseStateFrom;
+    public void setCaseStateFromId(long caseStateFromId) {
+        this.caseStateFromId = caseStateFromId;
     }
 
-    public En_CaseState getCaseStateTo() {
-        return caseStateTo;
+    public long getCaseStateToId() {
+        return caseStateToId;
     }
 
-    public void setCaseStateTo(En_CaseState caseStateTo) {
-        this.caseStateTo = caseStateTo;
+    public void setCaseStateToId(long caseStateToId) {
+        this.caseStateToId = caseStateToId;
     }
 
     @Override
@@ -65,13 +62,13 @@ public class CaseStateWorkflowLink implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         CaseStateWorkflowLink that = (CaseStateWorkflowLink) o;
         return caseStateWorkflow == that.caseStateWorkflow &&
-                caseStateFrom == that.caseStateFrom &&
-                caseStateTo == that.caseStateTo;
+                caseStateFromId == that.caseStateFromId &&
+                caseStateToId == that.caseStateToId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(caseStateWorkflow, caseStateFrom, caseStateTo);
+        return Objects.hash(caseStateWorkflow, caseStateFromId, caseStateToId);
     }
 
     @Override
@@ -79,8 +76,8 @@ public class CaseStateWorkflowLink implements Serializable {
         return "CaseStateWorkflowLink{" +
                 "id=" + id +
                 ", caseStateWorkflow=" + caseStateWorkflow +
-                ", caseStateFrom=" + caseStateFrom +
-                ", caseStateTo=" + caseStateTo +
+                ", caseStateFrom=" + caseStateFromId +
+                ", caseStateTo=" + caseStateToId +
                 '}';
     }
 }

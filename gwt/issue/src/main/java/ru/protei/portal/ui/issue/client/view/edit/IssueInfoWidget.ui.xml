@@ -7,7 +7,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <div ui:field="descriptionRO" class="form-group markdown p-t-15"/>
+        <g:HTMLPanel ui:field="descriptionReadOnly" styleName="form-group markdown p-t-15"/>
 
         <div ui:field="attachmentsPanel" class="row form-group">
             <div class="col-md-12">

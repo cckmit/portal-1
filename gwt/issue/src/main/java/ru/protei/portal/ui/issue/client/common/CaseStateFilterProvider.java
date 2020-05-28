@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issue.client.common;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -13,6 +12,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.ALL;
@@ -21,7 +21,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 public abstract class CaseStateFilterProvider implements Activity
 {
-    private final Map<En_CaseState,CaseState> statesMap = new HashMap<>();
+    private final Set<CaseState> statesSet = new HashSet<>();
 
     @Event
     public void onAuth(AuthEvents.Success event) {
@@ -30,21 +30,21 @@ public abstract class CaseStateFilterProvider implements Activity
 
     @Event
     public void onUpdateItem(CaseStateEvents.UpdateItem event) {
-        statesMap.replace(CaseState.asState(event.caseState), event.caseState);
+        statesSet.add(event.caseState);
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
-    public Selector.SelectorFilter<En_CaseState> makeFilter(List<CaseState> companyCaseStates) {
-        final Set<En_CaseState> companiesStates = new HashSet<>();
-        CollectionUtils.transform(companyCaseStates, companiesStates, CaseState::asState);
+    public Selector.SelectorFilter<CaseState> makeFilter(List<CaseState> companyCaseStates) {
+        final Set<CaseState> companiesStates = new HashSet<>();
+        CollectionUtils.transform(companyCaseStates, companiesStates, Function.identity());
         return value -> {
-            if (!statesMap.containsKey(value)) {
+            if (!statesSet.contains(value)) {
                 return false;
             }
-            if (ALL == statesMap.get(value).getUsageInCompanies()) {
+            if (ALL == value.getUsageInCompanies()) {
                 return true;
             }
-            if (NONE == statesMap.get(value).getUsageInCompanies()) {
+            if (NONE == value.getUsageInCompanies()) {
                 return false;
             }
 
@@ -54,10 +54,8 @@ public abstract class CaseStateFilterProvider implements Activity
     }
 
     private void setCaseStates(List<CaseState> states) {
-        statesMap.clear();
-        for (CaseState state: emptyIfNull(states)) {
-            statesMap.put(CaseState.asState(state), state);
-        }
+        statesSet.clear();
+        statesSet.addAll(emptyIfNull(states));
     }
 
     private void updateCaseStates() {

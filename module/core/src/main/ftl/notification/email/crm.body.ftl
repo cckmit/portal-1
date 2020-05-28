@@ -16,6 +16,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_product" value="${product}"/>
 <@set name="_criticality" value="${criticality}"/>
 <@set name="_state" value="${state}"/>
+<@set name="_pauseDate" value="${pauseDate}"/>
 <@set name="_customer" value="${customer}"/>
 <@set name="_manager" value="${manager}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
@@ -149,17 +150,20 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_manager}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                        <#assign newManager = (manager)???then(
+                                    manager +' ('+ (managerCompany!'?') +')',
+                                    (managerCompany)!'?'
+                                )>
                         <#if managerChanged>
-                                <@changeTo
-                                    old="${(oldManager??)?then(((TranslitUtils.transliterate(oldManager, lang))!'') +' ('+ TranslitUtils.transliterate(oldManagerCompany, lang) +')', '?')}"
-                                    new="${(manager??)?then(((TranslitUtils.transliterate(manager, lang))!'') +' ('+ TranslitUtils.transliterate(managerCompany, lang) +')', '?')}"
-                                />
+                            <@changeTo
+                                old="${(oldInitiator)???then(
+                                    TranslitUtils.transliterate(oldManager, lang) +' ('+ (TranslitUtils.transliterate(oldManagerCompany, lang)!'?') +')',
+                                    (TranslitUtils.transliterate(oldManagerCompany, lang))!'?'
+                                )}"
+                                new="${TranslitUtils.transliterate(newManager, lang)}"
+                            />
                         <#else>
-                            <#if manager??>
-                                ${TranslitUtils.transliterate(manager, lang)!''} (${TranslitUtils.transliterate(managerCompany, lang)})
-                            <#else>
-                                ?
-                            </#if>
+                            ${TranslitUtils.transliterate(newManager, lang)}
                         </#if>
                     </td>
                 </tr>
@@ -175,6 +179,23 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if isPausedState>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_pauseDate}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if pauseDateChanged>
+                                <@changeTo
+                                old="${oldPauseDate???then(oldPauseDate?date, '?')}"
+                                new="${pauseDate???then(pauseDate?date, '?')}"
+                                />
+                            <#else>
+                                ${pauseDate???then(pauseDate?date, '?')}
+                            </#if>
+                        </td>
+                    </tr>
+                </#if>
                 <#if showPrivacy>
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
@@ -316,7 +337,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#elseif caseComment.caseImportance??>
                         ${_changedImportanceTo} ${caseComment.caseImportance}
                     <#elseif caseComment.caseManager??>
-                        ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManager, lang)}
+                        ${_changedManagerTo} ${TranslitUtils.transliterate(caseComment.caseManagerAndCompany, lang)}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>

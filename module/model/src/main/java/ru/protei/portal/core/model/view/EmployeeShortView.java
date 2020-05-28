@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.view;
 
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Сокращенное представление Person
@@ -19,6 +21,15 @@ public class EmployeeShortView implements Serializable {
     @JdbcColumn(name="displayname")
     private String displayName;
 
+    @JdbcColumn(name="firstname")
+    private String firstName;
+
+    @JdbcColumn(name="lastname")
+    private String lastName;
+
+    @JdbcColumn(name="secondname")
+    private String secondName;
+
     @JdbcColumn(name="birthday")
     private Date birthday;
 
@@ -30,6 +41,9 @@ public class EmployeeShortView implements Serializable {
 
     @JdbcColumn(name="firedate")
     private Date fireDate;
+
+    @JdbcColumn(name="sex")
+    private String gender;
 
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
     private ContactInfo contactInfo;
@@ -99,5 +113,50 @@ public class EmployeeShortView implements Serializable {
 
     public void setFireDate(Date fireDate) {
         this.fireDate = fireDate;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public void setSecondName(String secondName) {
+        this.secondName = secondName;
+    }
+
+    public En_Gender getGender () {
+        return En_Gender.parse(this.gender);
+    }
+
+    public void setGender (En_Gender gender) {
+        this.gender = gender.getCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EmployeeShortView that = (EmployeeShortView) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

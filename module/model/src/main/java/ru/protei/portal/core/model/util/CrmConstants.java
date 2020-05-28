@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +9,8 @@ public class CrmConstants {
     public static final int DEFAULT_SELECTOR_CHUNK_SIZE = 100;
     public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
     public static final int EMAIL_MAX_SIZE = 254;
+
+    public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
@@ -43,6 +44,14 @@ public class CrmConstants {
         Long SYSTEM_USER_ID = 1L;
     }
 
+    public interface TopBrassPerson {
+        long PINCHUK_PERSON_ID = 29;
+        long APOSTOLOVA_PERSON_ID = 4;
+        long KOLOBKOV_PERSON_ID= 20;
+        long FREYKMAN_PERSON_ID = 45;
+        long MASLOV_PERSON_ID = 25;
+    }
+
     public interface Issue {
         String CREATE_CONTACT_IDENTITY = "issue-edit";
         int MIN_LENGTH_FOR_SEARCH_BY_COMMENTS = 3;
@@ -55,6 +64,8 @@ public class CrmConstants {
     public interface Masks {
         String EMAIL = "^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$";
         String ONLY_DIGITS = "^\\d*$";
+        String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+        String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
     }
 
     public interface Time {
@@ -91,5 +102,61 @@ public class CrmConstants {
 
     public interface ImportanceLevel {
         List<Integer> commonImportanceLevelIds = Arrays.asList(1,2,3,4);
+    }
+
+    public interface Company {
+        long HOME_COMPANY_ID = 1L;
+        long MAIN_HOME_COMPANY_ID = 3084L;
+        String MAIN_HOME_COMPANY_NAME = "Протей";
+    }
+
+    public interface LocaleTags {
+        String RU = "ru";
+        String EN = "en";
+    }
+
+    public interface LinkStart {
+        String HTTP = "http://";
+        String HTTPS = "https://";
+    }
+
+    public interface Redmine {
+        String NO_CONTENT_TYPE = "application/octet-stream";
+    }
+
+    public interface IpReservation {
+        String SUBNET_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
+        String IP_ADDRESS = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
+        String MAC_ADDRESS = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
+        String NUMBER = "^\\d{1,3}$";
+
+        String SUBNET_MASK = "0/24";
+
+        int MIN_IPS_COUNT = 1;
+        int MAX_IPS_COUNT = 255;
+    }
+
+    public interface Youtrack {
+        String REQUEST_TYPE_VALUE = "Удаление пользователей";
+    }
+
+    public interface State {
+        long CREATED = 1;
+        long OPENED = 2;
+        long WORKAROUND = 30;
+        long TEST_CUST = 20;
+        long DONE = 17;
+        long VERIFIED = 5;
+        long PAUSED = 4;
+        long CANCELED = 33;
+        long ACTIVE = 16;
+        long TEST_LOCAL = 19;
+        long INFO_REQUEST = 31;
+        long NX_REQUEST = 35;
+        long CUST_REQUEST = 36;
+        long CUST_PENDING = 34;
+        long CLOSED = 3;
+        long IGNORED = 10;
+        long CUSTOMER_RESPONSIBILITY = 37;
     }
 }

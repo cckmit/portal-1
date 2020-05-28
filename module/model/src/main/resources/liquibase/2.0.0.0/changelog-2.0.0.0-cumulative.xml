@@ -5,5 +5,15 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <include file="01-init-database.xml" relativeToChangelogFile="true" />
-
+  <include file="2020-04-16-dropnotnullconstraint-in-company_dep-and-worker_entry-and-add-field-sync_1c.xml" relativeToChangelogFile="true" />
+  <include file="2020-04-17-set-linked_equipment_id-equipment-fk.xml" relativeToChangelogFile="true" />
+  <include file="2020-04-20-add-pause_date-to-case_object.xml" relativeToChangelogFile="true" />
+  <include file="2020-03-18-ip-reservation.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-17-add-room-reservation-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-30-add-redmine-workflow.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-28-add-company_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-05-16-add-manager_company_id-column-to-case_object-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-05-18-add-customer_responsibility-state.xml" relativeToChangelogFile="true"/>
+  <include file="2020-05-21-modify-case-state-table.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-21-add-states-to-employee_registration.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

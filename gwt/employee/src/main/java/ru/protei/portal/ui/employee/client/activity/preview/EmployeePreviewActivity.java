@@ -75,11 +75,11 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new EmployeeEvents.Show());
+        fireEvent(new EmployeeEvents.Show(true));
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeShortView(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee) {
@@ -139,11 +139,12 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         if (head != null && !head.getId().equals(employeeId)) {
-            itemView.setDepartmentHead(head.getName(), LinkUtils.makeLink(EmployeeShortView.class, head.getId()));
+            itemView.setDepartmentHead(head.getName(), LinkUtils.makePreviewLink(EmployeeShortView.class, head.getId()));
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
 
         itemView.setPosition(workerEntry.getPositionName());
+        itemView.setCompany(workerEntry.getCompanyName());
 
         return itemView;
     }

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.product.client.activity.table;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,7 +12,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -73,7 +71,7 @@ public abstract class ProductTableActivity implements
             fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.PRODUCT ));
         }
 
-        clearScroll(event);
+        this.preScroll = event.preScroll;
 
         loadTable();
     }
@@ -107,13 +105,14 @@ public abstract class ProductTableActivity implements
 
     @Override
     public void onItemClicked(DevUnit value) {
+        persistScroll();
         showPreview(value);
     }
 
     @Override
     public void onEditClicked(DevUnit value) {
         if (!value.isDeprecatedUnit()) {
-            persistScrollTopPosition();
+            persistScroll();
             fireEvent( new ProductEvents.Edit ( value.getId() ));
         }
     }
@@ -146,7 +145,7 @@ public abstract class ProductTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
                 }));
     }
@@ -178,27 +177,19 @@ public abstract class ProductTableActivity implements
         view.triggerTableLoad();
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
+    private void restoreScroll() {
+        if (!preScroll) {
             view.clearSelection();
             return;
         }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }
 
-    private void clearScroll(ProductEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-        }
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     @Inject
@@ -216,7 +207,8 @@ public abstract class ProductTableActivity implements
     @Inject
     PolicyService policyService;
 
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
     private AppEvents.InitDetails init;
     private ProductQuery query;
 

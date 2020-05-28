@@ -1,21 +1,20 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
 public class EmployeeRegistrationQuery extends BaseQuery {
-    private Set<En_CaseState> states;
+    private Set<Long> states;
     private Date createdFrom, createdTo;
     private Collection<String> linkedIssueIds;
 
-    public Set<En_CaseState> getStates() {
+    public Set<Long> getStates() {
         return states;
     }
 
-    public void setStates(Set<En_CaseState> states) {
+    public void setStates(Set<Long> states) {
         this.states = states;
     }
 

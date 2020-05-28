@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
@@ -9,7 +8,10 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 19.05.16.
@@ -44,6 +46,9 @@ public class CaseObject extends AuditableObject {
 
     @JdbcColumn(name = "STATE")
     private long stateId;
+
+    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String stateName;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
@@ -134,6 +139,21 @@ public class CaseObject extends AuditableObject {
 
     @JdbcColumn(name = "technical_support_validity")
     private Date technicalSupportValidity;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "CASE_ID", table = "case_location", sqlTableAlias = "location"),
+            @JdbcJoinPath(localColumn = "LOCATION_ID", remoteColumn = "id", table = "location", sqlTableAlias = "region"),
+    }, mappedColumn = "name")
+    private String regionName;
+
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
+
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
+
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String managerCompanyName;
 
     // not db column
     private List<EntityOption> contracts;
@@ -243,6 +263,14 @@ public class CaseObject extends AuditableObject {
 
     public void setStateId(long stateId) {
         this.stateId = stateId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public Integer getImpLevel() {
@@ -427,7 +455,6 @@ public class CaseObject extends AuditableObject {
         this.members = members;
     }
 
-
     public String getExtAppType() {
         return extAppType;
     }
@@ -436,16 +463,7 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    public En_CaseState getState () {
-        return En_CaseState.getById(this.stateId);
-    }
-
-    public void setState (En_CaseState state) {
-        this.stateId = state.getId();
-    }
-
-
-    public En_ImportanceLevel importanceLevel () {
+    public En_ImportanceLevel getImportanceLevel() {
         return En_ImportanceLevel.getById(this.impLevel);
     }
 
@@ -529,15 +547,6 @@ public class CaseObject extends AuditableObject {
         this.projectSlas = projectSlas;
     }
 
-    @Override
-    public String getAuditType() {
-        return "CaseObject";
-    }
-
-    public interface Columns {
-        String EXT_APP = "EXT_APP";
-    }
-
     public EntityOption toEntityOption() {
         return new EntityOption(this.getName(), this.getId());
     }
@@ -548,6 +557,39 @@ public class CaseObject extends AuditableObject {
 
     public void setTechnicalSupportValidity(Date technicalSupportValidity) {
         this.technicalSupportValidity = technicalSupportValidity;
+    }
+
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
+    }
+
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseObject";
+    }
+
+    public interface Columns {
+        String EXT_APP = "EXT_APP";
     }
 
     @Override
@@ -562,6 +604,7 @@ public class CaseObject extends AuditableObject {
                 ", extId='" + extId + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
+                ", stateName=" + stateName +
                 ", impLevel=" + impLevel +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
@@ -592,6 +635,10 @@ public class CaseObject extends AuditableObject {
                 ", platformName='" + platformName + '\'' +
                 ", projectSlas=" + projectSlas +
                 ", technicalSupportValidity=" + technicalSupportValidity +
+                ", regionName='" + regionName + '\'' +
+                ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
