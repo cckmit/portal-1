@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService {
 
@@ -143,6 +142,9 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         List<Long> caseIds = stream(caseShortViews)
                 .map(CaseShortView::getId)
                 .collect(Collectors.toList());
+        if (isEmpty(caseIds)) {
+            return;
+        }
         caseTagService.getCaseObjectTags(token, caseIds)
                 .ifError(result -> log.warn("Failed to fetch case tags | status='{}', message='{}'", result.getStatus(), result.getMessage()))
                 .ifOk(tags -> assignTagsToCases(caseShortViews, tags));
