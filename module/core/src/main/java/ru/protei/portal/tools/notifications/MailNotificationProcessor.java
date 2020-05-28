@@ -529,11 +529,15 @@ public class MailNotificationProcessor {
     public void onDocumentMemberAddedEvent(DocumentMemberAddedEvent event) {
         Document document = event.getDocument();
         List<Person> personList = event.getPersonList();
-        if (document == null || CollectionUtils.isEmpty(personList)) {
-            log.error("Failed to send document member added notification: incomplete data provided: " +
-                    "document={}, personList={}", document, personList);
+        if (document == null) {
+            log.error("Failed to send document member added notification: document is null");
             return;
         }
+
+        if (CollectionUtils.isEmpty(personList)) {
+            return;
+        }
+
         List<NotificationEntry> recipients = personList.stream()
                 .map(this::fetchNotificationEntryFromPerson)
                 .filter(Objects::nonNull)

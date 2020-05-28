@@ -1572,6 +1572,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentTypeName();
 
+    String documentTypeNameValidationError();
+
     String documentTypeShortName();
 
     String documentTypeGost();

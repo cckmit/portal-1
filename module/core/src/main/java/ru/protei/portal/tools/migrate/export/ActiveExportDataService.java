@@ -270,8 +270,17 @@ public class ActiveExportDataService implements ExportDataService {
                 logger.debug("Export-handler task is requested to exit");
             }
             catch (Exception e) {
-                logger.error("Error in export-handler task, exit now", e);
+                Thread.currentThread().interrupt();
+                if (isAppShutdown(e)) {
+                    logger.debug("Shutdown export data service");
+                } else {
+                    logger.error("Error in export-handler task, exit now", e);
+                }
             }
+        }
+
+        boolean isAppShutdown(Exception e) {
+            return e.getMessage() == null;
         }
 
         private void tryExport(ExportSybEntry entry) throws Exception {
