@@ -234,19 +234,21 @@ public class PortalApiController {
             }
 
             Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
-                    .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, crmNumberList ))
-                    .ifOk( linkId -> log.info( "updateYoutrackCrmNumbers(): OK" ) )
-                    .ifError( result -> log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
-                            youtrackId, crmNumbers, result ) );
+                    .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, crmNumberList ));
 
             if (updateResult.isOk()) {
                 log.info( "updateYoutrackCrmNumbers(): OK" );
                 return "";
-            } else {
-                log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
-                        youtrackId, crmNumbers, updateResult.getStatus() );
-                return updateResult.getMessage() == null || updateResult.getMessage().isEmpty() ? "Внутренняя ошибка на портале" : updateResult.getMessage();
             }
+
+            log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
+                    youtrackId, crmNumbers, updateResult.getStatus() );
+
+            if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
+                return "Не найдены задачи с номерами: " + updateResult.getMessage();
+            }
+
+            return "Внутренняя ошибка на портале";
 
         } catch (NumberFormatException e) {
             log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers", e);
@@ -393,14 +395,17 @@ public class PortalApiController {
             }
         });
 
-        StringBuilder duplicateNumbers = new StringBuilder();
+        String duplicateNumbers = "";
 
         for (Map.Entry<Long, Integer> entry : crmNumberMap.entrySet()) {
-            duplicateNumbers.append(entry.getValue().equals(1) ? "" : entry.getKey());
-
+            duplicateNumbers += entry.getValue().equals(1) ? "" : entry.getKey() + ",";
         }
 
-        return duplicateNumbers.toString();
+        if (duplicateNumbers.endsWith(",")){
+            duplicateNumbers = duplicateNumbers.substring(0, duplicateNumbers.length() - 1);
+        }
+
+        return duplicateNumbers;
     }
 
     private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{

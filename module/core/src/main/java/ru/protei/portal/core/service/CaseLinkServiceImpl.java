@@ -55,7 +55,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     private TransactionTemplate transactionTemplate;
     @Autowired
-    AuditObjectDAO auditObjectDAO;
+    private AuditObjectDAO auditObjectDAO;
 
     @Override
     public Result<Map<En_CaseLink, String>> getLinkMap() {
@@ -374,7 +374,11 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseIds.add(caseId);
         }
 
-        return resultErrorMessage.isEmpty() ? ok(caseIds) : error(En_ResultStatus.NOT_FOUND, "Не найдены задачи с номерами: " + resultErrorMessage);
+        if (resultErrorMessage.endsWith(",")) {
+            resultErrorMessage = resultErrorMessage.substring(0, resultErrorMessage.length() - 1);
+        }
+
+        return resultErrorMessage.isEmpty() ? ok(caseIds) : error(En_ResultStatus.NOT_FOUND,  resultErrorMessage);
     }
 
 
