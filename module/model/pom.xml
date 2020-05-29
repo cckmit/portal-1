@@ -280,6 +280,12 @@
             <version>${project.junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.atlassian.renderer</groupId>
+            <artifactId>atlassian-renderer</artifactId>
+            <version>8.0.5</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
