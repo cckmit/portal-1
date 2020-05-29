@@ -223,11 +223,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber()));
 
+        caseObjectDAO.insertCase(caseObj);
+
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = addAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
         caseObj.setInfo(convertDescription(issue.getDescription(), addedAttachments));
 
-        caseObjectDAO.insertCase(caseObj);
 
         persistStateComment(authorId, caseObj.getId(), caseObj.getState());
         persistImportanceComment(authorId, caseObj.getId(), caseObj.getImpLevel());
