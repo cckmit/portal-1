@@ -210,6 +210,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private AssembledCaseEvent createCaseObject( Person initiator, Long authorId, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
+        logger.info("issue {}", issue);
         CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
@@ -227,6 +228,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = addAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
+        logger.info("caseObj {}", caseObj);
         caseObj.setInfo(convertDescription(issue.getDescription(), addedAttachments));
 
 
