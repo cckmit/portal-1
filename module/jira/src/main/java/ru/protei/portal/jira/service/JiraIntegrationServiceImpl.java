@@ -147,7 +147,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private AssembledCaseEvent updateCaseObject( Long authorId, CaseObject caseObj, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
-
+        logger.info("issue {}", issue);
         if (caseObj.isDeleted()) {
             logger.debug("our case {} is marked as deleted, skip event", caseObj.defGUID());
             return null;
@@ -176,7 +176,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
-
+        logger.info("caseObj {}", caseObj);
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = addAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
         caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
