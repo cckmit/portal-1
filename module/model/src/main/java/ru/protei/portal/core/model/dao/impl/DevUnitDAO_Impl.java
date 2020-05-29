@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
 
     @Override
     public List<DevUnit> getParents(Long productId) {
-        return getListByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID != ?",
+        return getListByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID != ?",
                 productId,
                 En_DevUnitType.DIRECTION.getId()
         );
@@ -45,12 +46,12 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
 
     @Override
     public List<DevUnit> getChildren(Long productId) {
-        return getListByCondition("ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)", productId);
+        return getListByCondition("dev_unit.ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)", productId);
     }
 
     @Override
     public DevUnit getProductDirection(Long productId) {
-        return getByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
+        return getByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
                 productId,
                 En_DevUnitType.DIRECTION.getId()
         );

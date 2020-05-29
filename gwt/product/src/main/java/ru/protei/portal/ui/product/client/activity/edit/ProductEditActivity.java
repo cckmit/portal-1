@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -226,6 +227,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         view.aliases().setValue(product.getAliases());
         view.aliasesVisibility().setVisible(currType.equals(En_DevUnitType.PRODUCT));
+
+        view.setCommonManagerCompanyId(policyService.getUserCompany().getId());
+        view.commonManager().setValue(devUnit.getCommonManagerId() == null ? null : new PersonShortView(devUnit.getCommonManagerName(), devUnit.getCommonManagerId()));
     }
 
     private boolean isPreviewDisplayed(String key) {
@@ -267,6 +271,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         product.setHistoryVersion(view.historyVersion().getValue());
 
         product.setAliases(view.aliases().getValue());
+
+        product.setCommonManagerId(view.commonManager().getValue() == null ? null : view.commonManager().getValue().getId());
     }
 
     private void resetValidationStatus(){

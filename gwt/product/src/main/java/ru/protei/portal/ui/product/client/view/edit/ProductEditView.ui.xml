@@ -9,6 +9,7 @@
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
              xmlns:alias='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:manager="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -51,6 +52,13 @@
                             </div>
 
                             <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label><ui:text from="{lang.productCommonManager}"/></label>
+                                <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}" fired="false"/>
+                            </div>
                         </div>
 
                         <g:HTMLPanel ui:field="directionContainer" styleName="row">

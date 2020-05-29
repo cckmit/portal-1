@@ -17,11 +17,13 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -34,9 +36,7 @@ import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActiv
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Вид карточки создания/редактирования продукта
@@ -225,6 +225,16 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         return direction;
     }
 
+    @Override
+    public HasValue<PersonShortView> commonManager() {
+        return commonManager;
+    }
+
+    @Override
+    public void setCommonManagerCompanyId(Long id) {
+        commonManager.updateCompanies(new HashSet<>(Collections.singleton(id)));
+    }
+
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
     {
@@ -320,6 +330,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     Button saveBtn;
     @UiField
     Button cancelBtn;
+    @Inject
+    @UiField(provided = true)
+    PersonButtonSelector commonManager;
 
     @Inject
     @UiField

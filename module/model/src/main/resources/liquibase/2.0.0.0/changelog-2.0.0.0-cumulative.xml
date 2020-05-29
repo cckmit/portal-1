@@ -17,4 +17,5 @@
   <include file="2020-05-21-modify-case-state-table.xml" relativeToChangelogFile="true" />
   <include file="2020-05-21-add-states-to-employee_registration.xml" relativeToChangelogFile="true" />
   <include file="2020-05-28-add-auto_open_issue-column-to-company-table.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-28-add-common_manager_id-column-to-dev_unit-table.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
