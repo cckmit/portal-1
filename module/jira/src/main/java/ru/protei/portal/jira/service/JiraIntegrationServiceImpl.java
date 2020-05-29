@@ -26,7 +26,6 @@ import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.utils.EntityCache;
-import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.portal.jira.dto.JiraHookEventData;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.mapper.CachedPersonMapper;
@@ -40,15 +39,12 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CaseCommentUtils.makeJiraImageString;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.utils.JiraUtils.parseImageNode;
+import static ru.protei.portal.core.utils.JiraUtils.setTextWithReplacedImagesFromJira;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
 public class JiraIntegrationServiceImpl implements JiraIntegrationService {
@@ -94,8 +90,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
         return jiraEndpointCache;
     }
-
-    private final Pattern jiraImagePattern = JiraUtils.getJiraImagePattern();
 
     @Override
     public Result<JiraEndpoint> selectEndpoint( Issue issue, Long originalCompanyId ) {
@@ -449,28 +443,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return our;
     }
 
-    private void replaceImageLink(CaseComment caseComment,
-                                    List<ru.protei.portal.core.model.ent.Attachment> attachments) {
-        Matcher matcher = jiraImagePattern.matcher(caseComment.getText());
-        while (matcher.find()) {
-            String group = matcher.group();
-            JiraUtils.ImageNode imageNode = parseImageNode(group.substring(1, group.length() - 1));
-            attachments.stream()
-                    .filter(a -> a.getFileName().equals(imageNode.link) && a.getCreatorId().equals(caseComment.getAuthorId()))
-                    .max(Comparator.comparing(ru.protei.portal.core.model.ent.Attachment::getCreated))
-                    .ifPresent(attachment -> {
-                        String imageString = makeJiraImageString(attachment.getExtLink(),
-                                attachment.getFileName() + (imageNode.alt != null ? ", imageNode.alt" : ""));
-                        caseComment.setText(caseComment.getText().replace(group, imageString));
-
-                        List<CaseAttachment> caseAttachments = caseComment.getCaseAttachments();
-                        if (caseAttachments == null) {
-                            caseAttachments = new ArrayList<>();
-                        }
-                        caseAttachments.add(new CaseAttachment(caseComment.getCaseId(), attachment.getId()));
-                        caseComment.setCaseAttachments(caseAttachments);
-                    });
-        }
+    private void replaceImageLink(CaseComment caseComment, List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        setTextWithReplacedImagesFromJira(caseComment, attachments);
     }
 
     private Long getNewCaseState(Long statusMapId, String issueStatusName) {
