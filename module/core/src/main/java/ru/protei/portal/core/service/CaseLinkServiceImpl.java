@@ -287,27 +287,33 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         log.debug("setYoutrackIdToCaseNumbers(): listCaseIdsToAdd={}, listCaseIdsToRemove={}", listCaseIdsToAdd, listCaseIdsToRemove);
 
+        Result<String> result = ok("");
+
         for (Long caseId : listCaseIdsToAdd) {
             Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
             log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, status=", caseId, addResult.getStatus());
+
             if (addResult.isError()){
                 return error(addResult.getStatus(), addResult.getMessage());
             }
+
+            addResult.getEvents().forEach(event -> result.publishEvent(event));
             makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
         }
 
         for (Long caseId : listCaseIdsToRemove) {
             makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
-
             Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
             log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, status=", caseId, removeResult.getStatus());
+
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());
             }
+
+            removeResult.getEvents().forEach(event -> result.publishEvent(event));
         }
 
-        return ok("");
-
+        return result;
     }
 
     private void makeAudit(Long caseId, String youtrackId, En_AuditType type, AuthToken token){
