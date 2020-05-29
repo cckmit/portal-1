@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
+import java.util.Set;
+
 /**
  * Button селектор с продуктами
  */
@@ -50,6 +52,10 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
 
     public void setDirectionId(Long directionId) {
         model.setDirectionId(directionId);
+    }
+
+    public void setPlatformIds(Set<Long> platformIds) {
+        model.setPlatformIds(platformIds);
     }
 
     private ProductModel model;

@@ -16,6 +16,7 @@ public class ProductQuery extends BaseQuery {
     private En_DevUnitState state;
     private Set<En_DevUnitType> types;
     private Long directionId;
+    private Set<Long> platformIds;
 
     public ProductQuery() {
         sortField = En_SortField.prod_name;
@@ -55,6 +56,14 @@ public class ProductQuery extends BaseQuery {
         this.directionId = productDirectionId;
     }
 
+    public Set<Long> getPlatformIds() {
+        return platformIds;
+    }
+
+    public void setPlatformIds(Set<Long> platformIds) {
+        this.platformIds = platformIds;
+    }
+
     public void addType(En_DevUnitType type) {
         if (this.types == null) {
             this.types = new HashSet<>();
@@ -72,4 +81,13 @@ public class ProductQuery extends BaseQuery {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ProductQuery{" +
+                "state=" + state +
+                ", types=" + types +
+                ", directionId=" + directionId +
+                ", platformIds=" + platformIds +
+                '}';
+    }
 }

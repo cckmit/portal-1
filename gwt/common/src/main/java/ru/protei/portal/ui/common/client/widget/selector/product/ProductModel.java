@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class ProductModel implements Activity,
@@ -61,6 +62,11 @@ public abstract class ProductModel implements Activity,
     public void setDirectionId(Long directionId) {
         cache.clearCache();
         query.setDirectionId(directionId);
+    }
+
+    public void setPlatformIds(Set<Long> platformIds) {
+        cache.clearCache();
+        query.setPlatformIds(platformIds);
     }
 
     private SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {

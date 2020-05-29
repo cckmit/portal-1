@@ -15,7 +15,6 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -80,13 +79,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setProduct(DevUnit product) {
-        this.product.setValue(ProductShortView.fromProduct(product));
-    }
-
-    @Override
-    public DevUnit getProduct() {
-        return DevUnit.fromProductShortView(product.getValue());
+    public HasValue<ProductShortView> product() {
+        return product;
     }
 
     @Override
@@ -388,6 +382,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasEnabled managerCompanyEnabled() {
         return managerCompany;
+    }
+
+    @Override
+    public void updateProductsByPlatformIds(Set<Long> platformIds) {
+        product.setPlatformIds(platformIds);
     }
 
     private void initView() {

@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static ru.protei.winter.core.utils.collections.CollectionUtils.isNotEmpty;
+
 /**
  * Created by michael on 23.05.16.
  */
@@ -82,7 +84,7 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
                 args.add(query.getState().getId());
             }
 
-            if (!CollectionUtils.isEmpty(query.getTypes())) {
+            if (isNotEmpty(query.getTypes())) {
                 condition
                         .append(" and UTYPE_ID in (")
                         .append(query.getTypes().stream()
@@ -96,8 +98,19 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
             }
 
             if (query.getDirectionId() != null) {
-                condition.append(" and ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)");
+                condition.append(" and dev_unit.ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)");
                 args.add(query.getDirectionId());
+            }
+
+            if (isNotEmpty(query.getPlatformIds())) {
+                condition.append(
+                        " and dev_unit.ID IN " +
+                                "(SELECT dev_unit_children.CHILD_ID FROM dev_unit_children WHERE DUNIT_ID IN " +
+                                    "(SELECT project_to_product.product_id FROM project_to_product WHERE project_to_product.project_id IN " +
+                                        "(SELECT platform.project_id FROM platform WHERE platform.id IN " + HelperFunc.makeInArg(query.getPlatformIds(), false) + ")" +
+                                    ")" +
+                                ")"
+                );
             }
         });
     }
