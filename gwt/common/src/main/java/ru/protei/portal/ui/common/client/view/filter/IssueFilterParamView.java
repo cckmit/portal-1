@@ -224,7 +224,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @Override
     public void updateModel() {
-        model.onUserFilterChanged();
+        if (model != null) {
+            model.onUserFilterChanged();
+        }
     }
 
     @Override

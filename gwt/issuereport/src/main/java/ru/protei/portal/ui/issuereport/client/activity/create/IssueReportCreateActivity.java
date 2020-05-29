@@ -30,13 +30,14 @@ import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractProjectFilterActivity {
+        AbstractIssueReportCreateActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
         issueFilterWidget.addAdditionalFilterValidate(
                 caseFilter -> validateQuery(caseFilter.getType(), caseFilter.getParams()));
+        issueFilterWidget.getIssueFilterParams().setModel(this);
         issueFilterWidget.clearFooterStyle();
         projectFilterView.clearFooterStyle();
     }
@@ -140,6 +141,11 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Override
     public void onProjectFilterChanged()  {
         ; // ничего не делаем, мы используем фильтр при создании отчета
+    }
+
+    @Override
+    public void onUserFilterChanged() {
+        // ничего не делаем, мы используем фильтр при создании отчета
     }
 
     private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
