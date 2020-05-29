@@ -234,7 +234,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         String description = issue.getDescription();
         logger.info("description {}", description);
         caseObj.setInfo(convertDescription(description, caseAttachments));
-
+        caseObjectDAO.merge(caseObj);
 
         persistStateComment(authorId, caseObj.getId(), caseObj.getState());
         persistImportanceComment(authorId, caseObj.getId(), caseObj.getImpLevel());
