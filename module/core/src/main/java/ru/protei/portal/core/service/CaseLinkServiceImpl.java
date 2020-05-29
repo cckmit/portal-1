@@ -250,13 +250,18 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
         if (caseId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
+        log.debug("getYoutrackLinks(): caseId={}", caseId);
         CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
         caseLinkQuery.setCaseId( caseId );
         caseLinkQuery.setType( En_CaseLink.YT );
-        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
+        log.debug("getYoutrackLinks(): caseLinkQuery={}", caseLinkQuery);
+        List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(caseLinkQuery);
+        log.debug("getYoutrackLinks(): find caseLinks={}", caseLinks);
+        return ok(caseLinks);
     }
 
     private Result<CaseLink> findCaseLinkByRemoteId(Collection<CaseLink> caseLinks, String youtrackId ) {
+        log.debug("findCaseLinkByRemoteId(): caseLinks={}, youtrackId={}", caseLinks, youtrackId);
         return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) )
                 .map( Result::ok )
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
@@ -291,7 +296,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         for (Long caseId : listCaseIdsToAdd) {
             Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, status=", caseId, addResult.getStatus());
+            log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, status={}", caseId, addResult.getStatus());
 
             if (addResult.isError()){
                 return error(addResult.getStatus(), addResult.getMessage());
@@ -304,7 +309,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         for (Long caseId : listCaseIdsToRemove) {
             makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
             Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, status=", caseId, removeResult.getStatus());
+            log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, status={}", caseId, removeResult.getStatus());
 
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());

@@ -325,9 +325,9 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
 
-        numbers = caseNumbersCreated.get(0) + ",\n" + caseNumbersCreated.get(1);
+        numbers = caseNumbersCreated.get(1) + ",\n" + caseNumbersCreated.get(2);
 
-        caseNumbersCreated.remove(2);
+        caseNumbersCreated.remove(0);
 
         //Устанавливаем 2 корректных номера (то есть один удалится)
         accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
