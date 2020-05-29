@@ -3,8 +3,8 @@ package ru.protei.portal.ui.common.client.widget.issuestate;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
@@ -58,17 +58,23 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
     private DisplayOptionCreator<CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
             return caseState -> {
-                return new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + makeCaseStateStyle(caseState));
+                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + makeCaseStateStyle(caseState));
+                displayOption.setTitle(makeCaseStateTitle(caseState));
+                return displayOption;
             };
         }
         return new DisplayOptionCreator<CaseState>() {
             @Override
             public DisplayOption makeDisplayOption(CaseState caseState) {
-                return new DisplayOption(makeCaseStateName(caseState));
+                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState));
+                displayOption.setTitle(makeCaseStateTitle(caseState));
+                return displayOption;
             }
             @Override
             public DisplayOption makeDisplaySelectedOption(CaseState caseState) {
-                return new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
+                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
+                displayOption.setTitle(makeCaseStateTitle(caseState));
+                return displayOption;
             }
         };
     }
@@ -79,6 +85,10 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
 
     private String makeCaseStateStyle(CaseState caseState) {
         return caseState == null ? "" : CaseStateUtils.makeStyleName(caseState.getState());
+    }
+
+    private String makeCaseStateTitle(CaseState caseState) {
+        return caseState == null ? "" : caseState.getInfo();
     }
 
     private En_CaseStateWorkflow workflow;

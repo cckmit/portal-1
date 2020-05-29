@@ -139,13 +139,13 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onUserFilterChanged() {
+    public void onProjectFilterChanged()  {
         ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
     @Override
-    public void onProjectFilterChanged()  {
-        ; // ничего не делаем, мы используем фильтр при создании отчета
+    public void onUserFilterChanged() {
+        // ничего не делаем, мы используем фильтр при создании отчета
     }
 
     private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {

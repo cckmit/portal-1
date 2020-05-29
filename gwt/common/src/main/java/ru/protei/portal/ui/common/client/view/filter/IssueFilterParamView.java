@@ -220,8 +220,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setValue(null);
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
+    }
 
-        model.onUserFilterChanged();
+    @Override
+    public void updateModel() {
+        if (model != null) {
+            model.onUserFilterChanged();
+        }
     }
 
     @Override
@@ -291,8 +296,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         tags.setValue(setOf( filter.getCaseTags() ) );
         toggleMsgSearchThreshold();
-
-        model.onUserFilterChanged();
     }
 
     @Override

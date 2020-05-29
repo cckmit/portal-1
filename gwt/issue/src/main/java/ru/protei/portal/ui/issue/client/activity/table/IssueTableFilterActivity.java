@@ -256,6 +256,7 @@ public abstract class IssueTableFilterActivity
 
     private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
         filterView.resetFilter();
+        onUserFilterChanged();
         filterService.getSelectorsParams( caseQuery, new RequestCallback<SelectorsParams>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -265,6 +266,7 @@ public abstract class IssueTableFilterActivity
             @Override
             public void onSuccess( SelectorsParams selectorsParams ) {
                 filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
+                IssueTableFilterActivity.this.onUserFilterChanged();
             }
         } );
     }
