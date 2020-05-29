@@ -262,7 +262,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private Result<CaseLink> findCaseLinkByRemoteId(Collection<CaseLink> caseLinks, String youtrackId ) {
         log.debug("findCaseLinkByRemoteId(): caseLinks={}, youtrackId={}", caseLinks, youtrackId);
-        return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) )
+        return find( caseLinks, caseLink -> youtrackId.equalsIgnoreCase(caseLink.getRemoteId()) )
                 .map( Result::ok )
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
     }

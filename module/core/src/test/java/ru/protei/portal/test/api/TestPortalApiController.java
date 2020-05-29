@@ -343,6 +343,33 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     @Transactional
+    public void removeLinkWithYoutrackIdInLowercase() throws Exception {
+        final String YOUTRACK_ID = "TEST-1";
+        final String YOUTRACK_ID_LOWERCASE = YOUTRACK_ID.toLowerCase();
+
+        List<Long> caseNumbersCreated = fillAndCreateCaseObjects(1);
+
+        String numbers = caseNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        numbers = "";
+
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID_LOWERCASE, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Case link must be removed!", caseNumbersFromDB.isEmpty());
+
+        removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
+    }
+
+    @Test
+    @Transactional
     public void setYoutrackIdToDuplicatedCrmNumbers() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
 
