@@ -15,8 +15,7 @@ import java.util.Set;
 /**
  * Button селектор с продуктами
  */
-public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortView>
-{
+public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortView> {
 
     @Inject
     public void init(ProductModel model) {
@@ -36,12 +35,12 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
     }
 
     @Override
-    protected SelectorItem makeSelectorItem( ProductShortView value, String elementHtml ) {
-        PopupSelectorItem item = new PopupSelectorItem();
+    protected SelectorItem<ProductShortView> makeSelectorItem(ProductShortView value, String elementHtml) {
+        PopupSelectorItem<ProductShortView> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
-        if(value!=null){
-            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" );
-            item.setIcon( En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "" );
+        if (value != null) {
+            item.setIcon(En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "");
+            item.setIcon(En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         }
         return item;
     }
@@ -58,6 +57,10 @@ public class DevUnitFormSelector extends FormPopupSingleSelector<ProductShortVie
         model.setPlatformIds(platformIds);
     }
 
-    private ProductModel model;
+    public void setAsyncProductModel(ProductModel productModel) {
+        this.model = productModel;
+        setAsyncModel(productModel);
+    }
 
+    private ProductModel model;
 }

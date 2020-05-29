@@ -14,6 +14,7 @@ import ru.protei.winter.core.utils.collections.CollectionUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.winter.core.utils.collections.CollectionUtils.isNotEmpty;
@@ -47,8 +48,8 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     }
 
     @Override
-    public List<DevUnit> getChildren(Long productId) {
-        return getListByCondition("dev_unit.ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)", productId);
+    public List<DevUnit> getChildren(Set<Long> productIds) {
+        return getListByCondition("dev_unit.ID IN (SELECT dev_unit_children.CHILD_ID FROM dev_unit_children WHERE dev_unit_children.DUNIT_ID IN " + HelperFunc.makeInArg(productIds, false) + ")");
     }
 
     @Override
@@ -105,10 +106,8 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
             if (isNotEmpty(query.getPlatformIds())) {
                 condition.append(
                         " and dev_unit.ID IN " +
-                                "(SELECT dev_unit_children.CHILD_ID FROM dev_unit_children WHERE DUNIT_ID IN " +
-                                    "(SELECT project_to_product.product_id FROM project_to_product WHERE project_to_product.project_id IN " +
-                                        "(SELECT platform.project_id FROM platform WHERE platform.id IN " + HelperFunc.makeInArg(query.getPlatformIds(), false) + ")" +
-                                    ")" +
+                                "(SELECT project_to_product.product_id FROM project_to_product WHERE project_to_product.project_id IN " +
+                                    "(SELECT platform.project_id FROM platform WHERE platform.id IN " + HelperFunc.makeInArg(query.getPlatformIds(), false) + ")" +
                                 ")"
                 );
             }

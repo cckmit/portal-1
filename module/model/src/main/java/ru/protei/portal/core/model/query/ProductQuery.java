@@ -88,6 +88,11 @@ public class ProductQuery extends BaseQuery {
                 ", types=" + types +
                 ", directionId=" + directionId +
                 ", platformIds=" + platformIds +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 '}';
     }
 }

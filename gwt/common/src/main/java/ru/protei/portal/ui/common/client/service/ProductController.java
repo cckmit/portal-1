@@ -37,6 +37,8 @@ public interface ProductController extends RemoteService {
      */
     List<ProductShortView> getProductViewList(ProductQuery query) throws RequestFailedException;
 
+    List<ProductShortView> getProductViewListWithChildren(ProductQuery query, En_DevUnitType filterType) throws RequestFailedException;
+
     /**
      * Получение списка продуктовых направлений
      *

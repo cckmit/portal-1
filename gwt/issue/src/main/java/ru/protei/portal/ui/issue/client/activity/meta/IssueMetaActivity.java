@@ -23,6 +23,8 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
+import ru.protei.portal.ui.common.client.widget.selector.product.CustomerProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -45,6 +47,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onInit() {
         log.info( "onInit():" );
         metaView.setActivity( this );
+
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        customerProductModel.setUnitState(En_DevUnitState.ACTIVE);
+
+        productModel.setUnitTypes(En_DevUnitType.PRODUCT);
+        customerProductModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Event
@@ -347,8 +355,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             metaView.caseSubscriptionContainer().setVisible(false);
         }
 
-        metaView.setProductTypes(En_DevUnitType.PRODUCT);
-
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
         metaView.state().setValue(new CaseState(meta.getStateId(), meta.getStateName()));
@@ -399,10 +405,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.product().setValue(ProductShortView.fromProduct(meta.getProduct()));
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
 
-        if (!hasSystemScopeForEdit()) {
-            updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
+        if (!isCustomerWithAutoOpenIssues(policyService.getProfile())) {
+            metaView.setProductModel(productModel);
         } else {
-            metaView.updateProductsByPlatformIds(null);
+            metaView.setProductModel(customerProductModel);
+            updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
         }
 
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
@@ -652,6 +659,18 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return false;
     }
 
+    private boolean isCustomerWithAutoOpenIssues(Profile profile) {
+        if (hasSystemScopeForEdit()) {
+            return false;
+        }
+
+        if (!profile.getCompany().getAutoOpenIssue()) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Inject
     AbstractIssueMetaView metaView;
 
@@ -672,6 +691,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     SiteFolderControllerAsync siteFolderController;
     @Inject
     HomeCompanyService homeCompanyService;
+    @Inject
+    ProductModel productModel;
+    @Inject
+    CustomerProductModel customerProductModel;
 
     @ContextAware
     CaseObjectMeta meta;

@@ -69,7 +69,7 @@ public abstract class ProductModel implements Activity,
         query.setPlatformIds(platformIds);
     }
 
-    private SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {
+    protected SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler( final ProductQuery query) {
         return new SelectorDataCacheLoadHandler() {
             @Override
             public void loadData( int offset, int limit, AsyncCallback handler ) {

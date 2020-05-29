@@ -24,6 +24,8 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.widget.selector.product.CustomerProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -69,11 +71,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 fireEvent(new NotifyEvents.Show(En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        customerProductModel.setUnitState(En_DevUnitState.ACTIVE);
+
+        productModel.setUnitTypes(En_DevUnitType.PRODUCT);
+        customerProductModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Event
     public void authEvent(AuthEvents.Success event) {
-        long stateId = event.profile.getCompany().getAutoOpenIssue() && !hasSystemScopeForEdit() ? CrmConstants.State.OPENED : CrmConstants.State.CREATED;
+        long stateId = isCustomerWithAutoOpenIssues(event.profile) ? CrmConstants.State.OPENED : CrmConstants.State.CREATED;
 
         caseStateController.getCaseState(stateId, new FluentCallback<CaseState>()
                 .withSuccess(this::setCurrentCaseState));
@@ -376,7 +384,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setCaseMetaNotifiers(null);
 
-        issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
         issueMetaView.importance().setValue(caseObjectMeta.getImportance());
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
         issueMetaView.state().setValue(currentCaseState);
@@ -388,9 +395,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
         issueMetaView.product().setValue(ProductShortView.fromProduct(caseObjectMeta.getProduct()));
 
-        if (!hasSystemScopeForEdit()) {
+        if (isCustomerWithAutoOpenIssues(policyService.getProfile())) {
+            issueMetaView.setProductModel(customerProductModel);
             requestPlatforms(caseObjectMeta.getInitiatorCompanyId(), this::updateProductsFilter);
         } else {
+            issueMetaView.setProductModel(productModel);
             issueMetaView.updateProductsByPlatformIds(null);
         }
 
@@ -682,6 +691,18 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return false;
     }
 
+    private boolean isCustomerWithAutoOpenIssues(Profile profile) {
+        if (hasSystemScopeForEdit()) {
+            return false;
+        }
+
+        if (!profile.getCompany().getAutoOpenIssue()) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -714,6 +735,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     CaseStateControllerAsync caseStateController;
     @Inject
     PersonControllerAsync personService;
+    @Inject
+    ProductModel productModel;
+    @Inject
+    CustomerProductModel customerProductModel;
 
     private boolean saving;
     private AppEvents.InitDetails init;

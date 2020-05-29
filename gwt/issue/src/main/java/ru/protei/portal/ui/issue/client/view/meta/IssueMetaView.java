@@ -35,6 +35,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
@@ -190,11 +191,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public void setTimeElapsedType(En_TimeElapsedType timeElapsedType) {
         this.timeElapsedType.setValue(timeElapsedType);
-    }
-
-    @Override
-    public void setProductTypes(En_DevUnitType... enDevUnitTypes) {
-        product.setTypes(enDevUnitTypes);
     }
 
     @Override
@@ -387,6 +383,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public void updateProductsByPlatformIds(Set<Long> platformIds) {
         product.setPlatformIds(platformIds);
+    }
+
+    @Override
+    public void setProductModel(ProductModel productModel) {
+        product.setAsyncProductModel(productModel);
     }
 
     private void initView() {

@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -46,7 +47,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     void fillImportanceOptions(List<En_ImportanceLevel> options);
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
-    void setProductTypes(En_DevUnitType... enDevUnitTypes);
 
     void setInitiator(Person initiator);
     Person getInitiator();
@@ -118,4 +118,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasEnabled managerCompanyEnabled();
 
     void updateProductsByPlatformIds(Set<Long> platformIds);
+
+    void setProductModel(ProductModel productModel);
 }

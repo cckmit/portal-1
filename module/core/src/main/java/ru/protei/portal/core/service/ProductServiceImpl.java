@@ -23,17 +23,16 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+
 /**
  * Реализация сервиса управления продуктами
  */
@@ -77,6 +76,26 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return makeListProductShortView( devUnitDAO.listByQuery(query) );
+    }
+
+    @Override
+    public Result<List<ProductShortView>> shortViewListWithChildren(AuthToken token, ProductQuery query, En_DevUnitType filterType) {
+        if (query.getDirectionId() != null && !checkIfDirection(query.getDirectionId())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<DevUnit> result = devUnitDAO.listByQuery(query);
+
+        if (isEmpty(result)) {
+            return ok(new ArrayList<>());
+        }
+
+        List<DevUnit> children = devUnitDAO.getChildren(toSet(result, DevUnit::getId));
+        result.addAll(children);
+
+        List<ProductShortView> resultProductsOnly = toList(getProductsByType(result, filterType), DevUnit::toProductShortView);
+
+        return ok(resultProductsOnly);
     }
 
     @Override
@@ -127,7 +146,7 @@ public class ProductServiceImpl implements ProductService {
         helper.fillAll( product );
 
         product.setParents(devUnitDAO.getParents(id));
-        product.setChildren(devUnitDAO.getChildren(id));
+        product.setChildren(devUnitDAO.getChildren(Collections.singleton(id)));
         product.setProductDirection(devUnitDAO.getProductDirection(id));
 
         return ok(product);
@@ -234,6 +253,17 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         return ok(checkUniqueProduct(name, type, excludeId));
+    }
+
+    private List<DevUnit> getProductsByType(List<DevUnit> products, En_DevUnitType type) {
+        if (type == null) {
+            return emptyIfNull(products);
+        }
+
+        return emptyIfNull(products)
+                .stream()
+                .filter(devUnit -> type.getId() == devUnit.getType().getId())
+                .collect(Collectors.toList());
     }
 
     private boolean checkIfDirection(Long directionId) {
