@@ -231,7 +231,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         logger.info("caseObj {}", caseObj);
         logger.info("addedAttachments {}", addedAttachments);
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
-        caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
+        String description = issue.getDescription();
+        logger.info("description {}", description);
+        caseObj.setInfo(convertDescription(description, caseAttachments));
 
 
         persistStateComment(authorId, caseObj.getId(), caseObj.getState());
@@ -450,9 +452,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private String convertDescription(String originalDescription, List<ru.protei.portal.core.model.ent.Attachment> attachments) {
+        logger.info("originalDescription {}", originalDescription);
         String description = originalDescription;
+        logger.info("description {}", description);
         if (!attachments.isEmpty()) {
+            logger.info("attachments.isEmpty() {}", originalDescription);
             description = getDescriptionWithReplacedImagesFromJira(originalDescription, attachments);
+            logger.info("description {}", description);
         }
 
         return description;
