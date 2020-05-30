@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
@@ -162,25 +163,21 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Set<Long> toRemoveIds = new HashSet<>();
         toRemoveIds.add(link.getId());
 
-        switch (link.getType()) {
-            case CRM:
-                // удаляем зеркальные CRM-линки
-                CaseLink mirrorCrmLink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(link.getRemoteId()), link.getCaseId().toString());
-                if ( mirrorCrmLink != null ) {
-                    toRemoveIds.add(mirrorCrmLink.getId());
-                }
-                break;
-            case YT:
-                Long caseNumber = caseObjectDAO.getCaseNumberById(link.getCaseId());
-                if (caseNumber == null) {
-                    return error(En_ResultStatus.NOT_FOUND);
-                }
-
-                // для YT-линков удаляем зеркальные на YT
-                youtrackService.removeIssueCrmNumber(link.getRemoteId(), caseNumber);
+        if (En_CaseLink.CRM.equals(link.getType())){
+            // удаляем зеркальные CRM-линки
+            CaseLink mirrorCrmLink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(link.getRemoteId()), link.getCaseId().toString());
+            if (mirrorCrmLink != null) {
+                toRemoveIds.add(mirrorCrmLink.getId());
+            }
         }
 
         int removedCount = caseLinkDAO.removeByKeys(toRemoveIds);
+
+        //Обновляем список ссылок на Youtrack
+        if (En_CaseLink.YT.equals(link.getType())) {
+            youtrackService.setIssueCrmNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId()));
+        }
+
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
     }
 
@@ -223,26 +220,22 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             Long createdLinkId = caseLinkDAO.persist(link);
             link.setId(createdLinkId);
             if (createCrossLinks) {
-                switch (link.getType()) {
-                    case CRM:
-                        Long remoteId = NumberUtils.toLong(link.getRemoteId());
-                        // для crm-линков создаем зеркальные
-                        if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, remoteId, link.getCaseId().toString())) {
-                            CaseLink crossCrmLink = new CaseLink();
-                            crossCrmLink.setCaseId(remoteId);
-                            crossCrmLink.setRemoteId(link.getCaseId().toString());
-                            crossCrmLink.setType(En_CaseLink.CRM);
-                            caseLinkDAO.persist(crossCrmLink);
-                        }
-                        break;
-                    case YT:
-                        // для YT-линков создаем зеркальные на YT
-                        Long caseNumber = caseObjectDAO.getCaseNumberById(link.getCaseId());
-                        if (caseNumber == null) {
-                            return error(En_ResultStatus.NOT_FOUND);
-                        }
-                        youtrackService.addIssueCrmNumber(link.getRemoteId(), caseNumber);
+                if (En_CaseLink.CRM.equals(link.getType())) {
+                    Long remoteId = NumberUtils.toLong(link.getRemoteId());
+                    // для crm-линков создаем зеркальные
+                    if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, remoteId, link.getCaseId().toString())) {
+                        CaseLink crossCrmLink = new CaseLink();
+                        crossCrmLink.setCaseId(remoteId);
+                        crossCrmLink.setRemoteId(link.getCaseId().toString());
+                        crossCrmLink.setType(En_CaseLink.CRM);
+                        caseLinkDAO.persist(crossCrmLink);
+                    }
                 }
+            }
+
+            //Обновляем список ссылок на Youtrack
+            if (En_CaseLink.YT.equals(link.getType())) {
+                youtrackService.setIssueCrmNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId()));
             }
             return ok(createdLinkId);
         });
@@ -414,6 +407,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         return listByQuery.stream()
                 .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId){
+        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId));
+
+        return caseObjects.stream()
+                .map(CaseObject::getCaseNumber)
                 .collect(Collectors.toList());
     }
 

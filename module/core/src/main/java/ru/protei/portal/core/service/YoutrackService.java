@@ -36,8 +36,7 @@ public interface YoutrackService {
 
     Result<YouTrackIssueInfo> removeIssueCrmNumber(String youtrackId, Long caseNumber);
 
-    Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
+    Result<YouTrackIssueInfo> setIssueCrmNumbers(String issueId, List<Long> caseNumbers);
 
-    @Async(BACKGROUND_TASKS)
-    void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed );
+    Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
 }

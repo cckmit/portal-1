@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.customfield.YtCustomFieldActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtStateBundleElement;
@@ -177,6 +176,21 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
+    public Result<YouTrackIssueInfo> setIssueCrmNumbers(String issueId, List<Long> caseNumbersFromDB){
+        if (issueId == null || caseNumbersFromDB == null || caseNumbersFromDB.isEmpty()) {
+            log.warn("setIssueCrmNumbers(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumbersFromDB={}", issueId, caseNumbersFromDB);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return api.getIssueWithFieldsCommentsAttachments(issueId)
+                .flatMap(issue -> {
+                    YtTextIssueCustomField field = (YtTextIssueCustomField) issue.getCrmNumberField();
+                    String caseNumbersFromYT = field == null || field.getValue() == null ? null : field.getValue().text;
+                    return setCrmNumbers(issue.idReadable, caseNumbersFromDB, caseNumbersFromYT);
+                });
+    }
+
+    @Override
     public Result<YouTrackIssueInfo> addIssueSystemComment(String issueId, String text) {
         if (issueId == null || text == null) {
             log.warn("addIssueSystemComment(): Can't add system comment. All arguments are mandatory issueId={} text={}", issueId, text);
@@ -196,19 +210,6 @@ public class YoutrackServiceImpl implements YoutrackService {
 
         return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
                 .map(this::convertYtIssue);
-    }
-
-    @Async(BACKGROUND_TASKS)
-    @Override
-    public void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed ) {
-
-        for (String youtrackId : emptyIfNull( removed )) {
-            removeIssueCrmNumber( youtrackId, caseNumber);
-        }
-
-        for (String youtrackId : emptyIfNull( added)) {
-            addIssueCrmNumber( youtrackId, caseNumber );
-        }
     }
 
     private Result<String> getProjectIdByName (String projectName){
@@ -240,8 +241,16 @@ public class YoutrackServiceImpl implements YoutrackService {
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
         issue.customFields.add(removeCaseNumberFromCrmNumbers(caseNumber, crmNumbers));
-        YtFieldDescriptor crmNumberField = new YtFieldDescriptor(YtSimpleIssueCustomField.class, "value");
-        return api.removeIssueFieldAndReturnWithFieldsCommentsAttachments(issueId, issue, crmNumberField)
+        return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
+                .map(this::convertYtIssue);
+    }
+
+    private Result<YouTrackIssueInfo> setCrmNumbers (String issueId, List<Long> caseNumbersFromDB, String caseNumbersFromYT) {
+        log.info("setCrmNumbers(): issueId={}, caseNumbersFromDB={}, caseNumbersFromYT={}", issueId, caseNumbersFromDB, caseNumbersFromYT);
+        YtIssue issue = new YtIssue();
+        issue.customFields = new ArrayList<>();
+        issue.customFields.add(makeAndFillCrmNumbersCustomField(caseNumbersFromDB, caseNumbersFromYT));
+        return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
                 .map(this::convertYtIssue);
     }
 
@@ -366,6 +375,68 @@ public class YoutrackServiceImpl implements YoutrackService {
 
         return cf;
     }
+
+    private YtIssueCustomField makeAndFillCrmNumbersCustomField(List<Long> caseNumbersFromDB, String caseNumbersFromYTString) {
+        YtTextIssueCustomField cf = new YtTextIssueCustomField();
+        YtTextFieldValue textFieldValue = new YtTextFieldValue();
+        cf.name = YtIssue.CustomFieldNames.crmNumbers;
+        cf.value = textFieldValue;
+        textFieldValue.text = "";
+
+        if (caseNumbersFromDB == null || caseNumbersFromDB.isEmpty()) {
+            return cf;
+        }
+
+        List<Long> caseNumbersFromYT = makeCaseNumberList(caseNumbersFromYTString);
+
+        List<Long> caseNumbersFromDBWithYTOrder = makeListFromDBWithYTOrder(caseNumbersFromDB, caseNumbersFromYT);
+
+        caseNumbersFromDBWithYTOrder.forEach(caseNumber -> {
+            textFieldValue.text += "[" + caseNumber + "]" + "(" + config.data().getCaseLinkConfig().getLinkCrm().replace("%id%", caseNumber.toString()) + ")\n";
+        });
+
+        textFieldValue.text = textFieldValue.text.substring(0, textFieldValue.text.length() - 1);
+
+        return cf;
+    }
+
+    private List<Long> makeListFromDBWithYTOrder(List<Long> caseNumbersFromDB, List<Long> caseNumbersFromYT) {
+        List<Long> resultList = new ArrayList<>(caseNumbersFromYT);
+
+        resultList.removeIf(caseNumber -> !caseNumbersFromDB.contains(caseNumber));
+        caseNumbersFromDB.removeIf(caseNumber -> resultList.contains(caseNumber));
+        resultList.addAll(caseNumbersFromDB);
+
+        return resultList;
+    }
+
+    private List<Long> makeCaseNumberList(String crmNumbers){
+        if (crmNumbers == null) {
+            return new ArrayList<>();
+        }
+
+        List<String> numberList = Arrays.asList(crmNumbers.split("\n"));
+
+        numberList.removeIf(Objects::isNull);
+
+        List<Long> parsedList;
+        try {
+            parsedList = numberList.stream().map(number -> {
+                if (number.startsWith("[")) {
+                    return Long.parseLong(number.substring(1, number.indexOf("]")));
+                } else {
+                    return Long.parseLong(number);
+                }
+            }).collect(Collectors.toList());
+        } catch (NumberFormatException e){
+            log.warn("makeCaseNumberList(): Fail to parse YT crmNumbers={}", crmNumbers);
+            return new ArrayList<>();
+        }
+
+        return parsedList;
+    }
+
+
 
     private YtIssueCustomField makeRequestTypeCustomField(){
         YtSingleEnumIssueCustomField singleEnum = new YtSingleEnumIssueCustomField();
