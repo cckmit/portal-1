@@ -165,9 +165,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         if (En_CaseLink.CRM.equals(link.getType())){
             // удаляем зеркальные CRM-линки
-            CaseLink mirrorCrmLink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(link.getRemoteId()), link.getCaseId().toString());
-            if (mirrorCrmLink != null) {
-                toRemoveIds.add(mirrorCrmLink.getId());
+            CaseLink crmCrosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(link.getRemoteId()), link.getCaseId().toString());
+            if (crmCrosslink != null) {
+                toRemoveIds.add(crmCrosslink.getId());
             }
         }
 

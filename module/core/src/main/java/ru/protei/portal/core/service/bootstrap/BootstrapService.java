@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service.bootstrap;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,54 @@ public class BootstrapService {
         documentBuildFullIndex();
         //fillImportanceLevels();
         migrateIpReservation();
+        fillWithCrossLinkColumn();
         transferYoutrackLinks();
+    }
+
+    private void fillWithCrossLinkColumn() {
+        log.debug("fillWithCrossLinkColumn(): start");
+
+        List<CaseLink> allCaseLinks = caseLinkDAO.getAll();
+
+        if (allCaseLinks.stream().anyMatch(CaseLink::getWithCrosslink)){
+            log.debug("fillWithCrossLinkColumn(): column already filled");
+            return;
+        }
+
+        for (CaseLink caseLink : allCaseLinks) {
+
+            try {
+                //Для CRM ссылок, если флаг еще не заполнен, находим обратную ссылку. Если она есть, то обеим ссылкам ставим true
+                if (caseLink.getType().equals(En_CaseLink.CRM) && !caseLink.getWithCrosslink()) {
+                    CaseLink crosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(caseLink.getRemoteId()), caseLink.getCaseId().toString());
+                    if (crosslink != null) {
+                        caseLink.setWithCrosslink(true);
+                        crosslink.setWithCrosslink(true);
+
+                        caseLinkDAO.merge(caseLink);
+                        caseLinkDAO.merge(crosslink);
+
+                    }
+                } else {
+                    //Для YT ссылок проверяем тим caseObject. Если CRM_SUPPORT, то ставим флаг true. Иначе - false
+                    CaseObject caseObject = caseObjectDAO.get(caseLink.getCaseId());
+
+                    if (caseObject == null) {
+                        log.warn("fillWithCrossLinkColumn(): CaseObject is NULL from caseLink={}", caseLink);
+                        continue;
+                    }
+
+                    if(En_CaseType.CRM_SUPPORT.equals(caseObject.getType())) {
+                        caseLink.setWithCrosslink(true);
+                        caseLinkDAO.merge(caseLink);
+                    }
+                }
+                log.debug("fillWithCrossLinkColumn(): successfully updated caselink={}", caseLink);
+            } catch (Exception e){
+                log.error("fillWithCrossLinkColumn(): failed to update caselink={}, errorMessage={}", caseLink, e.getMessage(), e);
+            }
+        }
+        log.debug("fillWithCrossLinkColumn(): finish");
     }
 
     private void transferYoutrackLinks() {

@@ -3,7 +3,8 @@ package ru.protei.portal.core.model.dict;
 public enum En_CaseLink {
 
     CRM(false),
-    YT(true);
+    YT(true),
+    CRM_OLD(true);
 
     En_CaseLink(boolean forcePrivacy) {
         this.forcePrivacy = forcePrivacy;

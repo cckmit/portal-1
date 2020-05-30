@@ -23,6 +23,9 @@ public class CaseLink extends AuditableObject {
     @JdbcColumn(name="remote_id")
     private String remoteId;
 
+    @JdbcColumn(name="with_crosslink")
+    private Boolean withCrosslink;
+
     @JdbcJoinedObject( sqlTableAlias = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
             @JdbcJoinData(remoteColumn = "id", value = "(SELECT CAST(case_link.remote_id AS UNSIGNED INTEGER))")
@@ -85,6 +88,14 @@ public class CaseLink extends AuditableObject {
         this.youTrackIssueInfo = youTrackIssueInfo;
     }
 
+    public Boolean getWithCrosslink() {
+        return withCrosslink;
+    }
+
+    public void setWithCrosslink(Boolean withCrosslink) {
+        this.withCrosslink = withCrosslink;
+    }
+
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
@@ -122,6 +133,7 @@ public class CaseLink extends AuditableObject {
                 ", caseId=" + caseId +
                 ", type=" + type +
                 ", remoteId=" + remoteId +
+                ", withCrosslink=" + withCrosslink +
                 '}';
     }
 }
