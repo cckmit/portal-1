@@ -159,6 +159,60 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
 
+    @Override
+    @Transactional
+    public Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList) {
+        log.debug("setYoutrackIdToCaseNumbers(): youtrackId={}, case list size={}, caseList={}", youtrackId, caseNumberList.size(), caseNumberList);
+
+        if (youtrackId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
+
+        Result<List<Long>> newCaseIdsResult = getCaseIdsByCaseNumbers(caseNumberList);
+        if (newCaseIdsResult.isError()) {
+            log.warn("setYoutrackIdToCaseNumbers(): fail to get newCaseIds, status={}", newCaseIdsResult.getStatus());
+            return error(newCaseIdsResult.getStatus(), newCaseIdsResult.getMessage());
+        }
+
+        log.debug("setYoutrackIdToCaseNumbers(): newCaseIds={}", newCaseIdsResult.getData());
+
+        List<Long> currentCaseIds = findAllCaseIdsByYoutrackId(youtrackId, true);
+        List<Long> newCaseIds = newCaseIdsResult.getData();
+
+        log.debug("setYoutrackIdToCaseNumbers(): current case ids={}, new case ids={}", currentCaseIds, newCaseIds);
+
+        List<Long> listCaseIdsToAdd = makeListCaseIdsToAddYoutrackLink(currentCaseIds, newCaseIds);
+        List<Long> listCaseIdsToRemove = makeListCaseIdsToRemoveYoutrackLink(currentCaseIds, newCaseIds);
+
+        log.debug("setYoutrackIdToCaseNumbers(): listCaseIdsToAdd={}, listCaseIdsToRemove={}", listCaseIdsToAdd, listCaseIdsToRemove);
+
+        Result<String> result = ok("");
+
+        for (Long caseId : listCaseIdsToAdd) {
+            Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
+            log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, status={}", caseId, addResult.getStatus());
+
+            if (addResult.isError()){
+                return error(addResult.getStatus(), addResult.getMessage());
+            }
+
+            addResult.getEvents().forEach(event -> result.publishEvent(event));
+            makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
+        }
+
+        for (Long caseId : listCaseIdsToRemove) {
+            makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
+            Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
+            log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, status={}", caseId, removeResult.getStatus());
+
+            if (removeResult.isError()){
+                return error(removeResult.getStatus(), removeResult.getMessage());
+            }
+
+            removeResult.getEvents().forEach(event -> result.publishEvent(event));
+        }
+
+        return result;
+    }
+
     private Result removeLink (CaseLink link){
         Set<Long> toRemoveIds = new HashSet<>();
         toRemoveIds.add(link.getId());
@@ -259,60 +313,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return find( caseLinks, caseLink -> youtrackId.equalsIgnoreCase(caseLink.getRemoteId()) )
                 .map( Result::ok )
                 .orElse( error( En_ResultStatus.NOT_FOUND ) );
-    }
-
-    @Override
-    @Transactional
-    public Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList) {
-        log.debug("setYoutrackIdToCaseNumbers(): youtrackId={}, case list size={}, caseList={}", youtrackId, caseNumberList.size(), caseNumberList);
-
-        if (youtrackId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
-
-        Result<List<Long>> newCaseIdsResult = getCaseIdsByCaseNumbers(caseNumberList);
-        if (newCaseIdsResult.isError()) {
-            log.warn("setYoutrackIdToCaseNumbers(): fail to get newCaseIds, status={}", newCaseIdsResult.getStatus());
-            return error(newCaseIdsResult.getStatus(), newCaseIdsResult.getMessage());
-        }
-
-        log.debug("setYoutrackIdToCaseNumbers(): newCaseIds={}", newCaseIdsResult.getData());
-
-        List<Long> currentCaseIds = findAllCaseIdsByYoutrackId(youtrackId, true);
-        List<Long> newCaseIds = newCaseIdsResult.getData();
-
-        log.debug("setYoutrackIdToCaseNumbers(): current case ids={}, new case ids={}", currentCaseIds, newCaseIds);
-
-        List<Long> listCaseIdsToAdd = makeListCaseIdsToAddYoutrackLink(currentCaseIds, newCaseIds);
-        List<Long> listCaseIdsToRemove = makeListCaseIdsToRemoveYoutrackLink(currentCaseIds, newCaseIds);
-
-        log.debug("setYoutrackIdToCaseNumbers(): listCaseIdsToAdd={}, listCaseIdsToRemove={}", listCaseIdsToAdd, listCaseIdsToRemove);
-
-        Result<String> result = ok("");
-
-        for (Long caseId : listCaseIdsToAdd) {
-            Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, status={}", caseId, addResult.getStatus());
-
-            if (addResult.isError()){
-                return error(addResult.getStatus(), addResult.getMessage());
-            }
-
-            addResult.getEvents().forEach(event -> result.publishEvent(event));
-            makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
-        }
-
-        for (Long caseId : listCaseIdsToRemove) {
-            makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
-            Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, status={}", caseId, removeResult.getStatus());
-
-            if (removeResult.isError()){
-                return error(removeResult.getStatus(), removeResult.getMessage());
-            }
-
-            removeResult.getEvents().forEach(event -> result.publishEvent(event));
-        }
-
-        return result;
     }
 
     private void makeAudit(Long caseId, String youtrackId, En_AuditType type, AuthToken token){

@@ -32,10 +32,6 @@ public interface YoutrackService {
 
     Result<YouTrackIssueInfo> getIssueInfo( String issueId );
 
-    Result<YouTrackIssueInfo> addIssueCrmNumber(String issueId, Long caseNumber);
-
-    Result<YouTrackIssueInfo> removeIssueCrmNumber(String youtrackId, Long caseNumber);
-
     Result<YouTrackIssueInfo> setIssueCrmNumbers(String issueId, List<Long> caseNumbers);
 
     Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
