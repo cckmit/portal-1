@@ -149,7 +149,7 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public Result<YouTrackIssueInfo> setIssueCrmNumbers(String issueId, List<Long> caseNumbersFromDB){
-        if (issueId == null || caseNumbersFromDB == null || caseNumbersFromDB.isEmpty()) {
+        if (issueId == null || caseNumbersFromDB == null) {
             log.warn("setIssueCrmNumbers(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumbersFromDB={}", issueId, caseNumbersFromDB);
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
