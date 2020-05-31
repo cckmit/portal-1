@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
@@ -123,25 +124,46 @@ public class BootstrapService {
 
         CaseLinkQuery query = new CaseLinkQuery(null, null);
         query.setType(En_CaseLink.YT);
+        query.setWithCrosslink(true);
 
         List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(query);
 
         log.debug("transferYoutrackLinks(): quantity of YT case links={}", listByQuery.size());
 
-        listByQuery.forEach(caseLink -> {
-            try {
-                log.debug("transferYoutrackLinks(): transfer case link with id={}, case number={}, remote number={}", caseLink.getId(), caseLink.getCaseId(), caseLink.getRemoteId());
-                Long caseNumber = caseObjectDAO.getCaseNumberById(caseLink.getCaseId());
-                String youtrackId = caseLink.getRemoteId();
+        Set<String> youtrackIssueIds = listByQuery.stream()
+                .map(CaseLink::getRemoteId)
+                .collect(Collectors.toSet());
 
-                if (caseNumber != null) {
-                    youtrackService.addIssueCrmNumber(youtrackId, caseNumber);
-                }
-                log.debug("transferYoutrackLinks(): SUCCESS transfer case link with id={}", caseLink.getId());
+        log.debug("transferYoutrackLinks(): quantity of YT ids={}", youtrackIssueIds.size());
+
+        youtrackIssueIds.forEach(youtrackIssueId -> {
+            try {
+                youtrackService.setIssueCrmNumbers(youtrackIssueId, findAllCaseNumbersByYoutrackId(youtrackIssueId, true));
+                log.debug("transferYoutrackLinks(): SUCCESS transfer case links to youtrack id={}", youtrackIssueId);
             } catch (Exception e){
-                log.error("transferYoutrackLinks(): ERROR transfer case link with id={}", caseLink.getId(), e);
+                log.error("transferYoutrackLinks(): ERROR transfer case links to youtrack id={}, error message={}", youtrackIssueId, e.getMessage());
             }
         });
+    }
+
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        caseLinkQuery.setWithCrosslink(withCrosslink);
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
+
+        return listByQuery.stream()
+                .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
+        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
+
+        return caseObjects.stream()
+                .map(CaseObject::getCaseNumber)
+                .collect(Collectors.toList());
     }
 
     private void fillImportanceLevels() {
