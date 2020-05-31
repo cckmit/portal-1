@@ -16,9 +16,11 @@ public interface CaseStateController extends RemoteService {
 
     List<CaseState> getCaseStates(En_CaseType type) throws RequestFailedException;
 
-    List<CaseState> getCaseStatesOmitPrivileges() throws RequestFailedException;
+    List<CaseState> getCaseStatesOmitPrivileges(En_CaseType type) throws RequestFailedException;
 
     CaseState getCaseState(Long id) throws RequestFailedException;
+
+    CaseState getCaseStateWithoutCompaniesOmitPrivileges(Long id) throws RequestFailedException;
 
     CaseState saveCaseState(CaseState state) throws RequestFailedException;
 }

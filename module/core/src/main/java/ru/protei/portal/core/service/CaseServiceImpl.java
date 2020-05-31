@@ -463,16 +463,6 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType) {
-        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
-
-        if (states == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        return ok(states);
-    }
-
-    @Override
     public Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -857,9 +847,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
-
-    @Autowired
-    CaseStateMatrixDAO caseStateMatrixDAO;
 
     @Autowired
     CaseCommentDAO caseCommentDAO;

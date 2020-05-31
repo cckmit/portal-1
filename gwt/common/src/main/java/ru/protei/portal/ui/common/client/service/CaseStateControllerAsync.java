@@ -13,9 +13,11 @@ public interface CaseStateControllerAsync {
 
     void getCaseStates(En_CaseType type, AsyncCallback<List<CaseState>> callback);
 
+    void getCaseStatesOmitPrivileges(En_CaseType type, AsyncCallback<List<CaseState>> callback);
+
     void getCaseState(Long id, AsyncCallback<CaseState> callback);
 
-    void saveCaseState(CaseState state, AsyncCallback<CaseState> callback);
+    void getCaseStateWithoutCompaniesOmitPrivileges(Long id, AsyncCallback<CaseState> callback);
 
-    void getCaseStatesOmitPrivileges(AsyncCallback<List<CaseState>> callback);
+    void saveCaseState(CaseState state, AsyncCallback<CaseState> callback);
 }

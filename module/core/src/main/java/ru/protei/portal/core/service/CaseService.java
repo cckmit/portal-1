@@ -53,8 +53,6 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result< CaseObjectMetaJira > updateCaseObjectMetaJira( AuthToken token, CaseObjectMetaJira caseMetaJira );
 
-    Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType);
-
     Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 
     @Privileged(forCases = {

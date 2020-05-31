@@ -215,8 +215,7 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public List<CaseState> getCompanyCaseStates(Long companyId) throws RequestFailedException {
-        log.info( "getCompanyCaseStates() companyId={}", companyId );
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        log.info("getCompanyCaseStates() companyId={}", companyId);
         return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
     }
 
@@ -232,14 +231,11 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
         log.info("getImportanceLevels() companyId={}", companyId);
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-
         List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
         List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
                 .map(CompanyImportanceItem::getImportanceLevelId)
                 .map(En_ImportanceLevel::getById)
                 .collect(Collectors.toList());
-
         log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
 
         return importanceLevels;

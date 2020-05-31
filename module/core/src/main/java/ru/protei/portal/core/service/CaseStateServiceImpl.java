@@ -1,8 +1,10 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -20,33 +22,52 @@ public class CaseStateServiceImpl implements CaseStateService {
     @Inject
     private CaseStateDAO caseStateDAO;
 
+    @Autowired
+    CaseStateMatrixDAO caseStateMatrixDAO;
+
     @Inject
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
-    public Result<List<CaseState>> caseStateList(AuthToken authToken, En_CaseType type) {
-        List<CaseState> list = caseStateDAO.getAllByCaseType(type);
-
-        if (list == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        return ok(list);
+    public Result<List<CaseState>> getCaseStates(AuthToken authToken, En_CaseType type) {
+        return getCaseStates(type);
     }
 
     @Override
-    public Result<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken) {
-        return caseStateList(authToken, En_CaseType.CRM_SUPPORT);
+    public Result<List<CaseState>> getCaseStatesOmitPrivileges(En_CaseType type) {
+        return getCaseStates(type);
+    }
+
+    @Override
+    public Result<List<CaseState>> getCaseStatesWithViewOrderOmitPrivileges(En_CaseType caseType) {
+        List<CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
+
+        if (states == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        return ok(states);
     }
 
     @Override
     public Result<CaseState> getCaseState(AuthToken authToken, long id) {
         CaseState state = caseStateDAO.get(id);
+
         if (state == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
         if (SELECTED.equals(state.getUsageInCompanies())) {
             jdbcManyRelationsHelper.fill(state, "companies");
         }
+
+        return ok(state);
+    }
+
+    @Override
+    public Result<CaseState> getCaseStateWithoutCompaniesOmitPrivileges(long id) {
+        CaseState state = caseStateDAO.get(id);
+
+        if (state == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
         return ok(state);
     }
@@ -91,5 +112,14 @@ public class CaseStateServiceImpl implements CaseStateService {
         List<CaseState> caseStates = caseStateDAO.getCaseStatesForCompany(companyId);
 
         return ok(caseStates);
+    }
+
+    private Result<List<CaseState>> getCaseStates(En_CaseType type) {
+        List<CaseState> list = caseStateDAO.getAllByCaseType(type);
+
+        if (list == null)
+            return error(En_ResultStatus.GET_DATA_ERROR);
+
+        return ok(list);
     }
 }

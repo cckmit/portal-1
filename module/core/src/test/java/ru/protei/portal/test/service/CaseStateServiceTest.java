@@ -77,7 +77,7 @@ public class CaseStateServiceTest {
 
     @Test
     public void getCaseStateFromServiceTest() throws Exception {
-        Result<List<CaseState>> response = caseStateService.caseStateList(TEST_AUTH_TOKEN, En_CaseType.CRM_SUPPORT);
+        Result<List<CaseState>> response = caseStateService.getCaseStates(TEST_AUTH_TOKEN, En_CaseType.CRM_SUPPORT);
 
         if (response.isError()) {
             fail("Expected list of CaseState");

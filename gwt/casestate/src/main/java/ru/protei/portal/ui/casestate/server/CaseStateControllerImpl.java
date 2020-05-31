@@ -39,19 +39,23 @@ public class CaseStateControllerImpl implements CaseStateController {
     @Override
     public List<CaseState> getCaseStates(En_CaseType type) throws RequestFailedException {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(caseStateService.caseStateList(authToken,type));
+        return checkResultAndGetData(caseStateService.getCaseStates(authToken,type));
     }
 
     @Override
-    public List<CaseState> getCaseStatesOmitPrivileges() throws RequestFailedException {
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(caseStateService.getCaseStatesOmitPrivileges(authToken));
+    public List<CaseState> getCaseStatesOmitPrivileges(En_CaseType type) throws RequestFailedException {
+        return checkResultAndGetData(caseStateService.getCaseStatesOmitPrivileges(type));
     }
 
     @Override
     public CaseState getCaseState(Long id) throws RequestFailedException {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(caseStateService.getCaseState(authToken, id));
+    }
+
+    @Override
+    public CaseState getCaseStateWithoutCompaniesOmitPrivileges(Long id) throws RequestFailedException {
+        return checkResultAndGetData(caseStateService.getCaseStateWithoutCompaniesOmitPrivileges(id));
     }
 
     @Override
@@ -64,6 +68,4 @@ public class CaseStateControllerImpl implements CaseStateController {
         }
         return state;
     }
-
-
 }

@@ -33,7 +33,6 @@ import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
-import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -73,7 +72,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Event
     public void authEvent(AuthEvents.Success event) {
-        caseStateController.getCaseState(CrmConstants.State.CREATED, new FluentCallback<CaseState>()
+        caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(CrmConstants.State.CREATED, new FluentCallback<CaseState>()
                 .withSuccess(this::setCreatedCaseState));
     }
 

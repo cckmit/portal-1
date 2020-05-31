@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.common;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -59,7 +60,7 @@ public abstract class CaseStateFilterProvider implements Activity
     }
 
     private void updateCaseStates() {
-        caseStateService.getCaseStatesOmitPrivileges(new ShortRequestCallback<List<CaseState>>()
+        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CRM_SUPPORT, new ShortRequestCallback<List<CaseState>>()
                 .setOnSuccess(states -> {
                     setCaseStates(states);
                     fireEvent(new CaseStateEvents.UpdateSelectorOptions());
