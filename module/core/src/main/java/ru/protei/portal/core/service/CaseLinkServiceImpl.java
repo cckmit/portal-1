@@ -175,7 +175,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         //Обновляем список ссылок на Youtrack
         if (En_CaseLink.YT.equals(link.getType())) {
-            youtrackService.setIssueCrmNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId()));
+            youtrackService.setIssueCrmNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId(), true));
         }
 
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
@@ -217,6 +217,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private Result<Long> addLink (CaseLink link, boolean createCrossLinks) {
 
         return lockService.doWithLockAndTransaction(CaseLink.class, link.getCaseId(), TimeUnit.SECONDS, 5, transactionTemplate, () -> {
+            link.setWithCrosslink(createCrossLinks);
             Long createdLinkId = caseLinkDAO.persist(link);
             link.setId(createdLinkId);
             if (createCrossLinks) {
@@ -235,7 +236,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
             //Обновляем список ссылок на Youtrack
             if (En_CaseLink.YT.equals(link.getType())) {
-                youtrackService.setIssueCrmNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId()));
+                youtrackService.setIssueCrmNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId(), true));
             }
             return ok(createdLinkId);
         });
@@ -275,7 +276,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         log.debug("setYoutrackIdToCaseNumbers(): newCaseIds={}", newCaseIdsResult.getData());
 
-        List<Long> currentCaseIds = findAllCaseIdsByYoutrackId(youtrackId);
+        List<Long> currentCaseIds = findAllCaseIdsByYoutrackId(youtrackId, true);
         List<Long> newCaseIds = newCaseIdsResult.getData();
 
         log.debug("setYoutrackIdToCaseNumbers(): current case ids={}, new case ids={}", currentCaseIds, newCaseIds);
@@ -399,10 +400,11 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
 
-    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId) {
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
         CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
         caseLinkQuery.setRemoteId( youtrackId );
         caseLinkQuery.setType( En_CaseLink.YT );
+        caseLinkQuery.setWithCrosslink(withCrosslink);
         List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
 
         return listByQuery.stream()
@@ -410,8 +412,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
-    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId){
-        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId));
+    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
+        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
 
         return caseObjects.stream()
                 .map(CaseObject::getCaseNumber)
@@ -424,6 +426,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         newLink.setCaseId( caseId );
         newLink.setType( En_CaseLink.YT );
         newLink.setRemoteId( youtrackId );
+        newLink.setWithCrosslink(true);
         Long id = caseLinkDAO.persist( newLink );
         if (id == null) {
             log.error( "addCaseLinkOnToYoutrack(): Can`t add link on to youtrack into case, persistence error" );
