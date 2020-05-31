@@ -147,7 +147,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private AssembledCaseEvent updateCaseObject( Long authorId, CaseObject caseObj, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
-        logger.info("issue {}", issue);
         if (caseObj.isDeleted()) {
             logger.debug("our case {} is marked as deleted, skip event", caseObj.defGUID());
             return null;
@@ -176,7 +175,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
-        logger.info("caseObj {}", caseObj);
+
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = addAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
         caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
@@ -210,7 +209,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private AssembledCaseEvent createCaseObject( Person initiator, Long authorId, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
-        logger.info("issue {}", issue);
         CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
@@ -228,12 +226,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
         List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = addAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
-        logger.info("caseObj {}", caseObj);
-        logger.info("addedAttachments {}", addedAttachments);
+
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
-        String description = issue.getDescription();
-        logger.info("description {}", description);
-        caseObj.setInfo(convertDescription(description, caseAttachments));
+        caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
         caseObjectDAO.merge(caseObj);
 
         persistStateComment(authorId, caseObj.getId(), caseObj.getState());
@@ -452,13 +447,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private String convertDescription(String originalDescription, List<ru.protei.portal.core.model.ent.Attachment> attachments) {
-        logger.info("originalDescription {}", originalDescription);
         String description = originalDescription;
-        logger.info("description {}", description);
         if (!attachments.isEmpty()) {
-            logger.info("attachments.isEmpty() {}", originalDescription);
             description = getDescriptionWithReplacedImagesFromJira(originalDescription, attachments);
-            logger.info("description {}", description);
         }
 
         return description;
