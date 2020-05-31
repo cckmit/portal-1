@@ -4,10 +4,16 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="add-with_crosslink-column-to-case_link-table" author="vologzhnain">
+    <changeSet id="add-with_crosslink-column-to-case_link-table" author="vologzhanin">
         <addColumn tableName="case_link">
-            <column name="with_crosslink" type="BOOLEAN" defaultValue="false"/>
+            <column name="with_crosslink" type="BOOLEAN" defaultValue="false" />
         </addColumn>
+    </changeSet>
+
+    <changeSet id="add-with_crosslink-notnull-constraint" author="vologzhanin">
+        <addNotNullConstraint columnDataType="BOOLEAN"
+                              columnName="with_crosslink"
+                              tableName="case_link"/>
     </changeSet>
 
 </databaseChangeLog>
