@@ -156,14 +156,13 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.number().setValue(String.valueOf(CrmConstants.IpReservation.MIN_IPS_COUNT));
         checkCreateAvailable();
 
+        view.reservedMode().setValue(En_ReservedMode.EXACT_IP, true);
+        view.reserveModeVisibility().setVisible(true);
+
         if (hasSystemPrivileges()) {
-            view.reservedMode().setValue(En_ReservedMode.EXACT_IP, true);
-            view.reserveModeVisibility().setVisible(true);
             view.owner().setValue(null);
             view.ownerEnabled().setEnabled(true);
         } else {
-            view.reservedMode().setValue(En_ReservedMode.ANY_FREE_IPS, true);
-            view.reserveModeVisibility().setVisible(false);
             PersonShortView ipOwner = new PersonShortView(
                     policyService.getProfile().getShortName(),
                     policyService.getProfile().getId(),
