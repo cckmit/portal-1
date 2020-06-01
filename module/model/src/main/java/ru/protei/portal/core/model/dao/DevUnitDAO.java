@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by michael on 23.05.16.
@@ -19,7 +20,7 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
     DevUnit getByLegacyId (En_DevUnitType type, Long legacyId);
     boolean updateState(DevUnit newState);
     List<DevUnit> getParents(Long productId);
-    List<DevUnit> getChildren(Long productId);
+    List<DevUnit> getChildren(Set<Long> productId);
     DevUnit getProductDirection(Long productId);
 
     @SqlConditionBuilder

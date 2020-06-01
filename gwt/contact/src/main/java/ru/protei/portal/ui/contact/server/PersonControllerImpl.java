@@ -78,6 +78,23 @@ public class PersonControllerImpl implements PersonController {
         return result.getData();
     }
 
+    @Override
+    public Person getCommonManagerByProductId(Long productId) throws RequestFailedException {
+        log.info("getPersonByProductId: productId={}", productId);
+
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Person> result = personService.getCommonManagerByProductId(authToken, productId);
+
+        log.info("result status: {}, data: {}", result.getStatus(), result.getData());
+
+        if (result.isError()) {
+            throw new RequestFailedException(result.getStatus());
+        }
+
+        return result.getData();
+    }
+
     @Autowired
     private PersonService personService;
     @Autowired

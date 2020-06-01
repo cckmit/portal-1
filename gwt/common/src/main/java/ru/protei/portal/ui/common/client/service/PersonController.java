@@ -26,4 +26,6 @@ public interface PersonController extends RemoteService {
     Map<Long, String> getPersonNames(Collection<Long> ids) throws RequestFailedException;
 
     Person getPerson(Long id) throws RequestFailedException;
+
+    Person getCommonManagerByProductId(Long productId) throws RequestFailedException;
 }

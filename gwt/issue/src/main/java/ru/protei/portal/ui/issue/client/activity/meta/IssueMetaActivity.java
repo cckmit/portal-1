@@ -16,23 +16,26 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
+import ru.protei.portal.ui.common.client.widget.selector.product.CustomerProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
-import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
 /**
@@ -44,6 +47,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onInit() {
         log.info( "onInit():" );
         metaView.setActivity( this );
+
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        customerProductModel.setUnitState(En_DevUnitState.ACTIVE);
+
+        productModel.setUnitTypes(En_DevUnitType.PRODUCT);
+        customerProductModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Event
@@ -115,7 +124,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     @Override
     public void onProductChanged() {
-        meta.setProduct(metaView.getProduct());
+        meta.setProduct(DevUnit.fromProductShortView(metaView.product().getValue()));
         onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() )));
     }
 
@@ -252,27 +261,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-        PlatformQuery query = new PlatformQuery();
-        query.setCompanyId(selectedCompanyId);
-
-        siteFolderController.getPlatformsOptionList(query, new FluentCallback<List<PlatformOption>>()
-                .withError(throwable -> {
-                    metaView.platform().setValue(null);
-                    meta.setPlatform(null);
-                    requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
-                    onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
-                })
-                .withSuccess( result -> {
-                    if(result != null && result.size() == 1){
-                        metaView.platform().setValue(result.get(0));
-                        meta.setPlatform(result.get(0));
-                    } else {
-                        metaView.platform().setValue(null);
-                        meta.setPlatform(null);
-                    }
-                    requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
-                    onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
-                } ));
+        fillPlatformValue(selectedCompanyId);
     }
 
     @Override
@@ -353,7 +342,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void fillView(CaseObjectMeta meta) {
         metaView.stateEnabled().setEnabled(!readOnly);
         metaView.importanceEnabled().setEnabled(!readOnly);
-        metaView.productEnabled().setEnabled(!readOnly && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
+        metaView.productEnabled().setEnabled(isProductEnabled(readOnly) );
         metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()) );
         metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
@@ -365,8 +354,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         } else {
             metaView.caseSubscriptionContainer().setVisible(false);
         }
-
-        metaView.setProductTypes(En_DevUnitType.PRODUCT);
 
         metaView.importance().setValue( meta.getImportance() );
         metaView.setStateWorkflow(recognizeWorkflow(meta.getExtAppType()));//Обязательно сетить до установки значения!
@@ -415,8 +402,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fillManagerInfoContainer(metaView, meta, readOnly);
 
-        metaView.setProduct( meta.getProduct() );
+        metaView.product().setValue(ProductShortView.fromProduct(meta.getProduct()));
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
+
+        if (!isCustomerWithAutoOpenIssues(policyService.getProfile())) {
+            metaView.setProductModel(productModel);
+        } else {
+            metaView.setProductModel(customerProductModel);
+            updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
+        }
+
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
@@ -596,6 +591,86 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
     }
 
+    private void fillPlatformValue(Long companyId) {
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+
+        requestPlatforms(companyId, platformOptions -> {
+            if (platformOptions != null && platformOptions.size() == 1) {
+                metaView.platform().setValue(platformOptions.get(0));
+                meta.setPlatform(platformOptions.get(0));
+            } else {
+                metaView.platform().setValue(null);
+                meta.setPlatform(null);
+            }
+
+            requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+            onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
+        });
+    }
+
+    private void requestPlatforms(Long companyId, Consumer<List<PlatformOption>> resultConsumer) {
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+
+        siteFolderController.getPlatformsOptionList(query, new FluentCallback<List<PlatformOption>>()
+                .withError(throwable -> resultConsumer.accept(null))
+                .withSuccess(resultConsumer)
+        );
+    }
+
+    private void updateProductsFilter(final AbstractIssueMetaView metaView, Long companyId, Long platformId) {
+        if (platformId != null) {
+            metaView.updateProductsByPlatformIds(new HashSet<>(Collections.singleton(platformId)));
+        } else {
+            requestPlatforms(companyId, platformOptions -> updateProductsFilter(metaView, platformOptions));
+        }
+    }
+
+    private void updateProductsFilter(final AbstractIssueMetaView metaView, List<PlatformOption> platformOptions) {
+        metaView.product().setValue(null);
+
+        if (isEmpty(platformOptions)) {
+            metaView.updateProductsByPlatformIds(null);
+            metaView.productEnabled().setEnabled(false);
+        } else {
+            metaView.updateProductsByPlatformIds(platformOptions.stream().map(PlatformOption::getId).collect(Collectors.toSet()));
+            metaView.productEnabled().setEnabled(isProductEnabled(readOnly));
+        }
+    }
+
+    private boolean hasSystemScopeForEdit() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
+    }
+
+    private boolean isProductEnabled(boolean readOnly) {
+        if (readOnly) {
+            return false;
+        }
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT)) {
+            return true;
+        }
+
+        if (policyService.getUserCompany().getAutoOpenIssue()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isCustomerWithAutoOpenIssues(Profile profile) {
+        if (hasSystemScopeForEdit()) {
+            return false;
+        }
+
+        if (!profile.getCompany().getAutoOpenIssue()) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Inject
     AbstractIssueMetaView metaView;
 
@@ -616,6 +691,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     SiteFolderControllerAsync siteFolderController;
     @Inject
     HomeCompanyService homeCompanyService;
+    @Inject
+    ProductModel productModel;
+    @Inject
+    CustomerProductModel customerProductModel;
 
     @ContextAware
     CaseObjectMeta meta;

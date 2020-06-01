@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -86,9 +87,15 @@ public class CaseObjectSqlBuilder {
                     if (!isWithoutManager) {
                         condition.append(" and manager IN " + makeInArg(managerIds, false));
                     } else if (managerIds.isEmpty()) {
-                        condition.append(" and manager IS NULL");
+                        condition
+                                .append(" and (manager IS NULL")
+                                .append(Boolean.TRUE.equals(query.getWithCommonManagers()) ? " or (SELECT person.sex FROM person WHERE person.id = manager) like \"" + En_Gender.UNDEFINED.getCode() + "\")" : ")");
                     } else {
-                        condition.append(" and (manager IN " + makeInArg(managerIds, false) + " or manager IS NULL)");
+                        condition
+                                .append(" and (manager IN ")
+                                .append(makeInArg(managerIds, false))
+                                .append(" or manager IS NULL")
+                                .append(Boolean.TRUE.equals(query.getWithCommonManagers()) ? " or (SELECT person.sex FROM person WHERE person.id = manager) like \"" + En_Gender.UNDEFINED.getCode() + "\")" : ")");
                     }
                 }
             }

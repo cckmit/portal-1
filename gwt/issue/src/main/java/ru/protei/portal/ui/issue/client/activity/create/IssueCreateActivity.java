@@ -9,13 +9,13 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
@@ -24,6 +24,8 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.widget.selector.product.CustomerProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -33,12 +35,12 @@ import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
-import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
@@ -69,14 +71,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 fireEvent(new NotifyEvents.Show(En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status) ? lang.uploadFileSizeExceed() + " (" + details + "Mb)" : lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+
+        productModel.setUnitState(En_DevUnitState.ACTIVE);
+        customerProductModel.setUnitState(En_DevUnitState.ACTIVE);
+
+        productModel.setUnitTypes(En_DevUnitType.PRODUCT);
+        customerProductModel.setUnitTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
     @Event
     public void authEvent(AuthEvents.Success event) {
-        caseStateController.getCaseState(CrmConstants.State.CREATED, new FluentCallback<CaseState>()
-                .withSuccess(caseState -> this.createdCaseState = caseState));
-        caseStateController.getCaseState(CrmConstants.State.OPENED, new FluentCallback<CaseState>()
-                .withSuccess(caseState -> this.openCaseState = caseState));
+        long stateId = isCustomerWithAutoOpenIssues(event.profile) ? CrmConstants.State.OPENED : CrmConstants.State.CREATED;
+
+        caseStateController.getCaseState(stateId, new FluentCallback<CaseState>()
+                .withSuccess(this::setCurrentCaseState));
     }
 
     @Event
@@ -186,6 +194,20 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onProductChanged() {
+        if (!hasSystemScopeForEdit() && issueMetaView.product().getValue() != null) {
+            personService.getCommonManagerByProductId(issueMetaView.product().getValue().getId(), new FluentCallback<Person>()
+                    .withSuccess(commonManager -> {
+                        if (commonManager == null) {
+                            return;
+                        }
+
+                        issueMetaView.updateManagersCompanyFilter(commonManager.getCompanyId());
+                        issueMetaView.setManager(commonManager);
+                        issueMetaView.setManagerCompany(new EntityOption(commonManager.getCompany().getCname(), commonManager.getCompanyId()));
+                    })
+            );
+        }
+
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
@@ -195,6 +217,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
                 slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
         );
+
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
@@ -219,7 +242,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                             subscriptions = filterByPlatformAndProduct(subscriptions);
                             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
                                     subscriptions,
-                                    CollectionUtils.isEmpty(subscriptions) ?
+                                    isEmpty(subscriptions) ?
                                             lang.issueCompanySubscriptionNotDefined() :
                                             lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
                                     )
@@ -297,23 +320,26 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.updateManagersCompanyFilter(issueMetaView.getManagerCompany().getId());
     }
 
-    private void fillPlatformValue(Long companyId){
+    private void fillPlatformValue(Long companyId) {
+        requestPlatforms(companyId, platformOptions -> {
+            if (platformOptions != null && platformOptions.size() == 1) {
+                issueMetaView.platform().setValue(platformOptions.get(0));
+            } else {
+                issueMetaView.platform().setValue(null);
+            }
+
+            onPlatformChanged();
+        });
+    }
+
+    private void requestPlatforms(Long companyId, Consumer<List<PlatformOption>> resultConsumer) {
         PlatformQuery query = new PlatformQuery();
         query.setCompanyId(companyId);
 
         siteFolderController.getPlatformsOptionList(query, new FluentCallback<List<PlatformOption>>()
-                .withError(throwable -> {
-                    issueMetaView.platform().setValue(null);
-                    onPlatformChanged();
-                })
-                .withSuccess( result -> {
-                    if(result != null && result.size() == 1){
-                        issueMetaView.platform().setValue(result.get(0));
-                    } else {
-                        issueMetaView.platform().setValue(null);
-                    }
-                    onPlatformChanged();
-                } ));
+                .withError(throwable -> resultConsumer.accept(null))
+                .withSuccess(resultConsumer)
+        );
     }
 
     private void addImageToMessage(Integer strPosition, Attachment attach) {
@@ -346,7 +372,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void fillMetaView( CaseObjectMeta caseObjectMeta ) {
         issueMetaView.companyEnabled().setEnabled(true);
-        issueMetaView.productEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT));
+        issueMetaView.productEnabled().setEnabled(isProductEnabled());
         issueMetaView.caseSubscriptionContainer().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
         issueMetaView.stateEnabled().setEnabled(true);
         issueMetaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
@@ -358,17 +384,25 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setCaseMetaNotifiers(null);
 
-        issueMetaView.setProductTypes(En_DevUnitType.PRODUCT);
         issueMetaView.importance().setValue(caseObjectMeta.getImportance());
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
-        setCaseState(issueMetaView, caseObjectMeta.getStateId());
+        issueMetaView.state().setValue(currentCaseState);
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
         issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == caseObjectMeta.getStateId());
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
-        issueMetaView.setProduct(caseObjectMeta.getProduct());
+        issueMetaView.product().setValue(ProductShortView.fromProduct(caseObjectMeta.getProduct()));
+
+        if (isCustomerWithAutoOpenIssues(policyService.getProfile())) {
+            issueMetaView.setProductModel(customerProductModel);
+            requestPlatforms(caseObjectMeta.getInitiatorCompanyId(), this::updateProductsFilter);
+        } else {
+            issueMetaView.setProductModel(productModel);
+            issueMetaView.updateProductsByPlatformIds(null);
+        }
+
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
         fillManagerInfoContainer(issueMetaView, caseObjectMeta);
 
@@ -433,11 +467,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private CaseObjectMeta initCaseMeta() {
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta(new CaseObject());
-        if (policyService.getUserCompany().getAutoOpenIssue()) {
-            caseObjectMeta.setStateId(CrmConstants.State.OPENED);
-        } else {
-            caseObjectMeta.setStateId(CrmConstants.State.CREATED);
-        }
+        caseObjectMeta.setStateId(CrmConstants.State.CREATED);
         caseObjectMeta.setImportance(En_ImportanceLevel.BASIC);
         caseObjectMeta.setInitiatorCompany(policyService.getUserCompany());
 
@@ -470,11 +500,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         caseObject.setInitiatorCompany(issueMetaView.getCompany());
         caseObject.setInitiator(issueMetaView.getInitiator());
-        caseObject.setProduct(issueMetaView.getProduct());
+        caseObject.setProduct(DevUnit.fromProductShortView(issueMetaView.product().getValue()));
         caseObject.setManager(issueMetaView.getManager());
         caseObject.setNotifiers(caseMetaNotifiers);
         caseObject.setPlatformId(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId());
-        caseObject.setAttachmentExists(!CollectionUtils.isEmpty(view.attachmentsContainer().getAll()));
+        caseObject.setAttachmentExists(!isEmpty(view.attachmentsContainer().getAll()));
         caseObject.setAttachments(new ArrayList<>(view.attachmentsContainer().getAll()));
         caseObject.setManagerCompanyId(issueMetaView.getManagerCompany().getId());
 
@@ -508,6 +538,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean validateView() {
+        if (policyService.getUserCompany().getAutoOpenIssue() && isStateWithRestrictions(issueMetaView.state().getValue())) {
+            fireEvent(new NotifyEvents.Show("Вы не можете создать обращение с данным статусом", NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
 
         if (issueMetaView.getCompany() == null) {
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
@@ -519,7 +553,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return false;
         }
 
-        if (issueMetaView.getProduct() == null && isStateWithRestrictions(issueMetaView.state().getValue().getId())) {
+        if (issueMetaView.product().getValue() == null && isStateWithRestrictions(issueMetaView.state().getValue().getId())) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -545,7 +579,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
         this.subscriptionsListEmptyMessage = emptyMessage;
 
-        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
+        if (isEmpty(subscriptionsList)) return subscriptionsListEmptyMessage;
 
         List<String> subscriptionsBasedOnPrivacyList = subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
@@ -553,7 +587,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .distinct()
                 .collect( Collectors.toList());
 
-        return CollectionUtils.isEmpty(subscriptionsBasedOnPrivacyList)
+        return isEmpty(subscriptionsBasedOnPrivacyList)
                 ? subscriptionsListEmptyMessage
                 : String.join(", ", subscriptionsBasedOnPrivacyList);
     }
@@ -561,10 +595,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private List<CompanySubscription> filterByPlatformAndProduct(List<CompanySubscription> subscriptionsList) {
         this.subscriptionsList = subscriptionsList;
 
-        if (CollectionUtils.isEmpty(subscriptionsList)) return subscriptionsList;
+        if (isEmpty(subscriptionsList)) return subscriptionsList;
 
         return subscriptionsList.stream()
-                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(issueMetaView.getProduct() == null ? null : issueMetaView.getProduct().getId(), companySubscription.getProductId()))
+                .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(issueMetaView.product().getValue() == null ? null : issueMetaView.product().getValue().getId(), companySubscription.getProductId()))
                         && (companySubscription.getPlatformId() == null || Objects.equals(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(), companySubscription.getPlatformId())))
                 .collect( Collectors.toList());
     }
@@ -585,6 +619,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         }
 
         homeCompanyService.isHomeCompany(companyId, result -> issueMetaView.initiatorSelectorAllowAddNew(!result));
+    }
+
+    private boolean isStateWithRestrictions(CaseState caseState) {
+        return isStateWithRestrictions(caseState.getId());
     }
 
     private boolean isStateWithRestrictions(long caseStateId) {
@@ -621,12 +659,48 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
     }
 
-    private void setCaseState(AbstractIssueMetaView issueMetaView, Long stateId) {
-        if (stateId == CrmConstants.State.OPENED) {
-            issueMetaView.state().setValue(openCaseState);
+    private void setCurrentCaseState(CaseState currentCaseState) {
+        this.currentCaseState = currentCaseState;
+    }
+
+    private void updateProductsFilter(List<PlatformOption> platformOptions) {
+        issueMetaView.product().setValue(null);
+
+        if (isEmpty(platformOptions)) {
+            issueMetaView.updateProductsByPlatformIds(null);
+            issueMetaView.productEnabled().setEnabled(false);
         } else {
-            issueMetaView.state().setValue(createdCaseState);
+            issueMetaView.updateProductsByPlatformIds(platformOptions.stream().map(PlatformOption::getId).collect(Collectors.toSet()));
+            issueMetaView.productEnabled().setEnabled(isProductEnabled());
         }
+    }
+
+    private boolean hasSystemScopeForEdit() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
+    }
+
+    private boolean isProductEnabled() {
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRODUCT_EDIT)) {
+            return true;
+        }
+
+        if (policyService.getUserCompany().getAutoOpenIssue()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isCustomerWithAutoOpenIssues(Profile profile) {
+        if (hasSystemScopeForEdit()) {
+            return false;
+        }
+
+        if (!profile.getCompany().getAutoOpenIssue()) {
+            return false;
+        }
+
+        return true;
     }
 
     @Inject
@@ -659,6 +733,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     SiteFolderControllerAsync siteFolderController;
     @Inject
     CaseStateControllerAsync caseStateController;
+    @Inject
+    PersonControllerAsync personService;
+    @Inject
+    ProductModel productModel;
+    @Inject
+    CustomerProductModel customerProductModel;
 
     private boolean saving;
     private AppEvents.InitDetails init;
@@ -667,7 +747,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private CaseObjectCreateRequest createRequest;
     private List<ProjectSla> slaList = new ArrayList<>();
     private AbstractCaseTagListActivity tagListActivity;
-    private CaseState createdCaseState;
-    private CaseState openCaseState;
+    private CaseState currentCaseState;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 }
