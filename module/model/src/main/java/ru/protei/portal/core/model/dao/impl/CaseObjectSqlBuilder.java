@@ -85,13 +85,21 @@ public class CaseObjectSqlBuilder {
                     boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
 
                     if (!isWithoutManager) {
-                        condition.append(" and manager IN " + makeInArg(managerIds, false));
+                        condition
+                                .append(" and manager IN ")
+                                .append(makeInArg(managerIds, false));
                     } else if (managerIds.isEmpty()) {
-                        condition.append(" and (manager IS NULL or (SELECT person.common_manager FROM person WHERE person.id = manager) IS ?)");
-                        args.add(true);
+                        condition
+                                .append(" and (manager IS NULL or (SELECT person.common_manager FROM person WHERE person.id = manager) IS ")
+                                .append(Boolean.TRUE)
+                                .append(")");
                     } else {
-                        condition.append(" and (manager IN " + makeInArg(managerIds, false) + " or manager IS NULL or (SELECT person.common_manager FROM person WHERE person.id = manager) IS ?)");
-                        args.add(true);
+                        condition
+                                .append(" and (manager IN ")
+                                .append(makeInArg(managerIds, false))
+                                .append(" or manager IS NULL or (SELECT person.common_manager FROM person WHERE person.id = manager) IS ")
+                                .append(Boolean.TRUE)
+                                .append(")");
                     }
                 }
             }

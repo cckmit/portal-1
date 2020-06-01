@@ -238,8 +238,9 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             }
 
             if (Boolean.TRUE.equals(query.getCommonManager())) {
-                condition.append(" and common_manager is ?");
-                args.add(Boolean.TRUE);
+                condition
+                        .append(" and common_manager is ")
+                        .append(Boolean.TRUE);
             }
         });
     }
