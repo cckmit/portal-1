@@ -70,11 +70,6 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setCommonManagerCompanyId(Long id);
 
-    String HISTORY_VERSION = "historyVersion";
-    String CONFIGURATION = "configuration";
-    String CDR_DESCRIPTION = "cdr_description";
-    String INFO = "info";
-
     HasValue<PersonShortView> commonManager();
 
     HasVisibility commonManagerContainerVisibility();
@@ -94,4 +89,9 @@ public interface AbstractProductEditView extends IsWidget {
     void setDescriptionLabel(String label);
 
     void setChildrenContainerLabel(String label);
+
+    String HISTORY_VERSION = "historyVersion";
+    String CONFIGURATION = "configuration";
+    String CDR_DESCRIPTION = "cdr_description";
+    String INFO = "info";
 }
