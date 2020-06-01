@@ -40,8 +40,6 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setInfoPreviewAllowed(boolean isPreviewAllowed);
 
-    void setMutableState(En_DevUnitType value);
-
     void setTypeImage(String src, String title);
 
     void setTypeImageVisibility(boolean isVisible);
@@ -78,4 +76,22 @@ public interface AbstractProductEditView extends IsWidget {
     String INFO = "info";
 
     HasValue<PersonShortView> commonManager();
+
+    HasVisibility commonManagerContainerVisibility();
+
+    HasVisibility parentsContainerVisibility();
+
+    void makeOnlyChildrenContainerVisible(boolean onlyChildrenContainer);
+
+    void setParentTypes(En_DevUnitType... types);
+
+    void setChildrenTypes(En_DevUnitType... types);
+
+    void setParentsContainerLabel(String label);
+
+    void setNameLabel(String label);
+
+    void setDescriptionLabel(String label);
+
+    void setChildrenContainerLabel(String label);
 }

@@ -54,12 +54,12 @@
                             <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
                         </div>
 
-                        <div class="row">
+                        <g:HTMLPanel ui:field="commonManagerContainer" styleName="row">
                             <div class="form-group col-md-12">
                                 <label><ui:text from="{lang.productCommonManager}"/></label>
                                 <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}" fired="false"/>
                             </div>
-                        </div>
+                        </g:HTMLPanel>
 
                         <g:HTMLPanel ui:field="directionContainer" styleName="row">
                             <div class="form-group col-md-12">

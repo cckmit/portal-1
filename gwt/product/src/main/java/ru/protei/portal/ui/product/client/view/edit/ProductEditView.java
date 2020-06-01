@@ -128,45 +128,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void setMutableState(En_DevUnitType type) {
-        parentsContainerLabel.setInnerText(lang.belongsTo());
-
-        if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
-            nameLabel.setInnerText(lang.complexName());
-            descriptionLabel.setInnerText(lang.complexDescription());
-            childrenContainerLabel.setInnerText(lang.products());
-
-            parentsContainer.addStyleName("hide");
-            childrenContainer.removeStyleName("col-md-6");
-            childrenContainer.addStyleName("col-md-12");
-
-            children.setTypes(En_DevUnitType.PRODUCT);
-        } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
-            nameLabel.setInnerText(lang.productName());
-            descriptionLabel.setInnerText(lang.productDescription());
-            childrenContainerLabel.setInnerText(lang.components());
-
-            parentsContainer.removeStyleName("hide");
-            childrenContainer.removeStyleName("col-md-12");
-            childrenContainer.addStyleName("col-md-6");
-
-            parents.setTypes(En_DevUnitType.COMPLEX);
-            children.setTypes(En_DevUnitType.COMPONENT);
-        } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
-            nameLabel.setInnerText(lang.componentName());
-            descriptionLabel.setInnerText(lang.componentDescription());
-            childrenContainerLabel.setInnerText(lang.components());
-
-            parentsContainer.removeStyleName("hide");
-            childrenContainer.removeStyleName("col-md-12");
-            childrenContainer.addStyleName("col-md-6");
-
-            parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
-            children.setTypes(En_DevUnitType.COMPONENT);
-        }
-    }
-
-    @Override
     public HasValue<String> info() { return info; }
 
     @Override
@@ -235,6 +196,57 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         commonManager.updateCompanies(new HashSet<>(Collections.singleton(id)));
     }
 
+    @Override
+    public HasVisibility commonManagerContainerVisibility() {
+        return commonManagerContainer;
+    }
+
+    @Override
+    public HasVisibility parentsContainerVisibility() {
+        return parentsContainer;
+    }
+
+    @Override
+    public void makeOnlyChildrenContainerVisible(boolean isOnlyChildrenContainerVisible) {
+        if (isOnlyChildrenContainerVisible) {
+            childrenContainer.removeStyleName("col-md-6");
+            childrenContainer.addStyleName("col-md-12");
+        } else {
+            childrenContainer.removeStyleName("col-md-12");
+            childrenContainer.addStyleName("col-md-6");
+        }
+    }
+
+    @Override
+    public void setParentTypes(En_DevUnitType... types) {
+        parents.setTypes(types);
+    }
+
+    @Override
+    public void setChildrenTypes(En_DevUnitType... types) {
+        children.setTypes(types);
+    }
+
+    @Override
+    public void setParentsContainerLabel(String label) {
+        parentsContainerLabel.setInnerText(label);
+    }
+
+    @Override
+    public void setNameLabel(String label) {
+        nameLabel.setInnerText(label);
+    }
+
+    @Override
+    public void setDescriptionLabel(String label) {
+        descriptionLabel.setInnerText(label);
+    }
+
+    @Override
+    public void setChildrenContainerLabel(String label) {
+        childrenContainerLabel.setInnerText(label);
+    }
+
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
     {
@@ -281,6 +293,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         children.ensureDebugId(DebugIds.PRODUCT.INCLUDES);
         parents.ensureDebugId(DebugIds.PRODUCT.PRODUCTS);
         aliases.ensureDebugId(DebugIds.PRODUCT.ALIASES);
+
+        commonManager.ensureDebugId(DebugIds.PRODUCT.COMMON_MANAGER);
 
         tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT.TAB.HISTORY_VERSION);
         historyVersion.getElement().setId(DebugIds.PRODUCT.HISTORY_VERSION);
@@ -333,6 +347,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField(provided = true)
     PersonButtonSelector commonManager;
+    @UiField
+    HTMLPanel commonManagerContainer;
 
     @Inject
     @UiField
