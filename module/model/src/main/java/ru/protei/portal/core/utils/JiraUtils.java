@@ -119,6 +119,16 @@ public class JiraUtils {
         caseComment.setText(textWithReplacedImages);
     }
 
+    static public String getDescriptionWithReplacedImagesFromJira(String text, Collection<Attachment> attachments) {
+        return getTextWithReplacedImages(
+                text,
+                attachments,
+                (node, attachment) -> attachment.getFileName().equals(node.filename),
+                (node, attachment) -> makeJiraImageString(attachment.getExtLink(),
+                            attachment.getFileName() + (node.alt != null ? ", " + node.alt : ""))
+        );
+    }
+
     static public String getTextWithReplacedImagesToJira(String text, Collection<Attachment> attachments) {
         return getTextWithReplacedImages(
                 text,

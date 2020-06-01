@@ -130,12 +130,6 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     }
 
     private void generalUpdate(JiraEndpoint endpoint, AssembledCaseEvent event, Issue issue, IssueRestClient issueClient) {
-//        final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
-//
-//        issueInputParameters
-//                .setSummary(object.getName());
-//                .setDescription(object.getInfo());
-
         final CaseObject object = event.getCaseObject();
 
         if (event.isCaseStateChanged()) {
@@ -170,15 +164,6 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 logger.debug("unable to find jira-severity value for our level {}", object.getImportanceLevel());
             }
         }
-
-
-//        issueClient.updateIssue(issueData.key, issueInputParameters.build()).done(
-//                aVoid ->
-//                        logger.debug("ok, issue {} was handled, case {}", issueData.key, object.getId())
-//        )
-//        .fail(throwable ->
-//                logger.debug("unable to send changes for case {}, issue={}", object.getId(), issueData.key, throwable)
-//        ).claim();
     }
 
     private boolean isRequireGenericDataUpdate (AssembledCaseEvent event) {
