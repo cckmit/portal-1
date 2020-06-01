@@ -17,8 +17,6 @@ import static ru.protei.winter.jdbc.JdbcHelper.makeSqlStringCollection;
  */
 public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> implements PersonAbsenceDAO {
 
-    private static Calendar calendar = Calendar.getInstance();
-
     @Override
     public List<PersonAbsence> listByEmployeeAndDateBounds(Long absenceId, Date from, Date till) {
         return getListByCondition("person_absence.person_id = ? AND (" +

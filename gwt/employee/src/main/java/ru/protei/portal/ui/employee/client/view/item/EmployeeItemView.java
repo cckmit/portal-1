@@ -93,6 +93,10 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
+    @Override
+    public void setAbsent(boolean isAbsent) {
+        employeeContainer.addClassName("fired");
+    }
 
     @UiField
     Anchor name;

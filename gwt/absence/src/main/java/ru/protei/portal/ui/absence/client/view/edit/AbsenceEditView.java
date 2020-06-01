@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.absence.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -107,6 +106,6 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
 
     private AbstractAbsenceEditActivity activity;
 
-    private static AbsenceCreateViewUiBinder ourUiBinder = GWT.create(AbsenceCreateViewUiBinder.class);
-    interface AbsenceCreateViewUiBinder extends UiBinder<HTMLPanel, AbsenceEditView> {}
+    private static AbsenceEditViewUiBinder ourUiBinder = GWT.create(AbsenceEditViewUiBinder.class);
+    interface AbsenceEditViewUiBinder extends UiBinder<HTMLPanel, AbsenceEditView> {}
 }

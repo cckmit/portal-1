@@ -11,8 +11,8 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 
 /**
@@ -70,6 +67,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     UserLoginDAO userLoginDAO;
 
     @Autowired
+    PersonAbsenceDAO personAbsenceDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -105,7 +105,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
-            List<Long> employeeIds = results.stream().map(e -> e.getId()).collect(Collectors.toList());
+            Set<Long> employeeIds = results.stream().map(e -> e.getId()).collect(Collectors.toSet());
             List<WorkerEntryShortView> workerEntries = workerEntryShortViewDAO.listByPersonIds(employeeIds);
             results.forEach(employee ->
                 employee.setWorkerEntries(workerEntries.stream().filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId())).collect(Collectors.toList()))
@@ -123,14 +123,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
-            List<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toList());
+            Set<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toSet());
             List<WorkerEntryShortView> workerEntries = changeCompanyNameIfHidden(workerEntryShortViewDAO.listByPersonIds(employeeIds));
+            List<PersonAbsence> personAbsences = personAbsenceDAO.listByQuery(new AbsenceQuery(employeeIds, new Date(), new Date()));
 
-            results.forEach(employee ->
-                    employee.setWorkerEntries(workerEntries.stream()
-                            .filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId()))
-                            .collect(Collectors.toList()))
-            );
+            results.forEach(employee -> {
+                employee.setWorkerEntries(workerEntries.stream()
+                        .filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId()))
+                        .collect(Collectors.toList()));
+                employee.setAbsent(personAbsences.stream()
+                        .anyMatch(absence -> absence.getPersonId().equals(employee.getId())));
+            });
         }
         return ok(sr);
     }

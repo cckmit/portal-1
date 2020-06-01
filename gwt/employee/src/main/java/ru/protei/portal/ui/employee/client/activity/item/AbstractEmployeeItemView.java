@@ -19,7 +19,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhoto ( String photo );
 
-    void setDepartmentParent( String value);
+    void setDepartmentParent( String value );
 
     void setDepartment( String value );
 
@@ -29,5 +29,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setIP( String value );
 
-    void setFireDate (String value );
+    void setFireDate ( String value );
+
+    void setAbsent( boolean isAbsent );
 }
