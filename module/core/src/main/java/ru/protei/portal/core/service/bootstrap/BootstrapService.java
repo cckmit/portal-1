@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service.bootstrap;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,14 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.PhoneUtils;
+import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
 import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
@@ -29,8 +32,10 @@ import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.api.struct.Result.error;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -61,6 +66,114 @@ public class BootstrapService {
         //fillImportanceLevels();
         migrateIpReservation();
         updateManagerFiltersWithoutManagerCompany();
+        fillWithCrossLinkColumn();
+        transferYoutrackLinks();
+    }
+
+    private void fillWithCrossLinkColumn() {
+        log.debug("fillWithCrossLinkColumn(): start");
+
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setType(En_CaseLink.YT);
+        List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
+
+        query.setType(En_CaseLink.CRM);
+        List<CaseLink> crmLinks = caseLinkDAO.getListByQuery(query);
+
+        if (ytLinks.stream().anyMatch(CaseLink::getWithCrosslink) || crmLinks.stream().anyMatch(CaseLink::getWithCrosslink)){
+            log.debug("fillWithCrossLinkColumn(): column already filled");
+            return;
+        }
+
+        //Для CRM ссылок, если флаг еще не заполнен, находим обратную ссылку. Если она есть, то обеим ссылкам ставим true
+        for (CaseLink caseLink : crmLinks) {
+            try {
+                CaseLink crosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(caseLink.getRemoteId()), caseLink.getCaseId().toString());
+                if (crosslink != null) {
+                    caseLink.setWithCrosslink(true);
+                    crosslink.setWithCrosslink(true);
+
+                    caseLinkDAO.merge(caseLink);
+                    caseLinkDAO.merge(crosslink);
+
+                }
+                log.debug("fillWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
+            } catch (Exception e){
+                log.error("fillWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
+            }
+        }
+
+        //Для YT ссылок проверяем тим caseObject. Если CRM_SUPPORT, то ставим флаг true. Иначе - false
+        for (CaseLink caseLink : ytLinks) {
+            try {
+                    CaseObject caseObject = caseObjectDAO.get(caseLink.getCaseId());
+
+                    if (caseObject == null) {
+                        log.warn("fillWithCrossLinkColumn(): CaseObject is NULL from caseLink={}", caseLink);
+                        continue;
+                    }
+
+                    if(En_CaseType.CRM_SUPPORT.equals(caseObject.getType())) {
+                        caseLink.setWithCrosslink(true);
+                        caseLinkDAO.merge(caseLink);
+                    }
+                log.debug("fillWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
+            } catch (Exception e){
+                log.error("fillWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
+            }
+        }
+        log.debug("fillWithCrossLinkColumn(): finish");
+    }
+
+    private void transferYoutrackLinks() {
+        if (!config.data().integrationConfig().isYoutrackLinksMigrationEnabled() || !config.data().getCommonConfig().isProductionServer()){
+            return;
+        }
+
+        log.debug("transferYoutrackLinks(): start transfer");
+
+        CaseLinkQuery query = new CaseLinkQuery(null, null);
+        query.setType(En_CaseLink.YT);
+        query.setWithCrosslink(true);
+
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(query);
+
+        log.debug("transferYoutrackLinks(): quantity of YT case links={}", listByQuery.size());
+
+        Set<String> youtrackIssueIds = listByQuery.stream()
+                .map(CaseLink::getRemoteId)
+                .collect(Collectors.toSet());
+
+        log.debug("transferYoutrackLinks(): quantity of YT ids={}", youtrackIssueIds.size());
+
+        youtrackIssueIds.forEach(youtrackIssueId -> {
+            try {
+                youtrackService.setIssueCrmNumbers(youtrackIssueId, findAllCaseNumbersByYoutrackId(youtrackIssueId, true));
+                log.debug("transferYoutrackLinks(): SUCCESS transfer case links to youtrack id={}", youtrackIssueId);
+            } catch (Exception e){
+                log.error("transferYoutrackLinks(): ERROR transfer case links to youtrack id={}, error message={}", youtrackIssueId, e.getMessage());
+            }
+        });
+    }
+
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        caseLinkQuery.setWithCrosslink(withCrosslink);
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
+
+        return listByQuery.stream()
+                .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
+        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
+
+        return caseObjects.stream()
+                .map(CaseObject::getCaseNumber)
+                .collect(Collectors.toList());
     }
 
     private void fillImportanceLevels() {
@@ -476,6 +589,10 @@ if(true) return; //TODO remove
     SubnetDAO subnetDAO;
     @Autowired
     ReservedIpDAO reservedIpDAO;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+    @Autowired
+    YoutrackService youtrackService;
     @Autowired
     PortalConfig config;
 }

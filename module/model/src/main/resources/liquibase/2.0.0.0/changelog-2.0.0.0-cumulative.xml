@@ -16,4 +16,6 @@
   <include file="2020-05-18-add-customer_responsibility-state.xml" relativeToChangelogFile="true"/>
   <include file="2020-05-21-modify-case-state-table.xml" relativeToChangelogFile="true" />
   <include file="2020-05-21-add-states-to-employee_registration.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-30-add-with_crosslink-column-to-case_link-table.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

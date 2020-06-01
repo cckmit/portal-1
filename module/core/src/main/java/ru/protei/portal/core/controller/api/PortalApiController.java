@@ -25,8 +25,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -215,48 +214,46 @@ public class PortalApiController {
                         product, result ) );
     }
 
-
-    @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public Result<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                @PathVariable("caseNumber") Long caseNumber,
-                                                @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
-                .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
-                .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
-                        youtrackId, caseNumber, result ) );
-
-    }
-
-    @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public Result<Long> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                      @PathVariable("caseNumber") Long caseNumber,
-                                                      @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
-                .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
-                .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
-                        youtrackId, caseNumber, result ) );
-    }
-
-    @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
-    public Result<Long> changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
-                                                 @PathVariable("oldCaseNumber") Long oldCaseNumber,
-                                                 @PathVariable("newCaseNumber") Long newCaseNumber,
+    @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
+    public String updateYoutrackCrmNumbers( HttpServletRequest request, HttpServletResponse response,
+                                                 @RequestBody (required = false) String crmNumbers,
                                                  @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
-        // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
-                caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
-                .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
-                .ifError( result -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
-                        youtrackId, oldCaseNumber, result ) );
+        final String OK = "";
+        final String CRM_NUMBERS_NOT_FOUND = "Не найдены задачи с номерами: ";
+        final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
+        final String INCORRECT_PARAMS = "Некорректно заданы номера обращений. Номера обращений должны содержать только цифры";
+
+        log.info( "updateYoutrackCrmNumbers() crmNumbers={} youtrackId={}", crmNumbers, youtrackId );
+
+        List<Long> crmNumberList;
+
+        try {
+            crmNumberList = makeCrmNumberList(crmNumbers);
+
+            removeDuplicates(crmNumberList);
+
+            Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
+                    .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, crmNumberList ));
+
+            if (updateResult.isOk()) {
+                log.info( "updateYoutrackCrmNumbers(): OK" );
+                return OK;
+            }
+
+            log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
+                    youtrackId, crmNumbers, updateResult.getStatus() );
+
+            if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
+                return CRM_NUMBERS_NOT_FOUND + updateResult.getMessage();
+            }
+
+            return INTERNAL_ERROR;
+
+        } catch (NumberFormatException e) {
+            log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers", e);
+            return INCORRECT_PARAMS;
+        }
     }
 
     @PostMapping(value = "/comments")
@@ -375,5 +372,28 @@ public class PortalApiController {
         } catch (Throwable ex) {
             return null;
         }
+    }
+
+    private void removeDuplicates(List<Long> crmNumberList) {
+        Set<Long> uniqueNumbers = new LinkedHashSet<>(crmNumberList);
+        crmNumberList.clear();
+        crmNumberList.addAll(uniqueNumbers);
+    }
+
+    private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
+        if (crmNumbers == null) {
+            return new ArrayList<>();
+        }
+        crmNumbers = crmNumbers.replace("\n", "");
+
+        return Arrays.stream(crmNumbers.split(","))
+                .filter(Objects::nonNull)
+                .map(number -> {
+            if (number.startsWith("[")) {
+                return Long.parseLong(number.substring(1, number.indexOf("]")));
+            } else {
+                return Long.parseLong(number);
+            }
+        }).collect(Collectors.toList());
     }
 }

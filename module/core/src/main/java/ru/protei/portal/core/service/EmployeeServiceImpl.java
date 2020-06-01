@@ -490,7 +490,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
         } catch (UnknownHostException e) {
             log.warn("makeAudit(): fail to setCreatorIp, UnknownHostException");
-            auditObject.setCreatorIp("0.0.0.0");;
+            auditObject.setCreatorIp("0.0.0.0");
         }
         auditObject.setCreatorShortName(token.getPersonDisplayShortName());
         auditObject.setEntryInfo(object);

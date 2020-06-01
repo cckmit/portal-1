@@ -32,20 +32,7 @@ public interface YoutrackService {
 
     Result<YouTrackIssueInfo> getIssueInfo( String issueId );
 
-    /**
-     * Установить caseNumber только если номер crm в youtrack не равен caseNumber
-     * (Не затирать историю изменений youtrack)
-     */
-    Result<YouTrackIssueInfo> setIssueCrmNumberIfDifferent(String issueId, Long caseNumber);
-
-    /**
-     * Удалить caseNumber только если номер crm в youtrack равен caseNumber
-     * (Не затирать историю изменений youtrack)
-     */
-    Result<YouTrackIssueInfo> removeIssueCrmNumberIfSame(String youtrackId, Long caseNumber);
+    Result<YouTrackIssueInfo> setIssueCrmNumbers(String issueId, List<Long> caseNumbers);
 
     Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
-
-    @Async(BACKGROUND_TASKS)
-    void mergeYouTrackLinks( Long caseNumber, List<String> added, List<String> removed );
 }
