@@ -84,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        List<DevUnit> result = devUnitDAO.listByQuery(query);
+        Set<DevUnit> result = new HashSet<>(devUnitDAO.listByQuery(query));
 
         if (isEmpty(result)) {
             return ok(new ArrayList<>());
@@ -93,9 +93,7 @@ public class ProductServiceImpl implements ProductService {
         List<DevUnit> children = devUnitDAO.getChildren(toSet(result, DevUnit::getId));
         result.addAll(children);
 
-        List<ProductShortView> resultProductsOnly = toList(getProductsByType(result, filterType), DevUnit::toProductShortView);
-
-        return ok(resultProductsOnly);
+        return ok(toList(getProductsByType(result, filterType), DevUnit::toProductShortView));
     }
 
     @Override
@@ -255,7 +253,7 @@ public class ProductServiceImpl implements ProductService {
         return ok(checkUniqueProduct(name, type, excludeId));
     }
 
-    private List<DevUnit> getProductsByType(List<DevUnit> products, En_DevUnitType type) {
+    private Collection<DevUnit> getProductsByType(Collection<DevUnit> products, En_DevUnitType type) {
         if (type == null) {
             return emptyIfNull(products);
         }
