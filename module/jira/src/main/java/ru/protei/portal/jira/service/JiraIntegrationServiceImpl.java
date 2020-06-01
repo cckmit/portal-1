@@ -176,7 +176,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
         JiraExtAppData jiraExtAppData = JiraExtAppData.fromJSON(appData.getExtAppData());
 
-        List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = addAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
+        List<ru.protei.portal.core.model.ent.Attachment> processedAttachments = processAttachments(endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper);
         List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
         caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
 
@@ -194,7 +194,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         }
 
         AssembledCaseEvent caseEvent = generateUpdateEvent(oldCase, caseObj, authorId);
-        caseEvent.putAddedAttachments(addedAttachments);
+        caseEvent.putAddedAttachments(processedAttachments);
 
         caseEvent.putAddedComments(processComments(endpoint.getServerLogin(),
                 issue.getComments(), caseObj.getId(), personMapper, jiraExtAppData, caseAttachments));
@@ -225,10 +225,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObjectDAO.insertCase(caseObj);
 
         JiraExtAppData jiraExtAppData = new JiraExtAppData();
-        List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = addAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
-
-        List<ru.protei.portal.core.model.ent.Attachment> caseAttachments = attachmentDAO.getListByCaseId(caseObj.getId());
-        caseObj.setInfo(convertDescription(issue.getDescription(), caseAttachments));
+        List<ru.protei.portal.core.model.ent.Attachment> addedAttachments = processAttachments( endpoint, issue.getAttachments(), caseObj.getId(), jiraExtAppData, personMapper );
+        caseObj.setInfo(convertDescription(issue.getDescription(), addedAttachments));
         caseObjectDAO.merge(caseObj);
 
         persistStateComment(authorId, caseObj.getId(), caseObj.getState());
@@ -315,11 +313,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return ourCaseComments;
     }
 
-    private List<ru.protei.portal.core.model.ent.Attachment> addAttachments(JiraEndpoint endpoint,
-                                                                            Iterable<Attachment> attachments,
-                                                                            Long caseObjectId,
-                                                                            JiraExtAppData state,
-                                                                            PersonMapper personMapper) {
+    private List<ru.protei.portal.core.model.ent.Attachment> processAttachments(JiraEndpoint endpoint,
+                                                                                Iterable<Attachment> attachments,
+                                                                                Long caseObjectId,
+                                                                                JiraExtAppData state,
+                                                                                PersonMapper personMapper) {
         if (attachments == null) {
             logger.debug("issue caseObjectId={} has no attachments", caseObjectId);
             return Collections.emptyList();
