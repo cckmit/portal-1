@@ -87,7 +87,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             companyIds = companies.stream().map(EntityOption::getId).collect(Collectors.toSet());
         }
 
-        personModel.updateCompanies(this, companyIds, null);
+        personModel.updateCompanies(this, companyIds, null, false);
 
     }
 

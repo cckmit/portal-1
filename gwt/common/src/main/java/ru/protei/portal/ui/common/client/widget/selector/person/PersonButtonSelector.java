@@ -43,6 +43,10 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 
     public void setFired ( boolean value ) { this.fired = value; }
 
+    public void setCommonManager(boolean isCommonManager) {
+        this.isCommonManager = isCommonManager;
+    }
+
     @Override
     public void refresh() {
         PersonShortView value = getValue();
@@ -70,7 +74,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     public void updateCompanies(Set<Long> companyIds) {
         this.companyIds = companyIds;
         if(model!=null){
-            model.updateCompanies(this, companyIds, fired);
+            model.updateCompanies(this, companyIds, fired, isCommonManager);
         }
     }
 
@@ -80,6 +84,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     private PersonModel model;
 
     private boolean fired = false;
+    private boolean isCommonManager = false;
     private Set<Long> companyIds;
 
     private static final Logger log = Logger.getLogger( PersonButtonSelector.class.getName() );

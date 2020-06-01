@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -228,7 +229,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.aliases().setValue(product.getAliases());
         view.aliasesVisibility().setVisible(currType.equals(En_DevUnitType.PRODUCT));
 
-        view.setCommonManagerCompanyId(policyService.getUserCompany().getId());
+        view.setCommonManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
         view.commonManager().setValue(devUnit.getCommonManagerId() == null ? null : new PersonShortView(devUnit.getCommonManagerName(), devUnit.getCommonManagerId()));
     }
 
