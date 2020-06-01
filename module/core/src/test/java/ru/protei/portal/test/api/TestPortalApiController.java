@@ -372,8 +372,9 @@ public class TestPortalApiController extends BaseServiceTest {
     @Transactional
     public void setYoutrackIdToDuplicatedCrmNumbers() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
+        final int UNIQUE_NUMBERS_COUNT = 3;
 
-        List<Long> caseNumbersCreated = fillAndCreateCaseObjects(3);
+        List<Long> caseNumbersCreated = fillAndCreateCaseObjects(UNIQUE_NUMBERS_COUNT);
 
         String numbers = caseNumbersCreated.stream()
                 .map(Object::toString)
@@ -384,11 +385,11 @@ public class TestPortalApiController extends BaseServiceTest {
         //Устанавливаем 4 номера (один - дубликат)
         ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
 
-        Assert.assertTrue("Error message must contains duplicate numbers", accept.andReturn().getResponse().getContentAsString().contains(caseNumbersCreated.get(0).toString()));
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
         List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
 
-        Assert.assertTrue("List with duplicate are added!", caseNumbersFromDB.isEmpty());
+        Assert.assertTrue("List must contain only unique numbers", compareLists(caseNumbersCreated, caseNumbersFromDB));
 
         removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
     }
