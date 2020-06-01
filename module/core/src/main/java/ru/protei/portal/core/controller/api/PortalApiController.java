@@ -220,6 +220,11 @@ public class PortalApiController {
                                                  @RequestBody (required = false) String crmNumbers,
                                                  @PathVariable("youtrackId") String youtrackId ) {
 
+        final String OK = "";
+        final String CRM_NUMBERS_NOT_FOUND = "Не найдены задачи с номерами: ";
+        final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
+        final String INCORRECT_PARAMS = "Некорректно заданы номера обращений. Номера обращений должны содержать только цифры";
+
         log.info( "updateYoutrackCrmNumbers() crmNumbers={} youtrackId={}", crmNumbers, youtrackId );
 
         List<Long> crmNumberList;
@@ -234,21 +239,21 @@ public class PortalApiController {
 
             if (updateResult.isOk()) {
                 log.info( "updateYoutrackCrmNumbers(): OK" );
-                return "";
+                return OK;
             }
 
             log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
                     youtrackId, crmNumbers, updateResult.getStatus() );
 
             if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
-                return "Не найдены задачи с номерами: " + updateResult.getMessage();
+                return CRM_NUMBERS_NOT_FOUND + updateResult.getMessage();
             }
 
-            return "Внутренняя ошибка на портале";
+            return INTERNAL_ERROR;
 
         } catch (NumberFormatException e) {
             log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers", e);
-            return "Некорректно заданы номера обращений. Номера обращений должны содержать только цифры";
+            return INCORRECT_PARAMS;
         }
     }
 
@@ -381,16 +386,9 @@ public class PortalApiController {
     }
 
     private void removeDuplicates(List<Long> crmNumberList) {
-        List<Long> withoutDuplicates = new ArrayList<>();
-
-        crmNumberList.forEach(number -> {
-            if (!withoutDuplicates.contains(number)){
-                withoutDuplicates.add(number);
-            }
-        });
-
+        Set<Long> uniqueNumbers = new LinkedHashSet<>(crmNumberList);
         crmNumberList.clear();
-        crmNumberList.addAll(withoutDuplicates);
+        crmNumberList.addAll(uniqueNumbers);
     }
 
     private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
@@ -399,11 +397,9 @@ public class PortalApiController {
         }
         crmNumbers = crmNumbers.replace("\n", "");
 
-        List<String> numberList = Arrays.asList(crmNumbers.split(","));
-
-        numberList.removeIf(Objects::isNull);
-
-        return numberList.stream().map(number -> {
+        return Arrays.stream(crmNumbers.split(","))
+                .filter(Objects::nonNull)
+                .map(number -> {
             if (number.startsWith("[")) {
                 return Long.parseLong(number.substring(1, number.indexOf("]")));
             } else {

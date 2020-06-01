@@ -292,7 +292,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         cf.value = textFieldValue;
         textFieldValue.text = "";
 
-        if (caseNumbersFromDB == null || caseNumbersFromDB.isEmpty()) {
+        if (CollectionUtils.isEmpty(caseNumbersFromDB)) {
             return cf;
         }
 
@@ -324,25 +324,20 @@ public class YoutrackServiceImpl implements YoutrackService {
             return new ArrayList<>();
         }
 
-        List<String> numberList = Arrays.asList(crmNumbers.split("\n"));
-
-        numberList.removeIf(Objects::isNull);
-
-        List<Long> parsedList;
         try {
-            parsedList = numberList.stream().map(number -> {
-                if (number.startsWith("[")) {
-                    return Long.parseLong(number.substring(1, number.indexOf("]")));
-                } else {
-                    return Long.parseLong(number);
-                }
-            }).collect(Collectors.toList());
+            return Arrays.stream(crmNumbers.split("\n"))
+                    .filter(Objects::nonNull)
+                    .map(number -> {
+                        if (number.startsWith("[")) {
+                            return Long.parseLong(number.substring(1, number.indexOf("]")));
+                        } else {
+                            return Long.parseLong(number);
+                        }
+                    }).collect(Collectors.toList());
         } catch (NumberFormatException e){
             log.warn("makeCaseNumberList(): Fail to parse YT crmNumbers={}", crmNumbers);
             return new ArrayList<>();
         }
-
-        return parsedList;
     }
 
     private YtIssueCustomField makeRequestTypeCustomField(){

@@ -394,44 +394,6 @@ public class TestPortalApiController extends BaseServiceTest {
         removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
     }
 
-    private boolean compareLists (List<Long> list1, List<Long> list2){
-        Collections.sort(list1);
-        Collections.sort(list2);
-        return list1.equals(list2);
-    }
-
-    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId) {
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setRemoteId( youtrackId );
-        caseLinkQuery.setType( En_CaseLink.YT );
-        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
-
-        return listByQuery.stream()
-                .map(CaseLink::getCaseId)
-                .map(caseObjectDAO::getCaseNumberById)
-                .collect(Collectors.toList());
-    }
-
-    private void removeCaseObjectsAndCaseLinks(List<Long> caseIds) {
-        caseIds.forEach(caseId -> {
-        CaseLinkQuery query = new CaseLinkQuery(caseId, false);
-        caseLinkDAO.getListByQuery(query)
-                .forEach(caseLink -> caseLinkDAO.remove(caseLink));
-        caseCommentDAO.getCaseComments(new CaseCommentQuery(caseId))
-                .forEach(caseComment -> caseCommentDAO.remove(caseComment));
-        caseObjectDAO.removeByKey(caseId);
-        });
-    }
-
-    private Long getCaseNumberFromResult (ResultActions resultActions) throws UnsupportedEncodingException {
-        String json = resultActions.andReturn().getResponse().getContentAsString();
-
-        int startIndex = json.indexOf("caseNumber")+12;
-        int endIndex = json.indexOf(",", startIndex);
-
-        return Long.parseLong(json.substring(startIndex, endIndex));
-    }
-
     @Test
     @Transactional
     public void getCaseCommentsListByCaseIdEmptyResult() throws Exception {
@@ -618,6 +580,44 @@ public class TestPortalApiController extends BaseServiceTest {
 
         caseTagDAO.removeByKey(persistedTagId);
         personDAO.removeByKey(person.getId());
+    }
+
+    private boolean compareLists (List<Long> list1, List<Long> list2){
+        Collections.sort(list1);
+        Collections.sort(list2);
+        return list1.equals(list2);
+    }
+
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
+
+        return listByQuery.stream()
+                .map(CaseLink::getCaseId)
+                .map(caseObjectDAO::getCaseNumberById)
+                .collect(Collectors.toList());
+    }
+
+    private void removeCaseObjectsAndCaseLinks(List<Long> caseIds) {
+        caseIds.forEach(caseId -> {
+            CaseLinkQuery query = new CaseLinkQuery(caseId, false);
+            caseLinkDAO.getListByQuery(query)
+                    .forEach(caseLink -> caseLinkDAO.remove(caseLink));
+            caseCommentDAO.getCaseComments(new CaseCommentQuery(caseId))
+                    .forEach(caseComment -> caseCommentDAO.remove(caseComment));
+            caseObjectDAO.removeByKey(caseId);
+        });
+    }
+
+    private Long getCaseNumberFromResult (ResultActions resultActions) throws UnsupportedEncodingException {
+        String json = resultActions.andReturn().getResponse().getContentAsString();
+
+        int startIndex = json.indexOf("caseNumber")+12;
+        int endIndex = json.indexOf(",", startIndex);
+
+        return Long.parseLong(json.substring(startIndex, endIndex));
     }
 
     private void setThreadUserLogin(UserLogin userLogin) {

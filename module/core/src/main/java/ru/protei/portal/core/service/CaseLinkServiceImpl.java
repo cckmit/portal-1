@@ -332,12 +332,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         auditObject.setCreated( new Date() );
         auditObject.setType(type);
         auditObject.setCreatorId( token.getPersonId() );
-        try {
-            auditObject.setCreatorIp(Inet4Address.getLocalHost ().getHostAddress());
-        } catch (UnknownHostException e) {
-            log.warn("makeAudit(): fail to setCreatorIp, UnknownHostException");
-            auditObject.setCreatorIp("0.0.0.0");
-        }
+        auditObject.setCreatorIp(token.getIp());
         auditObject.setCreatorShortName(token.getPersonDisplayShortName());
         auditObject.setEntryInfo(object);
 
@@ -381,22 +376,22 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private Result<List<Long>> getCaseIdsByCaseNumbers(List<Long> caseNumberList) {
         List<Long> caseIds = new ArrayList<>();
-
-        String resultErrorMessage = "";
+        List<Long> errorCaseId = new ArrayList<>();
 
         for (Long number : caseNumberList) {
             log.debug("getCaseIdsByCaseNumbers(): case number={}", number);
             Long caseId = caseObjectDAO.getCaseIdByNumber(number);
             log.debug("getCaseIdsByCaseNumbers(): case id={}", caseId);
-            resultErrorMessage += caseId == null ? number + "," : "";
+            if (caseId == null) {
+                errorCaseId.add(number);
+            }
             caseIds.add(caseId);
         }
 
-        if (resultErrorMessage.endsWith(",")) {
-            resultErrorMessage = resultErrorMessage.substring(0, resultErrorMessage.length() - 1);
-        }
-
-        return resultErrorMessage.isEmpty() ? ok(caseIds) : error(En_ResultStatus.NOT_FOUND,  resultErrorMessage);
+        return errorCaseId.isEmpty() ? ok(caseIds) :
+                error(En_ResultStatus.NOT_FOUND,  errorCaseId.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(",")));
     }
 
 
