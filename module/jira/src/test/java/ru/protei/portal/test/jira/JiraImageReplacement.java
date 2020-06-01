@@ -7,8 +7,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 
 import java.util.*;
 
-import static ru.protei.portal.core.utils.JiraUtils.getTextWithReplacedImagesToJira;
-import static ru.protei.portal.core.utils.JiraUtils.setTextWithReplacedImagesFromJira;
+import static ru.protei.portal.core.utils.JiraUtils.*;
 
 public class JiraImageReplacement {
 
@@ -33,6 +32,24 @@ public class JiraImageReplacement {
                         "\n" +
                         "ААА !!! ААА",
                 textWithReplacedImages);
+    }
+
+    @Test
+    public void fromJiraDescription() {
+        String str = "Description " +
+                "!min_creepy_duck.jpeg!\n" +
+                "ААА !!! ААА";
+
+        Attachment a = new Attachment();
+        a.setFileName("min_creepy_duck.jpeg");
+        a.setExtLink("20200416/11777");
+
+        String descriptionWithReplacedImagesFromJira = getDescriptionWithReplacedImagesFromJira(str, Arrays.asList(a));
+
+        Assert.assertEquals(
+                "Description !20200416/11777|alt=min_creepy_duck.jpeg!\n" +
+                        "ААА !!! ААА",
+                descriptionWithReplacedImagesFromJira);
     }
 
     @Test
