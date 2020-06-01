@@ -8,6 +8,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import ru.protei.portal.core.model.struct.FileStream;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -49,37 +51,41 @@ public class FileStorage {
 
         logger.debug("save: fileName=" + fileName);
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()){
-
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             String currentYearMonth = YearMonth.now().toString();
-            String filePath = currentYearMonth +"/"+ fileName;
+            String filePath = currentYearMonth + "/" + fileName;
             HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, fileStream);
 
-            CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);
-            logFileCreationResponse(fileName, "1", fileCreationResponse);
-            int fileCreationStatus = getStatus(fileCreationResponse);
+            HttpUriRequest buildCheckFolderExistsRequest = buildCheckFolderExists(currentYearMonth);
+            int checkFolderExistsStatus = getStatus(httpClient.execute(buildCheckFolderExistsRequest));
 
-            if(fileCreationStatus == HttpStatus.NOT_FOUND.value()){ //folder not exists
+            if (checkFolderExistsStatus == HttpStatus.NOT_FOUND.value()) {
                 HttpUriRequest folderCreationRequest = buildFolderCreationRequest(currentYearMonth);
                 int folderCreationStatus = getStatus(httpClient.execute(folderCreationRequest));
-                logger.debug("save: fileName=" + fileName + ", folderCreationRequest, statusCode=" + folderCreationStatus);
 
-                if (folderCreationStatus == HttpStatus.CREATED.value()) {
-                    fileCreationResponse = httpClient.execute(fileCreationRequest);
-                    logFileCreationResponse(fileName, "2", fileCreationResponse);
-                    fileCreationStatus = getStatus(fileCreationResponse);
-                } else {
+                if (folderCreationStatus != HttpStatus.CREATED.value()) {
                     throw new IOException("Unable create folder on fileStorage. status code " + folderCreationStatus);
                 }
             }
 
-            if(fileCreationStatus == HttpStatus.CREATED.value())
+            CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);
+            logFileCreationResponse(fileName, fileCreationResponse);
+            int fileCreationStatus = getStatus(fileCreationResponse);
+
+            if (fileCreationStatus == HttpStatus.CREATED.value()) {
                 return filePath;
-            else
-                throw new IOException("Unable upload file to fileStorage. status code "+ fileCreationStatus);
+            } else {
+                throw new IOException("Unable upload file to fileStorage. status code " + fileCreationStatus);
+            }
         }
     }
 
+    private HttpUriRequest buildCheckFolderExists(String folderName) {
+        RequestBuilder request = RequestBuilder.create("GET");
+        request.setUri(storagePath + folderName);
+        request.addHeader("Authorization", "Basic " + authentication);
+        return request.build();
+    }
 
     private HttpUriRequest buildFileCreationRequest(String filePath, FileStream fileStream) throws IOException {
         RequestBuilder request = RequestBuilder.create("PUT");
@@ -174,27 +180,15 @@ public class FileStorage {
         );
     }
 
-    private String encodePath(String path) throws UnsupportedEncodingException{
-        final Base64.Encoder enc = Base64.getUrlEncoder();
-        int lastDotPos = path.lastIndexOf('.');
-        int firstUnderscorePos = path.indexOf('_');
-        if (lastDotPos == -1) {
-            lastDotPos = path.length();
-        }
-        return path.substring(0, firstUnderscorePos + 1)
-                + enc.encodeToString(path.substring(firstUnderscorePos + 1, lastDotPos).getBytes(StandardCharsets.UTF_8))
-                + path.substring(lastDotPos);
-    }
-
     private int getStatus(HttpResponse response){
         return response.getStatusLine().getStatusCode();
     }
 
-    private void logFileCreationResponse(String fileName, String attempt, CloseableHttpResponse fileCreationResponse) {
+    private void logFileCreationResponse(String fileName, CloseableHttpResponse fileCreationResponse) {
         StringBuilder sb = new StringBuilder();
         int statusCode = getStatus(fileCreationResponse);
         sb.append("save: fileName=").append(fileName);
-        sb.append(", fileCreationResponse#").append(attempt);
+        sb.append(", fileCreationResponse");
         sb.append(", statusCode=").append(statusCode);
         if (statusCode != HttpStatus.CREATED.value()) {
             sb.append(", headers={");
