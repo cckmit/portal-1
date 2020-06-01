@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
@@ -40,8 +41,7 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
             }
 
             if (query.getEmployeeIds() != null) {
-                condition.append(" and person_absence.person_id in ")
-                        .append(makeSqlStringCollection(query.getEmployeeIds(), args, null));
+                condition.append(" and person_absence.person_id in " + HelperFunc.makeInArg(query.getEmployeeIds(), false));
             }
 
             if (query.getFromTime() != null) {
@@ -52,6 +52,7 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
 
             if (query.getTillTime() != null) {
                 condition.append(" and (person_absence.till_time <= ? or person_absence.from_time <= ?)");
+                args.add(query.getTillTime());
                 args.add(query.getTillTime());
             }
         });

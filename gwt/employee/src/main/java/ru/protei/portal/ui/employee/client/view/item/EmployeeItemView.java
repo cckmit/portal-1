@@ -95,7 +95,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @Override
     public void setAbsent(boolean isAbsent) {
-        employeeContainer.addClassName("fired");
+        if (isAbsent) {
+            employeeContainer.addClassName("fired");
+        }
     }
 
     @UiField
