@@ -72,29 +72,39 @@ public class BootstrapService {
     private void fillWithCrossLinkColumn() {
         log.debug("fillWithCrossLinkColumn(): start");
 
-        List<CaseLink> allCaseLinks = caseLinkDAO.getAll();
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setType(En_CaseLink.YT);
+        List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
 
-        if (allCaseLinks.stream().anyMatch(CaseLink::getWithCrosslink)){
+        query.setType(En_CaseLink.CRM);
+        List<CaseLink> crmLinks = caseLinkDAO.getListByQuery(query);
+
+        if (ytLinks.stream().anyMatch(CaseLink::getWithCrosslink) || crmLinks.stream().anyMatch(CaseLink::getWithCrosslink)){
             log.debug("fillWithCrossLinkColumn(): column already filled");
             return;
         }
 
-        for (CaseLink caseLink : allCaseLinks) {
-
+        //Для CRM ссылок, если флаг еще не заполнен, находим обратную ссылку. Если она есть, то обеим ссылкам ставим true
+        for (CaseLink caseLink : crmLinks) {
             try {
-                //Для CRM ссылок, если флаг еще не заполнен, находим обратную ссылку. Если она есть, то обеим ссылкам ставим true
-                if (caseLink.getType().equals(En_CaseLink.CRM) && !caseLink.getWithCrosslink()) {
-                    CaseLink crosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(caseLink.getRemoteId()), caseLink.getCaseId().toString());
-                    if (crosslink != null) {
-                        caseLink.setWithCrosslink(true);
-                        crosslink.setWithCrosslink(true);
+                CaseLink crosslink = caseLinkDAO.getCrmLink(En_CaseLink.CRM, NumberUtils.toLong(caseLink.getRemoteId()), caseLink.getCaseId().toString());
+                if (crosslink != null) {
+                    caseLink.setWithCrosslink(true);
+                    crosslink.setWithCrosslink(true);
 
-                        caseLinkDAO.merge(caseLink);
-                        caseLinkDAO.merge(crosslink);
+                    caseLinkDAO.merge(caseLink);
+                    caseLinkDAO.merge(crosslink);
 
-                    }
-                } else {
-                    //Для YT ссылок проверяем тим caseObject. Если CRM_SUPPORT, то ставим флаг true. Иначе - false
+                }
+                log.debug("fillWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
+            } catch (Exception e){
+                log.error("fillWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
+            }
+        }
+
+        //Для YT ссылок проверяем тим caseObject. Если CRM_SUPPORT, то ставим флаг true. Иначе - false
+        for (CaseLink caseLink : ytLinks) {
+            try {
                     CaseObject caseObject = caseObjectDAO.get(caseLink.getCaseId());
 
                     if (caseObject == null) {
@@ -106,10 +116,9 @@ public class BootstrapService {
                         caseLink.setWithCrosslink(true);
                         caseLinkDAO.merge(caseLink);
                     }
-                }
-                log.debug("fillWithCrossLinkColumn(): successfully updated caselink={}", caseLink);
+                log.debug("fillWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
             } catch (Exception e){
-                log.error("fillWithCrossLinkColumn(): failed to update caselink={}, errorMessage={}", caseLink, e.getMessage(), e);
+                log.error("fillWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
             }
         }
         log.debug("fillWithCrossLinkColumn(): finish");
