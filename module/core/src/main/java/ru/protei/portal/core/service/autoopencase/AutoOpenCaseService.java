@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * Сервис выполняющий автоокрытие помеченных кейсов через определенное время
@@ -26,30 +27,35 @@ public class AutoOpenCaseService {
     public void onStartup() {
         // проверям в базе созданные кейсы, которые надо открыть - ставим задачи на открытие через близашайшее время (до 1-2 минуты)
         List<Long> caseIdToAutoOpen = caseObjectDAO.getCaseIdToAutoOpen();
-        caseIdToAutoOpen.forEach(caseId -> createTask(caseId, random, 0 * 60 * 1000));
-
+        caseIdToAutoOpen.forEach(caseId -> createTask(caseId, random, MINUTE));
     }
 
     public void processNewCreatedCaseToAutoOpen(Long caseId, Long companyId) {
         // при создании кейса ставим задачу на открытие через некоторое время (4-5 минут)
-        // компания берется из селектора, там нет ничего кроме ид и имени
         Company company = companyDAO.get(companyId);
         if (company.getAutoOpenIssue() != null && company.getAutoOpenIssue()) {
-            createTask(caseId, random, 0 * 60 * 1000);
+            createTask(caseId, random, 4 * MINUTE);
         }
     }
 
-    public void createTask(Long caseId, Random random, int timeoutOffset) {
-        int timeout = timeoutOffset + random.nextInt(60 * 1000);
+
+    public ScheduledFuture<?> createTask(Long caseId, Random random, int timeoutOffset) {
+        int timeout = timeoutOffset + random.nextInt(60 ) * SEC;
         log.info("schedule case id = {}, timeout = {}", caseId, timeout);
-        scheduler.schedule(() -> runTask(caseId), new Date(new Date().getTime() + timeout));
+        return scheduler.schedule(() -> runTask(caseId), new Date(new Date().getTime() + timeout));
     }
 
-    private void runTask(Long caseId) {
+    public void runTask(Long caseId) {
         log.info("Process case id = {}", caseId);
+
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(caseId);
         if (caseMeta.getStateId() != CREATED_STATE) {
             log.info("Already opened case id = {}", caseId);
+            return;
+        }
+
+        if (caseMeta.getManager() != null) {
+            log.info("Already set manager case id = {}", caseId);
             return;
         }
 
@@ -58,21 +64,18 @@ public class AutoOpenCaseService {
             return;
         }
 
-        caseMeta.setStateId(OPEN_STATE);
-        if (caseMeta.getManager() == null) {
-            Person commonManager = personDAO.getCommonManagerByProductId(caseMeta.getProductId());
-
-            if (commonManager == null) {
-                log.error("No set common manager, case id = {}", caseId);
-                return;
-            } else {
-                caseMeta.setManager(commonManager);
-                caseService.updateCaseObjectMeta(createToken(commonManager), caseMeta);
-                log.info("Open case and set manager, caseId = {}", caseId);
-                log.info("End process case id = {}", caseId);
-                return;
-            }
+        Person commonManager = personDAO.getCommonManagerByProductId(caseMeta.getProductId());
+        if (commonManager == null) {
+            log.error("No set common manager, case id = {}", caseId);
+            return;
         }
+
+        caseMeta.setManager(commonManager);
+        caseMeta.setStateId(OPEN_STATE);
+
+        caseService.updateCaseObjectMeta(createToken(commonManager), caseMeta);
+
+        log.info("End process case id = {}, manager id = {}", caseId, commonManager.getId());
     }
 
     private AuthToken createToken(Person commonManager) {
@@ -118,6 +121,9 @@ public class AutoOpenCaseService {
 
     Random random = new Random();
 
-    static public final Long CREATED_STATE = 1L;
-    static public final Long OPEN_STATE = 2L;
+    static public final long CREATED_STATE = 1L;
+    static public final long OPEN_STATE = 2L;
+
+    static public final int SEC = 1000;
+    static public final int MINUTE = 60 * SEC;
 }
