@@ -18,6 +18,8 @@ public class PersonQuery extends BaseQuery {
 
     private Boolean deleted;
 
+    private Boolean isCommonManager;
+
     public PersonQuery() {
         super( "", En_SortField.person_full_name, En_SortDir.ASC );
     }
@@ -27,16 +29,17 @@ public class PersonQuery extends BaseQuery {
     }
 
     public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this(companyIds, onlyPeople, fired, null, searchString, sortField, sortDir);
+        this(companyIds, onlyPeople, fired, null, false, searchString, sortField, sortDir);
     }
 
-    public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, Boolean deleted, Boolean isCommonManager, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
         this.companyIds = companyIds;
         this.onlyPeople = onlyPeople;
         this.limit = 1000;
         this.fired = fired;
         this.deleted = deleted;
+        this.isCommonManager = isCommonManager;
     }
 
     public Set<Long> getCompanyIds() {
@@ -71,6 +74,14 @@ public class PersonQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
+    public Boolean getCommonManager() {
+        return isCommonManager;
+    }
+
+    public void setCommonManager(Boolean commonManager) {
+        isCommonManager = commonManager;
+    }
+
     private static Set<Long> toSet(Long companyId) {
         if (companyId == null) {
             return null;
@@ -80,14 +91,19 @@ public class PersonQuery extends BaseQuery {
         return companyIds;
     }
 
-
     @Override
     public String toString() {
         return "PersonQuery{" +
-                "onlyPeople=" + onlyPeople +
+                "companyIds=" + companyIds +
+                ", onlyPeople=" + onlyPeople +
                 ", fired=" + fired +
                 ", deleted=" + deleted +
-                ", companyIds=" + companyIds +
+                ", isCommonManager=" + isCommonManager +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 '}';
     }
 }

@@ -30,8 +30,8 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
         myId = event.profile.getId();
     }
 
-    public void updateCompanies( Refreshable selector, Set<Long> companyIds, Boolean fired) {
-        PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+    public void updateCompanies(Refreshable selector, Set<Long> companyIds, Boolean fired, Boolean isCommonManager) {
+        PersonQuery query = new PersonQuery(companyIds, null, fired, false, isCommonManager, null, En_SortField.person_full_name, En_SortDir.ASC);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 
             @Override

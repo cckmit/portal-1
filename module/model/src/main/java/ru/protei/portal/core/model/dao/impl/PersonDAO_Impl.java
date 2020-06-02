@@ -236,6 +236,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 condition.append(" and person.sex != ?");
                 args.add(En_Gender.UNDEFINED.getCode());
             }
+
+            if (Boolean.TRUE.equals(query.getCommonManager())) {
+                condition
+                        .append(" and common_manager is ")
+                        .append(Boolean.TRUE);
+            }
         });
     }
 
