@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -205,6 +206,8 @@ public class CaseServiceImpl implements CaseService {
             Result currentResult = caseLinkService.createLink(token, caseLink, true);
             if (currentResult.isError()) addLinksResult = currentResult;
         }
+
+        autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompany().getId());
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
@@ -917,6 +920,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
+    AutoOpenCaseService autoOpenCaseService;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

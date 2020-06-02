@@ -140,6 +140,15 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return getByCondition("CASE_NAME like ?", "%" + name + "%");
     }
 
+    @Override
+    public List<Long> getCaseIdToAutoOpen() {
+        String sql = "SELECT case_object.id " +
+                "FROM " + getTableName() + " " +
+                "WHERE case_object.STATE = 1" +
+                "  and (SELECT company.auto_open_issue from company where company.id = case_object.initiator_company)";
+        return jdbcTemplate.queryForList(sql, Long.class);
+    }
+
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition (CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);
