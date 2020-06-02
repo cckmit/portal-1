@@ -2613,4 +2613,10 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationEditHeader();
 
     String reservedIpAvailableCount();
+
+    String reloadPageAfterUpdateHeader();
+
+    String reloadPageAfterUpdateMessage();
+
+    String reloadPageAfterUpdateDoReloadPage();
 }
