@@ -17,5 +17,6 @@
   <include file="2020-05-21-modify-case-state-table.xml" relativeToChangelogFile="true" />
   <include file="2020-05-21-add-states-to-employee_registration.xml" relativeToChangelogFile="true" />
   <include file="2020-05-30-add-with_crosslink-column-to-case_link-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-02-add-plan-and-history-tables.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
