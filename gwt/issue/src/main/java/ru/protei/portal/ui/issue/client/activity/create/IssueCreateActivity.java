@@ -194,7 +194,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onProductChanged() {
-        if (!hasSystemScopeForEdit() && issueMetaView.product().getValue() != null) {
+        if (isCustomerWithAutoOpenIssues(policyService.getProfile()) && issueMetaView.product().getValue() != null) {
             personService.getCommonManagerByProductId(issueMetaView.product().getValue().getId(), new FluentCallback<Person>()
                     .withSuccess(commonManager -> {
                         if (commonManager == null) {
@@ -538,8 +538,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean validateView() {
-        if (policyService.getUserCompany().getAutoOpenIssue() && isStateWithRestrictions(issueMetaView.state().getValue())) {
-            fireEvent(new NotifyEvents.Show("Вы не можете создать обращение с данным статусом", NotifyEvents.NotifyType.ERROR));
+        if (isCustomerWithAutoOpenIssues(policyService.getProfile()) && CrmConstants.State.OPENED != issueMetaView.state().getValue().getId()) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueCantChooseState(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
