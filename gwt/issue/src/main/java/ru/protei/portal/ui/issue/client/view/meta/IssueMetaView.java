@@ -390,6 +390,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         product.setAsyncProductModel(productModel);
     }
 
+    @Override
+    public void setProductMandatory(boolean isProductMandatory) {
+        product.setMandatory(isProductMandatory);
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());

@@ -2617,6 +2617,4 @@ public interface Lang extends Messages, ContactItemLang {
     String productSelectCommonManager();
 
     String productCommonManager();
-
-    String errSaveIssueCantChooseState();
 }

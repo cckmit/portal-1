@@ -81,10 +81,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Event
     public void authEvent(AuthEvents.Success event) {
-        long stateId = isCustomerWithAutoOpenIssues(event.profile) ? CrmConstants.State.OPENED : CrmConstants.State.CREATED;
-
-        caseStateController.getCaseState(stateId, new FluentCallback<CaseState>()
-                .withSuccess(this::setCurrentCaseState));
+        caseStateController.getCaseState(CrmConstants.State.CREATED, new FluentCallback<CaseState>()
+                .withSuccess(this::setCreatedCaseState));
     }
 
     @Event
@@ -194,20 +192,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onProductChanged() {
-        if (isCustomerWithAutoOpenIssues(policyService.getProfile()) && issueMetaView.product().getValue() != null) {
-            personService.getCommonManagerByProductId(issueMetaView.product().getValue().getId(), new FluentCallback<Person>()
-                    .withSuccess(commonManager -> {
-                        if (commonManager == null) {
-                            return;
-                        }
-
-                        issueMetaView.updateManagersCompanyFilter(commonManager.getCompanyId());
-                        issueMetaView.setManager(commonManager);
-                        issueMetaView.setManagerCompany(new EntityOption(commonManager.getCompany().getCname(), commonManager.getCompanyId()));
-                    })
-            );
-        }
-
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
@@ -386,7 +370,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.importance().setValue(caseObjectMeta.getImportance());
         fillImportanceSelector(caseObjectMeta.getInitiatorCompanyId());
-        issueMetaView.state().setValue(currentCaseState);
+        issueMetaView.state().setValue(createdCaseState);
         issueMetaView.pauseDate().setValue(caseObjectMeta.getPauseDate() == null ? null : new Date(caseObjectMeta.getPauseDate()));
         issueMetaView.pauseDateContainerVisibility().setVisible(CrmConstants.State.PAUSED == caseObjectMeta.getStateId());
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
@@ -397,10 +381,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         if (isCustomerWithAutoOpenIssues(policyService.getProfile())) {
             issueMetaView.setProductModel(customerProductModel);
+            issueMetaView.setProductMandatory(true);
             requestPlatforms(caseObjectMeta.getInitiatorCompanyId(), this::updateProductsFilter);
         } else {
             issueMetaView.setProductModel(productModel);
-            issueMetaView.updateProductsByPlatformIds(null);
+            issueMetaView.setProductMandatory(false);
         }
 
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
@@ -538,8 +523,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean validateView() {
-        if (isCustomerWithAutoOpenIssues(policyService.getProfile()) && CrmConstants.State.OPENED != issueMetaView.state().getValue().getId()) {
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueCantChooseState(), NotifyEvents.NotifyType.ERROR));
+        if (isCustomerWithAutoOpenIssues(policyService.getProfile()) && issueMetaView.product().getValue() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -659,8 +644,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
     }
 
-    private void setCurrentCaseState(CaseState currentCaseState) {
-        this.currentCaseState = currentCaseState;
+    private void setCreatedCaseState(CaseState createdCaseState) {
+        this.createdCaseState = createdCaseState;
     }
 
     private void updateProductsFilter(List<PlatformOption> platformOptions) {
@@ -747,6 +732,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private CaseObjectCreateRequest createRequest;
     private List<ProjectSla> slaList = new ArrayList<>();
     private AbstractCaseTagListActivity tagListActivity;
-    private CaseState currentCaseState;
+    private CaseState createdCaseState;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
 }
