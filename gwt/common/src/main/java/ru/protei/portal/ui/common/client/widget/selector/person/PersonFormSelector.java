@@ -47,8 +47,8 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
     }
 
     public void updateCompanies(Set<Long> companyIds) {
-        if(model!=null){
-            model.updateCompanies(this, companyIds, fired, false);
+        if (model != null) {
+            model.updateCompanies(this, null, companyIds, fired);
         }
     }
 
