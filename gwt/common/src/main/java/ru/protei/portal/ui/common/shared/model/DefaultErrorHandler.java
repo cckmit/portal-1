@@ -37,10 +37,14 @@ public class DefaultErrorHandler implements Consumer<Throwable> {
 
     private void displayReloadPageDialog() {
         dialogView.setHeader( lang.reloadPageAfterUpdateHeader());
-        dialogView.getBodyContainer().add( new Label(lang.reloadPageAfterUpdateMessage()) );
+        Label errorText = new Label( lang.reloadPageAfterUpdateMessage() );
+        errorText.addStyleName( "m-t-10" );
+        dialogView.getBodyContainer().add( errorText );
         dialogView.saveButtonVisibility().setVisible(true);
         dialogView.setSaveOnEnterClick(true);
         dialogView.setSaveButtonName(lang.reloadPageAfterUpdateDoReloadPage());
+        dialogView.setCancelVisible( false );
+        dialogView.setCloseVisible( false );
         dialogView.showPopup();
 
         dialogView.setActivity( new AbstractDialogDetailsActivity() {

@@ -59,6 +59,8 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     public void onLoginClicked() {
         String login = view.login().getValue();
         String pwd = view.password().getValue();
+        view.showError( "" );
+        view.hideError();
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
                     log.warning( "onLoginClicked(): e: " + throwable );
