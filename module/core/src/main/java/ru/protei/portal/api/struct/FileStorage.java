@@ -8,7 +8,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -17,13 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import ru.protei.portal.core.model.struct.FileStream;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.util.Base64;
 
@@ -47,7 +43,7 @@ public class FileStorage {
      * Saves file to storage
      * @return Saved file's path or IOException
      */
-    public String save(String fileName, FileStream fileStream) throws IOException{
+    public String save(String fileName, FileStream fileStream) throws IOException {
 
         logger.debug("save: fileName=" + fileName);
 
@@ -68,14 +64,15 @@ public class FileStorage {
                 }
             }
 
-            CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);
-            logFileCreationResponse(fileName, fileCreationResponse);
-            int fileCreationStatus = getStatus(fileCreationResponse);
+            try (CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest)) {
+                logFileCreationResponse(fileName, fileCreationResponse);
+                int fileCreationStatus = getStatus(fileCreationResponse);
 
-            if (fileCreationStatus == HttpStatus.CREATED.value()) {
-                return filePath;
-            } else {
-                throw new IOException("Unable upload file to fileStorage. status code " + fileCreationStatus);
+                if (fileCreationStatus == HttpStatus.CREATED.value()) {
+                    return filePath;
+                } else {
+                    throw new IOException("Unable upload file to fileStorage. status code " + fileCreationStatus);
+                }
             }
         }
     }
@@ -143,11 +140,11 @@ public class FileStorage {
             request.setUri(storagePath + filePath);
             request.addHeader("Authorization", "Basic " + authentication);
 
-            CloseableHttpResponse response = httpClient.execute(request.build());
+            try (CloseableHttpResponse response = httpClient.execute(request.build())) {
+                logger.debug("deleteFile: filePath=" + filePath + ", statusCode=" + getStatus(response));
+                return HttpStatus.valueOf(getStatus(response)).is2xxSuccessful();
+            }
 
-            logger.debug("deleteFile: filePath=" + filePath + ", statusCode=" + getStatus(response));
-
-            return HttpStatus.valueOf(getStatus(response)).is2xxSuccessful();
         }catch (IOException e){
             logger.error("deleteFile", e);
         }
