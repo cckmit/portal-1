@@ -9,7 +9,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
-public abstract class CustomerProductModel extends ProductModel {
+public abstract class ProductWithChildrenModel extends ProductModel {
     protected SelectorDataCacheLoadHandler<ProductShortView> makeLoadHandler(final ProductQuery query) {
         return (offset, limit, asyncCallback) -> {
             query.setOffset(offset);
