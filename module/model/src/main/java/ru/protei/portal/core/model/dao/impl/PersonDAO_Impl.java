@@ -232,15 +232,15 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add(query.getDeleted() ? 1 : 0);
             }
 
-            if (query.getOnlyPeople() != null) {
-                condition.append(" and person.sex != ?");
-                args.add(En_Gender.UNDEFINED.getCode());
-            }
+            if (query.getPeople() != null) {
+                String eqSign = query.getPeople() ? "!=" : "=";
 
-            if (Boolean.TRUE.equals(query.getCommonManager())) {
                 condition
-                        .append(" and common_manager is ")
-                        .append(Boolean.TRUE);
+                        .append(" and person.sex ")
+                        .append(eqSign)
+                        .append(" ?");
+
+                args.add(En_Gender.UNDEFINED.getCode());
             }
         });
     }

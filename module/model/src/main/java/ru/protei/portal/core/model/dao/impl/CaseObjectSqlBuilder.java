@@ -89,17 +89,14 @@ public class CaseObjectSqlBuilder {
                                 .append(" and manager IN ")
                                 .append(makeInArg(managerIds, false));
                     } else if (managerIds.isEmpty()) {
-                        condition
-                                .append(" and (manager IS NULL or (SELECT person.common_manager FROM person WHERE person.id = manager) IS ")
-                                .append(Boolean.TRUE)
-                                .append(")");
+                        condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                        args.add(En_Gender.UNDEFINED.getCode());
                     } else {
                         condition
                                 .append(" and (manager IN ")
                                 .append(makeInArg(managerIds, false))
-                                .append(" or manager IS NULL or (SELECT person.common_manager FROM person WHERE person.id = manager) IS ")
-                                .append(Boolean.TRUE)
-                                .append(")");
+                                .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                        args.add(En_Gender.UNDEFINED.getCode());
                     }
                 }
             }
