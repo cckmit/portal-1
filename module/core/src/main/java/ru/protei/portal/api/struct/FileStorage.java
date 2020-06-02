@@ -54,19 +54,21 @@ public class FileStorage {
             String filePath = currentYearMonth + "/" + fileName;
             HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, fileStream);
 
-            HttpUriRequest buildCheckFolderExistsRequest = buildCheckFolderExists(currentYearMonth);
+            HttpUriRequest checkFolderExistsRequest = buildCheckFolderExists(currentYearMonth);
 
+            try (CloseableHttpResponse checkFolderExistsResponse = httpClient.execute(checkFolderExistsRequest)) {
+                int checkFolderExistsStatus = getStatus(checkFolderExistsResponse);
 
+                if (checkFolderExistsStatus == HttpStatus.NOT_FOUND.value()) {
+                    HttpUriRequest folderCreationRequest = buildFolderCreationRequest(currentYearMonth);
 
-            CloseableHttpResponse execute = httpClient.execute(buildCheckFolderExistsRequest);
-            int checkFolderExistsStatus = getStatus(execute);
+                    try (CloseableHttpResponse folderCreationResponse = httpClient.execute(folderCreationRequest)) {
+                        int folderCreationStatus = getStatus(folderCreationResponse);
 
-            if (checkFolderExistsStatus == HttpStatus.NOT_FOUND.value()) {
-                HttpUriRequest folderCreationRequest = buildFolderCreationRequest(currentYearMonth);
-                int folderCreationStatus = getStatus(httpClient.execute(folderCreationRequest));
-
-                if (folderCreationStatus != HttpStatus.CREATED.value()) {
-                    throw new IOException("Unable create folder on fileStorage. status code " + folderCreationStatus);
+                        if (folderCreationStatus != HttpStatus.CREATED.value()) {
+                            throw new IOException("Unable create folder on fileStorage. status code " + folderCreationStatus);
+                        }
+                    }
                 }
             }
 
@@ -80,12 +82,6 @@ public class FileStorage {
                     throw new IOException("Unable upload file to fileStorage. status code " + fileCreationStatus);
                 }
             }
-        }
-    }
-
-    private void doWithClose(Supplier<CloseableHttpResponse> responseSupplier, Consumer<CloseableHttpResponse> responseConsumer) throws IOException {
-        try (CloseableHttpResponse response = responseSupplier.get()) {
-            responseConsumer.accept(response);
         }
     }
 
