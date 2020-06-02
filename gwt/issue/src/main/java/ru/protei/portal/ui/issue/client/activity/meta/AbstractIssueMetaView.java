@@ -120,4 +120,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     void updateProductsByPlatformIds(Set<Long> platformIds);
 
     void setProductModel(ProductModel productModel);
+
+    void setProductMandatory(boolean isProductMandatory);
 }

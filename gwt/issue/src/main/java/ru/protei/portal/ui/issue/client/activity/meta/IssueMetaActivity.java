@@ -402,14 +402,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fillManagerInfoContainer(metaView, meta, readOnly);
 
-        metaView.product().setValue(ProductShortView.fromProduct(meta.getProduct()));
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
 
-        if (!isCustomerWithAutoOpenIssues(policyService.getProfile())) {
-            metaView.setProductModel(productModel);
-        } else {
+        ProductShortView product = ProductShortView.fromProduct(meta.getProduct());
+        if (isCustomerWithAutoOpenIssues(policyService.getProfile())) {
             metaView.setProductModel(customerProductModel);
-            updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
+            metaView.setProductMandatory(true);
+            updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId(), product);
+        } else {
+            metaView.setProductModel(productModel);
+            metaView.product().setValue(product);
+            metaView.setProductMandatory(false);
         }
 
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
@@ -485,6 +488,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.managerValidator().setValid(managerIsValid);
 
         boolean productIsValid = caseMeta.getProduct() != null || caseMeta.getManager() == null && !isStateWithRestrictions(caseMeta.getStateId());
+        productIsValid = productIsValid && (!isCustomerWithAutoOpenIssues(policyService.getProfile()) || caseMeta.getProduct() != null);
+
         metaView.productValidator().setValid(productIsValid);
 
         boolean isFieldsValid =
@@ -619,16 +624,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         );
     }
 
-    private void updateProductsFilter(final AbstractIssueMetaView metaView, Long companyId, Long platformId) {
+    private void updateProductsFilter(final AbstractIssueMetaView metaView, Long companyId, Long platformId, final ProductShortView currentProduct) {
         if (platformId != null) {
             metaView.updateProductsByPlatformIds(new HashSet<>(Collections.singleton(platformId)));
         } else {
-            requestPlatforms(companyId, platformOptions -> updateProductsFilter(metaView, platformOptions));
+            requestPlatforms(companyId, platformOptions -> updateProductsFilter(metaView, platformOptions, currentProduct));
         }
     }
 
-    private void updateProductsFilter(final AbstractIssueMetaView metaView, List<PlatformOption> platformOptions) {
-        metaView.product().setValue(null);
+    private void updateProductsFilter(final AbstractIssueMetaView metaView, List<PlatformOption> platformOptions, ProductShortView product) {
+        metaView.product().setValue(product);
 
         if (isEmpty(platformOptions)) {
             metaView.updateProductsByPlatformIds(null);

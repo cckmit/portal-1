@@ -24,6 +24,4 @@ public interface PersonControllerAsync {
     void getPersonNames(Collection<Long> ids, AsyncCallback<Map<Long, String>> async);
 
     void getPerson(Long id, AsyncCallback<Person> async);
-
-    void getCommonManagerByProductId(Long productId, AsyncCallback<Person> async);
 }
