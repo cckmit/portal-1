@@ -2,6 +2,7 @@ package ru.protei.portal.app.portal.client.activity.auth;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -14,11 +15,13 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.client.util.PasswordUtils;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.REMEMBER_ME_PREFIX;
 
@@ -57,7 +60,15 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         String login = view.login().getValue();
         String pwd = view.password().getValue();
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
-                .withError(throwable -> view.showError(lang.errLoginOrPwd()))
+                .withError(throwable -> {
+                    log.warning( "onLoginClicked(): e: " + throwable );
+                    if ( throwable instanceof IncompatibleRemoteServiceException) {
+                        defaultErrorHandler.accept( throwable );
+                        return;
+                    }
+
+                    view.showError( lang.errLoginOrPwd() );
+                } )
                 .withSuccess(profile -> {
                     view.hideError();
                     fireAuthSuccess(profile);
@@ -136,6 +147,9 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     Lang lang;
     @Inject
     LocalStorageService storage;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private AuthEvents.Init init;
+    private static final Logger log = Logger.getLogger( AuthActivity.class.getName() );
 }
