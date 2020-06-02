@@ -22,6 +22,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.YearMonth;
 import java.util.Base64;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Created by bondarenko on 25.04.17.
@@ -53,7 +55,11 @@ public class FileStorage {
             HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, fileStream);
 
             HttpUriRequest buildCheckFolderExistsRequest = buildCheckFolderExists(currentYearMonth);
-            int checkFolderExistsStatus = getStatus(httpClient.execute(buildCheckFolderExistsRequest));
+
+
+
+            CloseableHttpResponse execute = httpClient.execute(buildCheckFolderExistsRequest);
+            int checkFolderExistsStatus = getStatus(execute);
 
             if (checkFolderExistsStatus == HttpStatus.NOT_FOUND.value()) {
                 HttpUriRequest folderCreationRequest = buildFolderCreationRequest(currentYearMonth);
@@ -74,6 +80,12 @@ public class FileStorage {
                     throw new IOException("Unable upload file to fileStorage. status code " + fileCreationStatus);
                 }
             }
+        }
+    }
+
+    private void doWithClose(Supplier<CloseableHttpResponse> responseSupplier, Consumer<CloseableHttpResponse> responseConsumer) throws IOException {
+        try (CloseableHttpResponse response = responseSupplier.get()) {
+            responseConsumer.accept(response);
         }
     }
 
