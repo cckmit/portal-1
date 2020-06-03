@@ -37,6 +37,7 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.AccountServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
@@ -847,7 +848,7 @@ public class MainConfiguration {
 
     @Bean
     public AutoOpenCaseService getAutoOpenCaseService() {
-        return new AutoOpenCaseService();
+        return new AutoOpenCaseServiceImpl();
     }
 
 
