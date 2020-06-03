@@ -571,6 +571,114 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getSubnetNotificationSubject(Subnet subnet, Person initiator, SubnetNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
+        templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/subnet.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getSubnetNotificationBody(Subnet subnet, SubnetNotificationEvent.Action action, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
+        templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
+        templateModel.put("comment", subnet.getComment());
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/subnet.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpNotificationSubject(ReservedIp reservedIp, Person initiator, ReservedIpNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == ReservedIpNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == ReservedIpNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == ReservedIpNotificationEvent.Action.REMOVED);
+        templateModel.put("ipAddress", reservedIp.getIpAddress() != null ? reservedIp.getIpAddress() : "?");
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpNotificationBody(ReservedIp reservedIp, ReservedIpNotificationEvent.Action action, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        //templateModel.put("is_created", action == ReservedIpNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == ReservedIpNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == ReservedIpNotificationEvent.Action.REMOVED);
+        templateModel.put("owner", reservedIp.getOwnerShortName());
+        templateModel.put("subnet", reservedIp.getSubnet().getAddress()+"."+reservedIp.getSubnet().getMask());
+        templateModel.put("ipAddress", reservedIp.getIpAddress() != null
+                ? reservedIp.getIpAddress()
+                : "?");
+        templateModel.put("macAddress", reservedIp.getMacAddress() != null
+                ? reservedIp.getMacAddress()
+                : "?");
+        templateModel.put("reserveDate", reservedIp.getReserveDate() != null
+                ? new SimpleDateFormat("dd.MM.yyyy").format(reservedIp.getReserveDate())
+                : "?");
+        templateModel.put("releaseDate", reservedIp.getReleaseDate() != null
+                ? new SimpleDateFormat("dd.MM.yyyy").format(reservedIp.getReleaseDate())
+                : "?");
+        templateModel.put("comment", reservedIp.getComment());
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "releaseDateStart", releaseDateStart != null ?
+                new SimpleDateFormat("dd.MM.yyyy").format(releaseDateStart) : "?");
+        templateModel.put( "releaseDateEnd", releaseDateEnd != null ?
+                        new SimpleDateFormat("dd.MM.yyyy").format(releaseDateEnd) : "?" );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/reserved.ip.remaining.subject.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpRemainingNotificationBody(List<ReservedIp> reservedIps,
+                                                                   Date releaseDateStart, Date releaseDateEnd, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+
+        /**
+         * @todo
+         *
+         *
+         */
+
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.remaining.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
     }

@@ -19,6 +19,9 @@ public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements
     public ReservedIp getReservedIpByAddress(String address) { return getByCondition("ip_address=?", address); }
 
     @Override
+    public List<ReservedIp> getReservedIpsBySubnetId(Long subnetId) { return getListByCondition("subnet_id=?", subnetId); }
+
+    @Override
     public Map<Long, Long> countBySubnetIds(List<Long> subnetIds) {
         StringBuilder sb = new StringBuilder()
                 .append("SELECT subnet_id, COUNT(*) AS cnt FROM ")

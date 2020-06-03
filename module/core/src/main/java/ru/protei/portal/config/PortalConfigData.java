@@ -185,6 +185,7 @@ public class PortalConfigData {
         private final String crmEmployeeRegistrationUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
         private final String[] crmRoomReservationNotificationsRecipients;
+        private final String[] crmIpReservationNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
@@ -195,6 +196,7 @@ public class PortalConfigData {
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
             crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
+            crmIpReservationNotificationsRecipients = properties.getProperty("crm.ip_reservation.recipients", "").split(",");
         }
 
         public String getCrmCaseUrl() {
@@ -223,6 +225,10 @@ public class PortalConfigData {
 
         public String[] getCrmRoomReservationNotificationsRecipients() {
             return crmRoomReservationNotificationsRecipients;
+        }
+
+        public String[] getCrmIpReservationNotificationsRecipients() {
+            return crmIpReservationNotificationsRecipients;
         }
     }
 

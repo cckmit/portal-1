@@ -3,7 +3,12 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.ReservedIpNotificationEvent;
+import ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent;
+import ru.protei.portal.core.event.SubnetNotificationEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -12,17 +17,25 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.SubnetOption;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.not;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Реализация сервиса управления подсистемой резервирования IP
@@ -36,10 +49,19 @@ public class IpReservationServiceImpl implements IpReservationService {
     ReservedIpDAO reservedIpDAO;
 
     @Autowired
+    PersonDAO personDAO;
+
+    @Autowired
     JdbcManyRelationsHelper helper;
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    EventPublisherService publisherService;
+
+    @Autowired
+    PortalConfig config;
 
     @Override
     public Result<Boolean> isSubnetAddressExists( String address, Long excludeId) {
@@ -119,10 +141,18 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result< Map< Subnet, List<ReservedIp>>> getReservedIpsBySubnets(AuthToken token, ReservedIpQuery query ) {
         Map< Subnet, List<ReservedIp> > subnetToReservedIpsMap = new HashMap<>();
-        /*
-         *  @todo
-         *    по списку зарезервированных IP построить мапу с группировкой по подсетям
-         */
+
+        SearchResult<ReservedIp> sr = reservedIpDAO.getSearchResultByQuery(query);
+
+        if (CollectionUtils.isEmpty(sr.getResults())) {
+            return ok( subnetToReservedIpsMap );
+        }
+
+        subnetToReservedIpsMap = sr.getResults().stream()
+                .collect(Collectors.groupingBy(
+                        ReservedIp::getSubnet,
+                        LinkedHashMap::new, Collectors.toList()));
+
         return ok( subnetToReservedIpsMap );
     }
 
@@ -136,7 +166,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Override
     public Result<ReservedIp> getReservedIp( AuthToken authToken, Long id ) {
-        ReservedIp reservedIp = reservedIpDAO.get(id);
+        ReservedIp reservedIp = getReservedIp(id);
 
         return reservedIp != null ? Result.ok( reservedIp)
                 : error( En_ResultStatus.NOT_FOUND);
@@ -205,7 +235,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    public Result<Long> removeSubnet( AuthToken token, Subnet subnet, boolean removeWithIps) {
+    public Result<Subnet> removeSubnet( AuthToken token, Subnet subnet, boolean removeWithIps) {
         if (subnet == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
@@ -215,10 +245,20 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         if (removeWithIps || subnetAvailableToRemove(subnet.getId())) {
+
+            Subnet stored = subnetDAO.get(subnet.getId());
+
             if (!subnetDAO.removeByKey(subnet.getId()))
                 return error(En_ResultStatus.INTERNAL_ERROR);
 
-            return ok(subnet.getId());
+            return ok(stored)
+                    .publishEvent(new SubnetNotificationEvent(
+                            this,
+                            stored,
+                            getInitiator(token),
+                            SubnetNotificationEvent.Action.REMOVED,
+                            makeNotificationListFromSubnet(stored)
+                    ));
         }
 
         return error(En_ResultStatus.NOT_REMOVED);
@@ -226,7 +266,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Override
     /* @todo задача резервирования должна выполняться в фоне? */
-    public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
+    public Result<ArrayList<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
 
         if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_CREATE, null)) {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
@@ -334,7 +374,17 @@ public class IpReservationServiceImpl implements IpReservationService {
              -  ответ внести в reservedIp и merge в БД
         */
 
-        return ok(reservedIps);
+        List<ApplicationEvent> events = stream(reservedIps)
+                .map(reservedIp -> new ReservedIpNotificationEvent(
+                        this,
+                        reservedIp,
+                        getInitiator(token),
+                        ReservedIpNotificationEvent.Action.CREATED,
+                        makeNotificationListFromReservedIp(reservedIp)
+                ))
+                .collect(Collectors.toList());
+
+        return ok(reservedIps).publishEvents(events);
     }
 
     @Override
@@ -362,11 +412,19 @@ public class IpReservationServiceImpl implements IpReservationService {
         if ( !result ) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
-        return ok(reservedIp);
+
+        return ok(reservedIp)
+                .publishEvent(new ReservedIpNotificationEvent(
+                        this,
+                        reservedIp,
+                        getInitiator(token),
+                        ReservedIpNotificationEvent.Action.UPDATED,
+                        makeNotificationListFromReservedIp(reservedIp)
+                ));
     }
 
     @Override
-    public Result<Long> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
+    public Result<ReservedIp> removeReservedIp( AuthToken token, ReservedIp reservedIp ) {
         if (reservedIp == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
@@ -375,39 +433,114 @@ public class IpReservationServiceImpl implements IpReservationService {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        ReservedIp stored = getReservedIp(reservedIp.getId());
+
         if (!reservedIpDAO.removeByKey(reservedIp.getId())) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        /* @todo
-            уведомление об освобождении IP
-            надо ли его отправлять, если owner сам освобождает?
-         */
-        return ok(reservedIp.getId());
+        return ok(stored)
+                .publishEvent(new ReservedIpNotificationEvent(
+                        this,
+                        stored,
+                        getInitiator(token),
+                        ReservedIpNotificationEvent.Action.REMOVED,
+                        makeNotificationListFromReservedIp(stored)
+                ));
     }
 
+    /**
+     * Уведомление ответственных о приближении даты освобождения IP адреса в ближайшие 3 дня
+     * @return
+     */
     @Override
-    public Result<Boolean> notifyOwnerAboutReleaseIp() {
+    public Result<Boolean> notifyOwnersAboutReleaseIp() {
         /*
         @todo
-            - найти все IP с подходящими под критерий SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS датами освобождения
+            - найти все IP с подходящими под критерий RELEASE_DATE_EXPIRES_IN_DAYS датами освобождения
             - сгруппировать по owner_id
             - сформировать по одному уведомлению каждому owner'у со списком IP-адресов,
-              которые он должен освободить/продлить в течение SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS дней
+              которые он должен освободить/продлить в течение RELEASE_DATE_EXPIRES_IN_DAYS дней
          */
-        return ok(true );
+
+        log.info("notifyOwnersAboutReleaseIp(): start");
+
+        Date releaseDateStart = makeDateWithOffset(1);
+        Date releaseDateEnd = makeDateWithOffset(RELEASE_DATE_EXPIRES_IN_DAYS);
+
+        log.info("notifyOwnersAboutReleaseIp(): start from {} to {}", releaseDateStart, releaseDateEnd);
+
+        ReservedIpQuery query = new ReservedIpQuery();
+        query.setReleasedFrom(releaseDateStart);
+        query.setReleasedTo(releaseDateEnd);
+        Map<Long, List<ReservedIp>> reservedIpsByOwners = getReservedIpsByOwners(query);
+        if (reservedIpsByOwners.isEmpty()) {
+            log.info("notifyOwnersAboutReleaseIp(): expired reservedIps is empty for period from {} to {}", releaseDateStart, releaseDateEnd);
+            return ok(false);
+        }
+
+        int notificationSentAmount = 0;
+
+        for (Long ownerId : reservedIpsByOwners.keySet()) {
+
+            List<NotificationEntry> notificationEntries = makeNotificationListFromPersonId(ownerId);
+
+            if (CollectionUtils.isEmpty(notificationEntries)) {
+                log.info("notifyOwnersAboutReleaseIp(): notification for owner {} to release IPs: no entries to be notified", ownerId);
+                continue;
+            }
+            log.info("notifyOwnersAboutReleaseIp(): notification for owner {} to release IPs: entries to be notified: {}",
+                    ownerId, notificationEntries);
+            publisherService.publishEvent(new ReservedIpReleaseRemainingEvent(
+                    this, reservedIpsByOwners.get(ownerId), releaseDateStart, releaseDateEnd, notificationEntries));
+            notificationSentAmount++;
+        }
+
+        log.info("notifyOwnersAboutReleaseIp(): done {} notification(s)", notificationSentAmount);
+        return ok(notificationSentAmount > 0);
     }
 
+    /**
+     * Уведомление системных администраторов об истечении даты освобождения IP адресов
+     * @return
+     */
     @Override
     public Result<Boolean> notifyAdminsAboutExpiredReleaseDates() {
         /*
          @todo
             - найти все IP с наступившей датой освобождения
             - сгруппировать по owner_id
-            - сформировать одно уведомление со списокм owner'ов и принадлежащих им IP
-            возможно группировать следует по подсетям, а owner'а указывать как доп.инфо
+            - сформировать одно уведомление со списком IP в формате:
+               IP адрес, ответственный, дата освобождения
          */
-        return ok(true );
+
+        log.info("notifyAdminsAboutExpiredReleaseDates(): start");
+
+        Date today = makeDateWithOffset(0);
+
+        log.info("notifyAdminsAboutExpiredReleaseDates(): already expired to {}", today);
+
+        ReservedIpQuery query = new ReservedIpQuery();
+        query.setReleasedTo(today);
+        List<ReservedIp> reservedIps = getReservedIps(query);
+
+        if (CollectionUtils.isEmpty(reservedIps)) {
+            log.info("notifyAdminsAboutExpiredReleaseDates(): expired release date IP list is empty for today {}", today);
+            return ok(false);
+        }
+
+        List<NotificationEntry> notificationEntries = makeNotificationListFromConfiguration();
+
+        if (CollectionUtils.isEmpty(notificationEntries)) {
+            log.info("notifyAdminsAboutExpiredReleaseDates(): notification for expired release date IPs: no entries to be notified");
+            return ok(false);
+        }
+
+        log.info("notifyAdminsAboutExpiredReleaseDates(): notification for expired release date IPs: entries to be notified: {}", notificationEntries);
+        publisherService.publishEvent(new ReservedIpReleaseRemainingEvent(this, reservedIps, null, today, notificationEntries));
+
+        log.info("notifyAdminsAboutExpiredReleaseDates(): done");
+        return ok(true);
     }
 
     private boolean isValidSubnet(Subnet subnet) {
@@ -471,7 +604,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     private boolean isValidUseRange(AuthToken token, Date from, Date to) {
         return from != null
                 && ((to != null && from.before(to))
-                     || isSystemAdministrator(token));
+                     || isSystemAdministrator(token, En_Privilege.RESERVED_IP_CREATE));
     }
 
     private Set<SubnetOption> getAvailableSubnets(AuthToken token, Set<SubnetOption> selectedSubnets) {
@@ -527,6 +660,10 @@ public class IpReservationServiceImpl implements IpReservationService {
         return null;
     }
 
+    private ReservedIp getReservedIp(Long reservedIpId) {
+        return reservedIpDAO.get(reservedIpId);
+    }
+
     private boolean checkSubnetExists (String address, Long excludeId) {
         Subnet subnet = subnetDAO.getSubnetByAddress(address);
 
@@ -564,18 +701,94 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private boolean hasAccessForReservedIp(AuthToken token, En_Privilege privilege, ReservedIp reservedIp) {
-        return isSystemAdministrator(token)
+        return isSystemAdministrator(token, privilege)
                 || reservedIp == null
                 || (policyService.hasPrivilegeFor(privilege, token.getRoles())
                     && token.getPersonId().equals(reservedIp.getOwnerId())
         );
     }
 
-    private boolean isSystemAdministrator (AuthToken token) {
-        return policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE, token.getRoles());
+    private boolean isSystemAdministrator (AuthToken token, En_Privilege privilege) {
+        return policyService.hasScopeForPrivilege(token.getRoles(), privilege, En_Scope.SYSTEM);
     }
 
-    public static final int SEND_RELEASE_DATE_EXPIRES_TO_EXPIRE_DATE_IN_DAYS = 3;
+    private Date makeDateWithOffset(int dayOffset) {
+        LocalDate localDate = LocalDate.now();
+        localDate.plusDays(dayOffset);
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
 
+    private List<ReservedIp> getReservedIps(ReservedIpQuery query) {
+        return reservedIpDAO.getSearchResultByQuery(query).getResults();
+    }
+
+    private Map< Long, List< ReservedIp>> getReservedIpsByOwners(ReservedIpQuery query) {
+        Map< Long, List<ReservedIp> > ownerToReservedIpsMap = new HashMap<>();
+
+        SearchResult<ReservedIp> sr = reservedIpDAO.getSearchResultByQuery(query);
+
+        if (CollectionUtils.isNotEmpty(sr.getResults())) {
+            ownerToReservedIpsMap = sr.getResults().stream()
+                    .collect(Collectors.groupingBy(
+                            ReservedIp::getOwnerId,
+                            LinkedHashMap::new, Collectors.toList()));
+        }
+
+        return ownerToReservedIpsMap;
+    }
+
+    private List<NotificationEntry> makeNotificationListFromSubnet(Subnet subnet) {
+        List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsBySubnetId(subnet.getId());
+
+        if (CollectionUtils.isEmpty(reservedIps)) {
+            return null;
+        }
+
+        return stream(reservedIps).collect(Collectors.groupingBy(ReservedIp::getOwnerId))
+                .keySet().stream()
+                .filter(Objects::nonNull)
+                .map(ownerId -> {
+                    Person person = personDAO.get(ownerId);
+                    PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
+                    return NotificationEntry.email(contact.getEmail(), DEFAULT_LOCALE);
+                })
+                .filter(entry -> StringUtils.isNotEmpty(entry.getAddress()))
+                .collect(Collectors.toList());
+    }
+
+    private List<NotificationEntry> makeNotificationListFromReservedIp(ReservedIp reservedIp) {
+        return Stream.of(
+                makeNotificationListFromPersonId(reservedIp.getOwnerId()),
+                makeNotificationListFromPersonId(reservedIp.getCreatorId())
+        )
+                .flatMap(Collection::stream) // flatten
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private List<NotificationEntry> makeNotificationListFromPersonId(Long personId) {
+        Person person = personDAO.get(personId);
+        if (person == null) {
+            return null;
+        }
+
+        PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
+        return Arrays.asList(NotificationEntry.email(contact.getEmail(), person.getLocale()));
+    }
+
+    private List<NotificationEntry> makeNotificationListFromConfiguration() {
+        return stream(Arrays.asList(config.data().getMailNotificationConfig().getCrmIpReservationNotificationsRecipients()))
+                .filter(Objects::nonNull)
+                .filter(not(String::isEmpty))
+                .map(address -> NotificationEntry.email(address, DEFAULT_LOCALE))
+                .collect(Collectors.toList());
+    }
+
+    private Person getInitiator (AuthToken token) {
+        return personDAO.get(token.getPersonId());
+    }
+
+    private static final String DEFAULT_LOCALE = "ru";
+    private static final int RELEASE_DATE_EXPIRES_IN_DAYS = 3;
     private final static Logger log = LoggerFactory.getLogger( IpReservationService.class );
 }

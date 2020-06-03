@@ -704,6 +704,101 @@ public class MailNotificationProcessor {
         sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
     }
 
+    // -----------------------------
+    // IP reservation notifications
+    // -----------------------------
+
+    @EventListener
+    public void onSubnetNotificationEvent(SubnetNotificationEvent event) {
+        Subnet subnet = event.getSubnet();
+        Person initiator = event.getInitiator();
+        SubnetNotificationEvent.Action action = event.getAction();
+        List<NotificationEntry> notifiers = event.getNotificationEntryList();
+
+        if (isEmpty(notifiers) || action == null || subnet == null) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getSubnetNotificationSubject(subnet, initiator, action);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for subnet notification with id={} and action={}",
+                    subnet.getId(), action);
+            return;
+        }
+
+        List<String> recipients = stream(notifiers).map(NotificationEntry::getAddress).collect(Collectors.toList());
+
+        PreparedTemplate bodyTemplate = templateService.getSubnetNotificationBody(subnet, action, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for subnet notification with id={} and action={}",
+                    subnet.getId(), action);
+            return;
+        }
+
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onReservedIpNotificationEvent(ReservedIpNotificationEvent event) {
+        ReservedIp reservedIp = event.getReservedIp();
+        Person initiator = event.getInitiator();
+        ReservedIpNotificationEvent.Action action = event.getAction();
+        List<NotificationEntry> notifiers = event.getNotificationEntryList();
+
+        if (isEmpty(notifiers) || action == null || reservedIp == null) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getReservedIpNotificationSubject(reservedIp, initiator, action);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for reserved IP notification with id={} and action={}",
+                    reservedIp.getId(), action);
+            return;
+        }
+
+        List<String> recipients = stream(notifiers).map(NotificationEntry::getAddress).collect(Collectors.toList());
+
+        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIp, action, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for reserved IP notification with id={} and action={}",
+                    reservedIp.getId(), action);
+            return;
+        }
+
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onReleaseIpRemainingEvent(ReservedIpReleaseRemainingEvent event) {
+        List<ReservedIp> reservedIps = event.getReservedIpList();
+        Date releaseDateStart = event.getReleaseDateStart();
+        Date releaseDateEnd = event.getReleaseDateEnd();
+        List<NotificationEntry> notifiers = event.getNotificationEntryList();
+
+        if (isEmpty(notifiers)) {
+            log.info("Failed to send release reserved IPs remaining notification: empty notifiers set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getReservedIpRemainingNotificationSubject(releaseDateStart, releaseDateEnd);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for release reserved IPs notification");
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        PreparedTemplate bodyTemplate = templateService.getReservedIpRemainingNotificationBody(reservedIps,
+                releaseDateStart, releaseDateEnd, recipients);
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release reserved IPs notification");
+            return;
+        }
+
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+    }
+
     // -----
     // Utils
     // -----
