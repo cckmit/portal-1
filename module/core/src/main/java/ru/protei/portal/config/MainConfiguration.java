@@ -458,6 +458,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
+    @Bean
     public ProjectToProductDAO getProjectToProductDAO() {
         return new ProjectToProductDAO_Impl();
     }

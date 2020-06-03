@@ -9,7 +9,7 @@ public class HistoryQuery extends BaseQuery{
     private Long initiatorId;
     private Date date;
     private Long caseObjectId;
-    private En_HistoryValueType type;
+    private En_HistoryValueType valueType;
     private String oldValue;
     private String newValue;
 
@@ -37,12 +37,12 @@ public class HistoryQuery extends BaseQuery{
         this.caseObjectId = caseObjectId;
     }
 
-    public En_HistoryValueType getType() {
-        return type;
+    public En_HistoryValueType getValueType() {
+        return valueType;
     }
 
-    public void setType(En_HistoryValueType type) {
-        this.type = type;
+    public void setValueType(En_HistoryValueType valueType) {
+        this.valueType = valueType;
     }
 
     public String getOldValue() {
