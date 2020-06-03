@@ -398,7 +398,9 @@ public class IpReservationServiceImpl implements IpReservationService {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (!isValidReservedIp(token, reservedIp)) {
+        ReservedIp stored = reservedIpDAO.get(reservedIp.getId());
+
+        if (!isValidReservedIp(token, reservedIp, stored)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -578,11 +580,11 @@ public class IpReservationServiceImpl implements IpReservationService {
         return true;
     }
 
-    private boolean isValidReservedIp(AuthToken token, ReservedIp reservedIp) {
+    private boolean isValidReservedIp(AuthToken token, ReservedIp reservedIp, ReservedIp stored) {
         return reservedIp.getOwnerId() != null
                 && isValidIpAddress(reservedIp.getIpAddress())
                 && isValidMacAddress(reservedIp.getMacAddress())
-                && isValidUseRange(token, reservedIp.getReserveDate(), reservedIp.getReleaseDate());
+                && isValidUseRange(token, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), stored.getReleaseDate());
     }
 
     private boolean isValidIpAddress(String ipAddress) {
@@ -597,14 +599,13 @@ public class IpReservationServiceImpl implements IpReservationService {
     private boolean isValidUseRange(Date from, Date to) {
         return from != null
                 && to != null
-
                 && from.before(to);
     }
 
-    private boolean isValidUseRange(AuthToken token, Date from, Date to) {
+    private boolean isValidUseRange(AuthToken token, Date from, Date to, Date storedTo) {
+        boolean isAllowToSetNullDate = isSystemAdministrator(token, En_Privilege.RESERVED_IP_CREATE) || null == storedTo;
         return from != null
-                && ((to != null && from.before(to))
-                     || isSystemAdministrator(token, En_Privilege.RESERVED_IP_CREATE));
+                && (to != null && from.before(to) || isAllowToSetNullDate);
     }
 
     private Set<SubnetOption> getAvailableSubnets(AuthToken token, Set<SubnetOption> selectedSubnets) {

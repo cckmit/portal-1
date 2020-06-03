@@ -83,6 +83,21 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         this.isSaveOnEnterClick = isSaveOnEnterClick;
     }
 
+    @Override
+    public void setSaveButtonName( String name ) {
+        save.setText( name );
+    }
+
+    @Override
+    public void setCancelVisible( boolean isCancelVisible ) {
+        cancel.setVisible( isCancelVisible );
+    }
+
+    @Override
+    public void setCloseVisible( boolean isCloseVisible ) {
+        close.setVisible( isCloseVisible );
+    }
+
     @UiHandler( "save" )
     public void onSaveClicked( ClickEvent event ) {
         event.preventDefault();
