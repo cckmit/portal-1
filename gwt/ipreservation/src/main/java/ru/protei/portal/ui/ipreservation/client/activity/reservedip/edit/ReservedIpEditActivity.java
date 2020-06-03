@@ -117,9 +117,12 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         Date from = view.useRange().getValue().from;
         Date to = view.useRange().getValue().to;
 
+        boolean isAllowToSetNullDate = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_EDIT)
+                || null == reservedIp.getReleaseDate();
+
         if ( from == null
-             || (to == null && !policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_EDIT))
-             || from.after(to)) {
+             || (to == null && !isAllowToSetNullDate)
+             || (to != null && from.after(to))) {
             showError(lang.errSaveReservedIpUseInterval());
             return false;
         }
