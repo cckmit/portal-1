@@ -453,6 +453,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
     public ProjectToProductDAO getProjectToProductDAO() {
         return new ProjectToProductDAO_Impl();
     }

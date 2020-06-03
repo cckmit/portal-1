@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_HistoryValueType;
 
 import java.util.Date;
 
-public class HistoryQuery {
+public class HistoryQuery extends BaseQuery{
 
     private Long initiatorId;
     private Date date;
