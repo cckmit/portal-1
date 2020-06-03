@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
@@ -207,14 +208,23 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void makeOnlyChildrenContainerVisible(boolean isOnlyChildrenContainerVisible) {
-        if (isOnlyChildrenContainerVisible) {
-            childrenContainer.removeStyleName("col-md-6");
-            childrenContainer.addStyleName("col-md-12");
-        } else {
-            childrenContainer.removeStyleName("col-md-12");
-            childrenContainer.addStyleName("col-md-6");
-        }
+    public void makeChildrenContainerShortView() {
+        childrenContainer.getElement().replaceClassName(UiConstants.Styles.FULL_VIEW, UiConstants.Styles.SHORT_VIEW);
+    }
+
+    @Override
+    public void makeChildrenContainerFullView() {
+        childrenContainer.getElement().replaceClassName(UiConstants.Styles.SHORT_VIEW, UiConstants.Styles.FULL_VIEW);
+    }
+
+    @Override
+    public void makeDirectionContainerShortView() {
+        directionContainer.getElement().replaceClassName(UiConstants.Styles.FULL_VIEW, UiConstants.Styles.SHORT_VIEW);
+    }
+
+    @Override
+    public void makeDirectionContainerFullView() {
+        directionContainer.getElement().replaceClassName(UiConstants.Styles.SHORT_VIEW, UiConstants.Styles.FULL_VIEW);
     }
 
     @Override
@@ -225,11 +235,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setChildrenTypes(En_DevUnitType... types) {
         children.setTypes(types);
-    }
-
-    @Override
-    public void setParentsContainerLabel(String label) {
-        parentsContainerLabel.setInnerText(label);
     }
 
     @Override
@@ -366,8 +371,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     MarkdownAreaWithPreview cdrDescription;
     @UiField
     TextBox wikiLink;
-    @UiField
-    LabelElement parentsContainerLabel;
     @UiField
     LabelElement childrenContainerLabel;
     @Inject

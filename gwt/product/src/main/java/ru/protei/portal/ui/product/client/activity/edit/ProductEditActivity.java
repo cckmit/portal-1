@@ -299,38 +299,41 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     private void setMutableState(AbstractProductEditView view, En_DevUnitType type) {
-        view.setParentsContainerLabel(lang.belongsTo());
         view.commonManagerContainerVisibility().setVisible(En_DevUnitType.PRODUCT.equals(type));
+        view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(type));
 
         if (En_DevUnitType.COMPLEX.equals(type)) {
             view.setNameLabel(lang.complexName());
             view.setDescriptionLabel(lang.complexDescription());
             view.setChildrenContainerLabel(lang.products());
 
-            view.parentsContainerVisibility().setVisible(false);
-            view.makeOnlyChildrenContainerVisible(true);
+            view.makeChildrenContainerFullView();
 
             view.setChildrenTypes(En_DevUnitType.PRODUCT);
+
+            view.makeDirectionContainerFullView();
         } else if (En_DevUnitType.PRODUCT.equals(type)) {
             view.setNameLabel(lang.productName());
             view.setDescriptionLabel(lang.productDescription());
             view.setChildrenContainerLabel(lang.components());
 
-            view.parentsContainerVisibility().setVisible(true);
-            view.makeOnlyChildrenContainerVisible(false);
+            view.makeChildrenContainerShortView();
 
             view.setParentTypes(En_DevUnitType.COMPLEX);
             view.setChildrenTypes(En_DevUnitType.COMPONENT);
+
+            view.makeDirectionContainerShortView();
         } else if (En_DevUnitType.COMPONENT.equals(type)) {
             view.setNameLabel(lang.componentName());
             view.setDescriptionLabel(lang.componentDescription());
             view.setChildrenContainerLabel(lang.components());
 
-            view.parentsContainerVisibility().setVisible(true);
-            view.makeOnlyChildrenContainerVisible(false);
+            view.makeChildrenContainerShortView();
 
             view.setParentTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             view.setChildrenTypes(En_DevUnitType.COMPONENT);
+
+            view.makeDirectionContainerFullView();
         }
     }
 
