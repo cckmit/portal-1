@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.dict.En_RegionState;
 
 public class En_AbsenceReasonLang {
 
@@ -34,6 +35,25 @@ public class En_AbsenceReasonLang {
                 return lang.absenceReasonRemoteWork();
             default:
                 return lang.unknownField();
+        }
+    }
+
+    public String getStateIcon(En_AbsenceReason state) {
+        if(state == null)
+            return "fa fa-unknown";
+
+        switch (state){
+            case PERSONAL_AFFAIR: return "fas fa-user-clock";
+            case BUSINESS_TRIP: return "fas fa-plane";
+            case LOCAL_BUSINESS_TRIP: return "fas fa-business-time";
+            case STUDY: return "fas fa-university";
+            case DISEASE: return "fas fa-viruses";
+            case SICK_LEAVE: return "fas fa-hospital-user";
+            case LEAVE_WITHOUT_PAY: return "fas fa-umbrella-beach";
+            case DUTY: return "";
+            case REMOTE_WORK: return "fas fa-laptop-house";
+            default:
+                return "fa fa-unknown";
         }
     }
 

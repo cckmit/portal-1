@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
+import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableView;
@@ -134,6 +135,10 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
             employeeInfo.addClassName("fired");
         }
 
+        if (employee.getAbsence() != null) {
+            employeeInfo.addClassName("fired");
+        }
+
         if (employee.isFired()){
             employeeInfo.appendChild(LabelValuePairBuilder.make()
                     .addIconValuePair("fa fa-ban text-danger", employee.getDisplayName(), "contacts fired")
@@ -154,6 +159,10 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         Element employeeContacts = DOM.createDiv();
 
         if (employee.isFired()) {
+            employeeContacts.addClassName("fired");
+        }
+
+        if (employee.getAbsence() != null) {
             employeeContacts.addClassName("fired");
         }
 
@@ -230,6 +239,17 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
             employeeDepartment.appendChild(department);
         }
 
+        if (employee.getAbsence() != null) {
+
+            employeeDepartment.addClassName("fired");
+
+            Element absenceReason = LabelValuePairBuilder.make()
+                    .addIconPair(reasonLang.getStateIcon(employee.getAbsence().getReason()), "absence-reason")
+                    .toElement();
+            employeeDepartment.appendChild(absenceReason);
+
+        }
+
         return employeeDepartment.getString();
     }
 
@@ -249,6 +269,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     @UiField
     Lang lang;
 
+
+    @Inject
+    En_AbsenceReasonLang reasonLang;
 
     ClickColumnProvider<EmployeeShortView> columnProvider = new ClickColumnProvider<>();
     DynamicColumn<EmployeeShortView> name;

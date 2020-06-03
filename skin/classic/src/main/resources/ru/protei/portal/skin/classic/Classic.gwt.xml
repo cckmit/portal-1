@@ -14,7 +14,7 @@
     <stylesheet src="css/portal-classic.css"/>
 
     <stylesheet src="css/pages-icons.css"/>
-    <stylesheet src="css/font-awesome.min.css"/>
+    <stylesheet src="css/all.min.css"/>
 
     <source path='client'/>
     <source path='shared'/>

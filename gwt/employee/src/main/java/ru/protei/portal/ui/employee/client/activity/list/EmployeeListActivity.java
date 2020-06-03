@@ -160,7 +160,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setIP(employee.getIpAddress());
         if(employee.isFired())
             itemView.setFireDate(DateFormatter.formatDateOnly(employee.getFireDate()));
-        itemView.setAbsent(employee.isAbsent());
+        itemView.setAbsenceReason(employee.getAbsence() == null ? null : employee.getAbsence().getReason());
         return itemView;
     }
 

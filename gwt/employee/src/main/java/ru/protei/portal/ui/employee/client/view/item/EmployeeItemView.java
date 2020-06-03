@@ -9,6 +9,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
@@ -93,9 +95,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
-    @Override
-    public void setAbsent(boolean isAbsent) {
-        if (isAbsent) {
+    public void setAbsenceReason(En_AbsenceReason reason) {
+        if (reason != null) {
             employeeContainer.addClassName("fired");
         }
     }

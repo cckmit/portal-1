@@ -19,14 +19,14 @@ import static ru.protei.winter.jdbc.JdbcHelper.makeSqlStringCollection;
 public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> implements PersonAbsenceDAO {
 
     @Override
-    public List<PersonAbsence> listByEmployeeAndDateBounds(Long absenceId, Date from, Date till) {
+    public List<PersonAbsence> listByEmployeeAndDateBounds(Long employeeId, Date from, Date till) {
         return getListByCondition("person_absence.person_id = ? AND (" +
                 "(? < person_absence.from_time AND person_absence.from_time < ?) OR " +
                 "(? < person_absence.till_time AND person_absence.till_time < ?) OR " +
                 "(person_absence.from_time < ? AND ? < person_absence.till_time) OR " +
                 "(person_absence.from_time < ? AND ? < person_absence.till_time) OR " +
                 "(person_absence.from_time = ? AND person_absence.till_time = ?)" +
-                ")", absenceId, from, till, from, till, from, from, till, till, from, till);
+                ")", employeeId, from, till, from, till, from, from, till, till, from, till);
     }
 
     @Override

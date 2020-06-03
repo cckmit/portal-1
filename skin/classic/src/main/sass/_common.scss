@@ -788,6 +788,7 @@ label.bordered:after {
         td {
           height: 92px;
           > div {
+            position: relative;
             height: 75px;
             max-height: 75px;
             white-space: pre-line;
@@ -814,6 +815,14 @@ label.bordered:after {
 
     .employee-department {
       width: 45%
+    }
+
+    .absence-reason > i {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 70px;
+      opacity: 0.5;
     }
   }
 }
