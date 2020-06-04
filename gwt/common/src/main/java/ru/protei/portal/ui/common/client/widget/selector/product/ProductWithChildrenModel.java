@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.widget.selector.product;
 
-import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -14,7 +13,7 @@ public abstract class ProductWithChildrenModel extends ProductModel {
         return (offset, limit, asyncCallback) -> {
             query.setOffset(offset);
             query.setLimit(limit);
-            productService.getProductViewListWithChildren(query, En_DevUnitType.PRODUCT, new RequestCallback<List<ProductShortView>>() {
+            productService.getProductsViewListWithChildren(query, new RequestCallback<List<ProductShortView>>() {
                 @Override
                 public void onError(Throwable throwable) {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
