@@ -126,10 +126,12 @@ public abstract class IssueReportCreateActivity implements Activity,
             projectFilterView.resetFilter();
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(projectFilterView.asWidget());
+            view.scheduledTypeContainerVisibility().setVisible(false);
+            view.checkImportanceHistoryContainerVisibility().setVisible(false);
         } else {
             view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
             view.checkImportanceHistory().setValue(false);
-            view.scheduledTypeContainerVisibility().setVisible(reportType == En_ReportType.CASE_TIME_ELAPSED);
+            view.scheduledTypeContainerVisibility().setVisible(isScheduledTypeContainerVisible(reportType));
             view.checkImportanceHistoryContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
             issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
             applyIssueFilterVisibilityByPrivileges();
@@ -213,8 +215,19 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.name().setValue(null);
         view.reportType().setValue(En_ReportType.CASE_OBJECTS, true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
-        view.scheduledTypeContainerVisibility().setVisible(false);
         view.checkImportanceHistory().setValue(false);
+    }
+
+    private boolean isScheduledTypeContainerVisible(En_ReportType reportType) {
+        if (En_ReportType.CASE_OBJECTS.equals(reportType)) {
+            return true;
+        }
+
+        if (En_ReportType.CASE_TIME_ELAPSED.equals(reportType)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Inject

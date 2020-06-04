@@ -8,7 +8,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_creator" value="${notificationReportCreator}"/>
 <@set name="_type" value="${notificationReportType}"/>
 <@set name="_status" value="${notificationReportStatus}"/>
-<@set name="_filter" value="${notificationReportFilter}"/>
+<@set name="_period" value="${notificationReportPeriod}"/>
 
 <@set name="_typeCaseObjects" value="${notificationReportTypeCaseObjects}"/>
 <@set name="_typeCaseTimeElapsed" value="${notificationReportTypeCaseTimeElapsed}"/>
@@ -20,14 +20,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_statusError" value="${notificationReportStatusError}"/>
 
 <@set name="_filterSearch" value="${notificationReportFilterSearch}"/>
-<@set name="_filterCreated" value="${notificationReportFilterCreated}"/>
-<@set name="_filterUpdated" value="${notificationReportFilterUpdated}"/>
 <@set name="_filterFrom" value="${notificationReportFilterFrom}"/>
 <@set name="_filterTo" value="${notificationReportFilterTo}"/>
-<@set name="_filterSelected" value="${notificationReportFilterSelected}"/>
-<@set name="_filterCompany" value="${notificationReportFilterCompany}"/>
-<@set name="_filterProduct" value="${notificationReportFilterProduct}"/>
-<@set name="_filterCommentAuthor" value="${notificationReportFilterCommentAuthor}"/>
 
 <#noparse>
 <html>
@@ -108,15 +102,10 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 </tr>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                        ${_filter}
+                        ${_period}
                     </td>
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <#if filter.searchString??>
-                            ${_filterSearch}: ${filter.searchString}
-                            <br>
-                        </#if>
                         <#if filter.createdFrom?? || filter.createdTo??>
-                            ${_filterCreated} :
                             <#if filter.createdFrom??>
                                 ${_filterFrom?lower_case} ${filter.createdFrom?datetime}
                             </#if>
@@ -126,25 +115,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                             <br>
                         </#if>
                         <#if filter.modifiedFrom?? || filter.modifiedTo??>
-                            ${_filterUpdated} :
                             <#if filter.modifiedFrom??>
                                 ${_filterFrom?lower_case} ${filter.modifiedFrom?datetime}
                             </#if>
                             <#if filter.modifiedTo??>
                                 ${_filterTo?lower_case} ${filter.modifiedTo?datetime}
                             </#if>
-                            <br>
-                        </#if>
-                        <#if filter.companyIds??>
-                            ${_filterCompany}: ${filter.companyIds?size} ${_filterSelected?lower_case}
-                            <br>
-                        </#if>
-                        <#if filter.productIds??>
-                            ${_filterProduct}: ${filter.productIds?size} ${_filterSelected?lower_case}
-                            <br>
-                        </#if>
-                        <#if filter.commentAuthorIds??>
-                            ${_filterCommentAuthor}: ${filter.commentAuthorIds?size} ${_filterSelected?lower_case}
                             <br>
                         </#if>
                     </td>
