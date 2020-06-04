@@ -6,6 +6,7 @@ import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity(table = "plan_to_case_object")
 public class PlanToCaseObject implements Serializable{
@@ -24,6 +25,11 @@ public class PlanToCaseObject implements Serializable{
 
 
     public PlanToCaseObject() {}
+
+    public PlanToCaseObject(Long planId, Long caseObjectId) {
+        this.planId = planId;
+        this.caseObjectId = caseObjectId;
+    }
 
     public Long getId() {
         return id;
@@ -65,5 +71,19 @@ public class PlanToCaseObject implements Serializable{
                 ", caseObjectId=" + caseObjectId +
                 ", orderNumber=" + orderNumber +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlanToCaseObject that = (PlanToCaseObject) o;
+        return Objects.equals(planId, that.planId) &&
+                Objects.equals(caseObjectId, that.caseObjectId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(planId, caseObjectId);
     }
 }

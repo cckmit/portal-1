@@ -458,6 +458,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
     public HistoryDAO getHistoryDAO() {
         return new HistoryDAO_Impl();
     }
@@ -782,6 +787,11 @@ public class MainConfiguration {
     @Bean
     public CaseLinkService getCaseLinkService() {
         return new CaseLinkServiceImpl();
+    }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
     }
 
     @Bean

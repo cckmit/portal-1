@@ -113,6 +113,10 @@ public enum En_AuditType implements HasId {
     ROOM_RESERVATION_CREATE(73),
     ROOM_RESERVATION_MODIFY(74),
     ROOM_RESERVATION_REMOVE(75),
+
+    PLAN_CREATE(76),
+    PLAN_MODIFY(77),
+    PLAN_REMOVE(78),
     ;
 
     En_AuditType(int id ) {

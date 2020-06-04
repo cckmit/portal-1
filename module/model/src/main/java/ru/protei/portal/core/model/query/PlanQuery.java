@@ -7,7 +7,9 @@ public class PlanQuery extends BaseQuery{
     private String name;
     private Date created;
     private Long creatorId;
+    //сделать промежуток
     private Date dateFrom;
+    //сделать промежуток
     private Date dateTo;
     private Long issueId;
     private Long issueNumber;
