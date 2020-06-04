@@ -147,13 +147,13 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public Company getCompanyUnsafe(long id) throws RequestFailedException {
-        log.info("getCompany(): id={}", id);
+        log.info("getCompanyUnsafe(): id={}", id);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Company> response = companyService.getCompanyUnsafe(token, id);
 
-        log.info("getCompany(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData());
+        log.info("getCompanyUnsafe(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData());
 
         if (response.isError()) throw new RequestFailedException(response.getStatus());
 
