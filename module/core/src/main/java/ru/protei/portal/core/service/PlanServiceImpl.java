@@ -13,10 +13,13 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.ent.PlanToCaseObject;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PlanQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -58,7 +61,10 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        list.forEach(plan -> jdbcManyRelationsHelper.fillAll(plan));
+        list.forEach(plan -> {
+            jdbcManyRelationsHelper.fillAll(plan);
+            orderIssuesInPlan(plan);
+        });
 
         return ok(list);
     }
@@ -76,6 +82,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         jdbcManyRelationsHelper.fillAll(plan);
+        orderIssuesInPlan(plan);
 
         return ok(plan);
     }
@@ -87,13 +94,21 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        plan.setCreatorId(7942L);
+        plan.setCreatorId(token.getPersonId());
         plan.setCreated(new Date());
 
-        Long planId = saveToDB(plan);
+        Long planId =  planDAO.persist(plan);
 
         if (planId == null){
             return error(En_ResultStatus.NOT_CREATED);
+        }
+
+        if (CollectionUtils.isNotEmpty(plan.getIssueList())){
+            plan.getIssueList().forEach(issue -> {
+                PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
+                planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
+                planToCaseObjectDAO.persist(planToCaseObject);
+            });
         }
 
         return ok(planId);
@@ -127,9 +142,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
-        int maxOrderNumber = issuesInPlan.isEmpty() ? 0 : issuesInPlan.get(issuesInPlan.size()-1).getOrderNumber();
-
-        newIssueInPlan.setOrderNumber(maxOrderNumber + 10);
+        newIssueInPlan.setOrderNumber(issuesInPlan.size());
 
         newIssueInPlan.setId(planToCaseObjectDAO.persist(newIssueInPlan));
 
@@ -151,30 +164,51 @@ public class PlanServiceImpl implements PlanService{
 
         int rowCount = planToCaseObjectDAO.removeByPlanIdAndIssueId(planId, issueId);
 
-        switch (rowCount) {
-            case 0 :
-                return error(En_ResultStatus.NOT_FOUND);
-            case 1 :
-                return ok();
-            default:
-                throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
+        if (rowCount == 1) {
+            updateOrderNumbers(planId);
+            return ok();
         }
+
+        if (rowCount == 0) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
 
         //add history
     }
 
+
+
     @Override
     @Transactional
-    public Result<Boolean> changeIssueOrder(AuthToken token, List<PlanToCaseObject> changedList) {
-        if (changedList == null || !validatePlanToCaseObjects(changedList)){
+    public Result<Boolean> changeIssueOrder(AuthToken token, Plan plan) {
+        if (plan == null || CollectionUtils.isEmpty(plan.getIssueList())){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (planToCaseObjectDAO.mergeBatch(changedList) != changedList.size()){
+        List<PlanToCaseObject> issueOrderList = planToCaseObjectDAO.getSortedListByPlanId(plan.getId());
+        List<CaseShortView> issueList = plan.getIssueList();
+
+        if (issueOrderList.size() != issueList.size()){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        for (PlanToCaseObject planToCaseObject : issueOrderList) {
+            for (int i = 0; i < issueList.size(); i++) {
+                if (planToCaseObject.getCaseObjectId().equals(issueList.get(i).getId())){
+                    planToCaseObject.setOrderNumber(i);
+                    break;
+                }
+            }
+        }
+
+        if (planToCaseObjectDAO.mergeBatch(issueOrderList) != issueOrderList.size()){
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
         //add audit!
+        //add history
 
         return ok();
     }
@@ -195,11 +229,11 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
-        int maxOrderNumber = issuesInPlan.isEmpty() ? 0 : issuesInPlan.get(issuesInPlan.size()-1).getOrderNumber();
-
-        planToCaseObject.setOrderNumber(maxOrderNumber + 10);
+        planToCaseObject.setOrderNumber(issuesInPlan.size());
 
         planToCaseObjectDAO.merge(planToCaseObject);
+
+        updateOrderNumbers(currentPlanId);
 
         //add history
 
@@ -217,14 +251,6 @@ public class PlanServiceImpl implements PlanService{
         }
 
         return ok();
-    }
-
-    private boolean validatePlanToCaseObjects (List<PlanToCaseObject> list){
-        return list.stream().noneMatch(planToCaseObject ->
-                           planToCaseObject.getPlanId() == null
-                        || planToCaseObject.getCaseObjectId() == null
-                        || planToCaseObject.getId() == null
-                        || planToCaseObject.getOrderNumber() == null);
     }
 
     private boolean validatePlan (Plan plan) {
@@ -247,19 +273,31 @@ public class PlanServiceImpl implements PlanService{
         return true;
     }
 
-    private Long saveToDB(Plan plan) {
-        Long id;
-        try {
-            id = planDAO.persist(plan);
-            if (id == null) {
-                log.error("saveToDB(): failed to save plan to the db");
-                return null;
+    private void orderIssuesInPlan(Plan plan) {
+        List<PlanToCaseObject> sortedListByPlanId = planToCaseObjectDAO.getSortedListByPlanId(plan.getId());
+
+        for (int i = 0; i < sortedListByPlanId.size(); i++) {
+            Long caseIdCurrent = plan.getIssueList().get(i).getId();
+            Long caseIdOrdered = sortedListByPlanId.get(i).getCaseObjectId();
+
+            if (!caseIdCurrent.equals(caseIdOrdered)){
+
+                for (int j = i; j < sortedListByPlanId.size(); j++) {
+                    if (sortedListByPlanId.get(j).getCaseObjectId().equals(caseIdCurrent)){
+                        Collections.swap(plan.getIssueList(), i, j);
+                    }
+                }
+
             }
-            jdbcManyRelationsHelper.persist(plan, "issueOrderList");
-        } catch (Exception e) {
-            log.error("saveToDB(): failed to save plan to the db", e);
-            return null;
         }
-        return id;
+    }
+
+    private void updateOrderNumbers(Long planId) {
+        List<PlanToCaseObject> sortedListByPlanId = planToCaseObjectDAO.getSortedListByPlanId(planId);
+
+        for (int i = 0; i < sortedListByPlanId.size(); i++) {
+            sortedListByPlanId.get(i).setOrderNumber(i);
+        }
+        planToCaseObjectDAO.persistBatch(sortedListByPlanId);
     }
 }

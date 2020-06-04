@@ -30,11 +30,11 @@ public class Plan extends AuditableObject {
     private Date dateTo;
 
     @JdbcManyToMany(linkTable = "plan_to_case_object", localLinkColumn = "plan_id", remoteLinkColumn = "case_object_id")
-    public List<CaseShortView> issueList;
+    private List<CaseShortView> issueList;
 
-    @JdbcOneToMany(localColumn = "id", remoteColumn = "plan_id")
+   /* @JdbcOneToMany(localColumn = "id", remoteColumn = "plan_id")
     public List<PlanToCaseObject> issueOrderList;
-
+*/
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
@@ -97,14 +97,14 @@ public class Plan extends AuditableObject {
         this.issueList = issueList;
     }
 
-    public List<PlanToCaseObject> getIssueOrderList() {
+   /* public List<PlanToCaseObject> getIssueOrderList() {
         return issueOrderList;
     }
 
     public void setIssueOrderList(List<PlanToCaseObject> issueOrderList) {
         this.issueOrderList = issueOrderList;
     }
-
+*/
     @Override
     public String toString() {
         return "Plan{" +
@@ -115,7 +115,6 @@ public class Plan extends AuditableObject {
                 ", dateFrom=" + dateFrom +
                 ", dateTo=" + dateTo +
                 ", issueList=" + issueList +
-                ", issueOrderList=" + issueOrderList +
                 '}';
     }
 }

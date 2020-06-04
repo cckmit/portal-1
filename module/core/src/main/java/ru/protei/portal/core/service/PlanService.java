@@ -41,7 +41,7 @@ public interface PlanService {
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
-    Result<Boolean> changeIssueOrder(AuthToken token, List<PlanToCaseObject> changedList);
+    Result<Boolean> changeIssueOrder(AuthToken token, Plan plan);
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
