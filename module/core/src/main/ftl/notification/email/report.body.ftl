@@ -20,8 +20,6 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_statusError" value="${notificationReportStatusError}"/>
 
 <@set name="_filterSearch" value="${notificationReportFilterSearch}"/>
-<@set name="_filterFrom" value="${notificationReportFilterFrom}"/>
-<@set name="_filterTo" value="${notificationReportFilterTo}"/>
 
 <#noparse>
 <html>
@@ -107,19 +105,19 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if filter.createdFrom?? || filter.createdTo??>
                             <#if filter.createdFrom??>
-                                ${_filterFrom?lower_case} ${filter.createdFrom?datetime}
-                            </#if>
+                                ${filter.createdFrom?datetime}
+                            </#if> -
                             <#if filter.createdTo??>
-                                ${_filterTo?lower_case} ${filter.createdTo?datetime}
+                                ${filter.createdTo?datetime}
                             </#if>
                             <br>
                         </#if>
                         <#if filter.modifiedFrom?? || filter.modifiedTo??>
                             <#if filter.modifiedFrom??>
-                                ${_filterFrom?lower_case} ${filter.modifiedFrom?datetime}
-                            </#if>
+                                ${filter.modifiedFrom?datetime}
+                            </#if> -
                             <#if filter.modifiedTo??>
-                                ${_filterTo?lower_case} ${filter.modifiedTo?datetime}
+                                ${filter.modifiedTo?datetime}
                             </#if>
                             <br>
                         </#if>
