@@ -7,7 +7,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.CrmConstants.Time;
 import ru.protei.portal.core.service.CaseService;
 
 import javax.annotation.PostConstruct;
@@ -17,6 +16,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Сервис выполняющий автоокрытие помеченных кейсов через определенное время
@@ -27,28 +27,32 @@ public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
     public void onStartup() {
         log.info("Schedule case open at startup");
         caseObjectDAO.getCaseIdToAutoOpen()
-                .forEach(caseId -> createTask(caseId, random, Time.MINUTE));
+                .forEach(caseId -> createTask(caseId, TimeUnit.MINUTES.toMillis(1) + makeRandomDelaySecond(120)));
     }
 
     @Override
     public void processNewCreatedCaseToAutoOpen(Long caseId, Long companyId) {
         Company company = companyDAO.get(companyId);
         if (company.getAutoOpenIssue() != null && company.getAutoOpenIssue()) {
-            createTask(caseId, random, 3 * Time.MINUTE);
+            createTask(caseId, TimeUnit.MINUTES.toMillis(3) + makeRandomDelaySecond(120));
         }
     }
 
     @Override
-    public ScheduledFuture<?> createTask(Long caseId, Random random, long timeoutOffset) {
-        long timeout = timeoutOffset + (random.nextInt(120) * Time.SEC);
-        log.info("Schedule case open id = {}, timeout = {}", caseId, timeout);
-        return scheduler.schedule(() -> runTask(caseId), new Date(new Date().getTime() + timeout));
+    public ScheduledFuture<?> createTask(Long caseId, long delay) {
+        log.info("Schedule case open id = {}, delay = {}", caseId, delay);
+        return scheduler.schedule(() -> runTask(caseId), new Date(new Date().getTime() + delay));
     }
 
     private void runTask(Long caseId) {
         log.info("Process case id = {}", caseId);
 
         CaseObjectMeta caseMeta = caseObjectMetaDAO.get(caseId);
+
+        if (caseMeta == null) {
+            log.error("No case with id = {}", caseId);
+            return;
+        }
 
         if (caseMeta.getStateId() != CrmConstants.State.CREATED) {
             log.info("Already opened case id = {}", caseId);
@@ -93,6 +97,10 @@ public class AutoOpenCaseServiceImpl implements AutoOpenCaseService {
         token.setRoles(defaultEmployeeRoles);
 
         return token;
+    }
+
+    private long makeRandomDelaySecond(int bound) {
+        return TimeUnit.SECONDS.toMillis(random.nextInt(bound));
     }
 
     @Autowired

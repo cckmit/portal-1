@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
@@ -142,11 +143,15 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
     @Override
     public List<Long> getCaseIdToAutoOpen() {
-        String sql = "SELECT case_object.id " +
-                "FROM " + getTableName() + " " +
-                "WHERE case_object.STATE = 1" +
-                "  and (SELECT company.auto_open_issue from company where company.id = case_object.initiator_company)";
-        return jdbcTemplate.queryForList(sql, Long.class);
+        Query query = query().select( "id" )
+                .from( "case_object" )
+                .where("case_object.state" ).equal(CrmConstants.State.CREATED)
+                .and(query()
+                        .select( "SELECT company.auto_open_issue" ).from( "FROM company WHERE" )
+                            .whereExpression( "company.id = case_object.initiator_company" ))
+                .asQuery();
+
+        return jdbcTemplate.queryForList(query.buildSql(), query.args(), Long.class);
     }
 
     @SqlConditionBuilder

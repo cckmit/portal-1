@@ -18,7 +18,6 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
@@ -52,6 +51,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         newCaseObject.setManagerCompanyId(homeCompany.getId());
         newCaseObject.setProductId(product.getId());
         newCaseObject.setProducts(Collections.singleton(product));
+        newCaseObject.setStateId(CrmConstants.State.CREATED);
 
         CaseObjectCreateRequest request = new CaseObjectCreateRequest();
         request.setCaseObject(newCaseObject);
@@ -59,7 +59,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         caseObjectDAO.persist(newCaseObject);
 
         try {
-            service.createTask(newCaseObject.getId(), new Random(0), 0)
+            service.createTask(newCaseObject.getId(), 0)
                     .get();
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +101,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         openNoCommonManagerCase.setManagerId(commonManager.getId());
         openNoCommonManagerCase.setProductId(product.getId());
         openNoCommonManagerCase.setProducts(Collections.singleton(product));
-        openNoCommonManagerCase.setStateId(2L);
+        openNoCommonManagerCase.setStateId(CrmConstants.State.OPENED);
 
         caseObjectDAO.persist(openNoCommonManagerCase);
 
@@ -112,6 +112,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         createNoCommonManagerCase.setManagerCompanyId(homeCompany.getId());
         createNoCommonManagerCase.setProductId(product.getId());
         createNoCommonManagerCase.setProducts(Collections.singleton(product));
+        openNoCommonManagerCase.setStateId(CrmConstants.State.CREATED);
 
         caseObjectDAO.persist(createNoCommonManagerCase);
 
