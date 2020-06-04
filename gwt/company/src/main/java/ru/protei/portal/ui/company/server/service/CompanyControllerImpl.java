@@ -146,6 +146,21 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public Company getCompanyUnsafe(long id) throws RequestFailedException {
+        log.info("getCompany(): id={}", id);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Company> response = companyService.getCompanyUnsafe(token, id);
+
+        log.info("getCompany(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData());
+
+        if (response.isError()) throw new RequestFailedException(response.getStatus());
+
+        return response.getData();
+    }
+
+    @Override
     public List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException {
         log.info( "getCompanyOptionList()" );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);

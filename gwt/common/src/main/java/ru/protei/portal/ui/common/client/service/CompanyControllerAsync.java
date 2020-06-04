@@ -95,4 +95,6 @@ public interface CompanyControllerAsync {
     void getImportanceLevels(Long id, AsyncCallback<List<En_ImportanceLevel>> async);
 
     void getAllHomeCompanies(AsyncCallback<List<EntityOption>> async);
+
+    void getCompanyUnsafe(long id, AsyncCallback<Company> async);
 }

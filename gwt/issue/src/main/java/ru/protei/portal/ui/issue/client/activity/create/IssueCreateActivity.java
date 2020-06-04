@@ -210,7 +210,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
     }
 
-
     @Override
     public void onCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
@@ -221,7 +220,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         initiatorSelectorAllowAddNew(companyOption.getId());
 
-        companyService.getCompany(companyOption.getId(), new FluentCallback<Company>()
+        companyService.getCompanyUnsafe(companyOption.getId(), new FluentCallback<Company>()
                 .withSuccess(company -> {
                     setCurrentCompany(company);
                     fillPlatformValueAndUpdateProductsFilter(company);
@@ -336,7 +335,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 );
             }
 
-            onPlatformChanged();
+            requestSla(
+                    issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                    slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+            );
+
+            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(filterByPlatformAndProduct(subscriptionsList), subscriptionsListEmptyMessage));
         });
     }
 
@@ -679,7 +683,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             issueMetaView.productEnabled().setEnabled(false);
         } else {
             issueMetaView.updateProductsByPlatformIds(platformIds);
-            issueMetaView.productEnabled().setEnabled(isProductEnabled(issueMetaView.getCompany()));
+            issueMetaView.productEnabled().setEnabled(isProductEnabled(currentCompany));
         }
     }
 

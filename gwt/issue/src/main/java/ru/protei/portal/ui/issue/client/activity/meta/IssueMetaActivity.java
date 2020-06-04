@@ -271,7 +271,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-        companyService.getCompany(selectedCompanyId, new FluentCallback<Company>()
+        companyService.getCompanyUnsafe(selectedCompanyId, new FluentCallback<Company>()
                 .withSuccess(resultCompany -> {
                     setCurrentCompany(resultCompany);
                     fillPlatformValueAndUpdateProductsFilter(resultCompany);
@@ -730,10 +730,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void setCurrentCompany(Company company) {
         this.currentCompany = company;
-    }
-
-    private ProductModel getProductModelByCompany(Company company) {
-        return isCompanyWithAutoOpenIssues(company) ? productWithChildrenModel : productModel;
     }
 
     @Inject
