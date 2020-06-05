@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
-import ru.protei.portal.core.model.ent.PlanToCaseObject;
 import ru.protei.portal.core.model.query.PlanQuery;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public interface PlanService {
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
-    Result<PlanToCaseObject> addIssueToPlan(AuthToken token, Long planId, Long issueId);
+    Result<Boolean> addIssueToPlan(AuthToken token, Long planId, Long issueId);
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
@@ -41,11 +40,11 @@ public interface PlanService {
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
-    Result<Boolean> changeIssueOrder(AuthToken token, Plan plan);
+    Result<Boolean> changeIssuesOrder(AuthToken token, Plan plan);
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
-    Result<Boolean> moveIssueToOtherPlan(AuthToken token, Long currentPlanId, Long issueId, Long newPlanId);
+    Result<Boolean> moveIssueToAnotherPlan(AuthToken token, Long currentPlanId, Long issueId, Long newPlanId);
 
     @Privileged(En_Privilege.PLAN_REMOVE)
     @Auditable(En_AuditType.PLAN_REMOVE)

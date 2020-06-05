@@ -129,7 +129,7 @@ public class PlanServiceImpl implements PlanService{
 
     @Override
     @Transactional
-    public Result<PlanToCaseObject> addIssueToPlan(AuthToken token, Long planId, Long issueId) {
+    public Result<Boolean> addIssueToPlan(AuthToken token, Long planId, Long issueId) {
         if (planId == null || issueId == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -152,7 +152,7 @@ public class PlanServiceImpl implements PlanService{
 
         //add history
 
-        return ok(newIssueInPlan);
+        return ok();
     }
 
     @Override
@@ -182,7 +182,7 @@ public class PlanServiceImpl implements PlanService{
 
     @Override
     @Transactional
-    public Result<Boolean> changeIssueOrder(AuthToken token, Plan plan) {
+    public Result<Boolean> changeIssuesOrder(AuthToken token, Plan plan) {
         if (plan == null || CollectionUtils.isEmpty(plan.getIssueList())){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -215,12 +215,17 @@ public class PlanServiceImpl implements PlanService{
 
     @Override
     @Transactional
-    public Result<Boolean> moveIssueToOtherPlan(AuthToken token, Long currentPlanId, Long issueId, Long newPlanId) {
+    public Result<Boolean> moveIssueToAnotherPlan(AuthToken token, Long currentPlanId, Long issueId, Long newPlanId) {
         if (currentPlanId == null || issueId == null || newPlanId == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         PlanToCaseObject planToCaseObject = planToCaseObjectDAO.getByPlanIdAndIssueId(currentPlanId, issueId);
+
+        if (planToCaseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
         planToCaseObject.setPlanId(newPlanId);
 
         List<PlanToCaseObject> issuesInPlan = planToCaseObjectDAO.getSortedListByPlanId(newPlanId);
@@ -283,7 +288,7 @@ public class PlanServiceImpl implements PlanService{
             if (!caseIdCurrent.equals(caseIdOrdered)){
 
                 for (int j = i; j < sortedListByPlanId.size(); j++) {
-                    if (sortedListByPlanId.get(j).getCaseObjectId().equals(caseIdCurrent)){
+                    if (plan.getIssueList().get(j).getId().equals(caseIdOrdered)){
                         Collections.swap(plan.getIssueList(), i, j);
                     }
                 }
