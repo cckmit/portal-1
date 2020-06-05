@@ -46,7 +46,6 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = ReservedIp.class, name = ReservedIp.AUDIT_TYPE),
         @JsonSubTypes.Type(value = Subnet.class, name = Subnet.AUDIT_TYPE),
         @JsonSubTypes.Type(value = Plan.class, name = Plan.AUDIT_TYPE),
-        @JsonSubTypes.Type(value = History.class, name = History.AUDIT_TYPE),
 })
 public abstract class AuditableObject implements Serializable {
 

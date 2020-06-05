@@ -7,8 +7,10 @@ import java.util.Date;
 public class HistoryQuery extends BaseQuery{
 
     private Long initiatorId;
-    private Date date;
+    private Date dateFrom;
+    private Date dateTo;
     private Long caseObjectId;
+    private Long caseNumber;
     private En_HistoryValueType valueType;
     private String oldValue;
     private String newValue;
@@ -21,12 +23,20 @@ public class HistoryQuery extends BaseQuery{
         this.initiatorId = initiatorId;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getDateFrom() {
+        return dateFrom;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public Date getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
     }
 
     public Long getCaseObjectId() {
@@ -35,6 +45,14 @@ public class HistoryQuery extends BaseQuery{
 
     public void setCaseObjectId(Long caseObjectId) {
         this.caseObjectId = caseObjectId;
+    }
+
+    public Long getCaseNumber() {
+        return caseNumber;
+    }
+
+    public void setCaseNumber(Long caseNumber) {
+        this.caseNumber = caseNumber;
     }
 
     public En_HistoryValueType getValueType() {

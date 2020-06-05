@@ -7,7 +7,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.Date;
 
 @JdbcEntity(table = "history")
-public class History extends AuditableObject{
+public class History {
 
     public static final String AUDIT_TYPE = "History";
 
@@ -33,15 +33,9 @@ public class History extends AuditableObject{
     @JdbcColumn(name = "new_value")
     private String newValue;
 
-    @Override
-    public String getAuditType() {
-        return AUDIT_TYPE;
-    }
-
     public History() {
     }
 
-    @Override
     public Long getId() {
         return id;
     }
@@ -96,18 +90,5 @@ public class History extends AuditableObject{
 
     public void setNewValue(String newValue) {
         this.newValue = newValue;
-    }
-
-    @Override
-    public String toString() {
-        return "History{" +
-                "id=" + id +
-                ", initiatorId=" + initiatorId +
-                ", date=" + date +
-                ", caseObjectId=" + caseObjectId +
-                ", valueType=" + valueType +
-                ", oldValue='" + oldValue + '\'' +
-                ", newValue='" + newValue + '\'' +
-                '}';
     }
 }

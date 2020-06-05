@@ -120,7 +120,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!planDAO.partialMerge(plan, "name", "date_from", "date_to")){
+        if (!planDAO.partialMerge(plan, "name", "start_date", "finish_date")){
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -263,15 +263,15 @@ public class PlanServiceImpl implements PlanService{
             return false;
         }
 
-        if (plan.getDateFrom() == null) {
+        if (plan.getStartDate() == null) {
             return false;
         }
 
-        if (plan.getDateTo() == null) {
+        if (plan.getFinishDate() == null) {
             return false;
         }
 
-        if (plan.getDateFrom().after(plan.getDateTo())) {
+        if (plan.getStartDate().after(plan.getFinishDate())) {
             return false;
         }
 

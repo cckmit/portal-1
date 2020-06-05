@@ -39,14 +39,24 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
                 args.add(query.getInitiatorId());
             }
 
-            if (query.getDate() != null) {
-                condition.append(" and history.date = ?");
-                args.add(query.getDate());
+            if (query.getDateFrom() != null) {
+                condition.append(" and history.date >= ?");
+                args.add(query.getDateFrom());
+            }
+
+            if (query.getDateTo() != null) {
+                condition.append(" and history.date <= ?");
+                args.add(query.getDateTo());
             }
 
             if (query.getCaseObjectId() != null) {
                 condition.append(" and history.case_object_id = ?");
                 args.add(query.getCaseObjectId());
+            }
+
+            if (query.getCaseNumber() != null) {
+                condition.append(" and history.case_object_id in (select case_object.ID from case_object where case_object.CASENO = ?");
+                args.add(query.getCaseNumber());
             }
 
             if (query.getValueType() != null) {
@@ -63,6 +73,7 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
                 condition.append(" and history.new_value = ?");
                 args.add(query.getNewValue());
             }
+
         }));
     }
 }

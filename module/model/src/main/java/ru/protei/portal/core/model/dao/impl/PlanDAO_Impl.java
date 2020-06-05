@@ -49,14 +49,24 @@ public class PlanDAO_Impl extends PortalBaseJdbcDAO<Plan> implements PlanDAO {
                 args.add(query.getCreatorId());
             }
 
-            if (query.getDateFrom() != null) {
-                condition.append(" and plan.date_from = ?");
-                args.add(query.getDateFrom());
+            if (query.getStartDateFrom() != null) {
+                condition.append(" and plan.start_date >= ?");
+                args.add(query.getStartDateFrom());
             }
 
-            if (query.getDateTo() != null) {
-                condition.append(" and plan.date_to = ?");
-                args.add(query.getDateTo());
+            if (query.getStartDateTo() != null) {
+                condition.append(" and plan.start_date <= ?");
+                args.add(query.getStartDateTo());
+            }
+
+            if (query.getFinishDateFrom() != null) {
+                condition.append(" and plan.finish_date >= ?");
+                args.add(query.getFinishDateFrom());
+            }
+
+            if (query.getFinishDateTo() != null) {
+                condition.append(" and plan.finish_date <= ?");
+                args.add(query.getFinishDateTo());
             }
 
             if (query.getIssueId() != null) {

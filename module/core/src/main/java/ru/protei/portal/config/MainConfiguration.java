@@ -795,6 +795,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
     public SiteFolderService getSiteFolderService() {
         return new SiteFolderServiceImpl();
     }

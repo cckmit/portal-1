@@ -7,10 +7,10 @@ public class PlanQuery extends BaseQuery{
     private String name;
     private Date created;
     private Long creatorId;
-    //сделать промежуток
-    private Date dateFrom;
-    //сделать промежуток
-    private Date dateTo;
+    private Date startDateFrom;
+    private Date startDateTo;
+    private Date finishDateFrom;
+    private Date finishDateTo;
     private Long issueId;
     private Long issueNumber;
 
@@ -38,20 +38,36 @@ public class PlanQuery extends BaseQuery{
         this.creatorId = creatorId;
     }
 
-    public Date getDateFrom() {
-        return dateFrom;
+    public Date getStartDateFrom() {
+        return startDateFrom;
     }
 
-    public void setDateFrom(Date dateFrom) {
-        this.dateFrom = dateFrom;
+    public void setStartDateFrom(Date startDateFrom) {
+        this.startDateFrom = startDateFrom;
     }
 
-    public Date getDateTo() {
-        return dateTo;
+    public Date getStartDateTo() {
+        return startDateTo;
     }
 
-    public void setDateTo(Date dateTo) {
-        this.dateTo = dateTo;
+    public void setStartDateTo(Date startDateTo) {
+        this.startDateTo = startDateTo;
+    }
+
+    public Date getFinishDateFrom() {
+        return finishDateFrom;
+    }
+
+    public void setFinishDateFrom(Date finishDateFrom) {
+        this.finishDateFrom = finishDateFrom;
+    }
+
+    public Date getFinishDateTo() {
+        return finishDateTo;
+    }
+
+    public void setFinishDateTo(Date finishDateTo) {
+        this.finishDateTo = finishDateTo;
     }
 
     public Long getIssueId() {

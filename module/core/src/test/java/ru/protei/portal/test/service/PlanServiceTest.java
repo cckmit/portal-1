@@ -262,8 +262,8 @@ public class PlanServiceTest extends BaseServiceTest{
         Plan newPlan = new Plan();
         newPlan.setId(oldPlanId);
         newPlan.setName("new name");
-        newPlan.setDateFrom(new Date(oldPlan.getDateFrom().getTime() + 10000L));
-        newPlan.setDateTo(new Date(oldPlan.getDateTo().getTime() + 10000L));
+        newPlan.setStartDate(new Date(oldPlan.getStartDate().getTime() + 10000L));
+        newPlan.setFinishDate(new Date(oldPlan.getFinishDate().getTime() + 10000L));
         newPlan.setCreated(new Date(oldPlan.getCreated().getTime() + 10000L));
 
         Assert.assertTrue(planService.editPlanParams(getAuthToken(), newPlan).isOk());
@@ -272,8 +272,8 @@ public class PlanServiceTest extends BaseServiceTest{
         Assert.assertNotNull("Failed to get plan by id", newFromDB);
 
         Assert.assertNotEquals("Failed to update plan name", oldPlanFromDB.getName(), newFromDB.getName());
-        Assert.assertNotEquals("Failed to update plan date from", oldPlanFromDB.getDateFrom().getTime(), newFromDB.getDateFrom().getTime());
-        Assert.assertNotEquals("Failed to update plan date to", oldPlanFromDB.getDateTo().getTime(), newFromDB.getDateTo().getTime());
+        Assert.assertNotEquals("Failed to update plan date from", oldPlanFromDB.getStartDate().getTime(), newFromDB.getStartDate().getTime());
+        Assert.assertNotEquals("Failed to update plan date to", oldPlanFromDB.getFinishDate().getTime(), newFromDB.getFinishDate().getTime());
         Assert.assertEquals("Plan created date must not be updated", oldPlanFromDB.getCreated().getTime(), newFromDB.getCreated().getTime());
 
         Assert.assertTrue(planService.removePlan(getAuthToken(), oldPlanId).isOk());
@@ -457,8 +457,8 @@ public class PlanServiceTest extends BaseServiceTest{
     private Plan createPlan (String name) {
         Plan plan = new Plan();
         plan.setName(name + "test" + new Date().getTime());
-        plan.setDateFrom(new Date());
-        plan.setDateTo(new Date());
+        plan.setStartDate(new Date());
+        plan.setFinishDate(new Date());
         return plan;
     }
 
