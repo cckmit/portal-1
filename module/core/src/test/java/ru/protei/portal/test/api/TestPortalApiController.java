@@ -103,8 +103,102 @@ public class TestPortalApiController extends BaseServiceTest {
         CaseObject caseObjectFromDb = caseObjectDAO.getByCaseNameLike(issueName);
 
         Assert.assertNotNull("Expected 1 new created issue", caseObjectFromDb);
+    }
 
+    @Test
+    @Transactional
+    public void createIssueWithAutoOpenIssueWithoutProduct() throws Exception {
+        company.setAutoOpenIssue(true);
+        companyDAO.saveOrUpdate(company);
 
+        CaseObject caseObject = createNewCaseObject(person);
+        String issueName = "createIssueWithAutoOpenIssueWithoutProduct";
+        caseObject.setName(issueName);
+        caseObject.setInitiator(person);
+        caseObject.setInitiatorCompany( company );
+
+        authService.makeThreadAuthToken( userLogin );
+        ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+
+        company.setAutoOpenIssue(false);
+        companyDAO.saveOrUpdate(company);
+    }
+
+    @Test
+    @Transactional
+    public void createIssueWithAutoOpenIssueWithRandomProduct() throws Exception {
+        company.setAutoOpenIssue(true);
+        companyDAO.saveOrUpdate(company);
+
+        DevUnit devUnit = makeProduct("createIssueWithAutoOpenIssueWithRandomProduct");
+
+        CaseObject caseObject = createNewCaseObject(person);
+        String issueName = "createIssueWithAutoOpenIssueWithRandomProduct";
+        caseObject.setName(issueName);
+        caseObject.setInitiator(person);
+        caseObject.setInitiatorCompany(company);
+        caseObject.setProductId(devUnit.getId());
+
+        authService.makeThreadAuthToken( userLogin );
+        ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+
+        company.setAutoOpenIssue(false);
+        companyDAO.saveOrUpdate(company);
+
+        devUnitDAO.remove(devUnit);
+    }
+
+    @Test
+    @Transactional
+    public void createIssueWithAutoOpenIssueWithPlatformOwnedProduct() throws Exception {
+        company.setAutoOpenIssue(true);
+        companyDAO.saveOrUpdate(company);
+
+        DevUnit devUnit = makeProduct("createIssueWithAutoOpenIssueWithCorrectProduct");
+
+        CaseObject project = createNewCaseObject(person);
+        project.setName("createIssueWithAutoOpenIssueWithCorrectProduct");
+        project.setInitiatorCompanyId(company.getId());
+        project.setType(En_CaseType.PROJECT);
+        project.setProductId(devUnit.getId());
+
+        Long projectId = caseObjectDAO.persist(project);
+
+        Platform platform = new Platform();
+        platform.setName("createIssueWithAutoOpenIssueWithCorrectProduct");
+        platform.setCompanyId(company.getId());
+        platform.setProjectId(projectId);
+
+        ProjectToProduct projectToProduct = new ProjectToProduct(projectId, devUnit.getId());
+        projectToProductDAO.persist(projectToProduct);
+
+        Long platformId = platformDAO.persist(platform);
+
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setName("createIssueWithAutoOpenIssueWithoutProduct");
+        caseObject.setInitiator(person);
+        caseObject.setInitiatorCompany(company);
+        caseObject.setPlatformId(platformId);
+        caseObject.setProductId(devUnit.getId());
+
+        authService.makeThreadAuthToken( userLogin );
+        ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.id", notNullValue()))
+                .andExpect(jsonPath("$.data.initiatorId", is(person.getId().intValue())))
+                .andExpect(jsonPath("$.data.initiatorCompanyId", is(company.getId().intValue())))
+                .andExpect(jsonPath("$.data.productId", is(devUnit.getId().intValue())));
+
+        company.setAutoOpenIssue(false);
+        companyDAO.saveOrUpdate(company);
     }
 
     @Test
@@ -295,7 +389,6 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     @Transactional
-    @Ignore
     public void getTwoEmployees() throws Exception {
         Company homeCompany = companyDAO.get(1L);
 
@@ -349,7 +442,6 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     @Transactional
-    @Ignore
     public void getEmployeesEmptyResult() throws Exception {
         Company homeCompany = companyDAO.get(1L);
 
