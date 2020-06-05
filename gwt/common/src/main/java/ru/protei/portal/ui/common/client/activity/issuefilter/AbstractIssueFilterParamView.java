@@ -79,8 +79,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     void resetFilter();
 
-    void updateModel();
-
     void presetCompany(Company company);
 
     void presetManagerCompany(Company company);
