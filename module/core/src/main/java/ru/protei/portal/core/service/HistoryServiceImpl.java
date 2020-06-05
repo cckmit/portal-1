@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.impl.HistoryDAO_Impl;
+import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dict.En_HistoryValueType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -18,7 +18,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class HistoryServiceImpl implements HistoryService{
 
     @Autowired
-    HistoryDAO_Impl historyDAO;
+    HistoryDAO historyDAO;
 
     @Override
     public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryValueType valueType, String oldValue, String newValue) {

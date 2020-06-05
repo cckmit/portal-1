@@ -363,4 +363,9 @@ public class DaoTestsConfiguration {
         return new PlanToCaseObjectDAO_Impl();
     }
 
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
 }

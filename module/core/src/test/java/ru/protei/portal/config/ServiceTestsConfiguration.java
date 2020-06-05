@@ -309,6 +309,12 @@ public class ServiceTestsConfiguration {
     public PlanService getPlanService() {
         return new PlanServiceImpl();
     }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
     @Bean
     public RoomReservationService getRoomReservationService() {
         return new RoomReservationServiceImpl();

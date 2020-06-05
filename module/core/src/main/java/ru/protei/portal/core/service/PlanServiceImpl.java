@@ -9,6 +9,7 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
 import ru.protei.portal.core.model.dao.PlanToCaseObjectDAO;
+import ru.protei.portal.core.model.dict.En_HistoryValueType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
@@ -41,6 +42,9 @@ public class PlanServiceImpl implements PlanService{
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    HistoryService historyService;
 
     @Override
     public Result<List<Plan>> listPlans(AuthToken token, PlanQuery query) {
@@ -108,6 +112,7 @@ public class PlanServiceImpl implements PlanService{
                 PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
                 planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
                 planToCaseObjectDAO.persist(planToCaseObject);
+                historyService.createHistory(token, issue.getId(), En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId));
             });
         }
 
@@ -150,7 +155,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        //add history
+        historyService.createHistory(token, issueId, En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId));
 
         return ok();
     }
@@ -166,6 +171,7 @@ public class PlanServiceImpl implements PlanService{
 
         if (rowCount == 1) {
             updateOrderNumbers(planId);
+            historyService.createHistory(token, issueId, En_HistoryValueType.REMOVE_FROM_PLAN, String.valueOf(planId), null);
             return ok();
         }
 
@@ -174,11 +180,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
-
-        //add history
     }
-
-
 
     @Override
     @Transactional
@@ -206,9 +208,6 @@ public class PlanServiceImpl implements PlanService{
         if (planToCaseObjectDAO.mergeBatch(issueOrderList) != issueOrderList.size()){
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
-
-        //add audit!
-        //add history
 
         return ok();
     }
@@ -240,7 +239,7 @@ public class PlanServiceImpl implements PlanService{
 
         updateOrderNumbers(currentPlanId);
 
-        //add history
+        historyService.createHistory(token, issueId, En_HistoryValueType.CHANGE_PLAN, String.valueOf(currentPlanId), String.valueOf(newPlanId));
 
         return error(En_ResultStatus.INTERNAL_ERROR);
     }
@@ -249,6 +248,13 @@ public class PlanServiceImpl implements PlanService{
     public Result<Boolean> removePlan(AuthToken token, Long planId) {
         if (planId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Plan plan = planDAO.get(planId);
+        if (plan != null && plan.getIssueList() != null){
+            plan.getIssueList().forEach(issue ->{
+                historyService.createHistory(token, issue.getId(), En_HistoryValueType.REMOVE_FROM_PLAN, planId.toString(), null);
+            });
         }
 
         if (!planDAO.removeByKey(planId)) {
