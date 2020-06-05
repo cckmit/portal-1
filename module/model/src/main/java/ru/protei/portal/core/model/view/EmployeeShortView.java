@@ -51,7 +51,7 @@ public class EmployeeShortView implements Serializable {
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
 
-    private PersonAbsence absence;
+    private PersonAbsence currentAbsence;
 
     public Long getId() {
         return id;
@@ -149,11 +149,11 @@ public class EmployeeShortView implements Serializable {
         this.gender = gender.getCode();
     }
 
-    public PersonAbsence getAbsence() {
-        return absence;
+    public PersonAbsence getCurrentAbsence() {
+        return currentAbsence;
     }
 
-    public void setAbsence(PersonAbsence absence) {
-        this.absence = absence;
+    public void setCurrentAbsence(PersonAbsence absence) {
+        this.currentAbsence = absence;
     }
 }

@@ -135,8 +135,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
             employeeInfo.addClassName("fired");
         }
 
-        if (employee.getAbsence() != null) {
-            employeeInfo.addClassName("fired");
+        if (employee.getCurrentAbsence() != null) {
+            employeeInfo.addClassName("absent");
+            employeeInfo.setTitle(reasonLang.getName(employee.getCurrentAbsence().getReason()));
         }
 
         if (employee.isFired()){
@@ -162,8 +163,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
             employeeContacts.addClassName("fired");
         }
 
-        if (employee.getAbsence() != null) {
-            employeeContacts.addClassName("fired");
+        if (employee.getCurrentAbsence() != null) {
+            employeeContacts.addClassName("absent");
+            employeeContacts.setTitle(reasonLang.getName(employee.getCurrentAbsence().getReason()));
         }
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
@@ -239,15 +241,15 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
             employeeDepartment.appendChild(department);
         }
 
-        if (employee.getAbsence() != null) {
+        if (employee.getCurrentAbsence() != null) {
 
-            employeeDepartment.addClassName("fired");
+            employeeDepartment.addClassName("absent");
+            employeeDepartment.setTitle(reasonLang.getName(employee.getCurrentAbsence().getReason()));
 
             Element absenceReason = LabelValuePairBuilder.make()
-                    .addIconPair(reasonLang.getStateIcon(employee.getAbsence().getReason()), "absence-reason")
+                    .addIconPair(reasonLang.getStateIcon(employee.getCurrentAbsence().getReason()), "absence-reason")
                     .toElement();
             employeeDepartment.appendChild(absenceReason);
-
         }
 
         return employeeDepartment.getString();
@@ -268,7 +270,6 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     @Inject
     @UiField
     Lang lang;
-
 
     @Inject
     En_AbsenceReasonLang reasonLang;

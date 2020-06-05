@@ -9,8 +9,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
@@ -97,7 +99,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     public void setAbsenceReason(En_AbsenceReason reason) {
         if (reason != null) {
-            employeeContainer.addClassName("fired");
+            employeeContainer.addClassName("absent");
+            employeeContainer.setTitle(reasonLang.getName(reason));
         }
     }
 
@@ -164,6 +167,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     @UiField
     SpanElement emails;
 
+    @Inject
+    En_AbsenceReasonLang reasonLang;
 
     AbstractEmployeeItemActivity activity;
 

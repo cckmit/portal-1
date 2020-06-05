@@ -794,6 +794,29 @@ label.bordered:after {
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
+
+            .absence-reason > i {
+              position: absolute;
+              bottom: -30px;
+              right: -30px;
+              font-size: 30px;
+              opacity: 0.2;
+              webkit-transition: all 0.8s ease;
+              transition: all 0.8s ease;
+            }
+
+          }
+        }
+      }
+      tr:hover {
+        td {
+          > div {
+            .absence-reason > i {
+              bottom: 10px;
+              right: 10px;
+              font-size: 50px;
+              color: $success_dark_color;
+            }
           }
         }
       }
@@ -815,14 +838,6 @@ label.bordered:after {
 
     .employee-department {
       width: 45%
-    }
-
-    .absence-reason > i {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      font-size: 70px;
-      opacity: 0.5;
     }
   }
 }
@@ -4246,4 +4261,12 @@ table {
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.fired {
+  opacity: 0.5;
+}
+
+.absent {
+  opacity: 0.5;
 }

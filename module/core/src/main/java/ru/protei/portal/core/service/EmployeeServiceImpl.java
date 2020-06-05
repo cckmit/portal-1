@@ -131,7 +131,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setWorkerEntries(workerEntries.stream()
                         .filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId()))
                         .collect(Collectors.toList()));
-                employee.setAbsence(personAbsences.stream()
+                employee.setCurrentAbsence(personAbsences.stream()
                         .filter(absence -> absence.getPersonId().equals(employee.getId()))
                         .findFirst().orElse(null));
             });
