@@ -18,12 +18,14 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
@@ -778,12 +780,49 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta.getImpLevel() == null) return false;
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
         if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getPauseDate())) return false;
+        if ()
         if (caseMeta.getManagerCompanyId() == null) return false;
         if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
             return false;
         return true;
+    }
+
+    private boolean isProductValid(Long productId, Long platformId, Long companyId) {
+        Company company = companyDAO.get(companyId);
+
+        if (!Boolean.TRUE.equals(company.getAutoOpenIssue())) {
+            return true;
+        }
+
+        PlatformQuery platformQuery = new PlatformQuery();
+        platformQuery.setCompanyId(companyId);
+
+        List<PlatformOption> platformOptions = new ArrayList<>();
+
+        if (platformId == null) {
+            Result<List<PlatformOption>> listResult = siteFolderService.listPlatformsOptionList(null, platformQuery);
+        }
+
+        if (isEmpty(listResult.getData())) {
+            return false;
+        }
+    }
+
+
+    private List<DevUnit> getProductsByCompanyId(Long companyId) {
+        List<Platform> platforms = platformDAO.getPlatformsByCompanyId(companyId);
+
+        if (isEmpty(platforms)) {
+            return new ArrayList<>();
+        }
+
+        List<Project>
+    }
+
+    private List<DevUnit> getProductsByPlatformId(Long platformId) {
+
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {
@@ -848,6 +887,15 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    CompanyDAO companyDAO;
+
+    @Autowired
+    PlatformDAO platformDAO;
+
+    @Autowired
+    SiteFolderService siteFolderService;
 
     @Autowired
     CaseShortViewDAO caseShortViewDAO;
