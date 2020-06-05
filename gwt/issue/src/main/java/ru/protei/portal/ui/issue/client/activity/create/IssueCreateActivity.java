@@ -322,11 +322,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 issueMetaView.platform().setValue(null);
             }
 
-            if (!isCompanyWithAutoOpenIssues(company)) {
-                issueMetaView.setProductModel(productModel);
-            } else {
+            updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(company));
+
+            if (isCompanyWithAutoOpenIssues(company)) {
                 resetProduct(issueMetaView);
-                issueMetaView.setProductModel(productWithChildrenModel);
                 updateProductsFilter(
                         issueMetaView,
                         issueMetaView.platform().getValue() == null ?
@@ -404,13 +403,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setPauseDateValid(isPauseDateValid(caseObjectMeta.getStateId(), caseObjectMeta.getPauseDate()));
         issueMetaView.setCompany(caseObjectMeta.getInitiatorCompany());
 
-        this.currentCompany = caseObjectMeta.getInitiatorCompany();
+        setCurrentCompany(caseObjectMeta.getInitiatorCompany());
 
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
         issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
-        issueMetaView.setProductMandatory(isCustomerWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany()));
-        issueMetaView.setProductModel(isCompanyWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany()) ? productWithChildrenModel : productModel);
+        updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany()));
         issueMetaView.product().setValue(ProductShortView.fromProduct(caseObjectMeta.getProduct()));
 
         issueMetaView.setTimeElapsed(caseObjectMeta.getTimeElapsed());
@@ -548,7 +546,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean validateView() {
-        if (isCustomerWithAutoOpenIssues(currentCompany) && issueMetaView.product().getValue() == null) {
+        if (isCompanyWithAutoOpenIssues(currentCompany) && issueMetaView.product().getValue() == null) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -699,22 +697,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         return false;
     }
 
-    private boolean isCustomerWithAutoOpenIssues(Company company) {
-        if (hasSystemScopeForEdit()) {
-            return false;
-        }
-
-        if (!isCompanyWithAutoOpenIssues(company)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean hasSystemScopeForEdit() {
-        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
-    }
-
     private boolean isCompanyWithAutoOpenIssues(Company company) {
         return Boolean.TRUE.equals(company.getAutoOpenIssue());
     }
@@ -726,6 +708,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     private void setCurrentCompany(Company company) {
         this.currentCompany = company;
+    }
+
+    private void updateProductModelAndMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
+        metaView.setProductModel(isCompanyWithAutoOpenIssues ? productWithChildrenModel : productModel);
+        metaView.setProductMandatory(isCompanyWithAutoOpenIssues);
     }
 
     @Inject

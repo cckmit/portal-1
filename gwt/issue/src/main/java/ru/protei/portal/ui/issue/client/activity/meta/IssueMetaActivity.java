@@ -381,7 +381,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
         metaView.setTimeElapsed(meta.getTimeElapsed());
 
-        this.currentCompany = meta.getInitiatorCompany();
+        setCurrentCompany(meta.getInitiatorCompany());
 
         metaView.setCompany(meta.getInitiatorCompany());
         metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
@@ -421,14 +421,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
 
-        metaView.setProductMandatory(isCustomerWithAutoOpenIssues(meta.getInitiatorCompany()));
-
         metaView.product().setValue(ProductShortView.fromProduct(meta.getProduct()));
-
-        if (!isCompanyWithAutoOpenIssues(meta.getInitiatorCompany())) {
-            metaView.setProductModel(productModel);
-        } else {
-            metaView.setProductModel(productWithChildrenModel);
+        updateProductModelAndMandatory(metaView, isCompanyWithAutoOpenIssues(meta.getInitiatorCompany()));
+        
+        if (isCompanyWithAutoOpenIssues(meta.getInitiatorCompany())) {
             updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
         }
 
@@ -529,7 +525,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return false;
         }
 
-        if (isCustomerWithAutoOpenIssues(currentCompany)) {
+        if (isCompanyWithAutoOpenIssues(currentCompany)) {
             return false;
         }
 
@@ -632,7 +628,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
     }
 
-    private void fillPlatformValueAndUpdateProductsFilter(Company company) {
+    private void fillPlatformValueAndUpdateProductsFilter(final Company company) {
         requestPlatforms(company.getId(), platformOptions -> {
             if (platformOptions != null && platformOptions.size() == 1) {
                 metaView.platform().setValue(platformOptions.get(0));
@@ -642,10 +638,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 meta.setPlatform(null);
             }
 
-            if (!isCompanyWithAutoOpenIssues(company)) {
-                metaView.setProductModel(productModel);
-            } else {
-                metaView.setProductModel(productWithChildrenModel);
+            updateProductModelAndMandatory(metaView, isCompanyWithAutoOpenIssues(company));
+
+            if (isCompanyWithAutoOpenIssues(company)) {
                 resetProduct(meta, metaView);
                 updateProductsFilter(
                         metaView,
@@ -703,22 +698,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return false;
     }
 
-    private boolean isCustomerWithAutoOpenIssues(Company company) {
-        if (hasSystemScopeForEdit()) {
-            return false;
-        }
-
-        if (!isCompanyWithAutoOpenIssues(company)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean hasSystemScopeForEdit() {
-        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
-    }
-
     private boolean isCompanyWithAutoOpenIssues(Company company) {
         return Boolean.TRUE.equals(company.getAutoOpenIssue());
     }
@@ -730,6 +709,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private void setCurrentCompany(Company company) {
         this.currentCompany = company;
+    }
+    
+    private void updateProductModelAndMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
+        metaView.setProductModel(isCompanyWithAutoOpenIssues ? productWithChildrenModel : productModel);
+        metaView.setProductMandatory(isCompanyWithAutoOpenIssues);
     }
 
     @Inject
