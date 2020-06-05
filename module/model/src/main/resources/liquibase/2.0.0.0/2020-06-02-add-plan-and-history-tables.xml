@@ -106,7 +106,7 @@
         <addForeignKeyConstraint constraintName="fk_initiator_id_to_person"
                                  baseTableName="history" baseColumnNames="initiator_id"
                                  referencedTableName="person" referencedColumnNames="id"
-                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
     </changeSet>
 
 

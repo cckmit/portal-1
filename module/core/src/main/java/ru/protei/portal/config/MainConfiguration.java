@@ -430,8 +430,6 @@ public class MainConfiguration {
         return new RedminePriorityMapEntryDAO_Impl();
     }
 
-
-
     @Bean
     public CaseFilterDAO getIssueFilterDAO() {
         return new CaseFilterDAO_Impl();
