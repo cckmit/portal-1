@@ -151,9 +151,11 @@ public class ReservedIp extends AuditableObject {
                 "id=" + id +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
+                ", creator='" + creator + '\'' +
                 ", subnetId=" + subnetId +
                 ", subnet=" + subnet +
                 ", ownerId=" + ownerId +
+                ", ownerShortName='" + ownerShortName + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", macAddress='" + macAddress + '\'' +
                 ", reserveDate=" + reserveDate +

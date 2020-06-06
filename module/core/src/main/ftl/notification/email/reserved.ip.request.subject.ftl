@@ -1,1 +1,0 @@
-${reservedIpRequest}<#noparse> [${initiator}]</#noparse>

@@ -726,7 +726,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        List<String> recipients = stream(notifiers).map(NotificationEntry::getAddress).collect(Collectors.toList());
+        List<String> recipients = getNotifiersAddresses(notifiers);
 
         PreparedTemplate bodyTemplate = templateService.getSubnetNotificationBody(subnet, action, recipients);
         if (bodyTemplate == null) {
@@ -740,28 +740,26 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onReservedIpNotificationEvent(ReservedIpNotificationEvent event) {
-        ReservedIp reservedIp = event.getReservedIp();
+        List<ReservedIp> reservedIps = event.getReservedIps();
         Person initiator = event.getInitiator();
         ReservedIpNotificationEvent.Action action = event.getAction();
         List<NotificationEntry> notifiers = event.getNotificationEntryList();
 
-        if (isEmpty(notifiers) || action == null || reservedIp == null) {
+        if (isEmpty(notifiers) || action == null || CollectionUtils.isEmpty(reservedIps)) {
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getReservedIpNotificationSubject(reservedIp, initiator, action);
+        PreparedTemplate subjectTemplate = templateService.getReservedIpNotificationSubject(reservedIps, initiator, action);
         if (subjectTemplate == null) {
-            log.error("Failed to prepare subject template for reserved IP notification with id={} and action={}",
-                    reservedIp.getId(), action);
+            log.error("Failed to prepare subject template for reserved IP notification: action={}", action);
             return;
         }
 
-        List<String> recipients = stream(notifiers).map(NotificationEntry::getAddress).collect(Collectors.toList());
+        List<String> recipients = getNotifiersAddresses(notifiers);
 
-        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIp, action, recipients);
+        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, action, recipients);
         if (bodyTemplate == null) {
-            log.error("Failed to prepare body template for reserved IP notification with id={} and action={}",
-                    reservedIp.getId(), action);
+            log.error("Failed to prepare body template for reserved IP notification: action={}", action);
             return;
         }
 

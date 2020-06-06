@@ -10,7 +10,7 @@ import java.util.List;
 public class SubnetNotificationEvent extends ApplicationEvent {
 
     private final Subnet subnet;
-    private Person initiator;
+    private final Person initiator;
     private final Action action;
     private final List<NotificationEntry> notificationEntryList;
 

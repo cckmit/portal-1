@@ -74,9 +74,9 @@ public interface TemplateService {
 
     PreparedTemplate getSubnetNotificationBody(Subnet subnet, SubnetNotificationEvent.Action action, Collection<String> recipients);
 
-    PreparedTemplate getReservedIpNotificationSubject(ReservedIp reservedIp, Person initiator, ReservedIpNotificationEvent.Action action);
+    PreparedTemplate getReservedIpNotificationSubject(List<ReservedIp> reservedIps, Person initiator, ReservedIpNotificationEvent.Action action);
 
-    PreparedTemplate getReservedIpNotificationBody(ReservedIp reservedIp, ReservedIpNotificationEvent.Action action, Collection<String> recipients);
+    PreparedTemplate getReservedIpNotificationBody(List<ReservedIp> reservedIps, ReservedIpNotificationEvent.Action action, Collection<String> recipients);
 
     PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd);
 

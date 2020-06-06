@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
@@ -603,12 +602,12 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getReservedIpNotificationSubject(ReservedIp reservedIp, Person initiator, ReservedIpNotificationEvent.Action action) {
+    public PreparedTemplate getReservedIpNotificationSubject(List<ReservedIp> reservedIps, Person initiator,
+                                                             ReservedIpNotificationEvent.Action action) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("is_created", action == ReservedIpNotificationEvent.Action.CREATED);
         templateModel.put("is_updated", action == ReservedIpNotificationEvent.Action.UPDATED);
         templateModel.put("is_removed", action == ReservedIpNotificationEvent.Action.REMOVED);
-        templateModel.put("ipAddress", reservedIp.getIpAddress() != null ? reservedIp.getIpAddress() : "?");
         templateModel.put("initiator", initiator.getDisplayName());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.subject.%s.ftl");
@@ -618,26 +617,12 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getReservedIpNotificationBody(ReservedIp reservedIp, ReservedIpNotificationEvent.Action action, Collection<String> recipients) {
+    public PreparedTemplate getReservedIpNotificationBody(List<ReservedIp> reservedIps, ReservedIpNotificationEvent.Action action, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
-        //templateModel.put("is_created", action == ReservedIpNotificationEvent.Action.CREATED);
+        templateModel.put("is_created", action == ReservedIpNotificationEvent.Action.CREATED);
         templateModel.put("is_updated", action == ReservedIpNotificationEvent.Action.UPDATED);
         templateModel.put("is_removed", action == ReservedIpNotificationEvent.Action.REMOVED);
-        templateModel.put("owner", reservedIp.getOwnerShortName());
-        templateModel.put("subnet", reservedIp.getSubnet().getAddress()+"."+reservedIp.getSubnet().getMask());
-        templateModel.put("ipAddress", reservedIp.getIpAddress() != null
-                ? reservedIp.getIpAddress()
-                : "?");
-        templateModel.put("macAddress", reservedIp.getMacAddress() != null
-                ? reservedIp.getMacAddress()
-                : "?");
-        templateModel.put("reserveDate", reservedIp.getReserveDate() != null
-                ? new SimpleDateFormat("dd.MM.yyyy").format(reservedIp.getReserveDate())
-                : "?");
-        templateModel.put("releaseDate", reservedIp.getReleaseDate() != null
-                ? new SimpleDateFormat("dd.MM.yyyy").format(reservedIp.getReleaseDate())
-                : "?");
-        templateModel.put("comment", reservedIp.getComment());
+        templateModel.put("reservedIps", reservedIps);
         templateModel.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
@@ -664,13 +649,7 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getReservedIpRemainingNotificationBody(List<ReservedIp> reservedIps,
                                                                    Date releaseDateStart, Date releaseDateEnd, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
-
-        /**
-         * @todo
-         *
-         *
-         */
-
+        templateModel.put("reservedIps", reservedIps);
         templateModel.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.remaining.body.%s.ftl");

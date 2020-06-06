@@ -27,8 +27,8 @@ public class ReservedIpReleaseRemainingEvent extends ApplicationEvent {
 
     public List<NotificationEntry> getNotificationEntryList() { return notificationEntryList; }
 
-    private List<ReservedIp> reservedIps;
-    private Date releaseDateStart;
-    private Date releaseDateEnd;
-    private List<NotificationEntry> notificationEntryList;
+    private final List<ReservedIp> reservedIps;
+    private final Date releaseDateStart;
+    private final Date releaseDateEnd;
+    private final List<NotificationEntry> notificationEntryList;
 }

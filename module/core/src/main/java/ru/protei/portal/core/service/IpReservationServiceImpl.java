@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.ReservedIpNotificationEvent;
@@ -247,9 +246,14 @@ public class IpReservationServiceImpl implements IpReservationService {
         if (removeWithIps || subnetAvailableToRemove(subnet.getId())) {
 
             Subnet stored = subnetDAO.get(subnet.getId());
+            List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsBySubnetId(subnet.getId());
 
             if (!subnetDAO.removeByKey(subnet.getId()))
                 return error(En_ResultStatus.INTERNAL_ERROR);
+
+            if (CollectionUtils.isEmpty(reservedIps)) {
+                return ok(stored);
+            }
 
             return ok(stored)
                     .publishEvent(new SubnetNotificationEvent(
@@ -257,7 +261,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                             stored,
                             getInitiator(token),
                             SubnetNotificationEvent.Action.REMOVED,
-                            makeNotificationListFromSubnet(stored)
+                            makeNotificationListFromReservedIps(reservedIps)
                     ));
         }
 
@@ -362,7 +366,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                 Long reservedIpId = reservedIpDAO.persist(reservedIp);
 
                 if (reservedIpId != null) {
-                    reservedIps.add(reservedIp);
+                    reservedIps.add(getReservedIp(reservedIpId));
                 }
             }
         }
@@ -374,17 +378,16 @@ public class IpReservationServiceImpl implements IpReservationService {
              -  ответ внести в reservedIp и merge в БД
         */
 
-        List<ApplicationEvent> events = stream(reservedIps)
-                .map(reservedIp -> new ReservedIpNotificationEvent(
+        return ok(reservedIps)
+                .publishEvent(new ReservedIpNotificationEvent(
                         this,
-                        reservedIp,
+                        reservedIps,
                         getInitiator(token),
                         ReservedIpNotificationEvent.Action.CREATED,
-                        makeNotificationListFromReservedIp(reservedIp)
-                ))
-                .collect(Collectors.toList());
-
-        return ok(reservedIps).publishEvents(events);
+                        makeNotificationListFromPersonIds(
+                                token.getPersonId(),
+                                reservedIpRequest.getOwnerId())
+                ));
     }
 
     @Override
@@ -394,11 +397,14 @@ public class IpReservationServiceImpl implements IpReservationService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, reservedIp)) {
+        ReservedIp stored = reservedIpDAO.get(reservedIp.getId());
+
+        if (token == null
+            || !(hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, reservedIp)
+                 || hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, stored))
+        ) {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
-
-        ReservedIp stored = reservedIpDAO.get(reservedIp.getId());
 
         if (!isValidReservedIp(token, reservedIp, stored)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -415,13 +421,18 @@ public class IpReservationServiceImpl implements IpReservationService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
+        reservedIp = getReservedIp(reservedIp.getId());
+
         return ok(reservedIp)
                 .publishEvent(new ReservedIpNotificationEvent(
                         this,
                         reservedIp,
                         getInitiator(token),
                         ReservedIpNotificationEvent.Action.UPDATED,
-                        makeNotificationListFromReservedIp(reservedIp)
+                        makeNotificationListFromPersonIds(
+                                token.getPersonId(),
+                                reservedIp.getOwnerId(),
+                                stored.getOwnerId())
                 ));
     }
 
@@ -447,7 +458,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                         stored,
                         getInitiator(token),
                         ReservedIpNotificationEvent.Action.REMOVED,
-                        makeNotificationListFromReservedIp(stored)
+                        makeNotificationListFromPersonIds(token.getPersonId(), stored.getOwnerId())
                 ));
     }
 
@@ -457,20 +468,11 @@ public class IpReservationServiceImpl implements IpReservationService {
      */
     @Override
     public Result<Boolean> notifyOwnersAboutReleaseIp() {
-        /*
-        @todo
-            - найти все IP с подходящими под критерий RELEASE_DATE_EXPIRES_IN_DAYS датами освобождения
-            - сгруппировать по owner_id
-            - сформировать по одному уведомлению каждому owner'у со списком IP-адресов,
-              которые он должен освободить/продлить в течение RELEASE_DATE_EXPIRES_IN_DAYS дней
-         */
-
-        log.info("notifyOwnersAboutReleaseIp(): start");
 
         Date releaseDateStart = makeDateWithOffset(1);
         Date releaseDateEnd = makeDateWithOffset(RELEASE_DATE_EXPIRES_IN_DAYS);
 
-        log.info("notifyOwnersAboutReleaseIp(): start from {} to {}", releaseDateStart, releaseDateEnd);
+        log.info("notifyOwnersAboutReleaseIp(): start : from {} to {}", releaseDateStart, releaseDateEnd);
 
         ReservedIpQuery query = new ReservedIpQuery();
         query.setReleasedFrom(releaseDateStart);
@@ -508,19 +510,10 @@ public class IpReservationServiceImpl implements IpReservationService {
      */
     @Override
     public Result<Boolean> notifyAdminsAboutExpiredReleaseDates() {
-        /*
-         @todo
-            - найти все IP с наступившей датой освобождения
-            - сгруппировать по owner_id
-            - сформировать одно уведомление со списком IP в формате:
-               IP адрес, ответственный, дата освобождения
-         */
-
-        log.info("notifyAdminsAboutExpiredReleaseDates(): start");
 
         Date today = makeDateWithOffset(0);
 
-        log.info("notifyAdminsAboutExpiredReleaseDates(): already expired to {}", today);
+        log.info("notifyAdminsAboutExpiredReleaseDates(): start : already expired to {}", today);
 
         ReservedIpQuery query = new ReservedIpQuery();
         query.setReleasedTo(today);
@@ -738,33 +731,36 @@ public class IpReservationServiceImpl implements IpReservationService {
         return ownerToReservedIpsMap;
     }
 
-    private List<NotificationEntry> makeNotificationListFromSubnet(Subnet subnet) {
-        List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsBySubnetId(subnet.getId());
-
-        if (CollectionUtils.isEmpty(reservedIps)) {
-            return null;
-        }
-
+    private List<NotificationEntry> makeNotificationListFromReservedIps(List<ReservedIp> reservedIps) {
         return stream(reservedIps).collect(Collectors.groupingBy(ReservedIp::getOwnerId))
                 .keySet().stream()
-                .filter(Objects::nonNull)
                 .map(ownerId -> {
-                    Person person = personDAO.get(ownerId);
-                    PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
-                    return NotificationEntry.email(contact.getEmail(), DEFAULT_LOCALE);
+                    return makeNotificationEntryFromPersonId(ownerId);
                 })
+                .filter(Objects::nonNull)
                 .filter(entry -> StringUtils.isNotEmpty(entry.getAddress()))
                 .collect(Collectors.toList());
     }
 
-    private List<NotificationEntry> makeNotificationListFromReservedIp(ReservedIp reservedIp) {
-        return Stream.of(
-                makeNotificationListFromPersonId(reservedIp.getOwnerId()),
-                makeNotificationListFromPersonId(reservedIp.getCreatorId())
-        )
-                .flatMap(Collection::stream) // flatten
+    private List<NotificationEntry> makeNotificationListFromPersonIds(Long ... personIds) {
+        return Stream.of(personIds)
                 .distinct()
+                .map(ownerId -> {
+                    return makeNotificationEntryFromPersonId(ownerId);
+                })
+                .filter(Objects::nonNull)
+                .filter(entry -> StringUtils.isNotEmpty(entry.getAddress()))
                 .collect(Collectors.toList());
+    }
+
+    private NotificationEntry makeNotificationEntryFromPersonId(Long personId) {
+        Person person = personDAO.get(personId);
+        if (person == null) {
+            return null;
+        }
+
+        PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
+        return NotificationEntry.email(contact.getEmail(), person.getLocale());
     }
 
     private List<NotificationEntry> makeNotificationListFromPersonId(Long personId) {
@@ -778,7 +774,9 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {
-        return stream(Arrays.asList(config.data().getMailNotificationConfig().getCrmIpReservationNotificationsRecipients()))
+        return Stream.of(
+                config.data().getMailNotificationConfig().getCrmIpReservationNotificationsRecipients()
+        )
                 .filter(Objects::nonNull)
                 .filter(not(String::isEmpty))
                 .map(address -> NotificationEntry.email(address, DEFAULT_LOCALE))
