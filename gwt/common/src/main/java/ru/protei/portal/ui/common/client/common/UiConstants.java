@@ -32,6 +32,7 @@ public class UiConstants {
         String CONTRACT = "fa fa-file-signature";
         String IP_RESERVATION = "fa fa-sitemap";
         String ROOM_RESERVATION = "fas fa-calendar-day";
+        String PLAN = "fa fa-list-ol";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
