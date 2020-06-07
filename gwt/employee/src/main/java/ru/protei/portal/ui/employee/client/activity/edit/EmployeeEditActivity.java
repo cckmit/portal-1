@@ -525,7 +525,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
                 .withSuccess(workerEntryList -> {
                     fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new EmployeeEvents.Show(isNew(personId)));
+                    fireEvent(new EmployeeEvents.Show(!isNew(personId)));
                 }));
     }
 

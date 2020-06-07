@@ -103,7 +103,7 @@ public class ExcelReportWriter implements
                 HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "",
                 HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "",
                 object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "",
-                object.getCaseState() != null ? object.getCaseState().getName() : "",
+                HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
                 object.getCaseCreated() != null ? dateFormat.format(object.getCaseCreated()) : "",
                 timeFormatter.formatHourMinutes(object.getTimeElapsedNone()),
                 timeFormatter.formatHourMinutes(object.getTimeElapsedWatch()),

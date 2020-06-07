@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.service.CaseStateService;
@@ -36,21 +37,25 @@ public class CaseStateControllerImpl implements CaseStateController {
     private CaseStateService caseStateService;
 
     @Override
-    public List<CaseState> getCaseStates() throws RequestFailedException {
+    public List<CaseState> getCaseStates(En_CaseType type) throws RequestFailedException {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(caseStateService.caseStateList(authToken));
+        return checkResultAndGetData(caseStateService.getCaseStates(authToken,type));
     }
 
     @Override
-    public List<CaseState> getCaseStatesOmitPrivileges() throws RequestFailedException {
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(caseStateService.getCaseStatesOmitPrivileges(authToken));
+    public List<CaseState> getCaseStatesOmitPrivileges(En_CaseType type) throws RequestFailedException {
+        return checkResultAndGetData(caseStateService.getCaseStatesOmitPrivileges(type));
     }
 
     @Override
     public CaseState getCaseState(Long id) throws RequestFailedException {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(caseStateService.getCaseState(authToken, id));
+    }
+
+    @Override
+    public CaseState getCaseStateWithoutCompaniesOmitPrivileges(Long id) throws RequestFailedException {
+        return checkResultAndGetData(caseStateService.getCaseStateWithoutCompaniesOmitPrivileges(id));
     }
 
     @Override
@@ -63,6 +68,4 @@ public class CaseStateControllerImpl implements CaseStateController {
         }
         return state;
     }
-
-
 }

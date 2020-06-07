@@ -46,7 +46,6 @@ import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPosi
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
@@ -69,6 +68,7 @@ import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
+import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
@@ -107,6 +107,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
         bind( StateSelectorModel.class ).asEagerSingleton();
+        bind( EmployeeRegistrationStateModel.class ).asEagerSingleton();
 
         bind( HomeCompanyService.class ).asEagerSingleton();
 
@@ -114,7 +115,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( AbstractPagerView.class ).to( PagerView.class );
 
-        bind( IssueStates.class ).asEagerSingleton();
         bind( AbstractAttachmentView.class ).to( AttachmentView.class );
 
         bind( ConfirmDialogActivity.class ).asEagerSingleton();

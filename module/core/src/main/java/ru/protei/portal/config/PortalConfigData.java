@@ -148,6 +148,7 @@ public class PortalConfigData {
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
             crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
             crmUrlFiles = properties.getProperty( "crm.url.files", "http://newportal/crm/" );
+            isProductionServer = properties.getProperty( "is.production.server", Boolean.class, false );
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -165,10 +166,15 @@ public class PortalConfigData {
             return crmUrlFiles;
         }
 
+        public boolean isProductionServer() {
+            return isProductionServer;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
         private final String crmUrlFiles;
+        private final Boolean isProductionServer;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
@@ -384,6 +390,7 @@ public class PortalConfigData {
         private final boolean youtrackEnabled;
         private final boolean youtrackCompanySyncEnabled;
         private final boolean youtrackEmployeeSyncEnabled;
+        private final boolean youtrackLinksMigrationEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -395,6 +402,7 @@ public class PortalConfigData {
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
             youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
+            youtrackLinksMigrationEnabled = properties.getProperty("migration.youtrack.links", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -418,6 +426,9 @@ public class PortalConfigData {
         }
         public boolean isYoutrackEmployeeSyncEnabled() {
             return youtrackEmployeeSyncEnabled;
+        }
+        public boolean isYoutrackLinksMigrationEnabled() {
+            return youtrackLinksMigrationEnabled;
         }
 
         public boolean isJiraEnabled() {

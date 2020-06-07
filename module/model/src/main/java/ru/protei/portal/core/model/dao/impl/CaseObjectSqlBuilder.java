@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -63,13 +64,36 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and caseno in " + makeInArg(query.getCaseNumbers(), false));
             }
 
-            if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
-                condition.append(" and initiator_company in " + makeInArg(query.getCompanyIds(), false));
+            boolean isInitiatorCompaniesNotEmpty = isNotEmpty(query.getCompanyIds());
+
+            if (isInitiatorCompaniesNotEmpty) {
+                condition.append(" and (initiator_company in " + makeInArg(query.getCompanyIds(), false));
+
+                if (isNotEmpty(query.getInitiatorIds())) {
+                    condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
+                }
             }
 
-            if ( query.getInitiatorIds() != null && !query.getInitiatorIds().isEmpty() ) {
-                condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
+            if (isNotEmpty(query.getManagerCompanyIds())) {
+                String logicOperator = isInitiatorCompaniesNotEmpty && Boolean.TRUE.equals(query.getManagerOrInitiatorCondition()) ? " or " : " and ";
+
+                condition.append(logicOperator + "manager_company_id in " + makeInArg(query.getManagerCompanyIds(), false));
+
+                if (isNotEmpty(query.getManagerIds())) {
+                    List<Long> managerIds = new ArrayList<>(query.getManagerIds());
+                    boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
+
+                    if (!isWithoutManager) {
+                        condition.append(" and manager IN " + makeInArg(managerIds, false));
+                    } else if (managerIds.isEmpty()) {
+                        condition.append(" and manager IS NULL");
+                    } else {
+                        condition.append(" and (manager IN " + makeInArg(managerIds, false) + " or manager IS NULL)");
+                    }
+                }
             }
+
+            condition.append(isInitiatorCompaniesNotEmpty ? ")" : "");
 
             if (isNotEmpty(query.getProductIds())) {
                 if (query.getType() != null && query.getType().equals(En_CaseType.PROJECT)) {
@@ -99,21 +123,8 @@ public class CaseObjectSqlBuilder {
                         "WHERE case_location.location_id in (SELECT location.id FROM location WHERE location.parent_id in " + makeInArg(query.getDistrictIds(), false) + "))");
             }
 
-            if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                List<Long> managerIds = new ArrayList<>(query.getManagerIds());
-                boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
-
-                if (!isWithoutManager) {
-                    condition.append(" and manager IN " + makeInArg(managerIds, false));
-                } else if (managerIds.isEmpty()) {
-                    condition.append(" and manager IS NULL");
-                } else {
-                    condition.append(" and (manager IN " + makeInArg(managerIds, false) + " OR manager IS NULL)");
-                }
-            }
-
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
-                condition.append(" and state in " + makeInArg(query.getStateIds(), false));
+                condition.append(" and case_object.state in " + makeInArg(query.getStateIds(), false));
             }
 
             if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {

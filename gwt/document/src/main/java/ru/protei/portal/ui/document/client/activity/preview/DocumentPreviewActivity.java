@@ -164,10 +164,10 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private boolean hasAccessToDoc(Document document) {
-        if (policyService.hasSystemScopeForPrivilege(En_Privilege.DOCUMENT_EDIT)) {
+        if (policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
             return true;
         }
-        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.DOCUMENT_VIEW)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
             return false;
         }
         Long currentPersonId = policyService.getProfile().getId();
@@ -182,7 +182,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private boolean hasAccessToPdf() {
-        return policyService.hasSystemScopeForPrivilege(En_Privilege.DOCUMENT_VIEW);
+        return policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW);
     }
 
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";

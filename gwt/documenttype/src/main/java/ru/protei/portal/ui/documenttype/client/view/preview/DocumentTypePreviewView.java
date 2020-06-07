@@ -8,11 +8,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.documenttype.client.activity.preview.AbstractDocumentTypePreviewActivity;
 import ru.protei.portal.ui.documenttype.client.activity.preview.AbstractDocumentTypePreviewView;
 
@@ -51,6 +52,21 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
         return gost;
     }
 
+    @Override
+    public HasValidable nameValidation() {
+        return name;
+    }
+
+    @Override
+    public HasValidable shortNameValidation() {
+        return shortName;
+    }
+
+    @Override
+    public HasValidable gostValidation() {
+        return gost;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -69,11 +85,11 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
     @UiField
     Lang lang;
     @UiField
-    TextBox shortName;
+    ValidableTextBox shortName;
     @UiField
-    TextBox name;
+    ValidableTextBox name;
     @UiField
-    TextBox gost;
+    ValidableTextBox gost;
     @Inject
     @UiField(provided = true)
     DocumentCategorySelector documentCategory;

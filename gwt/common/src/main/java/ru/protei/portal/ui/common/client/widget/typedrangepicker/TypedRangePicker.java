@@ -61,6 +61,12 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
         range.setMandatory(value);
     }
 
+    public void setEnableUnlimited(boolean value) {
+        btnGroup.itemViewToModel.entrySet().stream()
+                .filter(e -> e.getValue().equals(En_DateIntervalType.UNLIMITED))
+                .findFirst().get().getKey().setEnabled(value);
+    }
+
     @UiField
     ToggleBtnGroup<En_DateIntervalType> btnGroup;
 

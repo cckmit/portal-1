@@ -751,7 +751,7 @@ label.bordered:after {
       }
     }
     .number {
-      width: 10%;
+      width: 14%;
       text-align: center;
       .number-size {
         font-size: 22px;
@@ -1351,8 +1351,8 @@ td.info {
 .state-opened,
 .state-workaround,
 .state-info_request,
-.state-nx_request,
-.state-cust_request {
+.state-request_to_nx,
+.state-request_to_customer {
   color: $info_color !important;
 }
 
@@ -1360,7 +1360,7 @@ td.info {
   color: $info_light_color !important;
 }
 
-.state-cust_pending {
+.state-customer_pending {
   color: #133aadcf !important;
 }
 
@@ -1368,8 +1368,8 @@ td.info {
   color: #4caf50 !important;
 }
 
-.state-test_local,
-.state-test_cust {
+.state-local_test,
+.state-customer_test {
   color: #906094 !important;
 }
 
@@ -1378,7 +1378,8 @@ td.info {
 }
 
 .state-canceled,
-.state-paused {
+.state-paused,
+.state-customer_responsibility {
   color: #868686 !important;
 }
 
@@ -1430,19 +1431,19 @@ td.info {
 .label-workaround,
 .label-info_request,
 .label-technical_project,
-.label-nx_request,
-.label-cust_request,
+.label-request_to_nx,
+.label-request_to_customer,
 .option-opened .option-name,
 .option-workaround .option-name,
 .option-info_request .option-name,
 .option-technical_project .option-name,
-.option-nx_request .option-name,
-.option-cust_request .option-name {
+.option-request_to_nx .option-name,
+.option-request_to_customer .option-name {
   background-color: $info_color;
 }
 
 .case-opened, .case-workaround, .case-info_request,
-.case-nx_request, .case-cust_request {
+.case-request_to_nx, .case-request_to_customer {
   color: $info_color;
   font-weight: bold;
 }
@@ -1459,12 +1460,12 @@ td.info {
   font-weight: bold;
 }
 
-.label-cust_pending,
-.option-cust_pending .option-name {
+.label-customer_pending,
+.option-customer_pending .option-name {
   background-color: #133aadcf;
 }
 
-.case-cust_pending {
+.case-customer_pending {
   color: #133aadcf;
   font-weight: bold;
 }
@@ -1481,15 +1482,15 @@ td.info {
   font-weight: bold;
 }
 
-.label-test_local,
-.label-test_cust,
-.option-test_local .option-name,
-.option-test_cust .option-name {
+.label-local_test,
+.label-customer_test,
+.option-local_test .option-name,
+.option-customer_test .option-name {
   background-color: #906094;
 }
 
-.case-test_local,
-.case-test_cust {
+.case-local_test,
+.case-customer_test {
   color: #906094;
   font-weight: bold;
 }
@@ -1506,13 +1507,16 @@ td.info {
 
 .label-canceled,
 .label-paused,
+.label-customer_responsibility,
 .option-canceled .option-name,
-.option-paused .option-name {
+.option-paused .option-name,
+.option-customer_responsibility .option-name {
   background-color: #868686;
 }
 
 .case-canceled,
-.case-paused {
+.case-paused,
+.case-customer_responsibility {
   color: #868686;
   font-weight: bold;
 }
@@ -3331,31 +3335,61 @@ label {
 }
 
 .subnet {
-  td {
-    small {
-      font-size: 85%;
+  table {
+    tbody {
+      tr {
+        td {
+          height: 35px;
+
+          > div {
+            height: 35px;
+            max-height: 35px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
     }
 
-    p {
-      margin: 0;
-      font-size: 85%;
-      line-height: 1.3em;
+    .address {
+      width: 15%;
+      text-align: center;
+
+      .address-size {
+        font-size: 16px;
+        padding: 7px 0;
+      }
     }
 
-    label {
-      font-weight: 600;
-      line-height: 1.2em;
-      vertical-align: inherit;
-      font-size: 0.9em;
-      cursor: pointer;
+    .creator {
+      width: 15%;
     }
-  }
 
-  .address {
-    width: 15%;
-    text-align: center;
-    .address-size {
-      font-size: 16px;
+    .ip-count {
+      text-align: center;
+    }
+
+    .comment {
+      width: 35%;
     }
   }
   .ip-count {
@@ -3364,48 +3398,81 @@ label {
 }
 
 .reserved-ip {
-  td {
-    small {
-      font-size: 85%;
+  table {
+    tbody {
+      tr {
+        td {
+          height: 35px;
+
+          > div {
+            height: 35px;
+            max-height: 35px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
     }
 
-    p {
-      margin: 0;
-      font-size: 85%;
-      line-height: 1.3em;
+    .ip-address {
+      width: 15%;
+      text-align: center;
+
+      .address-size {
+        font-size: 16px;
+        padding: 7px 0;
+      }
     }
 
-    label {
-      font-weight: 600;
-      line-height: 1.2em;
-      vertical-align: inherit;
-      font-size: 0.9em;
-      cursor: pointer;
+    .ip-use-range {
+      width: 20%;
     }
-  }
 
-  .ip-address {
-    width: 15%;
-    text-align: center;
-    .address-size {
-      font-size: 16px;
+    .ip-owner {
+      width: 15%;
     }
-  }
-  .ip-use-range {
-    width: 15%;
-  }
-  .ip-owner {
-  }
-  .ip-comment {
-  }
-  .ip-last-check {
+
+    .ip-comment {
+      width: 30%;
+    }
+
+    .ip-last-check {
+      width: 20%;
+    }
   }
 }
 
 .short-table-view {
   .reserved-ip {
+    .ip-address {
+      width: 20%;
+    }
+
+    .ip-use-range {
+      width: 40%;
+    }
+
     .ip-owner {
-      display: none;
+      width: 20%;
     }
 
     .ip-comment {
@@ -4434,4 +4501,9 @@ table {
     -webkit-transition: opacity .3s ease;
     transition: opacity .3s ease;
   }
+}
+
+.form-group-attached > div:not(:last-child) .add-border-bottom .form-group-default,
+.form-group-attached > div:not(:last-child).add-border-bottom .form-group-default {
+  border-bottom-color: rgba(0, 0, 0, 0.07);
 }

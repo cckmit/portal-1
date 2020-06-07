@@ -19,7 +19,7 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
 {
 
     @Inject
-    public void init( InitiatorModel model ) {
+    public void init( PersonModel model ) {
         this.model = model;
         setModel( model );
         setItemRenderer( value -> value == null ? defaultValue : value.getName() );
@@ -46,11 +46,6 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
 
     @Override
     public void refresh() {
-        PersonShortView value = getValue();
-        if (value != null
-                && !contains( model.getValues(), value )) {
-            setValue( null );
-        }
     }
 
     public void updateCompanies(Set<Long> companyIds) {
@@ -59,7 +54,7 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
         }
     }
 
-    private InitiatorModel model;
+    private PersonModel model;
 
     private boolean fired = false;
 }

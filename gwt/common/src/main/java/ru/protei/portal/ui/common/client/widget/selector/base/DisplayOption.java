@@ -10,6 +10,7 @@ public class DisplayOption {
     private String icon;
     private String imageSrc;
     private String externalLink;
+    private String title;
 
     public DisplayOption() {}
 
@@ -66,5 +67,13 @@ public class DisplayOption {
 
     public void setImageSrc( String imageSrc ) {
         this.imageSrc = imageSrc;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

@@ -6,13 +6,16 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -65,13 +68,15 @@ public class BaseServiceTest {
     public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
         CaseObject caseObject = new CaseObject();
         caseObject.setName( "Test_Case_Name" );
-        caseObject.setCaseNumber(caseNo);
-        caseObject.setState( En_CaseState.CREATED );
+        caseObject.setCaseNumber( caseNo );
+        caseObject.setStateId( CrmConstants.State.CREATED );
+        caseObject.setStateName( "created" );
+        caseObject.setManagerCompanyId( person.getCompanyId() );
         caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
+        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
         return caseObject;
     }
 
@@ -282,6 +287,8 @@ public class BaseServiceTest {
     protected DevUnitDAO devUnitDAO;
     @Autowired
     protected CaseObjectDAO caseObjectDAO;
+    @Autowired
+    protected CaseLinkDAO caseLinkDAO;
     @Autowired
     protected CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired

@@ -90,8 +90,9 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         log.debug( "getSelectorsParams(): caseQuery={} ", caseQuery );
         SelectorsParams selectorsParams = new SelectorsParams();
 
-        if (!isEmpty( caseQuery.getCompanyIds())) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds( filterToList( caseQuery.getCompanyIds(), Objects::nonNull ));
+        List<Long> companyIds = collectCompanyIds(caseQuery);
+        if (!isEmpty(companyIds)) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( filterToList(companyIds, Objects::nonNull ));
             if (result.isOk()) {
                 selectorsParams.setCompanyEntityOptions(result.getData());
             } else {
@@ -211,4 +212,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         return personsIds;
     }
 
+    private List<Long> collectCompanyIds(CaseQuery caseQuery) {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.addAll(emptyIfNull(caseQuery.getCompanyIds()));
+        companyIds.addAll(emptyIfNull(caseQuery.getManagerCompanyIds()));
+
+        return companyIds;
+    }
 }

@@ -3,8 +3,8 @@ package ru.protei.portal.ui.employeeregistration.client.activity.filter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseState;
 
 import java.util.Set;
 
@@ -18,7 +18,7 @@ public interface AbstractEmployeeRegistrationFilterView extends IsWidget {
 
     HasValue<DateInterval> dateRange();
 
-    HasValue<Set<En_CaseState>> states();
+    HasValue<Set<CaseState>> states();
 
     HasValue<En_SortField> sortField();
 

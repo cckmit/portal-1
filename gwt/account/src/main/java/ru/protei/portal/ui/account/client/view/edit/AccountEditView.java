@@ -19,9 +19,8 @@ import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActiv
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
 import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -124,7 +123,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         Company company = Company.fromEntityOption( event.getValue() );
 
         person.setEnabled( company != null );
-        setCompaniesForInitiator(InitiatorModel.makeCompanyIds(company));
+        setCompaniesForInitiator(PersonModel.makeCompanyIds(company));
         person.setValue( null );
     }
 

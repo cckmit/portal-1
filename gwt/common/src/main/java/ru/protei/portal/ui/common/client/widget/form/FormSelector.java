@@ -12,13 +12,13 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Вид селектора
@@ -47,9 +47,11 @@ public class FormSelector<T> extends Selector<T> implements HasValidable, HasEna
         }
         innerHtml += valueName;
 
+        String title = isNotEmpty(selectedValue.getTitle()) ? selectedValue.getTitle() : valueName;
+
         text.setInnerHTML(innerHtml);
-        if (StringUtils.isNotEmpty(valueName)) {
-            text.setTitle(valueName);
+        if (isNotEmpty(title)) {
+            text.setTitle(title);
         }
 
         if (selectedValue.getExternalLink() != null) {

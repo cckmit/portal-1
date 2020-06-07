@@ -68,7 +68,7 @@ public abstract class IssueTableFilterActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
+        if (!policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW )) {
             return;
         }
 
@@ -95,6 +95,7 @@ public abstract class IssueTableFilterActivity
 
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
         }
 
         this.preScroll = event.preScroll;
@@ -264,6 +265,7 @@ public abstract class IssueTableFilterActivity
             @Override
             public void onSuccess( SelectorsParams selectorsParams ) {
                 filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
+                IssueTableFilterActivity.this.onUserFilterChanged();
             }
         } );
     }
@@ -284,7 +286,6 @@ public abstract class IssueTableFilterActivity
 
     private void applyFilterViewPrivileges() {
         filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterView.getIssueFilterParams().managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
         filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
     }
 

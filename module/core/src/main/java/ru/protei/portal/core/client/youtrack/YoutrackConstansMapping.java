@@ -2,44 +2,36 @@ package ru.protei.portal.core.client.youtrack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-
-import java.util.List;
+import ru.protei.portal.core.model.util.CrmConstants;
 
 public class YoutrackConstansMapping {
-    public static En_CaseState toCaseState( String ytStateId) {
+    public static Long toCaseState(String ytStateId) {
         if (ytStateId == null)
             return null;
         switch (ytStateId) {
             case "New":
             case "Новый":
-                return En_CaseState.CREATED;
+                return CrmConstants.State.CREATED;
             case "Done":
             case "Выдан заказчику":
             case "Complete":
-                return En_CaseState.DONE;
+                return CrmConstants.State.DONE;
             case "Ignore":
-                return En_CaseState.IGNORED;
+                return CrmConstants.State.IGNORED;
             case "Closed":
-                return En_CaseState.CLOSED;
+                return CrmConstants.State.CLOSED;
             case "Canceled":
             case "Отменен":
-                return En_CaseState.CANCELED;
+                return CrmConstants.State.CANCELED;
             case "Verified":
-                return En_CaseState.VERIFIED;
+                return CrmConstants.State.VERIFIED;
             default:
-                return En_CaseState.ACTIVE;
+                return CrmConstants.State.ACTIVE;
         }
     }
 
-    public static En_CaseState toCaseState( List<String> ytStateIds ) {
-        if (ytStateIds == null || ytStateIds.size() != 1)
-            return null;
-        return toCaseState(ytStateIds.get(0));
-    }
-
-    public static En_ImportanceLevel toCaseImportance( String ytpriority ) {
+    public static En_ImportanceLevel toCaseImportance(String ytpriority) {
         En_ImportanceLevel result = null;
 
         if (ytpriority != null) {
@@ -62,11 +54,11 @@ public class YoutrackConstansMapping {
             }
 
             if (result == null) {
-                log.warn( "toCaseImportance(): Detected unknown YouTrack priority level= {}", ytpriority );
+                log.warn("toCaseImportance(): Detected unknown YouTrack priority level= {}", ytpriority);
             }
         }
         return result;
     }
 
-    private static final Logger log = LoggerFactory.getLogger( YoutrackConstansMapping.class );
+    private static final Logger log = LoggerFactory.getLogger(YoutrackConstansMapping.class);
 }

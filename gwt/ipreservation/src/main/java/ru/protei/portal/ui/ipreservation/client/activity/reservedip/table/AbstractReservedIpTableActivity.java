@@ -15,4 +15,8 @@ public interface AbstractReservedIpTableActivity  extends
         ClickColumn.Handler<ReservedIp>, EditClickColumn.EditHandler<ReservedIp>,
         RemoveClickColumn.RemoveHandler<ReservedIp>, RefreshClickColumn.RefreshHandler<ReservedIp>,
         InfiniteLoadHandler<ReservedIp>, InfiniteTableWidget.PagerListener {
+
+    boolean hasEditPrivileges(Long ownerId);
+    boolean hasRefreshPrivileges();
+    boolean hasRemovePrivileges(Long ownerId);
 }

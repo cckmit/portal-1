@@ -138,7 +138,12 @@ public enum En_SortField {
     /**
      * last active IP-address date
      */
-    check_date("last_check_date");
+    check_date("last_check_date"),
+
+    /**
+     * state order
+     */
+    state_order("VIEW_ORDER");
 
     private String fieldName;
     private String bundleKey;

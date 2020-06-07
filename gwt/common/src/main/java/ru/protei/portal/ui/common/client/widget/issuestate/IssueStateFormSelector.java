@@ -1,10 +1,10 @@
 package ru.protei.portal.ui.common.client.widget.issuestate;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.form.FormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
@@ -12,23 +12,22 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.List;
 
-public class IssueStateFormSelector extends FormSelector<En_CaseState> implements SelectorWithModel<En_CaseState> {
+public class IssueStateFormSelector extends FormSelector<CaseState> implements SelectorWithModel<CaseState> {
 
     @Inject
-    public void init(StateModel model, En_CaseStateLang En_CaseStateLang, Lang lang) {
+    public void init(StateModel model, Lang lang) {
         this.model = model;
-        this.lang = En_CaseStateLang;
         noSearchResult = lang.searchTerminalState();
     }
 
     @Override
-    public void setValue(En_CaseState value, boolean fireEvents) {
+    public void setValue(CaseState value, boolean fireEvents) {
         onValueSet(value);
         super.setValue(value, fireEvents);
     }
 
     @Override
-    public void fillOptions(List<En_CaseState> options) {
+    public void fillOptions(List<CaseState> options) {
         clearOptions();
         if (defaultValue != null) {
             addOption(null);
@@ -47,7 +46,7 @@ public class IssueStateFormSelector extends FormSelector<En_CaseState> implement
         this.defaultValue = defaultValue;
     }
 
-    private void onValueSet(En_CaseState caseState) {
+    private void onValueSet(CaseState caseState) {
         if (model == null || workflow == null) {
             // widget has not been configured properly yet
             return;
@@ -56,27 +55,42 @@ public class IssueStateFormSelector extends FormSelector<En_CaseState> implement
         model.subscribe(this, workflow, caseState);
     }
 
-    private DisplayOptionCreator<En_CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
+    private DisplayOptionCreator<CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            return caseState -> new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase());
+            return caseState -> {
+                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "fas fa-circle m-r-5 state-" + makeCaseStateStyle(caseState));
+                displayOption.setTitle(makeCaseStateTitle(caseState));
+                return displayOption;
+            };
         }
-        return new DisplayOptionCreator<En_CaseState>() {
+        return new DisplayOptionCreator<CaseState>() {
             @Override
-            public DisplayOption makeDisplayOption(En_CaseState caseState) {
-                return new DisplayOption(makeCaseStateName(caseState));
+            public DisplayOption makeDisplayOption(CaseState caseState) {
+                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState));
+                displayOption.setTitle(makeCaseStateTitle(caseState));
+                return displayOption;
             }
             @Override
-            public DisplayOption makeDisplaySelectedOption(En_CaseState caseState) {
-                return new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
+            public DisplayOption makeDisplaySelectedOption(CaseState caseState) {
+                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
+                displayOption.setTitle(makeCaseStateTitle(caseState));
+                return displayOption;
             }
         };
     }
 
-    private String makeCaseStateName(En_CaseState caseState) {
-        return caseState == null ? defaultValue : lang.getStateName(caseState);
+    private String makeCaseStateName(CaseState caseState) {
+        return caseState == null ? defaultValue : caseState.getState();
     }
 
-    private En_CaseStateLang lang;
+    private String makeCaseStateStyle(CaseState caseState) {
+        return caseState == null ? "" : CaseStateUtils.makeStyleName(caseState.getState());
+    }
+
+    private String makeCaseStateTitle(CaseState caseState) {
+        return caseState == null ? "" : caseState.getInfo();
+    }
+
     private En_CaseStateWorkflow workflow;
     private StateModel model;
     private String defaultValue;

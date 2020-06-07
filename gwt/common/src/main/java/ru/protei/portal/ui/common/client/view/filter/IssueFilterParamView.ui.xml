@@ -59,13 +59,18 @@
 
             <person:PersonMultiSelector ui:field="initiators"
                                         header="{lang.issueInitiator}"
+                                        selectCompanyMessage="{lang.initiatorSelectACompany}"
                                         addStyleNames="form-group col-md-4 resize-md-12"/>
 
-            <person:EmployeeMultiSelector ui:field="managers"
-                                          header="{lang.issueManager}"
-                                          addStyleNames="form-group col-md-4 resize-md-12"
-                                          firedEmployeesVisible="true"
-                                          hasNullValue="true"/>
+            <companyselector:CompanyMultiSelector ui:field="managerCompanies"
+                                                  header="{lang.issueManagerCompany}"
+                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <person:PersonMultiSelector ui:field="managers"
+                                        header="{lang.issueManager}"
+                                        selectCompanyMessage="{lang.managerSelectACompany}"
+                                        addStyleNames="form-group col-md-4 resize-md-12"
+                                        hasNullValue="true"/>
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.reportTypeCaseTimeElapsedWorkAutor}"

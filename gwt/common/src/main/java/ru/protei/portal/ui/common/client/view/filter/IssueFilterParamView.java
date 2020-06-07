@@ -14,10 +14,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -35,16 +35,14 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -65,6 +63,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
         initiators.setCompaniesSupplier(() -> new HashSet<>( companies.getValue()) );
+        managers.setCompaniesSupplier(() -> new HashSet<>(managerCompanies.getValue()));
+        managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         searchByCommentsWarning.setText(
                 lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
     }
@@ -75,13 +75,18 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setInitiatorModel(InitiatorModel initiatorModel) {
-        initiators.setInitiatorModel(initiatorModel);
+    public void setInitiatorsModel(PersonModel personModel) {
+        initiators.setPersonModel(personModel);
     }
 
     @Override
-    public void setCreatorModel(PersonModel personModel) {
-        creators.setPersonModel(personModel);
+    public void setManagersModel(PersonModel personModel) {
+        managers.setPersonModel(personModel);
+    }
+
+    @Override
+    public void setCreatorModel(AsyncPersonModel asyncPersonModel) {
+        creators.setAsyncSearchModel(asyncPersonModel);
     }
 
     @Override
@@ -130,6 +135,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasValue<Set<EntityOption>> managerCompanies() {
+        return managerCompanies;
+    }
+
+    @Override
     public HasValue<Set<PersonShortView>> initiators() {
         return initiators;
     }
@@ -165,7 +175,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<Set<En_CaseState>> states() {
+    public HasValue<Set<CaseState>> states() {
         return state;
     }
 
@@ -194,6 +204,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companies.setValue(null);
         products.setValue(null);
         managers.setValue(null);
+        managerCompanies.setValue(null);
         initiators.setValue(null);
         commentAuthors.setValue(null);
         creators.setValue(null);
@@ -210,7 +221,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
 
-        model.onUserFilterChanged();
+        if (isAttached()) {
+            model.onUserFilterChanged();
+        }
     }
 
     @Override
@@ -219,6 +232,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companyIds.add(toEntityOption(company));
         companies.setValue(companyIds);
         updateInitiators();
+    }
+
+    @Override
+    public void presetManagerCompany(Company company) {
+        HashSet<EntityOption> managerCompanies = new HashSet<>();
+        managerCompanies.add(toEntityOption(company));
+        this.managerCompanies.setValue(managerCompanies);
+        updateManagers();
     }
 
     private void toggleMsgSearchThreshold() {
@@ -245,9 +266,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateCreatedRange.setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
         dateModifiedRange.setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
         importance.setValue(caseQuery.getImportances());
-        state.setValue(setOf(caseQuery.getStates()));
+        state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
-        companies.setValue(new HashSet<>(emptyIfNull(filter.getCompanyEntityOptions())));
+        companies.setValue(applyCompanies(filter, caseQuery.getCompanyIds()));
+        managerCompanies.setValue(applyCompanies(filter, caseQuery.getManagerCompanyIds()));
+
         updateInitiators();
 
         initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
@@ -270,8 +293,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         tags.setValue(setOf( filter.getCaseTags() ) );
         toggleMsgSearchThreshold();
-
-        model.onUserFilterChanged();
     }
 
     @Override
@@ -294,11 +315,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setInitiatorIds(getManagersIdList(initiators.getValue()));
-                query.setImportances( nullIfEmpty(importance.getValue()));
-                query.setStates(nullIfEmpty( state.getValue()));
+                query.setImportances(nullIfEmpty(importance.getValue()));
+                query.setStateIds(nullIfEmpty(toList(states().getValue(), state -> state.getId())));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCaseTagsIds( nullIfEmpty( toList( tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ) );
-                query.setCreatorIds( nullIfEmpty( toList( creators().getValue(), personShortView -> personShortView == null ? null : personShortView.getId() ) ) );
+                query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
+                query.setCreatorIds(nullIfEmpty(toList(creators.getValue(), personShortView -> personShortView == null ? null : personShortView.getId())));
+                query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
 
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 query = fillModifiedInterval(query, dateModifiedRange.getValue());
@@ -314,10 +336,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             case CASE_RESOLUTION_TIME:
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
-                query.setManagerIds(getManagersIdList(managers.getValue()));
-                query.setCaseTagsIds(nullIfEmpty( toList( tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId() ) ));
+                query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 query.setImportances(nullIfEmpty(importance.getValue()));
-                query.setStates(nullIfEmpty(state.getValue()));
+                query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 break;
         }
@@ -325,18 +346,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter) {
+    public void setStateFilter(Selector.SelectorFilter<CaseState> caseStateFilter) {
         state.setFilter(caseStateFilter);
     }
 
     @Override
     public void fillImportanceButtons(List<En_ImportanceLevel> importanceLevelList) {
         importance.fillButtons(importanceLevelList);
-    }
-
-    @Override
-    public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
-        initiators.setCompaniesSupplier(collectionSupplier);
     }
 
     @UiHandler("search")
@@ -380,6 +396,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("managerCompanies")
+    public void onManagerCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        managers.updateCompanies();
+        onFilterChanged();
+    }
+
     @UiHandler("initiators")
     public void onInitiatorsSelected(ValueChangeEvent<Set<PersonShortView>> event) {
         onFilterChanged();
@@ -411,7 +433,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @UiHandler("state")
-    public void onStateSelected(ValueChangeEvent<Set<En_CaseState>> event) {
+    public void onStateSelected(ValueChangeEvent<Set<CaseState>> event) {
         onFilterChanged();
     }
 
@@ -428,10 +450,86 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortField.stopWatchForScrollOf(widget);
     }
 
+    public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
+        if (filterType == null) {
+            return;
+        }
+
+        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
+            modifiedRangeContainer.removeClassName(HIDE);
+            sortByContainer.removeClassName(HIDE);
+            labelCreated.setInnerText(lang.created());
+        } else {
+            modifiedRangeContainer.addClassName(HIDE);
+            sortByContainer.addClassName(HIDE);
+            labelCreated.setInnerText(lang.period());
+        }
+        creators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managerCompanies.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
+        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
+            importanceContainer.addClassName(HIDE);
+            stateContainer.addClassName(HIDE);
+        } else {
+            importanceContainer.removeClassName(HIDE);
+            stateContainer.removeClassName(HIDE);
+        }
+    }
+
+    public String validateMultiSelectorsTotalCount() {
+        if (managerCompanies.getValue().size() > 50) {
+            setManagerCompaniesErrorStyle(true);
+            return lang.errTooMuchCompanies();
+        } else {
+            setCompaniesErrorStyle(false);
+        }
+        if (companies.getValue().size() > 50){
+            setCompaniesErrorStyle(true);
+            return lang.errTooMuchCompanies();
+        } else {
+            setCompaniesErrorStyle(false);
+        }
+        if (products.getValue().size() > 50){
+            setProductsErrorStyle(true);
+            return lang.errTooMuchProducts();
+        } else {
+            setProductsErrorStyle(false);
+        }
+        if (managers.getValue().size() > 50){
+            setManagersErrorStyle(true);
+            return lang.errTooMuchManagers();
+        }
+        if (initiators.getValue().size() > 50){
+            setInitiatorsErrorStyle(true);
+            return lang.errTooMuchInitiators();
+        } else {
+            setManagersErrorStyle(false);
+        }
+        return null;
+    }
+
+    public boolean isSearchFieldCorrect(){
+        return !searchByComments.getValue() ||
+                search.getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
+    }
+
     private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> personIds) {
         return emptyIfNull(filter.getPersonShortViews()).stream()
                 .filter(personShortView ->
                         emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<EntityOption> applyCompanies(SelectorsParams filter, List<Long> companyIds) {
+        return emptyIfNull(filter.getCompanyEntityOptions()).stream()
+                .filter(company ->
+                        emptyIfNull(companyIds).stream().anyMatch(ids -> ids.equals(company.getId())))
                 .collect(Collectors.toSet());
     }
 
@@ -450,6 +548,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companies.setClearEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_CLEAR_BUTTON);
         companies.setItemContainerEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ITEM_CONTAINER);
         companies.setLabelEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_LABEL);
+        managerCompanies.setAddEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_ADD_BUTTON);
+        managerCompanies.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_CLEAR_BUTTON);
+        managerCompanies.setItemContainerEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_ITEM_CONTAINER);
+        managerCompanies.setLabelEnsureDebugId(DebugIds.FILTER.MANAGER_COMPANY_SELECTOR_LABEL);
         products.setAddEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ADD_BUTTON);
         products.setClearEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_CLEAR_BUTTON);
         products.setItemContainerEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ITEM_CONTAINER);
@@ -502,73 +604,19 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         timer.schedule(300);
     }
 
-    public void applyVisibilityByFilterType(En_CaseFilterType filterType) {
-        if (filterType == null) {
-            return;
-        }
-
-        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
-            modifiedRangeContainer.removeClassName(HIDE);
-            sortByContainer.removeClassName(HIDE);
-            labelCreated.setInnerText(lang.created());
-        } else {
-            modifiedRangeContainer.addClassName(HIDE);
-            sortByContainer.addClassName(HIDE);
-            labelCreated.setInnerText(lang.period());
-        }
-        creators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
-        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
-        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
-            importanceContainer.addClassName(HIDE);
-            stateContainer.addClassName(HIDE);
-        } else {
-            importanceContainer.removeClassName(HIDE);
-            stateContainer.removeClassName(HIDE);
-        }
-    }
-
-    public String validateMultiSelectorsTotalCount() {
-        if (companies.getValue().size() > 50){
-            setCompaniesErrorStyle(true);
-            return lang.errTooMuchCompanies();
-        } else {
-            setCompaniesErrorStyle(false);
-        }
-        if (products.getValue().size() > 50){
-            setProductsErrorStyle(true);
-            return lang.errTooMuchProducts();
-        } else {
-            setProductsErrorStyle(false);
-        }
-        if (managers.getValue().size() > 50){
-            setManagersErrorStyle(true);
-            return lang.errTooMuchManagers();
-        }
-        if (initiators.getValue().size() > 50){
-            setInitiatorsErrorStyle(true);
-            return lang.errTooMuchInitiators();
-        } else {
-            setManagersErrorStyle(false);
-        }
-        return null;
-    }
-
-    public boolean isSearchFieldCorrect(){
-        return !searchByComments.getValue() ||
-                search.getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
-    }
-
     private void setCompaniesErrorStyle(boolean hasError) {
         if (hasError) {
             companies.addStyleName(REQUIRED);
         } else {
             companies.removeStyleName(REQUIRED);
+        }
+    }
+
+    private void setManagerCompaniesErrorStyle(boolean hasError) {
+        if (hasError) {
+            managerCompanies.addStyleName(REQUIRED);
+        } else {
+            managerCompanies.removeStyleName(REQUIRED);
         }
     }
 
@@ -600,7 +648,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         initiators.updateCompanies();
     }
 
-    public static Set< Long > getProductsIdList( Set< ProductShortView > productSet ) {
+    private void updateManagers() {
+        managers.updateCompanies();
+    }
+
+    private static Set< Long > getProductsIdList(Set<ProductShortView> productSet) {
 
         if ( productSet == null || productSet.isEmpty() ) {
             return null;
@@ -611,14 +663,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 .collect( Collectors.toSet() );
     }
 
-    public static CaseQuery fillCreatedInterval( CaseQuery query, DateInterval interval ) {
+    private static CaseQuery fillCreatedInterval(CaseQuery query, DateInterval interval) {
         if (interval != null) {
             query.setCreatedFrom(interval.from);
             query.setCreatedTo(interval.to);
         }
         return query;
     }
-    public static CaseQuery fillModifiedInterval( CaseQuery query, DateInterval interval ) {
+    private static CaseQuery fillModifiedInterval(CaseQuery query, DateInterval interval) {
         if (interval != null) {
             query.setModifiedFrom(interval.from);
             query.setModifiedTo(interval.to);
@@ -626,7 +678,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         return query;
     }
 
-    public static List< Long > getCompaniesIdList( Set< EntityOption > companySet ) {
+    private static List< Long > getCompaniesIdList(Set<EntityOption> companySet) {
 
         if ( companySet == null || companySet.isEmpty() ) {
             return null;
@@ -637,7 +689,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 .collect( Collectors.toList() );
     }
 
-    public static EntityOption toEntityOption( Company company ) {
+    private static EntityOption toEntityOption(Company company) {
         if ( company == null  ) {
             return null;
         }
@@ -647,7 +699,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         return option;
     }
 
-    public static List< Long > getManagersIdList( Set< PersonShortView > personSet ) {
+    private static List< Long > getManagersIdList(Set<PersonShortView> personSet) {
 
         if ( personSet == null || personSet.isEmpty() ) {
             return null;
@@ -693,7 +745,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     PersonMultiSelector initiators;
     @Inject
     @UiField(provided = true)
-    EmployeeMultiSelector managers;
+    CompanyMultiSelector managerCompanies;
+    @Inject
+    @UiField(provided = true)
+    PersonMultiSelector managers;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;

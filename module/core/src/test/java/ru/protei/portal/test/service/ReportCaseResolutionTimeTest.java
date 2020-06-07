@@ -469,7 +469,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
     private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
 
-    private static List<Integer> activeStatesShort = Arrays.asList( 1, 2, 6, 16, 19, 30 );
+    private static List<Long> activeStatesShort = Arrays.asList( 1L, 2L, 6L, 16L, 19L, 30L );
     private static List<Long> commentsIds = new ArrayList<>();
 
     private static final Long CREATED = 1L;

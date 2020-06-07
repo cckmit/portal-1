@@ -5,14 +5,17 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
@@ -48,6 +51,9 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Inject
     HTMLRenderer htmlRenderer;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @PostConstruct
     public void onInit() {
@@ -132,10 +138,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportance() == null ? null : oldMetaState.getImportance().getCode());
 
         templateModel.put("caseChanged", event.isCaseStateChanged());
-        templateModel.put("caseState", newMetaState.getState() == null ? null : newMetaState.getState().getName());
-        templateModel.put("oldCaseState", oldMetaState == null || oldMetaState.getState() == null ? null : oldMetaState.getState().getName());
+        templateModel.put("caseState", newMetaState.getStateName());
+        templateModel.put("oldCaseState", oldMetaState == null ? null : oldMetaState.getStateName());
 
-        templateModel.put("isPausedState", En_CaseState.PAUSED.equals(newMetaState.getState()));
+        templateModel.put("isPausedState", CrmConstants.State.PAUSED == newMetaState.getStateId());
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
         templateModel.put("pauseDate", newMetaState.getPauseDate() == null ? null : new Date(newMetaState.getPauseDate()));
         templateModel.put("oldPauseDate", (oldMetaState == null || oldMetaState.getPauseDate() == null) ? null : new Date(oldMetaState.getPauseDate()));
@@ -152,9 +158,10 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("managerChanged", event.isManagerChanged());
         templateModel.put("manager", newMetaState.getManager() == null ? null : newMetaState.getManager().getDisplayName());
-        templateModel.put("managerCompany", newMetaState.getManager() == null || newMetaState.getManager().getCompany() == null ? null : newMetaState.getManager().getCompany().getCname());
         templateModel.put("oldManager", oldMetaState == null || oldMetaState.getManager() == null ? null : oldMetaState.getManager().getDisplayName());
-        templateModel.put("oldManagerCompany", oldMetaState == null || oldMetaState.getManager() == null || oldMetaState.getManager().getCompany() == null ? null : oldMetaState.getManager().getCompany().getCname());
+
+        templateModel.put("managerCompany", newMetaState.getManagerCompanyName());
+        templateModel.put("oldManagerCompany", oldMetaState == null ? null : oldMetaState.getManagerCompanyName());
 
         templateModel.put("platformChanged", event.isPlatformChanged());
         templateModel.put("platform", newMetaState.getPlatformName());
@@ -175,7 +182,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "TranslitUtils", new TransliterationUtils() );
         templateModel.put( "author", currentPerson );
         templateModel.put( "caseNumber", caseObject.getCaseNumber() );
-        templateModel.put( "caseState", caseMeta.getState() == null ? null : caseMeta.getState().getName() );
+        templateModel.put( "caseState", caseMeta.getStateName());
         templateModel.put( "importanceLevel", caseMeta.getImportance() == null ? null : caseMeta.getImportance().getCode() );
         templateModel.put( "productName", caseMeta.getProduct() == null ? null : caseMeta.getProduct().getName() );
 
@@ -262,7 +269,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("employmentType", newState.getEmploymentType().name());
         templateModel.put("withRegistration", newState.isWithRegistration());
         templateModel.put("position", newState.getPosition());
-        templateModel.put("state", newState.getState().getName());
+        templateModel.put("state", newState.getStateName());
         templateModel.put("employmentDateChanged", event.isEmploymentDateChanged());
         templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
         templateModel.put("newEmploymentDate", newState.getEmploymentDate());
@@ -580,9 +587,10 @@ public class TemplateServiceImpl implements TemplateService {
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
-                    mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
-                    mailComment.put( "caseManager", comment.getCaseManagerShortName() );
+                    mailComment.put( "caseState", comment.getCaseStateName() );
+                    mailComment.put( "caseImportance", comment.getCaseImportance() == null ? null : comment.getCaseImportance().getCode() );
+                    mailComment.put( "caseManager", comment.getCaseManagerId());
+                    mailComment.put( "caseManagerAndCompany", comment.getCaseManagerShortName() + " (" + comment.getManagerCompanyName() + ")");
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
                     mailComment.put( "added", isNew);
                     if (isChanged) {
