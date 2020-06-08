@@ -97,7 +97,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             return;
         }
 
-        fireEvent(new ActionBarEvents.Clear());
         fireEvent(new EmployeeEvents.Edit());
     }
 
@@ -112,7 +111,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             return;
         }
 
-        fireEvent(new ActionBarEvents.Clear());
         fireEvent(new AbsenceEvents.Edit());
     }
 
@@ -133,7 +131,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null);
+                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null,
+                filterView.showAbsent().getValue());
     }
 
 

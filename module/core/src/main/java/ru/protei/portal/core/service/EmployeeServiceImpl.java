@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -123,9 +124,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
+
             Set<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toSet());
             List<WorkerEntryShortView> workerEntries = changeCompanyNameIfHidden(workerEntryShortViewDAO.listByPersonIds(employeeIds));
-            List<PersonAbsence> personAbsences = personAbsenceDAO.listByQuery(new AbsenceQuery(employeeIds, new Date(), new Date()));
+
+            AbsenceQuery absenceQuery = new AbsenceQuery(employeeIds, new Date(), new Date(),
+                    Arrays.asList(En_AbsenceReason.values()).stream().filter(En_AbsenceReason::isActual).collect(Collectors.toSet()));
+            List<PersonAbsence> personAbsences = personAbsenceDAO.listByQuery(absenceQuery);
 
             results.forEach(employee -> {
                 employee.setWorkerEntries(workerEntries.stream()

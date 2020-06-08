@@ -129,7 +129,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null);
+                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null,
+                filterView.showAbsent().getValue());
     }
 
     private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {

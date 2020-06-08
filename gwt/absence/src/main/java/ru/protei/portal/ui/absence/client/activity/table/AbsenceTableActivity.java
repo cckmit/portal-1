@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
+import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
@@ -40,13 +41,6 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
         }
     }
 
-    @Event
-    public void onUpdate(AbsenceEvents.Update event) {
-        if (event.absence != null) {
-            view.updateRecord(event.absence);
-        }
-    }
-
     @Override
     public void onItemClicked(PersonAbsence value) {}
 
@@ -75,8 +69,8 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
     private Runnable removeAction(PersonAbsence value) {
         return () -> absenceController.removeAbsence(value.getId(), new FluentCallback<Boolean>()
                 .withSuccess(result -> {
-                    view.removeRecord(value);
                     fireEvent(new NotifyEvents.Show(lang.absenceRemoveSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new EmployeeEvents.Show());
                 }));
     }
 

@@ -62,16 +62,6 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
         absences.forEach(absence -> table.addRow(absence));
     }
 
-    @Override
-    public void removeRecord(PersonAbsence absence) {
-        table.removeRow(absence);
-    }
-
-    @Override
-    public void updateRecord(PersonAbsence absence) {
-        table.updateRow(absence);
-    }
-
     private void initTable() {
 
         editClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));

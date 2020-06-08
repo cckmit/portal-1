@@ -33,6 +33,8 @@ public class En_AbsenceReasonLang {
                 return lang.absenceReasonDuty();
             case REMOTE_WORK:
                 return lang.absenceReasonRemoteWork();
+            case LEAVE:
+                return lang.absenceReasonLeave();
             default:
                 return lang.unknownField();
         }
@@ -44,14 +46,15 @@ public class En_AbsenceReasonLang {
 
         switch (state){
             case PERSONAL_AFFAIR: return "fas fa-user-clock";
-            case BUSINESS_TRIP: return "fas fa-plane";
+            case BUSINESS_TRIP: return "fas fa-plane-departure";
             case LOCAL_BUSINESS_TRIP: return "fas fa-business-time";
-            case STUDY: return "fas fa-university";
+            case STUDY: return "fas fa-graduation-cap";
             case DISEASE: return "fas fa-viruses";
             case SICK_LEAVE: return "fas fa-hospital-user";
+            case NIGHT_WORK: return "fas fa-cloud-moon";
             case LEAVE_WITHOUT_PAY: return "fas fa-umbrella-beach";
-            case DUTY: return "";
-            case REMOTE_WORK: return "fas fa-laptop-house";
+            case LEAVE: return "fas fa-umbrella-beach";
+            case DUTY: return "fas fa-user-check";
             default:
                 return "fa fa-unknown";
         }

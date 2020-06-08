@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -54,6 +55,10 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                 condition.append(" and (person_absence.till_time <= ? or person_absence.from_time <= ?)");
                 args.add(query.getTillTime());
                 args.add(query.getTillTime());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getReasons())) {
+                condition.append(" and person_absence.reason_id in " + HelperFunc.makeInArg(query.getReasons(), reason -> String.valueOf(reason.getId())));
             }
         });
     }

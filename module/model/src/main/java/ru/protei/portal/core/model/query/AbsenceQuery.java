@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.query;
 
 
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
@@ -12,6 +13,7 @@ public class AbsenceQuery extends BaseQuery {
     private Set<Long> employeeIds;
     private Date fromTime;
     private Date tillTime;
+    private Set<En_AbsenceReason> reasons;
 
     public AbsenceQuery() {
         super (null, En_SortField.from_time, En_SortDir.ASC);
@@ -22,11 +24,12 @@ public class AbsenceQuery extends BaseQuery {
         this.employeeIds = employeeIds;
     }
 
-    public AbsenceQuery(Set<Long> employeeIds, Date fromTime, Date tillTime) {
+    public AbsenceQuery(Set<Long> employeeIds, Date fromTime, Date tillTime, Set<En_AbsenceReason> reasons) {
         super (null, En_SortField.from_time, En_SortDir.ASC);
         this.employeeIds = employeeIds;
         this.fromTime = fromTime;
         this.tillTime = tillTime;
+        this.reasons = reasons;
     }
 
     public Set<Long> getEmployeeIds() {
@@ -53,12 +56,21 @@ public class AbsenceQuery extends BaseQuery {
         this.tillTime = tillTime;
     }
 
+    public Set<En_AbsenceReason> getReasons() {
+        return reasons;
+    }
+
+    public void setReasons(Set<En_AbsenceReason> reasons) {
+        this.reasons = reasons;
+    }
+
     @Override
     public String toString() {
         return "AbsenceQuery{" +
                 "employeeIds=" + employeeIds +
                 ", fromTime=" + fromTime +
                 ", tillTime=" + tillTime +
+                ", reasons=" + reasons +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

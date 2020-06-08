@@ -9,6 +9,4 @@ public interface AbstractAbsenceTableView extends IsWidget {
     void setActivity(AbstractAbsenceTableActivity activity);
     void clearRecords();
     void addRecords(List<PersonAbsence> absences);
-    void removeRecord(PersonAbsence absence);
-    void updateRecord(PersonAbsence absence);
 }

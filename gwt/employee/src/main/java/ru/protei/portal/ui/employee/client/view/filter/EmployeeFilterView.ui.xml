@@ -34,6 +34,9 @@
                 <div class="form-group col-md-12">
                     <g:CheckBox ui:field="showFired" styleName="checkbox" text="{lang.employeeShowFired}"/>
                 </div>
+                <div class="form-group col-md-12">
+                    <g:CheckBox ui:field="showAbsent" styleName="checkbox" text="{lang.employeeShowFired}"/>
+                </div>
             </div>
         </div>
         <div class="card-footer text-right">

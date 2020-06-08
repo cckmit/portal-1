@@ -23,5 +23,6 @@ public interface AbstractEmployeeFilterView extends IsWidget {
     HasValue< Boolean > showFired();
     HasValue<Boolean> showTopBrass();
     HasValue<Set<EntityOption>> organizations();
+    HasValue<Boolean> showAbsent();
     void resetFilter();
 }

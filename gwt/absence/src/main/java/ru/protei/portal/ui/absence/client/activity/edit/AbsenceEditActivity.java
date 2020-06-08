@@ -169,7 +169,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
                 .withSuccess(result -> {
                     enableButtons(true);
                     fireEvent(new NotifyEvents.Show(isNew() ? lang.absenceCreated() : lang.absenceUpdated(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(isNew() ? (new EmployeeEvents.Show()) : (new AbsenceEvents.Update(absence)));
+                    fireEvent(new EmployeeEvents.Show());
                     onCancelClicked();
                 }));
     }

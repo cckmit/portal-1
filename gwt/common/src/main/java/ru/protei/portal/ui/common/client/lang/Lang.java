@@ -2641,4 +2641,6 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceRemoveConfirmMessage();
 
     String absenceRemoveSuccessful();
+
+    String absenceReasonLeave();
 }
