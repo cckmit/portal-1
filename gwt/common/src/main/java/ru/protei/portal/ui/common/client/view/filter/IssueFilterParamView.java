@@ -222,7 +222,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
 
         if (isAttached()) {
-            model.onUserFilterChanged();
+            onFilterChanged();
         }
     }
 
@@ -293,6 +293,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
         tags.setValue(setOf( filter.getCaseTags() ) );
         toggleMsgSearchThreshold();
+
+        onFilterChanged();
     }
 
     @Override
