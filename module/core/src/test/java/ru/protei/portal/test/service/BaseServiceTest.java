@@ -180,6 +180,7 @@ public class BaseServiceTest {
         caseObject.setProductId( productId );
         caseObject.setCreated( date );
         caseObject.setInitiatorCompanyId( initiatorCompanyId );
+        caseObject.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
         return makeCaseObject(caseObject);
     }
 
