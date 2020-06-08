@@ -280,6 +280,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     // для crm-линков создаем зеркальные
                     if (!caseLinkDAO.checkExistLink(En_CaseLink.CRM, remoteId, link.getCaseId().toString())) {
                         CaseLink crossCrmLink = new CaseLink();
+                        crossCrmLink.setWithCrosslink(true);
                         crossCrmLink.setCaseId(remoteId);
                         crossCrmLink.setRemoteId(link.getCaseId().toString());
                         crossCrmLink.setType(En_CaseLink.CRM);
