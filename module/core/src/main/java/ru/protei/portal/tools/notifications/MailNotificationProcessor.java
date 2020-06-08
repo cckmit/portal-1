@@ -757,7 +757,7 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
-        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, action, recipients);
+        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for reserved IP notification: action={}", action);
             return;
@@ -786,8 +786,7 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
-        PreparedTemplate bodyTemplate = templateService.getReservedIpRemainingNotificationBody(reservedIps,
-                releaseDateStart, releaseDateEnd, recipients);
+        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, recipients);
 
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for release reserved IPs notification");

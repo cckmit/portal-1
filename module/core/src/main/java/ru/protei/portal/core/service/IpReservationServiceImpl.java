@@ -707,8 +707,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private Date makeDateWithOffset(int dayOffset) {
-        LocalDate localDate = LocalDate.now();
-        localDate.plusDays(dayOffset);
+        LocalDate localDate = LocalDate.now().plusDays(dayOffset);
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 

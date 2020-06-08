@@ -19,17 +19,17 @@
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
-    <#if is_removed == false>
     <div style="padding: 5px;font-size: 14px;background:#f0f0f0;color:#666666;">
         <#if is_created == true>${_subnetActionCreated}</#if>
         <#if is_updated == true>${_subnetActionUpdated}</#if>
+        <#if is_removed == true>${_subnetActionRemoved}</#if>
         ${_subnetAction}
     </div>
     <table>
         <tbody>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_subnetIpAddress}</td>
-            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${ipAddress}${mask}</td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${ipAddress}</td>
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_subnetComment}</td>
@@ -37,7 +37,6 @@
         </tr>
         </tbody>
     </table>
-    </#if>
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
             ${_you} (<b>${userName}</b>) ${_notification_footer}

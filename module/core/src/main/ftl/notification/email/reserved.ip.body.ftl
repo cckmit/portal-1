@@ -4,48 +4,59 @@
 
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
-<@set name="_reservedIpList" value="${reservedIpList}"/>
+<@set name="_reservedIpIpAddress" value="${reservedIpIpAddress}"/>
+<@set name="_reservedIpOwner" value="${reservedIpOwner}"/>
+<@set name="_reservedIpUsePeriod" value="${reservedIpUsePeriod}"/>
 <@set name="_reservedIpForever" value="${reservedIpForever}"/>
+<@set name="_reservedIpComment" value="${reservedIpComment}"/>
 
 <#noparse>
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <style>
-        .ip  {
-            padding:5px;
+        .caption  {
+            padding:2px 10px 2px 0;
+            font-family:sans-serif;
             font-size:14px;
-            background:#f0f0f0;
             text-align:left;
+            color:#666666;
+            border-bottom: 1px solid #D4D5D6;
         }
 
         .field  {
             padding:2px 10px 2px 0;
             font-family:sans-serif;
-            font-size:12px;
-            color:#666666;
+            font-size:14px;
             text-align:left;
         }
     </style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
-<table style="width:70%">
+<table style="width:100%">
     <tbody>
+    <tr>
+        <td class="caption">${_reservedIpIpAddress}</td>
+        <td class="caption">${_reservedIpOwner}</td>
+        <td class="caption">${_reservedIpUsePeriod}</td>
+        <td class="caption">${_reservedIpComment}</td>
+    </tr>
     <#list reservedIps as reservedIp>
-        <tr>
-            <td class="ip" colspan="3">
-                ${reservedIp.ipAddress}
-                <#if reservedIp.macAddress??>&nbsp;[${reservedIp.macAddress}]</#if>
-            </td>
-        </tr>
-        <tr>
-            <td class="field">${reservedIp.ownerShortName}</td>
-            <td class="field">
-                ${reservedIp.reserveDate?string["dd.MM.yyyy"]} - ${reservedIp.releaseDate?string["dd.MM.yyyy"]}
-            </td>
-            <td class="field">${reservedIp.comment!''}</td>
-        </tr>
+    <tr>
+        <td class="field" rowspan="2">${reservedIp.ipAddress}
+            <#if reservedIp.macAddress??><br>[${reservedIp.macAddress}]</#if>
+        </td>
+    </tr>
+    <tr>
+        <td class="field">${reservedIp.ownerName!'?'}</td>
+        <td class="field">
+            ${(reservedIp.reserveDate?string["dd.MM.yyyy"])!'?'}
+            -
+            ${(reservedIp.releaseDate?string["dd.MM.yyyy"])!_reservedIpForever}
+        </td>
+        <td class="field">${reservedIp.comment!''}</td>
+    </tr>
     </#list>
     </tbody>
 </table>

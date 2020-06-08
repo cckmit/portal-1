@@ -1,1 +1,1 @@
-${reservedIpRemainingSubject} <#noparse>${releaseDateStart} - ${releaseDateEnd}</#noparse>
+${reservedIpRemainingSubject} <#noparse>[<#if releaseDateStart??>${releaseDateStart} - </#if>${releaseDateEnd}]</#noparse>

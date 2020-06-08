@@ -77,8 +77,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     }
 
     public void remindAboutNeedToReleaseIp() {
+        log.info("remindAboutNeedToReleaseIp start");
         ipReservationService.notifyOwnersAboutReleaseIp();
         ipReservationService.notifyAdminsAboutExpiredReleaseDates();
+        log.info("remindAboutNeedToReleaseIp end");
     }
 
     @Autowired
