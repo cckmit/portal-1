@@ -14,10 +14,13 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.ent.PlanToCaseObject;
+import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PlanQuery;
+import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collections;
@@ -45,6 +48,12 @@ public class PlanServiceImpl implements PlanService{
 
     @Autowired
     HistoryService historyService;
+
+    @Override
+    public Result<SearchResult<Plan>> getPlans(AuthToken token, PlanQuery query) {
+        SearchResult<Plan> sr = planDAO.getSearchResultByQuery(query);
+        return ok(sr);
+    }
 
     @Override
     public Result<List<Plan>> listPlans(AuthToken token, PlanQuery query) {

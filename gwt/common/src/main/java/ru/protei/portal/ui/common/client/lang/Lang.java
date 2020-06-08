@@ -2615,4 +2615,12 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpAvailableCount();
 
     String plans();
+
+    String planNameColumn();
+
+    String planPeriodColumn();
+
+    String planCreatorColumn();
+
+    String planIssueQuantityColumn();
 }

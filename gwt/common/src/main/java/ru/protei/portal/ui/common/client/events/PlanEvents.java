@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.events;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
 
 public class PlanEvents {
@@ -8,5 +9,12 @@ public class PlanEvents {
     public static class ShowPlans {
 
         public ShowPlans () {}
+    }
+
+    public static class CreatePlan {
+        public CreatePlan(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
     }
 }

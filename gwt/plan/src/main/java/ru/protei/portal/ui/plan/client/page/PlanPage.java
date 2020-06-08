@@ -8,11 +8,13 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 public abstract class PlanPage implements Activity{
 
@@ -26,6 +28,23 @@ public abstract class PlanPage implements Activity{
         if ( event.profile.hasPrivilegeFor( En_Privilege.PLAN_VIEW ) ) {
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PLAN, ТAB, DebugIds.SIDEBAR_MENU.PLAN ) );
             fireEvent( new AppEvents.InitPage(showPlans) );
+        }
+    }
+
+    @Event
+    public void onClickSection( SectionEvents.Clicked event ) {
+        if ( !ТAB.equals( event.identity ) ) {
+            return;
+        }
+
+        fireSelectTab();
+        fireEvent(showPlans);
+    }
+
+    private void fireSelectTab() {
+        fireEvent( new ActionBarEvents.Clear() );
+        if ( policyService.hasPrivilegeFor( En_Privilege.PLAN_VIEW) ) {
+            fireEvent(new MenuEvents.Select(ТAB));
         }
     }
 

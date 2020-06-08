@@ -76,6 +76,7 @@ public class UiConstants {
         String SUBNET_CREATE = "subnet_create";
         String RESERVED_IP = "reserved_ip";
         String RESERVED_IP_CREATE = "reserved_ip_create";
+        String PLAN_CREATE = "plan_create";
     }
 
     public interface Styles {

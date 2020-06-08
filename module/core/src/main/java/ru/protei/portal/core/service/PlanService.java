@@ -8,10 +8,14 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 public interface PlanService {
+
+    @Privileged(En_Privilege.PLAN_VIEW)
+    Result<SearchResult<Plan>> getPlans(AuthToken token, PlanQuery query);
 
     @Privileged(En_Privilege.PLAN_VIEW)
     Result<List<Plan>> listPlans(AuthToken token, PlanQuery query);

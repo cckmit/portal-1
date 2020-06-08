@@ -32,6 +32,9 @@ public class Plan extends AuditableObject {
     @JdbcManyToMany(linkTable = "plan_to_case_object", localLinkColumn = "plan_id", remoteLinkColumn = "case_object_id")
     private List<CaseShortView> issueList;
 
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "creator_id", remoteColumn = "id", table = "person")
+    private String creatorShortName;
+
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
@@ -92,5 +95,13 @@ public class Plan extends AuditableObject {
 
     public void setIssueList(List<CaseShortView> issueList) {
         this.issueList = issueList;
+    }
+
+    public String getCreatorShortName() {
+        return creatorShortName;
+    }
+
+    public void setCreatorShortName(String creatorShortName) {
+        this.creatorShortName = creatorShortName;
     }
 }
