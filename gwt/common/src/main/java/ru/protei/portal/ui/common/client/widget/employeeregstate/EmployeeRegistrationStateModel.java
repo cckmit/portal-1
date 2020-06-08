@@ -28,7 +28,7 @@ public abstract class EmployeeRegistrationStateModel extends LifecycleSelectorMo
 
     @Override
     protected void refreshOptions() {
-        caseStateController.getCaseStates(En_CaseType.EMPLOYEE_REGISTRATION, new FluentCallback<List<CaseState>>()
+        caseStateController.getCaseStatesOmitPrivileges(En_CaseType.EMPLOYEE_REGISTRATION, new FluentCallback<List<CaseState>>()
                 .withError(throwable ->
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR))
                 )
