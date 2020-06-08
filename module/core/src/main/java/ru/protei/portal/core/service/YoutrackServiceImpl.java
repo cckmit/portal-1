@@ -303,7 +303,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         List<Long> caseNumbersFromDBWithYTOrder = makeListFromDBWithYTOrder(caseNumbersFromDB, caseNumbersFromYT);
 
         caseNumbersFromDBWithYTOrder.forEach(caseNumber -> {
-            textFieldValue.text += "[" + caseNumber + "]" + "(" + config.data().getCaseLinkConfig().getLinkCrm().replace("%id%", caseNumber.toString()) + ")\n";
+            textFieldValue.text += "[" + caseNumber + "]" + "(" + config.data().getCaseLinkConfig().getCrosslinkYoutrack().replace("%id%", caseNumber.toString()) + ")\n";
         });
 
         textFieldValue.text = textFieldValue.text.substring(0, textFieldValue.text.length() - 1);
