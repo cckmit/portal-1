@@ -265,7 +265,6 @@ public abstract class IssueTableFilterActivity
             @Override
             public void onSuccess( SelectorsParams selectorsParams ) {
                 filterView.getIssueFilterParams().fillFilterFields(caseQuery, selectorsParams);
-                IssueTableFilterActivity.this.onUserFilterChanged();
             }
         } );
     }
