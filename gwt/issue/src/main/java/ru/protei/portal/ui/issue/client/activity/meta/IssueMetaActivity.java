@@ -423,7 +423,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
     }
 
-    private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta, boolean isReadOnly) {
+    private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, final CaseObjectMeta caseObjectMeta, boolean isReadOnly) {
         issueMetaView.managerEnabled().setEnabled(!isReadOnly && policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
         setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
 
@@ -434,6 +434,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
                 issueMetaView.setManagerCompany(company);
                 issueMetaView.updateManagersCompanyFilter(company.getId());
+                caseObjectMeta.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
             });
         }
 

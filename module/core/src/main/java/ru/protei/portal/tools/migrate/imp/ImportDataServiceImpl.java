@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacyDAO_Transaction;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -347,6 +348,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 //                    obj.setKeywords((String)row.get("strKeyWord"));
 //                    obj.setLocal(row.get("lIsLocal") == null ? 1 : ((Number) row.get("lIsLocal")).intValue());
             obj.setName("CRM-" + obj.getCaseNumber());
+            obj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
             obj.setManagerId(ext.getManagerId() != null ? personMap.get(ext.getManagerId()) : null);
             obj.setModified(ext.getLastUpdate());
 

@@ -212,6 +212,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     private AssembledCaseEvent createCaseObject( Person initiator, Long authorId, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
         CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
+        caseObj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
 
         Long newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
         logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getStateId(), newState);
