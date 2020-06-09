@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
 import java.time.LocalDateTime;
@@ -94,7 +95,7 @@ public class ContractReminderServiceImpl implements ContractReminderService {
                 continue;
             }
             String email = new PlainContactInfoFacade(contactInfo).getEmail();
-            String locale = person.getLocale() == null ? DEFAULT_LOCALE : person.getLocale();
+            String locale = person.getLocale() == null ? CrmConstants.DEFAULT_LOCALE : person.getLocale();
             if (StringUtils.isBlank(email)) {
                 continue;
             }
@@ -123,6 +124,5 @@ public class ContractReminderServiceImpl implements ContractReminderService {
     @Autowired
     EventPublisherService publisherService;
 
-    private static final String DEFAULT_LOCALE = "ru";
     private static final Logger log = LoggerFactory.getLogger(ContractReminderServiceImpl.class);
 }

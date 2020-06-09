@@ -95,7 +95,7 @@ public interface IpReservationService {
      */
     @Privileged(En_Privilege.RESERVED_IP_CREATE)
     @Auditable(En_AuditType.RESERVED_IP_CREATE)
-    Result<ArrayList<ReservedIp>> createReservedIp(AuthToken token, ReservedIpRequest reservedIpRequest);
+    Result<List<ReservedIp>> createReservedIp(AuthToken token, ReservedIpRequest reservedIpRequest);
 
     /**
      * Редактирование параметров зарезервированного IP-адреса

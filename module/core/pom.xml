@@ -95,7 +95,6 @@
                         <argument>notification/email/reserved.ip.subject.ftl</argument>
                         <argument>notification/email/reserved.ip.body.ftl</argument>
                         <argument>notification/email/reserved.ip.remaining.subject.ftl</argument>
-                        <argument>notification/email/reserved.ip.remaining.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

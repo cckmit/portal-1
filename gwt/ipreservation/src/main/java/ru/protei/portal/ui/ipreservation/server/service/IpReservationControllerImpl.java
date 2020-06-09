@@ -139,7 +139,7 @@ public class IpReservationControllerImpl implements IpReservationController {
         if ( reservedIpRequest == null )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
-        Result<ArrayList<ReservedIp>> response = ipReservationService.createReservedIp( token, reservedIpRequest );
+        Result<List<ReservedIp>> response = ipReservationService.createReservedIp( token, reservedIpRequest );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );

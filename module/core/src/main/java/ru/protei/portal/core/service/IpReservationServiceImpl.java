@@ -174,10 +174,6 @@ public class IpReservationServiceImpl implements IpReservationService {
     @Override
     public Result<Subnet> createSubnet( AuthToken token, Subnet subnet) {
 
-        if (token == null || !hasAccessForSubnet(token, En_Privilege.SUBNET_CREATE)) {
-            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
-        }
-
         if (!isValidSubnet(subnet)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -201,10 +197,6 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         if (subnet == null || subnet.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        if (token == null || !hasAccessForSubnet(token, En_Privilege.SUBNET_EDIT)) {
-            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
         if (!isValidSubnet(subnet)) {
@@ -239,10 +231,6 @@ public class IpReservationServiceImpl implements IpReservationService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (token == null || !hasAccessForSubnet(token, En_Privilege.SUBNET_REMOVE)) {
-            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
-        }
-
         if (removeWithIps || subnetAvailableToRemove(subnet.getId())) {
 
             Subnet stored = subnetDAO.get(subnet.getId());
@@ -270,17 +258,13 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     @Override
     /* @todo задача резервирования должна выполняться в фоне? */
-    public Result<ArrayList<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
-
-        if (token == null || !hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_CREATE, null)) {
-            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
-        }
+    public Result<List<ReservedIp>> createReservedIp( AuthToken token, ReservedIpRequest reservedIpRequest) {
 
         if (!isValidRequest(reservedIpRequest)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        ArrayList<ReservedIp> reservedIps = new ArrayList<>();
+        List<ReservedIp> reservedIps = new ArrayList<>();
 
         ReservedIp templateIp = new ReservedIp();
         templateIp.setCreated(new Date());
@@ -290,10 +274,8 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         En_DateIntervalType intervalType = reservedIpRequest.getDateIntervalType();
 
-        Calendar calendar = Calendar.getInstance();
-        Date today = calendar.getTime();
-        calendar.add(Calendar.MONTH, 1);
-        Date throughMonth = calendar.getTime();
+        Date today = makeDateWithOffset(0);
+        Date throughMonth = makeDateWithOffset(30);
 
         switch (intervalType) {
             case UNLIMITED:
@@ -306,7 +288,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                 break;
             case FIXED:
                 templateIp.setReserveDate(reservedIpRequest.getReserveDate());
-                templateIp.setReleaseDate(reservedIpRequest.getReserveDate());
+                templateIp.setReleaseDate(reservedIpRequest.getReleaseDate());
         }
 
         if (reservedIpRequest.isExact()) {
@@ -329,8 +311,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             if (reservedIpId == null)
                 return error(En_ResultStatus.NOT_CREATED);
 
-            templateIp.setId(reservedIpId);
-            reservedIps.add(templateIp);
+            reservedIps.add(getReservedIp(reservedIpId));
 
         } else {
          /*
@@ -401,7 +382,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         if (token == null
             || !(hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, reservedIp)
-                 || hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, stored))
+            || hasAccessForReservedIp(token, En_Privilege.RESERVED_IP_EDIT, stored))
         ) {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -470,7 +451,7 @@ public class IpReservationServiceImpl implements IpReservationService {
     public Result<Boolean> notifyOwnersAboutReleaseIp() {
 
         Date releaseDateStart = makeDateWithOffset(1);
-        Date releaseDateEnd = makeDateWithOffset(RELEASE_DATE_EXPIRES_IN_DAYS);
+        Date releaseDateEnd = makeDateWithOffset(CrmConstants.IpReservation.RELEASE_DATE_EXPIRES_IN_DAYS);
 
         log.info("notifyOwnersAboutReleaseIp(): start : from {} to {}", releaseDateStart, releaseDateEnd);
 
@@ -487,7 +468,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         for (Long ownerId : reservedIpsByOwners.keySet()) {
 
-            List<NotificationEntry> notificationEntries = makeNotificationListFromPersonId(ownerId);
+            List<NotificationEntry> notificationEntries = Arrays.asList(makeNotificationEntryFromPersonId(ownerId));
 
             if (CollectionUtils.isEmpty(notificationEntries)) {
                 log.info("notifyOwnersAboutReleaseIp(): notification for owner {} to release IPs: no entries to be notified", ownerId);
@@ -690,10 +671,6 @@ public class IpReservationServiceImpl implements IpReservationService {
         return result == null || result == 0;
     }
 
-    private boolean hasAccessForSubnet(AuthToken token, En_Privilege privilege) {
-        return policyService.hasPrivilegeFor(privilege, token.getRoles());
-    }
-
     private boolean hasAccessForReservedIp(AuthToken token, En_Privilege privilege, ReservedIp reservedIp) {
         return isSystemAdministrator(token, privilege)
                 || reservedIp == null
@@ -731,8 +708,9 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     private List<NotificationEntry> makeNotificationListFromReservedIps(List<ReservedIp> reservedIps) {
-        return stream(reservedIps).collect(Collectors.groupingBy(ReservedIp::getOwnerId))
-                .keySet().stream()
+        return stream(reservedIps)
+                .map(ReservedIp::getOwnerId)
+                .distinct()
                 .map(ownerId -> {
                     return makeNotificationEntryFromPersonId(ownerId);
                 })
@@ -762,23 +740,13 @@ public class IpReservationServiceImpl implements IpReservationService {
         return NotificationEntry.email(contact.getEmail(), person.getLocale());
     }
 
-    private List<NotificationEntry> makeNotificationListFromPersonId(Long personId) {
-        Person person = personDAO.get(personId);
-        if (person == null) {
-            return null;
-        }
-
-        PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
-        return Arrays.asList(NotificationEntry.email(contact.getEmail(), person.getLocale()));
-    }
-
     private List<NotificationEntry> makeNotificationListFromConfiguration() {
         return Stream.of(
                 config.data().getMailNotificationConfig().getCrmIpReservationNotificationsRecipients()
         )
                 .filter(Objects::nonNull)
                 .filter(not(String::isEmpty))
-                .map(address -> NotificationEntry.email(address, DEFAULT_LOCALE))
+                .map(address -> NotificationEntry.email(address, CrmConstants.DEFAULT_LOCALE))
                 .collect(Collectors.toList());
     }
 
@@ -786,7 +754,5 @@ public class IpReservationServiceImpl implements IpReservationService {
         return personDAO.get(token.getPersonId());
     }
 
-    private static final String DEFAULT_LOCALE = "ru";
-    private static final int RELEASE_DATE_EXPIRES_IN_DAYS = 3;
     private final static Logger log = LoggerFactory.getLogger( IpReservationService.class );
 }
