@@ -786,7 +786,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) return false;
-        if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
+        if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
         if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
         return true;
     }
@@ -838,10 +838,17 @@ public class CaseServiceImpl implements CaseService {
         return toList(emptyIfNull(productsResult.getData()), ProductShortView::getId).contains(productId);
     }
 
-    private boolean platformBelongsToCompany(Long platformId, Long companyId) {
-        Platform platform = platformDAO.get(platformId);
+    private boolean platformBelongsToCompany(AuthToken token, Long platformId, Long companyId) {
+        PlatformQuery platformQuery = new PlatformQuery();
+        platformQuery.setCompanyId(companyId);
 
-        return companyId.equals(platform.getCompanyId());
+        Result<List<PlatformOption>> listResult = siteFolderService.listPlatformsOptionList(token, platformQuery);
+
+        if (isEmpty(listResult.getData())) {
+            return false;
+        }
+
+        return toList(listResult.getData(), PlatformOption::getId).contains(platformId);
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {
