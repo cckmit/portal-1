@@ -18,12 +18,16 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
@@ -108,7 +112,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
-        if (!validateFieldsOfNew(caseObject)) {
+        if (!validateFieldsOfNew(token, caseObject)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -286,7 +290,7 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseMeta);
 
-        if (!validateMetaFields(caseMeta)) {
+        if (!validateMetaFields(token, caseMeta)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -748,10 +752,10 @@ public class CaseServiceImpl implements CaseService {
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFromId, caseStateToId);
     }
 
-    private boolean validateFieldsOfNew(CaseObject caseObject) {
+    private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
         if (!validateFields( caseObject )) return false;
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
-        if (!validateMetaFields( caseObjectMeta )) return false;
+        if (!validateMetaFields(token, caseObjectMeta)) return false;
         return true;
     }
 
@@ -763,7 +767,7 @@ public class CaseServiceImpl implements CaseService {
         return true;
     }
 
-    private boolean validateMetaFields(CaseObjectMeta caseMeta) {
+    private boolean validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
         if (caseMeta == null) return false;
         if (caseMeta.getImpLevel() == null) return false;
         if (En_ImportanceLevel.find(caseMeta.getImpLevel()) == null) return false;
@@ -771,9 +775,70 @@ public class CaseServiceImpl implements CaseService {
         if (caseMeta.getManagerCompanyId() == null) return false;
         if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) return false;
         if (caseMeta.getInitiatorCompanyId() == null) return false;
-        if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() ))
-            return false;
+        if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) return false;
+        if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
+        if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) return false;
         return true;
+    }
+
+    private boolean isProductValid(AuthToken token, Long productId, Long platformId, Long companyId) {
+        Company company = companyDAO.get(companyId);
+
+        if (!Boolean.TRUE.equals(company.getAutoOpenIssue())) {
+            return true;
+        }
+
+        if (productId == null) {
+            return false;
+        }
+
+        if (!isProductContainsInPlatformsProducts(token, productId, platformId, companyId)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isProductContainsInPlatformsProducts(AuthToken token, Long productId, Long platformId, Long companyId) {
+        ProductQuery productQuery = new ProductQuery();
+        productQuery.setState(En_DevUnitState.ACTIVE);
+        productQuery.setTypes(new HashSet<>(Arrays.asList(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT)));
+
+        Set<Long> platformIds = new HashSet<>();
+
+        if (platformId != null) {
+            platformIds.add(platformId);
+        } else {
+            PlatformQuery platformQuery = new PlatformQuery();
+            platformQuery.setCompanyId(companyId);
+
+            Result<List<PlatformOption>> platformsResult = siteFolderService.listPlatformsOptionList(token, platformQuery);
+
+            platformIds.addAll(toSet(emptyIfNull(platformsResult.getData()), PlatformOption::getId));
+        }
+
+        if (platformIds.isEmpty()) {
+            return false;
+        }
+
+        productQuery.setPlatformIds(platformIds);
+
+        Result<List<ProductShortView>> productsResult = productService.productsShortViewListWithChildren(token, productQuery);
+
+        return toList(emptyIfNull(productsResult.getData()), ProductShortView::getId).contains(productId);
+    }
+
+    private boolean platformBelongsToCompany(AuthToken token, Long platformId, Long companyId) {
+        PlatformQuery platformQuery = new PlatformQuery();
+        platformQuery.setCompanyId(companyId);
+
+        Result<List<PlatformOption>> listResult = siteFolderService.listPlatformsOptionList(token, platformQuery);
+
+        if (isEmpty(listResult.getData())) {
+            return false;
+        }
+
+        return toList(listResult.getData(), PlatformOption::getId).contains(platformId);
     }
 
     private boolean personBelongsToCompany(Long personId, Long companyId) {
@@ -838,6 +903,18 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    CompanyDAO companyDAO;
+
+    @Autowired
+    PlatformDAO platformDAO;
+
+    @Autowired
+    SiteFolderService siteFolderService;
+
+    @Autowired
+    ProductService productService;
 
     @Autowired
     CaseShortViewDAO caseShortViewDAO;

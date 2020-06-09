@@ -15,7 +15,6 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -36,6 +35,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
@@ -80,13 +80,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setProduct(DevUnit product) {
-        this.product.setValue(ProductShortView.fromProduct(product));
-    }
-
-    @Override
-    public DevUnit getProduct() {
-        return DevUnit.fromProductShortView(product.getValue());
+    public HasValue<ProductShortView> product() {
+        return product;
     }
 
     @Override
@@ -196,11 +191,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public void setTimeElapsedType(En_TimeElapsedType timeElapsedType) {
         this.timeElapsedType.setValue(timeElapsedType);
-    }
-
-    @Override
-    public void setProductTypes(En_DevUnitType... enDevUnitTypes) {
-        product.setTypes(enDevUnitTypes);
     }
 
     @Override
@@ -388,6 +378,21 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public HasEnabled managerCompanyEnabled() {
         return managerCompany;
+    }
+
+    @Override
+    public void updateProductsByPlatformIds(Set<Long> platformIds) {
+        product.setPlatformIds(platformIds);
+    }
+
+    @Override
+    public void setProductModel(ProductModel productModel) {
+        product.setAsyncProductModel(productModel);
+    }
+
+    @Override
+    public void setProductMandatory(boolean isProductMandatory) {
+        product.setMandatory(isProductMandatory);
     }
 
     private void initView() {

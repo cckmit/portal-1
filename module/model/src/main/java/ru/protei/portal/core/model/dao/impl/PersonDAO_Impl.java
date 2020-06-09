@@ -156,8 +156,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public List<Person> getPersons(PersonQuery query) {
-
         return listByQuery( query );
+    }
+
+    @Override
+    public Person getCommonManagerByProductId(Long productId) {
+        return getByCondition("person.id = (SELECT dev_unit.common_manager_id FROM dev_unit WHERE dev_unit.ID = ?)", productId);
     }
 
     /**
@@ -228,8 +232,14 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add(query.getDeleted() ? 1 : 0);
             }
 
-            if (query.getOnlyPeople() != null) {
-                condition.append(" and person.sex != ?");
+            if (query.getPeople() != null) {
+                String eqSign = query.getPeople() ? "!=" : "=";
+
+                condition
+                        .append(" and person.sex ")
+                        .append(eqSign)
+                        .append(" ?");
+
                 args.add(En_Gender.UNDEFINED.getCode());
             }
         });

@@ -447,6 +447,7 @@ public class DebugIds {
         String CANCEL_BUTTON = "product-cancel-button";
         String DIRECTION = "product-direction";
         String DIRECTION_LABEL = "product-direction-label";
+        String COMMON_MANAGER = "product-common-manager";
 
         interface TAB {
             String HISTORY_VERSION = "product-tab-history-version";

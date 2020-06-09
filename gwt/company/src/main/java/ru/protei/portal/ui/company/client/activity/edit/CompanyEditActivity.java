@@ -70,19 +70,25 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if (validateFieldsAndGetResult() && !tempCompany.isArchived()) {
-            fillDto(tempCompany);
-
-            companyService.saveCompany(tempCompany, new FluentCallback<Boolean>()
-                    .withSuccess(result -> {
-                        fireEvent(new CompanyEvents.Show(!isNew(tempCompany)));
-                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        fireEvent(new CompanyEvents.ChangeModel());
-                    })
-            );
-        } else {
+        if (tempCompany.isArchived()) {
             fireEvent(new NotifyEvents.Show(lang.errCompanyFieldsFill(), NotifyEvents.NotifyType.ERROR));
+            return;
         }
+
+        if (!validateFieldsAndGetResult()) {
+            fireEvent(new NotifyEvents.Show(lang.errCompanyFieldsFill(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        fillDto(tempCompany);
+
+        companyService.saveCompany(tempCompany, new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    fireEvent(new CompanyEvents.Show(!isNew(tempCompany)));
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CompanyEvents.ChangeModel());
+                })
+        );
     }
 
     @Override
@@ -199,6 +205,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), company.getId()));
         }
+
+        view.autoOpenIssues().setValue(company.getAutoOpenIssue());
     }
 
     private EntityOption makeCompanyOption(Company company) {
@@ -208,15 +216,16 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     private void fillDto(Company company) {
         company.setCname(view.companyName().getValue());
+        company.setInfo(view.comment().getText());
+        company.setCategory(view.companyCategory().getValue());
+        company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
+        company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
+        company.setAutoOpenIssue(view.autoOpenIssues().getValue());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
         infoFacade.setLegalAddress(view.legalAddress().getValue());
         infoFacade.setFactAddress(view.actualAddress().getValue());
-        company.setInfo(view.comment().getText());
-        company.setCategory(view.companyCategory().getValue());
-        company.setParentCompanyId(view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId());
-        company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
         infoFacade.setWebSite(view.webSite().getText());
     }
 

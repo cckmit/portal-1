@@ -60,6 +60,15 @@ public class PersonServiceImpl implements PersonService {
         return ok(names );
     }
 
+    @Override
+    public Result<Person> getCommonManagerByProductId(AuthToken authToken, Long productId) {
+        if (productId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return ok(personDAO.getCommonManagerByProductId(productId));
+    }
+
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {

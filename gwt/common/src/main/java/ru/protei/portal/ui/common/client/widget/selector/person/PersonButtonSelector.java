@@ -43,6 +43,10 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 
     public void setFired ( boolean value ) { this.fired = value; }
 
+    public void setPeople(boolean isPeople) {
+        this.isPeople = isPeople;
+    }
+
     @Override
     public void refresh() {
         PersonShortView value = getValue();
@@ -69,8 +73,8 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
 
     public void updateCompanies(Set<Long> companyIds) {
         this.companyIds = companyIds;
-        if(model!=null){
-            model.updateCompanies(this, companyIds, fired);
+        if (model != null) {
+            model.updateCompanies(this, isPeople, companyIds, fired);
         }
     }
 
@@ -80,6 +84,7 @@ public class PersonButtonSelector extends ButtonPopupSingleSelector< PersonShort
     private PersonModel model;
 
     private boolean fired = false;
+    private Boolean isPeople = null;
     private Set<Long> companyIds;
 
     private static final Logger log = Logger.getLogger( PersonButtonSelector.class.getName() );

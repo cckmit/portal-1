@@ -2614,6 +2614,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpAvailableCount();
 
+    String companyAutoOpenIssues();
+
+    String productSelectCommonManager();
+
+    String productCommonManager();
+
     String reloadPageAfterUpdateHeader();
 
     String reloadPageAfterUpdateMessage();

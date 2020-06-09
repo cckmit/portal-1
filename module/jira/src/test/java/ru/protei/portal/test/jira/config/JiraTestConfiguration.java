@@ -359,4 +359,54 @@ public class JiraTestConfiguration {
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return new CompanyImportanceItemDAO_Impl();
     }
+
+    @Bean
+    public SiteFolderService getSiteFolderService() {
+        return new SiteFolderServiceImpl();
+    }
+
+    @Bean
+    public ProductService getProductService() {
+        return new ProductServiceImpl();
+    }
+
+    @Bean
+    public PlatformDAO getPlatformDAO() {
+        return new PlatformDAO_Impl();
+    }
+
+    @Bean
+    public ServerDAO getServerDAO() {
+        return new ServerDAO_Impl();
+    }
+
+    @Bean
+    public ServerSqlBuilder getServerSqlBuilder() {
+        return new ServerSqlBuilder();
+    }
+
+    @Bean
+    public ApplicationDAO getApplicationDAO() {
+        return new ApplicationDAO_Impl();
+    }
+
+    @Bean
+    public ServerApplicationDAO getServerApplicationDAO() {
+        return new ServerApplicationDAO_Impl();
+    }
+
+    @Bean
+    public ProductSubscriptionDAO getProductSubscriptionDAO() {
+        return new ProductSubscriptionDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitDAO getDevUnitDAO() {
+        return new DevUnitDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitChildRefDAO getDevUnitChildRefDAO() {
+        return new DevUnitChildRefDAO_Impl();
+    }
 }
