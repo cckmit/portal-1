@@ -14,11 +14,9 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.ent.PlanToCaseObject;
-import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PlanQuery;
-import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -26,6 +24,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -52,6 +52,20 @@ public class PlanServiceImpl implements PlanService{
     @Override
     public Result<SearchResult<Plan>> getPlans(AuthToken token, PlanQuery query) {
         SearchResult<Plan> sr = planDAO.getSearchResultByQuery(query);
+
+        if ( CollectionUtils.isEmpty(sr.getResults())) {
+            return ok(sr);
+        }
+
+        Map<Long, Long> map = planToCaseObjectDAO.countByPlanIds(sr.getResults().stream()
+                .map(Plan::getId)
+                .collect(Collectors.toList()));
+
+        sr.getResults().forEach(plan -> {
+            Long count = map.getOrDefault(plan.getId(), 0L);
+            plan.setIssuesCount(count);
+        });
+
         return ok(sr);
     }
 

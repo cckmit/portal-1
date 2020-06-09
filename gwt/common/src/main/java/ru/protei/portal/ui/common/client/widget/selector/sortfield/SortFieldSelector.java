@@ -94,6 +94,10 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.ip_address );
                 addOption( En_SortField.check_date);
                 break;
+            case PLAN:
+                addOption( En_SortField.name );
+                addOption( En_SortField.creation_date);
+                break;
         }
     }
 

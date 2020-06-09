@@ -5,7 +5,8 @@ import java.util.Date;
 public class PlanQuery extends BaseQuery{
 
     private String name;
-    private Date created;
+    private Date createdFrom;
+    private Date createdTo;
     private Long creatorId;
     private Date startDateFrom;
     private Date startDateTo;
@@ -22,12 +23,20 @@ public class PlanQuery extends BaseQuery{
         this.name = name;
     }
 
-    public Date getCreated() {
-        return created;
+    public Date getCreatedFrom() {
+        return createdFrom;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setCreatedFrom(Date createdFrom) {
+        this.createdFrom = createdFrom;
+    }
+
+    public Date getCreatedTo() {
+        return createdTo;
+    }
+
+    public void setCreatedTo(Date createdTo) {
+        this.createdTo = createdTo;
     }
 
     public Long getCreatorId() {

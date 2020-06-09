@@ -2,10 +2,13 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.PlanToCaseObjectDAO;
 import ru.protei.portal.core.model.ent.PlanToCaseObject;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PlanToCaseObjectDAO_Impl extends PortalBaseJdbcDAO<PlanToCaseObject> implements PlanToCaseObjectDAO {
 
@@ -31,6 +34,21 @@ public class PlanToCaseObjectDAO_Impl extends PortalBaseJdbcDAO<PlanToCaseObject
     @Override
     public int removeByPlanIdAndIssueId(Long planId, Long caseId) {
         return removeByCondition("plan_id=? and case_object_id=?", planId, caseId);
+    }
+
+    @Override
+    public Map<Long, Long> countByPlanIds(List<Long> planIds) {
+        String sql = "SELECT plan_id, COUNT(*) AS cnt FROM " + getTableName() + " " +
+                "WHERE plan_id IN " + HelperFunc.makeInArg(planIds, String::valueOf) + " " +
+                "GROUP BY plan_id";
+        Map<Long, Long> result = new HashMap<>();
+        jdbcTemplate.query(sql, (rs, rowNum) -> {
+            long id = rs.getLong("plan_id");
+            long count = rs.getLong("cnt");
+            result.put(id, count);
+            return null;
+        });
+        return result;
     }
 
 }

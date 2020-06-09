@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dao.PlanDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Plan;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
@@ -34,14 +35,25 @@ public class PlanDAO_Impl extends PortalBaseJdbcDAO<Plan> implements PlanDAO {
         return new SqlCondition().build(((condition, args) -> {
             condition.append("1=1");
 
+            if (HelperFunc.isLikeRequired(query.getSearchString())) {
+                String arg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+                condition.append(" and plan.name like ? ");
+                args.add(arg);
+            }
+
             if (query.getName() != null) {
                 condition.append(" and plan.name = ?");
                 args.add(query.getName());
             }
 
-            if (query.getCreated() != null) {
-                condition.append(" and plan.created = ?");
-                args.add(query.getCreated());
+            if (query.getCreatedFrom() != null) {
+                condition.append(" and plan.created >= ?");
+                args.add(query.getCreatedFrom());
+            }
+
+            if (query.getCreatedTo() != null) {
+                condition.append(" and plan.created <= ?");
+                args.add(query.getCreatedTo());
             }
 
             if (query.getCreatorId() != null) {

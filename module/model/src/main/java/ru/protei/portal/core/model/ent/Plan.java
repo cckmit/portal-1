@@ -35,6 +35,8 @@ public class Plan extends AuditableObject {
     @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "creator_id", remoteColumn = "id", table = "person")
     private String creatorShortName;
 
+    private Long issuesCount;
+
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
@@ -103,5 +105,13 @@ public class Plan extends AuditableObject {
 
     public void setCreatorShortName(String creatorShortName) {
         this.creatorShortName = creatorShortName;
+    }
+
+    public Long getIssuesCount() {
+        return issuesCount;
+    }
+
+    public void setIssuesCount(Long issuesCount) {
+        this.issuesCount = issuesCount;
     }
 }

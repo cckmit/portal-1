@@ -2623,4 +2623,12 @@ public interface Lang extends Messages, ContactItemLang {
     String planCreatorColumn();
 
     String planIssueQuantityColumn();
+
+    String planSelectCreator();
+
+    String planCreationDate();
+
+    String planStartDate();
+
+    String planFinishDate();
 }
