@@ -26,7 +26,6 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setActivity(AbstractIssueMetaActivity activity);
 
-
     void setManagerCompany(EntityOption managerCompany);
 
     EntityOption getManagerCompany();

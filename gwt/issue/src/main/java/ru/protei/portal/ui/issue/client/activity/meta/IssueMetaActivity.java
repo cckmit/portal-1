@@ -144,12 +144,16 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     public void onPlatformChanged() {
         meta.setPlatform(metaView.platform().getValue());
 
-        if (isUserWithAutoOpenIssues(policyService.getProfile())) {
+        Runnable onResetProduct = null;
+
+        if (isCompanyWithAutoOpenIssues(currentCompany)) {
             resetProduct(meta, metaView);
             updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
+
+            onResetProduct = () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
         }
 
-        onCaseMetaChanged(meta);
+        onCaseMetaChanged(meta, onResetProduct);
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
     }
 
@@ -267,7 +271,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-        fillPlatformValueAndUpdateProductsFilter(selectedCompanyId);
+        companyService.getCompanyUnsafe(selectedCompanyId, new FluentCallback<Company>()
+                .withSuccess(resultCompany -> {
+                    setCurrentCompany(resultCompany);
+                    fillPlatformValueAndUpdateProductsFilter(resultCompany);
+                })
+        );
     }
 
     @Override
@@ -348,7 +357,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void fillView(CaseObjectMeta meta) {
         metaView.stateEnabled().setEnabled(!readOnly);
         metaView.importanceEnabled().setEnabled(!readOnly);
-        metaView.productEnabled().setEnabled(isProductEnabled(readOnly) );
+        metaView.productEnabled().setEnabled(isProductEnabled(readOnly, meta.getInitiatorCompany()) );
         metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()) );
         metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
@@ -371,6 +380,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         metaView.timeElapsedEditContainerVisibility().setVisible(false);
         metaView.setTimeElapsed(meta.getTimeElapsed());
+
+        setCurrentCompany(meta.getInitiatorCompany());
 
         metaView.setCompany(meta.getInitiatorCompany());
         metaView.initiatorUpdateCompany(meta.getInitiatorCompany());
@@ -410,14 +421,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.platform().setValue( meta.getPlatformId() == null ? null : new PlatformOption(meta.getPlatformName(), meta.getPlatformId()) );
 
-        metaView.setProductMandatory(isCustomerWithAutoOpenIssues(policyService.getProfile()));
-
         metaView.product().setValue(ProductShortView.fromProduct(meta.getProduct()));
-
-        if (!isUserWithAutoOpenIssues(policyService.getProfile())) {
-            metaView.setProductModel(productModel);
-        } else {
-            metaView.setProductModel(productWithChildrenModel);
+        updateProductModelAndMandatory(metaView, isCompanyWithAutoOpenIssues(meta.getInitiatorCompany()));
+        
+        if (isCompanyWithAutoOpenIssues(meta.getInitiatorCompany())) {
             updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
         }
 
@@ -518,7 +525,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return false;
         }
 
-        if (isCustomerWithAutoOpenIssues(policyService.getProfile())) {
+        if (isCompanyWithAutoOpenIssues(currentCompany)) {
             return false;
         }
 
@@ -621,11 +628,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
     }
 
-    private void fillPlatformValueAndUpdateProductsFilter(Long companyId) {
-        PlatformQuery query = new PlatformQuery();
-        query.setCompanyId(companyId);
-
-        requestPlatforms(companyId, platformOptions -> {
+    private void fillPlatformValueAndUpdateProductsFilter(final Company company) {
+        requestPlatforms(company.getId(), platformOptions -> {
             if (platformOptions != null && platformOptions.size() == 1) {
                 metaView.platform().setValue(platformOptions.get(0));
                 meta.setPlatform(platformOptions.get(0));
@@ -634,7 +638,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 meta.setPlatform(null);
             }
 
-            if (isUserWithAutoOpenIssues(policyService.getProfile())) {
+            updateProductModelAndMandatory(metaView, isCompanyWithAutoOpenIssues(company));
+
+            if (isCompanyWithAutoOpenIssues(company)) {
                 resetProduct(meta, metaView);
                 updateProductsFilter(
                         metaView,
@@ -669,14 +675,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void updateProductsFilter(final AbstractIssueMetaView metaView, Set<Long> platformIds) {
         if (isEmpty(platformIds)) {
             metaView.updateProductsByPlatformIds(null);
-            metaView.productEnabled().setEnabled(false);
         } else {
             metaView.updateProductsByPlatformIds(platformIds);
-            metaView.productEnabled().setEnabled(isProductEnabled(readOnly));
+            metaView.productEnabled().setEnabled(isProductEnabled(readOnly, currentCompany));
         }
     }
 
-    private boolean isProductEnabled(boolean readOnly) {
+    private boolean isProductEnabled(boolean readOnly, Company company) {
         if (readOnly) {
             return false;
         }
@@ -685,36 +690,29 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return true;
         }
 
-        if (isUserWithAutoOpenIssues(policyService.getProfile())) {
+        if (isCompanyWithAutoOpenIssues(company)) {
             return true;
         }
 
         return false;
     }
 
-    private boolean isCustomerWithAutoOpenIssues(Profile profile) {
-        if (hasSystemScopeForEdit()) {
-            return false;
-        }
-
-        if (!isUserWithAutoOpenIssues(profile)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean hasSystemScopeForEdit() {
-        return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT);
-    }
-
-    private boolean isUserWithAutoOpenIssues(Profile profile) {
-        return Boolean.TRUE.equals(profile.getCompany().getAutoOpenIssue());
+    private boolean isCompanyWithAutoOpenIssues(Company company) {
+        return Boolean.TRUE.equals(company.getAutoOpenIssue());
     }
 
     private void resetProduct(CaseObjectMeta meta, AbstractIssueMetaView metaView) {
         meta.setProduct(null);
         metaView.product().setValue(null);
+    }
+
+    private void setCurrentCompany(Company company) {
+        this.currentCompany = company;
+    }
+    
+    private void updateProductModelAndMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
+        metaView.setProductModel(isCompanyWithAutoOpenIssues ? productWithChildrenModel : productModel);
+        metaView.setProductMandatory(isCompanyWithAutoOpenIssues);
     }
 
     @Inject
@@ -753,6 +751,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private String subscriptionsListEmptyMessage;
     private boolean readOnly;
     private List<ProjectSla> slaList;
+    private Company currentCompany;
 
     private static final Logger log = Logger.getLogger( IssueMetaActivity.class.getName());
 

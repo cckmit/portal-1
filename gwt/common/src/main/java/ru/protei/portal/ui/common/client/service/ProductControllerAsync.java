@@ -42,5 +42,5 @@ public interface ProductControllerAsync {
 
     void isNameUnique(String name, En_DevUnitType type, Long exceptId, AsyncCallback<Boolean> async);
 
-    void getProductViewListWithChildren(ProductQuery query, En_DevUnitType filterType, AsyncCallback<List<ProductShortView>> async);
+    void getProductsViewListWithChildren(ProductQuery query, AsyncCallback<List<ProductShortView>> async);
 }

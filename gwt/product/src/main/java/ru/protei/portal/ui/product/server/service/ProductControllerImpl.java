@@ -137,11 +137,11 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public List<ProductShortView> getProductViewListWithChildren(ProductQuery query, En_DevUnitType filterType) throws RequestFailedException {
-        log.info("getProductViewListWithChildren(): ProductQuery={} | En_DevUnitType={}", query, filterType);
+    public List<ProductShortView> getProductsViewListWithChildren(ProductQuery query) throws RequestFailedException {
+        log.info("getProductViewListWithChildren(): ProductQuery={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<List<ProductShortView>> result = productService.shortViewListWithChildren(token, query, filterType);
+        Result<List<ProductShortView>> result = productService.productsShortViewListWithChildren(token, query);
 
         log.info("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
 

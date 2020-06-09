@@ -83,6 +83,8 @@ public class UiConstants {
         String TEXT_CENTER = "text-center";
         String SEARCH_NO_RESULT = "search-no-result";
         String MULTIPLE_ANY = "multiple-any";
+        String SHORT_VIEW = "col-md-6";
+        String FULL_VIEW = "col-md-12";
     }
 
     /**

@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Result<List<ProductShortView>> shortViewListWithChildren(AuthToken token, ProductQuery query, En_DevUnitType filterType) {
+    public Result<List<ProductShortView>> productsShortViewListWithChildren(AuthToken token, ProductQuery query) {
         if (query.getDirectionId() != null && !checkIfDirection(query.getDirectionId())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -90,10 +90,14 @@ public class ProductServiceImpl implements ProductService {
             return ok(new ArrayList<>());
         }
 
-        List<DevUnit> children = devUnitDAO.getChildren(toSet(result, DevUnit::getId));
-        result.addAll(children);
+        Set<Long> complexIds = toSet(getProductsByType(result, En_DevUnitType.COMPLEX), DevUnit::getId);
 
-        return ok(toList(getProductsByType(result, filterType), DevUnit::toProductShortView));
+        if (isNotEmpty(complexIds)) {
+            List<DevUnit> children = devUnitDAO.getChildren(complexIds);
+            result.addAll(children);
+        }
+
+        return ok(toList(getProductsByType(result, En_DevUnitType.PRODUCT), DevUnit::toProductShortView));
     }
 
     @Override

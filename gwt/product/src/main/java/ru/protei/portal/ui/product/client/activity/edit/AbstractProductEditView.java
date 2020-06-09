@@ -76,13 +76,17 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasVisibility parentsContainerVisibility();
 
-    void makeOnlyChildrenContainerVisible(boolean onlyChildrenContainer);
+    void makeChildrenContainerShortView();
+
+    void makeChildrenContainerFullView();
+
+    void makeDirectionContainerShortView();
+
+    void makeDirectionContainerFullView();
 
     void setParentTypes(En_DevUnitType... types);
 
     void setChildrenTypes(En_DevUnitType... types);
-
-    void setParentsContainerLabel(String label);
 
     void setNameLabel(String label);
 

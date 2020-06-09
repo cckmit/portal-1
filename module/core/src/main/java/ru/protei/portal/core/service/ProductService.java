@@ -28,7 +28,7 @@ public interface ProductService {
 
     Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
 
-    Result<List<ProductShortView>> shortViewListWithChildren(AuthToken token, ProductQuery query, En_DevUnitType filterType);
+    Result<List<ProductShortView>> productsShortViewListWithChildren(AuthToken token, ProductQuery query);
 
     Result<List<ProductShortView>> shortViewListByIds(AuthToken token, List<Long> ids );
 
