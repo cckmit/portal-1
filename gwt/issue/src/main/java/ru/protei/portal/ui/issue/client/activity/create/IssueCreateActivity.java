@@ -678,7 +678,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private void updateProductsFilter(final AbstractIssueMetaView issueMetaView, Set<Long> platformIds) {
         if (isEmpty(platformIds)) {
             issueMetaView.updateProductsByPlatformIds(null);
-            issueMetaView.productEnabled().setEnabled(false);
         } else {
             issueMetaView.updateProductsByPlatformIds(platformIds);
             issueMetaView.productEnabled().setEnabled(isProductEnabled(currentCompany));

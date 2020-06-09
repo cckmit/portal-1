@@ -675,7 +675,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void updateProductsFilter(final AbstractIssueMetaView metaView, Set<Long> platformIds) {
         if (isEmpty(platformIds)) {
             metaView.updateProductsByPlatformIds(null);
-            metaView.productEnabled().setEnabled(false);
         } else {
             metaView.updateProductsByPlatformIds(platformIds);
             metaView.productEnabled().setEnabled(isProductEnabled(readOnly, currentCompany));
