@@ -8,4 +8,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 public interface PlanControllerAsync {
 
     void getPlanList(PlanQuery query, AsyncCallback<SearchResult<Plan>> async);
+
+    void getPlanWithIssues(Long planId, AsyncCallback<Plan> async);
 }

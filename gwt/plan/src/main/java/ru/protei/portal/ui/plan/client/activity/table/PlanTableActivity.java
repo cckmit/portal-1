@@ -165,7 +165,7 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new PlanEvents.ShowPreview(view.getPreviewContainer(), value.getId(), true));
+            fireEvent(new PlanEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
         }
     }
 

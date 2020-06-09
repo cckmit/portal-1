@@ -2631,4 +2631,12 @@ public interface Lang extends Messages, ContactItemLang {
     String planStartDate();
 
     String planFinishDate();
+
+    String planIssuesList();
+
+    String goToPlans();
+
+    String planPeriod();
+
+    String planHeader( String p0 );
 }

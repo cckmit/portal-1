@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 
@@ -38,14 +39,26 @@ public class PlanEvents {
 
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, Long planId, boolean isShouldWrap ) {
+        public ShowPreview( HasWidgets parent, Long planId ) {
             this.parent = parent;
-            this.productId = planId;
-            this.isShouldWrap = isShouldWrap;
+            this.planId = planId;
         }
 
         public HasWidgets parent;
-        public Long productId;
-        public boolean isShouldWrap;
+        public Long planId;
+    }
+
+    @Url( value = "plan_preview", primary = true )
+    public static class ShowFullScreen {
+
+        public ShowFullScreen() {}
+
+        public ShowFullScreen ( Long id )
+        {
+            this.planId = id;
+        }
+
+        @Name( "id" )
+        public Long planId;
     }
 }

@@ -11,4 +11,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 public interface PlanController extends RemoteService {
 
     SearchResult<Plan> getPlanList(PlanQuery query) throws RequestFailedException;
+
+    Plan getPlanWithIssues(Long planId) throws RequestFailedException;
 }

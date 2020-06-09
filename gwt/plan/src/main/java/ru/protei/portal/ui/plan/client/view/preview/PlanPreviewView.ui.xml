@@ -1,0 +1,43 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="rootWrapper" styleName="card no-margin card-default card-fixed">
+        <div class="card-body">
+            <h4 class="no-margin inline">
+                <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
+            </h4>
+            <div class="inline pull-right">
+                <small ui:field="createdBy"/>
+            </div>
+            <h5 ui:field="name"/>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <h5>
+                        <ui:text from="{lang.planPeriod}"/>
+                    </h5>
+                    <div ui:field="period"/>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-12">
+                    <h5>
+                        <ui:text from="{lang.planIssuesList}"/>
+                    </h5>
+                    <div ui:field="issues"
+                                 class="form-group col-md-12 main-content-padding-0"/>
+                </div>
+            </div>
+        </div>
+        <g:HTMLPanel styleName="card-footer" ui:field="backButtonContainer">
+            <div class="card card-transparent no-margin">
+                <div class="text-right">
+                    <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlans}"/>
+                </div>
+            </div>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

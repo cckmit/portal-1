@@ -828,4 +828,12 @@ public class DebugIds {
         String SAVE_BUTTON = "reservedip-save-button";
         String CANCEL_BUTTON = "reservedip-cancel-button";
     }
+
+    public interface PLAN_PREVIEW {
+        String FULL_SCREEN_BUTTON = "plan-preview-full-screen-button";
+        String TITLE_LABEL = "plan-preview-title-label";
+        String DATE_CREATED_LABEL = "plan-preview-date-created-label";
+        String NAME_LABEL = "plan-preview-name-label";
+        String PERIOD_LABEL = "plan-preview-period-label";
+    }
 }
