@@ -123,13 +123,13 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
         name = new ClickColumn<Plan>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
-                columnHeader.addClassName( "ip-owner" );
+                columnHeader.addClassName( "plan-name" );
                 columnHeader.setInnerText(lang.planNameColumn());
             }
 
             @Override
             public void fillColumnValue(Element cell, Plan value) {
-                cell.addClassName( "ip-owner" );
+                cell.addClassName( "plan-name" );
                 cell.setInnerText(value.getName());
             }
         };
@@ -137,13 +137,13 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
         period = new ClickColumn<Plan>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
-                columnHeader.addClassName( "ip-use-range" );
+                columnHeader.addClassName( "plan-range" );
                 columnHeader.setInnerText(lang.planPeriodColumn());
             }
 
             @Override
             public void fillColumnValue(Element cell, Plan value) {
-                cell.addClassName( "ip-use-range" );
+                cell.addClassName( "plan-range" );
                 cell.setInnerText(DateFormatter.formatDateOnly(value.getStartDate()) + " - " + DateFormatter.formatDateOnly(value.getFinishDate()));
             }
         };
@@ -151,13 +151,13 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
         creator = new ClickColumn<Plan>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
-                columnHeader.addClassName( "ip-owner" );
+                columnHeader.addClassName( "plan-creator" );
                 columnHeader.setInnerText(lang.planCreatorColumn());
             }
 
             @Override
             public void fillColumnValue(Element cell, Plan value) {
-                cell.addClassName( "ip-owner" );
+                cell.addClassName( "plan-creator" );
                 cell.setInnerText(value.getCreatorShortName());
             }
         };
@@ -165,14 +165,14 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
         issueQuantity = new ClickColumn<Plan>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
-                columnHeader.addClassName( "ip-comment" );
+                columnHeader.addClassName( "plan-issue-quantity" );
                 columnHeader.setInnerText(lang.planIssueQuantityColumn());
             }
 
             @Override
             public void fillColumnValue(Element cell, Plan value) {
-                cell.addClassName( "ip-comment" );
-                cell.setInnerText(CollectionUtils.isNotEmpty(value.getIssueList()) ? String.valueOf(value.getIssueList().size()) : "0");
+                cell.addClassName( "plan-issue-quantity" );
+                cell.setInnerText(String.valueOf(value.getIssuesCount()));
             }
         };
 

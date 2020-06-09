@@ -3482,6 +3482,80 @@ label {
   }
 }
 
+.plan {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 35px;
+
+          > div {
+            height: 35px;
+            max-height: 35px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    .plan-name {
+      width: 45%;
+    }
+
+    .plan-range {
+      width: 15%;
+    }
+
+    .plan-creator {
+      width: 30%;
+    }
+
+    .plan-issue-quantity {
+      width: 10%;
+    }
+  }
+}
+
+.short-table-view {
+  .plan {
+    .plan-name {
+      width: 30%;
+    }
+
+    .plan-range {
+      width: 20%;
+    }
+
+    .plan-creator {
+      width: 30%;
+    }
+
+    .plan-issue-quantity {
+      display: none;
+    }
+  }
+}
+
 .preview-value-label {
   margin-top: 4px !important;
 }
