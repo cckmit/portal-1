@@ -8,10 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
-import ru.protei.portal.core.service.ContractReminderService;
-import ru.protei.portal.core.service.EmployeeRegistrationReminderService;
-import ru.protei.portal.core.service.IpReservationService;
-import ru.protei.portal.core.service.ReportControlService;
+import ru.protei.portal.core.service.*;
 
 import javax.annotation.PostConstruct;
 
@@ -80,8 +77,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     }
 
     public void remindAboutNeedToReleaseIp() {
-        ipReservationService.notifyOwnerAboutReleaseIp();
+        log.info("remindAboutNeedToReleaseIp start");
+        ipReservationService.notifyOwnersAboutReleaseIp();
         ipReservationService.notifyAdminsAboutExpiredReleaseDates();
+        log.info("remindAboutNeedToReleaseIp end");
     }
 
     @Autowired

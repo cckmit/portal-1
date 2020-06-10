@@ -10,10 +10,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -155,7 +153,7 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
             @Override
             public void fillColumnValue(Element cell, ReservedIp value) {
                 cell.addClassName( "ip-owner" );
-                cell.setInnerText(value.getOwnerShortName());
+                cell.setInnerText(value.getOwnerName());
             }
         };
 

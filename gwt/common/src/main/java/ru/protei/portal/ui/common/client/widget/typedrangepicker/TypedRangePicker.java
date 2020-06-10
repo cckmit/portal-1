@@ -25,6 +25,7 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
             @Override
             public void onValueChange(ValueChangeEvent<En_DateIntervalType> event) {
                 range.setVisible(btnGroup.getValue().equals(En_DateIntervalType.FIXED));
+                range.setMandatory(btnGroup.getValue().equals(En_DateIntervalType.FIXED));
             }
         });
         btnGroup.setValue(En_DateIntervalType.MONTH);

@@ -83,7 +83,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
         PersonShortView ipOwner = new PersonShortView(
-                reservedIp.getOwnerShortName(),
+                reservedIp.getOwnerName(),
                 reservedIp.getOwnerId());
         view.owner().setValue(ipOwner);
 

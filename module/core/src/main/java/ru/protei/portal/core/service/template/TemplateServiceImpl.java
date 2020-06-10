@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
@@ -568,6 +567,78 @@ public class TemplateServiceImpl implements TemplateService {
         PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.body.%s.ftl");
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getSubnetNotificationSubject(Subnet subnet, Person initiator, SubnetNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
+        templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/subnet.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getSubnetNotificationBody(Subnet subnet, SubnetNotificationEvent.Action action, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
+        templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
+        templateModel.put("comment", subnet.getComment());
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/subnet.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpNotificationSubject(List<ReservedIp> reservedIps, Person initiator,
+                                                             ReservedIpNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == ReservedIpNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == ReservedIpNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == ReservedIpNotificationEvent.Action.REMOVED);
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpNotificationBody(List<ReservedIp> reservedIps, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reservedIps", reservedIps);
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "releaseDateStart", releaseDateStart != null ?
+                new SimpleDateFormat("dd.MM.yyyy").format(releaseDateStart) : null);
+        templateModel.put( "releaseDateEnd", releaseDateEnd != null ?
+                        new SimpleDateFormat("dd.MM.yyyy").format(releaseDateEnd) : "?" );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/reserved.ip.remaining.subject.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
         return template;
     }
 
