@@ -8,8 +8,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;

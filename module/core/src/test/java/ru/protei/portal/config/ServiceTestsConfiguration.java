@@ -31,6 +31,8 @@ import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
@@ -305,6 +307,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public RoomReservationService getRoomReservationService() {
         return new RoomReservationServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return new AutoOpenCaseServiceImpl();
     }
 
 

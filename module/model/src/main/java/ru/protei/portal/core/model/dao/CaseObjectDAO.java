@@ -45,4 +45,6 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     int countByQuery(CaseQuery query);
 
     String getExternalAppName( Long caseId );
+
+    List<Long> getCaseIdToAutoOpen();
 }

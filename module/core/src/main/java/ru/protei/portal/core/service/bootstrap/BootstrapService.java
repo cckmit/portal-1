@@ -31,11 +31,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.core.model.dict.En_Gender.UNDEFINED;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -68,6 +70,7 @@ public class BootstrapService {
         updateManagerFiltersWithoutManagerCompany();
         fillWithCrossLinkColumn();
         transferYoutrackLinks();
+        addCommonManager();
     }
 
     private void fillWithCrossLinkColumn() {
@@ -294,7 +297,7 @@ public class BootstrapService {
 
         final String sqlCondition = "sex <> ? AND company_id IN (SELECT id FROM company WHERE category_id = ?)";
         final List<Object> params = new ArrayList<>();
-        params.add(En_Gender.UNDEFINED.getCode());
+        params.add(UNDEFINED.getCode());
         params.add(5);
 
         log.info("Patch for workers phone number normalization has started");
@@ -538,6 +541,37 @@ if(true) return; //TODO remove
             params.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
             caseFilterDAO.partialMerge(nextFilter, "params");
         }
+    }
+
+    private void addCommonManager() {
+        if (personDAO.getByCondition("displayname = 'Тех. поддержка NGN/ВКС'") != null) {
+            return;
+        }
+        log.info("Add Common Manager started");
+
+        Date created = java.sql.Timestamp.valueOf(LocalDateTime.now());
+        Stream.of(
+                "Тех. поддержка NGN/ВКС",
+                "Тех. поддержка ИП",
+                "Тех. поддержка Mobile",
+                "Тех. поддержка Top Connect",
+                "Тех. поддержка Billing",
+                "Тех. поддержка ЦОВ",
+                "Тех. поддержка 112",
+                "Тех. поддержка DPI"
+        ).map(name -> {
+            Person manager = new Person();
+            manager.setCreated(created);
+            manager.setCreator("DBA");
+            manager.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+            manager.setLastName(name);
+            manager.setDisplayName(name);
+            manager.setDisplayShortName(name);
+            manager.setGender(En_Gender.UNDEFINED);
+            manager.setLocale(CrmConstants.LocaleTags.RU);
+            return manager;
+        }).forEach(personDAO::persist);
+        log.info("Add Common Manager ended");
     }
 
     @Inject

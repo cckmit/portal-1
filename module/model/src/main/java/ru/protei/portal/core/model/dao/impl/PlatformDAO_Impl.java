@@ -2,17 +2,12 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PlatformDAO;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcHelper;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements PlatformDAO {
 
