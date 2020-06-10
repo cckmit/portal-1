@@ -301,7 +301,7 @@ public class PlanServiceTest extends BaseServiceTest{
         Assert.assertEquals("Wrong issues quantity", 1, planFromDB.getIssueList().size());
 
         //Добавляем уже добавленное ранее обращение
-        Result<Boolean> result = planService.addIssueToPlan(getAuthToken(), planId1, issue1.getId());
+        Result<Plan> result = planService.addIssueToPlan(getAuthToken(), planId1, issue1.getId());
         Assert.assertEquals( En_ResultStatus.ALREADY_EXIST, result.getStatus());
 
         planFromDB = planService.getPlanWithIssues(getAuthToken(), planId1).getData();
