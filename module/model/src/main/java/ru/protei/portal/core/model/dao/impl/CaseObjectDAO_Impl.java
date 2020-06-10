@@ -18,6 +18,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
@@ -146,6 +147,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         Query query = query().select( "id" )
                 .from( "case_object" )
                 .where("case_object.state" ).equal(CrmConstants.State.CREATED)
+                .and("case_object.case_type").equal(CRM_SUPPORT.getId())
                 .and(query()
                         .select( "SELECT company.auto_open_issue" ).from( "FROM company WHERE" )
                             .whereExpression( "company.id = case_object.initiator_company" ))

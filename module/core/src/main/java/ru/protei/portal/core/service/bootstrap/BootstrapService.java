@@ -449,7 +449,6 @@ if(true) return; //TODO remove
                 "Тех. поддержка DPI"
         ).map(name -> {
             Person manager = new Person();
-            manager.setCommonManager(true);
             manager.setCreated(created);
             manager.setCreator("DBA");
             manager.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);

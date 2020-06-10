@@ -8,6 +8,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -42,8 +44,27 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
         DevUnit product = createProduct("AutoOpenCaseServiceProduct");
         product.setCommonManagerId(commonManager.getId());
-
+        product.setType(En_DevUnitType.PRODUCT);
         devUnitDAO.persist(product);
+
+        CaseObject project = createNewCaseObject(customerPerson);
+        project.setName("AutoOpenCaseServiceProject");
+        project.setStateId(CrmConstants.State.OPENED);
+        project.setInitiatorCompanyId(customerCompany.getId());
+        project.setType(En_CaseType.PROJECT);
+        project.setProductId(product.getId());
+
+        Long projectId = caseObjectDAO.persist(project);
+
+        Platform platform = new Platform();
+        platform.setName("AutoOpenCaseServicePlatform");
+        platform.setCompanyId(customerCompany.getId());
+        platform.setProjectId(projectId);
+
+        ProjectToProduct projectToProduct = new ProjectToProduct(projectId, product.getId());
+        projectToProductDAO.persist(projectToProduct);
+
+        platformDAO.persist(platform);
 
         CaseObject newCaseObject = createNewCaseObject(customerPerson);
         newCaseObject.setInitiatorCompanyId(customerCompany.getId());
@@ -51,6 +72,8 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         newCaseObject.setManagerCompanyId(homeCompany.getId());
         newCaseObject.setProductId(product.getId());
         newCaseObject.setProducts(Collections.singleton(product));
+        newCaseObject.setPlatformId(platform.getId());
+        newCaseObject.setType(En_CaseType.CRM_SUPPORT);
         newCaseObject.setStateId(CrmConstants.State.CREATED);
 
         CaseObjectCreateRequest request = new CaseObjectCreateRequest();
@@ -102,6 +125,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         openNoCommonManagerCase.setProductId(product.getId());
         openNoCommonManagerCase.setProducts(Collections.singleton(product));
         openNoCommonManagerCase.setStateId(CrmConstants.State.OPENED);
+        openNoCommonManagerCase.setType(En_CaseType.CRM_SUPPORT);
 
         caseObjectDAO.persist(openNoCommonManagerCase);
 
@@ -113,6 +137,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         createNoCommonManagerCase.setProductId(product.getId());
         createNoCommonManagerCase.setProducts(Collections.singleton(product));
         openNoCommonManagerCase.setStateId(CrmConstants.State.CREATED);
+        openNoCommonManagerCase.setType(En_CaseType.CRM_SUPPORT);
 
         caseObjectDAO.persist(createNoCommonManagerCase);
 
@@ -154,6 +179,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         noAutoOpenCase.setManagerCompanyId(homeCompany.getId());
         noAutoOpenCase.setProductId(product.getId());
         noAutoOpenCase.setProducts(Collections.singleton(product));
+        noAutoOpenCase.setType(En_CaseType.CRM_SUPPORT);
 
         caseObjectDAO.persist(noAutoOpenCase);
 
@@ -163,6 +189,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         autoOpenCase.setManagerCompanyId(homeCompany.getId());
         autoOpenCase.setProductId(product.getId());
         autoOpenCase.setProducts(Collections.singleton(product));
+        autoOpenCase.setType(En_CaseType.CRM_SUPPORT);
 
         caseObjectDAO.persist(autoOpenCase);
 

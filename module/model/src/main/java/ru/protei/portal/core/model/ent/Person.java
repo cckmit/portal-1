@@ -91,9 +91,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcColumn(name = "locale")
     private String locale;
 
-    @JdbcColumn(name = "common_manager")
-    private Boolean isCommonManager;
-
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
             return null;
@@ -371,14 +368,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
         };
     }
 
-    public Boolean getCommonManager() {
-        return isCommonManager;
-    }
-
-    public void setCommonManager(Boolean commonManager) {
-        isCommonManager = commonManager;
-    }
-
     @Override
     public String toString() {
         return "Person{" +
@@ -406,7 +395,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +
                 ", locale='" + locale + '\'' +
-                ", isCommonManager=" + isCommonManager +
                 '}';
     }
 }
