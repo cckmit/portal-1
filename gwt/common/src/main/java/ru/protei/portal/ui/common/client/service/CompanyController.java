@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис по работе с компаниями
@@ -96,7 +97,7 @@ public interface CompanyController extends RemoteService {
      */
     List<CompanySubscription> getCompanySubscription( Long companyId ) throws RequestFailedException;
 
-    List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException;
+    List< CompanySubscription > getCompanyWithParentCompanySubscriptions(Set<Long> companyIds) throws RequestFailedException;
 
     /**
      * Получить список доступных статусов обращения

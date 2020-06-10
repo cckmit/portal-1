@@ -222,10 +222,10 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException {
-        log.info( "getCompanyWithParentCompanySubscriptions() companyId={}", companyId );
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return ServiceUtils.checkResultAndGetData( companyService.getCompanyWithParentCompanySubscriptions( authToken, companyId ));
+    public List<CompanySubscription> getCompanyWithParentCompanySubscriptions(Set<Long> companyIds) throws RequestFailedException {
+        log.info("getCompanyWithParentCompanySubscriptions() companyIds={}", companyIds);
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(companyService.getCompanyWithParentCompanySubscriptions(authToken, companyIds));
     }
 
     @Override

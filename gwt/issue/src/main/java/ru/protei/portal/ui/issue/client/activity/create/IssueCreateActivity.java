@@ -223,20 +223,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
-        companyService.getCompanyWithParentCompanySubscriptions(
-                companyOption.getId(),
-                new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> {
-                            subscriptions = filterByPlatformAndProduct(subscriptions);
-                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                    subscriptions,
-                                    isEmpty(subscriptions) ?
-                                            lang.issueCompanySubscriptionNotDefined() :
-                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                    )
-                            );
-                        })
-        );
+        updateSubscriptions(issueMetaView.getManagerCompany().getId(), companyOption.getId());
 
         companyService.getCompanyCaseStates(companyOption.getId(), new ShortRequestCallback<List<CaseState>>()
                 .setOnSuccess(caseStates -> {
@@ -306,6 +293,25 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onManagerCompanyChanged() {
         issueMetaView.setManager(null);
         issueMetaView.updateManagersCompanyFilter(issueMetaView.getManagerCompany().getId());
+
+        updateSubscriptions(issueMetaView.getManagerCompany().getId(), issueMetaView.getCompany().getId());
+    }
+
+    private void updateSubscriptions(Long... companyIds) {
+        companyService.getCompanyWithParentCompanySubscriptions(
+                new HashSet<>(Arrays.asList(companyIds)),
+                new ShortRequestCallback<List<CompanySubscription>>()
+                        .setOnSuccess(subscriptions -> {
+                            subscriptions = filterByPlatformAndProduct(subscriptions);
+                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            );
+                        })
+        );
     }
 
     private void fillPlatformValueAndUpdateProductsFilter(final Company company) {
