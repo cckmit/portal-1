@@ -52,6 +52,8 @@ import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
+import static org.mockito.Mockito.mock;
+
 @Configuration
 @EnableAspectJAutoProxy
 public class ServiceTestsConfiguration {
@@ -311,7 +313,7 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public AutoOpenCaseService getAutoOpenCaseService() {
-        return new AutoOpenCaseServiceImpl();
+        return mock(AutoOpenCaseService.class);
     }
 
 
