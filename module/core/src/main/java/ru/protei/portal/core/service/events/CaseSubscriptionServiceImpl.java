@@ -116,15 +116,20 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     private void appendCompanySubscriptions(CaseObjectMeta caseMeta, Set<NotificationEntry> result) {
         List<CompanySubscription> companySubscriptions = safeGetByCompany(caseMeta.getInitiatorCompanyId());
+        List<CompanySubscription> managerCompanySubscriptions = safeGetByCompany(caseMeta.getManagerCompanyId());
 
-        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = filterByPlatformAndProduct(companySubscriptions, caseMeta.getPlatformId(), caseMeta.getProductId());
+        Set<CompanySubscription> allCompanySubscriptions = new HashSet<>();
+        allCompanySubscriptions.addAll(companySubscriptions);
+        allCompanySubscriptions.addAll(managerCompanySubscriptions);
+
+        List<CompanySubscription> subscriptionsBasedOnPlatformAndProduct = filterByPlatformAndProduct(allCompanySubscriptions, caseMeta.getPlatformId(), caseMeta.getProductId());
 
         subscriptionsBasedOnPlatformAndProduct.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
 
         log.info( "companySubscriptions: {}", join( result, NotificationEntry::getAddress, ",") );
     }
 
-    private List<CompanySubscription> filterByPlatformAndProduct(List<CompanySubscription> companySubscriptions, Long platformId, Long productId) {
+    private List<CompanySubscription> filterByPlatformAndProduct(Set<CompanySubscription> companySubscriptions, Long platformId, Long productId) {
         return companySubscriptions.stream()
                 .filter(companySubscription -> (companySubscription.getPlatformId() == null || Objects.equals(platformId, companySubscription.getPlatformId()))
                                             && (companySubscription.getProductId() == null || Objects.equals(productId, companySubscription.getProductId())))

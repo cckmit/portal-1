@@ -234,20 +234,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setPlatformFilter(platformOption -> selectedCompanyId.equals(platformOption.getCompanyId()));
 
-        companyService.getCompanyWithParentCompanySubscriptions(
-                selectedCompanyId,
-                new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> {
-                            subscriptions = filterByPlatformAndProduct(subscriptions);
-                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                    subscriptions,
-                                    CollectionUtils.isEmpty(subscriptions) ?
-                                            lang.issueCompanySubscriptionNotDefined() :
-                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                    )
-                            );
-                        })
-        );
+        updateSubscriptions(selectedCompanyId, meta.getManagerCompanyId());
 
         companyService.getCompanyCaseStates(
                 selectedCompanyId,
@@ -295,6 +282,25 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.updateManagersCompanyFilter(metaView.getManagerCompany().getId());
 
         metaView.managerValidator().setValid(false);
+
+        updateSubscriptions(meta.getInitiatorCompanyId(), meta.getManagerCompanyId());
+    }
+
+    private void updateSubscriptions(Long... companyIds) {
+        companyService.getCompanyWithParentCompanySubscriptions(
+                new HashSet<>(Arrays.asList(companyIds)),
+                new ShortRequestCallback<List<CompanySubscription>>()
+                        .setOnSuccess(subscriptions -> {
+                            subscriptions = filterByPlatformAndProduct(subscriptions);
+                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
+                                    subscriptions,
+                                    CollectionUtils.isEmpty(subscriptions) ?
+                                            lang.issueCompanySubscriptionNotDefined() :
+                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
+                                    )
+                            );
+                        })
+        );
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
@@ -390,20 +396,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setPlatformFilter(platformOption -> meta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
         setPlatformVisibility(metaView, policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
 
-        companyService.getCompanyWithParentCompanySubscriptions(
-                meta.getInitiatorCompanyId(),
-                new ShortRequestCallback<List<CompanySubscription>>()
-                        .setOnSuccess(subscriptions -> {
-                            subscriptions = filterByPlatformAndProduct(subscriptions);
-                            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(
-                                    subscriptions,
-                                    CollectionUtils.isEmpty(subscriptions) ?
-                                            lang.issueCompanySubscriptionNotDefined() :
-                                            lang.issueCompanySubscriptionBasedOnPrivacyNotDefined()
-                                    )
-                            );
-                        })
-        );
+        updateSubscriptions(meta.getInitiatorCompanyId(), meta.getManagerCompanyId());
 
         companyService.getCompanyCaseStates(
                 meta.getInitiatorCompanyId(),

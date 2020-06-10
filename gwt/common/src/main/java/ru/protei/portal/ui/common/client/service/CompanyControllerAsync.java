@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Асинхронный сервис по работе с компаниями
@@ -83,7 +84,7 @@ public interface CompanyControllerAsync {
      * @param companyId
      */
     void getCompanySubscription( Long companyId, AsyncCallback< List< CompanySubscription > > async );
-    void getCompanyWithParentCompanySubscriptions( Long companyId, AsyncCallback<List<CompanySubscription>> async );
+    void getCompanyWithParentCompanySubscriptions(Set<Long> companyIds, AsyncCallback<List<CompanySubscription>> async );
 
     /**
      * Получить список доступных статусов обращения
