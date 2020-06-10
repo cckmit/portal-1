@@ -1,6 +1,7 @@
 package ru.protei.portal.test.jira.mock;
 
 import ru.protei.portal.core.model.dao.impl.JiraStatusMapEntryDAO_Impl;
+import ru.protei.portal.core.model.ent.JiraStatusMapEntry;
 import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.util.HashMap;
@@ -22,9 +23,17 @@ public class JiraStatusMapEntryDAO_ImplMock extends JiraStatusMapEntryDAO_Impl {
     }
 
     @Override
-    public Long getByJiraStatus(long mapId, String statusName) {
+    public JiraStatusMapEntry getByJiraStatus(long mapId, String statusName) {
         if (statusMap == null) buildStatusMap();
-        return statusName == null ? null : statusMap.get(statusName);
+
+        if (statusName == null) {
+            return null;
+        } else {
+            JiraStatusMapEntry jiraStatusMapEntry = new JiraStatusMapEntry();
+            jiraStatusMapEntry.setLocalStatusId(statusMap.get(statusName));
+            jiraStatusMapEntry.setLocalStatusName(statusName);
+            return jiraStatusMapEntry;
+        }
     }
 
     @Override
