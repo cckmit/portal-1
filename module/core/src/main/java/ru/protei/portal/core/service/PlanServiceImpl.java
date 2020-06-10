@@ -157,7 +157,7 @@ public class PlanServiceImpl implements PlanService{
 
     @Override
     @Transactional
-    public Result<Boolean> addIssueToPlan(AuthToken token, Long planId, Long issueId) {
+    public Result<Plan> addIssueToPlan(AuthToken token, Long planId, Long issueId) {
         if (planId == null || issueId == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -180,7 +180,7 @@ public class PlanServiceImpl implements PlanService{
 
         historyService.createHistory(token, issueId, En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId));
 
-        return ok();
+        return getPlanWithIssues(token, planId);
     }
 
     @Override

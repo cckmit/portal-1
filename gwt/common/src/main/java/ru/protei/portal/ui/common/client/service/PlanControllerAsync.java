@@ -10,4 +10,6 @@ public interface PlanControllerAsync {
     void getPlanList(PlanQuery query, AsyncCallback<SearchResult<Plan>> async);
 
     void getPlanWithIssues(Long planId, AsyncCallback<Plan> async);
+
+    void createPlan(Plan plan, AsyncCallback<Long> async);
 }

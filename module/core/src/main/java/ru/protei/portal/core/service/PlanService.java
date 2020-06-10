@@ -36,7 +36,7 @@ public interface PlanService {
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)
-    Result<Boolean> addIssueToPlan(AuthToken token, Long planId, Long issueId);
+    Result<Plan> addIssueToPlan(AuthToken token, Long planId, Long issueId);
 
     @Privileged(En_Privilege.PLAN_EDIT)
     @Auditable(En_AuditType.PLAN_MODIFY)

@@ -114,4 +114,19 @@ public class Plan extends AuditableObject {
     public void setIssuesCount(Long issuesCount) {
         this.issuesCount = issuesCount;
     }
+
+    @Override
+    public String toString() {
+        return "Plan{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", created=" + created +
+                ", creatorId=" + creatorId +
+                ", startDate=" + startDate +
+                ", finishDate=" + finishDate +
+                ", issueList=" + issueList +
+                ", creatorShortName='" + creatorShortName + '\'' +
+                ", issuesCount=" + issuesCount +
+                '}';
+    }
 }
