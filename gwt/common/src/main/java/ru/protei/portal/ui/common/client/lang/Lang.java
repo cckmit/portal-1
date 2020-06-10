@@ -2639,4 +2639,10 @@ public interface Lang extends Messages, ContactItemLang {
     String planPeriod();
 
     String planHeader( String p0 );
+
+    String planName();
+
+    String planMainInfoTitle();
+
+    String planSaved();
 }

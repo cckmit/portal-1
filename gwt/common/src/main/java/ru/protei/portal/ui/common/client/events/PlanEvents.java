@@ -16,13 +16,6 @@ public class PlanEvents {
         public ShowPlans (Boolean preScroll) {this.preScroll = preScroll;}
     }
 
-    public static class CreatePlan {
-        public CreatePlan(HasWidgets parent) {
-            this.parent = parent;
-        }
-        public HasWidgets parent;
-    }
-
     @Url( value = "plan")
     public static class Edit {
 

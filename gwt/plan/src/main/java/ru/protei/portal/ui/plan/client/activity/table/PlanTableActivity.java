@@ -75,8 +75,8 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
             return;
         }
 
-       /* view.clearSelection();
-        fireEvent(new PlanEvents.CreatePlan(view.getPreviewContainer()));*/
+        view.clearSelection();
+        fireEvent(new PlanEvents.Edit());
     }
 
 

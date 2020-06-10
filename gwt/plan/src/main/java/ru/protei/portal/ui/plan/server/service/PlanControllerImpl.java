@@ -38,6 +38,15 @@ public class PlanControllerImpl implements PlanController {
         return ServiceUtils.checkResultAndGetData(planService.getPlanWithIssues(token, planId));
     }
 
+    @Override
+    public Long createPlan(Plan plan) throws RequestFailedException {
+
+        log.info( "createPlan(): plan={}", plan);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.createPlan(token, plan));
+    }
+
     @Autowired
     private PlanService planService;
     @Autowired

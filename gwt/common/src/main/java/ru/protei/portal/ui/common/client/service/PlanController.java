@@ -13,4 +13,6 @@ public interface PlanController extends RemoteService {
     SearchResult<Plan> getPlanList(PlanQuery query) throws RequestFailedException;
 
     Plan getPlanWithIssues(Long planId) throws RequestFailedException;
+
+    Long createPlan(Plan plan) throws RequestFailedException;
 }
