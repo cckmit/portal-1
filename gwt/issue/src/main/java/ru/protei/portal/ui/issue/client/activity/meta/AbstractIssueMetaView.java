@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -116,4 +117,14 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setPauseDateValid(boolean isValid);
 
     HasEnabled managerCompanyEnabled();
+
+    void setPlanCreatorId(Long creatorId);
+
+    HasValue<Set<PlanOption>> plans();
+
+    HasVisibility plansContainerVisibility();
+
+    HasVisibility otherPlansContainerVisibility();
+
+    void setOtherPlans(String value);
 }

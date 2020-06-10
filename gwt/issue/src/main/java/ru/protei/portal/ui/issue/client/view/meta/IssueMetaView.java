@@ -19,10 +19,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -36,6 +33,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
@@ -390,6 +388,31 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         return managerCompany;
     }
 
+    @Override
+    public void setPlanCreatorId(Long creatorId) {
+        plans.setCreatorId(creatorId);
+    }
+
+    @Override
+    public HasValue<Set<PlanOption>> plans() {
+        return plans;
+    }
+
+    @Override
+    public HasVisibility plansContainerVisibility() {
+        return planContainer;
+    }
+
+    @Override
+    public HasVisibility otherPlansContainerVisibility() {
+        return otherPlansContainer;
+    }
+
+    @Override
+    public void setOtherPlans(String otherPlans) {
+        this.otherPlans.setInnerText(otherPlans);
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
@@ -433,6 +456,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
         timeElapsedType.ensureLabelDebugId(DebugIds.ISSUE.LABEL.TIME_ELAPSED_TYPE);
         notifiers.ensureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR);
+        plans.setAddEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ADD_BUTTON);
+        plans.setClearEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_CLEAR_BUTTON);
+        plans.setItemContainerEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ITEM_CONTAINER);
+        plans.setLabelEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_LABEL);
+        plans.ensureDebugId(DebugIds.ISSUE.PLANS_SELECTOR);
     }
 
     private String transliteration(String input) {
@@ -517,6 +545,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         activity.onManagerCompanyChanged();
     }
 
+    @UiHandler("plans")
+    public void onPlanChanged(ValueChangeEvent<Set<PlanOption>> event) {
+        activity.onPlansChanged();
+    }
+
     @UiField
     @Inject
     Lang lang;
@@ -534,6 +567,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     @UiField(provided = true)
     DevUnitFormSelector product;
+    @Inject
+    @UiField(provided = true)
+    PlanMultiSelector plans;
+    @UiField
+    HTMLPanel planContainer;
     @UiField
     HTMLPanel productContainer;
     @Inject
@@ -577,6 +615,10 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     LabelElement subscriptionsLabel;
     @UiField
     Element subscriptions;
+    @UiField
+    Element otherPlans;
+    @UiField
+    HTMLPanel otherPlansContainer;
     @UiField
     HTMLPanel slaContainer;
     @Inject

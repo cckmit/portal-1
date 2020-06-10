@@ -2,9 +2,11 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PlanOption;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CaseObjectCreateRequest extends AuditableObject {
 
@@ -17,6 +19,8 @@ public class CaseObjectCreateRequest extends AuditableObject {
     private En_TimeElapsedType timeElapsedType;
 
     private Long timeElapsed;
+
+    private Set<PlanOption> plans;
 
     public CaseObjectCreateRequest() {
         caseObject = new CaseObject();
@@ -78,6 +82,14 @@ public class CaseObjectCreateRequest extends AuditableObject {
 
     public Long getCaseId() {
         return caseObject == null ? null : caseObject.getId();
+    }
+
+    public Set<PlanOption> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(Set<PlanOption> plans) {
+        this.plans = plans;
     }
 
     @Override

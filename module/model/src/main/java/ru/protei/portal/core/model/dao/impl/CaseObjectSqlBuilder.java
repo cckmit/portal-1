@@ -283,6 +283,11 @@ public class CaseObjectSqlBuilder {
                             .append(")");
                 }
             }
+
+            if (query.getPlanId() != null) {
+                condition.append(" and case_object.id IN (SELECT case_object_id FROM plan_to_case_object WHERE plan_id = ?)");
+                args.add(query.getPlanId());
+            }
         });
     }
 }

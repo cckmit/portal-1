@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -22,6 +23,8 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Set;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
@@ -146,6 +149,21 @@ public class IssueControllerImpl implements IssueController {
         CaseObjectMeta meta = ServiceUtils.checkResultAndGetData(caseService.getIssueMeta(token, issueId));
         meta.setManagerId(personId);
         ServiceUtils.checkResult(caseService.updateCaseObjectMeta(token, meta));
+    }
+
+    @Override
+    public Set<PlanOption> updatePlans(Set<PlanOption> plans, Long caseId) throws RequestFailedException {
+        log.info("updateManagerOfIssue(): plans={}, caseId={}", plans, caseId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Set<PlanOption>> updatedPlansResult = caseService.updatePlans(token, plans, caseId);
+
+        if (updatedPlansResult.isError()) {
+            throw new RequestFailedException(updatedPlansResult.getStatus());
+        }
+
+        return updatedPlansResult.getData();
     }
 
     @Autowired

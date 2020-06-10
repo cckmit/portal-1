@@ -3,10 +3,12 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @JdbcEntity(table = "case_object")
 public class CaseObjectMeta extends AuditableObject {
@@ -351,6 +353,7 @@ public class CaseObjectMeta extends AuditableObject {
                 ", extAppType='" + extAppType + '\'' +
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 '}';
     }
 }

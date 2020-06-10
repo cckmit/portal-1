@@ -2614,6 +2614,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reservedIpAvailableCount();
 
+    String plan();
+
     String plans();
 
     String planNameColumn();
@@ -2638,11 +2640,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String planPeriod();
 
-    String planHeader( String p0 );
+    String planHeader( String planName );
+
+    String errGetConcreteList(String listName);
+
+    String selectPlan();
 
     String planName();
 
     String planMainInfoTitle();
 
     String planSaved();
+
+    String otherPlans();
 }

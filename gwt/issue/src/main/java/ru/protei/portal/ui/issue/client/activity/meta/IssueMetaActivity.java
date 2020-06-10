@@ -9,12 +9,14 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
@@ -26,13 +28,14 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
-import ru.protei.portal.ui.issue.client.view.meta.IssueMetaView;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
 
 /**
@@ -291,6 +294,23 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.updateManagersCompanyFilter(metaView.getManagerCompany().getId());
 
         metaView.managerValidator().setValid(false);
+
+        onCaseMetaChanged(meta);
+    }
+
+    @Override
+    public void onPlansChanged() {
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        issueService.updatePlans(metaView.plans().getValue(), meta.getId(), new FluentCallback<Set<PlanOption>>()
+                .withSuccess(updatedPlans -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    metaView.plans().setValue(updatedPlans);
+                })
+        );
     }
 
     private void onCaseMetaChanged(CaseObjectMeta caseMeta) {
@@ -421,6 +441,59 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
+
+        if (policyService.hasPrivilegeFor(En_Privilege.PLAN_VIEW)) {
+            requestPlans(meta.getId(), this::fillPlanContainers);
+        } else {
+            metaView.plansContainerVisibility().setVisible(false);
+            metaView.otherPlansContainerVisibility().setVisible(false);
+        }
+    }
+
+    private void requestPlans(Long caseId, Consumer<List<PlanOption>> plansConsumer) {
+        PlanQuery planQuery = new PlanQuery();
+        planQuery.setIssueId(caseId);
+
+        planService.getPlanOptionList(planQuery, new FluentCallback<List<PlanOption>>()
+                .withSuccess(plansConsumer)
+        );
+    }
+
+    private void fillPlanContainers(List<PlanOption> plans) {
+        Set<PlanOption> plansSet = new HashSet<>(emptyIfNull(plans));
+
+        fillPlansContainer(metaView, plansSet, policyService.getProfile());
+        fillOtherPlansContainer(metaView, plansSet, policyService.getProfile());
+    }
+
+    private void fillPlansContainer(final AbstractIssueMetaView issueMetaView, Set<PlanOption> plans, Profile profile) {
+        if (!profile.hasPrivilegeFor(En_Privilege.PLAN_EDIT)) {
+            issueMetaView.plansContainerVisibility().setVisible(false);
+            return;
+        }
+
+        issueMetaView.plansContainerVisibility().setVisible(true);
+        issueMetaView.plans().setValue(getPersonPlans(plans, profile.getId()));
+        issueMetaView.setPlanCreatorId(profile.getId());
+    }
+
+    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, Set<PlanOption> plans, Profile profile) {
+        Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
+
+        issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
+        issueMetaView.otherPlansContainerVisibility().setVisible(!otherPlans.isEmpty());
+    }
+
+    private Set<PlanOption> getPersonPlans(Set<PlanOption> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> personId.equals(plan.getCreatorId()))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<PlanOption> getOtherPlans(Set<PlanOption> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> !personId.equals(plan.getCreatorId()))
+                .collect(Collectors.toSet());
     }
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta, boolean isReadOnly) {
@@ -616,6 +689,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     SiteFolderControllerAsync siteFolderController;
     @Inject
     HomeCompanyService homeCompanyService;
+    @Inject
+    PlanControllerAsync planService;
 
     @ContextAware
     CaseObjectMeta meta;

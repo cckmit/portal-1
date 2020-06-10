@@ -5,6 +5,7 @@
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
+             xmlns:plan="urn:import:ru.protei.portal.ui.common.client.widget.selector.plan.selector"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
              xmlns:jirasla="urn:import:ru.protei.portal.ui.common.client.widget.jirasla"
              xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
@@ -194,5 +195,23 @@
                                               buttonStyle="btn-info btn-xs"/>
             </g:HTMLPanel>
         </div>
+
+        <g:HTMLPanel ui:field="planContainer" styleName="row form-group">
+            <div class="col-md-12">
+                <plan:PlanMultiSelector ui:field="plans"
+                                        buttonStyle="btn-info btn-xs"
+                                        header="{lang.plans}"
+                                        styleName="case-plans"
+                                        hasNullValue="false"/>
+            </div>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="otherPlansContainer" styleName="row form-group">
+            <div class="col-md-12">
+                <label>
+                    <ui:text from="{lang.otherPlans}"/>
+                </label>
+                <small class="hint-text block" ui:field="otherPlans"/>
+            </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

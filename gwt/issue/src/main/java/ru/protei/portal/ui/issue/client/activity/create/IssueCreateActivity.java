@@ -36,6 +36,7 @@ import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
@@ -267,9 +268,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPauseDateChanged() {
-        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue().getId(),
-                issueMetaView.pauseDate().getValue() == null ? null
-                        : issueMetaView.pauseDate().getValue().getTime()));
+        issueMetaView.setPauseDateValid(
+                isPauseDateValid(
+                        issueMetaView.state().getValue().getId(),
+                        issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())
+        );
     }
 
     @Override
@@ -286,6 +289,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onManagerCompanyChanged() {
         issueMetaView.setManager(null);
         issueMetaView.updateManagersCompanyFilter(issueMetaView.getManagerCompany().getId());
+    }
+
+    @Override
+    public void onPlansChanged() {
+        createRequest.setPlans(issueMetaView.plans().getValue());
     }
 
     private void fillPlatformValue(Long companyId){
@@ -365,6 +373,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.slaContainerVisibility().setVisible(isSystemScope());
         requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
+
+        issueMetaView.setPlanCreatorId(policyService.getProfile().getId());
+        issueMetaView.plansContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT));
+        issueMetaView.otherPlansContainerVisibility().setVisible(false);
     }
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
