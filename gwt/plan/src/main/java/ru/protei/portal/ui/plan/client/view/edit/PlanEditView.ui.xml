@@ -29,6 +29,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="card-header">
+            <div class="card-title">
+                <ui:text from="{lang.planMainInfoTitle}"/>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <g:HTMLPanel styleName="col-md-6 p-r-30" ui:field="unassignedTableContainer"/>
+                <g:HTMLPanel styleName="col-md-6 p-r-30" ui:field="assignedTableContainer"/>
+            </div>
+        </div>
+
         <div class="card-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
             <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>

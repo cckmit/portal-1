@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Service( "PlanController" )
 public class PlanControllerImpl implements PlanController {
@@ -45,6 +46,38 @@ public class PlanControllerImpl implements PlanController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(planService.createPlan(token, plan));
+    }
+
+    @Override
+    public List<Plan> listPlans(PlanQuery query) throws RequestFailedException {
+        log.info( "listPlans(): PlanQuery={}", query);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.listPlans(token, query));
+    }
+
+    @Override
+    public Plan addIssueToPlan(Long planId, Long issueId) throws RequestFailedException {
+        log.info( "addIssueToPlan(): planId={}, issueId={}", planId, issueId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.addIssueToPlan(token, planId, issueId));
+    }
+
+    @Override
+    public Boolean moveIssueToAnotherPlan(Long currentPlanId, Long issueId, Long newPlanId) throws RequestFailedException {
+        log.info( "moveIssueToAnotherPlan(): currentPlanId={}, issueId={}, newPlanId={}", currentPlanId, issueId, newPlanId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.moveIssueToAnotherPlan(token, currentPlanId, issueId, newPlanId));
+    }
+
+    @Override
+    public Boolean removeIssueFromPlan(Long planId, Long issueId) throws RequestFailedException {
+        log.info( "removeIssueFromPlan(): planId={}, issueId={}", planId, issueId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.removeIssueFromPlan(token, planId, issueId));
     }
 
     @Autowired
