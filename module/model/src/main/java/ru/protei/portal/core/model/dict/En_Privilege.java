@@ -112,6 +112,8 @@ public enum En_Privilege {
     PLAN_CREATE (PLAN, CREATE),
     PLAN_REMOVE (PLAN, REMOVE),
 
+    ISSUE_PLAN_VIEW (ISSUE, VIEW),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
@@ -124,6 +126,7 @@ public enum En_Privilege {
     ISSUE_FILTER_COMPANY_VIEW(ISSUE, null),
     ISSUE_FILTER_MANAGER_VIEW(ISSUE, null),
     ISSUE_FILTER_PRODUCT_VIEW(ISSUE, null),
+    ISSUE_FILTER_PLAN_VIEW(ISSUE, null),
 
     @Deprecated
     DASHBOARD_ALL_COMPANIES_VIEW(DASHBOARD, VIEW);
@@ -142,7 +145,8 @@ public enum En_Privilege {
 
             ISSUE_FILTER_COMPANY_VIEW,
             ISSUE_FILTER_MANAGER_VIEW,
-            ISSUE_FILTER_PRODUCT_VIEW
+            ISSUE_FILTER_PRODUCT_VIEW,
+            ISSUE_FILTER_PLAN_VIEW
     };
 
     En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {

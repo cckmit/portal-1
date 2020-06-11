@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;

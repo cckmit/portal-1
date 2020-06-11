@@ -77,6 +77,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasVisibility searchPrivateVisibility();
 
+    HasVisibility planVisibility();
+
     void resetFilter();
 
     void updateModel();

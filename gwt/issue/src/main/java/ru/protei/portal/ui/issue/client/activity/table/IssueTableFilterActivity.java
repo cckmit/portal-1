@@ -288,6 +288,7 @@ public abstract class IssueTableFilterActivity
     private void applyFilterViewPrivileges() {
         filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        filterView.getIssueFilterParams().planVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
     }
 
     private void updateCaseStatesFilter() {

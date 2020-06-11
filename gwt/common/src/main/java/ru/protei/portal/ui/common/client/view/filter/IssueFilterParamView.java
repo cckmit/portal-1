@@ -203,6 +203,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility planVisibility() {
+        return plan;
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -487,7 +492,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT));
+        plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);

@@ -478,6 +478,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, Set<PlanOption> plans, Profile profile) {
+        if (!profile.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_VIEW)) {
+            issueMetaView.otherPlansContainerVisibility().setVisible(false);
+            return;
+        }
+
         Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
 
         issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
