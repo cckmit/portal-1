@@ -222,7 +222,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setStateName(newState.getLocalStatusName());
         } else {
             caseObj.setStateId(CrmConstants.State.CREATED);
-            caseObj.setStateName("created");
+            caseObj.setStateName(CrmConstants.State.CREATED_NAME);
         }
         logger.info("issue {}, case-state new={}", issue.getKey(), caseObj.getStateId());
 
