@@ -88,6 +88,14 @@ public class PlanControllerImpl implements PlanController {
         return ServiceUtils.checkResultAndGetData(planService.changeIssuesOrder(token, plan));
     }
 
+    @Override
+    public Boolean editPlanParams(Plan plan) throws RequestFailedException {
+        log.info( "editPlanParams(): plan={}", plan);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.editPlanParams(token, plan));
+    }
+
     @Autowired
     private PlanService planService;
     @Autowired

@@ -27,6 +27,10 @@
                     <range:RangePicker ui:field="planPeriod" type="DATE" formatValue="dd.MM.yyyy"
                                        hasUnlimitedDateTo="false" styleName=""/>
                 </div>
+
+                <div class="form-group col-md-2">
+                    <g:Button ui:field="editPlan" text="{lang.planEditButton}" styleName="btn btn-info btn-xs edit-plan-button"/>
+                </div>
             </div>
         </div>
 

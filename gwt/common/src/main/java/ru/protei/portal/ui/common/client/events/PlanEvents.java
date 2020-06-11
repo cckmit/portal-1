@@ -34,6 +34,28 @@ public class PlanEvents {
         public Long planId;
     }
 
+    public static class EditParams {
+
+        public EditParams(){ }
+
+        public EditParams(Plan plan) {
+            this.plan = plan;
+        }
+
+        public Plan plan;
+    }
+
+    public static class Update {
+
+        public Update(){ }
+
+        public Update(Plan plan) {
+            this.plan = plan;
+        }
+
+        public Plan plan;
+    }
+
     public static class ShowPreview {
 
         public ShowPreview( HasWidgets parent, Long planId ) {

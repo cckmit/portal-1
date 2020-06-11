@@ -5,10 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -66,6 +63,13 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
         }
     }
 
+    @UiHandler("editPlan")
+    public void editButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onEditClicked();
+        }
+    }
+
     @UiField
     ValidableTextBox name;
     @Inject
@@ -75,6 +79,8 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     HTMLPanel unassignedTableContainer;
     @UiField
     HTMLPanel assignedTableContainer;
+    @UiField
+    Button editPlan;
 
 
     private AbstractPlanEditActivity activity;

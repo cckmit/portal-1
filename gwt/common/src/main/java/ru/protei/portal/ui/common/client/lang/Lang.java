@@ -2659,4 +2659,8 @@ public interface Lang extends Messages, ContactItemLang {
     String planAddIssueToPlan();
 
     String planMoveIssueToAnotherPlan();
+
+    String planEditButton();
+
+    String planEditPopupHeader();
 }

@@ -82,6 +82,11 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
     }
 
+    @Event
+    public void onUpdate (PlanEvents.Update event){
+        fillView(plan);
+    }
+
     @Override
     public void onSaveClicked() {
         if (!isValid()) {
@@ -103,10 +108,15 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
         fireEvent(new Back());
     }
 
+    @Override
+    public void onEditClicked() {
+        fireEvent(new PlanEvents.EditParams(plan));
+    }
+
     private void fillView(Plan plan) {
         this.plan = plan;
-       view.name().setValue(plan.getName());
-       view.planPeriod().setValue(new DateInterval(plan.getStartDate(), plan.getFinishDate()));
+        view.name().setValue(plan.getName());
+        view.planPeriod().setValue(new DateInterval(plan.getStartDate(), plan.getFinishDate()));
     }
 
 

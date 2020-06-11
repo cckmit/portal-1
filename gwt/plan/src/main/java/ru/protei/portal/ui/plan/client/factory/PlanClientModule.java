@@ -2,8 +2,10 @@ package ru.protei.portal.ui.plan.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.plan.client.activity.edit.AbstractPlanEditPopupView;
 import ru.protei.portal.ui.plan.client.activity.edit.AbstractPlanEditView;
 import ru.protei.portal.ui.plan.client.activity.edit.PlanEditActivity;
+import ru.protei.portal.ui.plan.client.activity.edit.PlanEditPopupActivity;
 import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractAssignedIssuesTableView;
 import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractUnassignedIssuesTableView;
 import ru.protei.portal.ui.plan.client.activity.edit.tables.AssignedIssuesTableActivity;
@@ -14,6 +16,7 @@ import ru.protei.portal.ui.plan.client.activity.preview.PlanPreviewActivity;
 import ru.protei.portal.ui.plan.client.activity.table.AbstractPlanTableView;
 import ru.protei.portal.ui.plan.client.activity.table.PlanTableActivity;
 import ru.protei.portal.ui.plan.client.page.PlanPage;
+import ru.protei.portal.ui.plan.client.view.edit.PlanEditPopupView;
 import ru.protei.portal.ui.plan.client.view.edit.PlanEditView;
 import ru.protei.portal.ui.plan.client.view.edit.tables.AssignedIssuesTableView;
 import ru.protei.portal.ui.plan.client.view.edit.tables.UnassignedIssuesTableView;
@@ -43,6 +46,7 @@ public class PlanClientModule extends AbstractGinModule {
         bind(UnassignedIssuesTableActivity.class).asEagerSingleton();
         bind(AbstractUnassignedIssuesTableView.class).to(UnassignedIssuesTableView.class).in(Singleton.class);
 
-
+        bind(PlanEditPopupActivity.class).asEagerSingleton();
+        bind(AbstractPlanEditPopupView.class).to(PlanEditPopupView.class).in(Singleton.class);
     }
 }

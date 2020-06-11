@@ -29,4 +29,6 @@ public interface PlanController extends RemoteService {
     Boolean removeIssueFromPlan(Long planId, Long issueId) throws RequestFailedException;
 
     Boolean changeIssuesOrder(Plan plan) throws RequestFailedException;
+
+    Boolean editPlanParams(Plan plan) throws RequestFailedException;
 }
