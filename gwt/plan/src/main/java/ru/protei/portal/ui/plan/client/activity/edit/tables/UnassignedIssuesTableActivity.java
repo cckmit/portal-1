@@ -64,14 +64,11 @@ public abstract class UnassignedIssuesTableActivity implements AbstractUnassigne
 
     @Override
     public void onItemActionAssign(CaseShortView value, UIObject relative) {
-        view.showLoader(true);
         planService.addIssueToPlan(planId, value.getId(), new FluentCallback<Plan>()
                 .withError(throwable -> {
-                    view.showLoader(false);
                     defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(plan -> {
-                    view.showLoader(false);
                     fireEvent(new NotifyEvents.Show(lang.planIssueAdded(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new PlanEvents.UpdateAssignedIssueTable(plan.getIssueList()));
                 }));
@@ -87,22 +84,18 @@ public abstract class UnassignedIssuesTableActivity implements AbstractUnassigne
         }
         Long filterId = filter.getId();
         saveTableFilterId(filterId);
-        view.showLoader(true);
         issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilter>()
                 .withError(throwable -> {
-                    view.showLoader(false);
                     defaultErrorHandler.accept(throwable);
                     view.filter().setValue(null, true);
                 })
                 .withSuccess(caseFilter -> {
-                    view.showLoader(false);
                     CaseQuery query = caseFilter.getParams();
                     loadTable(query);
                 }));
     }
 
     private void loadTable(CaseQuery query) {
-        view.showLoader(true);
         view.clearRecords();
         CaseQuery q = new CaseQuery(query);
         q.setOffset(0);
@@ -110,11 +103,9 @@ public abstract class UnassignedIssuesTableActivity implements AbstractUnassigne
         issueController.getIssues(q, new FluentCallback<SearchResult<CaseShortView>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    view.showLoader(false);
                     view.setTotalRecords(0);
                 })
                 .withSuccess(sr -> {
-                    view.showLoader(false);
                     view.setTotalRecords(sr.getTotalCount());
                     view.putRecords(sr.getResults());
                 }));

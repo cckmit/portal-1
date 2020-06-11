@@ -2655,4 +2655,8 @@ public interface Lang extends Messages, ContactItemLang {
     String planIssueRemoved();
 
     String planIssueMoved();
+
+    String planAddIssueToPlan();
+
+    String planMoveIssueToAnotherPlan();
 }

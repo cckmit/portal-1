@@ -16,6 +16,5 @@
         <div class="auto-overflow">
             <table:TableWidget ui:field="table" styleName="table table-hover issue-assignment-table"/>
         </div>
-        <loading:IndeterminateCircleLoading ui:field="loading" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false"/>
     </g:HTMLPanel>
 </ui:UiBinder>

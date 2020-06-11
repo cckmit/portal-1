@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractAssignedIssuesTableActivity;
 import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractAssignedIssuesTableView;
 import ru.protei.portal.ui.plan.client.view.columns.DragColumn;
@@ -53,19 +52,10 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
     public void setTotalRecords(int totalRecords) {
     }
 
-    @Override
-    public void showLoader(boolean isShow) {
-        loading.removeStyleName("d-block");
-        if (isShow) {
-            loading.addStyleName("d-block");
-        }
-    }
-
     private void initTable() {
         table.setDraggableRows(true);
         dragColumn.setHandler( activity );
-        AbstractColumn abstractColumn = table.addColumn(dragColumn.header, dragColumn.values);
-        abstractColumn.setVisibility(false);
+        table.addColumn(dragColumn.header, dragColumn.values);
 
         issuesColumnProvider = new ClickColumnProvider<>();
 
@@ -80,7 +70,7 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
 
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
 
-        ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.issueAssignmentIssueAssignTo(), null);
+        ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.planMoveIssueToAnotherPlan(), null);
         table.addColumn(assign.header, assign.values);
         assign.setHandler(value -> {});
         assign.setActionHandler(new ClickColumn.Handler<CaseShortView>() {
@@ -105,8 +95,6 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
 
     @UiField
     TableWidget<CaseShortView> table;
-    @UiField
-    IndeterminateCircleLoading loading;
 
     private ClickColumnProvider<CaseShortView> issuesColumnProvider;
     private RemoveClickColumn<CaseShortView> removeClickColumn;

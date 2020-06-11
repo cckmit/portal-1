@@ -16,8 +16,6 @@ public interface AbstractUnassignedIssuesTableView extends IsWidget {
 
     void setTotalRecords(int totalRecords);
 
-    void showLoader(boolean isShow);
-
     void updateFilterSelector();
 
     HasValue<CaseFilterShortView> filter();

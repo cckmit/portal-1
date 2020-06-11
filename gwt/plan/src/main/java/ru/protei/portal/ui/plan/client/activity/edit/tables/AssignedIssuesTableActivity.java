@@ -52,15 +52,12 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
 
     private Runnable removeAction(CaseShortView value) {
         return () -> {
-            view.showLoader(true);
             planService.removeIssueFromPlan(planId, value.getId(), new FluentCallback<Boolean>()
                     .withError(throwable -> {
-                        view.showLoader(false);
                         defaultErrorHandler.accept(throwable);
                         loadTable(planId);
                     })
                     .withSuccess(flag -> {
-                        view.showLoader(false);
                         loadTable(planId);
                         fireEvent(new NotifyEvents.Show(lang.planIssueRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     }));
@@ -101,15 +98,12 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
                 return;
             }
 
-            view.showLoader(true);
             planService.moveIssueToAnotherPlan(planId, value.getId(), plan.getId(), new FluentCallback<Boolean>()
                     .withError(throwable -> {
-                        view.showLoader(false);
                         defaultErrorHandler.accept(throwable);
                         loadTable(planId);
                     })
                     .withSuccess(flag -> {
-                        view.showLoader(false);
                         loadTable(planId);
                         fireEvent(new NotifyEvents.Show(lang.planIssueMoved(), NotifyEvents.NotifyType.SUCCESS));
                     }));
@@ -125,16 +119,13 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
     }
 
     private void loadTable(Long planId) {
-        view.showLoader(true);
         view.clearRecords();
         planService.getPlanWithIssues(planId, new FluentCallback<Plan>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    view.showLoader(false);
                     view.setTotalRecords(0);
                 })
                 .withSuccess(plan -> {
-                    view.showLoader(false);
                     view.setTotalRecords(plan.getIssueList().size());
                     view.putRecords(plan.getIssueList());
                     this.issues = plan.getIssueList();

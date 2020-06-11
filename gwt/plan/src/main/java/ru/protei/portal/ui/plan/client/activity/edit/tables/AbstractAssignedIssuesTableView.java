@@ -13,6 +13,4 @@ public interface AbstractAssignedIssuesTableView extends IsWidget {
     void putRecords(List<CaseShortView> list);
 
     void setTotalRecords(int totalRecords);
-
-    void showLoader(boolean isShow);
 }

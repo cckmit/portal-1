@@ -54,14 +54,6 @@ public class UnassignedIssuesTableView extends Composite implements AbstractUnas
     }
 
     @Override
-    public void showLoader(boolean isShow) {
-        loading.removeStyleName("d-block");
-        if (isShow) {
-            loading.addStyleName("d-block");
-        }
-    }
-
-    @Override
     public void updateFilterSelector() {
         filter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
@@ -80,7 +72,7 @@ public class UnassignedIssuesTableView extends Composite implements AbstractUnas
         number.setHandler(value -> activity.onItemClicked(value));
         number.setColumnProvider(issuesColumnProvider);
 
-        ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.issueAssignmentIssueAssignTo(), null);
+        ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.planAddIssueToPlan(), null);
         table.addColumn(assign.header, assign.values);
         assign.setHandler(value -> {});
         assign.setActionHandler(new ClickColumn.Handler<CaseShortView>() {
@@ -114,8 +106,6 @@ public class UnassignedIssuesTableView extends Composite implements AbstractUnas
     IssueFilterSelector filter;
     @UiField
     TableWidget<CaseShortView> table;
-    @UiField
-    IndeterminateCircleLoading loading;
 
     private ClickColumnProvider<CaseShortView> issuesColumnProvider;
     private AbstractUnassignedIssuesTableActivity activity;
