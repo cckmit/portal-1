@@ -26,7 +26,7 @@ public class FieldMappingTest {
         expectedMapping.put("Request to NX", CrmConstants.State.NX_REQUEST);
 
         expectedMapping.forEach((key,stateId) -> {
-            Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key));
+            Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key).getLocalStatusId());
             Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, stateId));
         });
     }

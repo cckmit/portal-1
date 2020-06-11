@@ -145,6 +145,7 @@ public class CrmConstants {
     }
 
     public interface State {
+        String CREATED_NAME = "created";
         long CREATED = 1;
         long OPENED = 2;
         long WORKAROUND = 30;
