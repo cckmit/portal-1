@@ -27,6 +27,7 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
 
     @Override
     public void fillColumnValue(Element cell, CaseShortView value) {
+        cell.addClassName("plan-issue-column");
         cell.appendChild(makeContent(value));
     }
 

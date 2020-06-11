@@ -73,7 +73,7 @@ public class DragColumn< T extends Identifiable> {
 
         @Override
         public void fillValue(Element element, T value ) {
-            element.setInnerHTML( "<i class='fas fa-lg fa-sort' style=\"cursor: pointer; color: teal;\"></i>" );
+            element.setInnerHTML( "<i class='fa fa-ellipsis-v' style=\"cursor: pointer; opacity: .5\"></i>" );
         }
 
         T src;
