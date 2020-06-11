@@ -264,7 +264,7 @@ public class PlanServiceImpl implements PlanService{
 
         historyService.createHistory(token, issueId, En_HistoryValueType.CHANGE_PLAN, String.valueOf(currentPlanId), String.valueOf(newPlanId));
 
-        return error(En_ResultStatus.INTERNAL_ERROR);
+        return ok();
     }
 
     @Override
@@ -332,6 +332,6 @@ public class PlanServiceImpl implements PlanService{
         for (int i = 0; i < sortedListByPlanId.size(); i++) {
             sortedListByPlanId.get(i).setOrderNumber(i);
         }
-        planToCaseObjectDAO.persistBatch(sortedListByPlanId);
+        planToCaseObjectDAO.mergeBatch(sortedListByPlanId);
     }
 }

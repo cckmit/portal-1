@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -41,6 +42,15 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     @Override
     public HasValue<DateInterval> planPeriod() { return planPeriod; }
 
+    @Override
+    public HasWidgets unassignedTableContainer() {
+        return unassignedTableContainer;
+    }
+
+    @Override
+    public HasWidgets assignedTableContainer() {
+        return assignedTableContainer;
+    }
 
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
@@ -61,6 +71,11 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     @Inject
     @UiField(provided = true)
     RangePicker planPeriod;
+    @UiField
+    HTMLPanel unassignedTableContainer;
+    @UiField
+    HTMLPanel assignedTableContainer;
+
 
     private AbstractPlanEditActivity activity;
 

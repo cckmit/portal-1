@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:table='urn:import:ru.brainworm.factory.widget.table.client'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="issue-assignment-wrapper">
+        <div class="auto-overflow">
+            <table:TableWidget ui:field="table" styleName="table table-hover issue-assignment-table"/>
+        </div>
+        <loading:IndeterminateCircleLoading ui:field="loading" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

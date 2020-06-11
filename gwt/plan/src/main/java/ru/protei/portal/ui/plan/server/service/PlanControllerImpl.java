@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlanQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.service.PlanService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -57,6 +55,46 @@ public class PlanControllerImpl implements PlanController {
     @Override
     public List<PlanOption> getPlanOptionList(PlanQuery query) throws RequestFailedException {
         return toList(emptyIfNull(getPlanList(query).getResults()), plan -> new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId()));
+    }
+
+    @Override
+    public List<Plan> listPlans(PlanQuery query) throws RequestFailedException {
+        log.info( "listPlans(): PlanQuery={}", query);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.listPlans(token, query));
+    }
+
+    @Override
+    public Plan addIssueToPlan(Long planId, Long issueId) throws RequestFailedException {
+        log.info( "addIssueToPlan(): planId={}, issueId={}", planId, issueId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.addIssueToPlan(token, planId, issueId));
+    }
+
+    @Override
+    public Boolean moveIssueToAnotherPlan(Long currentPlanId, Long issueId, Long newPlanId) throws RequestFailedException {
+        log.info( "moveIssueToAnotherPlan(): currentPlanId={}, issueId={}, newPlanId={}", currentPlanId, issueId, newPlanId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.moveIssueToAnotherPlan(token, currentPlanId, issueId, newPlanId));
+    }
+
+    @Override
+    public Boolean removeIssueFromPlan(Long planId, Long issueId) throws RequestFailedException {
+        log.info( "removeIssueFromPlan(): planId={}, issueId={}", planId, issueId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.removeIssueFromPlan(token, planId, issueId));
+    }
+
+    @Override
+    public Boolean changeIssuesOrder(Plan plan) throws RequestFailedException {
+        log.info( "changeIssuesOrder(): plan={}", plan);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.changeIssuesOrder(token, plan));
     }
 
     @Autowired

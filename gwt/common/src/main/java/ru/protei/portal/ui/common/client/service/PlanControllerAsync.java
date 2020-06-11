@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -18,4 +17,14 @@ public interface PlanControllerAsync {
     void createPlan(Plan plan, AsyncCallback<Long> async);
 
     void getPlanOptionList(PlanQuery query, AsyncCallback<List<PlanOption>> async);
+
+    void listPlans(PlanQuery query, AsyncCallback<List<Plan>> async);
+
+    void addIssueToPlan(Long planId, Long issueId, AsyncCallback<Plan> async);
+
+    void moveIssueToAnotherPlan(Long currentPlanId, Long issueId, Long newPlanId, AsyncCallback<Boolean> async);
+
+    void removeIssueFromPlan(Long planId, Long issueId, AsyncCallback<Boolean> async);
+
+    void changeIssuesOrder(Plan plan, AsyncCallback<Boolean> async);
 }

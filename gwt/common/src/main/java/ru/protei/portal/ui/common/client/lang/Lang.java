@@ -2653,4 +2653,14 @@ public interface Lang extends Messages, ContactItemLang {
     String planSaved();
 
     String otherPlans();
+
+    String planIssueConfirmRemove();
+
+    String planConfirmRemove();
+
+    String planIssueAdded();
+
+    String planIssueRemoved();
+
+    String planIssueMoved();
 }

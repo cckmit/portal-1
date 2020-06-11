@@ -94,4 +94,25 @@ public class PlanQuery extends BaseQuery {
     public void setIssueNumber(Long issueNumber) {
         this.issueNumber = issueNumber;
     }
+
+    @Override
+    public String toString() {
+        return "PlanQuery{" +
+                "name='" + name + '\'' +
+                ", createdFrom=" + createdFrom +
+                ", createdTo=" + createdTo +
+                ", creatorId=" + creatorId +
+                ", startDateFrom=" + startDateFrom +
+                ", startDateTo=" + startDateTo +
+                ", finishDateFrom=" + finishDateFrom +
+                ", finishDateTo=" + finishDateTo +
+                ", issueId=" + issueId +
+                ", issueNumber=" + issueNumber +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                '}';
+    }
 }

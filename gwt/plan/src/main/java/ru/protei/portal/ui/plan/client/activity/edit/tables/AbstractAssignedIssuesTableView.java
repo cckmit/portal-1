@@ -1,0 +1,18 @@
+package ru.protei.portal.ui.plan.client.activity.edit.tables;
+
+import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.view.CaseShortView;
+
+import java.util.List;
+
+public interface AbstractAssignedIssuesTableView extends IsWidget {
+    void setActivity(AbstractAssignedIssuesTableActivity activity);
+
+    void clearRecords();
+
+    void putRecords(List<CaseShortView> list);
+
+    void setTotalRecords(int totalRecords);
+
+    void showLoader(boolean isShow);
+}

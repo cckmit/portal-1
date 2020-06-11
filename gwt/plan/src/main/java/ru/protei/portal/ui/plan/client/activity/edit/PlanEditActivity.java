@@ -10,12 +10,15 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Plan;
+import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import java.util.List;
 
 public abstract class PlanEditActivity implements AbstractPlanEditActivity, Activity {
 
@@ -41,6 +44,23 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
         initDetails.parent.add(view.asWidget());
 
+        PlanQuery query = new PlanQuery();
+        query.setCreatorId(policyService.getProfile().getId());
+
+        planService.listPlans(query, new RequestCallback<List<Plan>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(List<Plan> result) {
+                fireEvent(new PlanEvents.ShowUnassignedIssueTable(view.unassignedTableContainer(), event.planId));
+                fireEvent(new PlanEvents.ShowAssignedIssueTable(view.assignedTableContainer(), result, event.planId));
+            }
+        });
+
+
         fireEvent(new ActionBarEvents.Clear());
         if (event.planId == null) {
             Plan plan = new Plan();
@@ -59,6 +79,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
                 fillView(result);
             }
         });
+
     }
 
     @Override
@@ -72,9 +93,6 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
         planService.createPlan(plan, new FluentCallback<Long>()
                 .withSuccess(result -> {
-                    //fireEvent(new SiteFolderPlatformEvents.ChangeModel());
-                    //fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                   // fireBackEvent.run();
                     fireEvent(new NotifyEvents.Show(lang.planSaved(), NotifyEvents.NotifyType.SUCCESS));
                 })
         );
