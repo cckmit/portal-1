@@ -96,6 +96,14 @@ public class PlanControllerImpl implements PlanController {
         return ServiceUtils.checkResultAndGetData(planService.editPlanParams(token, plan));
     }
 
+    @Override
+    public Boolean removePlan(Long planId) throws RequestFailedException {
+        log.info( "removePlan(): planId={}", planId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.removePlan(token, planId));
+    }
+
     @Autowired
     private PlanService planService;
     @Autowired

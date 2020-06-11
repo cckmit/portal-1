@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterActivity;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterView;
@@ -95,7 +97,21 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
 
     @Override
     public void onRemoveClicked(Plan value) {
+        fireEvent(new ConfirmDialogEvents.Show(lang.planConfirmRemove(), removeAction(value)));
+    }
 
+    private Runnable removeAction(Plan value) {
+        return () -> {
+            planService.removePlan(value.getId(), new FluentCallback<Boolean>()
+                    .withError(throwable -> {
+                        defaultErrorHandler.accept(throwable);
+                        loadTable();
+                    })
+                    .withSuccess(flag -> {
+                        loadTable();
+                        fireEvent(new NotifyEvents.Show(lang.planRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        };
     }
 
     @Override
@@ -194,6 +210,8 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
     PlanControllerAsync planService;
     @Inject
     AbstractPlanFilterView filterView;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private static String CREATE_ACTION;
     private Integer scrollTo = 0;

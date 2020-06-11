@@ -26,4 +26,6 @@ public interface PlanControllerAsync {
     void changeIssuesOrder(Plan plan, AsyncCallback<Boolean> async);
 
     void editPlanParams(Plan plan, AsyncCallback<Boolean> async);
+
+    void removePlan(Long planId, AsyncCallback<Boolean> async);
 }
