@@ -200,7 +200,7 @@
             <div class="col-md-12">
                 <plan:PlanMultiSelector ui:field="plans"
                                         buttonStyle="btn-info btn-xs"
-                                        header="{lang.plans}"
+                                        header="{lang.myPlans}"
                                         styleName="case-plans"
                                         hasNullValue="false"/>
             </div>
