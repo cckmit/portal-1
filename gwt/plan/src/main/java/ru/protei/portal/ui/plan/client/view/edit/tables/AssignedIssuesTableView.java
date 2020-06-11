@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractAssignedIssuesTableActivity;
 import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractAssignedIssuesTableView;
+import ru.protei.portal.ui.plan.client.view.columns.DragColumn;
 import ru.protei.portal.ui.plan.client.view.columns.IssueColumn;
 
 import java.util.List;
@@ -60,6 +62,10 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
     }
 
     private void initTable() {
+        table.setDraggableRows(true);
+        dragColumn.setHandler( activity );
+        AbstractColumn abstractColumn = table.addColumn(dragColumn.header, dragColumn.values);
+        abstractColumn.setVisibility(false);
 
         issuesColumnProvider = new ClickColumnProvider<>();
 
@@ -84,7 +90,6 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
             }
         });
         assign.setColumnProvider(issuesColumnProvider);
-        table.setDraggableRows(true);
     }
 
 
@@ -105,6 +110,7 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
 
     private ClickColumnProvider<CaseShortView> issuesColumnProvider;
     private RemoveClickColumn<CaseShortView> removeClickColumn;
+    DragColumn< CaseShortView > dragColumn = new DragColumn<>();
     private AbstractAssignedIssuesTableActivity activity;
 
 

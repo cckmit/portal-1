@@ -9,14 +9,12 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -69,6 +67,27 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
         };
     }
 
+    @Override
+    public void onSwapItems(CaseShortView src, CaseShortView dst) {
+        if (src.getId().equals(dst.getId())){
+            return;
+        }
+
+        swapIssues(src, dst);
+
+        Plan plan = new Plan();
+        plan.setIssueList(issues);
+        plan.setId(planId);
+        planService.changeIssuesOrder(plan, new FluentCallback<Boolean>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                    loadTable(planId);
+                })
+                .withSuccess(flag -> {
+                    loadTable(planId);
+                }));
+    }
+
 
     @Override
     public void onItemClicked(CaseShortView value) {
@@ -102,6 +121,7 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
         view.clearRecords();
         view.setTotalRecords(issuesList.size());
         view.putRecords(issuesList);
+        this.issues = issuesList;
     }
 
     private void loadTable(Long planId) {
@@ -117,6 +137,7 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
                     view.showLoader(false);
                     view.setTotalRecords(plan.getIssueList().size());
                     view.putRecords(plan.getIssueList());
+                    this.issues = plan.getIssueList();
                 }));
     }
 
@@ -137,6 +158,12 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
         popup.getPopup().showNear(relative, BasePopupView.Position.BY_RIGHT_SIDE, null);
     }
 
+    private void swapIssues( CaseShortView src, CaseShortView dst ) {
+        int dstIndex = issues.indexOf( dst );
+        issues.remove( src );
+        issues.add( dstIndex, src );
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -144,17 +171,11 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
     @Inject
     PlanControllerAsync planService;
     @Inject
-    IssueFilterControllerAsync issueFilterController;
-    @Inject
     DefaultErrorHandler defaultErrorHandler;
-    @Inject
-    LocalStorageService localStorageService;
     @Inject
     PolicyService policyService;
 
     private List<Plan> plans = new ArrayList<>();
     private Long planId;
-
-    private final static int TABLE_LIMIT = 100;
-    private final static String TABLE_FILTER_ID_KEY = "plan_unassigned_issue_table_filter_id";
+    private List<CaseShortView> issues;
 }

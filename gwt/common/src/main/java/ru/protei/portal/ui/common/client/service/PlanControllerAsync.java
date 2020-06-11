@@ -22,4 +22,6 @@ public interface PlanControllerAsync {
     void moveIssueToAnotherPlan(Long currentPlanId, Long issueId, Long newPlanId, AsyncCallback<Boolean> async);
 
     void removeIssueFromPlan(Long planId, Long issueId, AsyncCallback<Boolean> async);
+
+    void changeIssuesOrder(Plan plan, AsyncCallback<Boolean> async);
 }

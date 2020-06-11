@@ -80,6 +80,14 @@ public class PlanControllerImpl implements PlanController {
         return ServiceUtils.checkResultAndGetData(planService.removeIssueFromPlan(token, planId, issueId));
     }
 
+    @Override
+    public Boolean changeIssuesOrder(Plan plan) throws RequestFailedException {
+        log.info( "changeIssuesOrder(): plan={}", plan);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.changeIssuesOrder(token, plan));
+    }
+
     @Autowired
     private PlanService planService;
     @Autowired
