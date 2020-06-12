@@ -86,6 +86,11 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
         return planPeriod;
     }
 
+    @Override
+    public void setPlanPeriodValid (boolean isValid) {
+        planPeriod.markInputValid(isValid);
+    }
+
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {

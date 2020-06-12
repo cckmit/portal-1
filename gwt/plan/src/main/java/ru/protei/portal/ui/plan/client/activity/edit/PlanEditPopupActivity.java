@@ -80,7 +80,22 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
     }
 
     private boolean isValid() {
-        return view.nameValidator().isValid() && view.planPeriod().getValue().from != null && view.planPeriod().getValue().to != null;
+        if (!view.nameValidator().isValid()){
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if(view.planPeriod().getValue().to == null || view.planPeriod().getValue().from == null){
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (view.planPeriod().getValue().from.after(view.planPeriod().getValue().to)){
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
     }
 
     @Inject

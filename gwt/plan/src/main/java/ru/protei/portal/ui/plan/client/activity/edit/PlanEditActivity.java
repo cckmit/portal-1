@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.List;
 
@@ -39,6 +40,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     public void onShow(PlanEvents.Edit event) {
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
+        fireSelectTab();
 
         if (!hasPrivileges(event.planId)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
@@ -82,7 +84,6 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     @Override
     public void onSaveClicked() {
         if (!isValid()) {
-            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -124,6 +125,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
         view.planPeriod().setValue(new DateInterval(plan.getStartDate(), plan.getFinishDate()));
 
         if (isNew()) {
+            view.setPlanPeriodValid(false);
             view.setHeader( lang.planHeaderNew() );
             view.setCreatedBy("");
         } else {
@@ -140,7 +142,22 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     }
 
     private boolean isValid() {
-        return view.nameValidator().isValid() && view.planPeriod().getValue().from != null && view.planPeriod().getValue().to != null;
+        if (!view.nameValidator().isValid()){
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if(view.planPeriod().getValue().to == null || view.planPeriod().getValue().from == null){
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (view.planPeriod().getValue().from.after(view.planPeriod().getValue().to)){
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
     }
 
     private boolean hasPrivileges(Long planId) {
@@ -168,6 +185,13 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
     private boolean isNew(){
         return planId == null;
+    }
+
+    private void fireSelectTab() {
+        fireEvent( new ActionBarEvents.Clear() );
+        if ( policyService.hasPrivilegeFor( En_Privilege.PLAN_VIEW) ) {
+            fireEvent(new MenuEvents.Select(lang.plans()));
+        }
     }
 
 

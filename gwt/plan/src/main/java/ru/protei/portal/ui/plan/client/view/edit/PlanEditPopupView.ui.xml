@@ -18,7 +18,7 @@
                 <div class="form-group col-md-12">
                     <ui:text from="{lang.planPeriod}"/>
                     <range:RangePicker ui:field="planPeriod" type="DATE" formatValue="dd.MM.yyyy"
-                                       hasUnlimitedDateTo="false" styleName=""/>
+                                       hasUnlimitedDateTo="false" mandatory="true"/>
                 </div>
             </div>
 

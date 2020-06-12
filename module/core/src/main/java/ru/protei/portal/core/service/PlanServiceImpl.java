@@ -151,7 +151,8 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
+        Plan planFromDb = planDAO.get(plan.getId());
+        if (!Objects.equals(planFromDb.getName(), plan.getName()) && planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 

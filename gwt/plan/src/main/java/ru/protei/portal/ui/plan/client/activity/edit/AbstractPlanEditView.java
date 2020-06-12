@@ -32,4 +32,6 @@ public interface AbstractPlanEditView extends IsWidget {
     HasEnabled nameEnabled();
 
     HasEnabled periodEnabled();
+
+    void setPlanPeriodValid(boolean isValid);
 }

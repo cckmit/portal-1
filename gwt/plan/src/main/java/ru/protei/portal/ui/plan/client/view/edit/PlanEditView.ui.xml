@@ -33,7 +33,7 @@
                         <div class="form-group col-md-8">
                             <label><ui:text from="{lang.planPeriod}"/></label>
                             <range:RangePicker ui:field="planPeriod" type="DATE" formatValue="dd.MM.yyyy"
-                                               hasUnlimitedDateTo="false" styleName=""/>
+                                               hasUnlimitedDateTo="false" mandatory="true"/>
                         </div>
 
                         <div class="form-group col-md-4">
