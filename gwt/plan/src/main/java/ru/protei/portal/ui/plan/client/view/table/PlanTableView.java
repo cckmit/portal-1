@@ -22,6 +22,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.plan.client.activity.table.AbstractPlanTableActivity;
 import ru.protei.portal.ui.plan.client.activity.table.AbstractPlanTableView;
 
+import java.util.Objects;
+
 public class PlanTableView extends Composite implements AbstractPlanTableView {
 
     @Inject
@@ -71,12 +73,6 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
         table.updateRow(plan);
     }
 
-  /*  @Override
-    public void setAnimation ( TableAnimation animation ) {
-        animation.setContainers( tableContainer, previewContainer, filterContainer );
-        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-6", "col-md-6");
-    }
-*/
     @Override
     public void triggerTableLoad() {
         table.setTotalRecords(table.getPageSize());
@@ -114,9 +110,8 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
     }
 
     private void initTable () {
-        //добавить проверку создателя
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT) );
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.PLAN_REMOVE) );
+        editClickColumn.setEnabledPredicate(plan -> policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT) && Objects.equals(plan.getCreatorId(), policyService.getProfile().getId()));
+        removeClickColumn.setEnabledPredicate(plan -> policyService.hasPrivilegeFor(En_Privilege.PLAN_REMOVE) && Objects.equals(plan.getCreatorId(), policyService.getProfile().getId()));
 
         name = new ClickColumn<Plan>() {
             @Override

@@ -151,6 +151,10 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (!userIsCreator(token, plan)){
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         Plan planFromDb = planDAO.get(plan.getId());
         if (!Objects.equals(planFromDb.getName(), plan.getName()) && planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
             return error(En_ResultStatus.ALREADY_EXIST);
@@ -168,6 +172,10 @@ public class PlanServiceImpl implements PlanService{
     public Result<Plan> addIssueToPlan(AuthToken token, Long planId, Long issueId) {
         if (planId == null || issueId == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!userIsCreator(token, planId)){
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         PlanToCaseObject newIssueInPlan = new PlanToCaseObject(planId, issueId);
@@ -198,6 +206,10 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (!userIsCreator(token, planId)){
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         int rowCount = planToCaseObjectDAO.removeByPlanIdAndIssueId(planId, issueId);
 
         if (rowCount == 1) {
@@ -218,6 +230,10 @@ public class PlanServiceImpl implements PlanService{
     public Result<Boolean> changeIssuesOrder(AuthToken token, Plan plan) {
         if (plan == null || CollectionUtils.isEmpty(plan.getIssueList())){
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!userIsCreator(token, plan)){
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         List<PlanToCaseObject> issueOrderList = planToCaseObjectDAO.getSortedListByPlanId(plan.getId());
@@ -248,6 +264,10 @@ public class PlanServiceImpl implements PlanService{
     public Result<Boolean> moveIssueToAnotherPlan(AuthToken token, Long currentPlanId, Long issueId, Long newPlanId) {
         if (currentPlanId == null || issueId == null || newPlanId == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!userIsCreator(token, currentPlanId)){
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         PlanToCaseObject planToCaseObject = planToCaseObjectDAO.getByPlanIdAndIssueId(currentPlanId, issueId);
@@ -282,7 +302,12 @@ public class PlanServiceImpl implements PlanService{
         }
 
         Plan plan = planDAO.get(planId);
-        if (plan != null && plan.getIssueList() != null){
+
+        if (!userIsCreator(token, plan)){
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if (plan.getIssueList() != null){
             plan.getIssueList().forEach(issue ->{
                 historyService.createHistory(token, issue.getId(), En_HistoryValueType.REMOVE_FROM_PLAN, planId.toString(), null);
             });
@@ -293,6 +318,15 @@ public class PlanServiceImpl implements PlanService{
         }
 
         return ok();
+    }
+
+    private boolean userIsCreator (AuthToken token, Plan plan){
+        return Objects.equals(plan.getCreatorId(), token.getPersonId());
+    }
+
+    private boolean userIsCreator (AuthToken token, Long planId){
+        Plan plan = planDAO.get(planId);
+        return Objects.equals(plan.getCreatorId(), token.getPersonId());
     }
 
     private boolean validatePlan (Plan plan) {

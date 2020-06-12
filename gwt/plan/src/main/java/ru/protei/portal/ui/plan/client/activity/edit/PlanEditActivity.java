@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class PlanEditActivity implements AbstractPlanEditActivity, Activity {
 
@@ -59,8 +60,17 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
         }
         else {
             planService.getPlanWithIssues(event.planId, new FluentCallback<Plan>()
-                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetObject(), NotifyEvents.NotifyType.ERROR)))
-                    .withSuccess(result ->  fillView(result)));
+                    .withError(throwable -> {
+                        fireEvent(new NotifyEvents.Show(lang.errGetObject(), NotifyEvents.NotifyType.ERROR));
+                        fireEvent(new Back());
+                    })
+                    .withSuccess(result ->  {
+                        if (!Objects.equals(result.getCreatorId(), policyService.getProfile().getId())){
+                            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+                            return;
+                        }
+                        fillView(result);
+                    }));
         }
     }
 

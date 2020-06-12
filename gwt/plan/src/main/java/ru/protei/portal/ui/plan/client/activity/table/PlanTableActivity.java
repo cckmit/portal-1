@@ -90,13 +90,18 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
 
     @Override
     public void onEditClicked( Plan value ) {
-        //проверить права
+        if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT) || !value.getCreatorId().equals(policyService.getProfile().getId())) {
+            return;
+        }
         persistScroll();
         fireEvent( new PlanEvents.Edit ( value.getId() ));
     }
 
     @Override
     public void onRemoveClicked(Plan value) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_REMOVE) || !value.getCreatorId().equals(policyService.getProfile().getId())) {
+            return;
+        }
         fireEvent(new ConfirmDialogEvents.Show(lang.planConfirmRemove(), removeAction(value)));
     }
 
