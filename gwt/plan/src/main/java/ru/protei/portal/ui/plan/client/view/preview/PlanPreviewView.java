@@ -11,15 +11,25 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.plan.client.activity.preview.AbstractPlanPreviewActivity;
 import ru.protei.portal.ui.plan.client.activity.preview.AbstractPlanPreviewView;
+import ru.protei.portal.ui.plan.client.view.columns.IssueColumn;
+import ru.protei.portal.ui.plan.client.view.edit.tables.PlannedIssuesTableView;
+
+import java.util.List;
 
 public class PlanPreviewView extends Composite implements AbstractPlanPreviewView {
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        initTable();
         ensureDebugIds();
     }
 
@@ -41,9 +51,6 @@ public class PlanPreviewView extends Composite implements AbstractPlanPreviewVie
     public void setPeriod(String value) { this.period.setInnerHTML( value ); }
 
     @Override
-    public void setIssues(String value) { this.issues.setInnerHTML( value ); }
-
-    @Override
     public void showFullScreen(boolean isFullScreen){
         backButtonContainer.setVisible(isFullScreen);
         rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
@@ -62,6 +69,25 @@ public class PlanPreviewView extends Composite implements AbstractPlanPreviewVie
         if ( activity != null ) {
             activity.onGoToPlansClicked();
         }
+    }
+
+    @Override
+    public void clearRecords() {
+        table.clearRows();
+    }
+
+    @Override
+    public void putRecords(List<CaseShortView> list) {
+        list.forEach(table::addRow);
+    }
+
+    private void initTable() {
+        ClickColumnProvider<CaseShortView> issuesColumnProvider = new ClickColumnProvider<>();
+
+        IssueColumn number = new IssueColumn(lang);
+        table.addColumn(number.header, number.values);
+        number.setHandler(value -> activity.onItemClicked(value));
+        number.setColumnProvider(issuesColumnProvider);
     }
 
     private void ensureDebugIds() {
@@ -86,7 +112,8 @@ public class PlanPreviewView extends Composite implements AbstractPlanPreviewVie
     @UiField
     DivElement period;
     @UiField
-    DivElement issues;
+    TableWidget<CaseShortView> table;
+
 
     @UiField
     Lang lang;

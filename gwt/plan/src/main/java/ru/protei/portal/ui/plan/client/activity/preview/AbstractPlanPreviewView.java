@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.plan.client.activity.preview;
 
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.view.CaseShortView;
+
+import java.util.List;
 
 public interface AbstractPlanPreviewView extends IsWidget {
     void setActivity(AbstractPlanPreviewActivity activity);
@@ -14,7 +16,9 @@ public interface AbstractPlanPreviewView extends IsWidget {
 
     void setPeriod(String value);
 
-    void setIssues(String value);
-
     void showFullScreen(boolean isFullScreen);
+
+    void clearRecords();
+
+    void putRecords(List<CaseShortView> list);
 }

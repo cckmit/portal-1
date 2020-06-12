@@ -11,10 +11,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.PlanEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -65,6 +62,11 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
     }
 
     @Override
+    public void onItemClicked(CaseShortView value) {
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+    }
+
+    @Override
     public void onGoToPlansClicked() {
         fireEvent(new PlanEvents.ShowPlans(true));
     }
@@ -96,26 +98,12 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
         view.setCreatedBy(lang.createBy(value.getCreatorShortName(), DateFormatter.formatDateTime(value.getCreated())));
         view.setPeriod(DateFormatter.formatDateOnly(value.getStartDate()) + " - " + DateFormatter.formatDateOnly(value.getFinishDate()));
 
-        String issues = "";
-
-        if (plan.getIssueList() != null) {
-            for (CaseShortView caseShortView : plan.getIssueList()) {
-                issues += caseShortView.getCaseNumber() + " " + caseShortView.getName() + "<br>";
-            }
-        }
-        view.setIssues(issues);
+        loadTable(value.getIssueList());
     }
 
-    private boolean isSlaContainerVisible(List<ProjectSla> projectSlas) {
-        if (CollectionUtils.isEmpty(projectSlas)) {
-            return false;
-        }
-
-        if (projectSlas.stream().allMatch(ProjectSla::isEmpty)) {
-            return false;
-        }
-
-        return true;
+    private void loadTable(List<CaseShortView> issuesList){
+        view.clearRecords();
+        view.putRecords(issuesList);
     }
 
     @Inject
