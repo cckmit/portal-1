@@ -430,8 +430,6 @@ public class MainConfiguration {
         return new RedminePriorityMapEntryDAO_Impl();
     }
 
-
-
     @Bean
     public CaseFilterDAO getIssueFilterDAO() {
         return new CaseFilterDAO_Impl();
@@ -570,6 +568,11 @@ public class MainConfiguration {
     @Bean
     public RoomReservationDAO getRoomReservationDAO() {
         return new RoomReservationDAO_Impl();
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
     }
 
     /* SERVICES */

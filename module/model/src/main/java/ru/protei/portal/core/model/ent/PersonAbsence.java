@@ -23,6 +23,9 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     @JdbcColumn(name = "creator_id")
     private Long creatorId;
 
+    @JdbcJoinedObject(localColumn="creator_id", remoteColumn = "id")
+    private Person creator;
+
     @JdbcColumn(name = "person_id")
     private Long personId;
 
@@ -68,6 +71,14 @@ public class PersonAbsence extends AuditableObject implements Serializable {
 
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Person creator) {
+        this.creator = creator;
     }
 
     public Long getPersonId() {

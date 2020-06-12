@@ -2643,4 +2643,6 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceRemoveSuccessful();
 
     String absenceReasonLeave();
+
+    String errAbsenceHasIntersections();
 }

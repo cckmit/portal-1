@@ -90,6 +90,8 @@
                         <argument>notification/email/project.subject.ftl</argument>
                         <argument>notification/email/reservation.room.subject.ftl</argument>
                         <argument>notification/email/reservation.room.body.ftl</argument>
+                        <argument>notification/email/absence.subject.ftl</argument>
+                        <argument>notification/email/absence.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

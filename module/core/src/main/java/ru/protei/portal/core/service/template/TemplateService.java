@@ -1,10 +1,7 @@
 package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.AssembledProjectEvent;
-import ru.protei.portal.core.event.RoomReservationNotificationEvent;
-import ru.protei.portal.core.event.UserLoginUpdateEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -71,4 +68,8 @@ public interface TemplateService {
     PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action);
 
     PreparedTemplate getRoomReservationNotificationBody(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action, Collection<String> recipients);
+
+    PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence);
+
+    PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients);
 }

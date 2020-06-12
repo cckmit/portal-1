@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -20,6 +21,7 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**

@@ -224,5 +224,9 @@ public enum En_ResultStatus {
      */
     ROOM_RESERVATION_HAS_INTERSECTIONS,
 
+    /**
+     * Найдено пересечение с другими отсутствиями
+     */
+    ABSENCE_HAS_INTERSECTIONS,
     ;
 }

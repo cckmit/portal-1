@@ -699,9 +699,56 @@ public class MailNotificationProcessor {
         sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
     }
 
+
+    // -----------------------
+    // Absence notifications
+    // -----------------------
+
+    @EventListener
+    public void onAbsenceNotificationEvent(AbsenceNotificationEvent event) {
+        Person initiator = event.getInitiator();
+        PersonAbsence absence = event.getNewState();
+        EventAction action = event.getAction();
+        List<NotificationEntry> notificationEntries = collectNotifiers(event);
+        List<String> recipients = getNotifiersAddresses(notificationEntries);
+
+        if (isEmpty(notificationEntries) || action == null || absence == null) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getAbsenceNotificationSubject(initiator, absence);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for absence notification with id={} and action={}",
+                    absence.getId(), action);
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for absence notification with id={} and action={}",
+                    absence.getId(), action);
+            return;
+        }
+
+        sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
+    }
+
     // -----
     // Utils
     // -----
+
+    private List<NotificationEntry> collectNotifiers(AbsenceNotificationEvent event) {
+        PersonAbsence absence = event.getNewState();
+        return stream(new ArrayList<Person>() {{
+            addAll(event.getNotifiers());
+            add(absence.getCreator());
+            add(absence.getPerson());
+            add(event.getInitiator());
+        }}).map(this::fetchNotificationEntryFromPerson)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 
     private void sendMailToRecipients(Collection<NotificationEntry> recipients, PreparedTemplate bodyTemplate, PreparedTemplate subjectTemplate, boolean isShowPrivacy) {
         recipients.forEach(entry -> {

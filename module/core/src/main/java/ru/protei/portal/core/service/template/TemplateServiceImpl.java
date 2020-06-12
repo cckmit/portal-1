@@ -5,16 +5,13 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
-import ru.protei.portal.core.event.AssembledProjectEvent;
-import ru.protei.portal.core.event.RoomReservationNotificationEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
@@ -539,6 +536,52 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("person_absent", absence.getPerson().getDisplayName());
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/absence.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients) {
+        PersonAbsence oldState = event.getOldState();
+        PersonAbsence newState = event.getNewState();
+
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == EventAction.CREATED);
+        templateModel.put("is_updated", action == EventAction.UPDATED);
+        templateModel.put("is_removed", action == EventAction.REMOVED);
+
+        templateModel.put("person_absent", newState.getPerson().getDisplayName());
+
+        templateModel.put("fromTimeChanged", event.isFromTimeChanged());
+        templateModel.put("oldFromTime", getNullOrElse(oldState, PersonAbsence::getFromTime));
+        templateModel.put("fromTime", newState.getFromTime());
+
+        templateModel.put("tillTimeChanged", event.isTillTimeChanged());
+        templateModel.put("oldTillTime", getNullOrElse(oldState, PersonAbsence::getTillTime));
+        templateModel.put("tillTime", newState.getTillTime());
+
+        templateModel.put("reason", newState.getReason().getId());
+
+        templateModel.put("commentChanged", event.isUserCommentChanged());
+        templateModel.put("oldComment", getNullOrElse(oldState, PersonAbsence::getUserComment));
+        templateModel.put("comment", newState.getUserComment());
+
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/absence.body.%s.ftl");
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
