@@ -8,4 +8,6 @@ import java.util.List;
 public interface PlanDAO extends PortalBaseDAO<Plan> {
 
     List<Plan> getListByQuery(PlanQuery query);
+
+    boolean  checkExistByNameAndCreatorId(String planName, Long personId);
 }

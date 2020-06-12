@@ -22,69 +22,66 @@ public class PlanEvents {
 
     @Url( value = "plan")
     public static class Edit {
+        public Long planId;
 
         public Edit () {
             planId = null;
         }
-
         public Edit (Long id) {
             this.planId = id;
         }
-
-        public Long planId;
     }
 
     public static class EditParams {
-
-        public EditParams(){ }
+        public Plan plan;
 
         public EditParams(Plan plan) {
             this.plan = plan;
         }
-
-        public Plan plan;
     }
 
-    public static class Update {
+    public static class UpdateParams {
+        public Plan plan;
 
-        public Update(){ }
-
-        public Update(Plan plan) {
+        public UpdateParams(Plan plan) {
             this.plan = plan;
         }
+    }
 
-        public Plan plan;
+    public static class UpdateIssues {
+        public List<CaseShortView> issues;
+
+        public UpdateIssues(List<CaseShortView> issues) {
+            this.issues = issues;
+        }
     }
 
     public static class ShowPreview {
+        public Long planId;
+        public HasWidgets parent;
 
         public ShowPreview( HasWidgets parent, Long planId ) {
             this.parent = parent;
             this.planId = planId;
         }
-
-        public HasWidgets parent;
-        public Long planId;
     }
 
     @Url( value = "plan_preview", primary = true )
     public static class ShowFullScreen {
+        @Name( "id" )
+        public Long planId;
 
         public ShowFullScreen() {}
-
         public ShowFullScreen ( Long id )
         {
             this.planId = id;
         }
-
-        @Name( "id" )
-        public Long planId;
     }
 
     public static class ShowUnassignedIssueTable {
         public HasWidgets parent;
         public Long planId;
-        public ShowUnassignedIssueTable() {}
+
         public ShowUnassignedIssueTable(HasWidgets parent, Long planId) {
             this.parent = parent;
             this.planId = planId;
@@ -95,7 +92,7 @@ public class PlanEvents {
         public HasWidgets parent;
         public List<Plan> planList;
         public Long planId;
-        public ShowAssignedIssueTable() {}
+
         public ShowAssignedIssueTable(HasWidgets parent, List<Plan> planList, Long planId) {
             this.planList = planList;
             this.parent = parent;
@@ -103,11 +100,11 @@ public class PlanEvents {
         }
     }
 
-    public static class UpdateAssignedIssueTable {
-        public List<CaseShortView> issuesList;
-        public UpdateAssignedIssueTable() {}
-        public UpdateAssignedIssueTable(List<CaseShortView> issuesList) {
-            this.issuesList = issuesList;
+    public static class AddIssueToPlan {
+        public CaseShortView issue;
+
+        public AddIssueToPlan(CaseShortView issue) {
+            this.issue = issue;
         }
     }
 }

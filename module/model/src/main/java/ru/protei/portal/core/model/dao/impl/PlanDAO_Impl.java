@@ -30,6 +30,10 @@ public class PlanDAO_Impl extends PortalBaseJdbcDAO<Plan> implements PlanDAO {
         );
     }
 
+    public boolean checkExistByNameAndCreatorId(String planName, Long personId) {
+        return checkExistsByCondition ("plan.name=? and plan.creator_id=?", planName, personId);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(PlanQuery query) {
         return new SqlCondition().build(((condition, args) -> {

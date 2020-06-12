@@ -21,10 +21,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -121,6 +118,10 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
+
         plan.setCreatorId(token.getPersonId());
         plan.setCreated(new Date());
 
@@ -131,11 +132,13 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (CollectionUtils.isNotEmpty(plan.getIssueList())){
-            plan.getIssueList().forEach(issue -> {
-                PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
-                planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
-                planToCaseObjectDAO.persist(planToCaseObject);
-                historyService.createHistory(token, issue.getId(), En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId));
+            plan.getIssueList().stream()
+                    .distinct()
+                    .forEach(issue -> {
+                        PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
+                        planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
+                        planToCaseObjectDAO.persist(planToCaseObject);
+                        historyService.createHistory(token, issue.getId(), En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId));
             });
         }
 

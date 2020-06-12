@@ -75,12 +75,7 @@ public class UnassignedIssuesTableView extends Composite implements AbstractUnas
         ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.planAddIssueToPlan(), null);
         table.addColumn(assign.header, assign.values);
         assign.setHandler(value -> {});
-        assign.setActionHandler(new ClickColumn.Handler<CaseShortView>() {
-            public void onItemClicked(CaseShortView value) {}
-            public void onItemClicked(CaseShortView value, Element target) {
-                activity.onItemActionAssign(value, new CustomUIObject(target));
-            }
-        });
+        assign.setActionHandler(value -> activity.onItemActionAssign(value));
         assign.setColumnProvider(issuesColumnProvider);
     }
 
@@ -88,12 +83,6 @@ public class UnassignedIssuesTableView extends Composite implements AbstractUnas
     public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
             activity.onFilterChanged(event.getValue());
-        }
-    }
-
-    private static class CustomUIObject extends UIObject {
-        CustomUIObject(Element element) {
-            setElement(element);
         }
     }
 

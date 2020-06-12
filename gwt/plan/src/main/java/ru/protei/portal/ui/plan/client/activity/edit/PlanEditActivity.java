@@ -9,14 +9,16 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -42,49 +44,41 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
             return;
         }
 
+        fireEvent(new ActionBarEvents.Clear());
         initDetails.parent.add(view.asWidget());
 
-        PlanQuery query = new PlanQuery();
-        query.setCreatorId(policyService.getProfile().getId());
+        fillIssuesTables(event.planId);
 
-        planService.listPlans(query, new RequestCallback<List<Plan>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(List<Plan> result) {
-                fireEvent(new PlanEvents.ShowUnassignedIssueTable(view.unassignedTableContainer(), event.planId));
-                fireEvent(new PlanEvents.ShowAssignedIssueTable(view.assignedTableContainer(), result, event.planId));
-            }
-        });
-
-
-        fireEvent(new ActionBarEvents.Clear());
         if (event.planId == null) {
             Plan plan = new Plan();
             fillView(plan);
-            return;
         }
+        else {
+            planService.getPlanWithIssues(event.planId, new FluentCallback<Plan>()
+                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetObject(), NotifyEvents.NotifyType.ERROR)))
+                    .withSuccess(result ->  fillView(result)));
+        }
+    }
 
-        planService.getPlanWithIssues(event.planId, new RequestCallback<Plan>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetObject(), NotifyEvents.NotifyType.ERROR));
-            }
+    private void fillIssuesTables(Long planId) {
+        PlanQuery query = new PlanQuery();
+        query.setCreatorId(policyService.getProfile().getId());
 
-            @Override
-            public void onSuccess(Plan result) {
-                fillView(result);
-            }
-        });
-
+        planService.listPlans(query, new FluentCallback<List<Plan>>()
+                .withSuccess(planList -> {
+                    fireEvent(new PlanEvents.ShowUnassignedIssueTable(view.unassignedTableContainer(), planId));
+                    fireEvent(new PlanEvents.ShowAssignedIssueTable(view.assignedTableContainer(), planList, planId));
+                }));
     }
 
     @Event
-    public void onUpdate (PlanEvents.Update event){
+    public void onUpdateParams (PlanEvents.UpdateParams event){
         fillView(plan);
+    }
+
+    @Event
+    public void onUpdateIssues (PlanEvents.UpdateIssues event){
+        plan.setIssueList(event.issues);
     }
 
     @Override
@@ -97,6 +91,13 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
         fillPlan(plan);
 
         planService.createPlan(plan, new FluentCallback<Long>()
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException && En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new NotifyEvents.Show(lang.errPlanAlreadyExisted(), NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        defaultErrorHandler.accept(throwable);
+                    }
+                })
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.planSaved(), NotifyEvents.NotifyType.SUCCESS));
                 })
@@ -150,6 +151,8 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     PlanControllerAsync planService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private Plan plan;
     private AppEvents.InitDetails initDetails;

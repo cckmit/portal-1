@@ -63,15 +63,8 @@ public abstract class UnassignedIssuesTableActivity implements AbstractUnassigne
     }
 
     @Override
-    public void onItemActionAssign(CaseShortView value, UIObject relative) {
-        planService.addIssueToPlan(planId, value.getId(), new FluentCallback<Plan>()
-                .withError(throwable -> {
-                    defaultErrorHandler.accept(throwable);
-                })
-                .withSuccess(plan -> {
-                    fireEvent(new NotifyEvents.Show(lang.planIssueAdded(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new PlanEvents.UpdateAssignedIssueTable(plan.getIssueList()));
-                }));
+    public void onItemActionAssign(CaseShortView value) {
+        fireEvent(new PlanEvents.AddIssueToPlan(value));
     }
 
     @Override

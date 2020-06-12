@@ -35,33 +35,48 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
         HasWidgets container = event.parent;
         container.clear();
         container.add(view.asWidget());
-        plans = event.planList;
-        loadTable(event.planId);
         planId = event.planId;
+        plans = event.planList;
+        view.moveColumnVisibility(!isNew());
+
+        if (isNew()){
+            issues = new ArrayList<>();
+            loadTable(issues);
+        } else {
+            loadTable(event.planId);
+        }
     }
 
     @Event
-    public void onUpdate(PlanEvents.UpdateAssignedIssueTable event) {
-        loadTable(event.issuesList);
+    public void onAddIssue(PlanEvents.AddIssueToPlan event) {
+        if (isNew()){
+            if (issues.contains(event.issue)){
+                fireEvent(new NotifyEvents.Show(lang.errAlreadyExist(), NotifyEvents.NotifyType.ERROR));
+            } else {
+                issues.add(event.issue);
+                loadTable(issues);
+                fireEvent(new PlanEvents.UpdateIssues(issues));
+            }
+        } else {
+            planService.addIssueToPlan(planId, event.issue.getId(), new FluentCallback<Plan>()
+                    .withSuccess(plan -> {
+                        fireEvent(new NotifyEvents.Show(lang.planIssueAdded(), NotifyEvents.NotifyType.SUCCESS));
+                        issues = plan.getIssueList();
+                        loadTable(plan.getIssueList());
+                    }));
+        }
     }
 
     @Override
     public void onRemoveClicked(CaseShortView value) {
-        fireEvent(new ConfirmDialogEvents.Show(lang.planIssueConfirmRemove(), removeAction(value)));
-    }
-
-    private Runnable removeAction(CaseShortView value) {
-        return () -> {
-            planService.removeIssueFromPlan(planId, value.getId(), new FluentCallback<Boolean>()
-                    .withError(throwable -> {
-                        defaultErrorHandler.accept(throwable);
-                        loadTable(planId);
-                    })
-                    .withSuccess(flag -> {
-                        loadTable(planId);
-                        fireEvent(new NotifyEvents.Show(lang.planIssueRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    }));
-        };
+        if (isNew()){
+            issues.remove(value);
+            loadTable(issues);
+            fireEvent(new PlanEvents.UpdateIssues(issues));
+        }
+        else {
+            fireEvent(new ConfirmDialogEvents.Show(lang.planIssueConfirmRemove(), removeAction(value)));
+        }
     }
 
     @Override
@@ -72,17 +87,22 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
 
         swapIssues(src, dst);
 
-        Plan plan = new Plan();
-        plan.setIssueList(issues);
-        plan.setId(planId);
-        planService.changeIssuesOrder(plan, new FluentCallback<Boolean>()
-                .withError(throwable -> {
-                    defaultErrorHandler.accept(throwable);
-                    loadTable(planId);
-                })
-                .withSuccess(flag -> {
-                    loadTable(planId);
-                }));
+        if (isNew()){
+            loadTable(issues);
+            fireEvent(new PlanEvents.UpdateIssues(issues));
+        } else {
+            Plan plan = new Plan();
+            plan.setIssueList(issues);
+            plan.setId(planId);
+            planService.changeIssuesOrder(plan, new FluentCallback<Boolean>()
+                    .withError(throwable -> {
+                        defaultErrorHandler.accept(throwable);
+                        loadTable(planId);
+                    })
+                    .withSuccess(flag -> {
+                        loadTable(planId);
+                    }));
+        }
     }
 
 
@@ -94,7 +114,7 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
     @Override
     public void onItemActionAssign(CaseShortView value, UIObject relative) {
         showPlanSingleSelector(relative, plan -> {
-            if (plan == null) {
+            if (plan == null || isNew()) {
                 return;
             }
 
@@ -113,9 +133,7 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
 
     private void loadTable(List<CaseShortView> issuesList){
         view.clearRecords();
-        view.setTotalRecords(issuesList.size());
         view.putRecords(issuesList);
-        this.issues = issuesList;
     }
 
     private void loadTable(Long planId) {
@@ -123,13 +141,25 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
         planService.getPlanWithIssues(planId, new FluentCallback<Plan>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    view.setTotalRecords(0);
                 })
                 .withSuccess(plan -> {
-                    view.setTotalRecords(plan.getIssueList().size());
                     view.putRecords(plan.getIssueList());
                     this.issues = plan.getIssueList();
                 }));
+    }
+
+    private Runnable removeAction(CaseShortView value) {
+        return () -> {
+            planService.removeIssueFromPlan(planId, value.getId(), new FluentCallback<Boolean>()
+                    .withError(throwable -> {
+                        defaultErrorHandler.accept(throwable);
+                        loadTable(planId);
+                    })
+                    .withSuccess(flag -> {
+                        loadTable(planId);
+                        fireEvent(new NotifyEvents.Show(lang.planIssueRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        };
     }
 
     private void showPlanSingleSelector(UIObject relative, Consumer<Plan> onChanged) {
@@ -153,6 +183,10 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
         int dstIndex = issues.indexOf( dst );
         issues.remove( src );
         issues.add( dstIndex, src );
+    }
+
+    private boolean isNew (){
+        return planId == null;
     }
 
     @Inject

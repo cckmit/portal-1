@@ -7,19 +7,13 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.ent.Plan;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
-import ru.protei.portal.ui.common.client.events.CompanyDepartmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-
-import java.util.List;
 
 public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActivity, Activity, AbstractDialogDetailsActivity {
     @PostConstruct
@@ -58,7 +52,7 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
 
         planService.editPlanParams(plan, new FluentCallback<Boolean>()
                 .withSuccess(result -> {
-                    fireEvent(new PlanEvents.Update(plan));
+                    fireEvent(new PlanEvents.UpdateParams(plan));
                     fireEvent(new NotifyEvents.Show(lang.planSaved(), NotifyEvents.NotifyType.SUCCESS));
                     dialogView.hidePopup();
                 }));

@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
@@ -49,7 +50,8 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
     }
 
     @Override
-    public void setTotalRecords(int totalRecords) {
+    public void moveColumnVisibility (boolean isVisible){
+        moveToAnotherPlanColumn.setColumnVisibility(isVisible);
     }
 
     private void initTable() {
@@ -71,7 +73,7 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
 
         ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.planMoveIssueToAnotherPlan(), null);
-        table.addColumn(assign.header, assign.values);
+        moveToAnotherPlanColumn = table.addColumn(assign.header, assign.values);
         assign.setHandler(value -> {});
         assign.setActionHandler(new ClickColumn.Handler<CaseShortView>() {
             public void onItemClicked(CaseShortView value) {}
@@ -100,6 +102,7 @@ public class AssignedIssuesTableView extends Composite implements AbstractAssign
     private RemoveClickColumn<CaseShortView> removeClickColumn;
     DragColumn< CaseShortView > dragColumn = new DragColumn<>();
     private AbstractAssignedIssuesTableActivity activity;
+    private AbstractColumn moveToAnotherPlanColumn;
 
 
     interface AssignedIssueTableViewBinder extends UiBinder<HTMLPanel, AssignedIssuesTableView> {}

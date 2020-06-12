@@ -2665,4 +2665,6 @@ public interface Lang extends Messages, ContactItemLang {
     String planEditButton();
 
     String planEditPopupHeader();
+
+    String errPlanAlreadyExisted();
 }
