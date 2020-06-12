@@ -68,12 +68,6 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
 
     }
 
-    private void fillPlan(Plan plan) {
-        plan.setName(view.name().getValue());
-        plan.setStartDate(view.planPeriod().getValue().from);
-        plan.setFinishDate(view.planPeriod().getValue().to);
-    }
-
     @Override
     public void onCancelClicked() {
         dialogView.hidePopup();
@@ -96,6 +90,12 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
         }
 
         return true;
+    }
+
+    private void fillPlan(Plan plan) {
+        plan.setName(view.name().getValue());
+        plan.setStartDate(view.planPeriod().getValue().from);
+        plan.setFinishDate(view.planPeriod().getValue().to);
     }
 
     @Inject

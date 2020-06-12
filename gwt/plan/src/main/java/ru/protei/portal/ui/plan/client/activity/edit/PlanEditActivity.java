@@ -53,13 +53,6 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
         fillIssuesTables(event.planId);
 
-        view.editButtonVisibility().setVisible(!isNew());
-        view.saveButtonVisibility().setVisible(isNew());
-        view.cancelButtonVisibility().setVisible(isNew());
-        view.backButtonVisibility().setVisible(!isNew());
-        view.nameEnabled().setEnabled(isNew());
-        view.periodEnabled().setEnabled(isNew());
-
         if (isNew()) {
             Plan plan = new Plan();
             fillView(plan);
@@ -121,6 +114,14 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
     private void fillView(Plan plan) {
         this.plan = plan;
+
+        view.editButtonVisibility().setVisible(!isNew());
+        view.saveButtonVisibility().setVisible(isNew());
+        view.cancelButtonVisibility().setVisible(isNew());
+        view.backButtonVisibility().setVisible(!isNew());
+        view.nameEnabled().setEnabled(isNew());
+        view.periodEnabled().setEnabled(isNew());
+
         view.name().setValue(plan.getName());
         view.planPeriod().setValue(new DateInterval(plan.getStartDate(), plan.getFinishDate()));
 

@@ -64,6 +64,11 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
         fireEvent( new PlanEvents.ShowFullScreen( plan.getId() ) );
     }
 
+    @Override
+    public void onGoToPlansClicked() {
+        fireEvent(new PlanEvents.ShowPlans(true));
+    }
+
     private void fillView( Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
@@ -111,11 +116,6 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
         }
 
         return true;
-    }
-
-    @Override
-    public void onGoToPlansClicked() {
-        fireEvent(new PlanEvents.ShowPlans(true));
     }
 
     @Inject

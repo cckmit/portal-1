@@ -100,20 +100,6 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
         fireEvent(new ConfirmDialogEvents.Show(lang.planConfirmRemove(), removeAction(value)));
     }
 
-    private Runnable removeAction(Plan value) {
-        return () -> {
-            planService.removePlan(value.getId(), new FluentCallback<Boolean>()
-                    .withError(throwable -> {
-                        defaultErrorHandler.accept(throwable);
-                        loadTable();
-                    })
-                    .withSuccess(flag -> {
-                        loadTable();
-                        fireEvent(new NotifyEvents.Show(lang.planRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    }));
-        };
-    }
-
     @Override
     public void onFilterChanged() {
         loadTable();
@@ -142,6 +128,30 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
                 }));
     }
 
+    @Override
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
+    }
+
+    @Override
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
+    }
+
+    private Runnable removeAction(Plan value) {
+        return () -> {
+            planService.removePlan(value.getId(), new FluentCallback<Boolean>()
+                    .withError(throwable -> {
+                        defaultErrorHandler.accept(throwable);
+                        loadTable();
+                    })
+                    .withSuccess(flag -> {
+                        loadTable();
+                        fireEvent(new NotifyEvents.Show(lang.planRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    }));
+        };
+    }
+
     private PlanQuery makeQuery() {
         PlanQuery query = new PlanQuery();
         query.setSearchString(filterView.search().getValue());
@@ -155,15 +165,6 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;
-    }
-
-    @Override
-    public void onPageChanged(int page) {
-
-    }
-
-    @Override
-    public void onPageSelected(int page) {
     }
 
     private void loadTable() {
