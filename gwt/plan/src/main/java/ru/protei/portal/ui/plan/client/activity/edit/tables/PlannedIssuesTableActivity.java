@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -16,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.plan.client.popupselector.PopupSingleSelector;
@@ -51,7 +53,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     public void onAddIssue(PlanEvents.AddIssueToPlan event) {
         if (isNew()){
             if (issues.contains(event.issue)){
-                fireEvent(new NotifyEvents.Show(lang.errAlreadyExist(), NotifyEvents.NotifyType.ERROR));
+                fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
             } else {
                 issues.add(event.issue);
                 loadTable(issues);
@@ -59,6 +61,13 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
             }
         } else {
             planService.addIssueToPlan(planId, event.issue.getId(), new FluentCallback<Plan>()
+                    .withError(throwable -> {
+                        if (throwable instanceof RequestFailedException && En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException) throwable).status)) {
+                            fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
+                        } else {
+                            defaultErrorHandler.accept(throwable);
+                        }
+                    })
                     .withSuccess(plan -> {
                         fireEvent(new NotifyEvents.Show(lang.planIssueAdded(), NotifyEvents.NotifyType.SUCCESS));
                         issues = plan.getIssueList();
@@ -120,7 +129,11 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
 
             planService.moveIssueToAnotherPlan(planId, value.getId(), plan.getId(), new FluentCallback<Boolean>()
                     .withError(throwable -> {
-                        defaultErrorHandler.accept(throwable);
+                        if (throwable instanceof RequestFailedException && En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException) throwable).status)) {
+                            fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
+                        } else {
+                            defaultErrorHandler.accept(throwable);
+                        }
                         loadTable(planId);
                     })
                     .withSuccess(flag -> {
