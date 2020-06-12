@@ -9,6 +9,10 @@ public interface AbstractPlanEditView extends IsWidget {
 
     HasValue<String> name();
 
+    void setHeader(String value);
+
+    void setCreatedBy(String value);
+
     HasValidable nameValidator();
 
     HasValue<DateInterval> planPeriod();

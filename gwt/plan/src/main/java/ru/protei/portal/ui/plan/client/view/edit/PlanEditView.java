@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.plan.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -30,6 +31,12 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     public HasValue<String> name() {
         return name;
     }
+
+    @Override
+    public void setHeader(String value) { this.header.setText( value ); }
+
+    @Override
+    public void setCreatedBy(String value) { this.createdBy.setInnerHTML( value ); }
 
     @Override
     public HasValidable nameValidator() {
@@ -107,6 +114,10 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
         }
     }
 
+    @UiField
+    Element createdBy;
+    @UiField
+    Label header;
     @UiField
     ValidableTextBox name;
     @Inject

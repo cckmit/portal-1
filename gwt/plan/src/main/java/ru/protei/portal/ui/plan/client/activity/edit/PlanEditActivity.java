@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
@@ -46,17 +47,18 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
         fireEvent(new ActionBarEvents.Clear());
         initDetails.parent.add(view.asWidget());
+        planId = event.planId;
 
         fillIssuesTables(event.planId);
 
-        view.editButtonVisibility().setVisible(event.planId != null);
-        view.saveButtonVisibility().setVisible(event.planId == null);
-        view.cancelButtonVisibility().setVisible(event.planId == null);
-        view.backButtonVisibility().setVisible(event.planId != null);
-        view.nameEnabled().setEnabled(event.planId == null);
-        view.periodEnabled().setEnabled(event.planId == null);
+        view.editButtonVisibility().setVisible(!isNew());
+        view.saveButtonVisibility().setVisible(isNew());
+        view.cancelButtonVisibility().setVisible(isNew());
+        view.backButtonVisibility().setVisible(!isNew());
+        view.nameEnabled().setEnabled(isNew());
+        view.periodEnabled().setEnabled(isNew());
 
-        if (event.planId == null) {
+        if (isNew()) {
             Plan plan = new Plan();
             fillView(plan);
         }
@@ -65,17 +67,6 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetObject(), NotifyEvents.NotifyType.ERROR)))
                     .withSuccess(result ->  fillView(result)));
         }
-    }
-
-    private void fillIssuesTables(Long planId) {
-        PlanQuery query = new PlanQuery();
-        query.setCreatorId(policyService.getProfile().getId());
-
-        planService.listPlans(query, new FluentCallback<List<Plan>>()
-                .withSuccess(planList -> {
-                    fireEvent(new PlanEvents.ShowUnassignedIssueTable(view.unassignedTableContainer(), planId));
-                    fireEvent(new PlanEvents.ShowAssignedIssueTable(view.assignedTableContainer(), planList, planId));
-                }));
     }
 
     @Event
@@ -131,6 +122,14 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
         this.plan = plan;
         view.name().setValue(plan.getName());
         view.planPeriod().setValue(new DateInterval(plan.getStartDate(), plan.getFinishDate()));
+
+        if (isNew()) {
+            view.setHeader( lang.planHeaderNew() );
+            view.setCreatedBy("");
+        } else {
+            view.setHeader(lang.planHeader(plan.getId().toString()));
+            view.setCreatedBy(lang.createBy(plan.getCreatorShortName(), DateFormatter.formatDateTime(plan.getCreated())));
+        }
     }
 
 
@@ -156,6 +155,22 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
         return false;
     }
 
+    private void fillIssuesTables(Long planId) {
+        PlanQuery query = new PlanQuery();
+        query.setCreatorId(policyService.getProfile().getId());
+
+        planService.listPlans(query, new FluentCallback<List<Plan>>()
+                .withSuccess(planList -> {
+                    fireEvent(new PlanEvents.ShowUnassignedIssueTable(view.unassignedTableContainer(), planId));
+                    fireEvent(new PlanEvents.ShowAssignedIssueTable(view.assignedTableContainer(), planList, planId));
+                }));
+    }
+
+    private boolean isNew(){
+        return planId == null;
+    }
+
+
     @Inject
     Lang lang;
     @Inject
@@ -169,4 +184,5 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
     private Plan plan;
     private AppEvents.InitDetails initDetails;
+    private Long planId;
 }

@@ -2640,6 +2640,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String planHeader( String p0 );
 
+    String planHeaderNew();
+
     String planName();
 
     String planMainInfoTitle();
@@ -2667,4 +2669,6 @@ public interface Lang extends Messages, ContactItemLang {
     String planEditPopupHeader();
 
     String errPlanAlreadyExisted();
+
+    String planIssueList();
 }

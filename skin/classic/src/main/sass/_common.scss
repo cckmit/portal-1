@@ -3566,6 +3566,27 @@ label {
   height: 35px;
 }
 
+.planned-issue-wrapper {
+  background-color: #f4f4f4;
+  border: 1px solid #dcdbdb;
+}
+
+.planned-issue-table-top-collapse {
+  margin-top: -6px;
+}
+
+.planned-issue-table {
+
+  thead {
+    display: none;
+  }
+
+  span {
+    vertical-align: middle !important;
+    margin-right: 0.3em;
+  }
+}
+
 .preview-value-label {
   margin-top: 4px !important;
 }
