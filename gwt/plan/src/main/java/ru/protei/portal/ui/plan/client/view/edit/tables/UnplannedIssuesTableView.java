@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
@@ -59,6 +60,9 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
         return filter;
     }
 
+    @Override
+    public void setLimitLabel(String value) { this.limitLabel.setText( lang.planUnplannedTableLimit(value) ); }
+
     private void initTable() {
 
         issuesColumnProvider = new ClickColumnProvider<>();
@@ -91,6 +95,9 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
     IssueFilterSelector filter;
     @UiField
     TableWidget<CaseShortView> table;
+    @UiField
+    Label limitLabel;
+
 
     private ClickColumnProvider<CaseShortView> issuesColumnProvider;
     private AbstractUnplannedIssuesTableActivity activity;

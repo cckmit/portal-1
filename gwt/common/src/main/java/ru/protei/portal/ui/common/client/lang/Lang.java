@@ -2671,4 +2671,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errPlanAlreadyExisted();
 
     String planIssueList();
+
+    String planUnplannedTableFilterDefault();
+
+    String planUnplannedTableFilter();
+
+    String planUnplannedTableLimit( String p0 );
 }

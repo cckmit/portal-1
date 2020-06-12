@@ -5,15 +5,16 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="issue-assignment-wrapper">
+    <g:HTMLPanel styleName="planned-issue-wrapper p-t-10">
         <div>
             <div class="form-group col-md-12">
-                <label><ui:text from="{lang.issueAssignmentTableFilter}"/></label>
-                <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.issueAssignmentTableFilterDefault}"/>
+                <label class="inline"><ui:text from="{lang.planUnplannedTableFilter}"/></label>
+                <g:Label styleName="inline half-opacity pull-right label-style" ui:field="limitLabel"/>
+                <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.planUnplannedTableFilterDefault}"/>
             </div>
         </div>
         <div class="auto-overflow">
-            <table:TableWidget ui:field="table" styleName="table table-hover issue-assignment-table"/>
+            <table:TableWidget ui:field="table" styleName="table table-hover planned-issue-table"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -11,7 +11,7 @@
         <div class="card-body">
             <div class="row">
 
-                <g:HTMLPanel styleName="col-md-6 p-r-30" ui:field="unplannedTableContainer"/>
+                <g:HTMLPanel styleName="col-md-6" ui:field="unplannedTableContainer"/>
 
                 <div class="form-group col-md-6">
                     <div class="row">

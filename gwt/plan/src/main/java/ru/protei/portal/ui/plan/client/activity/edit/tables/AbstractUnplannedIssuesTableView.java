@@ -19,4 +19,6 @@ public interface AbstractUnplannedIssuesTableView extends IsWidget {
     void updateFilterSelector();
 
     HasValue<CaseFilterShortView> filter();
+
+    void setLimitLabel(String value);
 }
