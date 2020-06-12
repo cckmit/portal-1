@@ -179,8 +179,8 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
         planService.listPlans(query, new FluentCallback<List<Plan>>()
                 .withSuccess(planList -> {
-                    fireEvent(new PlanEvents.ShowUnassignedIssueTable(view.unassignedTableContainer(), planId));
-                    fireEvent(new PlanEvents.ShowAssignedIssueTable(view.assignedTableContainer(), planList, planId));
+                    fireEvent(new PlanEvents.ShowUnplannedIssueTable(view.unplannedTableContainer(), planId));
+                    fireEvent(new PlanEvents.ShowPlannedIssueTable(view.plannedTableContainer(), planList, planId));
                 }));
     }
 

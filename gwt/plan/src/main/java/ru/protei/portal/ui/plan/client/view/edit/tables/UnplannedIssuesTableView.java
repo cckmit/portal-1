@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.plan.client.view.edit.tables;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -9,32 +8,29 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
-import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractUnassignedIssuesTableActivity;
-import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractUnassignedIssuesTableView;
+import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractUnplannedIssuesTableActivity;
+import ru.protei.portal.ui.plan.client.activity.edit.tables.AbstractUnplannedIssuesTableView;
 import ru.protei.portal.ui.plan.client.view.columns.IssueColumn;
 
 import java.util.List;
 
-public class UnassignedIssuesTableView extends Composite implements AbstractUnassignedIssuesTableView {
+public class UnplannedIssuesTableView extends Composite implements AbstractUnplannedIssuesTableView {
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
-    public void setActivity(AbstractUnassignedIssuesTableActivity activity) {
+    public void setActivity(AbstractUnplannedIssuesTableActivity activity) {
         this.activity = activity;
         initTable();
     }
@@ -97,9 +93,9 @@ public class UnassignedIssuesTableView extends Composite implements AbstractUnas
     TableWidget<CaseShortView> table;
 
     private ClickColumnProvider<CaseShortView> issuesColumnProvider;
-    private AbstractUnassignedIssuesTableActivity activity;
+    private AbstractUnplannedIssuesTableActivity activity;
 
 
-    interface UnassignedIssueTableViewBinder extends UiBinder<HTMLPanel, UnassignedIssuesTableView> {}
-    private static UnassignedIssueTableViewBinder ourUiBinder = GWT.create(UnassignedIssueTableViewBinder.class);
+    interface UnplannedIssueTableViewBinder extends UiBinder<HTMLPanel, UnplannedIssuesTableView> {}
+    private static UnplannedIssueTableViewBinder ourUiBinder = GWT.create(UnplannedIssueTableViewBinder.class);
 }

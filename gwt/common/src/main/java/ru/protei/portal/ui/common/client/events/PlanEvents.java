@@ -78,22 +78,22 @@ public class PlanEvents {
         }
     }
 
-    public static class ShowUnassignedIssueTable {
+    public static class ShowUnplannedIssueTable {
         public HasWidgets parent;
         public Long planId;
 
-        public ShowUnassignedIssueTable(HasWidgets parent, Long planId) {
+        public ShowUnplannedIssueTable(HasWidgets parent, Long planId) {
             this.parent = parent;
             this.planId = planId;
         }
     }
 
-    public static class ShowAssignedIssueTable {
+    public static class ShowPlannedIssueTable {
         public HasWidgets parent;
         public List<Plan> planList;
         public Long planId;
 
-        public ShowAssignedIssueTable(HasWidgets parent, List<Plan> planList, Long planId) {
+        public ShowPlannedIssueTable(HasWidgets parent, List<Plan> planList, Long planId) {
             this.planList = planList;
             this.parent = parent;
             this.planId = planId;

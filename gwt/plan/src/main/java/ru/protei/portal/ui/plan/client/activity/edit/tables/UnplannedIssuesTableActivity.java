@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -32,19 +30,18 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public abstract class UnassignedIssuesTableActivity implements AbstractUnassignedIssuesTableActivity, Activity {
+public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedIssuesTableActivity, Activity {
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
     }
 
     @Event
-    public void onShow(PlanEvents.ShowUnassignedIssueTable event) {
+    public void onShow(PlanEvents.ShowUnplannedIssueTable event) {
         HasWidgets container = event.parent;
         container.clear();
         container.add(view.asWidget());
         initFilter();
-        planId = event.planId;
     }
 
     private void initFilter() {
@@ -133,7 +130,7 @@ public abstract class UnassignedIssuesTableActivity implements AbstractUnassigne
     @Inject
     Lang lang;
     @Inject
-    AbstractUnassignedIssuesTableView view;
+    AbstractUnplannedIssuesTableView view;
     @Inject
     IssueControllerAsync issueController;
     @Inject
@@ -147,8 +144,6 @@ public abstract class UnassignedIssuesTableActivity implements AbstractUnassigne
     @Inject
     PlanControllerAsync planService;
 
-    private Long planId;
-
     private final static int TABLE_LIMIT = 100;
-    private final static String TABLE_FILTER_ID_KEY = "plan_unassigned_issue_table_filter_id";
+    private final static String TABLE_FILTER_ID_KEY = "plan_unplanned_issue_table_filter_id";
 }

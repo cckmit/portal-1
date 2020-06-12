@@ -17,9 +17,9 @@ public interface AbstractPlanEditView extends IsWidget {
 
     HasValue<DateInterval> planPeriod();
 
-    HasWidgets unassignedTableContainer();
+    HasWidgets unplannedTableContainer();
 
-    HasWidgets assignedTableContainer();
+    HasWidgets plannedTableContainer();
 
     HasVisibility editButtonVisibility();
 

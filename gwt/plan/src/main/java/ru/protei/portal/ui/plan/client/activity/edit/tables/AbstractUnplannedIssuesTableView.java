@@ -7,8 +7,8 @@ import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.List;
 
-public interface AbstractUnassignedIssuesTableView extends IsWidget {
-    void setActivity(AbstractUnassignedIssuesTableActivity activity);
+public interface AbstractUnplannedIssuesTableView extends IsWidget {
+    void setActivity(AbstractUnplannedIssuesTableActivity activity);
 
     void clearRecords();
 

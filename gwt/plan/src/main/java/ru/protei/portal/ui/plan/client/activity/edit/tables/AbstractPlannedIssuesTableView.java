@@ -5,8 +5,8 @@ import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.List;
 
-public interface AbstractAssignedIssuesTableView extends IsWidget {
-    void setActivity(AbstractAssignedIssuesTableActivity activity);
+public interface AbstractPlannedIssuesTableView extends IsWidget {
+    void setActivity(AbstractPlannedIssuesTableActivity activity);
 
     void clearRecords();
 

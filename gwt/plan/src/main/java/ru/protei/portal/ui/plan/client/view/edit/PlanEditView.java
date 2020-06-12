@@ -47,13 +47,13 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     public HasValue<DateInterval> planPeriod() { return planPeriod; }
 
     @Override
-    public HasWidgets unassignedTableContainer() {
-        return unassignedTableContainer;
+    public HasWidgets unplannedTableContainer() {
+        return unplannedTableContainer;
     }
 
     @Override
-    public HasWidgets assignedTableContainer() {
-        return assignedTableContainer;
+    public HasWidgets plannedTableContainer() {
+        return plannedTableContainer;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     }
 
     @Override
-    public void setPlanPeriodValid (boolean isValid) {
+    public void setPlanPeriodValid(boolean isValid) {
         planPeriod.markInputValid(isValid);
     }
 
@@ -129,9 +129,9 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     @UiField(provided = true)
     RangePicker planPeriod;
     @UiField
-    HTMLPanel unassignedTableContainer;
+    HTMLPanel unplannedTableContainer;
     @UiField
-    HTMLPanel assignedTableContainer;
+    HTMLPanel plannedTableContainer;
     @UiField
     Button editPlanButton;
     @UiField

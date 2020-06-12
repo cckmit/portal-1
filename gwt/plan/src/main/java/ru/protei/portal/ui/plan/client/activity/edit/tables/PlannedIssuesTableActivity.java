@@ -24,14 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class AssignedIssuesTableActivity implements AbstractAssignedIssuesTableActivity, Activity {
+public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssuesTableActivity, Activity {
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
     }
 
     @Event
-    public void onShow(PlanEvents.ShowAssignedIssueTable event) {
+    public void onShow(PlanEvents.ShowPlannedIssueTable event) {
         HasWidgets container = event.parent;
         container.clear();
         container.add(view.asWidget());
@@ -192,7 +192,7 @@ public abstract class AssignedIssuesTableActivity implements AbstractAssignedIss
     @Inject
     Lang lang;
     @Inject
-    AbstractAssignedIssuesTableView view;
+    AbstractPlannedIssuesTableView view;
     @Inject
     PlanControllerAsync planService;
     @Inject
