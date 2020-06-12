@@ -71,6 +71,7 @@ public class PlanServiceImpl implements PlanService{
 
         List<Plan> list = planDAO.listByQuery(query);
         if (list == null) {
+            log.warn("listPlans(): GET_DATA_ERROR. list from DB is null");
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
@@ -82,6 +83,7 @@ public class PlanServiceImpl implements PlanService{
 
         List<Plan> list = planDAO.listByQuery(query);
         if (list == null) {
+            log.warn("listPlansWithIssues(): GET_DATA_ERROR. list from DB is null");
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
@@ -102,6 +104,7 @@ public class PlanServiceImpl implements PlanService{
         Plan plan = planDAO.get(planId);
 
         if (plan == null){
+            log.warn("getPlanWithIssues(): NOT_FOUND. plan from DB is null");
             return error(En_ResultStatus.NOT_FOUND);
         }
 
@@ -119,6 +122,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
+            log.warn("createPlan(): ALREADY_EXIST. plan with name={} and creatorId={} already existed", plan.getName(), plan.getCreatorId());
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
@@ -128,6 +132,7 @@ public class PlanServiceImpl implements PlanService{
         Long planId =  planDAO.persist(plan);
 
         if (planId == null){
+            log.warn("createPlan(): NOT_CREATED. planId from DB is null. Plan not created");
             return error(En_ResultStatus.NOT_CREATED);
         }
 
@@ -152,15 +157,18 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!userIsCreator(token, plan)){
+            log.warn("editPlanParams(): PERMISSION_DENIED. plan name={}, creatorId={}, token personId={}", plan.getName(), plan.getCreatorId(), token.getPersonId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         Plan planFromDb = planDAO.get(plan.getId());
         if (!Objects.equals(planFromDb.getName(), plan.getName()) && planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
+            log.warn("editPlanParams(): ALREADY_EXIST. planId={}, name={} ", plan.getId(), plan.getName());
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
         if (!planDAO.partialMerge(plan, "name", "start_date", "finish_date")){
+            log.warn("editPlanParams(): NOT_UPDATED. planId={}, name={} ", plan.getId(), plan.getName());
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -175,6 +183,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!userIsCreator(token, planId)){
+            log.warn("addIssueToPlan(): PERMISSION_DENIED. plan id={}, token personId={}", planId, token.getPersonId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -183,6 +192,7 @@ public class PlanServiceImpl implements PlanService{
         List<PlanToCaseObject> issuesInPlan = planToCaseObjectDAO.getSortedListByPlanId(planId);
 
         if (issuesInPlan.contains(newIssueInPlan)){
+            log.warn("addIssueToPlan(): ALREADY_EXIST. planId={}, issueId={} ", planId, issueId);
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
@@ -191,6 +201,7 @@ public class PlanServiceImpl implements PlanService{
         newIssueInPlan.setId(planToCaseObjectDAO.persist(newIssueInPlan));
 
         if (newIssueInPlan.getId() == null){
+            log.warn("addIssueToPlan(): NOT CREATED. planId={}, issueId={} ", planId, issueId);
             return error(En_ResultStatus.NOT_CREATED);
         }
 
@@ -207,6 +218,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!userIsCreator(token, planId)){
+            log.warn("removeIssueFromPlan(): PERMISSION DENIED. plan id={}, token personId={}", planId, token.getPersonId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -219,9 +231,11 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (rowCount == 0) {
+            log.warn("removeIssueFromPlan(): NOT_FOUND. plan id={}, token personId={}", planId, token.getPersonId());
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        log.warn("removeIssueFromPlan(): More that one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
         throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
     }
 
@@ -233,6 +247,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!userIsCreator(token, plan)){
+            log.warn("changeIssuesOrder(): PERMISSION DENIED. plan name={}, creatorId={}, token personId={}", plan.getName(), plan.getCreatorId(), token.getPersonId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -240,6 +255,7 @@ public class PlanServiceImpl implements PlanService{
         List<CaseShortView> issueList = plan.getIssueList();
 
         if (issueOrderList.size() != issueList.size()){
+            log.warn("changeIssuesOrder(): INCORRECT_PARAMS. list in plan and list from db have different sizes! plan name={}, creatorId={}, token personId={}", plan.getName(), plan.getCreatorId(), token.getPersonId());
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -253,7 +269,8 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (planToCaseObjectDAO.mergeBatch(issueOrderList) != issueOrderList.size()){
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            log.warn("changeIssuesOrder(): INCORRECT_PARAMS. updated list and list from db have different sizes! plan name={}, creatorId={}, token personId={}", plan.getName(), plan.getCreatorId(), token.getPersonId());
+            throw new RollbackTransactionException("removeIssueFromPlan(): rollback transaction");
         }
 
         return ok();
@@ -267,12 +284,14 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!userIsCreator(token, currentPlanId)){
+            log.warn("moveIssueToAnotherPlan(): PERMISSION_DENIED. currentPlanId={}, token personId={}", currentPlanId, token.getPersonId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         PlanToCaseObject planToCaseObject = planToCaseObjectDAO.getByPlanIdAndIssueId(currentPlanId, issueId);
 
         if (planToCaseObject == null) {
+            log.warn("moveIssueToAnotherPlan(): NOT_FOUND. currentPlanId={}, issueId={}", currentPlanId, issueId);
             return error(En_ResultStatus.NOT_FOUND);
         }
 
@@ -281,6 +300,7 @@ public class PlanServiceImpl implements PlanService{
         List<PlanToCaseObject> issuesInPlan = planToCaseObjectDAO.getSortedListByPlanId(newPlanId);
 
         if (issuesInPlan.contains(planToCaseObject)){
+            log.warn("moveIssueToAnotherPlan(): ALREADY_EXIST. currentPlanId={}, issueId={}, newPlanId={}", currentPlanId, issueId, newPlanId);
             return error(En_ResultStatus.ALREADY_EXIST);
         }
 
@@ -304,6 +324,7 @@ public class PlanServiceImpl implements PlanService{
         Plan plan = planDAO.get(planId);
 
         if (!userIsCreator(token, plan)){
+            log.warn("removePlan(): PERMISSION_DENIED. planId={}, token personId={}", planId, token.getPersonId());
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -314,6 +335,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (!planDAO.removeByKey(planId)) {
+            log.warn("removePlan(): NOT_FOUND. planId={}, token personId={}", planId, token.getPersonId());
             return error(En_ResultStatus.NOT_FOUND);
         }
 
@@ -321,6 +343,9 @@ public class PlanServiceImpl implements PlanService{
     }
 
     private boolean userIsCreator (AuthToken token, Plan plan){
+        if (plan.getCreatorId() == null && plan.getId() != null){
+            return userIsCreator(token, plan.getId());
+        }
         return Objects.equals(plan.getCreatorId(), token.getPersonId());
     }
 
