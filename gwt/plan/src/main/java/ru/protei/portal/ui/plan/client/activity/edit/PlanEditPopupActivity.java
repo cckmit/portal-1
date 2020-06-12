@@ -5,7 +5,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -13,6 +13,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActivity, Activity, AbstractDialogDetailsActivity {
@@ -51,6 +53,13 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
         fillPlan(plan);
 
         planService.editPlanParams(plan, new FluentCallback<Boolean>()
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException && En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new NotifyEvents.Show(lang.errPlanAlreadyExisted(), NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        defaultErrorHandler.accept(throwable);
+                    }
+                })
                 .withSuccess(result -> {
                     fireEvent(new PlanEvents.UpdateParams(plan));
                     fireEvent(new NotifyEvents.Show(lang.planSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -74,10 +83,6 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
         return view.nameValidator().isValid() && view.planPeriod().getValue().from != null && view.planPeriod().getValue().to != null;
     }
 
-    private boolean isNew( CompanyDepartment companyDepartment ) {
-        return companyDepartment!=null && companyDepartment.getId() == null;
-    }
-
     @Inject
     Lang lang;
     @Inject
@@ -86,6 +91,8 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
     AbstractDialogDetailsView dialogView;
     @Inject
     private PlanControllerAsync planService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private Plan plan;
 }

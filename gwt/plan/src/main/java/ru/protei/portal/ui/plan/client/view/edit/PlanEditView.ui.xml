@@ -50,6 +50,7 @@
         <div class="card-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
             <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlans}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

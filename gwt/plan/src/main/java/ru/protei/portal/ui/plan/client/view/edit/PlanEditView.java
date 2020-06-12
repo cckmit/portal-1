@@ -55,6 +55,21 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     }
 
     @Override
+    public HasVisibility saveButtonVisibility() {
+        return saveButton;
+    }
+
+    @Override
+    public HasVisibility cancelButtonVisibility() {
+        return cancelButton;
+    }
+
+    @Override
+    public HasVisibility backButtonVisibility() {
+        return backButton;
+    }
+
+    @Override
     public HasEnabled nameEnabled() {
         return name;
     }
@@ -77,6 +92,13 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
             activity.onCancelClicked();
         }
     }
+    @UiHandler("backButton")
+    public void backButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
 
     @UiHandler("editPlanButton")
     public void editButtonClick(ClickEvent event) {
@@ -96,6 +118,12 @@ public class PlanEditView extends Composite implements AbstractPlanEditView {
     HTMLPanel assignedTableContainer;
     @UiField
     Button editPlanButton;
+    @UiField
+    Button saveButton;
+    @UiField
+    Button cancelButton;
+    @UiField
+    Button backButton;
 
 
     private AbstractPlanEditActivity activity;

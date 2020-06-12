@@ -4,4 +4,5 @@ public interface AbstractPlanEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onEditClicked();
+    void onBackClicked();
 }

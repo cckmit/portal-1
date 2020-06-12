@@ -151,6 +151,10 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
+
         if (!planDAO.partialMerge(plan, "name", "start_date", "finish_date")){
             return error(En_ResultStatus.NOT_UPDATED);
         }

@@ -19,6 +19,12 @@ public interface AbstractPlanEditView extends IsWidget {
 
     HasVisibility editButtonVisibility();
 
+    HasVisibility saveButtonVisibility();
+
+    HasVisibility cancelButtonVisibility();
+
+    HasVisibility backButtonVisibility();
+
     HasEnabled nameEnabled();
 
     HasEnabled periodEnabled();

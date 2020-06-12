@@ -49,6 +49,13 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
         fillIssuesTables(event.planId);
 
+        view.editButtonVisibility().setVisible(event.planId != null);
+        view.saveButtonVisibility().setVisible(event.planId == null);
+        view.cancelButtonVisibility().setVisible(event.planId == null);
+        view.backButtonVisibility().setVisible(event.planId != null);
+        view.nameEnabled().setEnabled(event.planId == null);
+        view.periodEnabled().setEnabled(event.planId == null);
+
         if (event.planId == null) {
             Plan plan = new Plan();
             fillView(plan);
@@ -100,12 +107,18 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
                 })
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.planSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
+        fireEvent(new Back());
+    }
+
+    @Override
+    public void onBackClicked() {
         fireEvent(new Back());
     }
 
