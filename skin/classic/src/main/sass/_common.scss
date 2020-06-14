@@ -3587,6 +3587,15 @@ label {
   }
 }
 
+.plan-limit-label {
+  font-family: montserrat;
+  font-size: 8.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: -10px !important;
+}
+
 .preview-value-label {
   margin-top: 4px !important;
 }
@@ -4612,12 +4621,4 @@ table {
 
 .half-opacity {
   opacity: .5;
-}
-
-.label-style {
-  font-family: montserrat;
-  font-size: 10.5px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  font-weight: 500;
 }

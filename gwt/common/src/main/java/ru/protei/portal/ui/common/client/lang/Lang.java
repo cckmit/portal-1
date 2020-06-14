@@ -2679,4 +2679,6 @@ public interface Lang extends Messages, ContactItemLang {
     String planUnplannedTableLimit( String p0 );
 
     String errIssueAlreadyExistInPlan();
+
+    String planIssueNumber();
 }

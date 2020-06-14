@@ -2,6 +2,7 @@ package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import org.apache.poi.util.StringUtil;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -9,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -44,17 +46,6 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         initFilter();
     }
 
-    private void initFilter() {
-        CaseFilterShortView filter = null;
-        Long filterId = getTableFilterId();
-        if (filterId != null) {
-            filter = new CaseFilterShortView(filterId, null);
-        }
-        view.filter().setValue(filter, true);
-        view.updateFilterSelector();
-        view.setLimitLabel(String.valueOf(TABLE_LIMIT));
-    }
-
     @Override
     public void onItemClicked(CaseShortView value) {
         fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
@@ -67,6 +58,9 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
 
     @Override
     public void onFilterChanged(CaseFilterShortView filter) {
+        if(StringUtils.isNotEmpty(view.issueNumber().getValue())){
+            return;
+        }
         if (filter == null) {
             saveTableFilterId(null);
             CaseQuery query = makeDefaultQuery();
@@ -84,6 +78,17 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
                     CaseQuery query = caseFilter.getParams();
                     loadTable(query);
                 }));
+    }
+
+    @Override
+    public void onIssueNumberChanged() {
+        if(StringUtils.isEmpty(view.issueNumber().getValue())){
+            onFilterChanged(view.filter().getValue());
+        } else {
+            CaseQuery q = new CaseQuery();
+            q.setCaseNo(Long.parseLong(view.issueNumber().getValue()));
+            loadTable(q);
+        }
     }
 
     private void loadTable(CaseQuery query) {
@@ -110,6 +115,17 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         }
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
         return query;
+    }
+
+    private void initFilter() {
+        CaseFilterShortView filter = null;
+        Long filterId = getTableFilterId();
+        if (filterId != null) {
+            filter = new CaseFilterShortView(filterId, null);
+        }
+        view.filter().setValue(filter, true);
+        view.updateFilterSelector();
+        view.setLimitLabel(String.valueOf(TABLE_LIMIT));
     }
 
     private void saveTableFilterId(Long filterId) {

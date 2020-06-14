@@ -9,4 +9,6 @@ public interface AbstractUnplannedIssuesTableActivity {
     void onItemActionAssign(CaseShortView value);
 
     void onFilterChanged(CaseFilterShortView filter);
+
+    void onIssueNumberChanged();
 }
