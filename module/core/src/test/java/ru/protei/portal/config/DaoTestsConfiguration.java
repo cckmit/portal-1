@@ -351,4 +351,21 @@ public class DaoTestsConfiguration {
     public RoomReservationDAO getRoomReservationDAO() {
         return new RoomReservationDAO_Impl();
     }
+
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
 }

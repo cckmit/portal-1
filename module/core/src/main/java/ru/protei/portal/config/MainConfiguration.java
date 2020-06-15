@@ -432,8 +432,6 @@ public class MainConfiguration {
         return new RedminePriorityMapEntryDAO_Impl();
     }
 
-
-
     @Bean
     public CaseFilterDAO getIssueFilterDAO() {
         return new CaseFilterDAO_Impl();
@@ -452,6 +450,21 @@ public class MainConfiguration {
     @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
     }
 
     @Bean
@@ -774,6 +787,16 @@ public class MainConfiguration {
     @Bean
     public CaseLinkService getCaseLinkService() {
         return new CaseLinkServiceImpl();
+    }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
     }
 
     @Bean

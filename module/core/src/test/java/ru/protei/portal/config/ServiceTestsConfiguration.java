@@ -11,10 +11,10 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -32,8 +32,10 @@ import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
-import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.events.CaseSubscriptionService;
+import ru.protei.portal.core.service.events.CaseSubscriptionServiceImpl;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -44,8 +46,8 @@ import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.mock.PortalScheduleTasksStub;
-import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.mock.ReportControlServiceMock;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
@@ -305,6 +307,16 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public IpReservationService getIpReservationService() { return new IpReservationServiceImpl(); }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
 
     @Bean
     public RoomReservationService getRoomReservationService() {

@@ -143,7 +143,17 @@ public enum En_SortField {
     /**
      * state order
      */
-    state_order("VIEW_ORDER");
+    state_order("VIEW_ORDER"),
+
+    /**
+     * start_date
+     */
+    start_date("start_date"),
+
+    /**
+     * finish_date
+     */
+    finish_date("finish_date");
 
     private String fieldName;
     private String bundleKey;

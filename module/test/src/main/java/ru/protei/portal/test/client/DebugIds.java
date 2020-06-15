@@ -81,6 +81,7 @@ public class DebugIds {
         String SUBNET = "sidebar-menu-subnet";
         String RESERVED_IP = "sidebar-menu-reserved-ip";
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";
+        String PLAN = "sidebar-menu-plan";
         String ICON_SUFFIX = "-icon";
     }
 
@@ -827,5 +828,13 @@ public class DebugIds {
         String COMMENT_INPUT = "reservedip-comment-input";
         String SAVE_BUTTON = "reservedip-save-button";
         String CANCEL_BUTTON = "reservedip-cancel-button";
+    }
+
+    public interface PLAN_PREVIEW {
+        String FULL_SCREEN_BUTTON = "plan-preview-full-screen-button";
+        String TITLE_LABEL = "plan-preview-title-label";
+        String DATE_CREATED_LABEL = "plan-preview-date-created-label";
+        String NAME_LABEL = "plan-preview-name-label";
+        String PERIOD_LABEL = "plan-preview-period-label";
     }
 }

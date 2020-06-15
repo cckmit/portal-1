@@ -2625,4 +2625,72 @@ public interface Lang extends Messages, ContactItemLang {
     String reloadPageAfterUpdateMessage();
 
     String reloadPageAfterUpdateDoReloadPage();
+
+    String plans();
+
+    String planNameColumn();
+
+    String planPeriodColumn();
+
+    String planCreatorColumn();
+
+    String planIssueQuantityColumn();
+
+    String planSelectCreator();
+
+    String planCreationDate();
+
+    String planStartDate();
+
+    String planFinishDate();
+
+    String planIssuesList();
+
+    String goToPlans();
+
+    String planPeriod();
+
+    String planHeader( String p0 );
+
+    String planHeaderNew();
+
+    String planName();
+
+    String planMainInfoTitle();
+
+    String planSaved();
+
+    String planIssueConfirmRemove();
+
+    String planConfirmRemove();
+
+    String planIssueAdded();
+
+    String planIssueRemoved();
+
+    String planRemoved();
+
+    String planIssueMoved();
+
+    String planAddIssueToPlan();
+
+    String planMoveIssueToAnotherPlan();
+
+    String planEditButton();
+
+    String planEditPopupHeader();
+
+    String errPlanAlreadyExisted();
+
+    String planIssueList();
+
+    String planUnplannedTableFilterDefault();
+
+    String planUnplannedTableFilter();
+
+    String planUnplannedTableLimit( String p0 );
+
+    String errIssueAlreadyExistInPlan();
+
+    String planIssueNumber();
 }

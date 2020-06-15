@@ -3482,6 +3482,120 @@ label {
   }
 }
 
+.plan {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 55px;
+
+          > div {
+            height: 55px;
+            max-height: 55px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    .plan-name {
+      width: 40%;
+    }
+
+    .plan-range {
+      width: 20%;
+    }
+
+    .plan-creator {
+      width: 30%;
+    }
+
+    .plan-issue-quantity {
+      width: 10%;
+    }
+  }
+}
+
+.short-table-view {
+  .plan {
+    .plan-name {
+      width: 40%;
+    }
+
+    .plan-range {
+      width: 32%;
+    }
+
+    .plan-creator {
+      width: 28%;
+    }
+
+    .plan-issue-quantity {
+      display: none;
+    }
+  }
+}
+
+.plan-issue-column {
+  width: 100%;
+}
+
+.edit-plan-button {
+  position: absolute;
+  bottom: 10px;
+  height: 35px;
+}
+
+.planned-issue-wrapper {
+  background-color: #f4f4f4;
+  border: 1px solid #dcdbdb;
+}
+
+.planned-issue-table-top-collapse {
+  margin-top: -6px;
+}
+
+.planned-issue-table {
+
+  thead {
+    display: none;
+  }
+
+  span {
+    vertical-align: middle !important;
+    margin-right: 0.3em;
+  }
+}
+
+.plan-limit-label {
+  font-family: montserrat;
+  font-size: 8.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: -10px !important;
+}
+
 .preview-value-label {
   margin-top: 4px !important;
 }
@@ -4503,4 +4617,12 @@ table {
 .form-group-attached > div:not(:last-child) .add-border-bottom .form-group-default,
 .form-group-attached > div:not(:last-child).add-border-bottom .form-group-default {
   border-bottom-color: rgba(0, 0, 0, 0.07);
+}
+
+.half-opacity {
+  opacity: .5;
+}
+
+.cursor-default {
+  cursor: default !important;
 }

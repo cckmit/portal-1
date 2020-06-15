@@ -27,7 +27,8 @@ public class AuthServiceMock implements AuthService {
             En_Privilege.SUBNET_VIEW, En_Privilege.SUBNET_CREATE,
             En_Privilege.SUBNET_EDIT, En_Privilege.SUBNET_REMOVE,
             En_Privilege.RESERVED_IP_VIEW, En_Privilege.RESERVED_IP_CREATE,
-            En_Privilege.RESERVED_IP_EDIT, En_Privilege.RESERVED_IP_REMOVE
+            En_Privilege.RESERVED_IP_EDIT, En_Privilege.RESERVED_IP_REMOVE,
+            En_Privilege.PLAN_CREATE, En_Privilege.PLAN_EDIT, En_Privilege.PLAN_REMOVE, En_Privilege.PLAN_VIEW
     };
 
     private UserLogin stubUserLogin;

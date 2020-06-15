@@ -107,6 +107,11 @@ public enum En_Privilege {
     ROOM_RESERVATION_CREATE (ROOM_RESERVATION, CREATE),
     ROOM_RESERVATION_REMOVE (ROOM_RESERVATION, REMOVE),
 
+    PLAN_VIEW (PLAN, VIEW),
+    PLAN_EDIT (PLAN, EDIT),
+    PLAN_CREATE (PLAN, CREATE),
+    PLAN_REMOVE (PLAN, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
