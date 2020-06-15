@@ -40,10 +40,10 @@
     </head>
     <body bgcolor="#FFFFFF" text="#000000">
         <div>
-            <div style="padding: 5px;font-size: 14px;background:#f0f0f0;color:#666666;">
-                <#if is_created == true>${_absenceActionCreated}</#if>
-                <#if is_updated == true>${_absenceActionUpdated}</#if>
-                <#if is_removed == true>${_absenceActionRemoved}</#if>
+            <div style="padding: 5px;font-size: 14px;<#if is_created>background:#dff7e2;color:#11731d;<#elseif is_removed>background:#f7dede;color:#f55753;<#else>background:#f0f0f0;color:#666666;</#if>">
+                <#if is_created>${_absenceActionCreated}</#if>
+                <#if is_updated>${_absenceActionUpdated}</#if>
+                <#if is_removed>${_absenceActionRemoved}</#if>
                 ${_absenceAction}
             </div>
             <table>
@@ -59,7 +59,7 @@
                                 <@changeTo old="${(oldFromTime)!'?'}" new="${(fromTime)!'?'}"/>
                             <#else>
                                 ${(fromTime)!'?'}
-                            </#if> -
+                            </#if><br>
                             <#if tillTimeChanged>
                                 <@changeTo old="${(tillFromTime)!'?'}" new="${(tillTime)!'?'}"/>
                             <#else>

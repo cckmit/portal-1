@@ -45,11 +45,11 @@ public class AbsenceNotificationEvent extends ApplicationEvent {
     }
 
     public boolean isFromTimeChanged() {
-        return oldState != null && !Objects.equals(oldState.getFromTime(), newState.getTillTime());
+        return oldState != null && !Objects.equals(oldState.getFromTime(), newState.getFromTime());
     }
 
     public boolean isTillTimeChanged() {
-        return oldState != null && !Objects.equals(oldState.getFromTime(), newState.getTillTime());
+        return oldState != null && !Objects.equals(oldState.getTillTime(), newState.getTillTime());
     }
 
     public boolean isUserCommentChanged() {
