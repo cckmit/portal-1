@@ -74,6 +74,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private void showView() {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        view.showQuickview(false);
     }
 
     private void showActionBarActions() {
@@ -168,7 +169,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         table.setActivity(new AbstractDashboardTableActivity() {
             @Override
             public void onItemClicked(CaseShortView value) {
-                fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+                showIssuePreview(value.getCaseNumber());
             }
             @Override
             public void onOpenClicked() {
@@ -228,6 +229,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                     fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     loadDashboard();
                 }));
+    }
+
+    private void showIssuePreview(Long caseNumber) {
+        view.showQuickview(false);
+        fireEvent(new IssueEvents.ShowPreview(view.quickview(), caseNumber));
+        view.showQuickview(true);
     }
 
     @Inject

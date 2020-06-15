@@ -1,0 +1,69 @@
+
+.quickview-wrapper {
+  overflow-y: auto;
+
+  &.quickview-wrapper-75-percent {
+    width: 75%;
+    right: -75%;
+
+    &.open {
+      + .quickview-wrapper-substrate {
+        -webkit-transform: translate3d(-75%, 0, 0);
+        -ms-transform: translate(-75%, 0);
+        transform: translate3d(-75%, 0, 0);
+      }
+    }
+  }
+
+  &.quickview-wrapper-below-header {
+    z-index: 799;
+    margin-top: 60px;
+
+    + .quickview-wrapper-substrate {
+      z-index: 799;
+      margin-top: 60px;
+    }
+  }
+
+  + .quickview-wrapper-substrate {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: #0000008c;
+    width: 100%;
+    right: 0;
+    cursor: pointer;
+    overflow: hidden;
+    -webkit-transition: -webkit-transform 400ms cubic-bezier(.05, .74, .27, .99);
+    transition: transform 400ms cubic-bezier(.05, .74, .27, .99);
+    -webkit-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+
+    > .substrate-close {
+      position: relative;
+      display: inline-block;
+      float: right;
+      padding: 1.5em;
+      color: #000;
+      opacity: 0.3;
+    }
+  }
+
+  &.open {
+    + .quickview-wrapper-substrate {
+      -webkit-transform: translate3d(-285px, 0, 0);
+      -ms-transform: translate(-285px, 0);
+      transform: translate3d(-285px, 0, 0);
+    }
+  }
+
+  &:not(.open) {
+    overflow: hidden;
+
+    + .quickview-wrapper-substrate {
+      width: 0;
+    }
+  }
+}
