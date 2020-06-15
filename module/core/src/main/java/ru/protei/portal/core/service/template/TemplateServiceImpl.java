@@ -43,6 +43,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class TemplateServiceImpl implements TemplateService {
     public static final String BASE_TEMPLATE_PATH = "notification/email/";
     private static Logger log = getLogger(TemplateServiceImpl.class);
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     Configuration templateConfiguration;
 
@@ -566,12 +567,12 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("person_absent", newState.getPerson().getDisplayName());
 
         templateModel.put("fromTimeChanged", event.isFromTimeChanged());
-        templateModel.put("oldFromTime", getNullOrElse(oldState, PersonAbsence::getFromTime));
-        templateModel.put("fromTime", newState.getFromTime());
+        templateModel.put("oldFromTime", oldState == null ? null : dateFormat.format(oldState.getFromTime()));
+        templateModel.put("fromTime", dateFormat.format(newState.getFromTime()));
 
         templateModel.put("tillTimeChanged", event.isTillTimeChanged());
-        templateModel.put("oldTillTime", getNullOrElse(oldState, PersonAbsence::getTillTime));
-        templateModel.put("tillTime", newState.getTillTime());
+        templateModel.put("oldTillTime", oldState == null ? null : dateFormat.format(oldState.getTillTime()));
+        templateModel.put("tillTime", dateFormat.format(newState.getTillTime()));
 
         templateModel.put("reason", newState.getReason().getId());
 
