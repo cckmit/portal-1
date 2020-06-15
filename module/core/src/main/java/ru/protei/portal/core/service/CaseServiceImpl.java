@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -28,6 +29,7 @@ import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -41,7 +43,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -87,6 +88,7 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+        jdbcManyRelationsHelper.fill(caseObject, "plans");
 
         withJiraSLAInformation(caseObject);
 
@@ -203,6 +205,18 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        Set<PlanOption> plans = caseObjectCreateRequest.getPlans();
+
+        if (isNotEmpty(plans)) {
+            for (PlanOption planOption : plans) {
+                Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
+
+                if (planResult.isError()) {
+                    throw new ResultStatusException(planResult.getStatus());
+                }
+            }
+        }
+
         Result addLinksResult = ok();
 
         for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
@@ -285,6 +299,7 @@ public class CaseServiceImpl implements CaseService {
         if (oldState == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
+
         CaseObjectMeta oldCaseMeta = new CaseObjectMeta(oldState);
 
         if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, oldState)) {
@@ -348,6 +363,7 @@ public class CaseServiceImpl implements CaseService {
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObjectMeta newCaseMeta = caseObjectMetaDAO.get(caseMeta.getId());
+
         return ok(newCaseMeta)
                 .publishEvent( new CaseObjectMetaEvent(
                 this,
@@ -591,6 +607,56 @@ public class CaseServiceImpl implements CaseService {
         Long caseNumber = caseObjectDAO.getCaseNumberById( caseId );
         if(caseNumber==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseNumber);
+    }
+
+    @Override
+    @Transactional
+    public Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId) {
+        log.info("CaseServiceImpl#updatePlans : plans={}, caseId={}", plans, caseId);
+
+        CaseObject caseObject = caseObjectDAO.partialGet(caseId, "MODIFIED");
+        caseObject.setModified(new Date());
+        caseObjectDAO.partialMerge(caseObject, "MODIFIED");
+
+        PlanQuery planQuery = new PlanQuery();
+        planQuery.setIssueId(caseId);
+        planQuery.setCreatorId(token.getPersonId());
+
+        Result<List<PlanOption>> oldPlansResult = planService.listPlanOptions(token, planQuery);
+
+        if (oldPlansResult.isError()) {
+            return error(oldPlansResult.getStatus());
+        }
+
+        En_ResultStatus resultStatus = updatePlans(token, caseId, new HashSet<>(oldPlansResult.getData()), plans);
+
+        if (!En_ResultStatus.OK.equals(resultStatus)) {
+            throw new ResultStatusException(resultStatus);
+        }
+
+        return ok(plans);
+    }
+
+    private En_ResultStatus updatePlans(AuthToken token, Long caseId, Set<PlanOption> oldPlans, Set<PlanOption> plans) {
+        DiffCollectionResult<PlanOption> planDiffs = CollectionUtils.diffCollection(oldPlans, plans);
+
+        for (PlanOption planOption : emptyIfNull(planDiffs.getAddedEntries())) {
+            Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
+
+            if (planResult.isError()) {
+                return planResult.getStatus();
+            }
+        }
+
+        for (PlanOption planOption : emptyIfNull(planDiffs.getRemovedEntries())) {
+            Result<Boolean> planResult = planService.removeIssueFromPlan(token, planOption.getId(), caseId);
+
+            if (planResult.isError()) {
+                return planResult.getStatus();
+            }
+        }
+
+        return En_ResultStatus.OK;
     }
 
     private Long createAndPersistTimeElapsedMessage(Long authorId, Long caseId, Long timeElapsed, En_TimeElapsedType timeElapsedType) {
@@ -901,6 +967,13 @@ public class CaseServiceImpl implements CaseService {
         return caseObject;
     }
 
+    private Set<PlanOption> toPlanOptionSet(List<Plan> plans) {
+        return toSet(
+                emptyIfNull(plans),
+                plan -> new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId())
+        );
+    }
+
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
@@ -987,6 +1060,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     AutoOpenCaseService autoOpenCaseService;
+
+    @Autowired
+    PlanService planService;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

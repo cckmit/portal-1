@@ -57,9 +57,7 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
     public void onUserFilterChanged(Long id, Consumer<CaseFilter> afterChange) {
         filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
                 .withErrorMessage(lang.errNotFound())
-                .withSuccess(caseFilter -> {
-                    afterChange.accept(caseFilter);
-                })
+                .withSuccess(afterChange)
         );
     }
 

@@ -177,4 +177,19 @@ public class RedmineTestConfiguration {
     public AutoOpenCaseService getAutoOpenCaseService() {
         return mock(AutoOpenCaseService.class);
     }
+
+    @Bean
+    public SiteFolderService getSiteFolderService() {
+        return mock(SiteFolderService.class);
+    }
+
+    @Bean
+    public ProductService getProductService() {
+        return mock(ProductService.class);
+    }
+
+    @Bean
+    public PlanService getPlanService() {
+        return mock(PlanService.class);
+    }
 }

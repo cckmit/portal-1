@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:issuefilter='urn:import:ru.protei.portal.ui.common.client.widget.issuefilter'
              xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
              xmlns:filter="urn:import:ru.protei.portal.ui.common.client.view.filter">
 

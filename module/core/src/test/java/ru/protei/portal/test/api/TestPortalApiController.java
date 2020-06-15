@@ -197,6 +197,9 @@ public class TestPortalApiController extends BaseServiceTest {
 
         company.setAutoOpenIssue(false);
         companyDAO.saveOrUpdate(company);
+        platformDAO.removeByKey(platformId);
+        projectToProductDAO.removeAllProductsFromProject(projectId);
+        caseObjectDAO.removeByKey(projectId);
     }
 
     @Test

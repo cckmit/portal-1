@@ -167,6 +167,8 @@ public class DebugIds {
         String COMPANY_SELECTOR = "filter-company-selector";
         String SHOW_FIRED = "filter-show-fired";
 
+        String PLAN_SELECTOR = "filter-plan-selector";
+
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
             String FILTER_NAME_INPUT = "filter-user-filter-name-input";
@@ -283,6 +285,11 @@ public class DebugIds {
         String NOTIFIERS_SELECTOR = "issue-subscriptions-selector";
         String EDIT_NAME_AND_DESC_ACCEPT = "issue-edit-name-and-desc-accept";
         String EDIT_NAME_AND_DESC_REJECT = "issue-edit-name-and-desc-reject";
+        String PLANS_SELECTOR_ADD_BUTTON = "issue-plans-selector-add-button";
+        String PLANS_SELECTOR_CLEAR_BUTTON = "issue-plans-selector-clear-button";
+        String PLANS_SELECTOR_ITEM_CONTAINER = "issue-plans-selector-item-container";
+        String PLANS_SELECTOR_LABEL = "issue-plans-selector-label";
+        String PLANS_SELECTOR = "issue-plans-selector";
 
         interface LABEL {
             String NAME = "issue-label-name";

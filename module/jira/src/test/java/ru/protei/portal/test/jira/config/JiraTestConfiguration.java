@@ -421,4 +421,29 @@ public class JiraTestConfiguration {
     public UserRoleDAO getUserRoleDAO() {
         return new UserRoleDAO_impl();
     }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
 }

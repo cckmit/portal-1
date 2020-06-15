@@ -6,25 +6,25 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -69,6 +69,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
         fillJiraView( event.metaJira );
+        fillPlansView(meta.getPlans());
 
         if (!validateCaseMeta(meta)){
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
@@ -284,6 +285,23 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.managerValidator().setValid(false);
 
         updateSubscriptions(meta.getInitiatorCompanyId(), meta.getManagerCompanyId());
+
+        onCaseMetaChanged(meta);
+    }
+
+    @Override
+    public void onPlansChanged() {
+        if (readOnly) {
+            fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        issueService.updatePlans(metaView.ownerPlans().getValue(), meta.getId(), new FluentCallback<Set<PlanOption>>()
+                .withSuccess(updatedPlans -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    metaView.ownerPlans().setValue(updatedPlans);
+                })
+        );
     }
 
     private void updateSubscriptions(Long... companyIds) {
@@ -342,6 +360,51 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         if (!importanceLevels.contains(metaView.importance().getValue())){
             metaView.importance().setValue(null);
         }
+    }
+
+    private void fillPlansView(List<Plan> plans) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
+            metaView.ownerPlansContainerVisibility().setVisible(false);
+            metaView.otherPlansContainerVisibility().setVisible(false);
+            metaView.setPlansLabelVisible(false);
+            return;
+        }
+
+        metaView.setPlansLabelVisible(true);
+        fillOwnerPlansContainer(metaView, plans, policyService.getProfile());
+        fillOtherPlansContainer(metaView, plans, policyService.getProfile());
+    }
+
+    private void fillOwnerPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        if (!profile.hasPrivilegeFor(En_Privilege.PLAN_EDIT)) {
+            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
+            return;
+        }
+
+        issueMetaView.ownerPlansContainerVisibility().setVisible(true);
+        issueMetaView.ownerPlans().setValue(getOwnerPlans(plans, profile.getId()));
+        issueMetaView.setPlanCreatorId(profile.getId());
+    }
+
+    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
+
+        issueMetaView.otherPlansContainerVisibility().setVisible(true);
+        issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
+    }
+
+    private Set<PlanOption> getOwnerPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<PlanOption> getOtherPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> !personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
     }
 
     private void fillNotifiersView(CaseObjectMetaNotifiers caseMetaNotifiers) {
@@ -416,7 +479,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.product().setValue(ProductShortView.fromProduct(meta.getProduct()));
         updateProductModelAndMandatory(metaView, isCompanyWithAutoOpenIssues(meta.getInitiatorCompany()));
-        
+
         if (isCompanyWithAutoOpenIssues(meta.getInitiatorCompany())) {
             updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
         }
@@ -703,7 +766,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private void setCurrentCompany(Company company) {
         this.currentCompany = company;
     }
-    
+
     private void updateProductModelAndMandatory(AbstractIssueMetaView metaView, boolean isCompanyWithAutoOpenIssues) {
         metaView.setProductModel(isCompanyWithAutoOpenIssues ? productWithChildrenModel : productModel);
         metaView.setProductMandatory(isCompanyWithAutoOpenIssues);

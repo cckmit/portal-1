@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
@@ -34,23 +35,26 @@ import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.*;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterParamView {
 
@@ -200,6 +204,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility planVisibility() {
+        return plan;
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -220,6 +229,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setValue(null);
         tags.setValue(null);
         tags.isProteiUser( policyService.hasSystemScopeForPrivilege( En_Privilege.ISSUE_VIEW ) );
+        plan.setValue(null);
 
         if (isAttached()) {
             onFilterChanged();
@@ -276,6 +286,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
         commentAuthors.setValue(applyPersons(filter, caseQuery.getCommentAuthorIds()));
         creators.setValue(applyPersons(filter, caseQuery.getCreatorIds()));
+        plan.setValue(filter.getPlanOption());
 
         Set<PersonShortView> personShortViews = new LinkedHashSet<>();
         if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
@@ -323,6 +334,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 query.setCreatorIds(nullIfEmpty(toList(creators.getValue(), personShortView -> personShortView == null ? null : personShortView.getId())));
                 query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
+                query.setPlanId(plan.getValue() == null ? null : plan.getValue().getId());
 
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 query = fillModifiedInterval(query, dateModifiedRange.getValue());
@@ -444,6 +456,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("plan")
+    public void onPlanChanged(ValueChangeEvent<PlanOption> event) {
+        onFilterChanged();
+    }
+
     public void watchForScrollOf(Widget widget) {
         sortField.watchForScrollOf(widget);
     }
@@ -475,6 +492,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        plan.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);
@@ -538,6 +556,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     private void ensureDebugIds() {
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        plan.setEnsureDebugId(DebugIds.FILTER.PLAN_SELECTOR);
         searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         searchByCommentsWarning.ensureDebugId(DebugIds.FILTER.SEARCH_BY_WARNING_COMMENTS_LABEL);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_CREATED_RANGE_INPUT);
@@ -760,6 +779,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     CaseTagMultiSelector tags;
+    @Inject
+    @UiField(provided = true)
+    PlanButtonSelector plan;
     @UiField
     HTMLPanel searchPrivateContainer;
     @UiField

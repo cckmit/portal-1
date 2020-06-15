@@ -12,20 +12,17 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.util.UiResult;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -40,10 +37,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
-import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -274,9 +271,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPauseDateChanged() {
-        issueMetaView.setPauseDateValid(isPauseDateValid(issueMetaView.state().getValue().getId(),
-                issueMetaView.pauseDate().getValue() == null ? null
-                        : issueMetaView.pauseDate().getValue().getTime()));
+        issueMetaView.setPauseDateValid(
+                isPauseDateValid(
+                        issueMetaView.state().getValue().getId(),
+                        issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime())
+        );
     }
 
     @Override
@@ -295,6 +294,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.updateManagersCompanyFilter(issueMetaView.getManagerCompany().getId());
 
         updateSubscriptions(issueMetaView.getManagerCompany().getId(), issueMetaView.getCompany().getId());
+    }
+
+    @Override
+    public void onPlansChanged() {
+        createRequest.setPlans(issueMetaView.ownerPlans().getValue());
     }
 
     private void updateSubscriptions(Long... companyIds) {
@@ -416,7 +420,52 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.slaContainerVisibility().setVisible(isSystemScope());
         requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
+
+        issueMetaView.setPlanCreatorId(policyService.getProfile().getId());
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
+            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
+            issueMetaView.otherPlansContainerVisibility().setVisible(false);
+            issueMetaView.setPlansLabelVisible(false);
+        } else {
+            issueMetaView.setPlansLabelVisible(true);
+            fillOwnerPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
+            fillOtherPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
+        }
     }
+
+    private void fillOwnerPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        if (!profile.hasPrivilegeFor(En_Privilege.PLAN_EDIT)) {
+            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
+            return;
+        }
+
+        issueMetaView.ownerPlansContainerVisibility().setVisible(true);
+        issueMetaView.ownerPlans().setValue(getOwnerPlans(plans, profile.getId()));
+        issueMetaView.setPlanCreatorId(profile.getId());
+    }
+
+    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
+
+        issueMetaView.otherPlansContainerVisibility().setVisible(true);
+        issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
+    }
+
+    private Set<PlanOption> getOwnerPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<PlanOption> getOtherPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> !personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
+    }
+
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
         issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
