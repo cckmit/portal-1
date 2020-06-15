@@ -3,8 +3,11 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 
 import java.util.List;
+
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class CaseFilterDAO_Impl extends PortalBaseJdbcDAO< CaseFilter > implements CaseFilterDAO {
 
@@ -16,5 +19,13 @@ public class CaseFilterDAO_Impl extends PortalBaseJdbcDAO< CaseFilter > implemen
     @Override
     public CaseFilter checkExistsByParams( String name, Long loginId, En_CaseFilterType type ) {
         return getByCondition("name=? and login_id=? and type=?", name, loginId, type.name() );
+    }
+
+    @Override
+    public List<CaseFilter> getByPersonId(Long personId) {
+        Query query = query()
+                .whereExpression("id in (select case_filter_id from person_to_case_filter where person_id = ?)").attributes(personId);
+
+        return getListByCondition(query.buildSql(),  query.args());
     }
 }

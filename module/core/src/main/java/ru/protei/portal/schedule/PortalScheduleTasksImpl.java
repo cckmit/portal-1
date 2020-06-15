@@ -46,6 +46,12 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
          );
     }
 
+    // Методы для автоматической обработки, контролирования и управления отчетами
+    @Scheduled(fixedRate = 30 * 1000) // every 30 seconds
+    public void personToCaseFilter() {
+        personCaseFilterService.processMailNotification();
+    }
+
     @Scheduled(cron = "0 0 5 * * ?") // at 05:00:00 am every day
     public void processOldReportsSchedule() {
         reportControlService.processOldReports().ifError(response ->
@@ -97,6 +103,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     ReportControlService reportControlService;
     @Autowired
     IpReservationService ipReservationService;
+    @Autowired
+    PersonCaseFilterService personCaseFilterService;
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasksImpl.class );
 }
