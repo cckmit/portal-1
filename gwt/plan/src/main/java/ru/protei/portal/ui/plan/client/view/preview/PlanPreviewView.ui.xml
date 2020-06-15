@@ -17,18 +17,15 @@
 
             <div class="row form-group">
                 <div class="col-md-12">
-                    <h5>
-                        <ui:text from="{lang.planPeriod}"/>
+                    <h5 class="inline">
+                        <ui:text from="{lang.planPeriod}:"/>
                     </h5>
-                    <div ui:field="period"/>
+                    <div class="inline" ui:field="period"/>
                 </div>
             </div>
 
             <div class="row form-group">
                 <div class="col-md-12">
-                    <h5>
-                        <ui:text from="{lang.planIssuesList}"/>
-                    </h5>
                     <div class="planned-issue-wrapper">
                         <div class="auto-overflow planned-issue-table-top-collapse">
                             <table:TableWidget ui:field="table" styleName="table table-hover planned-issue-table"/>

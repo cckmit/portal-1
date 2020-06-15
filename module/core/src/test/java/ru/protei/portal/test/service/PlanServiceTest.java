@@ -339,7 +339,7 @@ public class PlanServiceTest extends BaseServiceTest{
 
         //Удаляем уже удаленное ранее обращение
         Result<Boolean> result = planService.removeIssueFromPlan(getAuthToken(), planId1, issues.get(0).getId());
-        Assert.assertEquals( En_ResultStatus.NOT_FOUND, result.getStatus());
+        Assert.assertEquals( En_ResultStatus.NOT_REMOVED, result.getStatus());
 
         planFromDB = planService.getPlanWithIssues(getAuthToken(), planId1).getData();
         Assert.assertNotNull("Failed to get plan by id", planFromDB);
