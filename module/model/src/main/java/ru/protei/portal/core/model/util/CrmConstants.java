@@ -11,6 +11,7 @@ public class CrmConstants {
     public static final int EMAIL_MAX_SIZE = 254;
 
     public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
+    public static final String SOME_PLANS_NOT_UPDATED = "some plans not updated";
 
     public static final String DEFAULT_LOCALE = "ru";
 

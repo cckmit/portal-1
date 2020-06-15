@@ -2749,6 +2749,28 @@ div.select2-container {
   }
 }
 
+.case-plans {
+  div.select2-container {
+    border: 0 !important;
+    ul.select2-choices {
+      padding-left: 0;
+      margin-bottom: 5px;
+      li.select2-search-choice {
+        display: inline !important;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .select2-container {
+    .select2-button {
+      .select2-add-button {
+        flex-grow: 0;
+      }
+    }
+  }
+}
+
 .issue-filter {
   padding-top: 0px !important;
 

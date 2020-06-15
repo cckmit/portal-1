@@ -155,6 +155,9 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String managerCompanyName;
 
+    @JdbcManyToMany(localLinkColumn = "case_object_id", remoteLinkColumn = "plan_id", linkTable = "plan_to_case_object")
+    private List<Plan> plans;
+
     // not db column
     private List<EntityOption> contracts;
 
@@ -583,6 +586,14 @@ public class CaseObject extends AuditableObject {
         this.managerCompanyName = managerCompanyName;
     }
 
+    public List<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<Plan> plans) {
+        this.plans = plans;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -604,7 +615,7 @@ public class CaseObject extends AuditableObject {
                 ", extId='" + extId + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
-                ", stateName=" + stateName +
+                ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
@@ -639,6 +650,7 @@ public class CaseObject extends AuditableObject {
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", plans=" + plans +
                 ", contracts=" + contracts +
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +

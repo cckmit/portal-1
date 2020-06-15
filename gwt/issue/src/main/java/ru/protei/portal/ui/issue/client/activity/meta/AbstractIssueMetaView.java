@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
@@ -121,4 +122,16 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setProductModel(ProductModel productModel);
 
     void setProductMandatory(boolean isProductMandatory);
+
+    void setPlanCreatorId(Long creatorId);
+
+    HasValue<Set<PlanOption>> ownerPlans();
+
+    HasVisibility ownerPlansContainerVisibility();
+
+    HasVisibility otherPlansContainerVisibility();
+
+    void setOtherPlans(String value);
+
+    void setPlansLabelVisible(boolean isVisible);
 }

@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import java.util.Date;
 
-public class PlanQuery extends BaseQuery{
+public class PlanQuery extends BaseQuery {
 
     private String name;
     private Date createdFrom;

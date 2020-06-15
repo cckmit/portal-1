@@ -2626,6 +2626,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reloadPageAfterUpdateDoReloadPage();
 
+    String plan();
+
     String plans();
 
     String planNameColumn();
@@ -2650,7 +2652,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String planPeriod();
 
-    String planHeader( String p0 );
+    String planHeader( String planName );
+
+    String errGetConcreteList(String listName);
+
+    String selectPlan();
 
     String planHeaderNew();
 
