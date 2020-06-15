@@ -196,11 +196,14 @@
             </g:HTMLPanel>
         </div>
 
-        <g:HTMLPanel ui:field="planContainer" styleName="row form-group">
+        <div class="form-group m-t-10 m-b-0">
+            <label ui:field="plansLabel"><ui:text from="{lang.plans}"/></label>
+        </div>
+
+        <g:HTMLPanel ui:field="ownerPlansContainer" styleName="row form-group">
             <div class="col-md-12">
                 <plan:PlanMultiSelector ui:field="plans"
                                         buttonStyle="btn-info btn-xs"
-                                        header="{lang.plans}"
                                         styleName="case-plans"
                                         hasNullValue="false"/>
             </div>

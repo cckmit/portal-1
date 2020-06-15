@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlanOption;
@@ -21,7 +22,6 @@ import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTa
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DefaultSlaValues;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
@@ -39,11 +39,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
-import static ru.protei.portal.core.model.util.CrmConstants.SOME_PLANS_NOT_UPDATED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
-import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
 
 /**
@@ -378,16 +377,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         issueMetaView.setPlanCreatorId(policyService.getProfile().getId());
 
-        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
-            fillOwnerPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
-            fillOtherPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
-        } else {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
             issueMetaView.ownerPlansContainerVisibility().setVisible(false);
             issueMetaView.otherPlansContainerVisibility().setVisible(false);
+            issueMetaView.setPlansLabelVisible(false);
+        } else {
+            issueMetaView.setPlansLabelVisible(true);
+            fillOwnerPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
+            fillOtherPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
         }
-
-        issueMetaView.ownerPlansContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT));
-        issueMetaView.otherPlansContainerVisibility().setVisible(false);
     }
 
     private void fillOwnerPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {

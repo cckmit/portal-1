@@ -141,6 +141,7 @@ public enum En_Privilege {
             ISSUE_PRIVACY_VIEW,
             ISSUE_WORK_TIME_VIEW,
             ISSUE_PLATFORM_VIEW,
+            ISSUE_PLAN_EDIT,
 
             ISSUE_FILTER_COMPANY_VIEW,
             ISSUE_FILTER_MANAGER_VIEW,

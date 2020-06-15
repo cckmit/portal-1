@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
@@ -400,7 +401,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public HasVisibility ownerPlansContainerVisibility() {
-        return planContainer;
+        return ownerPlansContainer;
     }
 
     @Override
@@ -411,6 +412,15 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public void setOtherPlans(String otherPlans) {
         this.otherPlans.setInnerText(otherPlans);
+    }
+
+    @Override
+    public void setPlansLabelVisible(boolean isVisible) {
+        if (isVisible) {
+            plansLabel.removeClassName(UiConstants.Styles.HIDE);
+        } else {
+            plansLabel.addClassName(UiConstants.Styles.HIDE);
+        }
     }
 
     private void initView() {
@@ -571,7 +581,9 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiField(provided = true)
     PlanMultiSelector plans;
     @UiField
-    HTMLPanel planContainer;
+    HTMLPanel ownerPlansContainer;
+    @UiField
+    LabelElement plansLabel;
     @UiField
     HTMLPanel productContainer;
     @Inject

@@ -127,4 +127,6 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility otherPlansContainerVisibility();
 
     void setOtherPlans(String value);
+
+    void setPlansLabelVisible(boolean isVisible);
 }

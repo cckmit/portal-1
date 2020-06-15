@@ -62,6 +62,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
         fillJiraView( event.metaJira );
+        fillPlansView(meta.getPlans());
 
         if (!validateCaseMeta(meta)){
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
@@ -353,6 +354,51 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
     }
 
+    private void fillPlansView(List<Plan> plans) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
+            metaView.ownerPlansContainerVisibility().setVisible(false);
+            metaView.otherPlansContainerVisibility().setVisible(false);
+            metaView.setPlansLabelVisible(false);
+            return;
+        }
+
+        metaView.setPlansLabelVisible(true);
+        fillOwnerPlansContainer(metaView, plans, policyService.getProfile());
+        fillOtherPlansContainer(metaView, plans, policyService.getProfile());
+    }
+
+    private void fillOwnerPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        if (!profile.hasPrivilegeFor(En_Privilege.PLAN_EDIT)) {
+            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
+            return;
+        }
+
+        issueMetaView.ownerPlansContainerVisibility().setVisible(true);
+        issueMetaView.ownerPlans().setValue(getOwnerPlans(plans, profile.getId()));
+        issueMetaView.setPlanCreatorId(profile.getId());
+    }
+
+    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
+
+        issueMetaView.otherPlansContainerVisibility().setVisible(true);
+        issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
+    }
+
+    private Set<PlanOption> getOwnerPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<PlanOption> getOtherPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> !personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
+    }
+
     private void fillNotifiersView(CaseObjectMetaNotifiers caseMetaNotifiers) {
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
         } else {
@@ -440,46 +486,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
-
-        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
-            fillOwnerPlansContainer(metaView, meta.getPlans(), policyService.getProfile());
-            fillOtherPlansContainer(metaView, meta.getPlans(), policyService.getProfile());
-        } else {
-            metaView.ownerPlansContainerVisibility().setVisible(false);
-            metaView.otherPlansContainerVisibility().setVisible(false);
-        }
-    }
-
-    private void fillOwnerPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
-        if (!profile.hasPrivilegeFor(En_Privilege.PLAN_EDIT)) {
-            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
-            return;
-        }
-
-        issueMetaView.ownerPlansContainerVisibility().setVisible(true);
-        issueMetaView.ownerPlans().setValue(getOwnerPlans(plans, profile.getId()));
-        issueMetaView.setPlanCreatorId(profile.getId());
-    }
-
-    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
-        Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
-
-        issueMetaView.otherPlansContainerVisibility().setVisible(true);
-        issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
-    }
-
-    private Set<PlanOption> getOwnerPlans(List<Plan> plans, Long personId) {
-        return stream(plans)
-                .filter(plan -> personId.equals(plan.getCreatorId()))
-                .map(PlanOption::fromPlan)
-                .collect(Collectors.toSet());
-    }
-
-    private Set<PlanOption> getOtherPlans(List<Plan> plans, Long personId) {
-        return stream(plans)
-                .filter(plan -> !personId.equals(plan.getCreatorId()))
-                .map(PlanOption::fromPlan)
-                .collect(Collectors.toSet());
     }
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta, boolean isReadOnly) {

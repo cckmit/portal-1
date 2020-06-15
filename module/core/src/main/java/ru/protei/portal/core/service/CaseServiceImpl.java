@@ -200,10 +200,16 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        En_ResultStatus resultStatus = updatePlans(token, caseId, null, emptyIfNull(caseObjectCreateRequest.getPlans()));
+        Set<PlanOption> plans = caseObjectCreateRequest.getPlans();
 
-        if (!En_ResultStatus.OK.equals(resultStatus)) {
-            throw new ResultStatusException(resultStatus);
+        if (isNotEmpty(plans)) {
+            for (PlanOption planOption : plans) {
+                Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
+
+                if (planResult.isError()) {
+                    throw new ResultStatusException(planResult.getStatus());
+                }
+            }
         }
 
         Result addLinksResult = ok();
@@ -630,7 +636,7 @@ public class CaseServiceImpl implements CaseService {
         for (PlanOption planOption : emptyIfNull(planDiffs.getAddedEntries())) {
             Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
 
-            if (!En_ResultStatus.OK.equals(planResult.getStatus())) {
+            if (planResult.isError()) {
                 return planResult.getStatus();
             }
         }
@@ -638,7 +644,7 @@ public class CaseServiceImpl implements CaseService {
         for (PlanOption planOption : emptyIfNull(planDiffs.getRemovedEntries())) {
             Result<Boolean> planResult = planService.removeIssueFromPlan(token, planOption.getId(), caseId);
 
-            if (!En_ResultStatus.OK.equals(planResult.getStatus())) {
+            if (planResult.isError()) {
                 return planResult.getStatus();
             }
         }
