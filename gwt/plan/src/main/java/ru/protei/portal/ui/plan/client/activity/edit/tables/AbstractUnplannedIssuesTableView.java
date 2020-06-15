@@ -26,4 +26,6 @@ public interface AbstractUnplannedIssuesTableView extends IsWidget {
     HasValidable issueNumberValidator();
 
     void setLimitLabel(String value);
+
+    void setIssueDefaultCursor(boolean isDefault);
 }

@@ -81,6 +81,11 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
     @Override
     public void setLimitLabel(String value) { this.limitLabel.setText( lang.planUnplannedTableLimit(value) ); }
 
+    @Override
+    public void setIssueDefaultCursor (boolean isDefault){
+        issue.setStyleName(isDefault ? "cursor-default" : null);
+    }
+
     @UiHandler("filter")
     public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
@@ -98,10 +103,10 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
 
         issuesColumnProvider = new ClickColumnProvider<>();
 
-        IssueColumn number = new IssueColumn(lang);
-        table.addColumn(number.header, number.values);
-        number.setHandler(value -> activity.onItemClicked(value));
-        number.setColumnProvider(issuesColumnProvider);
+        issue = new IssueColumn(lang);
+        table.addColumn(issue.header, issue.values);
+        issue.setHandler(value -> activity.onItemClicked(value));
+        issue.setColumnProvider(issuesColumnProvider);
 
         ActionIconClickColumn<CaseShortView> assign = new ActionIconClickColumn<>("far fa-lg fa-caret-square-right", lang.planAddIssueToPlan(), null);
         table.addColumn(assign.header, assign.values);
@@ -141,9 +146,10 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
     Label limitLabel;
 
 
+    private IssueColumn issue;
+    private Timer timer = null;
     private ClickColumnProvider<CaseShortView> issuesColumnProvider;
     private AbstractUnplannedIssuesTableActivity activity;
-    private Timer timer = null;
 
 
     interface UnplannedIssueTableViewBinder extends UiBinder<HTMLPanel, UnplannedIssuesTableView> {}

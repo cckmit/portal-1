@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -117,7 +116,9 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
 
     @Override
     public void onItemClicked(CaseShortView value) {
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+        if (planId != null) {
+            fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+        }
     }
 
     @Override
@@ -210,8 +211,6 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     PlanControllerAsync planService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
-    @Inject
-    PolicyService policyService;
 
     private List<Plan> plans = new ArrayList<>();
     private Long planId;

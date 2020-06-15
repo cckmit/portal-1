@@ -147,7 +147,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
 
     private void fillPlan(Plan plan) {
-        plan.setName(view.name().getValue());
+        plan.setName(view.name().getValue().trim());
         plan.setStartDate(view.planPeriod().getValue().from);
         plan.setFinishDate(view.planPeriod().getValue().to);
     }

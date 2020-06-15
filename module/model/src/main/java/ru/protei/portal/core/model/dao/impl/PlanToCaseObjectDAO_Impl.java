@@ -32,7 +32,7 @@ public class PlanToCaseObjectDAO_Impl extends PortalBaseJdbcDAO<PlanToCaseObject
     }
 
     @Override
-    public int removeByPlanIdAndIssueId(Long planId, Long caseId) {
+    public int removeIssueFromPlan(Long planId, Long caseId) {
         return removeByCondition("plan_id=? and case_object_id=?", planId, caseId);
     }
 

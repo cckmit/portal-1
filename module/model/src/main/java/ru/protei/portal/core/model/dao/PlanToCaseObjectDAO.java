@@ -10,7 +10,7 @@ public interface PlanToCaseObjectDAO extends PortalBaseDAO<PlanToCaseObject>{
     List<PlanToCaseObject> getSortedListByCaseId(Long caseId);
     PlanToCaseObject getByPlanIdAndIssueId(Long planId, Long caseId);
 
-    int removeByPlanIdAndIssueId(Long planId, Long caseId);
+    int removeIssueFromPlan(Long planId, Long caseId);
 
     Map<Long, Long> countByPlanIds(List<Long> planIds);
 }

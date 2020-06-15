@@ -28,7 +28,14 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
     @Override
     public void fillColumnValue(Element cell, CaseShortView value) {
         cell.addClassName("plan-issue-column");
+        if (styleName != null) {
+            cell.addClassName(styleName);
+        }
         cell.appendChild(makeContent(value));
+    }
+
+    public void setStyleName(String styleName) {
+        this.styleName = styleName;
     }
 
     private Node makeContent(CaseShortView value) {
@@ -77,4 +84,5 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
     }
 
     private Lang lang;
+    private String styleName;
 }

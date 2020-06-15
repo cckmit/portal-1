@@ -162,7 +162,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         Plan planFromDb = planDAO.get(plan.getId());
-        if (!Objects.equals(planFromDb.getName(), plan.getName()) && planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
+        if (!Objects.equals(planFromDb.getName(), plan.getName()) && planDAO.checkExistByNameAndCreatorId(plan.getName(), planFromDb.getCreatorId())){
             log.warn("editPlanParams(): ALREADY_EXIST. planId={}, name={} ", plan.getId(), plan.getName());
             return error(En_ResultStatus.ALREADY_EXIST);
         }
@@ -222,7 +222,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        int rowCount = planToCaseObjectDAO.removeByPlanIdAndIssueId(planId, issueId);
+        int rowCount = planToCaseObjectDAO.removeIssueFromPlan(planId, issueId);
 
         if (rowCount == 1) {
             updateOrderNumbers(planId);
@@ -231,8 +231,8 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (rowCount == 0) {
-            log.warn("removeIssueFromPlan(): NOT_FOUND. plan id={}, token personId={}", planId, token.getPersonId());
-            return error(En_ResultStatus.NOT_FOUND);
+            log.warn("removeIssueFromPlan(): NOT_REMOVED. plan id={}, token personId={}", planId, token.getPersonId());
+            return error(En_ResultStatus.NOT_REMOVED);
         }
 
         log.warn("removeIssueFromPlan(): More that one was removed! Rollback. plan id={}, token personId={}", planId, token.getPersonId());
@@ -288,6 +288,11 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        if (!userIsCreator(token, newPlanId)){
+            log.warn("moveIssueToAnotherPlan(): PERMISSION_DENIED. currentPlanId={}, token personId={}", currentPlanId, token.getPersonId());
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         PlanToCaseObject planToCaseObject = planToCaseObjectDAO.getByPlanIdAndIssueId(currentPlanId, issueId);
 
         if (planToCaseObject == null) {
@@ -328,15 +333,15 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        if (!planDAO.removeByKey(planId)) {
+            log.warn("removePlan(): NOT_REMOVED. planId={}, token personId={}", planId, token.getPersonId());
+            return error(En_ResultStatus.NOT_REMOVED);
+        }
+
         if (plan.getIssueList() != null){
             plan.getIssueList().forEach(issue ->{
                 historyService.createHistory(token, issue.getId(), En_HistoryValueType.REMOVE_FROM_PLAN, planId.toString(), null);
             });
-        }
-
-        if (!planDAO.removeByKey(planId)) {
-            log.warn("removePlan(): NOT_FOUND. planId={}, token personId={}", planId, token.getPersonId());
-            return error(En_ResultStatus.NOT_FOUND);
         }
 
         return ok();

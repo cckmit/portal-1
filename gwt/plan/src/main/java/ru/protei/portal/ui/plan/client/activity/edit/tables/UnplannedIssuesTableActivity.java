@@ -2,7 +2,6 @@ package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import org.apache.poi.util.StringUtil;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -23,7 +22,6 @@ import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
-import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -43,12 +41,16 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         HasWidgets container = event.parent;
         container.clear();
         container.add(view.asWidget());
+        planId = event.planId;
+        view.setIssueDefaultCursor(planId == null);
         initFilter();
     }
 
     @Override
     public void onItemClicked(CaseShortView value) {
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+        if (planId != null) {
+            fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+        }
     }
 
     @Override
@@ -126,6 +128,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         view.filter().setValue(filter, true);
         view.updateFilterSelector();
         view.setLimitLabel(String.valueOf(TABLE_LIMIT));
+        view.issueNumber().setValue("");
     }
 
     private void saveTableFilterId(Long filterId) {
@@ -158,9 +161,8 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
     LocalStorageService localStorageService;
     @Inject
     PolicyService policyService;
-    @Inject
-    PlanControllerAsync planService;
 
+    private Long planId;
     private final static int TABLE_LIMIT = 100;
     private final static String TABLE_FILTER_ID_KEY = "plan_unplanned_issue_table_filter_id";
 }

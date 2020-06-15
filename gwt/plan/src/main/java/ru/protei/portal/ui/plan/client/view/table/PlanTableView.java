@@ -110,8 +110,8 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
     }
 
     private void initTable () {
-        editClickColumn.setEnabledPredicate(plan -> policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT) && Objects.equals(plan.getCreatorId(), policyService.getProfile().getId()));
-        removeClickColumn.setEnabledPredicate(plan -> policyService.hasPrivilegeFor(En_Privilege.PLAN_REMOVE) && Objects.equals(plan.getCreatorId(), policyService.getProfile().getId()));
+        editClickColumn.setEnabledPredicate(plan -> hasAccess(En_Privilege.PLAN_EDIT, plan));
+        removeClickColumn.setEnabledPredicate(plan -> hasAccess(En_Privilege.PLAN_EDIT, plan));
 
         name = new ClickColumn<Plan>() {
             @Override
@@ -175,6 +175,11 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
         table.addColumn(issueQuantity.header, issueQuantity.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
+    }
+
+    private boolean hasAccess(En_Privilege privilege, Plan plan) {
+        return policyService.hasPrivilegeFor(privilege)
+                && Objects.equals(plan.getCreatorId(), policyService.getProfile().getId());
     }
 
     @UiField
