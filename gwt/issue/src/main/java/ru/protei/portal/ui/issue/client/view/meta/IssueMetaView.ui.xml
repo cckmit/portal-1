@@ -200,16 +200,13 @@
             <div class="col-md-12">
                 <plan:PlanMultiSelector ui:field="plans"
                                         buttonStyle="btn-info btn-xs"
-                                        header="{lang.myPlans}"
+                                        header="{lang.plans}"
                                         styleName="case-plans"
                                         hasNullValue="false"/>
             </div>
         </g:HTMLPanel>
         <g:HTMLPanel ui:field="otherPlansContainer" styleName="row form-group">
             <div class="col-md-12">
-                <label>
-                    <ui:text from="{lang.otherPlans}"/>
-                </label>
                 <small class="hint-text block" ui:field="otherPlans"/>
             </div>
         </g:HTMLPanel>

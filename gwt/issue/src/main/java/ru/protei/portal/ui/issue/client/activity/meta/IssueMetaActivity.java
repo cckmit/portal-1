@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -305,10 +304,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
-        issueService.updatePlans(metaView.plans().getValue(), meta.getId(), new FluentCallback<Set<PlanOption>>()
+        issueService.updatePlans(metaView.ownerPlans().getValue(), meta.getId(), new FluentCallback<Set<PlanOption>>()
                 .withSuccess(updatedPlans -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    metaView.plans().setValue(updatedPlans);
+                    metaView.ownerPlans().setValue(updatedPlans);
                 })
         );
     }
@@ -442,62 +441,44 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
 
-        if (policyService.hasPrivilegeFor(En_Privilege.PLAN_VIEW)) {
-            requestPlans(meta.getId(), this::fillPlanContainers);
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
+            fillOwnerPlansContainer(metaView, meta.getPlans(), policyService.getProfile());
+            fillOtherPlansContainer(metaView, meta.getPlans(), policyService.getProfile());
         } else {
-            metaView.plansContainerVisibility().setVisible(false);
+            metaView.ownerPlansContainerVisibility().setVisible(false);
             metaView.otherPlansContainerVisibility().setVisible(false);
         }
     }
 
-    private void requestPlans(Long caseId, Consumer<List<PlanOption>> plansConsumer) {
-        PlanQuery planQuery = new PlanQuery();
-        planQuery.setIssueId(caseId);
-
-        planService.getPlanOptionList(planQuery, new FluentCallback<List<PlanOption>>()
-                .withSuccess(plansConsumer)
-        );
-    }
-
-    private void fillPlanContainers(List<PlanOption> plans) {
-        Set<PlanOption> plansSet = new HashSet<>(emptyIfNull(plans));
-
-        fillPlansContainer(metaView, plansSet, policyService.getProfile());
-        fillOtherPlansContainer(metaView, plansSet, policyService.getProfile());
-    }
-
-    private void fillPlansContainer(final AbstractIssueMetaView issueMetaView, Set<PlanOption> plans, Profile profile) {
+    private void fillOwnerPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
         if (!profile.hasPrivilegeFor(En_Privilege.PLAN_EDIT)) {
-            issueMetaView.plansContainerVisibility().setVisible(false);
+            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
             return;
         }
 
-        issueMetaView.plansContainerVisibility().setVisible(true);
-        issueMetaView.plans().setValue(getPersonPlans(plans, profile.getId()));
+        issueMetaView.ownerPlansContainerVisibility().setVisible(true);
+        issueMetaView.ownerPlans().setValue(getOwnerPlans(plans, profile.getId()));
         issueMetaView.setPlanCreatorId(profile.getId());
     }
 
-    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, Set<PlanOption> plans, Profile profile) {
-        if (!profile.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_VIEW)) {
-            issueMetaView.otherPlansContainerVisibility().setVisible(false);
-            return;
-        }
-
+    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
         Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
 
+        issueMetaView.otherPlansContainerVisibility().setVisible(true);
         issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
-        issueMetaView.otherPlansContainerVisibility().setVisible(!otherPlans.isEmpty());
     }
 
-    private Set<PlanOption> getPersonPlans(Set<PlanOption> plans, Long personId) {
+    private Set<PlanOption> getOwnerPlans(List<Plan> plans, Long personId) {
         return stream(plans)
                 .filter(plan -> personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
                 .collect(Collectors.toSet());
     }
 
-    private Set<PlanOption> getOtherPlans(Set<PlanOption> plans, Long personId) {
+    private Set<PlanOption> getOtherPlans(List<Plan> plans, Long personId) {
         return stream(plans)
                 .filter(plan -> !personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
                 .collect(Collectors.toSet());
     }
 
@@ -694,8 +675,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     SiteFolderControllerAsync siteFolderController;
     @Inject
     HomeCompanyService homeCompanyService;
-    @Inject
-    PlanControllerAsync planService;
 
     @ContextAware
     CaseObjectMeta meta;

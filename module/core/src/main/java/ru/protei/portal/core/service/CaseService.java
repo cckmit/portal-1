@@ -83,5 +83,5 @@ public interface CaseService {
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
 
     @Privileged(En_Privilege.ISSUE_EDIT)
-    Result<Set<PlanOption>> updatePlans(AuthToken token, Set<PlanOption> plans, Long caseId);
+    Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId);
 }

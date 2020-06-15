@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class PlanServiceImpl implements PlanService{
 
@@ -78,6 +80,17 @@ public class PlanServiceImpl implements PlanService{
         }
 
         return ok(list);
+    }
+
+    @Override
+    public Result<List<PlanOption>> listPlanOptions(AuthToken token, PlanQuery query) {
+        Result<List<Plan>> listPlansResult = listPlans(token, query);
+
+        if (listPlansResult.isError()) {
+            return error(listPlansResult.getStatus());
+        }
+
+        return ok(toList(listPlansResult.getData(), PlanOption::fromPlan));
     }
 
     @Override

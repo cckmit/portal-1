@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -36,10 +37,11 @@ import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_PLANS_NOT_UPDATED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 
@@ -293,7 +295,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onPlansChanged() {
-        createRequest.setPlans(issueMetaView.plans().getValue());
+        createRequest.setPlans(issueMetaView.ownerPlans().getValue());
     }
 
     private void fillPlatformValue(Long companyId){
@@ -375,9 +377,51 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         requestSla(caseObjectMeta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, caseObjectMeta.getImpLevel())));
 
         issueMetaView.setPlanCreatorId(policyService.getProfile().getId());
-        issueMetaView.plansContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT));
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT)) {
+            fillOwnerPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
+            fillOtherPlansContainer(issueMetaView, caseObjectMeta.getPlans(), policyService.getProfile());
+        } else {
+            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
+            issueMetaView.otherPlansContainerVisibility().setVisible(false);
+        }
+
+        issueMetaView.ownerPlansContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLAN_EDIT));
         issueMetaView.otherPlansContainerVisibility().setVisible(false);
     }
+
+    private void fillOwnerPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        if (!profile.hasPrivilegeFor(En_Privilege.PLAN_EDIT)) {
+            issueMetaView.ownerPlansContainerVisibility().setVisible(false);
+            return;
+        }
+
+        issueMetaView.ownerPlansContainerVisibility().setVisible(true);
+        issueMetaView.ownerPlans().setValue(getOwnerPlans(plans, profile.getId()));
+        issueMetaView.setPlanCreatorId(profile.getId());
+    }
+
+    private void fillOtherPlansContainer(final AbstractIssueMetaView issueMetaView, List<Plan> plans, Profile profile) {
+        Set<PlanOption> otherPlans = getOtherPlans(plans, profile.getId());
+
+        issueMetaView.otherPlansContainerVisibility().setVisible(true);
+        issueMetaView.setOtherPlans(otherPlans.stream().map(PlanOption::getDisplayText).collect(Collectors.joining(", ")));
+    }
+
+    private Set<PlanOption> getOwnerPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<PlanOption> getOtherPlans(List<Plan> plans, Long personId) {
+        return stream(plans)
+                .filter(plan -> !personId.equals(plan.getCreatorId()))
+                .map(PlanOption::fromPlan)
+                .collect(Collectors.toSet());
+    }
+
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
         issueMetaView.managerEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));

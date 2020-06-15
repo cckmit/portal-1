@@ -88,7 +88,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     public void onShowPopupClicked(ClickEvent event) {
         getPopup().getChildContainer().clear();
         getSelector().fillFromBegin(this);
-        getPopup().showNear(button);
+        getPopup().showNear(root);
     }
 
     public void setEnsureDebugIdLabel( String company ) {

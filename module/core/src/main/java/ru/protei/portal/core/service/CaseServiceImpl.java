@@ -83,6 +83,7 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+        jdbcManyRelationsHelper.fill(caseObject, "plans");
 
         withJiraSLAInformation(caseObject);
 
@@ -199,18 +200,18 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        En_ResultStatus resultStatus = updatePlans(token, caseId, null, emptyIfNull(caseObjectCreateRequest.getPlans()));
+
+        if (!En_ResultStatus.OK.equals(resultStatus)) {
+            throw new ResultStatusException(resultStatus);
+        }
+
         Result addLinksResult = ok();
 
         for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
             caseLink.setCaseId(caseObject.getId());
             Result currentResult = caseLinkService.createLink(token, caseLink, true);
             if (currentResult.isError()) addLinksResult = currentResult;
-        }
-
-        En_ResultStatus resultStatus = updatePlans(token, caseId, null, emptyIfNull(caseObjectCreateRequest.getPlans()));
-
-        if (!En_ResultStatus.OK.equals(resultStatus)) {
-            throw new ResultStatusException(resultStatus);
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -596,48 +597,31 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<Set<PlanOption>> updatePlans(AuthToken token, Set<PlanOption> plans, Long caseId) {
+    @Transactional
+    public Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId) {
         log.info("CaseServiceImpl#updatePlans : plans={}, caseId={}", plans, caseId);
 
-        Result<Set<PlanOption>> oldPlansResult = getPlans(token, caseId);
-
-        if (oldPlansResult.isError()) {
-            return error(oldPlansResult.getStatus());
-        }
-
-        En_ResultStatus resultStatus = updatePlans(token, caseId, oldPlansResult.getData(), plans);
-
-        if (!En_ResultStatus.OK.equals(resultStatus)) {
-            return error(resultStatus);
-        }
-
-        return ok(plans);
-    }
-
-    private Result<Set<PlanOption>> getPlans(AuthToken token, Long caseId) {
-        log.info("CaseServiceImpl#getPlans : personId={}, caseId={}", token.getPersonId(), caseId);
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_EDIT, token.getRoles())) {
-            log.info("CaseServiceImpl#getPlans : person {} doesn't have {} privilege", token.getPersonId(), En_Privilege.PLAN_EDIT.name());
-            return ok();
-        }
+        CaseObject caseObject = caseObjectDAO.partialGet(caseId, "MODIFIED");
+        caseObject.setModified(new Date());
+        caseObjectDAO.partialMerge(caseObject, "MODIFIED");
 
         PlanQuery planQuery = new PlanQuery();
         planQuery.setIssueId(caseId);
         planQuery.setCreatorId(token.getPersonId());
 
-        log.info("CaseServiceImpl#getPlans : try to get plans");
+        Result<List<PlanOption>> oldPlansResult = planService.listPlanOptions(token, planQuery);
 
-        Result<SearchResult<Plan>> plansResult = planService.getPlans(token, planQuery);
-
-        if (!En_ResultStatus.OK.equals(plansResult.getStatus())) {
-            log.warn("CaseServiceImpl#getPlans : status={}", plansResult.getStatus());
-            return error(plansResult.getStatus());
+        if (oldPlansResult.isError()) {
+            return error(oldPlansResult.getStatus());
         }
 
-        log.info("CaseServiceImpl#getPlans : successfully got plans");
+        En_ResultStatus resultStatus = updatePlans(token, caseId, new HashSet<>(oldPlansResult.getData()), plans);
 
-        return ok(toPlanOptionSet(plansResult.getData().getResults()));
+        if (!En_ResultStatus.OK.equals(resultStatus)) {
+            throw new ResultStatusException(resultStatus);
+        }
+
+        return ok(plans);
     }
 
     private En_ResultStatus updatePlans(AuthToken token, Long caseId, Set<PlanOption> oldPlans, Set<PlanOption> plans) {

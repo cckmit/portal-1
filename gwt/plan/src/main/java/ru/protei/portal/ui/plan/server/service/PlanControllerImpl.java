@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
@@ -54,7 +55,10 @@ public class PlanControllerImpl implements PlanController {
 
     @Override
     public List<PlanOption> getPlanOptionList(PlanQuery query) throws RequestFailedException {
-        return toList(emptyIfNull(getPlanList(query).getResults()), plan -> new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId()));
+        log.info( "getPlanOptionList(): query={}", query);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(planService.listPlanOptions(token, query));
     }
 
     @Override

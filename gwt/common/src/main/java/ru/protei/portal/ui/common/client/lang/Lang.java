@@ -2652,8 +2652,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String planSaved();
 
-    String otherPlans();
-
     String planIssueConfirmRemove();
 
     String planConfirmRemove();
@@ -2663,6 +2661,4 @@ public interface Lang extends Messages, ContactItemLang {
     String planIssueRemoved();
 
     String planIssueMoved();
-
-    String myPlans();
 }

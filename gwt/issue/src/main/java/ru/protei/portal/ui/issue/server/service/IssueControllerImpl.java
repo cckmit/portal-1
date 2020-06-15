@@ -157,7 +157,7 @@ public class IssueControllerImpl implements IssueController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Set<PlanOption>> updatedPlansResult = caseService.updatePlans(token, plans, caseId);
+        Result<Set<PlanOption>> updatedPlansResult = caseService.updateCasePlans(token, plans, caseId);
 
         if (updatedPlansResult.isError()) {
             throw new RequestFailedException(updatedPlansResult.getStatus());

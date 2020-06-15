@@ -394,12 +394,12 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public HasValue<Set<PlanOption>> plans() {
+    public HasValue<Set<PlanOption>> ownerPlans() {
         return plans;
     }
 
     @Override
-    public HasVisibility plansContainerVisibility() {
+    public HasVisibility ownerPlansContainerVisibility() {
         return planContainer;
     }
 

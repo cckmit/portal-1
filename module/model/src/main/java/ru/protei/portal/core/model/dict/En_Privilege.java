@@ -112,10 +112,9 @@ public enum En_Privilege {
     PLAN_CREATE (PLAN, CREATE),
     PLAN_REMOVE (PLAN, REMOVE),
 
-    ISSUE_PLAN_VIEW (ISSUE, VIEW),
-
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
+    ISSUE_PLAN_EDIT (ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
     ISSUE_MANAGER_EDIT(ISSUE, null),
     ISSUE_PLATFORM_EDIT(ISSUE, null),

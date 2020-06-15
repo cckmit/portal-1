@@ -120,9 +120,9 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setPlanCreatorId(Long creatorId);
 
-    HasValue<Set<PlanOption>> plans();
+    HasValue<Set<PlanOption>> ownerPlans();
 
-    HasVisibility plansContainerVisibility();
+    HasVisibility ownerPlansContainerVisibility();
 
     HasVisibility otherPlansContainerVisibility();
 
