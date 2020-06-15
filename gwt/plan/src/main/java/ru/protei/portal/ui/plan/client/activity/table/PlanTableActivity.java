@@ -161,8 +161,6 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
         PlanQuery query = new PlanQuery();
         query.setSearchString(filterView.search().getValue());
         query.setCreatorId(filterView.creator().getValue() == null ? null : filterView.creator().getValue().getId());
-        query.setCreatedFrom(filterView.creationRange().getValue().from);
-        query.setCreatedTo(filterView.creationRange().getValue().to);
         query.setStartDateFrom(filterView.startRange().getValue().from);
         query.setStartDateTo(filterView.startRange().getValue().to);
         query.setFinishDateFrom(filterView.finishRange().getValue().from);

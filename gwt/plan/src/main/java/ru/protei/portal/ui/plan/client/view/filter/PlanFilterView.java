@@ -24,7 +24,6 @@ public class PlanFilterView extends Composite implements AbstractPlanFilterView 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        creationRange.setPlaceholder(lang.selectDate());
         startRange.setPlaceholder(lang.selectDate());
         finishRange.setPlaceholder(lang.selectDate());
         resetFilter();
@@ -48,9 +47,6 @@ public class PlanFilterView extends Composite implements AbstractPlanFilterView 
     public HasValue<PersonShortView> creator() { return planCreator; }
 
     @Override
-    public HasValue<DateInterval> creationRange() { return creationRange; }
-
-    @Override
     public HasValue<DateInterval> startRange() { return startRange; }
 
     @Override
@@ -59,10 +55,9 @@ public class PlanFilterView extends Composite implements AbstractPlanFilterView 
     @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.creation_date );
-        sortDir.setValue( true );
+        sortDir.setValue( false );
         search.setValue( "" );
         planCreator.setValue(null);
-        creationRange.setValue(null);
         startRange.setValue(null);
         finishRange.setValue(null);
     }
@@ -95,7 +90,7 @@ public class PlanFilterView extends Composite implements AbstractPlanFilterView 
         fireChangeTimer();
     }
 
-    @UiHandler({"creationRange", "startRange", "finishRange"})
+    @UiHandler({"startRange", "finishRange"})
     public void onDateChanged(ValueChangeEvent<DateInterval> event) {
         fireChangeTimer();
     }
@@ -120,10 +115,6 @@ public class PlanFilterView extends Composite implements AbstractPlanFilterView 
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector planCreator;
-
-    @Inject
-    @UiField(provided = true)
-    RangePicker creationRange;
 
     @Inject
     @UiField(provided = true)

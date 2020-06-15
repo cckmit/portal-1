@@ -111,7 +111,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
 
     private CaseQuery makeDefaultQuery() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStateIds(CaseStateUtils.getNewStateIds());
+        query.setStateIds(CaseStateUtils.getActiveStateIds());
         if (policyService.getProfile() != null) {
             query.setManagerCompanyIds(new ArrayList<>(Collections.singletonList(policyService.getUserCompany().getId())));
         }

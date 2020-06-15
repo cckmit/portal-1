@@ -96,7 +96,9 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case PLAN:
                 addOption( En_SortField.name );
-                addOption( En_SortField.creation_date);
+                addOption( En_SortField.creation_date );
+                addOption( En_SortField.start_date );
+                addOption( En_SortField.finish_date );
                 break;
         }
     }

@@ -17,8 +17,6 @@ public interface AbstractPlanFilterView extends IsWidget {
 
     HasValue<PersonShortView> creator();
 
-    HasValue<DateInterval> creationRange();
-
     HasValue<DateInterval> startRange();
 
     HasValue<DateInterval> finishRange();
