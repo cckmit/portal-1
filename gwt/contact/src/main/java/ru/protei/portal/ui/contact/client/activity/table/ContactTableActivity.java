@@ -10,7 +10,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -26,6 +28,10 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.StringUtils.*;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.*;
 
 /**
  * Активность таблицы контактов
@@ -172,11 +178,14 @@ public abstract class ContactTableActivity
     }
 
     private ContactQuery makeQuery() {
-        return new ContactQuery( filterView.company().getValue(),
+        ContactQuery query = new ContactQuery( filterView.company().getValue(),
                 filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
                 false,
-                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+                nullIfEmpty( filterView.searchPattern().getValue() ), filterView.sortField().getValue(),
+                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+
+        query.setAlternativeSearchString( makeAlternativeSearchString( filterView.searchPattern().getValue() ) );
+        return query;
 
     };
 

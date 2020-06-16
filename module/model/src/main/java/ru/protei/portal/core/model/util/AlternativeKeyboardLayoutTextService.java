@@ -2,10 +2,12 @@ package ru.protei.portal.core.model.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 /**
+ * Траскрипция символов между латинской и кириллической раскладками
  * ЙЦУКЕН - QWERTY
  */
 public class AlternativeKeyboardLayoutTextService {
@@ -29,12 +31,23 @@ public class AlternativeKeyboardLayoutTextService {
         }
     }
 
-//    public static String makeAlterSearchString( String searchString ) {
-//        if (isBlank( searchString )) return searchString;
-//        char[] alternative = searchString.toCharArray();
+    public static String makeAlternativeSearchString( String searchString ) {
+        if (isBlank( searchString )) {
+            return null;
+        }
+        String alternativeString = AlternativeKeyboardLayoutTextService.latinToCyrillic( searchString );
+        if (Objects.equals( searchString, alternativeString )) {
+            return null;
+        }
+        return alternativeString;
+    }
+
+//    public static String makeAlternativeString( String sourceString ) {
+//        if (isBlank( sourceString )) return sourceString;
+//        char[] alternative = sourceString.toCharArray();
 //        char charAt;
-//        for (int i = 0; i < searchString.length(); i++) {
-//            charAt = searchString.charAt( i );
+//        for (int i = 0; i < sourceString.length(); i++) {
+//            charAt = sourceString.charAt( i );
 //            if ('.' == charAt) {// неизвестна исходная раскладка
 //                continue;
 //            }

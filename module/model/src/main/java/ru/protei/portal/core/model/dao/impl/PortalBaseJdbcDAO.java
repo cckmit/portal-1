@@ -299,4 +299,9 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
         return jdbcTemplate.queryForList(query.toString(), Long.class, args.toArray());
     }
+
+    protected Integer booleanAsNumber( Boolean isExpression ) {
+        if (isExpression == null) return null;
+        return isExpression ? 1 : 0;
+    }
 }
