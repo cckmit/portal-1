@@ -1,13 +1,17 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +19,7 @@ import java.util.List;
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.helper.StringUtils.*;
 
 public class CaseObjectSqlBuilder {
 
@@ -168,15 +173,42 @@ public class CaseObjectSqlBuilder {
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-                condition.append( " and ( case_name like ? or case_object.info like ?");
-                if (isSearchAtComments(query)) {
-                    condition.append(" or case_comment.comment_text like ?");
-                    args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+                Condition searchCondition = SqlQueryBuilder.condition()
+                        .or( "case_name" ).like( query.getSearchString() )
+                        .or( "case_name" ).like( query.getAlternativeSearchString() )
+                        .or( "case_object.info" ).like( query.getSearchString() )
+                        .or( "case_object.info" ).like( query.getAlternativeSearchString() );
+                if (isSearchAtComments( query )) {
+                    searchCondition
+                            .or( "case_comment.comment_text" ).like( query.getSearchString() )
+                            .or( "case_comment.comment_text" ).like( query.getAlternativeSearchString() );
                 }
-                condition.append( ")" );
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                args.add(likeArg);
-                args.add(likeArg);
+                condition.append( " and (" )
+                        .append( searchCondition.getSqlCondition() )
+                        .append( ")" );
+                args.addAll( searchCondition.getSqlParameters() );
+//                String sqlCondition = searchCondition.getSqlCondition();
+//                List<Object> sqlParameters = searchCondition.getSqlParameters();
+//
+//                condition.append( " and ( case_name like ? or case_object.info like ?");
+//                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+//                args.add(likeArg);
+//                args.add(likeArg);
+//                if (!isBlank( query.getAlternativeSearchString() )) {
+//                    condition.append( " or case_name like ? or case_object.info like ?" );
+//                    String alternativeLikeArg = HelperFunc.makeLikeArg( query.getAlternativeSearchString(), true );
+//                    args.add( alternativeLikeArg );
+//                    args.add( alternativeLikeArg );
+//                }
+//                if (isSearchAtComments( query )) {
+//                    condition.append( " or case_comment.comment_text like ?" );
+//                    args.add( HelperFunc.makeLikeArg( query.getSearchString(), true ) );
+//                    if (!isBlank( query.getAlternativeSearchString() )) {
+//                        condition.append( " or case_comment.comment_text like ?" );
+//                        args.add( HelperFunc.makeLikeArg( query.getAlternativeSearchString(), true ) );
+//                    }
+//                }
+//                condition.append( ")" );
             }
 
             if (query.getSearchCasenoString() != null && !query.getSearchCasenoString().isEmpty()) {

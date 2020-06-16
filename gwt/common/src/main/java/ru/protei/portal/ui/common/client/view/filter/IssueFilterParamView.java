@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -44,10 +45,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -320,6 +318,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 if (query.getCaseNumbers() == null) {
                     query.setSearchStringAtComments(searchByComments.getValue());
                     query.setSearchString(isBlank(searchString) ? null : searchString);
+                    query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
                 }
                 query.setViewPrivate(searchPrivate.getValue());
                 query.setSortField(sortField.getValue());
@@ -357,6 +356,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 break;
         }
         return query;
+    }
+
+    private String makeAlternativeSearchString( String searchString ) {
+        if (isBlank( searchString )) return null;
+        String alternativeString = AlternativeKeyboardLayoutTextService.latinToCyrillic( searchString );
+        if (Objects.equals( searchString, alternativeString )) return null;
+        return alternativeString;
     }
 
     @Override
