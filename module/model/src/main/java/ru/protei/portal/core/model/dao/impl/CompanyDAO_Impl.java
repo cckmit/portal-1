@@ -8,6 +8,8 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
@@ -92,9 +94,24 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and cname like ?");
+                condition.append(" and (cname like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+
+                if (query.getAlternativeSearchString() != null) {
+                    condition.append(" or cname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getAlternativeSearchString(), true));
+                }
+                condition.append(" )");
             }
+
+//            if (HelperFunc.isLikeRequired( query.getSearchString() )) {
+//                Condition searchCondition = SqlQueryBuilder.condition()
+//                        .or( "cname" ).like( query.getSearchString() )
+//                        .or( "cname" ).like( query.getAlternativeSearchString() );
+//
+//                condition.append( " and (" ).append( searchCondition.getSqlCondition() ).append( ")" );
+//                args.addAll( searchCondition.getSqlParameters() );
+//            }
 
             if (query.getShowDeprecated() != null && !query.getShowDeprecated()) {
                 condition.append(" and is_deprecated = false");
