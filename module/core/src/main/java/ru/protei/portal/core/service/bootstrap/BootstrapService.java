@@ -66,7 +66,7 @@ public class BootstrapService {
         //fillImportanceLevels();
         migrateIpReservation();
         updateManagerFiltersWithoutManagerCompany();
-        fillWithCrossLinkColumn();
+        //fillWithCrossLinkColumn();
         transferYoutrackLinks();
     }
 
