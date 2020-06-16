@@ -214,6 +214,8 @@ public class MailNotificationProcessor {
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
+        log.info("performCaseObjectNotification() : isProteiRecipients={}, notifiers={}", isProteiRecipients, join(notifiers, ni->ni.getAddress(), ","));
+
         if (CollectionUtils.isEmpty(notifiers)) {
             return;
         }
