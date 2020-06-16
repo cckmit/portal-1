@@ -559,7 +559,7 @@ public class PortalConfigData {
         }
 
         public String getCrosslinkYoutrack() {
-            return linkYouTrack;
+            return crosslinkYoutrack;
         }
     }
 
