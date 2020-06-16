@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.core.utils.enums.HasId;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
@@ -145,6 +146,11 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
         return parameters;
     }
+
+//  2020-06-16 21:22:43.621 DEBUG [JdbcTemplate] [T-321 ProductService.getProducts(..)] - Executing prepared SQL statement [select count(*) from dev_unit left outer join person person_1 on dev_unit.common_manager_id = person_1.id where 1=1 and UNIT_STATE=? and UTYPE_ID <> ?]
+//2020-06-16 21:22:43.621 DEBUG [DataSourceUtils] [T-321 ProductService.getProducts(..)] - Fetching JDBC Connection from DataSource
+//2020-06-16 21:22:43.622 TRACE [StatementCreatorUtils] [T-321 ProductService.getProducts(..)] - Setting SQL statement parameter value: column index 1, parameter value [1], value class [java.lang.Integer], SQL type unknown
+//2020-06-16 21:22:43.622 TRACE [StatementCreatorUtils] [T-321 ProductService.getProducts(..)] - Setting SQL statement parameter value: column index 2, parameter value [3], value class [java.lang.Integer], SQL type unknown
 
     public Long getMaxId () {
         return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);
@@ -303,5 +309,15 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     protected Integer booleanAsNumber( Boolean isExpression ) {
         if (isExpression == null) return null;
         return isExpression ? 1 : 0;
+    }
+
+    protected Collection<Integer> collectIds( Collection<? extends HasId> hasIds ) {
+        if (hasIds == null) return null;
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (HasId hasId : hasIds) {
+            ids.add( hasId.getId() );
+        }
+
+        return ids;
     }
 }
