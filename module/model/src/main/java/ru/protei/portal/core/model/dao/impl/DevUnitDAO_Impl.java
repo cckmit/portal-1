@@ -4,18 +4,14 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
-import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
-import ru.protei.winter.core.utils.enums.HasId;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.winter.core.utils.collections.CollectionUtils.isNotEmpty;

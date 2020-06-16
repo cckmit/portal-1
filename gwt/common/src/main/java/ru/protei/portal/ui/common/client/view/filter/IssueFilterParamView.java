@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
@@ -356,13 +357,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 break;
         }
         return query;
-    }
-
-    private String makeAlternativeSearchString( String searchString ) {
-        if (isBlank( searchString )) return null;
-        String alternativeString = AlternativeKeyboardLayoutTextService.latinToCyrillic( searchString );
-        if (Objects.equals( searchString, alternativeString )) return null;
-        return alternativeString;
     }
 
     @Override

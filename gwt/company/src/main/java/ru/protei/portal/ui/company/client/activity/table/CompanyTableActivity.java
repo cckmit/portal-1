@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
 
 /**
  * Активность таблицы компаний
@@ -179,17 +180,6 @@ public abstract class CompanyTableActivity implements
         Window.scrollTo(0, scrollTo);
         preScroll = false;
         scrollTo = 0;
-    }
-
-    private String makeAlternativeSearchString( String searchString ) {
-        if (isBlank( searchString )) {
-            return null;
-        }
-        String alternativeString = AlternativeKeyboardLayoutTextService.latinToCyrillic( searchString );
-        if (Objects.equals( searchString, alternativeString )) {
-            return null;
-        }
-        return alternativeString;
     }
 
     private CompanyQuery makeQuery() {

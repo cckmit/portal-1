@@ -187,28 +187,6 @@ public class CaseObjectSqlBuilder {
                         .append( searchCondition.getSqlCondition() )
                         .append( ")" );
                 args.addAll( searchCondition.getSqlParameters() );
-//                String sqlCondition = searchCondition.getSqlCondition();
-//                List<Object> sqlParameters = searchCondition.getSqlParameters();
-//
-//                condition.append( " and ( case_name like ? or case_object.info like ?");
-//                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-//                args.add(likeArg);
-//                args.add(likeArg);
-//                if (!isBlank( query.getAlternativeSearchString() )) {
-//                    condition.append( " or case_name like ? or case_object.info like ?" );
-//                    String alternativeLikeArg = HelperFunc.makeLikeArg( query.getAlternativeSearchString(), true );
-//                    args.add( alternativeLikeArg );
-//                    args.add( alternativeLikeArg );
-//                }
-//                if (isSearchAtComments( query )) {
-//                    condition.append( " or case_comment.comment_text like ?" );
-//                    args.add( HelperFunc.makeLikeArg( query.getSearchString(), true ) );
-//                    if (!isBlank( query.getAlternativeSearchString() )) {
-//                        condition.append( " or case_comment.comment_text like ?" );
-//                        args.add( HelperFunc.makeLikeArg( query.getAlternativeSearchString(), true ) );
-//                    }
-//                }
-//                condition.append( ")" );
             }
 
             if (query.getSearchCasenoString() != null && !query.getSearchCasenoString().isEmpty()) {

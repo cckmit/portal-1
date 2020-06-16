@@ -147,11 +147,6 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return parameters;
     }
 
-//  2020-06-16 21:22:43.621 DEBUG [JdbcTemplate] [T-321 ProductService.getProducts(..)] - Executing prepared SQL statement [select count(*) from dev_unit left outer join person person_1 on dev_unit.common_manager_id = person_1.id where 1=1 and UNIT_STATE=? and UTYPE_ID <> ?]
-//2020-06-16 21:22:43.621 DEBUG [DataSourceUtils] [T-321 ProductService.getProducts(..)] - Fetching JDBC Connection from DataSource
-//2020-06-16 21:22:43.622 TRACE [StatementCreatorUtils] [T-321 ProductService.getProducts(..)] - Setting SQL statement parameter value: column index 1, parameter value [1], value class [java.lang.Integer], SQL type unknown
-//2020-06-16 21:22:43.622 TRACE [StatementCreatorUtils] [T-321 ProductService.getProducts(..)] - Setting SQL statement parameter value: column index 2, parameter value [3], value class [java.lang.Integer], SQL type unknown
-
     public Long getMaxId () {
         return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);
     }

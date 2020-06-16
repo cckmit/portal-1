@@ -42,31 +42,31 @@ public class AlternativeKeyboardLayoutTextService {
         return alternativeString;
     }
 
-//    public static String makeAlternativeString( String sourceString ) {
-//        if (isBlank( sourceString )) return sourceString;
-//        char[] alternative = sourceString.toCharArray();
-//        char charAt;
-//        for (int i = 0; i < sourceString.length(); i++) {
-//            charAt = sourceString.charAt( i );
-//            if ('.' == charAt) {// неизвестна исходная раскладка
-//                continue;
-//            }
-//            if (',' == charAt) {// неизвестна исходная раскладка
-//                continue;
-//            }
-//            if (latinToCyr.containsKey( charAt )) {
-//                alternative[i] = latinToCyr.get( charAt );
-//                continue;
-//            }
-//            if (cyrToLatin.containsKey( charAt )) {
-//                alternative[i] = cyrToLatin.get( charAt );
-//                continue;
-//            }
-//        }
-//
-//        String alternativeString = new String( alternative );
-//        return alternativeString;
-//    }
+    public static String makeAlternativeString( String sourceString ) {
+        if (isBlank( sourceString )) return sourceString;
+        char[] alternative = sourceString.toCharArray();
+        char charAt;
+        for (int i = 0; i < sourceString.length(); i++) {
+            charAt = sourceString.charAt( i );
+            if ('.' == charAt) {// неизвестна исходная раскладка
+                continue;
+            }
+            if (',' == charAt) {// неизвестна исходная раскладка
+                continue;
+            }
+            if (latinToCyr.containsKey( charAt )) {
+                alternative[i] = latinToCyr.get( charAt );
+                continue;
+            }
+            if (cyrToLatin.containsKey( charAt )) {
+                alternative[i] = cyrToLatin.get( charAt );
+                continue;
+            }
+        }
+
+        String alternativeString = new String( alternative );
+        return alternativeString;
+    }
 
     public static String latinToCyrillic( String searchString ) {
         if (isBlank( searchString )) return searchString;
