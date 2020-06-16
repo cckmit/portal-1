@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
@@ -42,6 +43,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         ipAddress.setRegexp( CrmConstants.IpReservation.IP_ADDRESS );
         macAddress.setRegexp( CrmConstants.IpReservation.MAC_ADDRESS );
         number.setRegexp( CrmConstants.IpReservation.NUMBER );
+        fillUseRangeButtons();
         ensureDebugIds();
     }
 
@@ -121,7 +123,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     }
 
     @Override
-    public void setEnableUnlimited(boolean value) { useRange.setEnableUnlimited(value); }
+    public void setEnableUnlimited(boolean value) { useRange.setEnableBtn(En_DateIntervalType.UNLIMITED, value); }
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
@@ -169,6 +171,12 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         if ( activity != null ) {
             activity.onOwnerChanged();
         }
+    }
+
+    private void fillUseRangeButtons() {
+        useRange.addBtn(En_DateIntervalType.MONTH,"btn btn-default col-md-4");
+        useRange.addBtn(En_DateIntervalType.UNLIMITED,"btn btn-default col-md-4");
+        useRange.getValue().setIntervalType(En_DateIntervalType.MONTH);
     }
 
     private void ensureDebugIds() {

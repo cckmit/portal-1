@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issuereport.client.view.table.columns;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_ReportType;
@@ -10,11 +11,13 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.*;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FilterColumn extends StaticColumn<Report> {
@@ -63,32 +66,13 @@ public class FilterColumn extends StaticColumn<Report> {
         }
 
         // date CreatedFrom CreatedTo
-        if (caseQuery.getCreatedFrom() != null || caseQuery.getCreatedTo() != null) {
-            Element managerElement = DOM.createElement("p");
-            StringBuilder sb = new StringBuilder();
-            sb.append(lang.created()).append(": ");
-            if (caseQuery.getCreatedFrom() != null) {
-                sb.append(lang.from().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getCreatedFrom())).append(" ");
-            }
-            if (caseQuery.getCreatedTo() != null) {
-                sb.append(lang.to().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getCreatedTo())).append(" ");
-            }
-            managerElement.setInnerText(sb.toString());
-            element.appendChild(managerElement);
+        if (caseQuery.getCreatedRange() != null) {
+            element.appendChild(makeDateRangeElement(caseQuery.getCreatedRange()));
         }
+
         // date ModifiedFrom ModifiedTo
-        if (caseQuery.getModifiedFrom() != null || caseQuery.getModifiedTo() != null) {
-            Element managerElement = DOM.createElement("p");
-            StringBuilder sb = new StringBuilder();
-            sb.append(lang.updated()).append(": ");
-            if (caseQuery.getModifiedFrom() != null) {
-                sb.append(lang.from().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getModifiedFrom())).append(" ");
-            }
-            if (caseQuery.getModifiedTo() != null) {
-                sb.append(lang.to().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getModifiedTo())).append(" ");
-            }
-            managerElement.setInnerText(sb.toString());
-            element.appendChild(managerElement);
+        if (caseQuery.getModifiedRange() != null) {
+            element.appendChild(makeDateRangeElement(caseQuery.getModifiedRange()));
         }
 
         // sorting
@@ -178,6 +162,29 @@ public class FilterColumn extends StaticColumn<Report> {
         }
     }
 
+    private Element makeDateRangeElement(DateRange range) {
+        Element dateRangeElement = DOM.createElement("p");
+        StringBuilder sb = new StringBuilder();
+        sb.append(lang.created()).append(": ");
+
+        if (Objects.equals(En_DateIntervalType.FIXED, range.getIntervalType())) {
+            if (range.getFrom() != null) {
+                sb.append(lang.from().toLowerCase()).append(" ")
+                        .append(DateFormatter.formatDateTime(range.getFrom())).append(" ");
+            }
+            if (range.getTo() != null) {
+                sb.append(lang.to().toLowerCase()).append(" ")
+                        .append(DateFormatter.formatDateTime(range.getTo())).append(" ");
+            }
+        } else {
+            sb.append(intervalTypeLang.getName(range.getIntervalType())).append(" ");
+        }
+
+        dateRangeElement.setInnerText(sb.toString());
+
+        return dateRangeElement;
+    }
+
     private Element makeArraySelectedElement(String prefix, Collection<?> collection) {
         Element element = DOM.createElement("p");
         element.setInnerText(prefix + ": " + collection.size() + " " + lang.selected().toLowerCase());
@@ -189,4 +196,5 @@ public class FilterColumn extends StaticColumn<Report> {
     private En_SortDirLang sortDirLang;
     private En_CaseImportanceLang caseImportanceLang;
     private En_RegionStateLang regionStateLang;
+    private En_DateIntervalLang intervalTypeLang;
 }

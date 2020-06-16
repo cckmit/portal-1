@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.winter.jdbc.annotations.ConverterType;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
 
 import java.util.*;
 
@@ -59,15 +62,11 @@ public class CaseQuery extends BaseQuery {
 
     private Boolean viewPrivate = null;
 
-    @JsonAlias({"from", "createdFrom" })
-    private Date createdFrom;
+    @JdbcColumn(name = "created", converterType = ConverterType.JSON)
+    private DateRange createdRange;
 
-    @JsonAlias({"to", "createdTo" })
-    private Date createdTo;
-
-    private Date modifiedFrom;
-
-    private Date modifiedTo;
+    @JdbcColumn(name = "modified", converterType = ConverterType.JSON)
+    private DateRange modifiedRange;
 
     private boolean searchStringAtComments = false;
 
@@ -125,10 +124,8 @@ public class CaseQuery extends BaseQuery {
         setType(query.getType());
         setStateIds(query.getStateIds());
         setImportanceIds(query.getImportanceIds());
-        setCreatedFrom(query.getCreatedFrom());
-        setCreatedTo(query.getCreatedTo());
-        setModifiedFrom(query.getModifiedFrom());
-        setModifiedTo(query.getModifiedTo());
+        setCreatedRange(query.getCreatedRange());
+        setModifiedRange(query.getModifiedRange());
         setManagerIds(query.getManagerIds());
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
@@ -235,21 +232,13 @@ public class CaseQuery extends BaseQuery {
         return this.importanceIds == null ? null : toSet( importanceIds, id1 -> En_ImportanceLevel.getById( id1 ) );
     }
 
-    public Date getCreatedFrom() { return createdFrom; }
+    public DateRange getCreatedRange() { return createdRange; }
 
-    public void setCreatedFrom( Date createdFrom ) { this.createdFrom = createdFrom; }
+    public void setCreatedRange(DateRange createdRange) { this.createdRange = createdRange; }
 
-    public Date getModifiedFrom() { return modifiedFrom; }
+    public DateRange getModifiedRange() { return modifiedRange; }
 
-    public void setModifiedFrom( Date modifiedFrom ) { this.modifiedFrom = modifiedFrom; }
-
-    public Date getCreatedTo() { return createdTo; }
-
-    public void setCreatedTo( Date createdTo ) { this.createdTo = createdTo; }
-
-    public Date getModifiedTo() { return modifiedTo; }
-
-    public void setModifiedTo( Date modifiedTo ) { this.modifiedTo = modifiedTo; }
+    public void setModifiedRange(DateRange modifiedRange) { this.modifiedRange = modifiedRange; }
 
     public List<Long> getManagerIds() { return managerIds; }
 
@@ -434,10 +423,8 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(headManagerIds) ||
                 CollectionUtils.isNotEmpty(caseMemberIds) ||
                 CollectionUtils.isNotEmpty(productDirectionIds) ||
-                createdFrom != null ||
-                createdTo != null ||
-                modifiedFrom != null ||
-                modifiedTo != null ||
+                createdRange != null ||
+                modifiedRange != null ||
                 StringUtils.isNotBlank(searchCasenoString) ||
                 memberId != null ||
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
@@ -471,10 +458,8 @@ public class CaseQuery extends BaseQuery {
                 ", productDirectionIds=" + productDirectionIds +
                 ", allowViewPrivate=" + allowViewPrivate +
                 ", viewPrivate=" + viewPrivate +
-                ", createdFrom=" + createdFrom +
-                ", createdTo=" + createdTo +
-                ", modifiedFrom=" + modifiedFrom +
-                ", modifiedTo=" + modifiedTo +
+                ", createdRange=" + createdRange +
+                ", modifiedRange=" + modifiedRange +
                 ", searchStringAtComments=" + searchStringAtComments +
                 ", searchCasenoString='" + searchCasenoString + '\'' +
                 ", memberId=" + memberId +
@@ -517,10 +502,8 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(stateIds, caseQuery.stateIds) &&
                 Objects.equals(importanceIds, caseQuery.importanceIds) &&
                 Objects.equals(viewPrivate, caseQuery.viewPrivate) &&
-                Objects.equals(createdFrom, caseQuery.createdFrom) &&
-                Objects.equals(createdTo, caseQuery.createdTo) &&
-                Objects.equals(modifiedFrom, caseQuery.modifiedFrom) &&
-                Objects.equals(modifiedTo, caseQuery.modifiedTo) &&
+                Objects.equals(createdRange, caseQuery.createdRange) &&
+                Objects.equals(modifiedRange, caseQuery.modifiedRange) &&
                 Objects.equals(searchCasenoString, caseQuery.searchCasenoString) &&
                 Objects.equals(memberId, caseQuery.memberId) &&
                 Objects.equals(commentAuthorIds, caseQuery.commentAuthorIds) &&
@@ -536,8 +519,8 @@ public class CaseQuery extends BaseQuery {
     @Override
     public int hashCode() {
         return Objects.hash(id, caseNumbers, caseIds, companyIds, managerCompanyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
-                type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
-                modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
+                type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
+                searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
                 customerSearch, findRecordByCaseComments, local, platformIndependentProject, productDirectionIds,
                 creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId);
     }

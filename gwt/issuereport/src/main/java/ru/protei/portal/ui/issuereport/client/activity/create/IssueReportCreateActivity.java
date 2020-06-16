@@ -161,7 +161,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         switch (reportType) {
             case CASE_RESOLUTION_TIME:
-                if (query.getCreatedFrom() == null || query.getCreatedTo() == null)  {
+                if (query.getCreatedRange().getFrom() == null || query.getCreatedRange().getTo() == null)  {
                     fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }

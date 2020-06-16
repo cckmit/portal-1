@@ -15,6 +15,8 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.ui.common.client.lang.En_DateIntervalLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 
+import java.util.Objects;
+
 public class TypedRangePicker extends Composite implements HasValue<DateIntervalWithType> {
 
     @Inject
@@ -28,13 +30,14 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
                 range.setMandatory(btnGroup.getValue().equals(En_DateIntervalType.FIXED));
             }
         });
-        btnGroup.setValue(En_DateIntervalType.MONTH);
     }
 
     private void initButtons() {
-        btnGroup.addBtn(lang.getName(En_DateIntervalType.MONTH), En_DateIntervalType.MONTH,"btn btn-default col-md-4");
         btnGroup.addBtn(lang.getName(En_DateIntervalType.FIXED), En_DateIntervalType.FIXED,"btn btn-default col-md-4");
-        btnGroup.addBtn(lang.getName(En_DateIntervalType.UNLIMITED), En_DateIntervalType.UNLIMITED,"btn btn-default col-md-4");
+    }
+
+    public void addBtn(En_DateIntervalType value, String buttonStyle ) {
+        btnGroup.addBtn(lang.getName(value), value,buttonStyle);
     }
 
     @Override
@@ -58,13 +61,15 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
         return addHandler( valueChangeHandler, ValueChangeEvent.getType() );
     }
 
+    public void setFormatValue(String value) { range.setFormatValue(value); }
+
     public void setRangeMandatory(boolean value) {
         range.setMandatory(value);
     }
 
-    public void setEnableUnlimited(boolean value) {
+    public void setEnableBtn(En_DateIntervalType intervalType, boolean value) {
         btnGroup.itemViewToModel.entrySet().stream()
-                .filter(e -> e.getValue().equals(En_DateIntervalType.UNLIMITED))
+                .filter(e -> Objects.equals(e.getValue(), intervalType))
                 .findFirst().get().getKey().setEnabled(value);
     }
 

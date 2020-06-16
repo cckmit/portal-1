@@ -7,10 +7,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -165,8 +167,7 @@ public class ReportCaseTest extends BaseServiceTest {
         cal.set( Calendar.MILLISECOND, 0 );
         to = cal.getTime();
 
-        caseQuery.setCreatedFrom( from );
-        caseQuery.setCreatedTo( to );
+        caseQuery.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, from, to ));
         caseQuery.setImportanceIds( toList( importances, En_ImportanceLevel::getId ) );
 
         return caseQuery;

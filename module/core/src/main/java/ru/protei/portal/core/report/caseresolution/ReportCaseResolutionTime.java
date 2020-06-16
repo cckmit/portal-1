@@ -49,12 +49,12 @@ public class ReportCaseResolutionTime {
 
     public void run() {
         log.info( "run(): Start report. caseQuery: {}", caseQuery );
-        intervals = makeIntervals( caseQuery.getCreatedFrom(), caseQuery.getCreatedTo(), DAY );
+        intervals = makeIntervals( caseQuery.getCreatedRange().getFrom(), caseQuery.getCreatedRange().getTo(), DAY );
 
         long startQuery = System.currentTimeMillis();
         List<CaseResolutionTimeReportDto> comments = caseCommentDAO.reportCaseResolutionTime(
-                caseQuery.getCreatedFrom(),
-                caseQuery.getCreatedTo(),
+                caseQuery.getCreatedRange().getFrom(),
+                caseQuery.getCreatedRange().getTo(),
                 caseQuery.getStateIds(),
                 caseQuery.getCompanyIds(),
                 caseQuery.getProductIds(),

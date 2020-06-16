@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -431,8 +433,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private CaseQuery createCaseQuery(  Date from, Date to ) {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setStateIds( activeStatesShort );
-        caseQuery.setCreatedFrom( from );
-        caseQuery.setCreatedTo( to );
+        caseQuery.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, from, to));
         return caseQuery;
     }
 

@@ -3,13 +3,16 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
@@ -143,28 +146,33 @@ public class CaseObjectSqlBuilder {
                     condition.append( " and (importance in " ).append( importantces )
                             .append( " or case_comment.cimp_level in " ).append( importantces )
                             .append( ")" );
-
                 }
             }
 
-            if ( query.getCreatedFrom() != null ) {
-                condition.append( " and case_object.created >= ?" );
-                args.add( query.getCreatedFrom() );
+            Interval created = createInterval(query.getCreatedRange());
+
+            if ( created != null ) {
+                if (created.from != null) {
+                    condition.append( " and case_object.created >= ?" );
+                    args.add( created.from );
+                }
+                if (created.to != null) {
+                    condition.append( " and case_object.created < ?" );
+                    args.add( created.to );
+                }
             }
 
-            if ( query.getCreatedTo() != null ) {
-                condition.append( " and case_object.created < ?" );
-                args.add( query.getCreatedTo() );
-            }
+            Interval modified = createInterval(query.getModifiedRange());
 
-            if ( query.getModifiedFrom() != null ) {
-                condition.append( " and case_object.modified >= ?" );
-                args.add( query.getModifiedFrom() );
-            }
-
-            if ( query.getModifiedTo() != null ) {
-                condition.append( " and case_object.modified < ?" );
-                args.add( query.getModifiedTo() );
+            if ( modified != null ) {
+                if (modified.from != null) {
+                    condition.append( " and case_object.modified >= ?" );
+                    args.add( modified.from );
+                }
+                if (modified.to != null) {
+                    condition.append( " and case_object.modified < ?" );
+                    args.add( created.to );
+                }
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
@@ -188,14 +196,17 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and case_object.id in (SELECT case_comment.case_id FROM case_comment " +
                         "WHERE 2=2");
 
-                if ( query.getModifiedFrom() != null ) {
-                    condition.append( " and case_comment.created >= ?" );
-                    args.add(query.getModifiedFrom());
+                if ( modified != null ) {
+                    if (modified.from != null) {
+                        condition.append( " and case_comment.created >= ?" );
+                        args.add( modified.from );
+                    }
+                    if (modified.to != null) {
+                        condition.append( " and case_comment.created < ?" );
+                        args.add( created.to );
+                    }
                 }
-                if ( query.getModifiedTo() != null ) {
-                    condition.append( " and case_comment.created < ?" );
-                    args.add(query.getModifiedTo());
-                }
+
                 if ( query.getStateIds() != null ) {
                     condition.append( " and case_comment.cstate_id in " + makeInArg(query.getStateIds()));
                 }
@@ -297,5 +308,106 @@ public class CaseObjectSqlBuilder {
                 args.add(query.getPlanId());
             }
         });
+    }
+
+    private Interval makeToday() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local = local.plusDays(1);
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval makeYesterday() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now();
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local = local.minusDays(1);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval makeThisWeek() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local = local.plusWeeks(1);
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval makeLastWeek() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local = local.minusWeeks(1);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval makeThisMonth() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local = local.plusMonths(1);
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval makeLastMonth() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local.minusMonths(1);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval makeThisYear() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local = local.plusYears(1);
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval makeLastYear() {
+        Interval interval = new Interval();
+        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
+        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        local.minusYears(1);
+        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return interval;
+    }
+
+    private Interval createInterval( DateRange dateRange ) {
+        if ( dateRange == null )
+            return null;
+
+        switch (dateRange.getIntervalType()) {
+            case FIXED      : return new Interval(dateRange.getFrom(), dateRange.getTo());
+            case TODAY      : return makeToday();
+            case YESTERDAY  : return makeYesterday();
+            case THIS_WEEK  : return makeThisWeek();
+            case LAST_WEEK  : return makeLastWeek();
+            case THIS_MONTH : return makeThisMonth();
+            case LAST_MONTH : return makeLastMonth();
+            case THIS_YEAR  : return makeThisYear();
+            case LAST_YEAR  : return makeLastYear();
+        }
+
+        return null;
+    }
+
+    private class Interval {
+        public Date from;
+        public Date to;
+        Interval ()  {}
+        Interval (Date from, Date to) {
+            this.from = from;
+            this.to = to;
+        }
     }
 }

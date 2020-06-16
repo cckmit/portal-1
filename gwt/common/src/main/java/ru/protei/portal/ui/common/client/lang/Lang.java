@@ -2699,4 +2699,20 @@ public interface Lang extends Messages, ContactItemLang {
     String errIssueAlreadyExistInPlan();
 
     String planIssueNumber();
+
+    String todayInterval();
+
+    String yesterdayInterval();
+
+    String thisWeekInterval();
+
+    String lastWeekInterval();
+
+    String thisMonthInterval();
+
+    String lastMonthInterval();
+
+    String thisYearInterval();
+
+    String lastYearInterval();
 }
