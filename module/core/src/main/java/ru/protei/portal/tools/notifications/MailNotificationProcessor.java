@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -794,6 +795,27 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onPersonCaseFilterEvent(PersonCaseFilterEvent event) {
+        Map<String, List<CaseObject>> stateToIssues = event.getIssues()
+                .stream().collect(groupingBy(CaseObject::getStateName));
+        NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getRecipient());
+
+        PreparedTemplate subjectTemplate = templateService.getPersonCaseFilterNotificationSubject();
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for PersonCaseFilter notification");
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getPersonCaseFilterNotificationBody(stateToIssues, getCrmCaseUrl(true));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release PersonCaseFilter notification");
+            return;
+        }
+
+        sendMailToRecipients(Collections.singletonList(notifier), bodyTemplate, subjectTemplate, true);
     }
 
     // -----

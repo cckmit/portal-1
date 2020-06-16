@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Сервис формирования шаблонов
@@ -80,4 +81,7 @@ public interface TemplateService {
 
     PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd);
 
+    PreparedTemplate getPersonCaseFilterNotificationSubject();
+
+    PreparedTemplate getPersonCaseFilterNotificationBody(Map<String, List<CaseObject>> stateToIssues, String urlTemplate);
 }

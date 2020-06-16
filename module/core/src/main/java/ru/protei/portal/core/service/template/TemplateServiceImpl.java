@@ -642,6 +642,29 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getPersonCaseFilterNotificationSubject() {
+        Map<String, Object> templateModel = new HashMap<>();
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/person.case.filter.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+
+    }
+
+    @Override
+    public PreparedTemplate getPersonCaseFilterNotificationBody(Map<String, List<CaseObject>> stateToIssues, String urlTemplate) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("stateToIssues", stateToIssues);
+        templateModel.put("urlTemplate", urlTemplate);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/person.case.filter.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
     }
