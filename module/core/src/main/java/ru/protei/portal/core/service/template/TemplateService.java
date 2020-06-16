@@ -83,5 +83,5 @@ public interface TemplateService {
 
     PreparedTemplate getPersonCaseFilterNotificationSubject();
 
-    PreparedTemplate getPersonCaseFilterNotificationBody(Map<String, List<CaseObject>> stateToIssues, String urlTemplate);
+    PreparedTemplate getPersonCaseFilterNotificationBody(List<CaseObject> issues, String urlTemplate);
 }

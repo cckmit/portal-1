@@ -13,12 +13,12 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <div>
     <div style="margin-top: 12px">
         <#if stateToIssues?has_content>
-            <#list stateToIssues?keys as state>
+            <#list stateOrder as state>
                 <h3 style="font-family: sans-serif;font-size: 14px">${state}</h3>
                 <#list stateToIssues[state] as issue>
-                    <#assign id=issue.id?c href=urlTemplate?replace("%d", id) name=issue.name/>
+                    <#assign number=issue.caseNumber?c href=urlTemplate?replace("%d", number) name=issue.name/>
                     <div style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <b><a href=${href}>${id}</a></b> - <span>${name}</span> </div>
+                        <b><a href=${href}>CRM-${number}</a></b> - <span>${name}</span> </div>
                 </#list>
             </#list>
         <#else>

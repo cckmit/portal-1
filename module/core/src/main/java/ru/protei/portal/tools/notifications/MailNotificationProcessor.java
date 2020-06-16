@@ -799,8 +799,6 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onPersonCaseFilterEvent(PersonCaseFilterEvent event) {
-        Map<String, List<CaseObject>> stateToIssues = event.getIssues()
-                .stream().collect(groupingBy(CaseObject::getStateName));
         NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getRecipient());
 
         PreparedTemplate subjectTemplate = templateService.getPersonCaseFilterNotificationSubject();
@@ -809,7 +807,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getPersonCaseFilterNotificationBody(stateToIssues, getCrmCaseUrl(true));
+        PreparedTemplate bodyTemplate = templateService.getPersonCaseFilterNotificationBody( event.getIssues(), getCrmCaseUrl(true));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for release PersonCaseFilter notification");
             return;
