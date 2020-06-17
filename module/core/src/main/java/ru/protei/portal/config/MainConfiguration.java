@@ -853,6 +853,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public PersonSubscriptionService getPersonSubscriptionService() {
+        return new PersonSubscriptionServiceImpl();
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }

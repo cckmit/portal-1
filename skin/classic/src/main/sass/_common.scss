@@ -4269,3 +4269,26 @@ table {
 .absent {
   opacity: 0.5;
 }
+
+.person-subscribers {
+  div.select2-container {
+    border: 0 !important;
+    background: transparent;
+    ul.select2-choices {
+      padding-left: 0;
+      margin-bottom: 5px;
+      li.select2-search-choice {
+        display: inline !important;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .select2-container {
+    .select2-button {
+      .select2-add-button {
+        flex-grow: 0;
+      }
+    }
+  }
+}

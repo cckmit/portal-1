@@ -2645,4 +2645,10 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceReasonLeave();
 
     String errAbsenceHasIntersections();
+
+    String profileGeneral();
+
+    String profileSubscriptions();
+
+    String profileInterestedEmployees();
 }

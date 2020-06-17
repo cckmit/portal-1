@@ -51,6 +51,17 @@ public class DebugIds {
             String NEW_PASSWORD = "profile-new-password-label";
             String CONFIRM_PASSWORD = "profile-confirm-password-label";
         }
+
+        interface SUBSCRIPTION {
+
+            String EMPLOYEE_SELECTOR_ADD_BUTTON = "profile-employee-selector-add-button";
+            String EMPLOYEE_SELECTOR_CLEAR_BUTTON = "profile-employee-selector-clear-button";
+            String EMPLOYEE_SELECTOR_ITEM_CONTAINER = "profile-employee-selector-item-container";
+
+            interface LABEL {
+                String EMPLOYEE_SELECTOR = "profile-employee-selector-label";
+            }
+        }
     }
 
     public interface ACTION_BAR {

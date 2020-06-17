@@ -36,6 +36,28 @@ public class AppEvents {
     public static class ShowProfile {}
 
     /**
+     * Показать общую вкладку профиля пользователя
+     */
+    public static class ShowProfileGeneral {
+        public ShowProfileGeneral(HasWidgets parent) {
+            this.parent = parent;
+        }
+
+        public HasWidgets parent;
+    }
+
+    /**
+     * Показать вкладку подписок профиля пользователя
+     */
+    public static class ShowProfileSubscriptions {
+        public ShowProfileSubscriptions(HasWidgets parent) {
+            this.parent = parent;
+        }
+
+        public HasWidgets parent;
+    }
+
+    /**
      * Инициализация контейнера App
      */
     public static class InitDetails {

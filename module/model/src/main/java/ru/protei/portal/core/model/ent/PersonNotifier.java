@@ -13,6 +13,9 @@ public class PersonNotifier implements Serializable {
     @JdbcColumn(name = "person_id")
     private Long personId;
 
+    @JdbcJoinedObject(localColumn="person_id", remoteColumn = "id")
+    private Person person;
+
     @JdbcColumn(name = "notifier_id")
     private Long notifierId;
 
@@ -41,6 +44,14 @@ public class PersonNotifier implements Serializable {
 
     public void setPersonId(Long personId) {
         this.personId = personId;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     public Long getNotifierId() {
