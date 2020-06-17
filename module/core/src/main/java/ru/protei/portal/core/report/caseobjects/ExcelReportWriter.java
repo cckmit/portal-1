@@ -171,91 +171,31 @@ public class ExcelReportWriter implements
     }
 
     private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription) {
-        List<Integer> columnsWidth = new LinkedList<>();
+        List<Integer> columnsWidthList = new ColumnsListBuilder<Integer>()
+                .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
+                .add(4590).add(4200).add(4200).add(4200)
+                .add(6000).add(3350).add(4600)
+                .add(4200).add(5800).add(5800)
+                .add(5800).add(5800).add(5800)
+                .add(5800).add(5800)
+                .addIf(5800, isNotRestricted).addIf(5800, isNotRestricted).addIf(5800, isNotRestricted)
+                .build();
 
-        columnsWidth.add(3650);
-
-        if (isNotRestricted) {
-            columnsWidth.add(3430);
-        }
-
-        columnsWidth.add(8570);
-
-        if (withDescription) {
-            columnsWidth.add(9000);
-        }
-
-        columnsWidth.add(4590);
-        columnsWidth.add(4200);
-        columnsWidth.add(4200);
-        columnsWidth.add(4200);
-
-        columnsWidth.add(6000);
-        columnsWidth.add(3350);
-        columnsWidth.add(4600);
-
-        columnsWidth.add(4200);
-        columnsWidth.add(5800);
-        columnsWidth.add(5800);
-
-        columnsWidth.add(5800);
-        columnsWidth.add(5800);
-        columnsWidth.add(5800);
-
-        columnsWidth.add(5800);
-        columnsWidth.add(5800);
-
-        if (isNotRestricted) {
-            columnsWidth.add(5800);
-            columnsWidth.add(5800);
-            columnsWidth.add(5800);
-        }
-
-        return toPrimitiveIntegerArray(columnsWidth.toArray(new Integer[]{}));
+        return toPrimitiveIntegerArray(columnsWidthList.toArray(new Integer[]{}));
     }
 
     private String[] getColumns(boolean isNotRestricted, boolean withDescription) {
-        List<String> columns = new LinkedList<>();
+        List<String> columnsList = new ColumnsListBuilder<String>()
+                .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
+                .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
+                .add("ir_product").add("ir_importance").add("ir_state")
+                .add("ir_date_created").add("ir_date_opened").add("ir_date_workaround")
+                .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
+                .add("ir_date_important").add("ir_date_critical")
+                .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_elapsed", isNotRestricted)
+                .build();
 
-        columns.add("ir_caseno");
-
-        if (isNotRestricted) {
-            columns.add("ir_private");
-        }
-
-        columns.add("ir_name");
-
-        if (withDescription) {
-            columns.add("ir_description");
-        }
-
-        columns.add("ir_company");
-        columns.add("ir_initiator");
-        columns.add("ir_manager");
-        columns.add("ir_manager_company");
-
-        columns.add("ir_product");
-        columns.add("ir_importance");
-        columns.add("ir_state");
-
-        columns.add("ir_date_created");
-        columns.add("ir_date_opened");
-        columns.add("ir_date_workaround");
-
-        columns.add("ir_date_customer_test");
-        columns.add("ir_date_done");
-        columns.add("ir_date_verify");
-
-        columns.add("ir_date_important");
-        columns.add("ir_date_critical");
-
-        if (isNotRestricted) {
-            columns.add("ir_time_solution_first");
-            columns.add("ir_time_solution_full");
-            columns.add("ir_time_elapsed");
-        }
-
-        return columns.toArray(new String[]{});
+        return columnsList.toArray(new String[]{});
     }
 
     private int[] toPrimitiveIntegerArray(Integer[] elements) {
@@ -266,5 +206,26 @@ public class ExcelReportWriter implements
         }
 
         return result;
+    }
+
+    private static class ColumnsListBuilder<T> {
+        private List<T> list = new LinkedList<>();
+
+        ColumnsListBuilder<T> add(T element) {
+            list.add(element);
+            return this;
+        }
+
+        ColumnsListBuilder<T> addIf(T element, boolean condition) {
+            if (condition) {
+                list.add(element);
+            }
+
+            return this;
+        }
+
+        List<T> build() {
+            return list;
+        }
     }
 }
