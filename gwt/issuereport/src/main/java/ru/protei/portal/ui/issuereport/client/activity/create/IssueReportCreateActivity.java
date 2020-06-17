@@ -125,6 +125,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         En_ReportType reportType = view.reportType().getValue();
         if (reportType == En_ReportType.PROJECT) {
             projectFilterView.resetFilter();
+            view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(projectFilterView.asWidget());
             view.scheduledTypeContainerVisibility().setVisible(false);
