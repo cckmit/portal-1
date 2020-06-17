@@ -83,7 +83,7 @@ public class Report implements Serializable {
     private En_ReportScheduledType scheduledType;
 
     @JdbcColumn(name = "with_description")
-    private Boolean withDescription;
+    private boolean withDescription;
 
     public Long getId() {
         return id;
@@ -181,11 +181,11 @@ public class Report implements Serializable {
         this.scheduledType = scheduledType;
     }
 
-    public Boolean getWithDescription() {
+    public boolean isWithDescription() {
         return withDescription;
     }
 
-    public void setWithDescription(Boolean withDescription) {
+    public void setWithDescription(boolean withDescription) {
         this.withDescription = withDescription;
     }
 

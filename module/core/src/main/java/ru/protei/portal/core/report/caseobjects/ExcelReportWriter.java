@@ -209,7 +209,7 @@ public class ExcelReportWriter implements
     }
 
     private static class ColumnsListBuilder<T> {
-        private List<T> list = new LinkedList<>();
+        private List<T> list = new ArrayList<>();
 
         ColumnsListBuilder<T> add(T element) {
             list.add(element);

@@ -130,6 +130,8 @@ public abstract class IssueReportCreateActivity implements Activity,
             view.scheduledTypeContainerVisibility().setVisible(false);
             view.checkImportanceHistoryContainerVisibility().setVisible(false);
             view.withDescriptionContainerVisibility().setVisible(false);
+            view.checkImportanceHistory().setValue(false);
+            view.withDescription().setValue(false);
         } else {
             view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
             view.checkImportanceHistory().setValue(false);
