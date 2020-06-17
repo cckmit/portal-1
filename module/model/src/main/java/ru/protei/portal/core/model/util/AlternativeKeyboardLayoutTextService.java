@@ -11,8 +11,6 @@ import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
  * ЙЦУКЕН - QWERTY
  */
 public class AlternativeKeyboardLayoutTextService {
-    private static Map<Character, String> rusToLatinCharacters = new HashMap<>();
-    private static Map<String, String> charsWithDots = new HashMap<>();
 
     static Map<Character, Character> latinToCyr = new HashMap<>();
     static Map<Character, Character> cyrToLatin = new HashMap<>();
@@ -68,13 +66,12 @@ public class AlternativeKeyboardLayoutTextService {
         return alternativeString;
     }
 
-    public static String latinToCyrillic( String searchString ) {
-        if (isBlank( searchString )) return searchString;
-        char[] alternative = searchString.toCharArray();
-        for (int i = 0; i < searchString.length(); i++) {
-            if (latinToCyr.containsKey( searchString.charAt( i ) )) {
-                alternative[i] = latinToCyr.get( searchString.charAt( i ) );
-                continue;
+    public static String latinToCyrillic( String latinString ) {
+        if (isBlank( latinString )) return latinString;
+        char[] alternative = latinString.toCharArray();
+        for (int i = 0; i < latinString.length(); i++) {
+            if (latinToCyr.containsKey( latinString.charAt( i ) )) {
+                alternative[i] = latinToCyr.get( latinString.charAt( i ) );
             }
         }
 
@@ -88,7 +85,6 @@ public class AlternativeKeyboardLayoutTextService {
         for (int i = 0; i < cyrillicString.length(); i++) {
             if (cyrToLatin.containsKey( cyrillicString.charAt( i ) )) {
                 alternative[i] = cyrToLatin.get( cyrillicString.charAt( i ) );
-                continue;
             }
         }
 
