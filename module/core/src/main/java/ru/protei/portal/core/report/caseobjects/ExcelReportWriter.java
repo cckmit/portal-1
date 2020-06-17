@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
@@ -15,10 +16,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 
@@ -32,15 +32,17 @@ public class ExcelReportWriter implements
     private final TimeFormatter timeFormatter;
     private final boolean isNotRestricted;
     private final String locale;
+    private final boolean withDescription;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter,
-                             boolean isRestricted) {
+                             boolean isRestricted, boolean withDescription) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
         this.timeFormatter = timeFormatter;
         this.isNotRestricted = !isRestricted;
         this.locale = localizedLang.getLanguageTag();
+        this.withDescription = withDescription;
     }
 
     @Override
@@ -70,44 +72,12 @@ public class ExcelReportWriter implements
 
     @Override
     public int[] getColumnsWidth() {
-        return isNotRestricted ?
-                new int[] {
-                        3650, 3430, 8570,
-                        4590, 4200, 4200, 4200,
-                        6000, 3350, 4600,
-                        4200, 5800, 5800,
-                        5800, 5800, 5800,
-                        5800, 5800,
-                        5800, 5800, 5800 } :
-                new int[] {
-                        3650, 8570,
-                        4590, 4200, 4200, 4200,
-                        6000, 3350, 4600,
-                        4200, 5800, 5800,
-                        5800, 5800, 5800,
-                        5800, 5800
-                };
+        return getColumnsWidth(isNotRestricted, withDescription);
     }
 
     @Override
     public String[] getColumnNames() {
-        return isNotRestricted ?
-                new String[] {
-                        "ir_caseno", "ir_private", "ir_name",
-                        "ir_company", "ir_initiator", "ir_manager", "ir_manager_company",
-                        "ir_product", "ir_importance", "ir_state",
-                        "ir_date_created", "ir_date_opened", "ir_date_workaround",
-                        "ir_date_customer_test", "ir_date_done", "ir_date_verify",
-                        "ir_date_important",  "ir_date_critical",
-                        "ir_time_solution_first", "ir_time_solution_full", "ir_time_elapsed" } :
-                new String[] {
-                        "ir_caseno", "ir_name",
-                        "ir_company", "ir_initiator", "ir_manager", "ir_manager_company",
-                        "ir_product", "ir_importance", "ir_state",
-                        "ir_date_created", "ir_date_opened", "ir_date_workaround",
-                        "ir_date_customer_test", "ir_date_done", "ir_date_verify",
-                        "ir_date_important", "ir_date_critical"
-                };
+        return getColumns(isNotRestricted, withDescription);
     }
 
     @Override
@@ -153,6 +123,7 @@ public class ExcelReportWriter implements
         values.add("CRM-" + issue.getCaseNumber());
         if (isNotRestricted) values.add(lang.get(issue.isPrivateCase() ? "yes" : "no"));
         values.add(HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "");
+        if (withDescription) values.add(StringUtils.emptyIfNull(issue.getInfo()));
         values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? transliterate(issue.getInitiatorCompany().getCname(), locale) : "");
         values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
         values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
@@ -197,5 +168,103 @@ public class ExcelReportWriter implements
             return minutes > 0 ? minutes : null;
         }
         return null;
+    }
+
+    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription) {
+        List<Integer> columnsWidth = new LinkedList<>();
+
+        columnsWidth.add(3650);
+
+        if (isNotRestricted) {
+            columnsWidth.add(3430);
+        }
+
+        columnsWidth.add(8570);
+
+        if (withDescription) {
+            columnsWidth.add(9000);
+        }
+
+        columnsWidth.add(4590);
+        columnsWidth.add(4200);
+        columnsWidth.add(4200);
+        columnsWidth.add(4200);
+
+        columnsWidth.add(6000);
+        columnsWidth.add(3350);
+        columnsWidth.add(4600);
+
+        columnsWidth.add(4200);
+        columnsWidth.add(5800);
+        columnsWidth.add(5800);
+
+        columnsWidth.add(5800);
+        columnsWidth.add(5800);
+        columnsWidth.add(5800);
+
+        columnsWidth.add(5800);
+        columnsWidth.add(5800);
+
+        if (isNotRestricted) {
+            columnsWidth.add(5800);
+            columnsWidth.add(5800);
+            columnsWidth.add(5800);
+        }
+
+        return toPrimitiveIntegerArray(columnsWidth.toArray(new Integer[]{}));
+    }
+
+    private String[] getColumns(boolean isNotRestricted, boolean withDescription) {
+        List<String> columns = new LinkedList<>();
+
+        columns.add("ir_caseno");
+
+        if (isNotRestricted) {
+            columns.add("ir_private");
+        }
+
+        columns.add("ir_name");
+
+        if (withDescription) {
+            columns.add("ir_description");
+        }
+
+        columns.add("ir_company");
+        columns.add("ir_initiator");
+        columns.add("ir_manager");
+        columns.add("ir_manager_company");
+
+        columns.add("ir_product");
+        columns.add("ir_importance");
+        columns.add("ir_state");
+
+        columns.add("ir_date_created");
+        columns.add("ir_date_opened");
+        columns.add("ir_date_workaround");
+
+        columns.add("ir_date_customer_test");
+        columns.add("ir_date_done");
+        columns.add("ir_date_verify");
+
+        columns.add("ir_date_important");
+        columns.add("ir_date_critical");
+
+        if (isNotRestricted) {
+            columns.add("ir_time_solution_first");
+            columns.add("ir_time_solution_full");
+            columns.add("ir_time_elapsed");
+        }
+
+        return columns.toArray(new String[]{});
+    }
+
+    private int[] toPrimitiveIntegerArray(Integer[] elements) {
+        int[] result = new int[elements.length];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = elements[i];
+        }
+
+        return result;
     }
 }

@@ -2699,4 +2699,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errIssueAlreadyExistInPlan();
 
     String planIssueNumber();
+
+    String issueReportWithDescription();
+
+    String issueReportWithDescriptionTitle();
 }

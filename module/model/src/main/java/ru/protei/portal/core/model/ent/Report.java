@@ -82,6 +82,9 @@ public class Report implements Serializable {
     @JdbcEnumerated(EnumType.STRING)
     private En_ReportScheduledType scheduledType;
 
+    @JdbcColumn(name = "with_description")
+    private Boolean withDescription;
+
     public Long getId() {
         return id;
     }
@@ -178,6 +181,14 @@ public class Report implements Serializable {
         this.scheduledType = scheduledType;
     }
 
+    public Boolean getWithDescription() {
+        return withDescription;
+    }
+
+    public void setWithDescription(Boolean withDescription) {
+        this.withDescription = withDescription;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
@@ -193,6 +204,7 @@ public class Report implements Serializable {
                 ", locale='" + locale + '\'' +
                 ", isRestricted=" + isRestricted +
                 ", scheduledType=" + scheduledType +
+                ", withDescription=" + withDescription +
                 '}';
     }
 }

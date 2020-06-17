@@ -24,9 +24,13 @@
                                 <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
                             </g:HTMLPanel>
-                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-4" title="{lang.issueImportanceCheckHistoryTitle}">
-                                <label ui:field="notifyLabel" class="m-l-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
+                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-12" title="{lang.issueImportanceCheckHistoryTitle}">
                                 <switcher:Switcher ui:field="checkImportanceHistory"/>
+                                <label class="m-l-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="withDescriptionContainer" styleName="form-group col-md-12" title="{lang.issueReportWithDescriptionTitle}">
+                                <switcher:Switcher ui:field="withDescription"/>
+                                <label class="m-l-5"><ui:text from="{lang.issueReportWithDescription}"/></label>
                             </g:HTMLPanel>
                         </div>
                     </div>

@@ -96,6 +96,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         report.setScheduledType(scheduledType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+        report.setWithDescription(view.withDescription().getValue());
         report.setCaseQuery(query);
 
         if (isSaving) {
@@ -128,11 +129,14 @@ public abstract class IssueReportCreateActivity implements Activity,
             view.getIssueFilterContainer().add(projectFilterView.asWidget());
             view.scheduledTypeContainerVisibility().setVisible(false);
             view.checkImportanceHistoryContainerVisibility().setVisible(false);
+            view.withDescriptionContainerVisibility().setVisible(false);
         } else {
             view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
             view.checkImportanceHistory().setValue(false);
+            view.withDescription().setValue(false);
             view.scheduledTypeContainerVisibility().setVisible(isScheduledTypeContainerVisible(reportType));
             view.checkImportanceHistoryContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+            view.withDescriptionContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
             issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
             applyIssueFilterVisibilityByPrivileges();
             view.getIssueFilterContainer().clear();
@@ -216,6 +220,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.reportType().setValue(En_ReportType.CASE_OBJECTS, true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.checkImportanceHistory().setValue(false);
+        view.withDescription().setValue(false);
     }
 
     private boolean isScheduledTypeContainerVisible(En_ReportType reportType) {
