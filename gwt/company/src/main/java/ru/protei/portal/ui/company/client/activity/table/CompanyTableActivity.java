@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -29,7 +30,11 @@ import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterV
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
 
 /**
  * Активность таблицы компаний
@@ -185,6 +190,7 @@ public abstract class CompanyTableActivity implements
 
         cq.setHomeGroupFlag(null);
         cq.setShowHidden(false);
+        cq.setAlternativeSearchString( makeAlternativeSearchString(filterView.searchPattern().getValue()) );
 
         if(filterView.categories().getValue() != null)
             cq.setCategoryIds(
