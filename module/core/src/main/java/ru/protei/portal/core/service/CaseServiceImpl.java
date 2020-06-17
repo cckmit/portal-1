@@ -224,7 +224,7 @@ public class CaseServiceImpl implements CaseService {
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
-        autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompany().getId());
+        autoOpenCaseService.processNewCreatedCaseToAutoOpen(caseId, caseObject.getInitiatorCompanyId());
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
