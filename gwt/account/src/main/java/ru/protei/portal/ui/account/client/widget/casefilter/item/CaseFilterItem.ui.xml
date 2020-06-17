@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:lang="urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale"
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="row form-group">
+        <div class="col-md-12">
+            <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.issueFilterNotDefined}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

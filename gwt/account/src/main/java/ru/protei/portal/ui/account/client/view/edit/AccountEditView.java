@@ -13,18 +13,21 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActivity;
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
+import ru.protei.portal.ui.account.client.widget.casefilter.group.CaseFilterGroup;
 import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -65,6 +68,11 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     @Override
     public HasText confirmPassword() {
         return confirmPassword;
+    }
+
+    @Override
+    public HasValue<List<CaseFilterShortView>> caseFilter() {
+        return caseFilter;
     }
 
     @Override
@@ -170,6 +178,10 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @UiField
     HTMLPanel infoPanel;
+
+    @Inject
+    @UiField( provided = true )
+    CaseFilterGroup caseFilter;
 
     @Inject
     @UiField( provided = true )

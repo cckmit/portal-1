@@ -18,7 +18,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                 <#list stateToIssues[state] as issue>
                     <#assign number=issue.caseNumber?c href=urlTemplate?replace("%d", number) name=issue.name/>
                     <div style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                        <b><a href=${href}>CRM-${number}</a></b> - <span>${name}</span> </div>
+                        <b><a href=${href}>CRM-${number}</a></b> - <span>${name}</span>
+                    </div>
                 </#list>
             </#list>
         <#else>

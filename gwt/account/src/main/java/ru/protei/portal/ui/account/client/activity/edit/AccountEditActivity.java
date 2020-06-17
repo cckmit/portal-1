@@ -2,7 +2,6 @@ package ru.protei.portal.ui.account.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -167,6 +166,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
             view.company().setValue( new EntityOption(userLogin.getCompanyName(), userLogin.getCompanyId()) );
             view.person().setValue( new PersonShortView(userLogin.getDisplayName(), userLogin.getPersonId()), userLogin.isFired() );
         }
+
+        view.caseFilter().setValue(null);
+
         view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : PersonModel.makeCompanyIds(userLogin.getCompanyId()));
         view.password().setText( "" );
         view.confirmPassword().setText( "" );

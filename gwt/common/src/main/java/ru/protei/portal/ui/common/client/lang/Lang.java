@@ -1190,6 +1190,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountFor();
 
+    String accountSubscribeCaseFilter();
+
     String accountRolesNotFound();
 
     String roleName();
