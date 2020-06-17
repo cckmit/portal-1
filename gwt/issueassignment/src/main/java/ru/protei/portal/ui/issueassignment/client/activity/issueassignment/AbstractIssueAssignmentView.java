@@ -15,4 +15,8 @@ public interface AbstractIssueAssignmentView extends IsWidget {
     HasWidgets tableContainer();
 
     HasWidgets deskContainer();
+
+    HasWidgets quickview();
+
+    void showQuickview(boolean isShow);
 }

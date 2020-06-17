@@ -1,10 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'
+             xmlns:quickview='urn:import:ru.protei.portal.ui.common.client.widget.quickview'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="p-l-15 p-r-15">
         <g:HTMLPanel styleName="row" ui:field="container"/>
+        <quickview:QuickView ui:field="quickview"/>
         <loading:IndeterminateCircleLoading ui:field="loadingView" styleName="padding-30" visible="false"/>
         <g:HTMLPanel ui:field="failedView" styleName="padding-30" visible="false">
             <div class="row">

@@ -22,7 +22,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
@@ -376,7 +375,7 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         rowIssueView.setHandler(new AbstractDeskRowIssueView.Handler() {
             @Override
             public void onOpenIssue(CaseShortView issue) {
-                fireEvent(new IssueEvents.Edit(issue.getCaseNumber()));
+                fireEvent(new IssueAssignmentEvents.ShowIssuePreview(issue.getCaseNumber()));
             }
             @Override
             public void onOpenOptions(UIObject relative, CaseShortView issue) {

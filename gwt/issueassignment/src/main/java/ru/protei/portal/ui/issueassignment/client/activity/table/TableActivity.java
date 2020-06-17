@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueAssignmentEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
@@ -73,7 +72,7 @@ public abstract class TableActivity implements Activity, AbstractTableActivity {
 
     @Override
     public void onItemClicked(CaseShortView value) {
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+        fireEvent(new IssueAssignmentEvents.ShowIssuePreview(value.getCaseNumber()));
     }
 
     @Override

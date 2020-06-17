@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.widget.quickview.QuickView;
 import ru.protei.portal.ui.issueassignment.client.activity.issueassignment.AbstractIssueAssignmentActivity;
 import ru.protei.portal.ui.issueassignment.client.activity.issueassignment.AbstractIssueAssignmentView;
 
@@ -42,6 +43,16 @@ public class IssueAssignmentView extends Composite implements AbstractIssueAssig
         return desk;
     }
 
+    @Override
+    public HasWidgets quickview() {
+        return quickview;
+    }
+
+    @Override
+    public void showQuickview(boolean isShow) {
+        quickview.show(isShow);
+    }
+
     @UiHandler("toggleTableButton")
     public void toggleTableButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -60,6 +71,8 @@ public class IssueAssignmentView extends Composite implements AbstractIssueAssig
     HTMLPanel table;
     @UiField
     HTMLPanel desk;
+    @UiField
+    QuickView quickview;
     @UiField
     Button toggleTableButton;
     @UiField
