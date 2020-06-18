@@ -587,6 +587,11 @@ public class MainConfiguration {
         return new RoomReservationDAO_Impl();
     }
 
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return new ContractSpecificationDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
