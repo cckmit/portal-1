@@ -16,6 +16,7 @@ public interface AbstractAbsenceEditView extends IsWidget {
     HasValue<En_AbsenceReason> reason();
     HasValue<String> comment();
     HasVisibility contentVisibility();
+    HasVisibility loadingVisibility();
     HasEnabled employeeEnabled();
     HasEnabled dateRangeEnabled();
     HasEnabled reasonEnabled();

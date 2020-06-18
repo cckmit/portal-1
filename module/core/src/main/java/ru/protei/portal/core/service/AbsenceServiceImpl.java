@@ -147,6 +147,36 @@ public class AbsenceServiceImpl implements AbsenceService {
                 getAbsenceNotifiers(absence)));
     }
 
+    @Override
+    public Result<Boolean> completeAbsence(AuthToken token, Long absenceId) {
+
+        if (absenceId == null) {
+            return error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        PersonAbsence oldState = personAbsenceDAO.get(absenceId);
+        if (oldState == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        PersonAbsence newState = new PersonAbsence(oldState);
+        newState.setTillTime(new Date());
+        if (!personAbsenceDAO.partialMerge(newState, "till_time")) {
+            error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        Person initiator = personDAO.get(token.getPersonId());
+
+        return ok(true)
+                .publishEvent(new AbsenceNotificationEvent(
+                        this,
+                        EventAction.UPDATED,
+                        initiator,
+                        oldState,
+                        newState,
+                        getAbsenceNotifiers(newState)));
+    }
+
     private boolean validateFields(PersonAbsence absence) {
         if (absence == null) {
             return false;

@@ -30,4 +30,9 @@ public interface AbsenceControllerAsync {
      * Удаление записи об отсутствии
      */
     void removeAbsence(Long id, AsyncCallback<Boolean> callback);
+
+    /**
+     * Завершение отсутствия
+     */
+    void completeAbsence(Long id, AsyncCallback<Boolean> callback);
 }

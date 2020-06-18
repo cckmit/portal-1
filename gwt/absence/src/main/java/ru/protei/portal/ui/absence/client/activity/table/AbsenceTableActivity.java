@@ -45,6 +45,15 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
     public void onItemClicked(PersonAbsence value) {}
 
     @Override
+    public void onCompleteAbsence(PersonAbsence value) {
+        absenceController.completeAbsence(value.getId(), new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.absenceCompleteSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new EmployeeEvents.Show());
+                }));
+    }
+
+    @Override
     public void onEditClicked(PersonAbsence value) {
         fireEvent(new AbsenceEvents.Edit(value.getId()));
     }

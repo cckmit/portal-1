@@ -2651,4 +2651,8 @@ public interface Lang extends Messages, ContactItemLang {
     String profileSubscriptions();
 
     String profileInterestedEmployees();
+
+    String absenceCompleteSuccessful();
+
+    String absenceComplete();
 }

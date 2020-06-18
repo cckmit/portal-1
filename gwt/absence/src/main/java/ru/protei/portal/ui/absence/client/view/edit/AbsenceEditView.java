@@ -15,6 +15,7 @@ import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditActiv
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
 import ru.protei.portal.ui.absence.client.widget.selector.AbsenceReasonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 
 public class AbsenceEditView extends Composite implements AbstractAbsenceEditView {
@@ -53,6 +54,11 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     @Override
     public HasVisibility contentVisibility() {
         return content;
+    }
+
+    @Override
+    public HasVisibility loadingVisibility() {
+        return loading;
     }
 
     @Override
@@ -103,6 +109,8 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     AutoResizeTextArea comment;
     @UiField
     HTMLPanel content;
+    @UiField
+    IndeterminateCircleLoading loading;
 
     private AbstractAbsenceEditActivity activity;
 

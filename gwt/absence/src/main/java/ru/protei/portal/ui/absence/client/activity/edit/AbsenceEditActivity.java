@@ -30,6 +30,8 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
     public void onInit() {
         view.setActivity(this);
         dialogView.setActivity(this);
+        dialogView.removeButtonVisibility().setVisible(false);
+        dialogView.setSaveOnEnterClick(false);
         dialogView.getBodyContainer().add(view.asWidget());
     }
 
@@ -51,9 +53,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
     }
 
     @Override
-    public void onRemoveClicked() {
-
-    }
+    public void onRemoveClicked() {}
 
     @Override
     public void onSaveClicked() {
@@ -90,13 +90,13 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         fillView(absence);
     }
     private void showLoading() {
-        //view.loadingVisibility().setVisible(true);
+        view.loadingVisibility().setVisible(true);
         dialogView.removeButtonVisibility().setVisible(false);
         dialogView.saveButtonVisibility().setVisible(false);
     }
 
     private void hideLoading() {
-        //view.loadingVisibility().setVisible(false);
+        view.loadingVisibility().setVisible(false);
     }
 
     private void fillView(PersonAbsence absence) {
@@ -104,7 +104,6 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
 
         boolean isAllowedCreate = hasAccessCreate();
         boolean isAllowedModify = isAllowedCreate || AccessUtil.isAllowedEdit(policyService, absence);
-        boolean isAllowedRemove = !isNew() && AccessUtil.isAllowedRemove(policyService, absence);
 
         PersonShortView currentPerson = new PersonShortView(policyService.getProfile().getFullName(), policyService.getProfile().getId());
         view.employee().setValue(absence.getPerson() == null ? currentPerson : absence.getPerson().toFullNameShortView());
@@ -118,7 +117,6 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         view.commentEnabled().setEnabled(isAllowedModify);
 
         dialogView.saveButtonVisibility().setVisible(isAllowedModify);
-        dialogView.removeButtonVisibility().setVisible(isAllowedRemove);
     }
 
     private boolean validateView() {

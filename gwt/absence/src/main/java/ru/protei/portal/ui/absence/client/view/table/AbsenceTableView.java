@@ -13,15 +13,13 @@ import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableAct
 import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableView;
 import ru.protei.portal.ui.absence.client.util.AccessUtil;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AbsenceTableView extends Composite implements AbstractAbsenceTableView {
@@ -37,6 +35,15 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
     @Override
     public void setActivity(AbstractAbsenceTableActivity activity) {
         this.activity = activity;
+
+        completeClickColumn.setHandler(activity);
+        completeClickColumn.setActionHandler(new ClickColumn.Handler<PersonAbsence>() {
+            public void onItemClicked(PersonAbsence value) {
+                activity.onCompleteAbsence(value);
+            }
+            public void onItemClicked(PersonAbsence value, com.google.gwt.dom.client.Element target) {}
+        });
+        completeClickColumn.setColumnProvider(columnProvider);
 
         editClickColumn.setHandler(activity);
         editClickColumn.setEditHandler(activity);
@@ -64,6 +71,9 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
 
     private void initTable() {
 
+        completeClickColumn = new ActionIconClickColumn<>("fas fa-lg fa-check", lang.absenceComplete(), null);
+        completeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
+        completeClickColumn.setEnabledPredicate(value -> new Date().before(value.getTillTime()));
         editClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
         removeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedRemove(policyService, value));
 
@@ -76,6 +86,7 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
         table.addColumn(tillTime.header, tillTime.values);
         table.addColumn(reason.header, reason.values);
         table.addColumn(comment.header, comment.values);
+        table.addColumn(completeClickColumn.header, completeClickColumn.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
 
@@ -143,6 +154,7 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
     PolicyService policyService;
 
     AbstractAbsenceTableActivity activity;
+    ActionIconClickColumn<PersonAbsence> completeClickColumn;
     EditClickColumn<PersonAbsence> editClickColumn;
     RemoveClickColumn<PersonAbsence> removeClickColumn;
     ClickColumnProvider<PersonAbsence> columnProvider = new ClickColumnProvider<>();

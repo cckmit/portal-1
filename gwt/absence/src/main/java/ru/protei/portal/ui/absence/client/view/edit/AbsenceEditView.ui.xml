@@ -3,10 +3,13 @@
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:reason='urn:import:ru.protei.portal.ui.absence.client.widget.selector'
-             xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'>
+             xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="card card-transparent no-margin">
+        <loading:IndeterminateCircleLoading ui:field="loading" visible="false"
+                                            styleName="p-t-20 p-b-20 p-l-20 p-r-20"/>
         <g:HTMLPanel ui:field="content" visible="false" styleName="card-body">
             <div class="row">
                 <div class="form-group col-md-12">

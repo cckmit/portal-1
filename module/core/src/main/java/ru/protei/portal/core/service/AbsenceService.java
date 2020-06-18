@@ -30,4 +30,8 @@ public interface AbsenceService {
     @Privileged(En_Privilege.ABSENCE_REMOVE)
     @Auditable(En_AuditType.ABSENCE_REMOVE)
     Result<Boolean> removeAbsence(AuthToken token, Long absenceId);
+
+    @Privileged(En_Privilege.ABSENCE_EDIT)
+    @Auditable(En_AuditType.ABSENCE_MODIFY)
+    Result<Boolean> completeAbsence(AuthToken token, Long absenceId);
 }

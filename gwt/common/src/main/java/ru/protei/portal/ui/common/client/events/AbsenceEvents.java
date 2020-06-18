@@ -25,13 +25,4 @@ public class AbsenceEvents {
             this.id = id;
         }
     }
-
-    public static class Update {
-
-        public PersonAbsence absence;
-
-        public Update(PersonAbsence absence) {
-            this.absence = absence;
-        }
-    }
 }

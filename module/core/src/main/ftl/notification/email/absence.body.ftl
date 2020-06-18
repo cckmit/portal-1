@@ -10,8 +10,6 @@
 <@set name="_absenceAction" value="${absenceAction}"/>
 <@set name="_absenceEmployee" value="${absenceEmployee}"/>
 <@set name="_absenceDateRange" value="${absenceDateRange}"/>
-<@set name="_absenceFrom" value="${absenceFrom}"/>
-<@set name="_absenceTo" value="${absenceTo}"/>
 <@set name="_absenceReason" value="${absenceReason}"/>
 <@set name="_absenceComment" value="${absenceComment}"/>
 <@set name="_absenceReasonValue1" value="${absenceReasonValue1}"/>
@@ -57,31 +55,17 @@
                     </tr>
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_absenceDateRange}</td>
-                        <td>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td style="vertical-align:top;font-family: sans-serif;font-size: 14px; padding: 0;">${_absenceFrom}</td>
-                                        <td style="vertical-align:top;font-family: sans-serif;font-size: 14px; padding: 0;">
-                                            <#if fromTimeChanged>
-                                                <@changeTo old="${(oldFromTime)!'?'}" new="${(fromTime)!'?'}"/>
-                                            <#else>
-                                                ${(fromTime)!'?'}
-                                            </#if>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="vertical-align:top;font-family: sans-serif;font-size: 14px; padding: 0;">${_absenceTo}</td>
-                                        <td style="vertical-align:top;font-family: sans-serif;font-size: 14px; padding: 0;">
-                                            <#if tillTimeChanged>
-                                                <@changeTo old="${(oldTillTime)!'?'}" new="${(tillTime)!'?'}"/>
-                                            <#else>
-                                                ${(tillTime)!'?'}
-                                            </#if>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if fromTimeChanged>
+                                <@changeTo old="${(oldFromTime)!'?'}" new="${(fromTime)!'?'}"/>
+                            <#else>
+                                ${(fromTime)!'?'}
+                            </#if> -
+                            <#if tillTimeChanged>
+                                <@changeTo old="${(oldTillTime)!'?'}" new="${(tillTime)!'?'}"/>
+                            <#else>
+                                ${(tillTime)!'?'}
+                            </#if>
                         </td>
                     </tr>
                     <tr>
