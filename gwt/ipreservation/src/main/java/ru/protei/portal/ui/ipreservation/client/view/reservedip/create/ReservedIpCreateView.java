@@ -175,6 +175,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
 
     private void fillUseRangeButtons() {
         useRange.addBtn(En_DateIntervalType.MONTH,"btn btn-default col-md-4");
+        useRange.addBtn(En_DateIntervalType.FIXED, "btn btn-default col-md-4");
         useRange.addBtn(En_DateIntervalType.UNLIMITED,"btn btn-default col-md-4");
         useRange.getValue().setIntervalType(En_DateIntervalType.MONTH);
     }

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.query;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;

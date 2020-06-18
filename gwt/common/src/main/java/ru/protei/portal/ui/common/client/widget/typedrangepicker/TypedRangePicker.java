@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.ui.common.client.lang.En_DateIntervalLang;
+import ru.protei.portal.ui.common.client.widget.selector.rangetype.RangeTypeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 
 import java.util.Objects;
@@ -22,18 +23,24 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initButtons();
         btnGroup.addValueChangeHandler(new ValueChangeHandler<En_DateIntervalType>() {
             @Override
             public void onValueChange(ValueChangeEvent<En_DateIntervalType> event) {
-                range.setVisible(btnGroup.getValue().equals(En_DateIntervalType.FIXED));
-                range.setMandatory(btnGroup.getValue().equals(En_DateIntervalType.FIXED));
+                setRangePicker(event.getValue());
+            }
+        });
+
+        rangeTypeSelector.addValueChangeHandler(new ValueChangeHandler<En_DateIntervalType>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<En_DateIntervalType> event) {
+                setRangePicker(event.getValue());
             }
         });
     }
 
-    private void initButtons() {
-        btnGroup.addBtn(lang.getName(En_DateIntervalType.FIXED), En_DateIntervalType.FIXED,"btn btn-default col-md-4");
+    private void setRangePicker(En_DateIntervalType type) {
+        range.setVisible(Objects.equals(type, En_DateIntervalType.FIXED));
+        range.setMandatory(Objects.equals(type, En_DateIntervalType.FIXED));
     }
 
     public void addBtn(En_DateIntervalType value, String buttonStyle ) {
@@ -75,6 +82,10 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
 
     @UiField
     ToggleBtnGroup<En_DateIntervalType> btnGroup;
+
+    @Inject
+    @UiField(provided = true)
+    RangeTypeButtonSelector rangeTypeSelector;
 
     @Inject
     @UiField(provided = true)

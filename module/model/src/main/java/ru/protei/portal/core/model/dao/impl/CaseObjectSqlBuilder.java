@@ -171,7 +171,7 @@ public class CaseObjectSqlBuilder {
                 }
                 if (modified.to != null) {
                     condition.append( " and case_object.modified < ?" );
-                    args.add( created.to );
+                    args.add( modified.to );
                 }
             }
 
@@ -203,7 +203,7 @@ public class CaseObjectSqlBuilder {
                     }
                     if (modified.to != null) {
                         condition.append( " and case_comment.created < ?" );
-                        args.add( created.to );
+                        args.add( modified.to );
                     }
                 }
 
