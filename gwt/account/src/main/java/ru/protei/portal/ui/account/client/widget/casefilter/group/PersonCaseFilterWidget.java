@@ -26,16 +26,18 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
 
     public void setPersonId(Long personId) {
         itemContainer.clear();
+        makeItemAndFillValue(null);
 
         this.personId = personId;
         controller.getCaseFilterByPersonId(personId, new FluentCallback<List<CaseFilterShortView>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                    makeItemAndFillValue(null);
                 })
                 .withSuccess(list -> {
-                    list.forEach(this::makeItemAndFillValue);
-                    makeItemAndFillValue(null);
+                    if (!list.isEmpty()) {
+                        itemContainer.clear();
+                        list.forEach(this::makeItemAndFillValue);
+                    }
                 })
         );
     }
@@ -49,9 +51,6 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
                     .withSuccess((v) -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
             if (newId == null && itemContainer.getWidgetCount() > 1) {
                 itemContainer.remove(personCaseFilterItem);
-            }
-            if (oldId == null && newId != null) {
-                makeItemAndFillValue(null);
             }
         });
         itemContainer.add(personCaseFilterItem);

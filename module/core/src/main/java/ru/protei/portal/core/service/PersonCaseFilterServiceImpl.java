@@ -6,7 +6,7 @@ import ru.protei.portal.core.event.PersonCaseFilterEvent;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.PersonToCaseFilterDAO;
+import ru.protei.portal.core.model.dao.PersonCaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.PersonQuery;
@@ -27,7 +27,7 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
     @Autowired
     CaseFilterDAO caseFilterDAO;
     @Autowired
-    PersonToCaseFilterDAO personToCaseFilterDAO;
+    PersonCaseFilterDAO personCaseFilterDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
@@ -71,21 +71,21 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
         }
 
         if (oldCaseFilterId == null && newCaseFilterID != null) {
-            if (!personToCaseFilterDAO.checkExistsByCondition("person_id = ? and case_filter_id = ?",
+            if (!personCaseFilterDAO.checkExistsByCondition("person_id = ? and case_filter_id = ?",
                     personId, newCaseFilterID)) {
-                personToCaseFilterDAO.persist(createPersonToCaseFilter(personId, newCaseFilterID));
+                personCaseFilterDAO.persist(createPersonToCaseFilter(personId, newCaseFilterID));
             }
         } else if (oldCaseFilterId != null && newCaseFilterID == null) {
-            personToCaseFilterDAO.removeByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
+            personCaseFilterDAO.removeByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
         } else {
-            PersonToCaseFilter personToCaseFilter = personToCaseFilterDAO
+            PersonToCaseFilter personToCaseFilter = personCaseFilterDAO
                     .getByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
             if (personToCaseFilter == null) {
                 personToCaseFilter = createPersonToCaseFilter(personId, newCaseFilterID);
             } else {
                 personToCaseFilter.setCaseFilterId(newCaseFilterID);
             }
-            personToCaseFilterDAO.merge(personToCaseFilter);
+            personCaseFilterDAO.merge(personToCaseFilter);
         }
 
         return ok();

@@ -588,8 +588,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public PersonToCaseFilterDAO getPersonToCaseFilterDAO() {
-        return new PersonToCaseFilterDAO_Impl();
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return new PersonCaseFilterDAO_Impl();
     }
 
     /* SERVICES */
