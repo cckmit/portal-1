@@ -41,14 +41,14 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     public void onShow(PlanEvents.Edit event) {
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
-        fireSelectTab();
+        fireEvent(new MenuEvents.Select(lang.plans()));
+        fireEvent(new ActionBarEvents.Clear());
 
         if (!hasPrivileges(event.planId)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
         }
 
-        fireEvent(new ActionBarEvents.Clear());
         initDetails.parent.add(view.asWidget());
         planId = event.planId;
 
@@ -109,12 +109,12 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new PlanEvents.ShowPlans(true));
     }
 
     @Override
     public void onBackClicked() {
-        fireEvent(new Back());
+        fireEvent(new PlanEvents.ShowPlans(true));
     }
 
     @Override
@@ -147,7 +147,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
 
     private void fillPlan(Plan plan) {
-        plan.setName(view.name().getValue().trim());
+        plan.setName(clearName(view.name().getValue()));
         plan.setStartDate(view.planPeriod().getValue().from);
         plan.setFinishDate(view.planPeriod().getValue().to);
     }
@@ -194,17 +194,13 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
                 }));
     }
 
+    private String clearName(String name) {
+        return name.trim().replaceAll("[\\s]{2,}", " ");
+    }
+
     private boolean isNew(){
         return planId == null;
     }
-
-    private void fireSelectTab() {
-        fireEvent( new ActionBarEvents.Clear() );
-        if ( policyService.hasPrivilegeFor( En_Privilege.PLAN_VIEW) ) {
-            fireEvent(new MenuEvents.Select(lang.plans()));
-        }
-    }
-
 
     @Inject
     Lang lang;

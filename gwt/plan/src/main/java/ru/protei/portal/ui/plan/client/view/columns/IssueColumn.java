@@ -57,7 +57,7 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
         div.appendChild(makeSpan("label label-" + CaseStateUtils.makeStyleName(value.getStateName()), value.getStateName()));
         if (isPrivate) div.appendChild(makeSpan("fa fa-fw fa-lock text-danger", ""));
         div.appendChild(makeSpan("font-weight-bold", String.valueOf(number)));
-        div.appendChild(makeSpan("", name));
+        div.appendChild(makeSpan("word-break-word", name));
         return div;
     }
 
@@ -79,7 +79,7 @@ public class IssueColumn extends ClickColumn<CaseShortView> {
     private SpanElement makeSpan(String className, String text) {
         SpanElement span = Document.get().createSpanElement();
         span.setClassName(className);
-        span.setInnerHTML(text);
+        span.setInnerText(text);
         return span;
     }
 

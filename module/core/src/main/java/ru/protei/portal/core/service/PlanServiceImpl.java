@@ -134,6 +134,8 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        plan.setName(clearName(plan.getName()));
+
         if (planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
             log.warn("createPlan(): ALREADY_EXIST. plan with name={} and creatorId={} already existed", plan.getName(), plan.getCreatorId());
             return error(En_ResultStatus.ALREADY_EXIST);
@@ -142,7 +144,7 @@ public class PlanServiceImpl implements PlanService{
         plan.setCreatorId(token.getPersonId());
         plan.setCreated(new Date());
 
-        Long planId =  planDAO.persist(plan);
+        Long planId = planDAO.persist(plan);
 
         if (planId == null){
             log.warn("createPlan(): NOT_CREATED. planId from DB is null. Plan not created");
@@ -168,6 +170,8 @@ public class PlanServiceImpl implements PlanService{
         if (plan == null || plan.getId() == null || !validatePlan(plan)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        plan.setName(clearName(plan.getName()));
 
         if (!userIsCreator(token, plan)){
             log.warn("editPlanParams(): PERMISSION_DENIED. plan name={}, creatorId={}, token personId={}", plan.getName(), plan.getCreatorId(), token.getPersonId());
@@ -418,5 +422,9 @@ public class PlanServiceImpl implements PlanService{
             sortedListByPlanId.get(i).setOrderNumber(i);
         }
         planToCaseObjectDAO.mergeBatch(sortedListByPlanId);
+    }
+
+    private String clearName(String name) {
+        return name.trim().replaceAll("[\\s]{2,}", " ");
     }
 }
