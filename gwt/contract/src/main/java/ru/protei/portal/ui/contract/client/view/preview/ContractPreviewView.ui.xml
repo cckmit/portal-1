@@ -76,6 +76,9 @@
 
                     <label ui:field="dates"/>
 
+                    <h5><ui:text from="{lang.contractSpecificationsHeader}"/></h5>
+                    <label ui:field="specifications"/>
+
                     <h5><ui:text from="{lang.comments}"/></h5>
 
                     <g:HTMLPanel ui:field="commentContainer"/>

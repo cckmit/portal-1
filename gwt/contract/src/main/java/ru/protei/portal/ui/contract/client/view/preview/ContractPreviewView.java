@@ -88,6 +88,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
+    public void setSpecifications(String value) {
+        this.specifications.setInnerHTML(value);
+    }
+
+    @Override
     public void setOrganization(String value) {
         this.organization.setInnerText(value);
     }
@@ -164,6 +169,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     Anchor header;
     @UiField
     LabelElement dates;
+    @UiField
+    LabelElement specifications;
     @UiField
     SpanElement contractParent;
     @UiField

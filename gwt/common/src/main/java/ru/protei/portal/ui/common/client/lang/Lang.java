@@ -2102,6 +2102,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDeliveryAndPaymentsPeriodHeader();
 
+    String contractSpecificationsHeader();
+
     String contractPaymentCommentPlaceholder();
 
     String contractDateSigning();

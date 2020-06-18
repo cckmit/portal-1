@@ -1,0 +1,22 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="form-group row">
+        <div class="col-md-2">
+            <g:TextBox ui:field="clause" styleName="form-control"/>
+        </div>
+
+        <div class="col-md-9">
+            <g:TextBox ui:field="text" styleName="form-control"/>
+        </div>
+
+        <div class="col-md-1">
+            <g:Button ui:field="remove" styleName="btn btn-danger">
+                <i class="fa fa-trash"/>
+            </g:Button>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

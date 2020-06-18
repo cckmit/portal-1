@@ -79,6 +79,7 @@ public class ContractServiceImpl implements ContractService {
 
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
+        jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
 
         return ok(contract);
     }
@@ -106,6 +107,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INTERNAL_ERROR);
 
         jdbcManyRelationsHelper.persist(contract, "contractDates");
+        jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
 
         return ok(id);
     }
@@ -128,6 +130,7 @@ public class ContractServiceImpl implements ContractService {
         caseObjectDAO.merge(caseObject);
         contractDAO.merge(contract);
         jdbcManyRelationsHelper.persist(contract, "contractDates");
+        jdbcManyRelationsHelper.persist(contract, "contractSpecifications");;
 
         return ok(contract.getId());
     }

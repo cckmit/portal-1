@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Project;
@@ -112,6 +113,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
         view.setDirection(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseDirectionName()) : StringUtils.emptyIfNull(value.getDirectionName()));
         view.setDates(getAllDatesAsString(value.getContractDates()));
+        view.setSpecifications(getAllSpecificationsAsHTML(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
@@ -129,6 +131,13 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         return dates.stream()
                 .map(p -> datesTypeLang.getName(p.getType()) + " – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : ""))
                 .collect(Collectors.joining(", "));
+    }
+
+    private String getAllSpecificationsAsHTML(List<ContractSpecification> specifications) {
+        if ( specifications == null ) return "";
+        return specifications.stream()
+                .map(spec -> spec.getClause() + " - " + spec.getText())
+                .collect(Collectors.joining("<br>"));
     }
 
     private String formatDate(Date date) {
