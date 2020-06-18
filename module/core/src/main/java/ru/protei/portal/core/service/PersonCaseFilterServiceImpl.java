@@ -1,6 +1,8 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.PersonCaseFilterEvent;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
     @Autowired
@@ -35,6 +38,7 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
+    @Async(BACKGROUND_TASKS)
     @Override
     public Result<Void> processMailNotification() {
         PersonQuery personWithCaseFilters = new PersonQuery();
@@ -65,27 +69,30 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
     }
 
     @Override
+    @Transactional
     public Result<Void> changePersonToCaseFilter(AuthToken authToken, Long personId, Long oldCaseFilterId, Long newCaseFilterID ) {
         if (personId == null || (oldCaseFilterId == null && newCaseFilterID == null)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (oldCaseFilterId == null && newCaseFilterID != null) {
+        if (oldCaseFilterId == null) {
             if (!personCaseFilterDAO.checkExistsByCondition("person_id = ? and case_filter_id = ?",
                     personId, newCaseFilterID)) {
                 personCaseFilterDAO.persist(createPersonToCaseFilter(personId, newCaseFilterID));
             }
-        } else if (oldCaseFilterId != null && newCaseFilterID == null) {
-            personCaseFilterDAO.removeByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
         } else {
-            PersonToCaseFilter personToCaseFilter = personCaseFilterDAO
-                    .getByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
-            if (personToCaseFilter == null) {
-                personToCaseFilter = createPersonToCaseFilter(personId, newCaseFilterID);
+            if (newCaseFilterID == null) {
+                personCaseFilterDAO.removeByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
             } else {
-                personToCaseFilter.setCaseFilterId(newCaseFilterID);
+                PersonToCaseFilter personToCaseFilter = personCaseFilterDAO
+                        .getByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
+                if (personToCaseFilter == null) {
+                    personToCaseFilter = createPersonToCaseFilter(personId, newCaseFilterID);
+                } else {
+                    personToCaseFilter.setCaseFilterId(newCaseFilterID);
+                }
+                personCaseFilterDAO.merge(personToCaseFilter);
             }
-            personCaseFilterDAO.merge(personToCaseFilter);
         }
 
         return ok();
