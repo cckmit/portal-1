@@ -2655,4 +2655,6 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceCompleteSuccessful();
 
     String absenceComplete();
+
+    String employeeShowAbsent();
 }
