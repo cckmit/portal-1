@@ -1,11 +1,7 @@
 package ru.protei.portal.ui.account.client.widget.casefilter.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -16,21 +12,18 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
+
+import java.util.function.BiConsumer;
 
 
 /**
  * Один элемент списка
  */
-public class CaseFilterItem
+public class PersonCaseFilterItem
         extends Composite
-        implements TakesValue<CaseFilterShortView>,
-        HasCloseHandlers<CaseFilterItem>,
-        HasAddHandlers, HasEnabled
+        implements TakesValue<CaseFilterShortView>, HasEnabled
 {
     @Inject
     public void onInit() {
@@ -45,6 +38,11 @@ public class CaseFilterItem
 
     @Override
     public void setValue( CaseFilterShortView value ) {
+        if (value == null) {
+            oldFilterId = null;
+        } else {
+            oldFilterId = value.getId();
+        }
         filter.setValue(value);
     }
 
@@ -58,23 +56,15 @@ public class CaseFilterItem
         filter.setEnabled(b);
     }
 
-    @Override
-    public HandlerRegistration addCloseHandler( CloseHandler<CaseFilterItem> handler ) {
-        return addHandler( handler, CloseEvent.getType() );
-    }
-
-    @Override
-    public HandlerRegistration addAddHandler( AddHandler handler ) {
-        return addHandler( handler, AddEvent.getType() );
-    }
-
     @UiHandler( "filter" )
     public void onFilterChanged( ValueChangeEvent<CaseFilterShortView> event) {
-        if ( filter.getValue() == null ) {
-            CloseEvent.fire( this, this );
-        } else {
-            AddEvent.fire( this );
-        }
+        Long newId = filter.getValue() == null ? null : filter.getValue().getId();
+        callback.accept(oldFilterId, newId);
+        oldFilterId = newId;
+    }
+
+    public void setCallback(BiConsumer<Long, Long> callback) {
+        this.callback = callback;
     }
 
     @Inject
@@ -83,6 +73,9 @@ public class CaseFilterItem
     @UiField
     Lang lang;
 
-    interface PersonCaseFilterItemUiBinder extends UiBinder< HTMLPanel, CaseFilterItem> {}
+    private BiConsumer<Long, Long> callback;
+    private Long oldFilterId = null;
+
+    interface PersonCaseFilterItemUiBinder extends UiBinder< HTMLPanel, PersonCaseFilterItem> {}
     private static PersonCaseFilterItemUiBinder ourUiBinder = GWT.create( PersonCaseFilterItemUiBinder.class );
 }

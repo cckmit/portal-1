@@ -6,21 +6,28 @@ import ru.protei.portal.core.event.PersonCaseFilterEvent;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.dao.PersonToCaseFilterDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
     CaseFilterDAO caseFilterDAO;
+    @Autowired
+    PersonToCaseFilterDAO personToCaseFilterDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
     @Autowired
@@ -42,6 +49,52 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
             }
         }
 
-        return Result.ok();
+        return ok();
+    }
+
+    @Override
+    public Result<List<CaseFilterShortView>> getCaseFilterByPersonId(AuthToken authToken, Long personId) {
+        if (personId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<CaseFilter> list = caseFilterDAO.getByPersonId(personId);
+        List< CaseFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
+
+        return ok(result);
+    }
+
+    @Override
+    public Result<Void> changePersonToCaseFilter(AuthToken authToken, Long personId, Long oldCaseFilterId, Long newCaseFilterID ) {
+        if (personId == null || (oldCaseFilterId == null && newCaseFilterID == null)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (oldCaseFilterId == null && newCaseFilterID != null) {
+            if (!personToCaseFilterDAO.checkExistsByCondition("person_id = ? and case_filter_id = ?",
+                    personId, newCaseFilterID)) {
+                personToCaseFilterDAO.persist(createPersonToCaseFilter(personId, newCaseFilterID));
+            }
+        } else if (oldCaseFilterId != null && newCaseFilterID == null) {
+            personToCaseFilterDAO.removeByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
+        } else {
+            PersonToCaseFilter personToCaseFilter = personToCaseFilterDAO
+                    .getByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
+            if (personToCaseFilter == null) {
+                personToCaseFilter = createPersonToCaseFilter(personId, newCaseFilterID);
+            } else {
+                personToCaseFilter.setCaseFilterId(newCaseFilterID);
+            }
+            personToCaseFilterDAO.merge(personToCaseFilter);
+        }
+
+        return ok();
+    }
+
+    private PersonToCaseFilter createPersonToCaseFilter(Long personId, Long caseFilterId) {
+        PersonToCaseFilter personToCaseFilter = new PersonToCaseFilter();
+        personToCaseFilter.setPersonId(personId);
+        personToCaseFilter.setCaseFilterId(caseFilterId);
+        return personToCaseFilter;
     }
 }

@@ -167,8 +167,6 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
             view.person().setValue( new PersonShortView(userLogin.getDisplayName(), userLogin.getPersonId()), userLogin.isFired() );
         }
 
-        view.caseFilter().setValue(null);
-
         view.setCompaniesForInitiator(userLogin.getCompanyId() == null ? Collections.emptySet() : PersonModel.makeCompanyIds(userLogin.getCompanyId()));
         view.password().setText( "" );
         view.confirmPassword().setText( "" );

@@ -31,8 +31,6 @@ public interface AbstractAccountEditView extends IsWidget {
 
     HasText confirmPassword();
 
-    HasValue<List<CaseFilterShortView>> caseFilter();
-
     HasValue< Set< UserRole > > roles();
 
     HasValue<Boolean> sendWelcomeEmail();

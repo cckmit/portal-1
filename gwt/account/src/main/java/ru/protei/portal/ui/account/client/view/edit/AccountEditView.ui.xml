@@ -4,7 +4,7 @@
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:rolelist='urn:import:ru.protei.portal.ui.account.client.widget.role'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:casefilter='urn:import:ru.protei.portal.ui.account.client.widget.casefilter.group'>
+>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
@@ -14,59 +14,45 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <div class="card card-transparent no-margin">
-                                    <div class="card-body">
-                                        <div class="form-group col-md-12">
-                                            <label class="">
-                                                <ui:text from="{lang.accountCompany}"/>
-                                            </label>
-                                            <company:CompanySelector ui:field="company" validation="true"
-                                                                     defaultValue="{lang.selectAccountCompany}"/>
-                                        </div>
-                                        <div class="form-group col-md-12">
-                                            <label class="">
-                                                <ui:text from="{lang.accountPerson}"/>
-                                            </label>
-                                            <person:PersonButtonSelector ui:field="person" validation="true"
-                                                                         defaultValue="{lang.selectAccountPerson}"/>
-                                        </div>
-                                        <div class="form-group col-md-12">
-                                            <label class="">
-                                                <ui:text from="{lang.accountLogin}"/>
-                                            </label>
-                                            <div class="verifiable">
-                                                <i ui:field="verifiableIcon"/>
-                                            </div>
-                                            <validablefield:ValidableTextBox ui:field="login" styleName="form-control"
-                                                                             notNull="true"/>
-                                        </div>
-                                        <div class="form-group col-md-12">
-                                            <label class="">
-                                                <ui:text from="{lang.accountPassword}"/>
-                                            </label>
-                                            <g:PasswordTextBox ui:field="password" styleName="form-control"/>
-                                        </div>
-                                        <div class="form-group col-md-12">
-                                            <label class="">
-                                                <ui:text from="{lang.accountConfirmPassword}"/>
-                                            </label>
-                                            <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control"/>
-                                        </div>
-                                        <g:HTMLPanel ui:field="infoPanel" styleName="col-md-12">
-                                            <ui:text from="{lang.accountLoginInfo}"/>
-                                        </g:HTMLPanel>
-                                    </div>
+                                <div class="form-group col-md-12">
+                                    <label class="">
+                                        <ui:text from="{lang.accountCompany}"/>
+                                    </label>
+                                    <company:CompanySelector ui:field="company" validation="true"
+                                                             defaultValue="{lang.selectAccountCompany}"/>
                                 </div>
-                                <div class="card card-transparent no-margin">
-                                    <div class="card-body">
-                                        <div class="form-group col-md-12">
-                                            <label class="">
-                                                <ui:text from="{lang.accountSubscribeCaseFilter}"/>
-                                            </label>
-                                            <casefilter:CaseFilterGroup ui:field="caseFilter"/>
-                                        </div>
-                                    </div>
+                                <div class="form-group col-md-12">
+                                    <label class="">
+                                        <ui:text from="{lang.accountPerson}"/>
+                                    </label>
+                                    <person:PersonButtonSelector ui:field="person" validation="true"
+                                                                 defaultValue="{lang.selectAccountPerson}"/>
                                 </div>
+                                <div class="form-group col-md-12">
+                                    <label class="">
+                                        <ui:text from="{lang.accountLogin}"/>
+                                    </label>
+                                    <div class="verifiable">
+                                        <i ui:field="verifiableIcon"/>
+                                    </div>
+                                    <validablefield:ValidableTextBox ui:field="login" styleName="form-control"
+                                                                     notNull="true"/>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="">
+                                        <ui:text from="{lang.accountPassword}"/>
+                                    </label>
+                                    <g:PasswordTextBox ui:field="password" styleName="form-control"/>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="">
+                                        <ui:text from="{lang.accountConfirmPassword}"/>
+                                    </label>
+                                    <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control"/>
+                                </div>
+                                <g:HTMLPanel ui:field="infoPanel" styleName="col-md-12">
+                                    <ui:text from="{lang.accountLoginInfo}"/>
+                                </g:HTMLPanel>
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="">

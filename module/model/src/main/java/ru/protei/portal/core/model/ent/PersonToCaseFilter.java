@@ -5,8 +5,10 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
+
 @JdbcEntity(table = "person_to_case_filter")
-public class PersonToCaseFilter {
+public class PersonToCaseFilter implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
