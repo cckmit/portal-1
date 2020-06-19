@@ -56,7 +56,13 @@ public class SpringGwtRemoteServiceServlet extends RemoteServiceServlet {
             moduleBaseURL = moduleBaseURLHdr;
         }
 
-        return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
+        SerializationPolicy serializationPolicy = super.doGetSerializationPolicy( request, moduleBaseURL, strongName );
+        if (serializationPolicy == null) {
+            LOG.warn( "SerializationPolicy not found. May occur when application redeployed." );
+            throw new  IncompatibleRemoteServiceException( "SerializationPolicy not found" );
+        }
+
+        return serializationPolicy;
     }
 
     private String extractControllerName( String url ) {
