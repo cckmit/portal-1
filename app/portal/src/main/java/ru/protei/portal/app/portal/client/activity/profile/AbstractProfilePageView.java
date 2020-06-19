@@ -28,4 +28,6 @@ public interface AbstractProfilePageView extends IsWidget {
     void setIcon(String iconSrc);
 
     void setPersonId(Long personId);
+
+    HasVisibility personCaseFilterContainerVisibility();
 }

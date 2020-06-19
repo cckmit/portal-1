@@ -75,6 +75,11 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
+    public HasVisibility personCaseFilterContainerVisibility() {
+        return personCaseFilterContainer;
+    }
+
+    @Override
     public HasVisibility changePasswordButtonVisibility() {
         return changePasswordButton;
     }
@@ -139,6 +144,8 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     LabelElement confirmPasswordLabel;
     @UiField
     HeadingElement changePasswordLabel;
+    @UiField
+    HTMLPanel personCaseFilterContainer;
 
     @Inject
     @UiField( provided = true )

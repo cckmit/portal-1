@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -44,6 +45,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
         fireEvent( new ActionBarEvents.Clear() );
 
+        view.personCaseFilterContainerVisibility().setVisible(policyService.hasSystemScopeForPrivilege( En_Privilege.COMMON_PROFILE_VIEW ));
         fillView( policyService.getProfile() );
     }
 
