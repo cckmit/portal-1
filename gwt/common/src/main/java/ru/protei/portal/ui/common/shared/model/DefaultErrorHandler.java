@@ -39,6 +39,7 @@ public class DefaultErrorHandler implements Consumer<Throwable> {
         dialogView.setHeader( lang.reloadPageAfterUpdateHeader());
         Label errorText = new Label( lang.reloadPageAfterUpdateMessage() );
         errorText.addStyleName( "m-t-10" );
+        dialogView.getBodyContainer().clear();
         dialogView.getBodyContainer().add( errorText );
         dialogView.saveButtonVisibility().setVisible(true);
         dialogView.setSaveOnEnterClick(true);
