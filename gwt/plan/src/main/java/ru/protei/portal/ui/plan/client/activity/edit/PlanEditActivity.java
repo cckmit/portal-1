@@ -20,7 +20,6 @@ import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,8 +40,6 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     public void onShow(PlanEvents.Edit event) {
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
-        fireEvent(new MenuEvents.Select(lang.plans()));
-        fireEvent(new ActionBarEvents.Clear());
 
         if (!hasPrivileges(event.planId)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
@@ -147,7 +144,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
 
     private void fillPlan(Plan plan) {
-        plan.setName(clearName(view.name().getValue()));
+        plan.setName(normalizeSpaces(view.name().getValue()));
         plan.setStartDate(view.planPeriod().getValue().from);
         plan.setFinishDate(view.planPeriod().getValue().to);
     }
@@ -194,8 +191,8 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
                 }));
     }
 
-    private String clearName(String name) {
-        return name.trim().replaceAll("[\\s]{2,}", " ");
+    private String normalizeSpaces(String text) {
+        return text.trim().replaceAll("[\\s]{2,}", " ");
     }
 
     private boolean isNew(){

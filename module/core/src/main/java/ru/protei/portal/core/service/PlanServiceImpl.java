@@ -134,7 +134,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        plan.setName(clearName(plan.getName()));
+        plan.setName(normalizeSpaces(plan.getName()));
 
         if (planDAO.checkExistByNameAndCreatorId(plan.getName(), token.getPersonId())){
             log.warn("createPlan(): ALREADY_EXIST. plan with name={} and creatorId={} already existed", plan.getName(), plan.getCreatorId());
@@ -171,7 +171,7 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        plan.setName(clearName(plan.getName()));
+        plan.setName(normalizeSpaces(plan.getName()));
 
         if (!userIsCreator(token, plan)){
             log.warn("editPlanParams(): PERMISSION_DENIED. plan name={}, creatorId={}, token personId={}", plan.getName(), plan.getCreatorId(), token.getPersonId());
@@ -424,7 +424,7 @@ public class PlanServiceImpl implements PlanService{
         planToCaseObjectDAO.mergeBatch(sortedListByPlanId);
     }
 
-    private String clearName(String name) {
-        return name.trim().replaceAll("[\\s]{2,}", " ");
+    private String normalizeSpaces(String text) {
+        return text.trim().replaceAll("[\\s]{2,}", " ");
     }
 }

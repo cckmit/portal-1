@@ -53,8 +53,6 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
     @Event
     public void onShow( PlanEvents.ShowPlans event ) {
         initDetails.parent.clear();
-        fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new MenuEvents.Select(lang.plans()));
 
         if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_VIEW)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));

@@ -29,6 +29,21 @@ public abstract class PlanPage implements Activity{
     }
 
     @Event
+    public void onShowTable( PlanEvents.ShowPlans event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onShowPreviewFullScreen( PlanEvents.ShowFullScreen event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onShowDetail( PlanEvents.Edit event ) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onClickSection( SectionEvents.Clicked event ) {
         if ( !ТAB.equals( event.identity ) ) {
             return;
