@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.account.client.widget.casefilter.group;
+package ru.protei.portal.app.portal.client.widget.casefilter.group;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -11,8 +11,8 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.account.client.widget.casefilter.item.PersonCaseFilterCallbacks;
-import ru.protei.portal.ui.account.client.widget.casefilter.item.PersonCaseFilterItem;
+import ru.protei.portal.app.portal.client.widget.casefilter.item.PersonCaseFilterCallbacks;
+import ru.protei.portal.app.portal.client.widget.casefilter.item.PersonCaseFilterItem;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonCaseFilterControllerAsync;

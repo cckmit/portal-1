@@ -3,5 +3,5 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="itemContainer" styleName="m-t-10"/>
+    <g:HTMLPanel ui:field="itemContainer" styleName=""/>
 </ui:UiBinder>

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.account.client.widget.casefilter.item;
+package ru.protei.portal.app.portal.client.widget.casefilter.item;
 
 public interface PersonCaseFilterCallbacks {
     void add(Long caseFilterId);

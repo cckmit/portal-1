@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.account.client.widget.casefilter.item;
+package ru.protei.portal.app.portal.client.widget.casefilter.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
