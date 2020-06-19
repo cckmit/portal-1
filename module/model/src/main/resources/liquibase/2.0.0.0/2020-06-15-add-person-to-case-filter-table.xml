@@ -22,5 +22,10 @@
                                  referencedTableName="case_filter" referencedColumnNames="ID" />
     </changeSet>
 
+    <changeSet id="add-unique_constraint-on-person-to-case-filter-table" author="porubov">
+        <addUniqueConstraint constraintName="person_id_case_filter_id_unique"
+                             tableName="person_to_case_filter" columnNames="person_id, case_filter_id"/>
+    </changeSet>
+
 
 </databaseChangeLog>
