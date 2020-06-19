@@ -298,8 +298,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         issueService.updatePlans(metaView.ownerPlans().getValue(), meta.getId(), new FluentCallback<Set<PlanOption>>()
                 .withSuccess(updatedPlans -> {
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     metaView.ownerPlans().setValue(updatedPlans);
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CaseHistoryEvents.Reload(meta.getId()));
                 })
         );
     }

@@ -32,7 +32,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Edit event) {
         if (!hasPrivileges(event.serverId)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

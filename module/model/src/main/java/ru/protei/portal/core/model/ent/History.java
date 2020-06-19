@@ -2,12 +2,14 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_HistoryValueType;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @JdbcEntity(table = "history")
-public class History {
+public class History implements Serializable {
 
     public static final String AUDIT_TYPE = "History";
 
@@ -32,6 +34,12 @@ public class History {
 
     @JdbcColumn(name = "new_value")
     private String newValue;
+
+    @JdbcColumn(name = "old_value_data", converterType = ConverterType.JSON)
+    private EntityOption oldValueData;
+
+    @JdbcColumn(name = "new_value_data", converterType = ConverterType.JSON)
+    private EntityOption newValueData;
 
     public History() {
     }
@@ -90,5 +98,36 @@ public class History {
 
     public void setNewValue(String newValue) {
         this.newValue = newValue;
+    }
+
+    public EntityOption getOldValueData() {
+        return oldValueData;
+    }
+
+    public void setOldValueData(EntityOption oldValueData) {
+        this.oldValueData = oldValueData;
+    }
+
+    public EntityOption getNewValueData() {
+        return newValueData;
+    }
+
+    public void setNewValueData(EntityOption newValueData) {
+        this.newValueData = newValueData;
+    }
+
+    @Override
+    public String toString() {
+        return "History{" +
+                "id=" + id +
+                ", initiatorId=" + initiatorId +
+                ", date=" + date +
+                ", caseObjectId=" + caseObjectId +
+                ", valueType=" + valueType +
+                ", oldValue='" + oldValue + '\'' +
+                ", newValue='" + newValue + '\'' +
+                ", oldValueData=" + oldValueData +
+                ", newValueData=" + newValueData +
+                '}';
     }
 }

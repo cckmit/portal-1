@@ -33,7 +33,6 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.core.model.helper.DocumentUtils;
-import ru.protei.portal.ui.document.client.activity.table.DocumentTableActivity;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -55,7 +54,7 @@ public abstract class DocumentEditActivity
     @Event
     public void onCreateFromWizard(DocumentEvents.CreateFromWizard event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
-            fireEvent(new ForbiddenEvents.Show(event.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
 
@@ -69,7 +68,7 @@ public abstract class DocumentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onEquipmentCreate(DocumentEvents.CreateWithEquipment event){
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         if (event.projectId == null || event.equipmentId == null) {
@@ -90,7 +89,7 @@ public abstract class DocumentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onEdit(DocumentEvents.Edit event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 

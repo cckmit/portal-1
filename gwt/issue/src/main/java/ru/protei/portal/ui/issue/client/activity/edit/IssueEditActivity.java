@@ -31,7 +31,6 @@ import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.issue.client.activity.table.IssueTableFilterActivity;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
@@ -92,7 +91,7 @@ public abstract class IssueEditActivity implements
     public void onShow( IssueEvents.Edit event ) {
         HasWidgets container = initDetails.parent;
         if (!hasAccess()) {
-            fireEvent(new ForbiddenEvents.Show(container));
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
 
@@ -111,7 +110,7 @@ public abstract class IssueEditActivity implements
     public void onShow( IssueEvents.ShowPreview event ) {
         HasWidgets container = event.parent;
         if (!hasAccess()) {
-            fireEvent(new ForbiddenEvents.Show(container));
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
 
@@ -124,7 +123,7 @@ public abstract class IssueEditActivity implements
     public void onShow( IssueEvents.ShowFullScreen event ) {
         HasWidgets container = initDetails.parent;
         if (!hasAccess()) {
-            fireEvent(new ForbiddenEvents.Show(container));
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
 
@@ -257,7 +256,7 @@ public abstract class IssueEditActivity implements
         issueController.getIssue(number, new FluentCallback<CaseObject>()
                 .withError(throwable -> {
                     if (throwable instanceof RequestFailedException && En_ResultStatus.PERMISSION_DENIED.equals(((RequestFailedException) throwable).status)) {
-                        fireEvent(new ForbiddenEvents.Show());
+                        fireEvent(new ErrorPageEvents.ShowForbidden());
                     }
                 })
                 .withSuccess(issue -> {
@@ -267,6 +266,7 @@ public abstract class IssueEditActivity implements
                     showTags(issue);
                     showMeta(issue);
                     showComments(issue);
+                    showPlansHistory(issue);
                     attachToContainer(container);
                 }));
     }
@@ -305,6 +305,10 @@ public abstract class IssueEditActivity implements
                 .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
                 .withPrivateCase( issue.isPrivateCase() )
                 .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
+    }
+
+    private void showPlansHistory(CaseObject issue) {
+        fireEvent(new CaseHistoryEvents.Load(issue.getId(), issueInfoWidget.getHistoryContainer()));
     }
 
     private void reloadComments() {

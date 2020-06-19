@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -156,7 +157,7 @@ public class PlanServiceImpl implements PlanService{
                         PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
                         planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
                         planToCaseObjectDAO.persist(planToCaseObject);
-                        historyService.createHistory(token, issue.getId(), En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId));
+                        createHistory(token, issue.getId(), En_HistoryValueType.ADD_TO_PLAN, null, plan);
             });
         }
 
@@ -218,7 +219,8 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.NOT_CREATED);
         }
 
-        historyService.createHistory(token, issueId, En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId));
+        Plan plan = planDAO.get(planId);
+        createHistory(token, issueId, En_HistoryValueType.ADD_TO_PLAN, null, plan);
 
         return getPlanWithIssues(token, planId);
     }
@@ -235,11 +237,13 @@ public class PlanServiceImpl implements PlanService{
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
+        Plan plan = planDAO.get(planId);
+
         int rowCount = planToCaseObjectDAO.removeIssueFromPlan(planId, issueId);
 
         if (rowCount == 1) {
             updateOrderNumbers(planId);
-            historyService.createHistory(token, issueId, En_HistoryValueType.REMOVE_FROM_PLAN, String.valueOf(planId), null);
+            createHistory(token, issueId, En_HistoryValueType.REMOVE_FROM_PLAN, plan, null);
             return ok();
         }
 
@@ -328,7 +332,10 @@ public class PlanServiceImpl implements PlanService{
 
         updateOrderNumbers(currentPlanId);
 
-        historyService.createHistory(token, issueId, En_HistoryValueType.CHANGE_PLAN, String.valueOf(currentPlanId), String.valueOf(newPlanId));
+        Plan previousPlan = planDAO.get(currentPlanId);
+        Plan newPlan = planDAO.get(newPlanId);
+
+        createHistory(token, issueId, En_HistoryValueType.CHANGE_PLAN, previousPlan, newPlan);
 
         return ok();
     }
@@ -352,9 +359,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (plan.getIssueList() != null){
-            plan.getIssueList().forEach(issue ->{
-                historyService.createHistory(token, issue.getId(), En_HistoryValueType.REMOVE_FROM_PLAN, planId.toString(), null);
-            });
+            plan.getIssueList().forEach(issue -> createHistory(token, issue.getId(), En_HistoryValueType.REMOVE_FROM_PLAN, plan, null));
         }
 
         return ok();
@@ -418,5 +423,18 @@ public class PlanServiceImpl implements PlanService{
             sortedListByPlanId.get(i).setOrderNumber(i);
         }
         planToCaseObjectDAO.mergeBatch(sortedListByPlanId);
+    }
+
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryValueType type, Plan oldPlan, Plan newPlan) {
+        return historyService.createHistory(token, id, type,
+                oldPlan == null ? null : createPlanHistoryValue(oldPlan.getId(), oldPlan.getName()),
+                newPlan == null ? null : createPlanHistoryValue(newPlan.getId(), newPlan.getName()),
+                oldPlan == null ? null : new EntityOption(oldPlan.getName(), oldPlan.getId()),
+                newPlan == null ? null : new EntityOption(newPlan.getName(), newPlan.getId())
+        );
+    }
+
+    private String createPlanHistoryValue(Long planId, String planName) {
+        return "#" + planId + " " + planName;
     }
 }

@@ -56,7 +56,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         employeeRegistrationId = event.id;
 
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

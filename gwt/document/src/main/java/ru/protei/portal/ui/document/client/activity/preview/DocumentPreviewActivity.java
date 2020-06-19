@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -46,7 +46,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     @Event
     public void onShow(DocumentEvents.ShowPreview event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(event.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
         event.parent.clear();
@@ -58,7 +58,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     @Event
     public void onShow(DocumentEvents.ShowPreviewFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         initDetails.parent.clear();

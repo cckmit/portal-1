@@ -2703,4 +2703,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportWithDescription();
 
     String issueReportWithDescriptionTitle();
+
+    String caseHistory();
+
+    String errPlanNotFound();
 }

@@ -84,7 +84,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Event
     public void onShow(IssueEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show(init.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(init.parent));
             return;
         }
 

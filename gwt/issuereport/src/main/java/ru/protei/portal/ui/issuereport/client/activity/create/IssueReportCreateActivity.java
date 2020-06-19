@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
-import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public abstract class IssueReportCreateActivity implements Activity,
@@ -58,7 +57,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

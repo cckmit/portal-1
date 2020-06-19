@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -28,12 +29,17 @@
                 </div>
             </div>
         </div>
-        <div ui:field="commentsPanel" class="row">
-            <div class="form-group col-md-12" ui:field="comments">
-                <label>
-                    <ui:text from="{lang.comments}"/>
-                </label>
-                <g:HTMLPanel ui:field="commentsContainer"/>
+        <div class="row">
+            <div class="form-group col-md-12">
+                <tab:TabWidget styleName="issue-info-tab-widget">
+                    <tab:pane.TabWidgetPane tabName="{lang.comments}">
+                        <g:HTMLPanel ui:field="commentsContainer"/>
+                    </tab:pane.TabWidgetPane>
+
+                    <tab:pane.TabWidgetPane tabName="{lang.caseHistory}">
+                        <g:HTMLPanel ui:field="historyContainer"/>
+                    </tab:pane.TabWidgetPane>
+                </tab:TabWidget>
             </div>
         </div>
     </g:HTMLPanel>

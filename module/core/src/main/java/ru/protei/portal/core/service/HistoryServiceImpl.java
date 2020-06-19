@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.query.HistoryQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Date;
 import java.util.List;
@@ -15,13 +16,15 @@ import java.util.List;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
-public class HistoryServiceImpl implements HistoryService{
+public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
     HistoryDAO historyDAO;
 
     @Override
-    public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryValueType valueType, String oldValue, String newValue) {
+    public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryValueType valueType,
+                                      String oldValue, String newValue, EntityOption oldValueData, EntityOption newValueData) {
+
         if (caseObjectId == null || valueType == null || (oldValue == null && newValue == null)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -31,6 +34,8 @@ public class HistoryServiceImpl implements HistoryService{
         history.setValueType(valueType);
         history.setOldValue(oldValue);
         history.setNewValue(newValue);
+        history.setOldValueData(oldValueData);
+        history.setNewValueData(newValueData);
         history.setInitiatorId(token.getPersonId());
         history.setDate(new Date());
 
@@ -52,6 +57,14 @@ public class HistoryServiceImpl implements HistoryService{
         }
 
         return ok(list);
+    }
 
+    @Override
+    public Result<List<History>> getHistoryListByCaseId(AuthToken token, Long caseId) {
+        if (caseId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return listHistories(token, new HistoryQuery(caseId));
     }
 }

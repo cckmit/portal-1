@@ -4648,3 +4648,49 @@ table {
 .cursor-default {
   cursor: default !important;
 }
+
+.case-history {
+  list-style: none;
+  padding: 0;
+  .case-history-item-date {
+    color: #999;
+  }
+}
+
+.issue-info-tab-widget {
+  .chats {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.history-item-history-type {
+  float: left;
+  margin-right: 10px;
+}
+
+.history-item-added-value, .history-item-removed-value {
+  white-space: nowrap;
+  float: left;
+  max-width: 90%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.history-item-changed-value {
+  float: left;
+  .history-item-old-value, .history-item-new-value {
+    white-space: nowrap;
+    float: left;
+    max-width: 60%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .history-arrow-icon {
+    float: left;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+  }
+}

@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_HistoryValueType;
 
 import java.util.Date;
 
-public class HistoryQuery extends BaseQuery{
+public class HistoryQuery extends BaseQuery {
 
     private Long initiatorId;
     private Date dateFrom;
@@ -14,6 +14,12 @@ public class HistoryQuery extends BaseQuery{
     private En_HistoryValueType valueType;
     private String oldValue;
     private String newValue;
+
+    public HistoryQuery() {}
+
+    public HistoryQuery(Long caseObjectId) {
+        this.caseObjectId = caseObjectId;
+    }
 
     public Long getInitiatorId() {
         return initiatorId;
@@ -77,5 +83,24 @@ public class HistoryQuery extends BaseQuery{
 
     public void setNewValue(String newValue) {
         this.newValue = newValue;
+    }
+
+    @Override
+    public String toString() {
+        return "HistoryQuery{" +
+                "initiatorId=" + initiatorId +
+                ", dateFrom=" + dateFrom +
+                ", dateTo=" + dateTo +
+                ", caseObjectId=" + caseObjectId +
+                ", caseNumber=" + caseNumber +
+                ", valueType=" + valueType +
+                ", oldValue='" + oldValue + '\'' +
+                ", newValue='" + newValue + '\'' +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                '}';
     }
 }
