@@ -17,10 +17,10 @@
 
             <div class="row form-group">
                 <div class="col-md-12">
-                    <h5 class="inline">
-                        <ui:text from="{lang.planPeriod}:"/>
-                    </h5>
-                    <div class="inline" ui:field="period"/>
+                    <b>
+                        <ui:text from="{lang.planPeriod}: "/>
+                    </b>
+                    <span class="pre-formatted-info" ui:field="period"/>
                 </div>
             </div>
 

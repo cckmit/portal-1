@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterActivity;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.List;
 
@@ -60,7 +61,6 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
 
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add(pagerView.asWidget());
-        fireEvent(new ActionBarEvents.Clear());
 
         if (policyService.hasPrivilegeFor(En_Privilege.PLAN_CREATE)) {
             fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.PLAN_CREATE ));
