@@ -38,7 +38,13 @@ public class SpringGwtRemoteServiceServlet extends RemoteServiceServlet {
 
             LOG.info( "Invoking: " + bean.getClass().getSimpleName() + "."+rpcRequest.getMethod().getName() + "(..) for URL: " + url);
 
-            return RPC.invokeAndEncodeResponse(bean, rpcRequest.getMethod(), rpcRequest.getParameters(), rpcRequest.getSerializationPolicy());
+            SerializationPolicy serializationPolicy = rpcRequest.getSerializationPolicy();
+            if (serializationPolicy == null) {
+                LOG.warn( "processCall(): SerializationPolicy not found. May occur when application redeployed." );
+                return RPC.encodeResponseForFailure( null, new IncompatibleRemoteServiceException( "SerializationPolicy not found" ) );
+            }
+
+            return RPC.invokeAndEncodeResponse(bean, rpcRequest.getMethod(), rpcRequest.getParameters(), serializationPolicy );
         } catch (IncompatibleRemoteServiceException var4) {
             this.log("An IncompatibleRemoteServiceException was thrown while processing this call.", var4);
             return RPC.encodeResponseForFailure(null, var4);
@@ -58,7 +64,7 @@ public class SpringGwtRemoteServiceServlet extends RemoteServiceServlet {
 
         SerializationPolicy serializationPolicy = super.doGetSerializationPolicy( request, moduleBaseURL, strongName );
         if (serializationPolicy == null) {
-            LOG.warn( "SerializationPolicy not found. May occur when application redeployed." );
+            LOG.warn( "doGetSerializationPolicyI(): SerializationPolicy not found. May occur when application redeployed." );
             throw new  IncompatibleRemoteServiceException( "SerializationPolicy not found" );
         }
 
