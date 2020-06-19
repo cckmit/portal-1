@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.account.client.widget.casefilter.item.PersonCaseFilterCallbacks;
@@ -43,6 +44,7 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
                         itemContainer.clear();
                         list.forEach(this::makeItemAndFillValue);
                     }
+                    updateFilterSelectors(list);
                 })
         );
     }
@@ -55,14 +57,20 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
             public void add(Long caseFilterId) {
                 controller.addPersonToCaseFilter(personId, caseFilterId, new FluentCallback<Boolean>()
                         .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
-                        .withSuccess(b -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
+                        .withSuccess(b -> {
+                            fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS));
+                            updateFilterSelectors();
+                        }));
             }
 
             @Override
             public void remove(Long caseFilterId) {
                 controller.removePersonToCaseFilter(personId, caseFilterId, new FluentCallback<Boolean>()
                         .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
-                        .withSuccess(b -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
+                        .withSuccess(b -> {
+                            fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS));
+                            updateFilterSelectors();
+                        }));
                 if (itemContainer.getWidgetCount() > 1) {
                     itemContainer.remove(personCaseFilterItem);
                 }
@@ -72,10 +80,28 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
             public void change(Long oldCaseFilterId, Long newCaseFilterId) {
                 controller.changePersonToCaseFilter(personId, oldCaseFilterId, newCaseFilterId, new FluentCallback<Boolean>()
                         .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
-                        .withSuccess(b -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
+                        .withSuccess(b -> {
+                            fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS));
+                            updateFilterSelectors();
+                        }));
             }
         });
         itemContainer.add(personCaseFilterItem);
+    }
+
+    private void updateFilterSelectors() {
+        controller.getCaseFilterByPersonId(personId, new FluentCallback<List<CaseFilterShortView>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(list -> updateFilterSelectors(list))
+        );
+    }
+
+    private void updateFilterSelectors(List<CaseFilterShortView> filters) {
+        if (CollectionUtils.isEmpty(filters)) {
+            itemContainer.forEach(item -> ((PersonCaseFilterItem)item).setSelectorFilter(null));
+        } else {
+            itemContainer.forEach(item -> ((PersonCaseFilterItem)item).setSelectorFilter(value -> !filters.contains(value)));
+        }
     }
 
     private void setTestAttributes() {

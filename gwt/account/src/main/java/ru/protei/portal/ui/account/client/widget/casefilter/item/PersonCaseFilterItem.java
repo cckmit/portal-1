@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -56,6 +57,10 @@ public class PersonCaseFilterItem
     @Override
     public void setEnabled(boolean b) {
         filter.setEnabled(b);
+    }
+
+    public void setSelectorFilter(Selector.SelectorFilter<CaseFilterShortView> selectorFilter) {
+        filter.setFilter(selectorFilter);
     }
 
     @UiHandler( "filter" )
