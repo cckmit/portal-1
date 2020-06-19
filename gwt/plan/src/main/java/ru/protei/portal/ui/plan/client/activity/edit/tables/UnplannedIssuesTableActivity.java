@@ -129,6 +129,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         view.updateFilterSelector();
         view.setLimitLabel(String.valueOf(TABLE_LIMIT));
         view.issueNumber().setValue("");
+        onFilterChanged(view.filter().getValue());
     }
 
     private void saveTableFilterId(Long filterId) {

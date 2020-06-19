@@ -5,6 +5,7 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -110,7 +111,7 @@ public class PlanPreviewView extends Composite implements AbstractPlanPreviewVie
     @UiField
     Anchor header;
     @UiField
-    DivElement period;
+    SpanElement period;
     @UiField
     TableWidget<CaseShortView> table;
 

@@ -93,9 +93,13 @@ public abstract class PlanEditPopupActivity implements AbstractPlanEditPopupActi
     }
 
     private void fillPlan(Plan plan) {
-        plan.setName(view.name().getValue());
+        plan.setName(normalizeSpaces(view.name().getValue()));
         plan.setStartDate(view.planPeriod().getValue().from);
         plan.setFinishDate(view.planPeriod().getValue().to);
+    }
+
+    private String normalizeSpaces(String text) {
+        return text.trim().replaceAll("[\\s]{2,}", " ");
     }
 
     @Inject

@@ -43,7 +43,6 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
     public void onShow( PlanEvents.ShowFullScreen event ) {
         initDetails.parent.clear();
 
-
         if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_VIEW)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));
             return;
