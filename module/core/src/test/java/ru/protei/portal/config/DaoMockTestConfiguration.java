@@ -345,6 +345,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return mock(PersonCaseFilterDAO.class);
+    }
+
+    @Bean
     public PlanDAO getPlanDAO() {
         return mock(PlanDAO.class);
     }

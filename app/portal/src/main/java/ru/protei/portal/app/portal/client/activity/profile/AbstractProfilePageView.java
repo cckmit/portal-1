@@ -26,4 +26,6 @@ public interface AbstractProfilePageView extends IsWidget {
     HasVisibility changePasswordButtonVisibility();
 
     void setIcon(String iconSrc);
+
+    void setPersonId(Long personId);
 }

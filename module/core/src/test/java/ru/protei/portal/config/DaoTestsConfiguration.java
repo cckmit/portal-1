@@ -352,6 +352,10 @@ public class DaoTestsConfiguration {
         return new RoomReservationDAO_Impl();
     }
 
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return new PersonCaseFilterDAO_Impl();
+    }
 
     @Bean
     public PlanDAO getPlanDAO() {

@@ -31,7 +31,7 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
     }
 
     void updateCompanies(Refreshable selector, Boolean people, Set<Long> companyIds, Boolean fired) {
-        PersonQuery query = new PersonQuery(companyIds, people, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+        PersonQuery query = new PersonQuery(companyIds, people, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 
             @Override

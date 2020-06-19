@@ -232,6 +232,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
                 args.add(En_Gender.UNDEFINED.getCode());
             }
+
+            if (query.getHasCaseFilter() != null) {
+
+                condition.append(" and person.id in ");
+                condition.append(" (select distinct(person_id) from person_to_case_filter)" );
+            }
         });
     }
 

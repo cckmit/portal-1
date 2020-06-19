@@ -5,11 +5,13 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.List;
 import java.util.Set;
 
 /**

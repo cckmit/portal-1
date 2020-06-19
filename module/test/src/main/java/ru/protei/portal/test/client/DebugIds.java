@@ -182,6 +182,12 @@ public class DebugIds {
         }
     }
 
+    public interface PERSON_CASE_FILTER {
+        String ITEM_CONTAINER = "person-case-filter-item-container";
+        String ITEM = "person-case-filter-item";
+        String FILTER_SELECTOR = "person-case-filter-filter-selector";
+    }
+
     public interface COMPANY_CATEGORY_BUTTON {
         String DEFAULT = "company-category-button-";
         String CUSTOMER = "company-category-button-customer";

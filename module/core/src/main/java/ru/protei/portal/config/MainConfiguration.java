@@ -587,6 +587,11 @@ public class MainConfiguration {
         return new RoomReservationDAO_Impl();
     }
 
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return new PersonCaseFilterDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -874,6 +879,10 @@ public class MainConfiguration {
         return new AutoOpenCaseServiceImpl();
     }
 
+    @Bean
+    public PersonCaseFilterService getPersonCaseFilterService() {
+        return new PersonCaseFilterServiceImpl();
+    }
 
     @Bean
     public ReportCase getReportCase() {

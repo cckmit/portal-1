@@ -89,6 +89,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
         view.setCompany( value.getCompany() == null ? "" : value.getCompany().getCname() );
         view.changePasswordButtonVisibility().setVisible(isAvailableChangePassword());
         view.passwordContainerVisibility().setVisible(false);
+        view.setPersonId(value.getId());
     }
 
     private boolean isAvailableChangePassword() {

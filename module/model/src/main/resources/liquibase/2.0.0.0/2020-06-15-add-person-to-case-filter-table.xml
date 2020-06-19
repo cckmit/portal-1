@@ -1,0 +1,31 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-person-to-case-filter-table" author="porubov">
+        <createTable tableName="person_to_case_filter">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="person_id" type="BIGINT" />
+            <column name="case_filter_id" type="BIGINT" />
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_CL_person" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="person_to_case_filter" baseColumnNames="person_id"
+                                 referencedTableName="person" referencedColumnNames="id" />
+
+        <addForeignKeyConstraint constraintName="FK_CL_case_filter" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 baseTableName="person_to_case_filter" baseColumnNames="case_filter_id"
+                                 referencedTableName="case_filter" referencedColumnNames="ID" />
+    </changeSet>
+
+    <changeSet id="add-unique_constraint-on-person-to-case-filter-table" author="porubov">
+        <addUniqueConstraint constraintName="person_id_case_filter_id_unique"
+                             tableName="person_to_case_filter" columnNames="person_id, case_filter_id"/>
+    </changeSet>
+
+
+</databaseChangeLog>
