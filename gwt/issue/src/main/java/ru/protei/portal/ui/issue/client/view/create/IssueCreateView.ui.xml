@@ -69,14 +69,14 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 order-first order-lg-last">
+                <div class="col-lg-4 order-first order-lg-last issue-create-meta-container">
                     <div class="card card-default">
                         <g:HTMLPanel ui:field="issueMetaViewContainer" styleName="card-body issue-meta-edit"/>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card-footer text-right">
+        <div class="card-footer text-right forcibly-bottom">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
             <g:Button ui:field="cancelButton" styleName="btn btn-default close_button"
                       text="{lang.buttonCancel}"/>

@@ -356,7 +356,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .withSuccess(resultConsumer)
         );
     }
-
     private void addImageToMessage(Integer strPosition, Attachment attach) {
         view.description().setValue(
                 addImageInMessage(En_TextMarkup.MARKDOWN, view.description().getValue(), strPosition, attach));
