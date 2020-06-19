@@ -11,5 +11,7 @@ public interface PersonCaseFilterService {
 
     Result<List<CaseFilterShortView>> getCaseFilterByPersonId(AuthToken authToken, Long personId);
 
-    Result<Void> changePersonToCaseFilter(AuthToken authToken, Long personId, Long oldCaseFilterId, Long newCaseFilterId);
+    Result<Boolean> addPersonToCaseFilter(AuthToken authToken, Long personId, Long caseFilterId);
+    Result<Boolean> removePersonToCaseFilter(AuthToken authToken, Long personId, Long caseFilterId);
+    Result<Boolean> changePersonToCaseFilter(AuthToken authToken, Long personId, Long oldCaseFilterId, Long newCaseFilterId);
 }

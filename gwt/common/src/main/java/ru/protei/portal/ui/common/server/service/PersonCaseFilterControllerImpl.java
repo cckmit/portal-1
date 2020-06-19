@@ -34,16 +34,48 @@ public class PersonCaseFilterControllerImpl implements PersonCaseFilterControlle
     }
 
     @Override
-    public void changePersonToCaseFilter(Long personId, Long oldCaseFilterId, Long newCaseFilterId) throws RequestFailedException {
-        log.info("changePersonToCaseFilter, personId: {}, oldCaseFilterId: {}, newCaseFilterId: {}", personId, oldCaseFilterId, newCaseFilterId);
+    public boolean addPersonToCaseFilter(Long personId, Long caseFilterId) throws RequestFailedException {
+        log.info("addPersonToCaseFilter, personId: {}, caseFilterId: {}", personId, caseFilterId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Void> response = personCaseFilterService.changePersonToCaseFilter(token, personId, oldCaseFilterId, newCaseFilterId);
+        Result<Boolean> response = personCaseFilterService.addPersonToCaseFilter(token, personId, caseFilterId);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
+
+        return response.getData();
+    }
+
+    @Override
+    public boolean removePersonToCaseFilter(Long personId, Long caseFilterId) throws RequestFailedException {
+        log.info("removePersonToCaseFilter, personId: {}, caseFilterId: {}", personId, caseFilterId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = personCaseFilterService.removePersonToCaseFilter(token, personId, caseFilterId);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
+    }
+
+    @Override
+    public boolean changePersonToCaseFilter(Long personId, Long oldCaseFilterId, Long newCaseFilterId) throws RequestFailedException {
+        log.info("changePersonToCaseFilter, personId: {}, oldCaseFilterId: {}, newCaseFilterId: {}", personId, oldCaseFilterId, newCaseFilterId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Boolean> response = personCaseFilterService.changePersonToCaseFilter(token, personId, oldCaseFilterId, newCaseFilterId);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
     }
 
     @Autowired

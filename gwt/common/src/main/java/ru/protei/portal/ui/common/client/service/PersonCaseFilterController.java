@@ -12,5 +12,7 @@ public interface PersonCaseFilterController extends RemoteService {
 
     List<CaseFilterShortView> getCaseFilterByPersonId(Long personId) throws RequestFailedException;
 
-    void changePersonToCaseFilter(Long personId, Long oldCaseFilterId, Long newCaseFilterId) throws RequestFailedException;
+    boolean addPersonToCaseFilter(Long personId, Long caseFilterId) throws RequestFailedException;
+    boolean removePersonToCaseFilter(Long personId, Long caseFilterId) throws RequestFailedException;
+    boolean changePersonToCaseFilter(Long personId, Long oldCaseFilterId, Long newCaseFilterId) throws RequestFailedException;
 }

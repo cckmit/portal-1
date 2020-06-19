@@ -63,39 +63,53 @@ public class PersonCaseFilterServiceImpl implements PersonCaseFilterService {
         }
 
         List<CaseFilter> list = caseFilterDAO.getByPersonId(personId);
-        List< CaseFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
+        List<CaseFilterShortView> result = list.stream().map(CaseFilter::toShortView).collect(Collectors.toList());
 
         return ok(result);
     }
 
     @Override
     @Transactional
-    public Result<Void> changePersonToCaseFilter(AuthToken authToken, Long personId, Long oldCaseFilterId, Long newCaseFilterID ) {
+    public Result<Boolean> addPersonToCaseFilter(AuthToken authToken, Long personId, Long caseFilterId) {
+        if (personId == null || caseFilterId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        if (!personCaseFilterDAO.isExist(personId, caseFilterId)) {
+            personCaseFilterDAO.persist(createPersonToCaseFilter(personId, caseFilterId));
+        }
+
+        return ok(true);
+    }
+
+    @Override
+    @Transactional
+    public Result<Boolean> removePersonToCaseFilter(AuthToken authToken, Long personId, Long caseFilterId) {
+        if (personId == null || caseFilterId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        personCaseFilterDAO.removeByPersonIdAndCaseFilterId(personId, caseFilterId);
+
+        return ok(true);
+    }
+
+    @Override
+    @Transactional
+    public Result<Boolean> changePersonToCaseFilter(AuthToken authToken, Long personId, Long oldCaseFilterId, Long newCaseFilterID ) {
         if (personId == null || (oldCaseFilterId == null && newCaseFilterID == null)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (oldCaseFilterId == null) {
-            if (!personCaseFilterDAO.checkExistsByCondition("person_id = ? and case_filter_id = ?",
-                    personId, newCaseFilterID)) {
-                personCaseFilterDAO.persist(createPersonToCaseFilter(personId, newCaseFilterID));
-            }
+        PersonToCaseFilter personToCaseFilter = personCaseFilterDAO.getByPersonIdAndCaseFilterId(personId, oldCaseFilterId);
+        if (personToCaseFilter == null) {
+            personToCaseFilter = createPersonToCaseFilter(personId, newCaseFilterID);
         } else {
-            if (newCaseFilterID == null) {
-                personCaseFilterDAO.removeByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
-            } else {
-                PersonToCaseFilter personToCaseFilter = personCaseFilterDAO
-                        .getByCondition("person_id = ? and case_filter_id = ?", personId, oldCaseFilterId);
-                if (personToCaseFilter == null) {
-                    personToCaseFilter = createPersonToCaseFilter(personId, newCaseFilterID);
-                } else {
-                    personToCaseFilter.setCaseFilterId(newCaseFilterID);
-                }
-                personCaseFilterDAO.merge(personToCaseFilter);
-            }
+            personToCaseFilter.setCaseFilterId(newCaseFilterID);
         }
 
-        return ok();
+        personCaseFilterDAO.merge(personToCaseFilter);
+
+        return ok(true);
     }
 
     private PersonToCaseFilter createPersonToCaseFilter(Long personId, Long caseFilterId) {

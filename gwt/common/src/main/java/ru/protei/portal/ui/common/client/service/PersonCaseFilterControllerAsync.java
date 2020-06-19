@@ -8,5 +8,7 @@ import java.util.List;
 public interface PersonCaseFilterControllerAsync {
    void getCaseFilterByPersonId(Long personId, AsyncCallback< List< CaseFilterShortView > > async );
 
-   void changePersonToCaseFilter(Long personId, Long oldCaseFilterId, Long newCaseFilterId, AsyncCallback< Void > async);
+   void addPersonToCaseFilter(Long personId, Long caseFilterId, AsyncCallback< Boolean > async);
+   void removePersonToCaseFilter(Long personId, Long caseFilterId, AsyncCallback< Boolean > async);
+   void changePersonToCaseFilter(Long personId, Long oldCaseFilterId, Long newCaseFilterId, AsyncCallback< Boolean > async);
 }

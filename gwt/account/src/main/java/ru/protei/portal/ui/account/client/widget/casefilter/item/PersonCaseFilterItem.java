@@ -15,8 +15,6 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 
-import java.util.function.BiConsumer;
-
 
 /**
  * Один элемент списка
@@ -58,13 +56,27 @@ public class PersonCaseFilterItem
 
     @UiHandler( "filter" )
     public void onFilterChanged( ValueChangeEvent<CaseFilterShortView> event) {
-        Long newId = filter.getValue() == null ? null : filter.getValue().getId();
-        callback.accept(oldFilterId, newId);
-        oldFilterId = newId;
+        Long newFilterId = filter.getValue() == null ? null : filter.getValue().getId();
+
+        if (oldFilterId == null && newFilterId == null) {
+            return;
+        }
+
+        if (oldFilterId == null) {
+            callbacks.add(newFilterId);
+        } else {
+            if (newFilterId == null) {
+                callbacks.remove(oldFilterId);
+            } else {
+                callbacks.change(oldFilterId, newFilterId);
+            }
+        }
+
+        oldFilterId = newFilterId;
     }
 
-    public void setCallback(BiConsumer<Long, Long> callback) {
-        this.callback = callback;
+    public void setCallback(PersonCaseFilterCallbacks callbacks) {
+        this.callbacks = callbacks;
     }
 
     @Inject
@@ -73,7 +85,7 @@ public class PersonCaseFilterItem
     @UiField
     Lang lang;
 
-    private BiConsumer<Long, Long> callback;
+    private PersonCaseFilterCallbacks callbacks;
     private Long oldFilterId = null;
 
     interface PersonCaseFilterItemUiBinder extends UiBinder< HTMLPanel, PersonCaseFilterItem> {}

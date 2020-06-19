@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.ui.account.client.widget.casefilter.item.PersonCaseFilterCallbacks;
 import ru.protei.portal.ui.account.client.widget.casefilter.item.PersonCaseFilterItem;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -45,12 +46,29 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
     private void makeItemAndFillValue(CaseFilterShortView value) {
         PersonCaseFilterItem personCaseFilterItem = itemProvider.get();
         personCaseFilterItem.setValue(value);
-        personCaseFilterItem.setCallback((oldId, newId) -> {
-            controller.changePersonToCaseFilter(personId, oldId, newId, new FluentCallback<Void>()
-                    .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
-                    .withSuccess((v) -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
-            if (newId == null && itemContainer.getWidgetCount() > 1) {
-                itemContainer.remove(personCaseFilterItem);
+        personCaseFilterItem.setCallback(new PersonCaseFilterCallbacks() {
+            @Override
+            public void add(Long caseFilterId) {
+                controller.addPersonToCaseFilter(personId, caseFilterId, new FluentCallback<Boolean>()
+                        .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
+                        .withSuccess(b -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
+            }
+
+            @Override
+            public void remove(Long caseFilterId) {
+                controller.removePersonToCaseFilter(personId, caseFilterId, new FluentCallback<Boolean>()
+                        .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
+                        .withSuccess(b -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
+                if (itemContainer.getWidgetCount() > 1) {
+                    itemContainer.remove(personCaseFilterItem);
+                }
+            }
+
+            @Override
+            public void change(Long oldCaseFilterId, Long newCaseFilterId) {
+                controller.changePersonToCaseFilter(personId, oldCaseFilterId, newCaseFilterId, new FluentCallback<Boolean>()
+                        .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errPersonCaseFilterChangeError(), NotifyEvents.NotifyType.ERROR)))
+                        .withSuccess(b -> fireEvent(new NotifyEvents.Show(lang.personCaseFilterChange(), NotifyEvents.NotifyType.SUCCESS))));
             }
         });
         itemContainer.add(personCaseFilterItem);
