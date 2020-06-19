@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.account.client.widget.casefilter.item.PersonCaseFilterCallbacks;
 import ru.protei.portal.ui.account.client.widget.casefilter.item.PersonCaseFilterItem;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -18,11 +19,14 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+
 abstract public class PersonCaseFilterWidget extends Composite implements Activity {
 
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        setTestAttributes();
     }
 
     public void setPersonId(Long personId) {
@@ -72,6 +76,10 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
             }
         });
         itemContainer.add(personCaseFilterItem);
+    }
+
+    private void setTestAttributes() {
+        itemContainer.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.PERSON_CASE_FILTER.ITEM_CONTAINER);
     }
 
     @UiField

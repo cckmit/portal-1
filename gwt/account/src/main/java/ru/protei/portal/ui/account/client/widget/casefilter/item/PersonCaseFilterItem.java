@@ -12,8 +12,11 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 
 /**
@@ -26,6 +29,7 @@ public class PersonCaseFilterItem
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        setTestAttributes();
         filter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
@@ -78,6 +82,14 @@ public class PersonCaseFilterItem
     public void setCallback(PersonCaseFilterCallbacks callbacks) {
         this.callbacks = callbacks;
     }
+
+    private void setTestAttributes() {
+        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.PERSON_CASE_FILTER.ITEM);
+        filter.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.PERSON_CASE_FILTER.FILTER_SELECTOR);
+    }
+
+    @UiField
+    HTMLPanel root;
 
     @Inject
     @UiField(provided = true)
