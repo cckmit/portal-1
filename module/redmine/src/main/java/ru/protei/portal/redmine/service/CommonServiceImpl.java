@@ -154,6 +154,7 @@ public final class CommonServiceImpl implements CommonService {
         final CaseObjectMeta oldMeta = new CaseObjectMeta( object );
 
         object.setStateId( redmineStatusEntry.getLocalStatusId() );
+        object.setStateName( redmineStatusEntry.getLocalStatusName() );
         caseObjectDAO.merge( object );
         logger.debug( "Updated case state for case with id {}, old={}, new={}", object.getId(), oldMeta.getStateId(), object.getStateId());
 

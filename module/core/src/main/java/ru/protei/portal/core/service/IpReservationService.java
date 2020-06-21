@@ -5,10 +5,7 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.ReservedIpRequest;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.ReservedIp;
-import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -79,7 +76,7 @@ public interface IpReservationService {
      */
     @Privileged(En_Privilege.SUBNET_REMOVE)
     @Auditable(En_AuditType.SUBNET_REMOVE)
-    Result<Long> removeSubnet(AuthToken token, Subnet subnet, boolean removeWithIps);
+    Result<Subnet> removeSubnet(AuthToken token, Subnet subnet, boolean removeWithIps);
 
     /**
      *
@@ -117,9 +114,9 @@ public interface IpReservationService {
      */
     @Privileged(En_Privilege.RESERVED_IP_REMOVE)
     @Auditable(En_AuditType.RESERVED_IP_REMOVE)
-    Result<Long> removeReservedIp(AuthToken token, ReservedIp reservedIp);
+    Result<ReservedIp> removeReservedIp(AuthToken token, ReservedIp reservedIp);
 
-    Result<Boolean> notifyOwnerAboutReleaseIp();
+    Result<Boolean> notifyOwnersAboutReleaseIp();
 
     Result<Boolean> notifyAdminsAboutExpiredReleaseDates();
 }

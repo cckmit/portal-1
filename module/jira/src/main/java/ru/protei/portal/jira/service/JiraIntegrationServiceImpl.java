@@ -163,9 +163,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setLocal(0);
 
         long oldStateId = caseObj.getStateId();
-        Long newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
-        long newStateId = newState == null ? caseObj.getStateId() : newState;
-        caseObj.setStateId(newStateId);
+        JiraStatusMapEntry newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
+        if (newState != null) {
+            caseObj.setStateId(newState.getLocalStatusId());
+            caseObj.setStateName(newState.getLocalStatusName());
+        }
 
         En_ImportanceLevel oldImportance = En_ImportanceLevel.getById(caseObj.getImpLevel());
         En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
@@ -186,8 +188,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObjectDAO.merge(caseObj);
 
-        if (newStateId != oldStateId) {
-            persistStateComment(authorId, caseObj.getId(), newStateId);
+        if (caseObj.getStateId() != oldStateId) {
+            persistStateComment(authorId, caseObj.getId(), caseObj.getStateId());
         }
 
         if (!newImportance.equals(oldImportance)) {
@@ -214,9 +216,15 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
         caseObj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
 
-        Long newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
-        logger.info("issue {}, case-state old={}, new={}", issue.getKey(), caseObj.getStateId(), newState);
-        caseObj.setStateId(newState == null ? CrmConstants.State.CREATED : newState);
+        JiraStatusMapEntry newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
+        if (newState != null) {
+            caseObj.setStateId(newState.getLocalStatusId());
+            caseObj.setStateName(newState.getLocalStatusName());
+        } else {
+            caseObj.setStateId(CrmConstants.State.CREATED);
+            caseObj.setStateName(CrmConstants.State.CREATED_NAME);
+        }
+        logger.info("issue {}, case-state new={}", issue.getKey(), caseObj.getStateId());
 
         En_ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
         logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.getImportanceLevel(), newImportance);
@@ -459,9 +467,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         setTextWithReplacedImagesFromJira(caseComment, attachments);
     }
 
-    private Long getNewCaseState(Long statusMapId, String issueStatusName) {
+    private JiraStatusMapEntry getNewCaseState(Long statusMapId, String issueStatusName) {
 
-        Long state = jiraStatusMapEntryDAO.getByJiraStatus(statusMapId, issueStatusName);
+        JiraStatusMapEntry state = jiraStatusMapEntryDAO.getByJiraStatus(statusMapId, issueStatusName);
         if (state == null){
             logger.error("unable to map jira-status " + issueStatusName + " to portal case-state");
         }

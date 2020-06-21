@@ -36,6 +36,8 @@ import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.AccountServiceImpl;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
@@ -430,8 +432,6 @@ public class MainConfiguration {
         return new RedminePriorityMapEntryDAO_Impl();
     }
 
-
-
     @Bean
     public CaseFilterDAO getIssueFilterDAO() {
         return new CaseFilterDAO_Impl();
@@ -450,6 +450,21 @@ public class MainConfiguration {
     @Bean
     public CaseLinkDAO getCaseLinkDAO() {
         return new CaseLinkDAO_Impl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
     }
 
     @Bean
@@ -775,6 +790,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
     public SiteFolderService getSiteFolderService() {
         return new SiteFolderServiceImpl();
     }
@@ -842,6 +867,11 @@ public class MainConfiguration {
     @Bean
     public RoomReservationService getRoomReservationService() {
         return new RoomReservationServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return new AutoOpenCaseServiceImpl();
     }
 
 

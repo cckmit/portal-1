@@ -17,6 +17,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
@@ -34,7 +35,6 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 @EnableAspectJAutoProxy
 @EnableAsync
@@ -173,5 +173,23 @@ public class RedmineTestConfiguration {
         return new LockServiceImpl();
     }
 
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return mock(AutoOpenCaseService.class);
+    }
 
+    @Bean
+    public SiteFolderService getSiteFolderService() {
+        return mock(SiteFolderService.class);
+    }
+
+    @Bean
+    public ProductService getProductService() {
+        return mock(ProductService.class);
+    }
+
+    @Bean
+    public PlanService getPlanService() {
+        return mock(PlanService.class);
+    }
 }

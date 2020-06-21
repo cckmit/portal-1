@@ -81,6 +81,7 @@ public class DebugIds {
         String SUBNET = "sidebar-menu-subnet";
         String RESERVED_IP = "sidebar-menu-reserved-ip";
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";
+        String PLAN = "sidebar-menu-plan";
         String ICON_SUFFIX = "-icon";
     }
 
@@ -165,6 +166,8 @@ public class DebugIds {
 
         String COMPANY_SELECTOR = "filter-company-selector";
         String SHOW_FIRED = "filter-show-fired";
+
+        String PLAN_SELECTOR = "filter-plan-selector";
 
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
@@ -282,6 +285,11 @@ public class DebugIds {
         String NOTIFIERS_SELECTOR = "issue-subscriptions-selector";
         String EDIT_NAME_AND_DESC_ACCEPT = "issue-edit-name-and-desc-accept";
         String EDIT_NAME_AND_DESC_REJECT = "issue-edit-name-and-desc-reject";
+        String PLANS_SELECTOR_ADD_BUTTON = "issue-plans-selector-add-button";
+        String PLANS_SELECTOR_CLEAR_BUTTON = "issue-plans-selector-clear-button";
+        String PLANS_SELECTOR_ITEM_CONTAINER = "issue-plans-selector-item-container";
+        String PLANS_SELECTOR_LABEL = "issue-plans-selector-label";
+        String PLANS_SELECTOR = "issue-plans-selector";
 
         interface LABEL {
             String NAME = "issue-label-name";
@@ -447,6 +455,7 @@ public class DebugIds {
         String CANCEL_BUTTON = "product-cancel-button";
         String DIRECTION = "product-direction";
         String DIRECTION_LABEL = "product-direction-label";
+        String COMMON_MANAGER = "product-common-manager";
 
         interface TAB {
             String HISTORY_VERSION = "product-tab-history-version";
@@ -826,5 +835,13 @@ public class DebugIds {
         String COMMENT_INPUT = "reservedip-comment-input";
         String SAVE_BUTTON = "reservedip-save-button";
         String CANCEL_BUTTON = "reservedip-cancel-button";
+    }
+
+    public interface PLAN_PREVIEW {
+        String FULL_SCREEN_BUTTON = "plan-preview-full-screen-button";
+        String TITLE_LABEL = "plan-preview-title-label";
+        String DATE_CREATED_LABEL = "plan-preview-date-created-label";
+        String NAME_LABEL = "plan-preview-name-label";
+        String PERIOD_LABEL = "plan-preview-period-label";
     }
 }

@@ -27,6 +27,7 @@ public enum En_PrivilegeEntity {
     SUBNET(22),
     RESERVED_IP(23),
     ROOM_RESERVATION(5),
+    PLAN(24),
     ;
 
     private final Integer order;

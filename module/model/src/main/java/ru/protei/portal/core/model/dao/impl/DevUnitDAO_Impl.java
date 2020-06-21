@@ -8,12 +8,14 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ru.protei.winter.core.utils.collections.CollectionUtils.isNotEmpty;
 
 /**
  * Created by michael on 23.05.16.
@@ -37,20 +39,20 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
 
     @Override
     public List<DevUnit> getParents(Long productId) {
-        return getListByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID != ?",
+        return getListByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID != ?",
                 productId,
                 En_DevUnitType.DIRECTION.getId()
         );
     }
 
     @Override
-    public List<DevUnit> getChildren(Long productId) {
-        return getListByCondition("ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)", productId);
+    public List<DevUnit> getChildren(Set<Long> productIds) {
+        return getListByCondition("dev_unit.ID IN (SELECT dev_unit_children.CHILD_ID FROM dev_unit_children WHERE dev_unit_children.DUNIT_ID IN " + HelperFunc.makeInArg(productIds, false) + ")");
     }
 
     @Override
     public DevUnit getProductDirection(Long productId) {
-        return getByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
+        return getByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
                 productId,
                 En_DevUnitType.DIRECTION.getId()
         );
@@ -81,7 +83,7 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
                 args.add(query.getState().getId());
             }
 
-            if (!CollectionUtils.isEmpty(query.getTypes())) {
+            if (isNotEmpty(query.getTypes())) {
                 condition
                         .append(" and UTYPE_ID in (")
                         .append(query.getTypes().stream()
@@ -95,8 +97,17 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
             }
 
             if (query.getDirectionId() != null) {
-                condition.append(" and ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)");
+                condition.append(" and dev_unit.ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)");
                 args.add(query.getDirectionId());
+            }
+
+            if (isNotEmpty(query.getPlatformIds())) {
+                condition.append(
+                        " and dev_unit.ID IN " +
+                                "(SELECT project_to_product.product_id FROM project_to_product WHERE project_to_product.project_id IN " +
+                                    "(SELECT platform.project_id FROM platform WHERE platform.id IN " + HelperFunc.makeInArg(query.getPlatformIds(), false) + ")" +
+                                ")"
+                );
             }
         });
     }

@@ -90,6 +90,11 @@
                         <argument>notification/email/project.subject.ftl</argument>
                         <argument>notification/email/reservation.room.subject.ftl</argument>
                         <argument>notification/email/reservation.room.body.ftl</argument>
+                        <argument>notification/email/subnet.subject.ftl</argument>
+                        <argument>notification/email/subnet.body.ftl</argument>
+                        <argument>notification/email/reserved.ip.subject.ftl</argument>
+                        <argument>notification/email/reserved.ip.body.ftl</argument>
+                        <argument>notification/email/reserved.ip.remaining.subject.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

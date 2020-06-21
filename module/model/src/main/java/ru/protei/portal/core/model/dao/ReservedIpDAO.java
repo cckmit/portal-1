@@ -12,6 +12,8 @@ public interface ReservedIpDAO extends PortalBaseDAO<ReservedIp> {
 
     ReservedIp getReservedIpByAddress(String address);
 
+    List<ReservedIp> getReservedIpsBySubnetId(Long subnetId);
+
     Map<Long, Long> countBySubnetIds(List<Long> subnetIds);
 
     @SqlConditionBuilder

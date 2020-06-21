@@ -12,7 +12,7 @@ import java.util.List;
  * Сокращенное представление кейса
  */
 @JdbcEntity(table = "case_object")
-public class CaseShortView implements Serializable {
+public class CaseShortView implements Serializable, Identifiable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

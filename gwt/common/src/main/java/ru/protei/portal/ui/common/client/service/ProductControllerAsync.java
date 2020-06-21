@@ -41,4 +41,6 @@ public interface ProductControllerAsync {
     void getProductDirectionList(ProductDirectionQuery query, AsyncCallback<List<ProductDirectionInfo>> callback);
 
     void isNameUnique(String name, En_DevUnitType type, Long exceptId, AsyncCallback<Boolean> async);
+
+    void getProductsViewListWithChildren(ProductQuery query, AsyncCallback<List<ProductShortView>> async);
 }

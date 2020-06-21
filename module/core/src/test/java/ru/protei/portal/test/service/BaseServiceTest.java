@@ -290,6 +290,10 @@ public class BaseServiceTest {
     @Autowired
     protected CaseLinkDAO caseLinkDAO;
     @Autowired
+    protected PlatformDAO platformDAO;
+    @Autowired
+    protected ProjectToProductDAO projectToProductDAO;
+    @Autowired
     protected CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
     protected CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;

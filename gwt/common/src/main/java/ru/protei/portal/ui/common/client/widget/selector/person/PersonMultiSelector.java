@@ -87,7 +87,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             companyIds = companies.stream().map(EntityOption::getId).collect(Collectors.toSet());
         }
 
-        personModel.updateCompanies(this, companyIds, null);
+        personModel.updateCompanies(this, null, companyIds, null);
 
     }
 
@@ -104,7 +104,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         this.selectCompanyMessage = selectCompanyMessage;
     }
 
-    Lang lang;
+    private Lang lang;
     private PersonModel personModel;
     private String selectCompanyMessage;
 

@@ -12,8 +12,7 @@ public class JiraStatusMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraStatusMapE
     }
 
     @Override
-    public Long getByJiraStatus(long mapId, String statusName) {
-        JiraStatusMapEntry entry = getByCondition("map_id=? and jira_status_name=?", mapId, statusName);
-        return entry == null ? null : entry.getLocalStatusId();
+    public JiraStatusMapEntry getByJiraStatus(long mapId, String statusName) {
+        return getByCondition("map_id=? and jira_status_name=?", mapId, statusName);
     }
 }

@@ -93,6 +93,8 @@ public class CaseQuery extends BaseQuery {
 
     private Boolean managerOrInitiatorCondition;
 
+    private Long planId;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -145,6 +147,7 @@ public class CaseQuery extends BaseQuery {
         setHeadManagerIds(query.getHeadManagerIds());
         setCaseMemberIds(query.getCaseMemberIds());
         setManagerOrInitiatorCondition(query.getManagerOrInitiatorCondition());
+        setPlanId(query.getPlanId());
     }
 
     public Long getId() {
@@ -404,6 +407,14 @@ public class CaseQuery extends BaseQuery {
         this.managerOrInitiatorCondition = managerOrInitiatorCondition;
     }
 
+    public Long getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(Long planId) {
+        this.planId = planId;
+    }
+
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
@@ -434,7 +445,8 @@ public class CaseQuery extends BaseQuery {
                 local != null ||
                 isCheckImportanceHistory != null ||
                 platformIndependentProject != null ||
-                managerOrInitiatorCondition != null;
+                managerOrInitiatorCondition != null ||
+                planId != null;
     }
 
     @Override
@@ -475,6 +487,7 @@ public class CaseQuery extends BaseQuery {
                 ", creatorIds=" + creatorIds +
                 ", isCheckImportanceHistory=" + isCheckImportanceHistory +
                 ", managerOrInitiatorCondition=" + managerOrInitiatorCondition +
+                ", planId=" + planId +
                 '}';
     }
 
@@ -516,7 +529,8 @@ public class CaseQuery extends BaseQuery {
                 Objects.equals(platformIndependentProject, caseQuery.platformIndependentProject) &&
                 Objects.equals(productDirectionIds, caseQuery.productDirectionIds) &&
                 Objects.equals(creatorIds, caseQuery.creatorIds) &&
-                Objects.equals(managerOrInitiatorCondition, caseQuery.managerOrInitiatorCondition);
+                Objects.equals(managerOrInitiatorCondition, caseQuery.managerOrInitiatorCondition) &&
+                Objects.equals(planId, caseQuery.planId);
     }
 
     @Override
@@ -524,7 +538,7 @@ public class CaseQuery extends BaseQuery {
         return Objects.hash(id, caseNumbers, caseIds, companyIds, managerCompanyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdFrom, createdTo, modifiedFrom,
                 modifiedTo, searchStringAtComments, searchCasenoString, memberId, commentAuthorIds, caseTagsIds,
-                customerSearch, findRecordByCaseComments, local, platformIndependentProject,
-                productDirectionIds, creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition);
+                customerSearch, findRecordByCaseComments, local, platformIndependentProject, productDirectionIds,
+                creatorIds, regionIds, headManagerIds, caseMemberIds, managerOrInitiatorCondition, planId);
     }
 }

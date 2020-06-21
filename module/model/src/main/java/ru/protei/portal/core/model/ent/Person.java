@@ -386,9 +386,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
                 ", genderCode='" + genderCode + '\'' +
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
+                ", passportInfo='" + passportInfo + '\'' +
                 ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
+                ", fireDate=" + fireDate +
                 ", contactInfo=" + contactInfo +
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +

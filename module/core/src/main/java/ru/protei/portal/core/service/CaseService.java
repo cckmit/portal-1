@@ -12,10 +12,12 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис управления обращениями
@@ -79,4 +81,7 @@ public interface CaseService {
 
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
+
+    @Privileged(En_Privilege.ISSUE_EDIT)
+    Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId);
 }

@@ -25,6 +25,7 @@ import ru.protei.portal.ui.region.client.factory.RegionClientModule;
 import ru.protei.portal.ui.role.client.factory.RoleClientModule;
 import ru.protei.portal.ui.roomreservation.client.factory.RoomReservationClientModule;
 import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
+import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
 
 /**
  * Фабрика
@@ -35,7 +36,7 @@ import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
         ProductClientModule.class, ProjectClientModule.class, RegionClientModule.class, EmployeeRegistrationClientModule.class,
         IssueClientModule.class, IssueReportClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
         DocumentClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class, SiteFolderClientModule.class,
-        ContractClientModule.class, IpReservationClientModule.class
+        ContractClientModule.class, IpReservationClientModule.class, PlanClientModule.class
 })
 public interface ClientFactory
         extends FactoryInjector

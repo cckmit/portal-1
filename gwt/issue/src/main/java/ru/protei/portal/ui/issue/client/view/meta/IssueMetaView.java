@@ -12,18 +12,17 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
@@ -34,8 +33,11 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
@@ -43,7 +45,6 @@ import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
-import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,13 +81,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setProduct(DevUnit product) {
-        this.product.setValue(ProductShortView.fromProduct(product));
-    }
-
-    @Override
-    public DevUnit getProduct() {
-        return DevUnit.fromProductShortView(product.getValue());
+    public HasValue<ProductShortView> product() {
+        return product;
     }
 
     @Override
@@ -196,11 +192,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public void setTimeElapsedType(En_TimeElapsedType timeElapsedType) {
         this.timeElapsedType.setValue(timeElapsedType);
-    }
-
-    @Override
-    public void setProductTypes(En_DevUnitType... enDevUnitTypes) {
-        product.setTypes(enDevUnitTypes);
     }
 
     @Override
@@ -390,6 +381,55 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         return managerCompany;
     }
 
+    @Override
+    public void updateProductsByPlatformIds(Set<Long> platformIds) {
+        product.setPlatformIds(platformIds);
+    }
+
+    @Override
+    public void setProductModel(ProductModel productModel) {
+        product.setAsyncProductModel(productModel);
+    }
+
+    @Override
+    public void setProductMandatory(boolean isProductMandatory) {
+        product.setMandatory(isProductMandatory);
+    }
+
+    @Override
+    public void setPlanCreatorId(Long creatorId) {
+        plans.setCreatorId(creatorId);
+    }
+
+    @Override
+    public HasValue<Set<PlanOption>> ownerPlans() {
+        return plans;
+    }
+
+    @Override
+    public HasVisibility ownerPlansContainerVisibility() {
+        return ownerPlansContainer;
+    }
+
+    @Override
+    public HasVisibility otherPlansContainerVisibility() {
+        return otherPlansContainer;
+    }
+
+    @Override
+    public void setOtherPlans(String otherPlans) {
+        this.otherPlans.setInnerText(otherPlans);
+    }
+
+    @Override
+    public void setPlansLabelVisible(boolean isVisible) {
+        if (isVisible) {
+            plansLabel.removeClassName(UiConstants.Styles.HIDE);
+        } else {
+            plansLabel.addClassName(UiConstants.Styles.HIDE);
+        }
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
@@ -433,6 +473,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
         timeElapsedType.ensureLabelDebugId(DebugIds.ISSUE.LABEL.TIME_ELAPSED_TYPE);
         notifiers.ensureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR);
+        plans.setAddEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ADD_BUTTON);
+        plans.setClearEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_CLEAR_BUTTON);
+        plans.setItemContainerEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ITEM_CONTAINER);
+        plans.setLabelEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_LABEL);
+        plans.ensureDebugId(DebugIds.ISSUE.PLANS_SELECTOR);
     }
 
     private String transliteration(String input) {
@@ -517,6 +562,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         activity.onManagerCompanyChanged();
     }
 
+    @UiHandler("plans")
+    public void onPlanChanged(ValueChangeEvent<Set<PlanOption>> event) {
+        activity.onPlansChanged();
+    }
+
     @UiField
     @Inject
     Lang lang;
@@ -534,6 +584,13 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Inject
     @UiField(provided = true)
     DevUnitFormSelector product;
+    @Inject
+    @UiField(provided = true)
+    PlanMultiSelector plans;
+    @UiField
+    HTMLPanel ownerPlansContainer;
+    @UiField
+    LabelElement plansLabel;
     @UiField
     HTMLPanel productContainer;
     @Inject
@@ -577,6 +634,10 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     LabelElement subscriptionsLabel;
     @UiField
     Element subscriptions;
+    @UiField
+    Element otherPlans;
+    @UiField
+    HTMLPanel otherPlansContainer;
     @UiField
     HTMLPanel slaContainer;
     @Inject

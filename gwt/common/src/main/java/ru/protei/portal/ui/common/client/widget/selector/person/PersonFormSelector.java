@@ -10,8 +10,6 @@ import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
-
 /**
  * Селектор person
  */
@@ -49,8 +47,8 @@ public class PersonFormSelector extends FormPopupSingleSelector<PersonShortView>
     }
 
     public void updateCompanies(Set<Long> companyIds) {
-        if(model!=null){
-            model.updateCompanies(this, companyIds, fired);
+        if (model != null) {
+            model.updateCompanies(this, null, companyIds, fired);
         }
     }
 

@@ -9,6 +9,7 @@
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
              xmlns:alias='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:manager="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -53,16 +54,21 @@
                             <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
                         </div>
 
-                        <g:HTMLPanel ui:field="directionContainer" styleName="row">
-                            <div class="form-group col-md-12">
+                        <div class="row">
+                            <g:HTMLPanel ui:field="directionContainer" styleName="form-group col-md-12">
                                 <label ui:field="directionLabel"><ui:text from="{lang.productDirection}"/></label>
                                 <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.productSelectDirection}"/>
-                            </div>
-                        </g:HTMLPanel>
+                            </g:HTMLPanel>
+
+                            <g:HTMLPanel ui:field="commonManagerContainer" styleName="form-group col-md-6">
+                                <label><ui:text from="{lang.productCommonManager}"/></label>
+                                <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}" hasNullValue="true" people="false"/>
+                            </g:HTMLPanel>
+                        </div>
 
                         <div class="row">
                             <g:HTMLPanel ui:field="parentsContainer" styleName="form-group col-md-6">
-                                <label ui:field="parentsContainerLabel"/>
+                                <label><ui:text from="{lang.belongsTo}"/></label>
                                 <devunit:DevUnitMultiSelector ui:field="parents" hasNullValue="false"/>
                             </g:HTMLPanel>
                             <g:HTMLPanel ui:field="childrenContainer" styleName="form-group col-md-6">

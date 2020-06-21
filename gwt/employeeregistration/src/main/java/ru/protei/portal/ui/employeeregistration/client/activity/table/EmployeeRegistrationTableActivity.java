@@ -15,10 +15,7 @@ import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -43,6 +40,11 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     @Event
     public void onInitDetails(AppEvents.InitDetails event) {
         this.init = event;
+    }
+
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        filterView.resetFilter();
     }
 
     @Event(Type.FILL_CONTENT)

@@ -20,15 +20,13 @@
                                 <label><ui:text from="{lang.issueReportsTitle}"/></label>
                                 <g:TextBox ui:field="name" styleName="form-control"/>
                             </div>
-                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-4" title="{lang.issueImportanceCheckHistoryTitle}">
-                                <label ui:field="notifyLabel" class="m-r-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
-                                <div>
-                                    <switcher:Switcher ui:field="checkImportanceHistory"/>
-                                </div>
-                            </g:HTMLPanel>
                             <g:HTMLPanel ui:field="scheduledTypeContainer" styleName="form-group col-md-4">
                                 <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-4" title="{lang.issueImportanceCheckHistoryTitle}">
+                                <label ui:field="notifyLabel" class="m-l-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
+                                <switcher:Switcher ui:field="checkImportanceHistory"/>
                             </g:HTMLPanel>
                         </div>
                     </div>

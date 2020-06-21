@@ -11,9 +11,11 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
@@ -301,8 +303,26 @@ public class ReportControlServiceImpl implements ReportControlService {
             case DAILY:
             default: days = 1;
         }
+
         Date now = new Date();
-        report.getCaseQuery().setCreatedFrom(new Date(now.getTime() - days * CrmConstants.Time.DAY));
-        report.getCaseQuery().setCreatedTo(now);
+
+        if (En_ReportType.CASE_TIME_ELAPSED.equals(report.getReportType())) {
+            setCreatedDates(report.getCaseQuery(), new Date(now.getTime() - days * CrmConstants.Time.DAY), now);
+        }
+
+        if (En_ReportType.CASE_OBJECTS.equals(report.getReportType())) {
+            setCreatedDates(report.getCaseQuery(), null, null);
+            setModifiedDates(report.getCaseQuery(), new Date(now.getTime() - days * CrmConstants.Time.DAY), now);
+        }
+    }
+
+    private void setCreatedDates(CaseQuery query, Date from, Date to) {
+        query.setCreatedFrom(from);
+        query.setCreatedTo(to);
+    }
+
+    private void setModifiedDates(CaseQuery query, Date from, Date to) {
+        query.setModifiedFrom(from);
+        query.setModifiedTo(to);
     }
 }

@@ -1,0 +1,58 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+
+        <div class="card-body">
+            <div class="row">
+
+                <g:HTMLPanel styleName="col-md-6" ui:field="unplannedTableContainer"/>
+
+                <div class="form-group col-md-6">
+                    <div class="row">
+
+                        <div class="form-group col-md-12">
+                            <h4 class="no-margin p-l-0 inline">
+                                <g:Label ui:field="header"/>
+                            </h4>
+                            <div class="inline pull-right">
+                                <small ui:field="createdBy"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.planName}"/></label>
+                            <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
+                        </div>
+
+                        <div class="form-group col-md-8">
+                            <label><ui:text from="{lang.planPeriod}"/></label>
+                            <range:RangePicker ui:field="planPeriod" type="DATE" formatValue="dd.MM.yyyy"
+                                               hasUnlimitedDateTo="false" mandatory="true"/>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <g:Button ui:field="editPlanButton" text="{lang.planEditButton}" styleName="btn btn-info btn-xs edit-plan-button"/>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.planIssuesList}"/></label>
+                            <g:HTMLPanel ui:field="plannedTableContainer"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlans}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

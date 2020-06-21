@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
 @JdbcEntity(table = "case_object")
 public class CaseObjectMeta extends AuditableObject {
@@ -76,6 +77,9 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String managerCompanyName;
 
+//    not db column
+    private List<Plan> plans;
+
     public CaseObjectMeta() {}
 
     public CaseObjectMeta(CaseObject co) {
@@ -100,6 +104,7 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getExtAppType() != null) setExtAppType(co.getExtAppType());
         if (co.getManagerCompanyId() != null) setManagerCompanyId(co.getManagerCompanyId());
         if (co.getManagerCompanyName() != null) setManagerCompanyName(co.getManagerCompanyName());
+        if (co.getPlans() != null) setPlans(co.getPlans());
         setPrivateCase(co.isPrivateCase());
     }
 
@@ -124,6 +129,7 @@ public class CaseObjectMeta extends AuditableObject {
         if (getTimeElapsed() != null) co.setTimeElapsed(getTimeElapsed());
         if (getExtAppType() != null) co.setExtAppType(getExtAppType());
         if (getManagerCompanyId() != null) co.setManagerCompanyId(getManagerCompanyId());
+        if (getPlans() != null) co.setPlans(getPlans());
         co.setPrivateCase(isPrivateCase());
         return co;
     }
@@ -328,6 +334,14 @@ public class CaseObjectMeta extends AuditableObject {
         this.managerCompanyName = managerCompanyName;
     }
 
+    public List<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<Plan> plans) {
+        this.plans = plans;
+    }
+
     @Override
     public String toString() {
         return "CaseObjectMeta{" +
@@ -351,6 +365,8 @@ public class CaseObjectMeta extends AuditableObject {
                 ", extAppType='" + extAppType + '\'' +
                 ", pauseDate=" + pauseDate +
                 ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", plans=" + plans +
                 '}';
     }
 }

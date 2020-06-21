@@ -59,6 +59,6 @@ public class CompanyDepartmentEditView extends Composite implements AbstractComp
     @UiField(provided = true)
     HomeCompanyButtonSelector company;
 
-    interface CaseTagEditViewUiBinder extends UiBinder<Widget, CompanyDepartmentEditView> {}
-    private static CaseTagEditViewUiBinder ourUiBinder = GWT.create(CaseTagEditViewUiBinder.class);
+    interface CompanyDepartmentEditViewUiBinder extends UiBinder<Widget, CompanyDepartmentEditView> {}
+    private static CompanyDepartmentEditViewUiBinder ourUiBinder = GWT.create(CompanyDepartmentEditViewUiBinder.class);
 }

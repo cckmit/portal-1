@@ -32,6 +32,7 @@ public class UiConstants {
         String CONTRACT = "fa fa-file-signature";
         String IP_RESERVATION = "fa fa-sitemap";
         String ROOM_RESERVATION = "fas fa-calendar-day";
+        String PLAN = "fa fa-list-ol";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
@@ -75,6 +76,7 @@ public class UiConstants {
         String SUBNET_CREATE = "subnet_create";
         String RESERVED_IP = "reserved_ip";
         String RESERVED_IP_CREATE = "reserved_ip_create";
+        String PLAN_CREATE = "plan_create";
     }
 
     public interface Styles {
@@ -83,6 +85,8 @@ public class UiConstants {
         String TEXT_CENTER = "text-center";
         String SEARCH_NO_RESULT = "search-no-result";
         String MULTIPLE_ANY = "multiple-any";
+        String SHORT_VIEW = "col-md-6";
+        String FULL_VIEW = "col-md-12";
     }
 
     /**

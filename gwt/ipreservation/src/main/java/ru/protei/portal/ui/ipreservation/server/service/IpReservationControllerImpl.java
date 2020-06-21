@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -172,10 +173,10 @@ public class IpReservationControllerImpl implements IpReservationController {
     public Long removeSubnet(Subnet subnet, boolean removeWithIps) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Long> response = ipReservationService.removeSubnet(token, subnet, removeWithIps);
+        Result<Subnet> response = ipReservationService.removeSubnet(token, subnet, removeWithIps);
 
         if (response.isOk()) {
-            return response.getData();
+            return response.getData().getId();
         }
 
         throw new RequestFailedException(response.getStatus());
@@ -184,10 +185,10 @@ public class IpReservationControllerImpl implements IpReservationController {
     @Override
     public Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Long> response = ipReservationService.removeReservedIp(token, reservedIp);
+        Result<ReservedIp> response = ipReservationService.removeReservedIp(token, reservedIp);
 
         if (response.isOk()) {
-            return response.getData();
+            return response.getData().getId();
         }
 
         throw new RequestFailedException(response.getStatus());

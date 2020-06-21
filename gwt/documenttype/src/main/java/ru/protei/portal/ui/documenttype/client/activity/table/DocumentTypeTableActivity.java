@@ -39,7 +39,9 @@ public abstract class DocumentTypeTableActivity
     }
 
     @Event
-    public void onAuthSuccess(AuthEvents.Success event) {}
+    public void onAuthSuccess(AuthEvents.Success event) {
+        filterView.resetFilter();
+    }
 
     @Event
     public void onShow(DocumentTypeEvents.Show event) {
