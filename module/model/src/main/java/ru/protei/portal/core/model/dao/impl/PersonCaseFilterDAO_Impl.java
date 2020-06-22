@@ -16,6 +16,13 @@ public class PersonCaseFilterDAO_Impl extends PortalBaseJdbcDAO<PersonToCaseFilt
     }
 
     @Override
+    public boolean isUsed(Long caseFilterId) {
+        Condition condition = query().asCondition()
+                .and("case_filter_id").equal(caseFilterId);
+        return checkExistsByCondition(condition.getSqlCondition(), caseFilterId);
+    }
+
+    @Override
     public boolean removeByPersonIdAndCaseFilterId(Long personId, Long caseFilterId) {
         Condition condition = query().asCondition()
                 .and("person_id").equal(personId)
