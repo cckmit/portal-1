@@ -542,6 +542,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectIssueManager();
 
+    String selectIssuePeriod();
+
     String selectDate();
 
     String issueAttachments();

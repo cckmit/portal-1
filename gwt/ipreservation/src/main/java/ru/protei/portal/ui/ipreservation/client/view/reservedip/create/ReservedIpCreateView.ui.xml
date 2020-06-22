@@ -63,7 +63,7 @@
                     <label class="col-md-12 control-label">
                         <ui:text from="{lang.reservedIpUsePeriod}"/>
                     </label>
-                    <picker:TypedRangePicker ui:field="useRange" formatValue="dd.MM.yyyy"/>
+                    <picker:TypedToggleRangePicker ui:field="useRange" formatValue="dd.MM.yyyy"/>
                 </div>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.comment}"/></label>

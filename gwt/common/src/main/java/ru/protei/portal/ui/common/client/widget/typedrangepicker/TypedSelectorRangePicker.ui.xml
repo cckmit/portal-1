@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:range="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range"
+             xmlns:selector="urn:import:ru.protei.portal.ui.common.client.widget.selector.rangetype">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="">
+        <g:HTMLPanel ui:field="label" tag="label" styleName="hide"/>
+        <selector:RangeTypeButtonSelector ui:field="selector" styleName="dropdown-selector"
+                                          hasNullValue="true" defaultValue="{lang.selectIssuePeriod}"/>
+        <range:RangePicker ui:field="range" styleName="" placeholder="{lang.selectDate}" />
+    </g:HTMLPanel>
+
+</ui:UiBinder>

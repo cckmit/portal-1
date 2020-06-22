@@ -13,24 +13,16 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.ui.common.client.lang.En_DateIntervalLang;
-import ru.protei.portal.ui.common.client.widget.selector.rangetype.RangeTypeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 
 import java.util.Objects;
 
-public class TypedRangePicker extends Composite implements HasValue<DateIntervalWithType> {
+public class TypedToggleRangePicker extends Composite implements HasValue<DateIntervalWithType> {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         btnGroup.addValueChangeHandler(new ValueChangeHandler<En_DateIntervalType>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<En_DateIntervalType> event) {
-                setRangePicker(event.getValue());
-            }
-        });
-
-        rangeTypeSelector.addValueChangeHandler(new ValueChangeHandler<En_DateIntervalType>() {
             @Override
             public void onValueChange(ValueChangeEvent<En_DateIntervalType> event) {
                 setRangePicker(event.getValue());
@@ -70,9 +62,7 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
 
     public void setFormatValue(String value) { range.setFormatValue(value); }
 
-    public void setRangeMandatory(boolean value) {
-        range.setMandatory(value);
-    }
+    public void setRangeMandatory(boolean value) { range.setMandatory(value); }
 
     public void setEnableBtn(En_DateIntervalType intervalType, boolean value) {
         btnGroup.itemViewToModel.entrySet().stream()
@@ -85,15 +75,11 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
 
     @Inject
     @UiField(provided = true)
-    RangeTypeButtonSelector rangeTypeSelector;
-
-    @Inject
-    @UiField(provided = true)
     RangePicker range;
 
     @Inject
     En_DateIntervalLang lang;
 
-    interface TypedRangePickerUiBinder extends UiBinder<Widget, TypedRangePicker> { }
-    private static TypedRangePickerUiBinder ourUiBinder = GWT.create(TypedRangePickerUiBinder.class);
+    interface TypedToggleRangePickerUiBinder extends UiBinder<Widget, TypedToggleRangePicker> { }
+    private static TypedToggleRangePickerUiBinder ourUiBinder = GWT.create(TypedToggleRangePickerUiBinder.class);
 }

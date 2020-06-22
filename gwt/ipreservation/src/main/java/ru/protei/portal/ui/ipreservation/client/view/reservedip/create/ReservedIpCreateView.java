@@ -21,7 +21,7 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedRangePicker;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedToggleRangePicker;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.create.AbstractReservedIpCreateActivity;
@@ -242,7 +242,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
 
     @Inject
     @UiField(provided = true)
-    TypedRangePicker useRange;
+    TypedToggleRangePicker useRange;
 
     @UiField
     HTMLPanel exactIpContainer;
