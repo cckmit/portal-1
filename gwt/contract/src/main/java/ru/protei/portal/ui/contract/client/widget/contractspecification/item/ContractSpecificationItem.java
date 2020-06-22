@@ -31,7 +31,8 @@ public class ContractSpecificationItem
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         setTestAttributes();
-        text.getElement().setAttribute( "placeholder", lang.contractPaymentCommentPlaceholder() );
+        clause.getElement().setAttribute( "placeholder", lang.contractSpecificationClausePlaceholder() );
+        text.getElement().setAttribute( "placeholder", lang.contractSpecificationTextPlaceholder() );
     }
 
     @Override

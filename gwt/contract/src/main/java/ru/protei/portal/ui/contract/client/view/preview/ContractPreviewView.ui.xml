@@ -80,7 +80,7 @@
                             </g:HTMLPanel>
                         </tab:pane.TabWidgetPane>
 
-                        <tab:pane.TabWidgetPane tabName="{lang.contractSpecificationsHeader}">
+                        <tab:pane.TabWidgetPane tabName="{lang.contractSpecificationHeader}">
                             <g:HTMLPanel ui:field="specifications" styleName="small"/>
                         </tab:pane.TabWidgetPane>
                     </tab:TabWidget>

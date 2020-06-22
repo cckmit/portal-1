@@ -126,7 +126,7 @@
                         </g:HTMLPanel>
                     </tab:pane.TabWidgetPane>
 
-                    <tab:pane.TabWidgetPane tabName="{lang.contractSpecificationsHeader}">
+                    <tab:pane.TabWidgetPane tabName="{lang.contractSpecificationHeader}">
                         <g:HTMLPanel>
                             <div class="card-body">
                                 <contractwidgets:contractspecification.list.ContractSpecificationList

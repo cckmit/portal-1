@@ -2102,7 +2102,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDeliveryAndPaymentsPeriodHeader();
 
-    String contractSpecificationsHeader();
+    String contractSpecificationHeader();
+
+    String contractSpecificationClausePlaceholder();
+
+    String contractSpecificationTextPlaceholder();
 
     String contractPaymentCommentPlaceholder();
 
