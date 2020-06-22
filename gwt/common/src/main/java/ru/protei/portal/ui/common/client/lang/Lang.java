@@ -760,8 +760,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSVN();
 
-    String errPersonCaseFilterChangeError();
-
     String msgHello();
 
     String msgObjectSaved();
@@ -2709,4 +2707,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportWithDescriptionTitle();
 
     String personCaseFilterChange();
+
+    String errPersonCaseFilterChangeError();
+
+    String errPersonCaseFilterInUse();
 }

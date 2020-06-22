@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
+import ru.protei.portal.core.model.dao.PersonCaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
@@ -34,6 +34,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
     @Autowired
     CaseFilterDAO caseFilterDAO;
+    @Autowired
+    PersonCaseFilterDAO personCaseFilterDAO;
     @Autowired
     AuthService authService;
     @Autowired
@@ -173,8 +175,12 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         log.debug( "removeIssueFilter(): id={} ", id );
 
+        if (personCaseFilterDAO.isUsed(id)) {
+            return error(En_ResultStatus.ISSUE_FILTER_IS_USED);
+        }
+
         if ( caseFilterDAO.removeByKey( id ) ) {
-            return ok(true );
+            return ok(true);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR );

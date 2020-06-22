@@ -224,5 +224,10 @@ public enum En_ResultStatus {
      */
     ROOM_RESERVATION_HAS_INTERSECTIONS,
 
+    /**
+     * Фильты обращений : фильтр используется
+     */
+    ISSUE_FILTER_IS_USED,
+
     ;
 }
