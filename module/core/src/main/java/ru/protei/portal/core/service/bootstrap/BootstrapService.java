@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
@@ -71,6 +72,7 @@ public class BootstrapService {
         //fillWithCrossLinkColumn();
         transferYoutrackLinks();
         addCommonManager();
+        updateHistoryTable();
     }
 
     private void fillWithCrossLinkColumn() {
@@ -574,6 +576,50 @@ if(true) return; //TODO remove
         log.info("Add Common Manager ended");
     }
 
+    private void updateHistoryTable() {
+        List<History> histories = historyDAO.getAll();
+
+        List<History> oldHistories = histories
+                .stream()
+                .filter(history -> history.getOldValueData() == null)
+                .filter(history -> history.getNewValueData() == null)
+                .collect(toList());
+
+        for (History history : oldHistories) {
+            if (history.getOldValue() != null) {
+                long planId = Long.parseLong(history.getOldValue());
+                Plan oldPlan = planDAO.get(planId);
+
+                if (oldPlan != null) {
+                    history.setOldValue(createPlanHistoryValue(oldPlan.getId(), oldPlan.getName()));
+                    history.setOldValueData(new EntityOption(oldPlan.getName(), oldPlan.getId()));
+                } else {
+                    history.setOldValue(createPlanHistoryValue(planId, ""));
+                    history.setOldValueData(new EntityOption("", planId));
+                }
+            }
+
+            if (history.getNewValue() != null) {
+                long planId = Long.parseLong(history.getNewValue());
+                Plan newPlan = planDAO.get(planId);
+
+                if (newPlan != null) {
+                    history.setNewValue(createPlanHistoryValue(newPlan.getId(), newPlan.getName()));
+                    history.setNewValueData(new EntityOption(newPlan.getName(), newPlan.getId()));
+                } else {
+                    history.setNewValue(createPlanHistoryValue(planId, ""));
+                    history.setNewValueData(new EntityOption("", planId));
+                }
+            }
+        }
+
+        historyDAO.mergeBatch(oldHistories);
+    }
+
+    private String createPlanHistoryValue(Long planId, String planName) {
+        return "#" + planId + " " + planName;
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -629,4 +675,8 @@ if(true) return; //TODO remove
     YoutrackService youtrackService;
     @Autowired
     PortalConfig config;
+    @Autowired
+    HistoryDAO historyDAO;
+    @Autowired
+    PlanDAO planDAO;
 }
