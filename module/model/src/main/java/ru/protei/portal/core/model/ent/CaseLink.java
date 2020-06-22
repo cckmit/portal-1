@@ -128,12 +128,14 @@ public class CaseLink extends AuditableObject {
 
     @Override
     public String toString() {
-        return "CaseMember{" +
+        return "CaseLink{" +
                 "id=" + id +
                 ", caseId=" + caseId +
                 ", type=" + type +
-                ", remoteId=" + remoteId +
+                ", remoteId='" + remoteId + '\'' +
                 ", withCrosslink=" + withCrosslink +
+                ", caseInfo=" + caseInfo +
+                ", youTrackIssueInfo=" + youTrackIssueInfo +
                 '}';
     }
 }

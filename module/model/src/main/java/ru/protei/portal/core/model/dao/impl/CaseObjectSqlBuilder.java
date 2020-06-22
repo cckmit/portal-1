@@ -314,8 +314,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now();
         interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local = local.plusDays(1);
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
@@ -323,8 +322,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now();
         interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local = local.minusDays(1);
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.from = Date.from(local.minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
@@ -332,8 +330,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
         interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local = local.plusWeeks(1);
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusWeeks(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
@@ -341,8 +338,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
         interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local = local.minusWeeks(1);
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.from = Date.from(local.minusWeeks(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
@@ -350,8 +346,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
         interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local = local.plusMonths(1);
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
@@ -359,8 +354,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
         interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local.minusMonths(1);
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.from = Date.from(local.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
@@ -368,8 +362,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
         interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local = local.plusYears(1);
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.to = Date.from(local.plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
@@ -377,8 +370,7 @@ public class CaseObjectSqlBuilder {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
         interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        local.minusYears(1);
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        interval.from = Date.from(local.minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
     }
 
