@@ -223,3 +223,13 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     min-height: 0 !important;
   }
 }
+
+
+.contract-specification-preview-item {
+  .item-clause {
+    position: relative;
+    float:left;
+    padding-right: 12px;
+    font-weight: bold;
+  }
+}

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contract.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -21,7 +22,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,8 +115,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setManager(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseManagerShortName()) : StringUtils.emptyIfNull(value.getManagerShortName()));
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
         view.setDirection(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseDirectionName()) : StringUtils.emptyIfNull(value.getDirectionName()));
-        view.setDates(getAllDatesAsString(value.getContractDates()));
-        view.setSpecifications(getAllSpecificationsAsHTML(value.getContractSpecifications()));
+        view.setDates(getAllDatesAsStringAsHTML(value.getContractDates()));
+        view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
@@ -126,18 +129,22 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .withModifyEnabled(true));
     }
 
-    private String getAllDatesAsString(List<ContractDate> dates) {
+    private String getAllDatesAsStringAsHTML(List<ContractDate> dates) {
         if ( dates == null ) return "";
         return dates.stream()
-                .map(p -> datesTypeLang.getName(p.getType()) + " – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : ""))
-                .collect(Collectors.joining(", "));
+                .map(p -> "<div><b>" + datesTypeLang.getName(p.getType()) + "</b> – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "" + "</div>"))
+                .collect(Collectors.joining("\n"));
     }
 
-    private String getAllSpecificationsAsHTML(List<ContractSpecification> specifications) {
-        if ( specifications == null ) return "";
+    private List<ContractSpecificationPreviewItem> getAllSpecificationsAsWidgets(List<ContractSpecification> specifications) {
+        if (specifications == null) return new ArrayList<>();
         return specifications.stream()
-                .map(spec -> spec.getClause() + " - " + spec.getText())
-                .collect(Collectors.joining("<br>"));
+                .map(spec -> {
+                    ContractSpecificationPreviewItem item = contractSpecificationPreviewItemProvider.get();
+                    item.setValue(spec);
+                    return item;
+                })
+                .collect(Collectors.toList());
     }
 
     private String formatDate(Date date) {
@@ -157,6 +164,9 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private ContractControllerAsync contractController;
     @Inject
     private PolicyService policyService;
+
+    @Inject
+    private Provider<ContractSpecificationPreviewItem> contractSpecificationPreviewItemProvider;
 
     private Long contractId;
 

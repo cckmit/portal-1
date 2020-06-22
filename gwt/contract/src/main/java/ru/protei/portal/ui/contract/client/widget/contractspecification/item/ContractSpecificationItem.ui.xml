@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -10,11 +11,11 @@
         </div>
 
         <div class="col-md-9">
-            <g:TextBox ui:field="text" styleName="form-control"/>
+            <autoresizetextarea:AutoResizeTextArea ui:field="text" styleName="form-control" minRows="2"/>
         </div>
 
         <div class="col-md-1">
-            <g:Button ui:field="remove" styleName="btn btn-danger">
+            <g:Button ui:field="remove" styleName="btn btn-danger pull-right">
                 <i class="fa fa-trash"/>
             </g:Button>
         </div>

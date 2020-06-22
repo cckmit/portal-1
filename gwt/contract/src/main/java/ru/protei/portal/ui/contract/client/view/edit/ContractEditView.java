@@ -190,9 +190,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
 
         commonHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COMMON_HEADER);
-        workGroupHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.WORKGROUP_HEADER);
-        deliveryAndPaymentsPeriodHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DELIVERY_AND_PAYMENTS_PERIOD_HEADER);
-        specificationHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.SPECIFICATION_HEADER);
 
         numberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.NUMBER);
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
@@ -326,10 +323,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     DivElement commonHeader;
     @UiField
     DivElement workGroupHeader;
-    @UiField
-    DivElement deliveryAndPaymentsPeriodHeader;
-    @UiField
-    DivElement specificationHeader;
     @UiField
     Button cancelButton;
 

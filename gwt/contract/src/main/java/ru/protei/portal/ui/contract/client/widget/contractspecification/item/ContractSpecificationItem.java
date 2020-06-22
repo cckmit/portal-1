@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -80,7 +81,7 @@ public class ContractSpecificationItem
     @UiField
     TextBox clause;
     @UiField
-    TextBox text;
+    AutoResizeTextArea text;
     @UiField
     Button remove;
 
