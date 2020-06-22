@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+
 @JdbcEntity(table = "contract_specification")
 public class ContractSpecification implements Serializable {
 
@@ -69,7 +71,7 @@ public class ContractSpecification implements Serializable {
     }
 
     public int getClauseNesting() {
-        return clauseNumbers.size();
+        return emptyIfNull(clauseNumbers).size();
     }
 
     @Override

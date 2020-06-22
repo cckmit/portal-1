@@ -22,12 +22,13 @@ public class ContractSpecificationPreviewItem
         setTestAttributes();
     }
 
-    public void setValue( ContractSpecification value ) {
-         if ( value == null ) {
+    public void setValue(ContractSpecification value) {
+        if (value == null) {
             value = new ContractSpecification();
         }
-        clause.setInnerText( value.getClause() );
-        text.setInnerHTML( value.getText() == null? value.getText() : value.getText().replaceAll("\n", "<br>")  );
+        root.addStyleName("nest" + value.getClauseNesting());
+        clause.setInnerText(value.getClause());
+        text.setInnerHTML(value.getText() == null ? value.getText() : value.getText().replaceAll("\n", "<br>"));
     }
 
     private void setTestAttributes() {
