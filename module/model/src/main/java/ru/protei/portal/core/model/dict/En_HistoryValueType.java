@@ -6,24 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum En_HistoryValueType implements HasId {
-    ADD_TO_PLAN(0) {
-        @Override
-        public En_Privilege getPrivilege() {
-            return En_Privilege.PLAN_VIEW;
-        }
-    },
-    CHANGE_PLAN(1) {
-        @Override
-        public En_Privilege getPrivilege() {
-            return En_Privilege.PLAN_VIEW;
-        }
-    },
-    REMOVE_FROM_PLAN(2) {
-        @Override
-        public En_Privilege getPrivilege() {
-            return En_Privilege.PLAN_VIEW;
-        }
-    },
+    ADD_TO_PLAN(0),
+    CHANGE_PLAN(1),
+    REMOVE_FROM_PLAN(2),
     ;
 
     En_HistoryValueType(int id) {
@@ -35,7 +20,6 @@ public enum En_HistoryValueType implements HasId {
         return id;
     }
 
-    public abstract En_Privilege getPrivilege();
     public static final List<En_HistoryValueType> PLANS = new ArrayList<>();
     private int id;
 

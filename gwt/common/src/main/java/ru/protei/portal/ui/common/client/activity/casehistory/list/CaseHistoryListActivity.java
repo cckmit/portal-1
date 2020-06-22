@@ -50,7 +50,7 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
     }
 
     private void addHistoryItem(History history) {
-        if (En_HistoryValueType.PLANS.contains(history.getValueType()) && policyService.hasPrivilegeFor(history.getValueType().getPrivilege())) {
+        if (En_HistoryValueType.PLANS.contains(history.getValueType()) && policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             view.root().add(makePlanHistoryItem(history).asWidget());
         }
     }
