@@ -18,6 +18,8 @@ public class PersonQuery extends BaseQuery {
 
     private Boolean deleted;
 
+    private Boolean hasCaseFilter;
+
     public PersonQuery() {
         super( "", En_SortField.person_full_name, En_SortDir.ASC );
     }
@@ -27,16 +29,17 @@ public class PersonQuery extends BaseQuery {
     }
 
     public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this(companyIds, people, fired, null, searchString, sortField, sortDir);
+        this(companyIds, people, fired, null, searchString, sortField, sortDir, null);
     }
 
-    public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir, Boolean hasCaseFilter) {
         super(searchString, sortField, sortDir);
         this.companyIds = companyIds;
         this.people = people;
         this.limit = 1000;
         this.fired = fired;
         this.deleted = deleted;
+        this.hasCaseFilter = hasCaseFilter;
     }
 
     public Set<Long> getCompanyIds() {
@@ -71,6 +74,14 @@ public class PersonQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
+    public Boolean getHasCaseFilter() {
+        return hasCaseFilter;
+    }
+
+    public void setHasCaseFilter(Boolean hasCaseFilter) {
+        this.hasCaseFilter = hasCaseFilter;
+    }
+
     private static Set<Long> toSet(Long companyId) {
         if (companyId == null) {
             return null;
@@ -87,6 +98,7 @@ public class PersonQuery extends BaseQuery {
                 ", people=" + people +
                 ", fired=" + fired +
                 ", deleted=" + deleted +
+                ", hasCaseFilter=" + hasCaseFilter +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

@@ -8,6 +8,8 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -176,15 +178,20 @@ public class CaseObjectSqlBuilder {
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-                condition.append( " and ( case_name like ? or case_object.info like ?");
-                if (isSearchAtComments(query)) {
-                    condition.append(" or case_comment.comment_text like ?");
-                    args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+                Condition searchCondition = SqlQueryBuilder.condition()
+                        .or( "case_name" ).like( query.getSearchString() )
+                        .or( "case_name" ).like( query.getAlternativeSearchString() )
+                        .or( "case_object.info" ).like( query.getSearchString() )
+                        .or( "case_object.info" ).like( query.getAlternativeSearchString() );
+                if (isSearchAtComments( query )) {
+                    searchCondition
+                            .or( "case_comment.comment_text" ).like( query.getSearchString() )
+                            .or( "case_comment.comment_text" ).like( query.getAlternativeSearchString() );
                 }
-                condition.append( ")" );
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                args.add(likeArg);
-                args.add(likeArg);
+                condition.append( " and (" )
+                        .append( searchCondition.getSqlCondition() )
+                        .append( ")" );
+                args.addAll( searchCondition.getSqlParameters() );
             }
 
             if (query.getSearchCasenoString() != null && !query.getSearchCasenoString().isEmpty()) {

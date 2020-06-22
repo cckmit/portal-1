@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.PlanEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -29,6 +26,21 @@ public abstract class PlanPage implements Activity{
             fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PLAN, ТAB, DebugIds.SIDEBAR_MENU.PLAN ) );
             fireEvent( new AppEvents.InitPage(showPlans) );
         }
+    }
+
+    @Event
+    public void onShowTable( PlanEvents.ShowPlans event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onShowPreviewFullScreen( PlanEvents.ShowFullScreen event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onShowDetail( PlanEvents.Edit event ) {
+        fireSelectTab();
     }
 
     @Event

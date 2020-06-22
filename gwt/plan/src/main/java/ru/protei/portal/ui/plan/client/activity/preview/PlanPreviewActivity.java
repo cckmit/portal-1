@@ -6,8 +6,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Plan;
-import ru.protei.portal.core.model.ent.ProjectSla;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -42,7 +40,6 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
     @Event
     public void onShow( PlanEvents.ShowFullScreen event ) {
         initDetails.parent.clear();
-
 
         if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_VIEW)) {
             fireEvent(new ForbiddenEvents.Show(initDetails.parent));

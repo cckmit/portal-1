@@ -30,6 +30,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processScheduledMailReportsDaily, new CronTrigger( "0 0 6 * * ?"));
         // at 05:00:00 am every MONDAY
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
+        // at 10:00:00 am every day
+        scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -83,6 +85,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         log.info("remindAboutNeedToReleaseIp end");
     }
 
+    public void processPersonCaseFilterMailNotification() {
+        personCaseFilterService.processMailNotification();
+    }
+
     @Autowired
     PortalConfig config;
 
@@ -97,6 +103,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     ReportControlService reportControlService;
     @Autowired
     IpReservationService ipReservationService;
+    @Autowired
+    PersonCaseFilterService personCaseFilterService;
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasksImpl.class );
 }

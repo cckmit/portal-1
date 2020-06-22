@@ -328,6 +328,10 @@ public class ServiceTestsConfiguration {
         return mock(AutoOpenCaseService.class);
     }
 
+    @Bean
+    public PersonCaseFilterService getPersonCaseFilterService() {
+        return new PersonCaseFilterServiceImpl();
+    }
 
     @Bean
     public ReportCase getReportCase() {

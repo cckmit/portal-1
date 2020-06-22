@@ -182,6 +182,12 @@ public class DebugIds {
         }
     }
 
+    public interface PERSON_CASE_FILTER {
+        String ITEM_CONTAINER = "person-case-filter-item-container";
+        String ITEM = "person-case-filter-item";
+        String FILTER_SELECTOR = "person-case-filter-filter-selector";
+    }
+
     public interface COMPANY_CATEGORY_BUTTON {
         String DEFAULT = "company-category-button-";
         String CUSTOMER = "company-category-button-customer";
@@ -317,6 +323,7 @@ public class DebugIds {
         String REPORT_TYPE = "issue-report-type";
         String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
         String IMPORTANCE_CHECK_HISTORY ="issue-report-importance-check-history";
+        String WITH_DESCRIPTION = "issue-report-with-description";
         String CREATE_BUTTON = "issue-report-create-button";
         String CANCEL_BUTTON = "issue-report-cancel-button";
     }

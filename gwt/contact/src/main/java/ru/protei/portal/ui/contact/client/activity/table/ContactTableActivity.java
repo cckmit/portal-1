@@ -27,6 +27,9 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.StringUtils.*;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.*;
+
 /**
  * Активность таблицы контактов
  */
@@ -172,11 +175,14 @@ public abstract class ContactTableActivity
     }
 
     private ContactQuery makeQuery() {
-        return new ContactQuery( filterView.company().getValue(),
+        ContactQuery query = new ContactQuery( filterView.company().getValue(),
                 filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
                 false,
-                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+                nullIfEmpty( filterView.searchPattern().getValue() ), filterView.sortField().getValue(),
+                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+
+        query.setAlternativeSearchString( makeAlternativeSearchString( filterView.searchPattern().getValue() ) );
+        return query;
 
     };
 

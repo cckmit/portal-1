@@ -30,4 +30,8 @@ public interface AbstractIssueReportCreateView extends IsWidget {
     HasVisibility checkImportanceHistoryContainerVisibility();
 
     HasValue<Boolean> checkImportanceHistory();
+
+    HasValue<Boolean> withDescription();
+
+    HasVisibility withDescriptionContainerVisibility();
 }

@@ -762,6 +762,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSVN();
 
+    String errPersonCaseFilterChangeError();
+
     String msgHello();
 
     String msgObjectSaved();
@@ -1191,6 +1193,8 @@ public interface Lang extends Messages, ContactItemLang {
     String accountSecondName();
 
     String accountFor();
+
+    String accountSubscribeCaseFilter();
 
     String accountRolesNotFound();
 
@@ -2701,6 +2705,12 @@ public interface Lang extends Messages, ContactItemLang {
     String errIssueAlreadyExistInPlan();
 
     String planIssueNumber();
+
+    String issueReportWithDescription();
+
+    String issueReportWithDescriptionTitle();
+
+    String personCaseFilterChange();
 
     String todayInterval();
 

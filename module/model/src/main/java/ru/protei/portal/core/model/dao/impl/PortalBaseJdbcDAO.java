@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.core.utils.enums.HasId;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
@@ -298,5 +299,20 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
                 .append(JdbcHelper.makeSqlStringCollection(testKeys, args, null));
 
         return jdbcTemplate.queryForList(query.toString(), Long.class, args.toArray());
+    }
+
+    protected Integer booleanAsNumber( Boolean isExpression ) {
+        if (isExpression == null) return null;
+        return isExpression ? 1 : 0;
+    }
+
+    protected Collection<Integer> collectIds( Collection<? extends HasId> hasIds ) {
+        if (hasIds == null) return null;
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (HasId hasId : hasIds) {
+            ids.add( hasId.getId() );
+        }
+
+        return ids;
     }
 }

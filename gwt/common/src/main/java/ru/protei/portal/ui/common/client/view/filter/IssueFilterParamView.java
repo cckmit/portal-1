@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
@@ -319,6 +320,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 if (query.getCaseNumbers() == null) {
                     query.setSearchStringAtComments(searchByComments.getValue());
                     query.setSearchString(isBlank(searchString) ? null : searchString);
+                    query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
                 }
                 query.setViewPrivate(searchPrivate.getValue());
                 query.setSortField(sortField.getValue());

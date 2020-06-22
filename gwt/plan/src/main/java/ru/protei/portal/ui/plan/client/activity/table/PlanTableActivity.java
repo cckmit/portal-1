@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -60,7 +59,6 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
 
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add(pagerView.asWidget());
-        fireEvent(new ActionBarEvents.Clear());
 
         if (policyService.hasPrivilegeFor(En_Privilege.PLAN_CREATE)) {
             fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.PLAN_CREATE ));

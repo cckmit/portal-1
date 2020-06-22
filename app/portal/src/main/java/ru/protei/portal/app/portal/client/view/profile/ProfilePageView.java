@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.app.portal.client.widget.casefilter.group.PersonCaseFilterWidget;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
@@ -66,6 +67,16 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     @Override
     public void setIcon( String iconSrc ) {
         this.icon.setSrc( iconSrc );
+    }
+
+    @Override
+    public void setPersonId(Long personId) {
+        personCaseFilterWidget.setPersonId(personId);
+    }
+
+    @Override
+    public HasVisibility personCaseFilterContainerVisibility() {
+        return personCaseFilterContainer;
     }
 
     @Override
@@ -133,6 +144,12 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     LabelElement confirmPasswordLabel;
     @UiField
     HeadingElement changePasswordLabel;
+    @UiField
+    HTMLPanel personCaseFilterContainer;
+
+    @Inject
+    @UiField( provided = true )
+    PersonCaseFilterWidget personCaseFilterWidget;
 
     AbstractProfilePageActivity activity;
 

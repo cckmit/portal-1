@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:casefilter='urn:import:ru.protei.portal.app.portal.client.widget.casefilter.group'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -21,7 +22,7 @@
                                 <small ui:field="company"/>
                             </h4>
 
-                            <g:Button ui:field="changePasswordButton" styleName="btn btn-success"
+                            <g:Button ui:field="changePasswordButton" styleName="btn btn-success m-b-20"
                                       text="{lang.buttonChangePassword}"/>
 
                             <g:HTMLPanel ui:field="passwordContainer" visible="false" styleName="row">
@@ -48,10 +49,17 @@
                                     </label>
                                     <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control"/>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-12 m-b-20">
                                     <g:Button ui:field="savePasswordButton" styleName="btn btn-success"
                                               text="{lang.buttonSave}"/>
                                 </div>
+                            </g:HTMLPanel>
+
+                            <g:HTMLPanel ui:field="personCaseFilterContainer" styleName="form-group">
+                                <label class="">
+                                    <ui:text from="{lang.accountSubscribeCaseFilter}"/>
+                                </label>
+                                <casefilter:PersonCaseFilterWidget ui:field="personCaseFilterWidget"/>
                             </g:HTMLPanel>
                         </div>
                     </div>

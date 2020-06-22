@@ -109,6 +109,16 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         CaseObject caseObject = caseObjectDAO.get(newCaseObject.getId());
         Assert.assertEquals(caseObject.getStateId(), CrmConstants.State.OPENED);
         Assert.assertEquals(caseObject.getManagerId(), commonManager.getId());
+
+        // non transaction, remove manually
+        caseCommentDAO.removeByCondition("case_id = ? or case_id = ?", newCaseObject.getId(), project.getId());
+        platformDAO.remove(platform);
+        projectToProductDAO.removeByCondition("project_id = ? and product_id = ?", project.getId(), product.getId());
+        caseObjectDAO.remove(newCaseObject);
+        caseObjectDAO.remove(project);
+        personDAO.remove(customerPerson);
+        personDAO.remove(commonManager);
+        companyDAO.remove(customerCompany);
     }
 
     @Test

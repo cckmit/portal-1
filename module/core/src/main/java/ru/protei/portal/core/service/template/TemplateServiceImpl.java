@@ -34,7 +34,9 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -639,6 +641,39 @@ public class TemplateServiceImpl implements TemplateService {
         PreparedTemplate template = new PreparedTemplate( "notification/email/reserved.ip.remaining.subject.%s.ftl" );
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getPersonCaseFilterNotificationSubject() {
+        Map<String, Object> templateModel = new HashMap<>();
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/person.case.filter.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+
+    }
+
+    @Override
+    public PreparedTemplate getPersonCaseFilterNotificationBody(List<CaseObject> issue, String urlTemplate) {
+        Map<String, List<CaseObject>> stateToIssues = issue
+                .stream().collect(groupingBy(CaseObject::getStateName));
+
+        List<String> stateOrder = stateToIssues.values().stream()
+                .map(list -> list.get(0))
+                .sorted(Comparator.comparing(CaseObject::getStateId))
+                .map(CaseObject::getStateName)
+                .collect(Collectors.toList());
+
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("stateToIssues", stateToIssues);
+        templateModel.put("urlTemplate", urlTemplate);
+        templateModel.put("stateOrder", stateOrder);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/person.case.filter.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 

@@ -2758,6 +2758,14 @@ div.select2-container {
       li.select2-search-choice {
         display: inline !important;
         padding-right: 10px;
+        .selected-value {
+          max-width: 85%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          line-height: 15px;
+          margin-bottom: -2px;
+        }
       }
     }
   }
@@ -4647,4 +4655,12 @@ table {
 
 .cursor-default {
   cursor: default !important;
+}
+
+.word-break-word {
+  word-break: break-word !important;
+}
+
+.issue-create-meta-container {
+  margin-bottom: 50px;
 }
