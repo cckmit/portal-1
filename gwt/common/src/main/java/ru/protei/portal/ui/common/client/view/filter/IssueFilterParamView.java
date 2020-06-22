@@ -44,7 +44,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.core.model.struct.DateRange;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedRangePicker;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,8 +63,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         ensureDebugIds();
         search.getElement().setPropertyString("placeholder", lang.search());
         sortDir.setValue(false);
-        fillDateRangeButtons(dateCreatedRange);
-        fillDateRangeButtons(dateModifiedRange);
+        fillDateRanges(dateCreatedRange);
+        fillDateRanges(dateModifiedRange);
+        dateCreatedRange.setHeader(lang.created());
+        dateModifiedRange.setHeader(lang.updated());
         initiators.setCompaniesSupplier(() -> new HashSet<>( companies.getValue()) );
         managers.setCompaniesSupplier(() -> new HashSet<>(managerCompanies.getValue()));
         managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
@@ -366,39 +368,35 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         importance.fillButtons(importanceLevelList);
     }
 
-    private void fillDateRangeButtons(TypedRangePicker rangePicker) {
-        rangePicker.addBtn(En_DateIntervalType.TODAY,"btn btn-default col-md-6");
-        rangePicker.addBtn(En_DateIntervalType.YESTERDAY,"btn btn-default col-md-6");
-        rangePicker.addBtn(En_DateIntervalType.THIS_WEEK,"btn btn-default col-md-6");
-        rangePicker.addBtn(En_DateIntervalType.LAST_WEEK,"btn btn-default col-md-6");
-        rangePicker.addBtn(En_DateIntervalType.THIS_MONTH,"btn btn-default col-md-6");
-        rangePicker.addBtn(En_DateIntervalType.LAST_MONTH,"btn btn-default col-md-6");
-        rangePicker.addBtn(En_DateIntervalType.THIS_YEAR,"btn btn-default col-md-6");
-        rangePicker.addBtn(En_DateIntervalType.LAST_YEAR,"btn btn-default col-md-6");
-        rangePicker.getValue().setIntervalType(En_DateIntervalType.THIS_WEEK);
+    private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
+        rangePicker.fillSelector(En_DateIntervalType.issueTypes());
     }
 
     public static DateRange createDateRange(DateIntervalWithType dateInterval) {
-        DateInterval interval = dateInterval.getInterval();
         En_DateIntervalType intervalType = dateInterval.getIntervalType();
-        if (!En_DateIntervalType.FIXED.equals(intervalType)) {
+
+        if (intervalType != null) {
+
+            if (Objects.equals(intervalType, En_DateIntervalType.FIXED)) {
+                DateInterval interval = dateInterval.getInterval();
+                return new DateRange(intervalType, interval.from, interval.to);
+            }
+
             return new DateRange(intervalType, null, null);
-        } else if(interval.from != null) {
-            return new DateRange(intervalType, interval.from, interval.to);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     public DateIntervalWithType createDateIntervalWithType(DateRange range, boolean isMandatory) {
         if(range != null) {
-            if(range.getFrom() != null) {
-                return new DateIntervalWithType(new DateInterval(range.getFrom(), range.getTo()), range.getIntervalType());
+            if(range.getFrom() != null || range.getTo() != null) {
+                return new DateIntervalWithType(new DateInterval(range.getFrom(), range.getTo()), En_DateIntervalType.FIXED);
             } else {
                 return new DateIntervalWithType(isMandatory ? new DateInterval() : null, range.getIntervalType());
             }
         } else {
-            return new DateIntervalWithType(isMandatory ? new DateInterval() : null, En_DateIntervalType.TODAY);
+            return null;
         }
     }
 
@@ -510,13 +508,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
-            modifiedRangeContainer.removeClassName(HIDE);
+            dateCreatedRange.setHeader(lang.created());
+            dateModifiedRange.removeStyleName(HIDE);
             sortByContainer.removeClassName(HIDE);
-            labelCreated.setInnerText(lang.created());
         } else {
-            modifiedRangeContainer.addClassName(HIDE);
+            dateCreatedRange.setHeader(lang.period());
+            dateModifiedRange.addStyleName(HIDE);
             sortByContainer.addClassName(HIDE);
-            labelCreated.setInnerText(lang.period());
         }
         creators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
@@ -625,8 +623,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         tags.setClearEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_CLEAR_BUTTON);
         tags.setItemContainerEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_ITEM_CONTAINER);
         tags.setLabelEnsureDebugId(DebugIds.FILTER.TAG_SELECTOR_LABEL);
-        labelCreated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_CREATED_RANGE_LABEL);
-        labelUpdated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_MODIFIED_RANGE_LABEL);
+/*        labelCreated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_CREATED_RANGE_LABEL);
+        labelUpdated.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DATE_MODIFIED_RANGE_LABEL);*/
         labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
         labelSearchPrivate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.PRIVACY_LABEL);
         labelIssueImportance.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_IMPORTANCE_LABEL);
@@ -764,10 +762,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     CheckBox searchByComments;
     @Inject
     @UiField(provided = true)
-    TypedRangePicker dateCreatedRange;
+    TypedSelectorRangePicker dateCreatedRange;
     @Inject
     @UiField(provided = true)
-    TypedRangePicker dateModifiedRange;
+    TypedSelectorRangePicker dateModifiedRange;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;
@@ -805,10 +803,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField
     ThreeStateButton searchPrivate;
     @UiField
-    LabelElement labelCreated;
-    @UiField
-    LabelElement labelUpdated;
-    @UiField
     LabelElement labelSortBy;
     @UiField
     LabelElement labelSearchPrivate;
@@ -824,8 +818,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     IssueStatesOptionList state;
 
 
-    @UiField
-    DivElement modifiedRangeContainer;
     @UiField
     DivElement sortByContainer;
 
