@@ -2138,6 +2138,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyDateValid();
 
+    String contractValidationContractSpecification();
+
     String contractOrganization();
 
     String contractParent();

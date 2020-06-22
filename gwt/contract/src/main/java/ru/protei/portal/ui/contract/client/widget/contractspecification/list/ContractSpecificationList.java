@@ -12,16 +12,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.item.ContractSpecificationItem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ContractSpecificationList
         extends Composite
-        implements HasValue<List<ContractSpecification>>
+        implements HasValue<List<ContractSpecification>>, HasValidable
 {
     public ContractSpecificationList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -58,6 +56,16 @@ public class ContractSpecificationList
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ContractSpecification>> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
+    }
+
+    @Override
+    public void setValid(boolean isValid) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isValid() {
+        return modelToView.keySet().stream().allMatch(ContractSpecificationItem::isValid);
     }
 
     @UiHandler( "add" )

@@ -204,6 +204,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
             return lang.contractValidationEmptyDirection();
 
+        if (!view.validateContractSpecifications().isValid())
+            return lang.contractValidationContractSpecification();
+
         return null;
     }
 

@@ -14,12 +14,13 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -31,6 +32,7 @@ public class ContractSpecificationItem
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         setTestAttributes();
+        clause.setRegexp(CrmConstants.Masks.CONTRACT_SPECIFICATION_CLAUSE);
         clause.getElement().setAttribute( "placeholder", lang.contractSpecificationClausePlaceholder() );
         text.getElement().setAttribute( "placeholder", lang.contractSpecificationTextPlaceholder() );
     }
@@ -47,7 +49,7 @@ public class ContractSpecificationItem
         }
         this.value = value;
 
-        clause.setValue( value.getClause() );
+        clause.setValue(value.getClause());
         text.setValue( value.getText() );
     }
 
@@ -72,6 +74,10 @@ public class ContractSpecificationItem
         value.setText(text.getValue());
     }
 
+    public boolean isValid(){
+        return clause.isValid();
+    }
+
     private void setTestAttributes() {
         root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.SPECIFICATION_ITEM.ITEM);
         clause.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.SPECIFICATION_ITEM.CLAUSE_INPUT);
@@ -80,7 +86,7 @@ public class ContractSpecificationItem
     }
 
     @UiField
-    TextBox clause;
+    ValidableTextBox clause;
     @UiField
     AutoResizeTextArea text;
     @UiField
