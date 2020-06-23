@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="">
+    <g:HTMLPanel ui:field="root">
         <g:HTMLPanel ui:field="label" tag="label" styleName="hide"/>
         <selector:RangeTypeButtonSelector ui:field="selector" styleName="dropdown-selector"
                                           hasNullValue="true" defaultValue="{lang.selectIssuePeriod}"/>

@@ -7,6 +7,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -46,13 +47,16 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
 
     @Override
     public void setValue(DateIntervalWithType value) {
-        btnGroup.setValue(value.getIntervalType(), true);
-        range.setValue(value.getInterval());
+        setValue(value);
     }
 
     @Override
-    public void setValue(DateIntervalWithType value, boolean b) {
-        setValue(value);
+    public void setValue(DateIntervalWithType value, boolean fireEvents) {
+        btnGroup.setValue(value.getIntervalType(), true);
+        range.setValue(value.getInterval());
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, value);
+        }
     }
 
     @Override
@@ -70,6 +74,10 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
                 .findFirst().get().getKey().setEnabled(value);
     }
 
+    public void setEnsureDebugId(String debugId) {
+        root.ensureDebugId(debugId);
+    }
+
     @UiField
     ToggleBtnGroup<En_DateIntervalType> btnGroup;
 
@@ -79,6 +87,9 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
 
     @Inject
     En_DateIntervalLang lang;
+
+    @UiField
+    HTMLPanel root;
 
     interface TypedToggleRangePickerUiBinder extends UiBinder<Widget, TypedToggleRangePicker> { }
     private static TypedToggleRangePickerUiBinder ourUiBinder = GWT.create(TypedToggleRangePickerUiBinder.class);

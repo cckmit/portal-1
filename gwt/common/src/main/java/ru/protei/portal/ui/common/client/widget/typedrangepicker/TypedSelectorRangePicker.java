@@ -52,13 +52,16 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
 
     @Override
     public void setValue(DateIntervalWithType value) {
-        selector.setValue(value == null ? null : value.getIntervalType(), true);
-        range.setValue(value == null ? null : value.getInterval());
+        setValue(value, false);
     }
 
     @Override
-    public void setValue(DateIntervalWithType value, boolean b) {
-        setValue(value);
+    public void setValue(DateIntervalWithType value, boolean fireEvents) {
+        selector.setValue(value == null ? null : value.getIntervalType(), true);
+        range.setValue(value == null ? null : value.getInterval());
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, value);
+        }
     }
 
     @Override
@@ -70,6 +73,10 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
 
     public void setRangeMandatory(boolean value) { range.setMandatory(value); }
 
+    public void setEnsureDebugId(String debugId) {
+        root.ensureDebugId(debugId);
+    }
+
     @UiField
     HTMLPanel label;
 
@@ -80,6 +87,9 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
     @Inject
     @UiField(provided = true)
     RangePicker range;
+
+    @UiField
+    HTMLPanel root;
 
     interface TypedSelectorRangePickerUiBinder extends UiBinder<Widget, TypedSelectorRangePicker> { }
     private static TypedSelectorRangePickerUiBinder ourUiBinder = GWT.create(TypedSelectorRangePickerUiBinder.class);
