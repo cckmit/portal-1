@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.activity.casehistory.item;
 
 /**
- * Абстрактная активность одного комментария
+ * Абстрактная активность айтема истории
  */
 public interface AbstractCaseHistoryItemActivity {
 }

@@ -20,7 +20,7 @@ import java.util.List;
 public class CaseHistoryControllerImpl implements CaseHistoryController {
     @Override
     public List<History> getHistoryListByCaseId(Long caseId) throws RequestFailedException {
-        log.info("CaseHistoryControllerImpl#getHistoryListByCaseId : caseId={}", caseId);
+        log.info("getHistoryListByCaseId() : caseId={}", caseId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 

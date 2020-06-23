@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
- * Представление одного комментария
+ * Представление айтема истории
  */
 public interface AbstractCaseHistoryItemView extends IsWidget {
     void setActivity(AbstractCaseHistoryItemActivity activity);
