@@ -1,16 +1,16 @@
 package ru.protei.portal.ui.contract.client.widget.contractspecification.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.logical.shared.HasCloseHandlers;
+import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -19,14 +19,16 @@ import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class ContractSpecificationItem
         extends Composite
-        implements TakesValue<ContractSpecification>, HasCloseHandlers<ContractSpecificationItem>
+        implements TakesValue<ContractSpecification>,
+        HasCloseHandlers<ContractSpecificationItem>,
+        HasValueChangeHandlers<ContractSpecificationItem>
 {
     @Inject
     public void onInit() {
@@ -44,18 +46,23 @@ public class ContractSpecificationItem
 
     @Override
     public void setValue( ContractSpecification value ) {
-         if ( value == null ) {
+        if (value == null) {
             value = new ContractSpecification();
         }
         this.value = value;
 
-        clause.setValue(value.getClause());
+        clause.setValue( value.getClause() );
         text.setValue( value.getText() );
     }
 
     @Override
     public HandlerRegistration addCloseHandler(CloseHandler<ContractSpecificationItem> handler ) {
         return addHandler( handler, CloseEvent.getType() );
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ContractSpecificationItem> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 
     @UiHandler( "remove" )
@@ -67,6 +74,7 @@ public class ContractSpecificationItem
     @UiHandler( "clause" )
     public void onChangeClause(KeyUpEvent event) {
         value.setClause(clause.getValue());
+        changeTimer.schedule(50);
     }
 
     @UiHandler( "text" )
@@ -74,8 +82,29 @@ public class ContractSpecificationItem
         value.setText(text.getValue());
     }
 
+    public void setError(boolean isError, String error) {
+        markBoxAsError(isError);
+
+        if (isError) {
+            msg.removeClassName("hide");
+            msg.setInnerText(error);
+            return;
+        }
+
+        msg.addClassName("hide");
+        msg.setInnerText(null);
+    }
+
     public boolean isValid(){
-        return clause.isValid();
+        return clause.isValid() & text.isValid();
+    }
+
+    private void markBoxAsError(boolean isError) {
+        if (isError) {
+            root.addStyleName("has-error");
+            return;
+        }
+        root.removeStyleName("has-error");
     }
 
     private void setTestAttributes() {
@@ -85,12 +114,21 @@ public class ContractSpecificationItem
         remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.SPECIFICATION_ITEM.REMOVE_BUTTON);
     }
 
+    Timer changeTimer = new Timer(){
+        @Override
+        public void run() {
+            ValueChangeEvent.fire(ContractSpecificationItem.this, ContractSpecificationItem.this);
+        }
+    };
+
     @UiField
     ValidableTextBox clause;
     @UiField
-    AutoResizeTextArea text;
+    ValiableAutoResizeTextArea text;
     @UiField
     Button remove;
+    @UiField
+    Element msg;
 
     @UiField
     Lang lang;

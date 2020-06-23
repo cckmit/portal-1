@@ -6,19 +6,25 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="form-group row">
-        <div class="col-md-2">
-            <validablefield:ValidableTextBox ui:field="clause" styleName="form-control"/>
+    <g:HTMLPanel ui:field="root" styleName="form-group">
+        <div class="row">
+            <div class="col-md-2">
+                <validablefield:ValidableTextBox ui:field="clause" styleName="form-control"/>
+            </div>
+
+            <div class="col-md-9">
+                <autoresizetextarea:ValiableAutoResizeTextArea ui:field="text" styleName="form-control" minRows="2"/>
+            </div>
+
+            <div class="col-md-1">
+                <g:Button ui:field="remove" styleName="btn btn-danger pull-right">
+                    <i class="fa fa-trash"/>
+                </g:Button>
+            </div>
         </div>
 
-        <div class="col-md-9">
-            <autoresizetextarea:AutoResizeTextArea ui:field="text" styleName="form-control" minRows="2"/>
-        </div>
-
-        <div class="col-md-1">
-            <g:Button ui:field="remove" styleName="btn btn-danger pull-right">
-                <i class="fa fa-trash"/>
-            </g:Button>
+        <div class="row">
+            <small class="dn-msg"><span ui:field="msg" class="text-danger"/> </small>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

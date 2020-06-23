@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.item.ContractSpecificationItem;
@@ -43,6 +44,8 @@ public class ContractSpecificationList
             makeItemAndFillValue(items);
         }
 
+        isValid();
+
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, this.value );
         }
@@ -65,7 +68,8 @@ public class ContractSpecificationList
 
     @Override
     public boolean isValid() {
-        return modelToView.keySet().stream().allMatch(ContractSpecificationItem::isValid);
+        return modelToView.keySet().stream().allMatch(item -> item.isValid()) &&
+                modelToView.keySet().stream().allMatch(item -> isValidAllClause(item));
     }
 
     @UiHandler( "add" )
@@ -90,6 +94,7 @@ public class ContractSpecificationList
             ContractSpecification remove = modelToView.remove( event.getTarget() );
             ContractSpecificationList.this.value.remove( remove );
         });
+        itemWidget.addValueChangeHandler(event -> isValidAllClause(event.getValue()));
 
         modelToView.put( itemWidget, value );
         container.add( itemWidget );
@@ -99,10 +104,27 @@ public class ContractSpecificationList
         add.ensureDebugId(debugId);
     }
 
+    private boolean isValidAllClause(ContractSpecificationItem item) {
+        ContractSpecification i = item.getValue();
+        for (ContractSpecification contractSpecification : value) {
+            if (i == contractSpecification) {
+                break;
+            }
+            if (contractSpecification.getClause().equals(i.getClause())) {
+                item.setError(true, lang.contractValidationContractSpecificationClauseDuplication());
+                return false;
+            }
+        }
+        item.setError(false, null);
+        return true;
+    }
+
     @UiField
     FlowPanel container;
     @UiField
     Button add;
+    @UiField
+    Lang lang;
 
     @Inject
     Provider<ContractSpecificationItem> itemFactory;
