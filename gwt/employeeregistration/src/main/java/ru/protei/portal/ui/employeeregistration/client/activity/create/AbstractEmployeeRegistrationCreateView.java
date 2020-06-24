@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
@@ -82,4 +83,10 @@ public interface AbstractEmployeeRegistrationCreateView extends IsWidget {
     void setOperatingSystemErrorLabel(String errorMsg);
 
     HasValue<EntityOption> company();
+
+    HasValue<EntityOption> department();
+
+    HasEnabled departmentEnabled();
+
+    void setDepartmentModel(SelectorModel<EntityOption> model);
 }

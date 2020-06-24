@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
+import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 
 /**
  * Использование статуса обращения в компаниях

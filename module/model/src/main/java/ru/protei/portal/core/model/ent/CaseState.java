@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;

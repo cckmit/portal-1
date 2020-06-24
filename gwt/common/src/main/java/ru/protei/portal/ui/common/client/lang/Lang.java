@@ -2709,4 +2709,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportWithDescriptionTitle();
 
     String personCaseFilterChange();
+
+    String employeeRegistrationDepartment();
 }

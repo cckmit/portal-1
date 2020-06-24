@@ -14,7 +14,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.inject.Inject;
 import java.util.List;
 
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.SELECTED;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 public class CaseStateServiceImpl implements CaseStateService {

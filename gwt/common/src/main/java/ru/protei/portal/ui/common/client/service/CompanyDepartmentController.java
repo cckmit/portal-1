@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public interface CompanyDepartmentController extends RemoteService {
 
     Long updateCompanyDepartmentName(CompanyDepartment companyDepartment) throws RequestFailedException;
 
+    List<EntityOption> getPersonDepartments(Long personId, boolean withParentDepartments) throws RequestFailedException;
 }
