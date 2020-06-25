@@ -56,4 +56,6 @@ public interface CommonService {
 
     Result<Boolean> updateCreatedOn( RedmineEndpoint endpoint );
     Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint );
+
+    List<Platform> getPlatforms(Long companyId);
 }

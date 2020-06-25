@@ -365,6 +365,12 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         obj.setLocal(0);
         obj.setInitiatorCompanyId(companyId);
         obj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+
+        List<Platform> platforms = commonService.getPlatforms(obj.getInitiatorCompanyId());
+        if (platforms != null && platforms.size() == 1) {
+            obj.setPlatformId(platforms.get(0).getId());
+        }
+
         return obj;
     }
 
