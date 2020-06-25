@@ -350,8 +350,8 @@ public abstract class IssueEditActivity implements
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
-        view.setCopyNameText(String.valueOf(issue.getCaseNumber()));
-        view.setCopyNameAndNumberText(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
+        view.setCopyNameText(String.valueOf(issue.getCaseNumber()), success -> copyToClipboardNotify(success));
+        view.setCopyNameAndNumberText(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName(), success -> copyToClipboardNotify(success));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
@@ -417,6 +417,14 @@ public abstract class IssueEditActivity implements
 
     private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
         return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+    }
+
+    private void copyToClipboardNotify(Boolean success) {
+        if (success) {
+            fireSuccessCopyNotify();
+        } else {
+            fireErrorCopyNotify();
+        }
     }
 
     @Inject

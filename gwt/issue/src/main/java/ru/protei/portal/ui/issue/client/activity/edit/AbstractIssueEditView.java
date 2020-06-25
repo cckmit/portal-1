@@ -4,6 +4,8 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
+import java.util.function.Consumer;
+
 /**
  * Представление создания и редактирования обращения
  */
@@ -21,9 +23,9 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setName(String issueName);
 
-    void setCopyNameAndNumberText(String copyText);
+    void setCopyNameAndNumberText(String copyText, Consumer<Boolean> callback);
 
-    void setCopyNameText(String copyText);
+    void setCopyNameText(String copyText, Consumer<Boolean> callback);
 
     HasWidgets getTagsContainer();
 

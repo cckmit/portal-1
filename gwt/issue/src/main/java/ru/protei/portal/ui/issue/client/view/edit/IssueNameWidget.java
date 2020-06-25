@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
@@ -14,6 +15,8 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
+
+import java.util.function.Consumer;
 
 public class IssueNameWidget extends Composite  {
 
@@ -33,8 +36,11 @@ public class IssueNameWidget extends Composite  {
         nameRO.setInnerHTML( issueName );
     }
 
-    public void setCopyText ( String copyText ) {
-        copyNumberAndName.getElement().setAttribute("onclick", ClipboardUtils.generateOnclickText(copyText));
+    public void setCopyText (String copyText, Consumer<Boolean> callback) {
+        if (copyNumberAndNameAddHandler != null) {
+            copyNumberAndNameAddHandler.removeHandler();
+        }
+        copyNumberAndNameAddHandler = copyNumberAndName.addClickHandler(event -> callback.accept(ClipboardUtils.copyToClipboard(copyText)));
     }
 
     private void ensureDebugIds() {
@@ -57,6 +63,7 @@ public class IssueNameWidget extends Composite  {
     LabelElement nameRO;
 
     private AbstractIssueEditActivity activity;
+    private HandlerRegistration copyNumberAndNameAddHandler;
 
     interface IssueNameWidgetUiBinder extends UiBinder<HTMLPanel, IssueNameWidget> {
     }
