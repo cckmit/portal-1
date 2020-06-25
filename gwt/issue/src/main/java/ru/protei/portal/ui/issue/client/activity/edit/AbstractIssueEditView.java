@@ -23,10 +23,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setName(String issueName);
 
-    void setCopyNameAndNumberText(String copyText, Consumer<Boolean> callback);
-
-    void setCopyNameText(String copyText, Consumer<Boolean> callback);
-
     HasWidgets getTagsContainer();
 
     HasWidgets getInfoContainer();

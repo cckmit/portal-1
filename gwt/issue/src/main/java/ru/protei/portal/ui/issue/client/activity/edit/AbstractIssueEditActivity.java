@@ -16,4 +16,8 @@ public interface AbstractIssueEditActivity {
     void onAddLinkClicked(IsWidget target);
 
     void onBackClicked();
+
+    void onCopyNumberClicked();
+
+    void onCopyNumberAndName();
 }
