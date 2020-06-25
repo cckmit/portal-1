@@ -1,5 +1,8 @@
 package ru.protei.portal.core.model.view;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 
@@ -11,8 +14,10 @@ import java.util.Objects;
  */
 public class EntityOption implements Serializable {
 
-    private String displayText;
     private Long id;
+    @JsonProperty("name")
+    private String displayText;
+    @JsonIgnore
     private String info;
 
     public EntityOption() {

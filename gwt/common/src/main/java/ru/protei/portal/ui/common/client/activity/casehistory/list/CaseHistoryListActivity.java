@@ -67,26 +67,26 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
         if (En_HistoryValueType.ADD_TO_PLAN.equals(history.getValueType())) {
             historyItem.setAddedValue(
-                    makeLink( idOrNull(history.getNewValueData()), Plan.class,  history.getNewValue() ),
-                    history.getNewValue()
+                    makeLink(Plan.class, history.getNewValue()),
+                    history.getNewValue().getDisplayText()
             );
         }
 
         if (En_HistoryValueType.REMOVE_FROM_PLAN.equals(history.getValueType())) {
             historyItem.setRemovedValue(
-                    makeLink( idOrNull(history.getOldValueData()), Plan.class, history.getOldValue() ),
-                    history.getOldValue()
+                    makeLink(Plan.class, history.getOldValue()),
+                    history.getOldValue().getDisplayText()
             );
         }
 
         if (En_HistoryValueType.CHANGE_PLAN.equals(history.getValueType())) {
             historyItem.setOldValue(
-                    makeLink( idOrNull(history.getOldValueData()), Plan.class, history.getOldValue() ),
-                    history.getOldValue()
+                    makeLink(Plan.class, history.getOldValue()),
+                    history.getOldValue().getDisplayText()
             );
             historyItem.setNewValue(
-                    makeLink( idOrNull(history.getNewValueData()), Plan.class, history.getNewValue() ),
-                    history.getNewValue()
+                    makeLink(Plan.class, history.getNewValue()),
+                    history.getNewValue().getDisplayText()
             );
         }
 
@@ -95,15 +95,10 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
         return historyItem;
     }
 
-    private Long idOrNull(EntityOption historyValueData) {
-        return historyValueData == null ? null : historyValueData.getId();
-    }
-
-    private String makeLink(Long id, Class<?> clazz, String historyValue) {
-        return "<a href='" +
-                LinkUtils.makePreviewLink(clazz, id) +
-                "' target='_blank'>" +
-                historyValue +
+    private String makeLink(Class<?> clazz, EntityOption option) {
+        return "<a target='_blank' " +
+                "href='" + LinkUtils.makePreviewLink(clazz, option.getId()) + "'>" +
+                "#" + option.getId() + " " + option.getDisplayText() +
                 "</a>";
     }
 

@@ -1,0 +1,26 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="update-history" author="turik">
+        <update tableName="history">
+            <column name="old_value" valueComputed="JSON_OBJECT('id', old_value, 'name', (select name from plan where id = old_value))"/>
+            <where>old_value is not null</where>
+        </update>
+        <update tableName="history">
+            <column name="new_value" valueComputed="JSON_OBJECT('id', new_value, 'name', (select name from plan where id = new_value))"/>
+            <where>new_value is not null</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="update-history-old_value-type" author="turik">
+        <modifyDataType tableName="history" columnName="old_value" newDataType="JSON"/>
+    </changeSet>
+
+    <changeSet id="update-history-new_value-type" author="turik">
+        <modifyDataType tableName="history" columnName="new_value" newDataType="JSON"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -32,10 +32,8 @@ public class HistoryServiceImpl implements HistoryService {
         History history = new History();
         history.setCaseObjectId(caseObjectId);
         history.setValueType(valueType);
-        history.setOldValue(oldValue);
-        history.setNewValue(newValue);
-        history.setOldValueData(oldValueData);
-        history.setNewValueData(newValueData);
+        history.setOldValue(oldValueData);
+        history.setNewValue(newValueData);
         history.setInitiatorId(token.getPersonId());
         history.setDate(new Date());
 

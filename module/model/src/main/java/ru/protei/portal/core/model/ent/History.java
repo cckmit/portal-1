@@ -29,17 +29,11 @@ public class History implements Serializable {
     @JdbcEnumerated(EnumType.ID)
     private En_HistoryValueType valueType;
 
-    @JdbcColumn(name = "old_value")
-    private String oldValue;
+    @JdbcColumn(name = "old_value", converterType = ConverterType.JSON)
+    private EntityOption oldValue;
 
-    @JdbcColumn(name = "new_value")
-    private String newValue;
-
-    @JdbcColumn(name = "old_value_data", converterType = ConverterType.JSON)
-    private EntityOption oldValueData;
-
-    @JdbcColumn(name = "new_value_data", converterType = ConverterType.JSON)
-    private EntityOption newValueData;
+    @JdbcColumn(name = "new_value", converterType = ConverterType.JSON)
+    private EntityOption newValue;
 
     public History() {
     }
@@ -84,36 +78,20 @@ public class History implements Serializable {
         this.valueType = valueType;
     }
 
-    public String getOldValue() {
+    public EntityOption getOldValue() {
         return oldValue;
     }
 
-    public void setOldValue(String oldValue) {
+    public void setOldValue(EntityOption oldValue) {
         this.oldValue = oldValue;
     }
 
-    public String getNewValue() {
+    public EntityOption getNewValue() {
         return newValue;
     }
 
-    public void setNewValue(String newValue) {
+    public void setNewValue(EntityOption newValue) {
         this.newValue = newValue;
-    }
-
-    public EntityOption getOldValueData() {
-        return oldValueData;
-    }
-
-    public void setOldValueData(EntityOption oldValueData) {
-        this.oldValueData = oldValueData;
-    }
-
-    public EntityOption getNewValueData() {
-        return newValueData;
-    }
-
-    public void setNewValueData(EntityOption newValueData) {
-        this.newValueData = newValueData;
     }
 
     @Override
@@ -126,8 +104,6 @@ public class History implements Serializable {
                 ", valueType=" + valueType +
                 ", oldValue='" + oldValue + '\'' +
                 ", newValue='" + newValue + '\'' +
-                ", oldValueData=" + oldValueData +
-                ", newValueData=" + newValueData +
                 '}';
     }
 }
