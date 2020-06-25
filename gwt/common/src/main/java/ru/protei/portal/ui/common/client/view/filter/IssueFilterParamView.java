@@ -282,6 +282,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companies.setValue(applyCompanies(filter, caseQuery.getCompanyIds()));
         managerCompanies.setValue(applyCompanies(filter, caseQuery.getManagerCompanyIds()));
 
+        updateManagers();
         updateInitiators();
 
         initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
