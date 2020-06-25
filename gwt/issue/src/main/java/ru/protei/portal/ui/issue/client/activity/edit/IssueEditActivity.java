@@ -26,12 +26,12 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.issue.client.activity.table.IssueTableFilterActivity;
 import ru.protei.portal.ui.issue.client.view.edit.IssueInfoWidget;
 import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget;
 
@@ -41,8 +41,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -74,8 +74,6 @@ public abstract class IssueEditActivity implements
 
         issueInfoWidget.setFileUploadHandler( uploadHandler );
         issueNameDescriptionEditWidget.setFileUploader(issueInfoWidget.getFileUploader());
-
-        setNotifyFunctionsForJavascript(this);
     }
 
     @Event
@@ -240,6 +238,16 @@ public abstract class IssueEditActivity implements
         fireBackEvent.run();
     }
 
+    @Override
+    public void onCopyNumberClicked() {
+        copyToClipboardNotify(ClipboardUtils.copyToClipboard(String.valueOf(issue.getCaseNumber())));
+    }
+
+    @Override
+    public void onCopyNumberAndNameClicked() {
+        copyToClipboardNotify(ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() ));
+    }
+
     public void fireSuccessCopyNotify() {
         fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
     }
@@ -311,15 +319,6 @@ public abstract class IssueEditActivity implements
         fireEvent(new CaseCommentEvents.Reload());
     }
 
-    private static native void setNotifyFunctionsForJavascript(AbstractIssueEditActivity activity)/*-{
-        $wnd.fireSuccessCopyNotify = function () {
-            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireSuccessCopyNotify()();
-        }
-        $wnd.fireErrorCopyNotify = function () {
-            activity.@ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity::fireErrorCopyNotify()();
-        }
-    }-*/;
-
     private void attachToContainer(HasWidgets container) {
         container.add(view.asWidget());
     }
@@ -350,8 +349,6 @@ public abstract class IssueEditActivity implements
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
-        view.setCopyNameText(String.valueOf(issue.getCaseNumber()));
-        view.setCopyNameAndNumberText(lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName());
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
@@ -417,6 +414,14 @@ public abstract class IssueEditActivity implements
 
     private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
         return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+    }
+
+    private void copyToClipboardNotify(Boolean success) {
+        if (success) {
+            fireSuccessCopyNotify();
+        } else {
+            fireErrorCopyNotify();
+        }
     }
 
     @Inject
