@@ -2711,4 +2711,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errPersonCaseFilterChangeError();
 
     String errPersonCaseFilterInUse();
+
+    String employeeRegistrationDepartment();
 }

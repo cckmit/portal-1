@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.casestate.client.view.btngroup;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
+import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
-import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 
 

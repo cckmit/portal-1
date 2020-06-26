@@ -21,13 +21,13 @@ import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.employeedepartment.EmployeeDepartmentModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
 import java.util.HashSet;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 public abstract class EmployeeRegistrationCreateActivity implements Activity, AbstractEmployeeRegistrationCreateActivity {
@@ -35,6 +35,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setDepartmentModel(departmentModel);
     }
 
     @Event
@@ -49,6 +50,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
             return;
         }
 
+        departmentModel.refreshOptions(null);
         clearView();
 
         initDetails.parent.clear();
@@ -100,6 +102,13 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
                         && view.additionalSoft().getValue().length() <= CrmConstants.EmployeeRegistration.ADDITIONAL_SOFT_MAX_LENGTH
                         && view.resourceComment().getValue().length() <= CrmConstants.EmployeeRegistration.RESOURCE_COMMENT_MAX_LENGTH
         );
+    }
+
+    @Override
+    public void onHeadOfDepartmentChanged() {
+        view.departmentEnabled().setEnabled(true);
+        view.department().setValue(null);
+        departmentModel.refreshOptions(view.headOfDepartment().getValue() == null ? null : view.headOfDepartment().getValue().getId());
     }
 
     private void showValidationError(EmployeeRegistration employeeRegistration) {
@@ -169,7 +178,6 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
 
 
     private EmployeeRegistration fillDto(EmployeeRegistration employeeRegistration) {
-
         employeeRegistration.setEmployeeFullName(view.fullName().getValue());
         employeeRegistration.setComment(view.comment().getValue());
         employeeRegistration.setWorkplace(view.workplace().getValue());
@@ -188,6 +196,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         employeeRegistration.setAdditionalSoft( view.additionalSoft().getValue() );
         employeeRegistration.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
         employeeRegistration.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
+        employeeRegistration.setDepartmentId(view.department().getValue() == null ? null : view.department().getValue().getId());
 
         return employeeRegistration;
     }
@@ -203,6 +212,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.additionalSoft().setValue(null);
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
+        view.department().setValue(null);
         view.equipmentList().setValue(new HashSet<>());
         HashSet<En_PhoneOfficeType> phoneOfficeTypes = new HashSet<>();
         phoneOfficeTypes.add(En_PhoneOfficeType.OFFICE);
@@ -227,6 +237,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
 
         view.company().setValue(null);
 
+        view.departmentEnabled().setEnabled(false);
         view.saveEnabled().setEnabled(true);
     }
 
@@ -238,6 +249,8 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
     @Inject
     private PolicyService policyService;
+    @Inject
+    private EmployeeDepartmentModel departmentModel;
 
     private AppEvents.InitDetails initDetails;
 }

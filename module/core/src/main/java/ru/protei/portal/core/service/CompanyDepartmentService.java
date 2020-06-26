@@ -7,6 +7,9 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
 
@@ -30,4 +33,5 @@ public interface CompanyDepartmentService {
     @Privileged(requireAny = {En_Privilege.EMPLOYEE_CREATE, En_Privilege.EMPLOYEE_EDIT})
     Result<Long> removeCompanyDepartment(AuthToken token, CompanyDepartment companyDepartment);
 
+    Result<List<EntityOption>> getPersonDepartments(AuthToken authToken, Long personId, boolean withParentDepartments);
 }

@@ -175,7 +175,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     @UiField
     LabelElement label;
     @UiField
-    Lang lang;
+    protected Lang lang;
 
     private static final String ERROR_STYLENAME ="has-error";
     private boolean isValidable;

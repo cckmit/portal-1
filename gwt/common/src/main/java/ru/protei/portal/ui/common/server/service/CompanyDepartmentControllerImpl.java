@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CompanyDepartmentService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CompanyDepartmentController;
@@ -40,6 +41,12 @@ public class CompanyDepartmentControllerImpl implements CompanyDepartmentControl
     public Long updateCompanyDepartmentName(CompanyDepartment companyDepartment) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(companyDepartmentService.updateCompanyDepartmentName(authToken, companyDepartment));
+    }
+
+    @Override
+    public List<EntityOption> getPersonDepartments(Long personId, boolean withParentDepartments) throws RequestFailedException {
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(companyDepartmentService.getPersonDepartments(authToken, personId, withParentDepartments));
     }
 
     @Autowired
