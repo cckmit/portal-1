@@ -101,7 +101,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType, boolean createCrossLinks) {
+    public Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType, boolean createCrossLinks) {
 
         En_ResultStatus validationStatus = validateLinkBeforeAdd(link, authToken);
         if (!En_ResultStatus.OK.equals(validationStatus)) {
@@ -109,7 +109,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         Long createdLinkId = addLink(link, createCrossLinks).getData();
-        Result<Long> completeResult = ok(createdLinkId);
+        CaseLink createdLink = caseLinkDAO.get(createdLinkId);
+
+        Result<CaseLink> completeResult = ok(createdLink);
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             completeResult.publishEvent(new CaseLinkEvent(this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null));
