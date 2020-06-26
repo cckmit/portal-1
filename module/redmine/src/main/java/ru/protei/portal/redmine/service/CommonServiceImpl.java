@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
@@ -311,6 +312,12 @@ public final class CommonServiceImpl implements CommonService {
                 .collect(Collectors.toSet()));
     }
 
+    @Override
+    public List<Platform> getPlatforms(Long companyId) {
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+        return platformDAO.listByQuery(query);
+    }
 
     @Autowired
     private FileController fileController;
@@ -341,6 +348,9 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private PersonDAO personDAO;
+
+    @Autowired
+    PlatformDAO platformDAO;
 
     private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 }

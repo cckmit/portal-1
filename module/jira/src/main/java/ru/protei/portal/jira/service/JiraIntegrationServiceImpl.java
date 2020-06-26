@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -83,6 +84,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     AttachmentService attachmentService;
     @Autowired
     AttachmentDAO attachmentDAO;
+    @Autowired
+    PlatformDAO platformDAO;
 
     private EntityCache<JiraEndpoint> jiraEndpointCache;
     private EntityCache<JiraEndpoint> jiraEndpointCache() {
@@ -231,6 +234,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setImpLevel(newImportance == null ? En_ImportanceLevel.BASIC.getId() : newImportance.getId());
 
         caseObj.setName(getNewName(issue, caseObj.getCaseNumber()));
+
+        List<Platform> platforms = getPlatforms(caseObj.getInitiatorCompanyId());
+        if (platforms != null && platforms.size() == 1) {
+            caseObj.setPlatformId(platforms.get(0).getId());
+        }
 
         caseObjectDAO.insertCase(caseObj);
 
@@ -587,5 +595,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 .map(JiraCompanyGroup::getCompany)
                 .map(Company::getId)
                 .orElse(originalCompanyId);
+    }
+
+    private List<Platform> getPlatforms(Long companyId) {
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+        return platformDAO.listByQuery(query);
     }
 }
