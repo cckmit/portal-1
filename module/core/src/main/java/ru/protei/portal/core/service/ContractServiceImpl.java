@@ -19,9 +19,7 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -78,7 +76,7 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
         jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
-        sortSpecification(contract.getContractSpecifications());
+        Collections.sort(contract.getContractSpecifications());
 
         return ok(contract);
     }
@@ -158,24 +156,5 @@ public class ContractServiceImpl implements ContractService {
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
         Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
-    }
-
-    private void sortSpecification(List<ContractSpecification> contractSpecifications) {
-        if (CollectionUtils.isEmpty(contractSpecifications)) {
-            return;
-        }
-
-        contractSpecifications.sort((item1, item2) -> {
-            List<Integer> o1 = item1.getClauseNumbers();
-            List<Integer> o2 = item2.getClauseNumbers();
-
-            for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) {
-                int c = o1.get(i).compareTo(o2.get(i));
-                if (c != 0) {
-                    return c;
-                }
-            }
-            return Integer.compare(o1.size(), o2.size());
-        });
     }
 }

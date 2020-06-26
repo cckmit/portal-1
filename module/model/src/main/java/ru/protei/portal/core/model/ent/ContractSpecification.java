@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 @JdbcEntity(table = "contract_specification")
-public class ContractSpecification implements Serializable {
+public class ContractSpecification implements Serializable, Comparable<ContractSpecification> {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -72,6 +72,20 @@ public class ContractSpecification implements Serializable {
 
     public int getClauseNesting() {
         return emptyIfNull(clauseNumbers).size();
+    }
+
+    @Override
+    public int compareTo(ContractSpecification o) {
+        List<Integer> o1 = this.getClauseNumbers();
+        List<Integer> o2 = o.getClauseNumbers();
+
+        for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) {
+            int c = o1.get(i).compareTo(o2.get(i));
+            if (c != 0) {
+                return c;
+            }
+        }
+        return Integer.compare(o1.size(), o2.size());
     }
 
     @Override
