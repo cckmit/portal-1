@@ -2104,6 +2104,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDeliveryAndPaymentsPeriodHeader();
 
+    String contractSpecificationHeader();
+
+    String contractSpecificationClausePlaceholder();
+
+    String contractSpecificationTextPlaceholder();
+
     String contractPaymentCommentPlaceholder();
 
     String contractDateSigning();
@@ -2133,6 +2139,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyDateSigning();
 
     String contractValidationEmptyDateValid();
+
+    String contractValidationContractSpecification();
+
+    String contractValidationContractSpecificationClauseDuplication();
 
     String contractOrganization();
 

@@ -6,12 +6,13 @@
              xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.selector.company"
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
-             xmlns:list="urn:import:ru.protei.portal.ui.contract.client.widget.contractdates.list"
+             xmlns:contractwidgets="urn:import:ru.protei.portal.ui.contract.client.widget"
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money"
              xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -114,19 +115,27 @@
                 </div>
             </div>
 
+            <g:HTMLPanel  styleName="container-fluid padding-15 bg-white">
+                <tab:TabWidget styleName="">
+                    <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
+                        <g:HTMLPanel>
+                            <div class="card-body">
+                                <contractwidgets:contractdates.list.ContractDatesList
+                                        ui:field="dateList" addStyleNames="row"/>
+                            </div>
+                        </g:HTMLPanel>
+                    </tab:pane.TabWidgetPane>
 
-            <div class="container-fluid padding-15">
-                <div class="card card-transparent no-margin">
-                    <div class="card-header">
-                        <div ui:field="deliveryAndPaymentsPeriodHeader" class="card-title">
-                            <ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <list:ContractDatesList ui:field="dateList" addStyleNames="row"/>
-                    </div>
-                </div>
-            </div>
+                    <tab:pane.TabWidgetPane tabName="{lang.contractSpecificationHeader}">
+                        <g:HTMLPanel>
+                            <div class="card-body">
+                                <contractwidgets:contractspecification.list.ContractSpecificationList
+                                        ui:field="specificationList" addStyleNames="row"/>
+                            </div>
+                        </g:HTMLPanel>
+                    </tab:pane.TabWidgetPane>
+                </tab:TabWidget>
+            </g:HTMLPanel>
 
         </div>
         <div class="card-footer">

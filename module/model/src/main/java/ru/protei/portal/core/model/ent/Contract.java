@@ -162,6 +162,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcOneToMany(localColumn = "id", remoteColumn = "contract_id")
     private List<ContractDate> contractDates;
 
+    @JdbcOneToMany(localColumn = "id", remoteColumn = "contract_id")
+    private List<ContractSpecification> contractSpecifications;
+
     @JdbcColumn(name = "organization_id")
     private Long organizationId;
 
@@ -349,6 +352,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.contractDates = contractDates;
     }
 
+    public List<ContractSpecification> getContractSpecifications() {
+        return contractSpecifications;
+    }
+
+    public void setContractSpecifications(List<ContractSpecification> contractSpecifications) {
+        this.contractSpecifications = contractSpecifications;
+    }
+
     public Long getOrganizationId() {
         return organizationId;
     }
@@ -476,6 +487,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", dateSigning=" + dateSigning +
                 ", dateValid=" + dateValid +
                 ", contractDates=" + contractDates +
+                ", contractSpecifications=" + contractSpecifications +
                 ", organizationId=" + organizationId +
                 ", organizationName='" + organizationName + '\'' +
                 ", parentContractId=" + parentContractId +
