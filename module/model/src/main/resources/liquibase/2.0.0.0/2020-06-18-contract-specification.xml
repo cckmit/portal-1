@@ -23,4 +23,14 @@
                                  referencedTableName="contract" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>
+
+    <changeSet id="contract-specification-constraints" author="porubov">
+        <addNotNullConstraint tableName="contract_specification" columnName="text"
+                              columnDataType="MEDIUMTEXT"/>
+        <addNotNullConstraint tableName="contract_specification" columnName="clause"
+                              columnDataType="varchar(64)"/>
+        <addUniqueConstraint constraintName="c-contract_id-clause-unique"
+                             tableName="contract_specification" columnNames="contract_id,clause"/>
+    </changeSet>
+
 </databaseChangeLog>

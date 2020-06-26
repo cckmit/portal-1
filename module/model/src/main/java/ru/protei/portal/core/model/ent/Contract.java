@@ -445,25 +445,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.caseDirectionId = caseDirectionId;
     }
 
-    public void sortSpecification() {
-        if (CollectionUtils.isEmpty(contractSpecifications)) {
-            return;
-        }
-
-        contractSpecifications.sort((item1, item2) -> {
-            List<Integer> o1 = item1.getClauseNumbers();
-            List<Integer> o2 = item2.getClauseNumbers();
-
-            for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) {
-                int c = o1.get(i).compareTo(o2.get(i));
-                if (c != 0) {
-                    return c;
-                }
-            }
-            return Integer.compare(o1.size(), o2.size());
-        });
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (id != null) {

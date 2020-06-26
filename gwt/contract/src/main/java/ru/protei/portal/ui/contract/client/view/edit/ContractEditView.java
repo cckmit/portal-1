@@ -240,7 +240,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         contragent.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
 
         dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
-        specificationList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
+        specificationList.setEnsureDebugId(DebugIds.CONTRACT.ADD_SPECIFICATIONS_BUTTON);
 
         saveButton.ensureDebugId(DebugIds.CONTRACT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);

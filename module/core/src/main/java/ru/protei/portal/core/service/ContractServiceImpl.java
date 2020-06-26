@@ -11,10 +11,7 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -23,6 +20,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -80,7 +78,7 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
         jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
-        contract.sortSpecification();
+        sortSpecification(contract.getContractSpecifications());
 
         return ok(contract);
     }
@@ -160,5 +158,24 @@ public class ContractServiceImpl implements ContractService {
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
         Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
+    }
+
+    private void sortSpecification(List<ContractSpecification> contractSpecifications) {
+        if (CollectionUtils.isEmpty(contractSpecifications)) {
+            return;
+        }
+
+        contractSpecifications.sort((item1, item2) -> {
+            List<Integer> o1 = item1.getClauseNumbers();
+            List<Integer> o2 = item2.getClauseNumbers();
+
+            for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) {
+                int c = o1.get(i).compareTo(o2.get(i));
+                if (c != 0) {
+                    return c;
+                }
+            }
+            return Integer.compare(o1.size(), o2.size());
+        });
     }
 }
