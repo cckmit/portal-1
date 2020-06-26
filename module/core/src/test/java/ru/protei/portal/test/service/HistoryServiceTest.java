@@ -11,12 +11,11 @@ import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_HistoryValueType;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.HistoryQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.HistoryService;
 import ru.protei.portal.core.service.PlanService;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -26,7 +25,6 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -75,7 +73,7 @@ public class HistoryServiceTest extends BaseServiceTest {
         List<History> listBeforeAdding = historyService.listHistories(getAuthToken(), query).getData();
         Assert.assertNotNull(listBeforeAdding);
 
-        Long historyId = createHistory(getAuthToken(), issues.get(0).getId(), En_HistoryValueType.ADD_TO_PLAN, null, plan).getData();
+        Long historyId = createHistory(getAuthToken(), issues.get(0).getId(), En_HistoryAction.ADD, En_HistoryType.PLAN, null, plan).getData();
         Assert.assertNotNull("History not created, historyId is null", historyId);
 
         List<History> listAfterAdding = historyService.listHistories(getAuthToken(), query).getData();
@@ -86,12 +84,12 @@ public class HistoryServiceTest extends BaseServiceTest {
         Assert.assertTrue(historyDAO.removeByKey(historyId));
     }
 
-    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryValueType type, Plan oldPlan, Plan newPlan) {
-        return historyService.createHistory(token, id, type,
-                oldPlan == null ? null : createPlanHistoryValue(oldPlan.getId(), oldPlan.getName()),
-                newPlan == null ? null : createPlanHistoryValue(newPlan.getId(), newPlan.getName()),
-                oldPlan == null ? null : new EntityOption(oldPlan.getName(), oldPlan.getId()),
-                newPlan == null ? null : new EntityOption(newPlan.getName(), newPlan.getId())
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, En_HistoryType type, Plan oldPlan, Plan newPlan) {
+        return historyService.createHistory(token, id, action, type,
+                oldPlan == null ? null : oldPlan.getId(),
+                oldPlan == null ? null : oldPlan.getName(),
+                newPlan == null ? null : newPlan.getId(),
+                newPlan == null ? null : newPlan.getName()
         );
     }
 

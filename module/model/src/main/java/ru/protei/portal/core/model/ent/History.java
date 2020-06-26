@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_HistoryValueType;
-import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -10,8 +10,6 @@ import java.util.Date;
 
 @JdbcEntity(table = "history")
 public class History implements Serializable {
-
-    public static final String AUDIT_TYPE = "History";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -25,15 +23,25 @@ public class History implements Serializable {
     @JdbcColumn(name = "case_object_id")
     private Long caseObjectId;
 
+    @JdbcColumn(name = "action_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_HistoryAction action;
+
     @JdbcColumn(name = "value_type")
     @JdbcEnumerated(EnumType.ID)
-    private En_HistoryValueType valueType;
+    private En_HistoryType type;
 
-    @JdbcColumn(name = "old_value", converterType = ConverterType.JSON)
-    private EntityOption oldValue;
+    @JdbcColumn(name = "old_id")
+    private Long oldId;
 
-    @JdbcColumn(name = "new_value", converterType = ConverterType.JSON)
-    private EntityOption newValue;
+    @JdbcColumn(name = "old_name")
+    private String oldName;
+
+    @JdbcColumn(name = "new_id")
+    private Long newId;
+
+    @JdbcColumn(name = "new_name")
+    private String newName;
 
     public History() {
     }
@@ -70,28 +78,52 @@ public class History implements Serializable {
         this.caseObjectId = caseObjectId;
     }
 
-    public En_HistoryValueType getValueType() {
-        return valueType;
+    public En_HistoryAction getAction() {
+        return action;
     }
 
-    public void setValueType(En_HistoryValueType valueType) {
-        this.valueType = valueType;
+    public void setAction(En_HistoryAction action) {
+        this.action = action;
     }
 
-    public EntityOption getOldValue() {
-        return oldValue;
+    public En_HistoryType getType() {
+        return type;
     }
 
-    public void setOldValue(EntityOption oldValue) {
-        this.oldValue = oldValue;
+    public void setType(En_HistoryType type) {
+        this.type = type;
     }
 
-    public EntityOption getNewValue() {
-        return newValue;
+    public Long getOldId() {
+        return oldId;
     }
 
-    public void setNewValue(EntityOption newValue) {
-        this.newValue = newValue;
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
+    }
+
+    public String getOldName() {
+        return oldName;
+    }
+
+    public void setOldName(String oldName) {
+        this.oldName = oldName;
+    }
+
+    public Long getNewId() {
+        return newId;
+    }
+
+    public void setNewId(Long newId) {
+        this.newId = newId;
+    }
+
+    public String getNewName() {
+        return newName;
+    }
+
+    public void setNewName(String newName) {
+        this.newName = newName;
     }
 
     @Override
@@ -101,9 +133,12 @@ public class History implements Serializable {
                 ", initiatorId=" + initiatorId +
                 ", date=" + date +
                 ", caseObjectId=" + caseObjectId +
-                ", valueType=" + valueType +
-                ", oldValue='" + oldValue + '\'' +
-                ", newValue='" + newValue + '\'' +
+                ", action=" + action +
+                ", type=" + type +
+                ", oldId=" + oldId +
+                ", oldName='" + oldName + '\'' +
+                ", newId=" + newId +
+                ", newName='" + newName + '\'' +
                 '}';
     }
 }

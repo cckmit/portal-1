@@ -72,6 +72,7 @@ public class BootstrapService {
         //fillWithCrossLinkColumn();
         transferYoutrackLinks();
         addCommonManager();
+        updateHistoryTable();
     }
 
     private void fillWithCrossLinkColumn() {
@@ -575,8 +576,23 @@ if(true) return; //TODO remove
         log.info("Add Common Manager ended");
     }
 
-    private String createPlanHistoryValue(Long planId, String planName) {
-        return "#" + planId + " " + planName;
+    private void updateHistoryTable() {
+        List<History> histories = historyDAO.getListByCondition("old_name is null and new_name is null");
+        for (History history : histories) {
+            if (history.getOldId()!= null) {
+                Plan oldPlan = planDAO.get(history.getOldId());
+                if (oldPlan != null) {
+                    history.setOldName(oldPlan.getName());
+                }
+            }
+            if (history.getNewId() != null) {
+                Plan newPlan = planDAO.get(history.getNewId());
+                if (newPlan != null) {
+                    history.setNewName(newPlan.getName());
+                }
+            }
+        }
+        historyDAO.mergeBatch(histories);
     }
 
     @Inject

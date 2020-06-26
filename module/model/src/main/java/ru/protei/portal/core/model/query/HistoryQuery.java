@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.En_HistoryValueType;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 
 import java.util.Date;
 
@@ -11,9 +11,9 @@ public class HistoryQuery extends BaseQuery {
     private Date dateTo;
     private Long caseObjectId;
     private Long caseNumber;
-    private En_HistoryValueType valueType;
-    private String oldValue;
-    private String newValue;
+    private En_HistoryType valueType;
+    private Long oldId;
+    private Long newId;
 
     public HistoryQuery() {}
 
@@ -61,28 +61,28 @@ public class HistoryQuery extends BaseQuery {
         this.caseNumber = caseNumber;
     }
 
-    public En_HistoryValueType getValueType() {
+    public En_HistoryType getValueType() {
         return valueType;
     }
 
-    public void setValueType(En_HistoryValueType valueType) {
+    public void setValueType(En_HistoryType valueType) {
         this.valueType = valueType;
     }
 
-    public String getOldValue() {
-        return oldValue;
+    public Long getOldId() {
+        return oldId;
     }
 
-    public void setOldValue(String oldValue) {
-        this.oldValue = oldValue;
+    public void setOldId(Long oldId) {
+        this.oldId = oldId;
     }
 
-    public String getNewValue() {
-        return newValue;
+    public Long getNewId() {
+        return newId;
     }
 
-    public void setNewValue(String newValue) {
-        this.newValue = newValue;
+    public void setNewId(Long newId) {
+        this.newId = newId;
     }
 
     @Override
@@ -94,8 +94,8 @@ public class HistoryQuery extends BaseQuery {
                 ", caseObjectId=" + caseObjectId +
                 ", caseNumber=" + caseNumber +
                 ", valueType=" + valueType +
-                ", oldValue='" + oldValue + '\'' +
-                ", newValue='" + newValue + '\'' +
+                ", oldId=" + oldId +
+                ", newId=" + newId +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

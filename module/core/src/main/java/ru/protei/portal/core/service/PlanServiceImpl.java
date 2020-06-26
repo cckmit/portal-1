@@ -9,7 +9,8 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PlanDAO;
 import ru.protei.portal.core.model.dao.PlanToCaseObjectDAO;
-import ru.protei.portal.core.model.dict.En_HistoryValueType;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Plan;
@@ -157,7 +158,7 @@ public class PlanServiceImpl implements PlanService{
                         PlanToCaseObject planToCaseObject = new PlanToCaseObject(planId, issue.getId());
                         planToCaseObject.setOrderNumber(plan.getIssueList().indexOf(issue));
                         planToCaseObjectDAO.persist(planToCaseObject);
-                        createHistory(token, issue.getId(), En_HistoryValueType.ADD_TO_PLAN, null, plan);
+                        createHistory(token, issue.getId(), En_HistoryType.PLAN, En_HistoryAction.ADD, null, plan);
             });
         }
 
@@ -220,7 +221,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         Plan plan = planDAO.get(planId);
-        createHistory(token, issueId, En_HistoryValueType.ADD_TO_PLAN, null, plan);
+        createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.ADD, null, plan);
 
         return getPlanWithIssues(token, planId);
     }
@@ -243,7 +244,7 @@ public class PlanServiceImpl implements PlanService{
 
         if (rowCount == 1) {
             updateOrderNumbers(planId);
-            createHistory(token, issueId, En_HistoryValueType.REMOVE_FROM_PLAN, plan, null);
+            createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.REMOVE, plan, null);
             return ok();
         }
 
@@ -335,7 +336,7 @@ public class PlanServiceImpl implements PlanService{
         Plan previousPlan = planDAO.get(currentPlanId);
         Plan newPlan = planDAO.get(newPlanId);
 
-        createHistory(token, issueId, En_HistoryValueType.CHANGE_PLAN, previousPlan, newPlan);
+        createHistory(token, issueId, En_HistoryType.PLAN, En_HistoryAction.CHANGE, previousPlan, newPlan);
 
         return ok();
     }
@@ -359,7 +360,7 @@ public class PlanServiceImpl implements PlanService{
         }
 
         if (plan.getIssueList() != null){
-            plan.getIssueList().forEach(issue -> createHistory(token, issue.getId(), En_HistoryValueType.REMOVE_FROM_PLAN, plan, null));
+            plan.getIssueList().forEach(issue -> createHistory(token, issue.getId(), En_HistoryType.PLAN, En_HistoryAction.REMOVE, plan, null));
         }
 
         return ok();
@@ -425,16 +426,12 @@ public class PlanServiceImpl implements PlanService{
         planToCaseObjectDAO.mergeBatch(sortedListByPlanId);
     }
 
-    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryValueType type, Plan oldPlan, Plan newPlan) {
-        return historyService.createHistory(token, id, type,
-                oldPlan == null ? null : createPlanHistoryValue(oldPlan.getId(), oldPlan.getName()),
-                newPlan == null ? null : createPlanHistoryValue(newPlan.getId(), newPlan.getName()),
-                oldPlan == null ? null : new EntityOption(oldPlan.getName(), oldPlan.getId()),
-                newPlan == null ? null : new EntityOption(newPlan.getName(), newPlan.getId())
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryType type, En_HistoryAction action, Plan oldPlan, Plan newPlan) {
+        return historyService.createHistory(token, id, action, type,
+                oldPlan == null ? null : oldPlan.getId(),
+                oldPlan == null ? null : oldPlan.getName(),
+                newPlan == null ? null : newPlan.getId(),
+                newPlan == null ? null : newPlan.getName()
         );
-    }
-
-    private String createPlanHistoryValue(Long planId, String planName) {
-        return "#" + planId + " " + planName;
     }
 }
