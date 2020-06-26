@@ -7,9 +7,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.portal.core.model.ent.*;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +24,7 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
-    Result<Long> createLink(AuthToken authToken, CaseLink value, boolean createCrossLinks);
+    Result<CaseLink> createLink(AuthToken authToken, CaseLink value, boolean createCrossLinks);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)

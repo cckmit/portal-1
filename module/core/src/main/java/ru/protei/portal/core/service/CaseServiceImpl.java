@@ -531,7 +531,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber) {
+    public Result<CaseInfo> getCaseInfo(AuthToken token, Long caseNumber) {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
@@ -547,8 +547,9 @@ public class CaseServiceImpl implements CaseService {
         info.setPrivateCase(caseObject.isPrivateCase());
         info.setName(caseObject.getName());
         info.setImpLevel(caseObject.getImpLevel());
-        info.setStateId(caseObject.getStateId());
         info.setInfo(caseObject.getInfo());
+        info.setStateId(caseObject.getStateId());
+        info.setState(caseStateDAO.get(caseObject.getStateId()));
 
         return ok(info);
     }
@@ -1024,6 +1025,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @Autowired
     PolicyService policyService;

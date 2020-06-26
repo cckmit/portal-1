@@ -53,7 +53,7 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     }
 
     @Override
-    public Long createLink(CaseLink value, boolean createCrossLinks) throws RequestFailedException {
+    public CaseLink createLink(CaseLink value, boolean createCrossLinks) throws RequestFailedException {
         AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
         return checkResultAndGetData( linkService.createLink( authToken, value, createCrossLinks) );
     }
