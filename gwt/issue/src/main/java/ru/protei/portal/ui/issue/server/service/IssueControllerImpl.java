@@ -132,7 +132,7 @@ public class IssueControllerImpl implements IssueController {
         log.info("getIssueShortInfo(): number: {}", caseNumber);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<CaseInfo> response = caseService.getCaseShortInfo( token, caseNumber );
+        Result<CaseInfo> response = caseService.getCaseInfo( token, caseNumber );
         log.info("getIssueShortInfo(), number: {} -> {} ", caseNumber, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {
