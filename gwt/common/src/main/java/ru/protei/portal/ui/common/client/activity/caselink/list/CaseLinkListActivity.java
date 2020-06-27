@@ -198,7 +198,7 @@ public abstract class CaseLinkListActivity
                 .withSuccess(caseLink -> {
                     value.setId(caseLink.getId());
                     value.setCaseInfo(caseLink.getCaseInfo());
-                    addLinkToParentAndModifyLinksCount(caseLink);
+                    addLinkToParentAndModifyLinksCount(value);
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
                 })
