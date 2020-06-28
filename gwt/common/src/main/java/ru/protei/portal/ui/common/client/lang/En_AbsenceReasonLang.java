@@ -40,23 +40,24 @@ public class En_AbsenceReasonLang {
         }
     }
 
-    public String getStateIcon(En_AbsenceReason state) {
+    public String getStyle(En_AbsenceReason state) {
         if(state == null)
             return "fa fa-unknown";
 
         switch (state){
-            case PERSONAL_AFFAIR: return "fas fa-user-clock";
-            case BUSINESS_TRIP: return "fas fa-plane-departure";
-            case LOCAL_BUSINESS_TRIP: return "fas fa-business-time";
-            case STUDY: return "fas fa-graduation-cap";
-            case DISEASE: return "fas fa-viruses";
-            case SICK_LEAVE: return "fas fa-hospital-user";
-            case NIGHT_WORK: return "fas fa-cloud-moon";
-            case LEAVE_WITHOUT_PAY: return "fas fa-umbrella-beach";
-            case LEAVE: return "fas fa-umbrella-beach";
-            case DUTY: return "fas fa-user-check";
+            case PERSONAL_AFFAIR: return "bg-primary-lighter";
+            case BUSINESS_TRIP:
+            case LOCAL_BUSINESS_TRIP: return "bg-success-lighter";
+            case STUDY: return "bg-danger-lighter";
+            case DISEASE:
+            case SICK_LEAVE: return "bg-info-lighter";
+            case NIGHT_WORK:
+            case DUTY: return "bg-complete-lighter";
+            case LEAVE_WITHOUT_PAY:
+            case LEAVE: return "bg-warning-lighter";
+
             default:
-                return "fa fa-unknown";
+                return "";
         }
     }
 

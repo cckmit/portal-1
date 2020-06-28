@@ -24,6 +24,9 @@ import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableView;
+import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeContactsColumn;
+import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeDepartmentColumn;
+import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeInfoColumn;
 
 /**
  * Представление списка сотрудников
@@ -107,152 +110,13 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     }
 
     private void initTable() {
-        name = new DynamicColumn<>(
-                lang.employeeEmployeeFullName(),
-                "employee-info",
-                this::getEmployeeInfoBlock
-        );
-        contacts = new DynamicColumn<>(
-                lang.employeeContactInfo(),
-                "employee-contacts",
-                this::getEmployeeContactsBlock
-        );
-        department = new DynamicColumn<>(
-                lang.employeePosition(),
-                "employee-department",
-                this::getEmployeeDepartmentBlock
-        );
+        name = new EmployeeInfoColumn(lang, reasonLang);
+        contacts = new EmployeeContactsColumn(lang, reasonLang);
+        department = new EmployeeDepartmentColumn(lang, reasonLang);
 
         table.addColumn(name.header, name.values);
         table.addColumn(contacts.header, contacts.values);
         table.addColumn(department.header, department.values);
-    }
-
-    private String getEmployeeInfoBlock(EmployeeShortView employee) {
-        Element employeeInfo = DOM.createDiv();
-
-        if (employee.isFired()) {
-            employeeInfo.addClassName("fired");
-        }
-
-        if (employee.getCurrentAbsence() != null) {
-            employeeInfo.addClassName("absent");
-            employeeInfo.setTitle(reasonLang.getName(employee.getCurrentAbsence().getReason()));
-        }
-
-        if (employee.isFired()){
-            employeeInfo.appendChild(LabelValuePairBuilder.make()
-                    .addIconValuePair("fa fa-ban text-danger", employee.getDisplayName(), "contacts fired")
-                    .toElement());
-        } else {
-            employeeInfo.appendChild(LabelValuePairBuilder.make()
-                    .addIconValuePair(null, employee.getDisplayName(), "contacts bold")
-                    .toElement());
-        }
-        employeeInfo.appendChild(LabelValuePairBuilder.make()
-                .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts")
-                .toElement());
-
-        return employeeInfo.getString();
-    }
-
-    private String getEmployeeContactsBlock(EmployeeShortView employee) {
-        Element employeeContacts = DOM.createDiv();
-
-        if (employee.isFired()) {
-            employeeContacts.addClassName("fired");
-        }
-
-        if (employee.getCurrentAbsence() != null) {
-            employeeContacts.addClassName("absent");
-            employeeContacts.setTitle(reasonLang.getName(employee.getCurrentAbsence().getReason()));
-        }
-
-        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-        String phones = infoFacade.publicPhonesAsFormattedString(true);
-
-        if (!phones.isEmpty()) {
-            employeeContacts.appendChild(LabelValuePairBuilder.make()
-                    .addIconValuePair(null, phones, "contacts")
-                    .toElement());
-        }
-
-        if (!infoFacade.publicEmailsAsString().isEmpty()) {
-            employeeContacts.appendChild(EmailRender
-                    .renderToElement(null, infoFacade.publicEmailsStream(), "contacts", false)
-            );
-        }
-
-        return employeeContacts.getString();
-    }
-
-    private String getEmployeeDepartmentBlock(EmployeeShortView employee) {
-        Element employeeDepartment = DOM.createDiv();
-
-        if (employee.isFired()) {
-            employeeDepartment.addClassName("fired");
-        }
-
-        employeeDepartment.addClassName("department");
-        Element department;
-        Element departmentParent;
-        Element position;
-        Element company;
-
-        WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
-        WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
-
-        if (mainEntry != null) {
-            company = LabelValuePairBuilder.make()
-                    .addIconValuePair(null, mainEntry.getCompanyName(), "contacts")
-                    .toElement();
-            employeeDepartment.appendChild(company);
-
-            if (mainEntry.getDepartmentParentName() == null) {
-                department = LabelValuePairBuilder.make()
-                        .addIconValuePair(null, mainEntry.getDepartmentName(), "contacts")
-                        .toElement();
-
-                employeeDepartment.appendChild(department);
-            } else {
-                departmentParent = LabelValuePairBuilder.make()
-                        .addIconValuePair(null, mainEntry.getDepartmentParentName(), "contacts")
-                        .toElement();
-
-                department = LabelValuePairBuilder.make()
-                        .addIconValuePair(null, mainEntry.getDepartmentName(), "contacts")
-                        .toElement();
-
-                employeeDepartment.appendChild(departmentParent);
-                employeeDepartment.appendChild(department);
-            }
-
-            if (mainEntry.getPositionName() != null){
-                position = LabelValuePairBuilder.make()
-                        .addIconValuePair(null, mainEntry.getPositionName(), "contacts")
-                        .toElement();
-
-                employeeDepartment.appendChild(position);
-            }
-        } else if (employee.isFired()) {
-            department = LabelValuePairBuilder.make()
-                    .addIconValuePair(null, lang.employeeFired() + (employee.getFireDate() == null ? "" : " " + DateFormatter.formatDateOnly(employee.getFireDate())), "contacts")
-                    .toElement();
-            employeeDepartment.appendChild(department);
-        }
-
-        if (employee.getCurrentAbsence() != null) {
-
-            employeeDepartment.addClassName("absent");
-            employeeDepartment.setTitle(reasonLang.getName(employee.getCurrentAbsence().getReason()));
-
-            Element absenceReason = LabelValuePairBuilder.make()
-                    .addIconPair(reasonLang.getStateIcon(employee.getCurrentAbsence().getReason()), "absence-reason")
-                    .toElement();
-            employeeDepartment.appendChild(absenceReason);
-        }
-
-        return employeeDepartment.getString();
     }
 
     @UiField
@@ -275,14 +139,12 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     En_AbsenceReasonLang reasonLang;
 
     ClickColumnProvider<EmployeeShortView> columnProvider = new ClickColumnProvider<>();
-    DynamicColumn<EmployeeShortView> name;
-    DynamicColumn<EmployeeShortView> contacts;
-    DynamicColumn<EmployeeShortView> department;
+    EmployeeInfoColumn name;
+    EmployeeContactsColumn contacts;
+    EmployeeDepartmentColumn department;
 
     AbstractEmployeeTableActivity activity;
 
     private static EmployeeListViewUiBinder ourUiBinder = GWT.create(EmployeeListViewUiBinder.class);
-
-    interface EmployeeListViewUiBinder extends UiBinder<HTMLPanel, EmployeeTableView> {
-    }
+    interface EmployeeListViewUiBinder extends UiBinder<HTMLPanel, EmployeeTableView> {}
 }

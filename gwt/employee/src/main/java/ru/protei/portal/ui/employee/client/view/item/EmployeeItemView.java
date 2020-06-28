@@ -99,8 +99,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     public void setAbsenceReason(En_AbsenceReason reason) {
         if (reason != null) {
-            employeeContainer.addClassName("absent");
-            employeeContainer.setTitle(reasonLang.getName(reason));
+            addStyleName(reasonLang.getStyle(reason));
+            setTitle(reasonLang.getName(reason));
         }
     }
 
