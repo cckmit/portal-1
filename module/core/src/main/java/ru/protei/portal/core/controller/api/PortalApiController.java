@@ -256,6 +256,34 @@ public class PortalApiController {
         }
     }
 
+    @PostMapping(value = "/changeyoutrackid/{oldyoutrackid}/{newyoutrackid}", produces = "text/plain;charset=UTF-8")
+    public String changeYoutrackId( HttpServletRequest request, HttpServletResponse response,
+                                   @PathVariable("oldyoutrackid") String oldYoutrackId,
+                                   @PathVariable("newyoutrackid") String newYoutrackId ) {
+
+        log.info( "changeYoutrackId() oldYoutrackId={} newYoutrackId={}", oldYoutrackId, newYoutrackId );
+
+        final String OK = "";
+        final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
+        final String INCORRECT_PARAMS = "Некорректно заданы номера youtrack задач. Номера не должны быть пустыми";
+
+        Result<String> changeResult = authenticate(request, response, authService, sidGen, log)
+                .flatMap( token -> caseLinkService.changeYoutrackId( token, oldYoutrackId, newYoutrackId ));
+
+        if (changeResult.isOk()) {
+            log.info( "changeYoutrackId(): OK" );
+            return OK;
+        }
+
+        log.warn( "changeYoutrackId(): Can`t change youtrack id, status: {}", changeResult.getStatus() );
+
+        if (En_ResultStatus.INCORRECT_PARAMS.equals(changeResult.getStatus())){
+            return INCORRECT_PARAMS;
+        }
+
+        return INTERNAL_ERROR;
+    }
+
     @PostMapping(value = "/comments")
     public Result<List<CaseCommentShortView>> getCaseCommentList(
             @RequestBody CaseCommentApiQuery query,

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,6 +210,39 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         return result;
+    }
+
+    @Override
+    @Transactional
+    public Result<String> changeYoutrackId(AuthToken token, String oldYoutrackId, String newYoutrackId) {
+        log.debug("changeYoutrackId(): oldYoutrackId={}, newYoutrackId={}", oldYoutrackId, newYoutrackId);
+
+        if (StringUtils.isEmpty(oldYoutrackId) || StringUtils.isEmpty(newYoutrackId)) {
+            return error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setType(En_CaseLink.YT);
+        query.setRemoteId(oldYoutrackId);
+
+        try {
+            List<CaseLink> caseLinkList = caseLinkDAO.getListByQuery(query);
+
+            log.debug("changeYoutrackId(): size caseLinkList={}", caseLinkList.size());
+
+            caseLinkList.forEach(caseLink -> caseLink.setRemoteId(newYoutrackId));
+
+            int batchSize = caseLinkDAO.mergeBatch(caseLinkList);
+
+            if (batchSize != caseLinkList.size()) {
+                log.warn("changeYoutrackId(): size caseLinkList={}, batchSize={}", caseLinkList.size(), batchSize);
+            }
+        } catch (Exception e){
+            log.error("changeYoutrackId(): change failed", e);
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        return ok();
     }
 
     private Result removeLink (CaseLink link){
