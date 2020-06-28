@@ -52,13 +52,13 @@
 
     <changeSet id="add-old_name-column-in-history-table" author="turik">
         <addColumn tableName="history">
-            <column name="old_name" type="varchar(256)"/>
+            <column name="old_value" type="varchar(256)"/>
         </addColumn>
     </changeSet>
 
     <changeSet id="add-new_name-column-in-history-table" author="turik">
         <addColumn tableName="history">
-            <column name="new_name" type="varchar(256)"/>
+            <column name="new_value" type="varchar(256)"/>
         </addColumn>
     </changeSet>
 

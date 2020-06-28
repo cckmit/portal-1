@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.ent.Plan;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemActivity;
 import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -68,26 +67,26 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
         if (En_HistoryAction.ADD.equals(history.getAction())) {
             historyItem.setAddedValue(
-                    makeLink(Plan.class, history.getNewId(), history.getNewName()),
-                    history.getNewName()
+                    makeLink(Plan.class, history.getNewId(), history.getNewValue()),
+                    history.getNewValue()
             );
         }
 
         if (En_HistoryAction.REMOVE.equals(history.getAction())) {
             historyItem.setRemovedValue(
-                    makeLink(Plan.class, history.getOldId(), history.getOldName()),
-                    history.getOldName()
+                    makeLink(Plan.class, history.getOldId(), history.getOldValue()),
+                    history.getOldValue()
             );
         }
 
         if (En_HistoryAction.CHANGE.equals(history.getAction())) {
             historyItem.setOldValue(
-                    makeLink(Plan.class, history.getOldId(), history.getOldName()),
-                    history.getOldName()
+                    makeLink(Plan.class, history.getOldId(), history.getOldValue()),
+                    history.getOldValue()
             );
             historyItem.setNewValue(
-                    makeLink(Plan.class, history.getNewId(), history.getNewName()),
-                    history.getNewName()
+                    makeLink(Plan.class, history.getNewId(), history.getNewValue()),
+                    history.getNewValue()
             );
         }
 
@@ -96,10 +95,10 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
         return historyItem;
     }
 
-    private String makeLink(Class<?> clazz, Long id, String name) {
+    private String makeLink(Class<?> clazz, Long id, String value) {
         return "<a target='_blank' " +
                 "href='" + LinkUtils.makePreviewLink(clazz, id) + "'>" +
-                "#" + id + " " + name +
+                "#" + id + " " + value +
                 "</a>";
     }
 

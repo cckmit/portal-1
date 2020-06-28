@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
@@ -577,18 +576,18 @@ if(true) return; //TODO remove
     }
 
     private void updateHistoryTable() {
-        List<History> histories = historyDAO.getListByCondition("old_name is null and new_name is null");
+        List<History> histories = historyDAO.getListByCondition("old_value is null and new_value is null");
         for (History history : histories) {
             if (history.getOldId()!= null) {
                 Plan oldPlan = planDAO.get(history.getOldId());
                 if (oldPlan != null) {
-                    history.setOldName(oldPlan.getName());
+                    history.setOldValue(oldPlan.getName());
                 }
             }
             if (history.getNewId() != null) {
                 Plan newPlan = planDAO.get(history.getNewId());
                 if (newPlan != null) {
-                    history.setNewName(newPlan.getName());
+                    history.setNewValue(newPlan.getName());
                 }
             }
         }

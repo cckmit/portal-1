@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -34,14 +33,14 @@ public class History implements Serializable {
     @JdbcColumn(name = "old_id")
     private Long oldId;
 
-    @JdbcColumn(name = "old_name")
-    private String oldName;
+    @JdbcColumn(name = "old_value")
+    private String oldValue;
 
     @JdbcColumn(name = "new_id")
     private Long newId;
 
-    @JdbcColumn(name = "new_name")
-    private String newName;
+    @JdbcColumn(name = "new_value")
+    private String newValue;
 
     public History() {
     }
@@ -102,12 +101,12 @@ public class History implements Serializable {
         this.oldId = oldId;
     }
 
-    public String getOldName() {
-        return oldName;
+    public String getOldValue() {
+        return oldValue;
     }
 
-    public void setOldName(String oldName) {
-        this.oldName = oldName;
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
     }
 
     public Long getNewId() {
@@ -118,12 +117,12 @@ public class History implements Serializable {
         this.newId = newId;
     }
 
-    public String getNewName() {
-        return newName;
+    public String getNewValue() {
+        return newValue;
     }
 
-    public void setNewName(String newName) {
-        this.newName = newName;
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
     }
 
     @Override
@@ -136,9 +135,9 @@ public class History implements Serializable {
                 ", action=" + action +
                 ", type=" + type +
                 ", oldId=" + oldId +
-                ", oldName='" + oldName + '\'' +
+                ", oldValue='" + oldValue + '\'' +
                 ", newId=" + newId +
-                ", newName='" + newName + '\'' +
+                ", newValue='" + newValue + '\'' +
                 '}';
     }
 }

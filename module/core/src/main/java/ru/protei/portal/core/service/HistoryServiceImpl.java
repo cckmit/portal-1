@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.query.HistoryQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Date;
 import java.util.List;
@@ -24,9 +23,9 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
-                                      En_HistoryType type, Long oldId, String oldName, Long newId, String newName) {
+                                      En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
 
-        if (caseObjectId == null || type == null || action == null || (oldId == null && newId == null) || (oldName == null && newName == null)){
+        if (caseObjectId == null || type == null || action == null || (oldId == null && newId == null) || (oldValue == null && newValue == null)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -37,9 +36,9 @@ public class HistoryServiceImpl implements HistoryService {
         history.setAction(action);
         history.setType(type);
         history.setOldId(oldId);
-        history.setOldName(oldName);
+        history.setOldValue(oldValue);
         history.setNewId(newId);
-        history.setNewName(newName);
+        history.setNewValue(newValue);
 
         Long historyId = historyDAO.persist(history);
 
