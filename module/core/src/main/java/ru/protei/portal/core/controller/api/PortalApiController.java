@@ -265,7 +265,6 @@ public class PortalApiController {
 
         final String OK = "";
         final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
-        final String INCORRECT_PARAMS = "Некорректно заданы номера youtrack задач. Номера не должны быть пустыми";
 
         Result<String> changeResult = authenticate(request, response, authService, sidGen, log)
                 .flatMap( token -> caseLinkService.changeYoutrackId( token, oldYoutrackId, newYoutrackId ));
@@ -276,10 +275,6 @@ public class PortalApiController {
         }
 
         log.warn( "changeYoutrackId(): Can`t change youtrack id, status: {}", changeResult.getStatus() );
-
-        if (En_ResultStatus.INCORRECT_PARAMS.equals(changeResult.getStatus())){
-            return INCORRECT_PARAMS;
-        }
 
         return INTERNAL_ERROR;
     }
