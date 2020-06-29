@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -60,6 +61,20 @@ public class CaseQuery extends BaseQuery {
     private boolean allowViewPrivate = true;
 
     private Boolean viewPrivate = null;
+
+    @Deprecated
+    @JsonAlias({"from", "createdFrom" })
+    private Date createdFrom;
+
+    @Deprecated
+    @JsonAlias({"to", "createdTo" })
+    private Date createdTo;
+
+    @Deprecated
+    private Date modifiedFrom;
+
+    @Deprecated
+    private Date modifiedTo;
 
     @JdbcColumn(name = "created", converterType = ConverterType.JSON)
     private DateRange createdRange;
@@ -123,6 +138,10 @@ public class CaseQuery extends BaseQuery {
         setType(query.getType());
         setStateIds(query.getStateIds());
         setImportanceIds(query.getImportanceIds());
+        setCreatedFrom(query.getCreatedFrom());
+        setCreatedTo(query.getCreatedTo());
+        setModifiedFrom(query.getModifiedFrom());
+        setModifiedTo(query.getModifiedTo());
         setCreatedRange(query.getCreatedRange());
         setModifiedRange(query.getModifiedRange());
         setManagerIds(query.getManagerIds());
@@ -230,6 +249,22 @@ public class CaseQuery extends BaseQuery {
     public Set<En_ImportanceLevel> getImportances() {
         return this.importanceIds == null ? null : toSet( importanceIds, id1 -> En_ImportanceLevel.getById( id1 ) );
     }
+
+    public Date getCreatedFrom() { return createdFrom; }
+
+    public void setCreatedFrom( Date createdFrom ) { this.createdFrom = createdFrom; }
+
+    public Date getModifiedFrom() { return modifiedFrom; }
+
+    public void setModifiedFrom( Date modifiedFrom ) { this.modifiedFrom = modifiedFrom; }
+
+    public Date getCreatedTo() { return createdTo; }
+
+    public void setCreatedTo( Date createdTo ) { this.createdTo = createdTo; }
+
+    public Date getModifiedTo() { return modifiedTo; }
+
+    public void setModifiedTo( Date modifiedTo ) { this.modifiedTo = modifiedTo; }
 
     public DateRange getCreatedRange() { return createdRange; }
 

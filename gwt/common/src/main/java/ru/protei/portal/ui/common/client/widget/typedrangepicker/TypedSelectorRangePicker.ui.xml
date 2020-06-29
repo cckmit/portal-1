@@ -7,7 +7,7 @@
 
     <g:HTMLPanel ui:field="root">
         <g:HTMLPanel ui:field="label" tag="label" styleName="hide"/>
-        <selector:RangeTypeButtonSelector ui:field="selector" styleName="dropdown-selector"
+        <selector:RangeTypeButtonSelector ui:field="rangeType" styleName="dropdown-selector"
                                           hasNullValue="true" defaultValue="{lang.selectIssuePeriod}"/>
         <range:RangePicker ui:field="range" styleName="" placeholder="{lang.selectDate}" />
     </g:HTMLPanel>

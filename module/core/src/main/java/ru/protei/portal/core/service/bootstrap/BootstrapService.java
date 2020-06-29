@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.YoutrackService;
@@ -71,6 +72,7 @@ public class BootstrapService {
         //fillWithCrossLinkColumn();
         transferYoutrackLinks();
         addCommonManager();
+        updateIssueFiltersDateRanges();
     }
 
     private void fillWithCrossLinkColumn() {
@@ -572,6 +574,43 @@ if(true) return; //TODO remove
             return manager;
         }).forEach(personDAO::persist);
         log.info("Add Common Manager ended");
+    }
+
+    /**
+     * onetime method
+     */
+    private void updateIssueFiltersDateRanges() {
+        log.info("updateIssueFiltersDateRanges started");
+
+        List<CaseFilter> allFilters = caseFilterDAO.getAll();
+
+        for (CaseFilter filter : CollectionUtils.emptyIfNull(allFilters)) {
+            CaseQuery params = filter.getParams();
+
+            boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(params.getCreatedRange(), params.getCreatedFrom(), params.getCreatedTo());
+            boolean isModifiedRangeNeedToUpdate = checkDateRangeExists(params.getModifiedRange(), params.getModifiedFrom(), params.getModifiedTo());
+
+            if(isCreatedRangeNeedToUpdate) {
+                params.setCreatedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+            }
+
+            if(isModifiedRangeNeedToUpdate) {
+                params.setModifiedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+            }
+
+            if (isCreatedRangeNeedToUpdate || isModifiedRangeNeedToUpdate) {
+                caseFilterDAO.partialMerge(filter, "params");
+            }
+        }
+        log.info("updateIssueFiltersDateRanges ended");
+    }
+
+    private boolean checkDateRangeExists(DateRange range, Date from, Date to) {
+        return range == null && (from != null || to != null);
+    }
+
+    private DateRange createDateRange(Date from, Date to) {
+        return new DateRange(En_DateIntervalType.FIXED, from, to);
     }
 
     @Inject
