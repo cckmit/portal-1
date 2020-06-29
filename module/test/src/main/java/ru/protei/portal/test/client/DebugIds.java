@@ -797,6 +797,11 @@ public class DebugIds {
             String TEXT_INPUT = "contract-specification-item-text-input";
             String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
+
+        interface CONTRAGENT {
+            String NAME = "contract-contragent-name";
+            String SEARCH_BUTTON = "contract-contragent-search-button";
+        }
     }
 
     public interface CLEANABLE_SEARCH_BOX {

@@ -2068,6 +2068,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractContragent();
 
+    String selectContractContragent();
+
     String contractProject();
 
     String contractProjectNotDefined();
@@ -2095,6 +2097,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contract();
 
     String contractWorkGroup();
+
+    String contractWorkGroupInfo();
 
     String contractCostNotDefined();
 

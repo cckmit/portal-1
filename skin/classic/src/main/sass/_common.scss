@@ -4710,3 +4710,33 @@ table {
     margin-top: 5px;
   }
 }
+
+/** CONTRAGENT **/
+.contragent {
+  position: relative;
+}
+
+.contragent input {
+  padding-right: 28px !important;
+}
+
+.contragent .contragent-search-icon {
+  position: absolute;
+  font-weight: 600;
+  height: 30px;
+  width: 30px;
+  top: 0px;
+  right: 0px;
+  margin-right: 0;
+}
+
+.contragent-search-icon:before {
+  content: "\f002";
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  text-align: center;
+  line-height: 34px;
+  font-family: "Font Awesome 5 Free";
+  z-index: 10;
+}
