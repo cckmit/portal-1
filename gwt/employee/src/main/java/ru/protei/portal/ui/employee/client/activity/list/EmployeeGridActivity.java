@@ -34,7 +34,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     @Event(Type.FILL_CONTENT)
     public void onShow(EmployeeEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -75,7 +75,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -90,7 +90,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

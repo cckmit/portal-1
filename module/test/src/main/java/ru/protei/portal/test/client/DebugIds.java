@@ -354,6 +354,17 @@ public class DebugIds {
         }
     }
 
+    public interface CASE_HISTORY {
+        interface ITEM {
+            String CREATE_DATE = "issue-case-history-item-create-date";
+            String ADDED_VALUE = "issue-case-history-item-added-value";
+            String REMOVED_VALUE = "issue-case-history-item-removed-value";
+            String OLD_VALUE = "issue-case-history-item-old-value";
+            String NEW_VALUE = "issue-case-history-item-new-value";
+            String HISTORY_TYPE = "issue-case-history-item-history-type";
+        }
+    }
+
     @Deprecated public interface ISSUE_PREVIEW {
         @Deprecated String FULL_SCREEN_BUTTON = DebugIds.ISSUE.SHOW_EDIT_BUTTON;
         @Deprecated String PLATFORM = DebugIds.SITE_FOLDER.LINK.PLATFORM;

@@ -46,7 +46,7 @@ public abstract class DocumentTypeTableActivity
     @Event
     public void onShow(DocumentTypeEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

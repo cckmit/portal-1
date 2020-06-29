@@ -48,17 +48,17 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
 
     @Event
     public void onFullScreenShow(EmployeeRegistrationEvents.ShowFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         if (event.id == null) {
             fireEvent(new Back());
             return;
         }
 
         employeeRegistrationId = event.id;
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
-            return;
-        }
 
         fullScreenContainer.clear();
         fullScreenContainer.add( view.asWidget() );

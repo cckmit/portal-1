@@ -325,8 +325,9 @@ public class CollectionUtils {
      * Равенство коллекций, без учета пордяка элементов
      */
     public static <T> boolean equals(Collection<T> firstCollection, Collection<T> secondCollection) {
-        firstCollection = emptyIfNull(firstCollection);
-        secondCollection = emptyIfNull(secondCollection);
+        if (firstCollection == null || secondCollection == null) {
+            return firstCollection == null && secondCollection == null;
+        }
 
         if (firstCollection.size() != secondCollection.size()) {
             return false;
@@ -336,6 +337,25 @@ public class CollectionUtils {
             return false;
         }
 
+        if (!secondCollection.containsAll(firstCollection)) {
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * Проход по списку в обратном направлении
+     */
+    public static <T> void forEachReverse(List<T> elements, Consumer<T> elementConsumer) {
+        if (isEmpty(elements) || elementConsumer == null) {
+            return;
+        }
+
+        ListIterator<T> listIterator = elements.listIterator(elements.size());
+
+        while (listIterator.hasPrevious()) {
+            elementConsumer.accept(listIterator.previous());
+        }
     }
 }

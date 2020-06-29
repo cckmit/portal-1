@@ -40,6 +40,9 @@ public class IssueInfoWidget extends Composite {
         return commentsContainer;
     }
 
+    public HasWidgets getHistoryContainer() {
+        return historyContainer;
+    }
 
     public HasAttachments attachmentsContainer() {
         return attachmentContainer;
@@ -97,7 +100,7 @@ public class IssueInfoWidget extends Composite {
     @UiField
     HTMLPanel commentsContainer;
     @UiField
-    DivElement comments;
+    HTMLPanel historyContainer;
     @Inject
     @UiField
     AttachmentUploader fileUploader;
@@ -110,8 +113,6 @@ public class IssueInfoWidget extends Composite {
     LabelElement attachmentsLabel;
     @UiField
     DivElement attachmentsPanel;
-    @UiField
-    DivElement commentsPanel;
     @UiField
     HTMLPanel descriptionReadOnly;
 

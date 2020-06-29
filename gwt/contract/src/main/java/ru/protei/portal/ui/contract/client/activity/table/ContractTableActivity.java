@@ -58,7 +58,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Event(Type.FILL_CONTENT)
     public void onShow(ContractEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

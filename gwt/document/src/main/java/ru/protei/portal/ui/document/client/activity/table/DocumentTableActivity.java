@@ -50,7 +50,7 @@ public abstract class DocumentTableActivity
     @Event(Type.FILL_CONTENT)
     public void onShow(DocumentEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

@@ -60,7 +60,7 @@ public abstract class ApplicationTableActivity implements
     @Event
     public void onShow(SiteFolderAppEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

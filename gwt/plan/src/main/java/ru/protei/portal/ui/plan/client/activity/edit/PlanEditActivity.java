@@ -42,7 +42,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
         Window.scrollTo(0, 0);
 
         if (!hasPrivileges(event.planId)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -63,7 +63,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
                     })
                     .withSuccess(result ->  {
                         if (!Objects.equals(result.getCreatorId(), policyService.getProfile().getId())){
-                            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+                            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
                             return;
                         }
                         fillView(result);

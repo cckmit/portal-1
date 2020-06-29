@@ -6,15 +6,13 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Plan;
-import ru.protei.portal.core.model.ent.ProjectSla;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
@@ -44,11 +42,11 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
         initDetails.parent.clear();
 
         if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
-        initDetails.parent.add( view.asWidget() );
+        initDetails.parent.add(view.asWidget());
 
         fillView( event.planId );
         view.showFullScreen( true );
@@ -70,23 +68,16 @@ public abstract class PlanPreviewActivity implements AbstractPlanPreviewActivity
         fireEvent(new PlanEvents.ShowPlans(true));
     }
 
-    private void fillView( Long id ) {
+    private void fillView(Long id) {
         if (id == null) {
-            fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
-        planService.getPlanWithIssues( id, new RequestCallback<Plan>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Plan value ) {
-                fillView( value );
-            }
-        } );
+        planService.getPlanWithIssues(id, new FluentCallback<Plan>()
+                .withError(throwable -> fireEvent(new ErrorPageEvents.ShowNotFound(initDetails.parent, lang.errPlanNotFound())))
+                .withSuccess(this::fillView)
+        );
     }
 
     private void fillView(Plan value) {

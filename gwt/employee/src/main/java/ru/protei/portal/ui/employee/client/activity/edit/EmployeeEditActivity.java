@@ -58,7 +58,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Event
     public void onShow( EmployeeEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 

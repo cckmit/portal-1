@@ -61,7 +61,7 @@ public abstract class PlatformTableActivity implements
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

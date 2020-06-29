@@ -57,7 +57,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     @Event
     public void onShow( ProjectEvents.ShowFullScreen event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

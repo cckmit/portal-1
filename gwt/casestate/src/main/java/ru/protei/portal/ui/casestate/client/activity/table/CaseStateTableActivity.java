@@ -33,7 +33,7 @@ public abstract class CaseStateTableActivity implements Activity,
     @Event
     public void onShow(CaseStateEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CASE_STATES_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

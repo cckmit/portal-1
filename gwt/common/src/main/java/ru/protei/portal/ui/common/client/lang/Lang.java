@@ -2723,4 +2723,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errPersonCaseFilterInUse();
 
     String employeeRegistrationDepartment();
+
+    String caseHistory();
+
+    String errPlanNotFound();
 }

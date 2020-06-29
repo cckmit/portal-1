@@ -57,7 +57,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     @Event
     public void onShow(ContractEvents.ShowFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
