@@ -526,45 +526,6 @@ public class TestPortalApiController extends BaseServiceTest {
 
     @Test
     @Transactional
-    public void changeYoutrackIdWithEmptyNumber() throws Exception {
-        final String OLD_YOUTRACK_ID = "CHANGE_TEST-1" + System.currentTimeMillis();
-        final String NEW_YOUTRACK_ID = "CHANGE_TEST-2" + System.currentTimeMillis();
-        final int CASE_COUNT = 3;
-
-        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
-        Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
-
-        List<Long> caseNumbersCreated = fillAndCreateCaseObjects(CASE_COUNT);
-
-        String numbers = caseNumbersCreated.stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(",\n"));
-        createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + OLD_YOUTRACK_ID, numbers).andExpect(status().isOk());
-
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
-        Assert.assertEquals("Wrong quantity of numbers with old link", CASE_COUNT, caseNumbersFromDB.size());
-
-        createPostResultActionWithStringBody("/api/changeyoutrackid/" + "" + "/" + NEW_YOUTRACK_ID, null)
-                .andExpect(status().isNotFound());
-
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(NEW_YOUTRACK_ID);
-        Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
-        Assert.assertEquals("Wrong quantity of numbers with old link", CASE_COUNT, caseNumbersFromDB.size());
-
-        createPostResultActionWithStringBody("/api/changeyoutrackid/" + OLD_YOUTRACK_ID + "/", null)
-                .andExpect(status().isNotFound());
-
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(NEW_YOUTRACK_ID);
-        Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
-        Assert.assertEquals("Wrong quantity of numbers with old link", CASE_COUNT, caseNumbersFromDB.size());
-
-        removeCaseObjectsAndCaseLinks(caseNumbersCreated);
-    }
-
-    @Test
-    @Transactional
     public void changeUnusedYoutrackId() throws Exception {
         final String OLD_YOUTRACK_ID = "UNUSED-1";
         final String NEW_YOUTRACK_ID = "UNUSED-2";
