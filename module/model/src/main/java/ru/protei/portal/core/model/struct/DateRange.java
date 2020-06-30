@@ -10,7 +10,6 @@ import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DateRange implements Serializable {
-    @JsonAlias ({"type", "intervalType"})
     private En_DateIntervalType intervalType;
     private Date from;
     private Date to;

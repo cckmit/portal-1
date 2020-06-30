@@ -7,18 +7,17 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.*;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
 public class CaseObjectSqlBuilder {
@@ -317,69 +316,6 @@ public class CaseObjectSqlBuilder {
         });
     }
 
-    private Interval makeToday() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now();
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = Date.from(local.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
-
-    private Interval makeYesterday() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now();
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.from = Date.from(local.minusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
-
-    private Interval makeThisWeek() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = Date.from(local.plusWeeks(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
-
-    private Interval makeLastWeek() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.from = Date.from(local.minusWeeks(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
-
-    private Interval makeThisMonth() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = Date.from(local.plusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
-
-    private Interval makeLastMonth() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth()-1);
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.from = Date.from(local.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
-
-    private Interval makeThisYear() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
-        interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.to = Date.from(local.plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
-
-    private Interval makeLastYear() {
-        Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
-        interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        interval.from = Date.from(local.minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return interval;
-    }
 
     private Interval createInterval( DateRange dateRange ) {
         if ( dateRange == null )
@@ -398,15 +334,5 @@ public class CaseObjectSqlBuilder {
         }
 
         return null;
-    }
-
-    private class Interval {
-        public Date from;
-        public Date to;
-        Interval ()  {}
-        Interval (Date from, Date to) {
-            this.from = from;
-            this.to = to;
-        }
     }
 }

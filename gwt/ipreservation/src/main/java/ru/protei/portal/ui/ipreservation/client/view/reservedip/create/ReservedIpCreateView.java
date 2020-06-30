@@ -30,7 +30,10 @@ import ru.protei.portal.ui.ipreservation.client.view.widget.mode.En_ReservedMode
 import ru.protei.portal.ui.ipreservation.client.view.widget.mode.ReservedModeBtnGroup;
 import ru.protei.portal.ui.ipreservation.client.view.widget.selector.SubnetMultiSelector;
 
+import java.util.Arrays;
 import java.util.Set;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Вид редактирования зарезервированного IP
@@ -174,9 +177,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     }
 
     private void fillUseRangeButtons() {
-        useRange.addBtn(En_DateIntervalType.MONTH,"btn btn-default col-md-4");
-        useRange.addBtn(En_DateIntervalType.FIXED, "btn btn-default col-md-4");
-        useRange.addBtn(En_DateIntervalType.UNLIMITED,"btn btn-default col-md-4");
+        En_DateIntervalType.reservedIpTypes().forEach(type -> useRange.addBtn(type,"btn btn-default col-md-4"));
         useRange.getValue().setIntervalType(En_DateIntervalType.MONTH);
     }
 

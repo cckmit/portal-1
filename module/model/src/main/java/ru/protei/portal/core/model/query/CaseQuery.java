@@ -76,10 +76,8 @@ public class CaseQuery extends BaseQuery {
     @Deprecated
     private Date modifiedTo;
 
-    @JdbcColumn(name = "created", converterType = ConverterType.JSON)
     private DateRange createdRange;
 
-    @JdbcColumn(name = "modified", converterType = ConverterType.JSON)
     private DateRange modifiedRange;
 
     private boolean searchStringAtComments = false;

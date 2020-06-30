@@ -16,25 +16,28 @@ public enum En_DateIntervalType {
     THIS_YEAR,
     LAST_YEAR;
 
-    public static List<En_DateIntervalType> reservedIpTypes() {
-        List<En_DateIntervalType> list = new ArrayList<>();
-        list.add(MONTH);
-        list.add(FIXED);
-        list.add(UNLIMITED);
-        return list;
+    private static List<En_DateIntervalType> reservedIpRangeTypes;
+    private static List<En_DateIntervalType> issueRangeTypes;
+
+    static {
+        reservedIpRangeTypes = new ArrayList<>(3);
+        reservedIpRangeTypes.add(MONTH);
+        reservedIpRangeTypes.add(FIXED);
+        reservedIpRangeTypes.add(UNLIMITED);
+
+        issueRangeTypes = new ArrayList<>(9);
+        issueRangeTypes.add(FIXED);
+        issueRangeTypes.add(TODAY);
+        issueRangeTypes.add(YESTERDAY);
+        issueRangeTypes.add(THIS_WEEK);
+        issueRangeTypes.add(LAST_WEEK);
+        issueRangeTypes.add(THIS_MONTH);
+        issueRangeTypes.add(LAST_MONTH);
+        issueRangeTypes.add(THIS_YEAR);
+        issueRangeTypes.add(LAST_YEAR);
     }
 
-    public static List<En_DateIntervalType> issueTypes() {
-        List<En_DateIntervalType> list = new ArrayList<>();
-        list.add(FIXED);
-        list.add(TODAY);
-        list.add(YESTERDAY);
-        list.add(THIS_WEEK);
-        list.add(LAST_WEEK);
-        list.add(THIS_MONTH);
-        list.add(LAST_MONTH);
-        list.add(THIS_YEAR);
-        list.add(LAST_YEAR);
-        return list;
-    }
+    public static List<En_DateIntervalType> reservedIpTypes() { return reservedIpRangeTypes; }
+
+    public static List<En_DateIntervalType> issueTypes() { return issueRangeTypes; }
 }
