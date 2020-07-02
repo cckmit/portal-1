@@ -14,6 +14,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.contract.client.widget.contraget.create.AbstractContragentCreateView;
 import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchActivity;
 import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchView;
 
@@ -26,6 +27,39 @@ public class ContragentWidget extends Composite implements HasValue<String> {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.selectContractContragent());
+
+        dialogDetailsSearchView.setActivity(new AbstractDialogDetailsActivity(){
+            @Override
+            public void onSaveClicked() {
+                name.setValue(searchView.contragentName().getValue());
+                dialogDetailsSearchView.hidePopup();
+            }
+            @Override
+            public void onCancelClicked() {
+                dialogDetailsSearchView.hidePopup();
+            }
+        });
+        dialogDetailsSearchView.getBodyContainer().add(searchView.asWidget());
+        dialogDetailsSearchView.removeButtonVisibility().setVisible(false);
+        dialogDetailsSearchView.setHeader(lang.searchContragentTitle());
+
+        dialogDetailsCreateView.setActivity(new AbstractDialogDetailsActivity(){
+            @Override
+            public void onSaveClicked() {
+                name.setValue(createView.contragentName().getValue());
+                dialogDetailsCreateView.hidePopup();
+            }
+
+            @Override
+            public void onCancelClicked() {
+                dialogDetailsCreateView.hidePopup();
+            }
+        });
+        dialogDetailsCreateView.getBodyContainer().add(createView.asWidget());
+        dialogDetailsCreateView.removeButtonVisibility().setVisible(false);
+        dialogDetailsCreateView.setHeader(lang.createContragentTitle());
+        dialogDetailsCreateView.setSaveButtonName(lang.buttonCreate());
+
         searchView.setActivity(new AbstractContragentSearchActivity() {
             @Override
             public void onSearchClicked() {
@@ -35,7 +69,9 @@ public class ContragentWidget extends Composite implements HasValue<String> {
 
             @Override
             public void onCreateClicked() {
-
+                createView.reset();
+                dialogDetailsSearchView.hidePopup();
+                dialogDetailsCreateView.showPopup();
             }
         });
     }
@@ -68,11 +104,7 @@ public class ContragentWidget extends Composite implements HasValue<String> {
     @UiHandler( "button" )
     public void onButtonClicked ( ClickEvent event ) {
         searchView.reset();
-        dialogDetailsView.setActivity(searchDialogActivity);
-        dialogDetailsView.getBodyContainer().add(searchView.asWidget());
-        dialogDetailsView.removeButtonVisibility().setVisible(false);
-        dialogDetailsView.setHeader(lang.searchContragentTitle());
-        dialogDetailsView.showPopup();
+        dialogDetailsSearchView.showPopup();
     }
 
 
@@ -80,7 +112,13 @@ public class ContragentWidget extends Composite implements HasValue<String> {
     AbstractContragentSearchView searchView;
 
     @Inject
-    AbstractDialogDetailsView dialogDetailsView;
+    AbstractContragentCreateView createView;
+
+    @Inject
+    AbstractDialogDetailsView dialogDetailsSearchView;
+
+    @Inject
+    AbstractDialogDetailsView dialogDetailsCreateView;
 
     @UiField
     TextBox name;
@@ -90,19 +128,6 @@ public class ContragentWidget extends Composite implements HasValue<String> {
 
     @UiField
     Lang lang;
-
-    AbstractDialogDetailsActivity searchDialogActivity = new AbstractDialogDetailsActivity(){
-        @Override
-        public void onSaveClicked() {
-            name.setValue(searchView.contragentName().getValue());
-            dialogDetailsView.hidePopup();
-        }
-
-        @Override
-        public void onCancelClicked() {
-            dialogDetailsView.hidePopup();
-        }
-    };
 
     interface ContragentWidgetUiBinder extends UiBinder<HTMLPanel, ContragentWidget> {}
     private static ContragentWidgetUiBinder ourUiBinder = GWT.create( ContragentWidgetUiBinder.class );
