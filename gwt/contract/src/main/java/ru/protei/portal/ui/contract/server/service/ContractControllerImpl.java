@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.ContractService;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Service("ContractController")
 public class ContractControllerImpl implements ContractController {
@@ -71,6 +73,24 @@ public class ContractControllerImpl implements ContractController {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public List<String> getContractorCountryList() throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.getContractorCountryList(token));
+    }
+
+    @Override
+    public List<ContractorAPI> findContractors(String contractorINN, String contractorKPP) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, contractorINN, contractorKPP));
+    }
+
+    @Override
+    public ContractorAPI createContractor(ContractorAPI contractor) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractor));
     }
 
     @Autowired

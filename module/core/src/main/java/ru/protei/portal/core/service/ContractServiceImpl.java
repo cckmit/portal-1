@@ -132,6 +132,51 @@ public class ContractServiceImpl implements ContractService {
         return ok(contract.getId());
     }
 
+    @Override
+    public Result<List<String>> getContractorCountryList(AuthToken token) {
+        // mock service 1cAPI
+        return ok(Arrays.asList("RUSSIA", "USA", "CHINA"));
+    }
+
+    @Override
+    public Result<List<ContractorAPI>> findContractors(AuthToken token, String contractorINN, String contractorKPP) {
+        if (contractorINN == null || contractorKPP == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        // mock service 1cAPI
+        if ("123".equals(contractorINN) && "456".equals(contractorKPP)) {
+            ContractorAPI contractorAPI1 = new ContractorAPI();
+            contractorAPI1.setName("contractorAPI1");
+            contractorAPI1.setFullname("contractorAPI1 fullname");
+            contractorAPI1.setInn("123");
+            contractorAPI1.setKpp("456");
+            contractorAPI1.setCountry("RUSSIA");
+            contractorAPI1.setResident(true);
+
+            ContractorAPI contractorAPI2 = new ContractorAPI();
+            contractorAPI2.setName("contractorAPI2");
+            contractorAPI2.setFullname("contractorAPI2 fullname");
+            contractorAPI2.setInn("123");
+            contractorAPI2.setKpp("456");
+            contractorAPI2.setCountry("USA");
+            contractorAPI2.setResident(false);
+
+            return ok(Arrays.asList(contractorAPI1, contractorAPI2));
+        } else {
+            return ok(new ArrayList<>());
+        }
+    }
+
+    @Override
+    public Result<ContractorAPI> createContractor(AuthToken token, ContractorAPI contractor) {
+        if (contractor == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        // mock service 1cAPI
+        return ok(contractor);
+    }
+
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
         if (caseObject == null) {
             caseObject = new CaseObject();
