@@ -11,12 +11,15 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.item.ContractSpecificationItem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ContractSpecificationList
         extends Composite
