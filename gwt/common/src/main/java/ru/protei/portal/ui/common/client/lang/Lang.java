@@ -2070,6 +2070,24 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectContractContragent();
 
+    String notFoundContragentName();
+
+    String searchContragentTitle();
+
+    String createContragentTitle();
+
+    String contractContragentName();
+
+    String contractContragentFullname();
+
+    String contractContragentINN();
+
+    String contractContragentKPP();
+
+    String contractContragentCountry();
+
+    String contractContragentResident();
+
     String contractProject();
 
     String contractProjectNotDefined();

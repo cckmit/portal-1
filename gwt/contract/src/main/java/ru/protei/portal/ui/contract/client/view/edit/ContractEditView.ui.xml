@@ -13,7 +13,7 @@
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
-             xmlns:box="urn:import:ru.protei.portal.ui.contract.client.widget.contraget.box">
+             xmlns:contraget="urn:import:ru.protei.portal.ui.contract.client.widget.contraget">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -99,7 +99,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label ui:field="contragentLabel"><ui:text from="{lang.contractContragent}"/></label>
-                                <box:ContragentBox ui:field="contragentBox" placeHolder="{lang.selectContractContragent}"/>
+                                <contraget:ContragentWidget ui:field="contragentWidget"/>
                                 <company:CompanySelector ui:field="contragent" enabled="false" defaultValue="{lang.selectAccountCompany}"/>
                             </div>
                             <div class="form-group col-md-6">

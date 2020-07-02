@@ -36,7 +36,7 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditAct
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
-import ru.protei.portal.ui.contract.client.widget.contraget.box.ContragentBox;
+import ru.protei.portal.ui.contract.client.widget.contraget.ContragentWidget;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
@@ -298,8 +298,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     CompanySelector contragent;
-    @UiField
-    ContragentBox contragentBox;
+    @Inject
+    @UiField(provided = true)
+    ContragentWidget contragentWidget;
     @UiField
     LabelElement numberLabel;
     @UiField
