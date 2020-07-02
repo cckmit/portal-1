@@ -168,7 +168,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         switch (reportType) {
             case CASE_RESOLUTION_TIME:
-                if (query.getCreatedRange().getFrom() == null || query.getCreatedRange().getTo() == null)  {
+                if (validateDateRange(query)) {
                     fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
@@ -177,8 +177,24 @@ public abstract class IssueReportCreateActivity implements Activity,
                     return false;
                 }
                 break;
+            case CASE_OBJECTS:
+                if (validateDateRange(query)) {
+                    fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
+                    return false;
+                }
+                break;
         }
         return true;
+    }
+
+    private boolean validateDateRange(CaseQuery query) {
+        return query.getCreatedRange() == null
+               || query.getCreatedRange().getIntervalType() == null
+               || (query.getCreatedRange().getIntervalType().equals(En_DateIntervalType.FIXED)
+                   && (query.getCreatedRange().getFrom() == null
+                       || query.getCreatedRange().getTo() == null
+                       || query.getCreatedRange().getFrom().after(query.getCreatedRange().getTo()))
+                  );
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {

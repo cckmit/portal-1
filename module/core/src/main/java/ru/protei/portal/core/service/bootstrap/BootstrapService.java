@@ -73,6 +73,7 @@ public class BootstrapService {
         transferYoutrackLinks();
         addCommonManager();
         updateIssueFiltersDateRanges();
+        updateIssueReportDateRanges();
     }
 
     private void fillWithCrossLinkColumn() {
@@ -605,6 +606,32 @@ if(true) return; //TODO remove
         log.info("updateIssueFiltersDateRanges ended");
     }
 
+    private void updateIssueReportDateRanges() {
+        log.info("updateIssueReportDateRanges started");
+
+        List<Report> reports = reportDAO.getAll();
+
+        for (Report report : CollectionUtils.emptyIfNull(reports)) {
+            CaseQuery params = report.getCaseQuery();
+
+            boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(params.getCreatedRange(), params.getCreatedFrom(), params.getCreatedTo());
+            boolean isModifiedRangeNeedToUpdate = checkDateRangeExists(params.getModifiedRange(), params.getModifiedFrom(), params.getModifiedTo());
+
+            if(isCreatedRangeNeedToUpdate) {
+                params.setCreatedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+            }
+
+            if(isModifiedRangeNeedToUpdate) {
+                params.setModifiedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+            }
+
+            if (isCreatedRangeNeedToUpdate || isModifiedRangeNeedToUpdate) {
+                reportDAO.partialMerge(report, "case_query");
+            }
+        }
+        log.info("updateIssueReportDateRanges ended");
+    }
+
     private boolean checkDateRangeExists(DateRange range, Date from, Date to) {
         return range == null && (from != null || to != null);
     }
@@ -664,6 +691,8 @@ if(true) return; //TODO remove
     ReservedIpDAO reservedIpDAO;
     @Autowired
     CaseLinkDAO caseLinkDAO;
+    @Autowired
+    ReportDAO reportDAO;
     @Autowired
     YoutrackService youtrackService;
     @Autowired

@@ -6,12 +6,14 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.ui.common.client.lang.En_DateIntervalLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
@@ -23,21 +25,10 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        btnGroup.addValueChangeHandler(new ValueChangeHandler<En_DateIntervalType>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<En_DateIntervalType> event) {
-                setRangePicker(event.getValue());
-            }
-        });
-    }
-
-    private void setRangePicker(En_DateIntervalType type) {
-        range.setVisible(Objects.equals(type, En_DateIntervalType.FIXED));
-        range.setMandatory(Objects.equals(type, En_DateIntervalType.FIXED));
     }
 
     public void addBtn(En_DateIntervalType value, String buttonStyle ) {
-        btnGroup.addBtn(lang.getName(value), value,buttonStyle);
+        btnGroup.addBtn(lang.getName(value), value, buttonStyle);
     }
 
     @Override
@@ -47,13 +38,14 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
 
     @Override
     public void setValue(DateIntervalWithType value) {
-        setValue(value);
+        setValue(value, false);
     }
 
     @Override
     public void setValue(DateIntervalWithType value, boolean fireEvents) {
-        btnGroup.setValue(value.getIntervalType(), true);
-        range.setValue(value.getInterval());
+        btnGroup.setValue(value == null ? DEFAULT_TYPE : value.getIntervalType());
+        range.setValue(value == null ? null : value.getInterval());
+        changeRangePicker(value == null ? null : value.getIntervalType());
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
@@ -62,6 +54,17 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<DateIntervalWithType> valueChangeHandler) {
         return addHandler( valueChangeHandler, ValueChangeEvent.getType() );
+    }
+
+    @UiHandler("btnGroup")
+    void onChangeRangeType(ValueChangeEvent<En_DateIntervalType> event) {
+        changeRangePicker(event.getValue());
+        ValueChangeEvent.fire(this, this.getValue());
+    }
+
+    @UiHandler("range")
+    void onChangeRange(ValueChangeEvent<DateInterval> event) {
+        ValueChangeEvent.fire(this, this.getValue());
     }
 
     public void setFormatValue(String value) { range.setFormatValue(value); }
@@ -78,6 +81,12 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
         root.ensureDebugId(debugId);
     }
 
+    private void changeRangePicker(En_DateIntervalType type) {
+        boolean isRangeAllowAndMandatory = type != null && Objects.equals(type, En_DateIntervalType.FIXED);
+        range.setVisible(isRangeAllowAndMandatory);
+        range.setMandatory(isRangeAllowAndMandatory);
+    }
+
     @UiField
     ToggleBtnGroup<En_DateIntervalType> btnGroup;
 
@@ -90,6 +99,8 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
 
     @UiField
     HTMLPanel root;
+
+    En_DateIntervalType DEFAULT_TYPE = En_DateIntervalType.THIS_MONTH;
 
     interface TypedToggleRangePickerUiBinder extends UiBinder<Widget, TypedToggleRangePicker> { }
     private static TypedToggleRangePickerUiBinder ourUiBinder = GWT.create(TypedToggleRangePickerUiBinder.class);

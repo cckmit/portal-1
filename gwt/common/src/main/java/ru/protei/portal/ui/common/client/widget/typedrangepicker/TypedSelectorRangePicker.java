@@ -50,7 +50,7 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
     public void setValue(DateIntervalWithType value, boolean fireEvents) {
         rangeType.setValue(value == null ? null : value.getIntervalType());
         range.setValue(value == null ? null : value.getInterval());
-        setRangePicker(value == null ? null : value.getIntervalType());
+        changeRangePicker(value == null ? null : value.getIntervalType());
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
@@ -63,9 +63,9 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
 
     @UiHandler("rangeType")
     void onChangeRangeType(ValueChangeEvent<En_DateIntervalType> event) {
-        setRangePicker(event.getValue());
+        changeRangePicker(event.getValue());
         ValueChangeEvent.fire(this, this.getValue());
-   }
+    }
 
     @UiHandler("range")
     void onChangeRange(ValueChangeEvent<DateInterval> event) {
@@ -80,7 +80,7 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
         root.ensureDebugId(debugId);
     }
 
-    private void setRangePicker(En_DateIntervalType type) {
+    private void changeRangePicker(En_DateIntervalType type) {
         boolean isRangeAllowAndMandatory = type != null && Objects.equals(type, En_DateIntervalType.FIXED);
         range.setVisible(isRangeAllowAndMandatory);
         range.setMandatory(isRangeAllowAndMandatory);
