@@ -25,5 +25,6 @@
   <include file="2020-06-18-contract-specification.xml" relativeToChangelogFile="true"/>
   <include file="2020-06-23-add-department_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-06-25-modify-history-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-07-02-add-contractor-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

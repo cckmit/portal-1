@@ -96,8 +96,6 @@ public class ContragentCreateView extends Composite implements AbstractContragen
     @UiField
     HTMLPanel root;
 
-    AbstractContragentCreateActivity activity;
-
     private static ContragentSearchViewUiBinder ourUiBinder = GWT.create(ContragentSearchViewUiBinder.class);
     interface ContragentSearchViewUiBinder extends UiBinder<HTMLPanel, ContragentCreateView> {}
 }

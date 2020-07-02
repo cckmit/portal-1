@@ -597,6 +597,11 @@ public class MainConfiguration {
         return new ContractSpecificationDAO_Impl();
     }
 
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return new ContractorDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
