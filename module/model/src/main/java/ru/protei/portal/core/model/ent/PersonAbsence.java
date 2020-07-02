@@ -29,7 +29,7 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     @JdbcColumn(name = "person_id")
     private Long personId;
 
-    @JdbcJoinedObject(localColumn="person_id", remoteColumn = "id")
+    @JdbcJoinedObject(localColumn="person_id", remoteColumn = "id", sqlTableAlias = "pa")
     private Person person;
 
     @JdbcColumn(name = "reason_id")

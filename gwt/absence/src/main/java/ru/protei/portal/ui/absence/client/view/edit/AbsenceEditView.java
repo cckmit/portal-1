@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditActivity;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
-import ru.protei.portal.ui.absence.client.widget.selector.AbsenceReasonButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -82,10 +82,10 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     }
 
     private void ensureDebugIds() {
-        absenceEmployeeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.Absence.LABEL.EMPLOYEE);
-        absenceDateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.Absence.LABEL.DATE_RANGE);
-        absenceReasonLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.Absence.LABEL.REASON);
-        absenceCommentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.Absence.LABEL.COMMENT);
+        absenceEmployeeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.EMPLOYEE_SELECTOR_LABEL);
+        absenceDateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.DATE_RANGE_LABEL);
+        absenceReasonLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.REASON_SELECTOR_LABEL);
+        absenceCommentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.COMMENT_LABEL);
     }
 
     @UiField

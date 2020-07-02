@@ -2640,7 +2640,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceRemoveConfirmMessage();
 
-    String absenceRemoveSuccessful();
+    String absenceRemovedSuccessfully();
 
     String absenceReasonLeave();
 
@@ -2652,9 +2652,20 @@ public interface Lang extends Messages, ContactItemLang {
 
     String profileInterestedEmployees();
 
-    String absenceCompleteSuccessful();
+    String absenceCompletedSuccessfully();
 
     String absenceComplete();
 
     String employeeShowAbsent();
+
+    String absenceReports();
+
+    String absenceReportEmployees();
+
+    String absenceReportReasons();
+
+    String absenceReportDateRange();
+
+    String absenceStartDateRange();
+
 }

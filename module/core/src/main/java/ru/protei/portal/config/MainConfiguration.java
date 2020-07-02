@@ -31,6 +31,8 @@ import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
@@ -870,6 +872,11 @@ public class MainConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportAbsence getReportAbsence() {
+        return new ReportAbsenceImpl();
     }
 
     @Bean

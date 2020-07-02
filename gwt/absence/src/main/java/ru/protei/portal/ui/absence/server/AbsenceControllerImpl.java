@@ -16,8 +16,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
-import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
  * Реализация сервиса по работе с отсутствиями

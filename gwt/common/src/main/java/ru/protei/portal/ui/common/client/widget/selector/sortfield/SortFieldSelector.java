@@ -94,6 +94,11 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.ip_address );
                 addOption( En_SortField.check_date);
                 break;
+            case ABSENCE:
+                addOption(En_SortField.absence_person);
+                addOption(En_SortField.absence_date);
+                addOption(En_SortField.absence_reason);
+                break;
         }
     }
 

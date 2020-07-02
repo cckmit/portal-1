@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
@@ -17,7 +18,13 @@ import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.report.absence.ReportAbsence;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,6 +32,7 @@ import java.util.stream.Stream;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 public class AbsenceServiceImpl implements AbsenceService {
 
@@ -36,6 +44,12 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Autowired
     PersonNotifierDAO personNotifierDAO;
+
+    @Autowired
+    ReportAbsence reportAbsence;
+
+    @Autowired
+    HttpServletResponse response;
 
     @Override
     public Result<List<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query) {

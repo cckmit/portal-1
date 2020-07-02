@@ -18,9 +18,11 @@ import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilte
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 
 public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivity, AbstractEmployeeFilterActivity, Activity {
+
     @PostConstruct
     public void onInit() {
         filterView.setActivity(this);
+        filterView.resetFilter();
         query = makeQuery();
         currentViewType = ViewType.valueOf(localStorageService.getOrDefault(EMPLOYEE_CURRENT_VIEW_TYPE, ViewType.LIST.toString()));
     }

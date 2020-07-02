@@ -128,8 +128,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             Set<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toSet());
             List<WorkerEntryShortView> workerEntries = changeCompanyNameIfHidden(workerEntryShortViewDAO.listByPersonIds(employeeIds));
 
-            AbsenceQuery absenceQuery = new AbsenceQuery(employeeIds, new Date(), new Date(),
-                    Arrays.asList(En_AbsenceReason.values()).stream().filter(En_AbsenceReason::isActual).collect(Collectors.toSet()));
+            AbsenceQuery absenceQuery = new AbsenceQuery(new Date(), new Date(), employeeIds,
+                    Arrays.asList(En_AbsenceReason.values()).stream().filter(En_AbsenceReason::isActual).map(En_AbsenceReason::getId).collect(Collectors.toSet()));
             List<PersonAbsence> personAbsences = personAbsenceDAO.listByQuery(absenceQuery);
 
             results.forEach(employee -> {

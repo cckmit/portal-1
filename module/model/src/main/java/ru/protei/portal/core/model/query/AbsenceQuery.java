@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.query;
 
 
-import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
@@ -10,10 +9,10 @@ import java.util.Set;
 
 public class AbsenceQuery extends BaseQuery {
 
-    private Set<Long> employeeIds;
     private Date fromTime;
     private Date tillTime;
-    private Set<En_AbsenceReason> reasons;
+    private Set<Long> employeeIds;
+    private Set<Integer> reasonIds;
 
     public AbsenceQuery() {
         super (null, En_SortField.from_time, En_SortDir.ASC);
@@ -24,20 +23,20 @@ public class AbsenceQuery extends BaseQuery {
         this.employeeIds = employeeIds;
     }
 
-    public AbsenceQuery(Set<Long> employeeIds, Date fromTime, Date tillTime, Set<En_AbsenceReason> reasons) {
+    public AbsenceQuery(Date fromTime, Date tillTime, Set<Long> employeeIds, Set<Integer> reasonIds) {
         super (null, En_SortField.from_time, En_SortDir.ASC);
-        this.employeeIds = employeeIds;
         this.fromTime = fromTime;
         this.tillTime = tillTime;
-        this.reasons = reasons;
-    }
-
-    public Set<Long> getEmployeeIds() {
-        return employeeIds;
-    }
-
-    public void setEmployeeIds(Set<Long> employeeIds) {
         this.employeeIds = employeeIds;
+        this.reasonIds = reasonIds;
+    }
+
+    public AbsenceQuery(Date fromTime, Date tillTime, Set<Long> employeeIds, Set<Integer> reasonIds, En_SortField sortField, En_SortDir sortDir) {
+        super (null, sortField, sortDir);
+        this.fromTime = fromTime;
+        this.tillTime = tillTime;
+        this.employeeIds = employeeIds;
+        this.reasonIds = reasonIds;
     }
 
     public Date getFromTime() {
@@ -56,12 +55,20 @@ public class AbsenceQuery extends BaseQuery {
         this.tillTime = tillTime;
     }
 
-    public Set<En_AbsenceReason> getReasons() {
-        return reasons;
+    public Set<Long> getEmployeeIds() {
+        return employeeIds;
     }
 
-    public void setReasons(Set<En_AbsenceReason> reasons) {
-        this.reasons = reasons;
+    public void setEmployeeIds(Set<Long> employeeIds) {
+        this.employeeIds = employeeIds;
+    }
+
+    public Set<Integer> getReasonIds() {
+        return reasonIds;
+    }
+
+    public void setReasonIds(Set<Integer> reasonIds) {
+        this.reasonIds = reasonIds;
     }
 
     @Override
@@ -70,7 +77,7 @@ public class AbsenceQuery extends BaseQuery {
                 "employeeIds=" + employeeIds +
                 ", fromTime=" + fromTime +
                 ", tillTime=" + tillTime +
-                ", reasons=" + reasons +
+                ", reasons=" + reasonIds +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

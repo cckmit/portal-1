@@ -48,7 +48,7 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
     public void onCompleteAbsence(PersonAbsence value) {
         absenceController.completeAbsence(value.getId(), new FluentCallback<Boolean>()
                 .withSuccess(result -> {
-                    fireEvent(new NotifyEvents.Show(lang.absenceCompleteSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.absenceCompletedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Show());
                 }));
     }
@@ -78,7 +78,7 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
     private Runnable removeAction(PersonAbsence value) {
         return () -> absenceController.removeAbsence(value.getId(), new FluentCallback<Boolean>()
                 .withSuccess(result -> {
-                    fireEvent(new NotifyEvents.Show(lang.absenceRemoveSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.absenceRemovedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Show());
                 }));
     }

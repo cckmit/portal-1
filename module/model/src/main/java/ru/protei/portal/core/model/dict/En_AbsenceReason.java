@@ -4,17 +4,17 @@ import ru.protei.winter.core.utils.enums.HasId;
 
 public enum En_AbsenceReason implements HasId {
     PERSONAL_AFFAIR(1, true),
-    BUSINESS_TRIP(2, true),
-    LOCAL_BUSINESS_TRIP(3, true),
-    STUDY(4, true),
+    GUEST_PASS(2, false),
+    BUSINESS_TRIP(3, true),
+    LOCAL_BUSINESS_TRIP(4, true),
     DISEASE(5, true),
     SICK_LEAVE(6, true),
-    GUEST_PASS(7, false),
-    NIGHT_WORK(8, true),
-    LEAVE_WITHOUT_PAY(9, true),
-    DUTY(10, true),
-    REMOTE_WORK(11, false),
-    LEAVE(12, true);
+    NIGHT_WORK(7, true),
+    DUTY(8, true),
+    STUDY(9, true),
+    REMOTE_WORK(10, false),
+    LEAVE(11, true),
+    LEAVE_WITHOUT_PAY(12, true);
 
     private final int id;
     private final boolean actual;

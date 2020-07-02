@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.report.ReportWriter;
@@ -16,10 +15,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 

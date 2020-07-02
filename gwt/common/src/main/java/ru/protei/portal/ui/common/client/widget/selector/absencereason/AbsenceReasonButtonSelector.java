@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.client.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.absencereason;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;

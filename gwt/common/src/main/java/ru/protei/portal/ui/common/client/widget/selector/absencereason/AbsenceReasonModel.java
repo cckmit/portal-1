@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.client.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.absencereason;
 
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;

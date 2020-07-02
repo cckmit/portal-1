@@ -93,6 +93,7 @@ public class DebugIds {
         String RESERVED_IP = "sidebar-menu-reserved-ip";
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";
         String ICON_SUFFIX = "-icon";
+        String ABSENCE_REPORTS = "sidebar-menu-absence-reports";
     }
 
     public interface SELECTOR {
@@ -823,12 +824,30 @@ public class DebugIds {
         String CANCEL_BUTTON = "reservedip-cancel-button";
     }
 
-    public interface Absence {
-        interface LABEL {
-            String EMPLOYEE = "absence-employee-label";
-            String DATE_RANGE = "absence-date-range-label";
-            String REASON = "absence-reason-label";
-            String COMMENT = "absence-comment-label";
-        }
+    public interface ABSENCE {
+        String EMPLOYEE_SELECTOR_LABEL = "absence-employee-selector-label";
+        String DATE_RANGE_LABEL = "absence-date-range-label";
+        String REASON_SELECTOR_LABEL = "absence-reason-selector-label";
+        String COMMENT_LABEL = "absence-comment-label";
     }
+
+    public interface ABSENCE_REPORT {
+        String DATE_RANGE_INPUT = "absence-report-date-range-input";
+        String DATE_RANGE_BUTTON = "absence-report-date-range-button";
+        String DATE_RANGE_LABEL = "absence-report-date-range-label";
+        String EMPLOYEE_SELECTOR_ADD_BUTTON = "absence-report-employee-selector-add-button";
+        String EMPLOYEE_SELECTOR_CLEAR_BUTTON = "absence-report-employee-selector-clear-button";
+        String EMPLOYEE_SELECTOR_ITEM_CONTAINER = "absence-report-employee-selector-item-container";
+        String EMPLOYEE_SELECTOR_LABEL = "absence-report-employee-selector-label";
+        String REASON_SELECTOR_ADD_BUTTON = "absence-report-reason-selector-add-button";
+        String REASON_SELECTOR_CLEAR_BUTTON = "absence-report-reason-selector-clear-button";
+        String REASON_SELECTOR_ITEM_CONTAINER = "absence-report-reason-selector-item-container";
+        String REASON_SELECTOR_LABEL = "absence-report-reason-selector-label";
+        String SORT_FIELD_LABEL = "absence-report-sort-field-selector-label";
+        String SORT_FIELD_SELECTOR = "absence-report-sort-field-selector";
+        String SORT_DIR_BUTTON = "absence-report-sort-dir-button";
+        String REPORT_BUTTON = "absence-report-report-button";
+        String RESET_BUTTON = "absence-report-reset-button";
+    }
+
 }

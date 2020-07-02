@@ -8,11 +8,8 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import static ru.protei.winter.jdbc.JdbcHelper.makeSqlStringCollection;
 
 /**
  * Created by michael on 05.07.16.
@@ -41,7 +38,7 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                 return;
             }
 
-            if (query.getEmployeeIds() != null) {
+            if (CollectionUtils.isNotEmpty(query.getEmployeeIds())) {
                 condition.append(" and person_absence.person_id in " + HelperFunc.makeInArg(query.getEmployeeIds(), false));
             }
 
@@ -57,8 +54,8 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                 args.add(query.getTillTime());
             }
 
-            if (CollectionUtils.isNotEmpty(query.getReasons())) {
-                condition.append(" and person_absence.reason_id in " + HelperFunc.makeInArg(query.getReasons(), reason -> String.valueOf(reason.getId())));
+            if (CollectionUtils.isNotEmpty(query.getReasonIds())) {
+                condition.append(" and person_absence.reason_id in " + HelperFunc.makeInArg(query.getReasonIds(), false));
             }
         });
     }

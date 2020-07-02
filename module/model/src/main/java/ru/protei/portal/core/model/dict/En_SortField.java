@@ -143,7 +143,22 @@ public enum En_SortField {
     /**
      * from time absence
      */
-    from_time("from_time");
+    from_time("from_time"),
+
+    /**
+     * absence date
+     */
+    absence_date("from_time"),
+
+    /**
+     * absence person
+     */
+    absence_person("pa.displayname"),
+
+    /**
+     * absence reason
+     */
+    absence_reason("reason_id");
 
     private String fieldName;
     private String bundleKey;
