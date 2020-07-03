@@ -10,17 +10,23 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.contract.client.widget.contraget.create.AbstractContragentCreateView;
 import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchActivity;
 import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchView;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-public class ContragentWidget extends Composite implements HasValue<String> {
+abstract public class ContragentWidget extends Composite implements HasValue<Contractor>, Activity {
 
     @Inject
     public void onInit() {
@@ -46,8 +52,27 @@ public class ContragentWidget extends Composite implements HasValue<String> {
         dialogDetailsCreateView.setActivity(new AbstractDialogDetailsActivity(){
             @Override
             public void onSaveClicked() {
-                name.setValue(createView.contragentName().getValue());
-                dialogDetailsCreateView.hidePopup();
+                if (!createView.isValid()) {
+                    fireEvent(new NotifyEvents.Show(lang.contractContragentValidationError(), NotifyEvents.NotifyType.ERROR));
+                    return;
+                }
+
+                ContractorAPI contractorAPI = new ContractorAPI();
+                contractorAPI.setInn(createView.contragentINN().getValue());
+                contractorAPI.setKpp(createView.contragentKPP().getValue());
+                contractorAPI.setName(createView.contragentName().getValue());
+                contractorAPI.setFullname(createView.contragentFullname().getValue());
+                contractorAPI.setCountry(createView.contragentCountry().getValue());
+                contractorAPI.setResident(createView.contragentResident().getValue());
+
+                controller.createContractor(contractorAPI, new FluentCallback<Contractor>()
+                        .withError(t -> {
+                            fireEvent(new NotifyEvents.Show(lang.contractContragentSaveError(), NotifyEvents.NotifyType.ERROR));
+                        })
+                        .withSuccess(value -> {
+                            setValue(value);
+                            dialogDetailsCreateView.hidePopup();
+                        }));
             }
 
             @Override
@@ -77,22 +102,23 @@ public class ContragentWidget extends Composite implements HasValue<String> {
     }
 
     @Override
-    public String getValue() {
-        return name.getValue();
+    public Contractor getValue() {
+        return value;
     }
 
     @Override
-    public void setValue(String value) {
-        name.setValue(value, false);
+    public void setValue(Contractor value) {
+        setValue(value, false);
     }
 
     @Override
-    public void setValue(String value, boolean fireEvents) {
-        name.setValue(value, fireEvents);
+    public void setValue(Contractor value, boolean fireEvents) {
+        this.value = value;
+        name.setValue(value.getName(), fireEvents);
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Contractor> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
@@ -128,6 +154,11 @@ public class ContragentWidget extends Composite implements HasValue<String> {
 
     @UiField
     Lang lang;
+
+    @Inject
+    ContractControllerAsync controller;
+
+    private Contractor value;
 
     interface ContragentWidgetUiBinder extends UiBinder<HTMLPanel, ContragentWidget> {}
     private static ContragentWidgetUiBinder ourUiBinder = GWT.create( ContragentWidgetUiBinder.class );

@@ -2088,6 +2088,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractContragentResident();
 
+    String contractContragentValidationError();
+
+    String contractContragentSaveError();
+
+    String contractContragentCountryPlaceholder();
+
     String contractProject();
 
     String contractProjectNotDefined();

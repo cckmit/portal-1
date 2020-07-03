@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
@@ -88,9 +89,9 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public ContractorAPI createContractor(ContractorAPI contractor) throws RequestFailedException {
+    public Contractor createContractor(ContractorAPI contractorApi) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractor));
+        return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractorApi));
     }
 
     @Autowired

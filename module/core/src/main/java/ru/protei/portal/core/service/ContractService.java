@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -36,5 +37,5 @@ public interface ContractService {
     Result<List<ContractorAPI>> findContractors(AuthToken token, String contractorINN, String contractorKPP);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
-    Result<ContractorAPI> createContractor(AuthToken token, ContractorAPI contractor);
+    Result<Contractor> createContractor(AuthToken token, ContractorAPI contractor);
 }

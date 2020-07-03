@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
+             xmlns:country="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractorcountry"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -23,13 +24,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.contractContragentName}"/>
                     </label>
                     <validablefield:ValidableTextBox ui:field="contragentName" styleName="form-control"/>
                 </div>
-                <div class="form-group col-md-6">
+                <div class="row">
+                </div>
+                <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.contractContragentFullname}"/>
                     </label>
@@ -41,12 +44,13 @@
                     <label>
                         <ui:text from="{lang.contractContragentCountry}"/>
                     </label>
-                    <validablefield:ValidableTextBox ui:field="contragentCountry" styleName="form-control"/>
+                    <country:ContractorCountrySelector ui:field="contragentCountry"
+                                   defaultValue="{lang.contractContragentCountryPlaceholder}" validation="true"/>
                 </div>
                 <div class="form-group col-md-6">
-                    <label>
-                        <ui:text from="{lang.contractContragentResident}"/>
-                    </label>
+                    <div>
+                        <label><ui:text from="{lang.contractContragentResident}"/></label>
+                    </div>
                     <switcher:Switcher ui:field="contragentResident"/>
                 </div>
             </div>

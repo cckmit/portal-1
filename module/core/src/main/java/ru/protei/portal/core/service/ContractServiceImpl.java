@@ -169,11 +169,16 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<ContractorAPI> createContractor(AuthToken token, ContractorAPI contractor) {
-        if (contractor == null) {
+    public Result<Contractor> createContractor(AuthToken token, ContractorAPI contractorAPI) {
+        if (contractorAPI == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
         // mock service 1cAPI
+        Contractor contractor = new Contractor();
+        contractor.setName(contractorAPI.getName() + " [saved]");
+        contractor.setRefKey("1C_KEY-ref");
+
         return ok(contractor);
     }
 
