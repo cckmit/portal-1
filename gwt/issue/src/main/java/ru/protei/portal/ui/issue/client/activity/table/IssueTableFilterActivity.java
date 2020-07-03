@@ -241,10 +241,12 @@ public abstract class IssueTableFilterActivity
     }
 
     private void validateCreatedRange(boolean isValid){
+        filterView.getIssueFilterParams().setCreatedRangeValid(isValid);
         filterView.createEnabled().setEnabled(isValid);
     }
 
     private void validateModifiedRange(boolean isValid){
+        filterView.getIssueFilterParams().setModifiedRangeValid(isValid);
         filterView.createEnabled().setEnabled(isValid);
     }
 

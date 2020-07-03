@@ -52,11 +52,12 @@ public class ReportCaseResolutionTime {
     public void run() {
         log.info( "run(): Start report. caseQuery: {}", caseQuery );
         intervals = makeIntervals( caseQuery.getCreatedRange(), DAY );
+        ru.protei.portal.core.model.struct.Interval createInterval = DateRangeUtils.makeInterval(caseQuery.getCreatedRange());
 
         long startQuery = System.currentTimeMillis();
         List<CaseResolutionTimeReportDto> comments = caseCommentDAO.reportCaseResolutionTime(
-                caseQuery.getCreatedRange().getFrom(),
-                caseQuery.getCreatedRange().getTo(),
+                (createInterval == null ? null : createInterval.from),
+                (createInterval == null ? null : createInterval.to),
                 caseQuery.getStateIds(),
                 caseQuery.getCompanyIds(),
                 caseQuery.getProductIds(),

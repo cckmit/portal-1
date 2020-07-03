@@ -23,7 +23,9 @@ import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
@@ -188,13 +190,17 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private boolean validateDateRange(CaseQuery query) {
-        return query.getCreatedRange() == null
-               || query.getCreatedRange().getIntervalType() == null
-               || (query.getCreatedRange().getIntervalType().equals(En_DateIntervalType.FIXED)
-                   && (query.getCreatedRange().getFrom() == null
-                       || query.getCreatedRange().getTo() == null
-                       || query.getCreatedRange().getFrom().after(query.getCreatedRange().getTo()))
-                  );
+        if (query.getCreatedRange() == null
+            || query.getCreatedRange().getIntervalType() == null
+            || !Objects.equals(query.getCreatedRange().getIntervalType(), En_DateIntervalType.FIXED)
+        ) {
+            return true;
+        }
+
+        Date from = query.getCreatedRange().getFrom();
+        Date to = query.getCreatedRange().getTo();
+        return from.after(to);
+
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.struct;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 

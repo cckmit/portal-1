@@ -76,6 +76,8 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
 
     public void setRangeMandatory(boolean value) { range.setMandatory(value); }
 
+    public void setRangeValid(boolean isValid) { range.markInputValid(isValid); }
+
     public void setEnsureDebugId(String debugId) {
         root.ensureDebugId(debugId);
     }

@@ -119,6 +119,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public void setCreatedRangeValid(boolean isValid) { dateCreatedRange.setRangeValid(isValid); }
+
+    @Override
+    public void setModifiedRangeValid(boolean isValid) { dateModifiedRange.setRangeValid(isValid); }
+
+    @Override
     public HasValue<En_SortField> sortField() {
         return sortField;
     }
@@ -412,13 +418,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    @UiHandler("dateCreatedRange")
-    public void onDateCreatedRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
-        onFilterChanged();
-    }
-
-    @UiHandler("dateModifiedRange")
-    public void onDateModifiedRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
+    @UiHandler({"dateCreatedRange", "dateModifiedRange"})
+    public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
         onFilterChanged();
     }
 
@@ -582,7 +583,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     public boolean isDateRangeValid(DateIntervalWithType dateRange) {
         if (dateRange == null || dateRange.getIntervalType() == null) {
-            return false;
+            return true;
         }
 
         return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED) || dateRange.getInterval().isValid();
