@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
 
 import java.time.LocalDate;
@@ -56,7 +57,7 @@ public class DateRangeUtils {
         return interval;
     }
 
-    public static  Interval makeThisYear() {
+    public static Interval makeThisYear() {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
         interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -64,11 +65,30 @@ public class DateRangeUtils {
         return interval;
     }
 
-    public static  Interval makeLastYear() {
+    public static Interval makeLastYear() {
         Interval interval = new Interval();
         LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfYear()-1);
         interval.to = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
         interval.from = Date.from(local.minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
+    }
+
+    public static Interval makeInterval(DateRange dateRange ) {
+        if ( dateRange == null )
+            return null;
+
+        switch (dateRange.getIntervalType()) {
+            case FIXED      : return new Interval(dateRange.getFrom(), dateRange.getTo());
+            case TODAY      : return makeToday();
+            case YESTERDAY  : return makeYesterday();
+            case THIS_WEEK  : return makeThisWeek();
+            case LAST_WEEK  : return makeLastWeek();
+            case THIS_MONTH : return makeThisMonth();
+            case LAST_MONTH : return makeLastMonth();
+            case THIS_YEAR  : return makeThisYear();
+            case LAST_YEAR  : return makeLastYear();
+        }
+
+        return null;
     }
 }

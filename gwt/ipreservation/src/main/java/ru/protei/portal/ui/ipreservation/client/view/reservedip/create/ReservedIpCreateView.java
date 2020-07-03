@@ -30,10 +30,7 @@ import ru.protei.portal.ui.ipreservation.client.view.widget.mode.En_ReservedMode
 import ru.protei.portal.ui.ipreservation.client.view.widget.mode.ReservedModeBtnGroup;
 import ru.protei.portal.ui.ipreservation.client.view.widget.selector.SubnetMultiSelector;
 
-import java.util.Arrays;
 import java.util.Set;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Вид редактирования зарезервированного IP

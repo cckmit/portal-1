@@ -572,6 +572,23 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 search.getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
 
+    public boolean isCreatedRangeValid() {
+        return isDateRangeValid(dateCreatedRange.getValue());
+    }
+
+    public boolean isModifiedRangeValid() {
+        return isDateRangeValid(dateModifiedRange.getValue());
+    }
+
+    public boolean isDateRangeValid(DateIntervalWithType dateRange) {
+        if (dateRange == null || dateRange.getIntervalType() == null) {
+            return false;
+        }
+
+        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED) || dateRange.getInterval().isValid();
+    }
+
+
     private Set<PersonShortView> applyPersons(SelectorsParams filter, List<Long> personIds) {
         return emptyIfNull(filter.getPersonShortViews()).stream()
                 .filter(personShortView ->

@@ -43,12 +43,16 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
 
     @Override
     public void setValue(DateIntervalWithType value, boolean fireEvents) {
-        btnGroup.setValue(value == null ? DEFAULT_TYPE : value.getIntervalType());
+        btnGroup.setValue(value == null ? defaultType : value.getIntervalType());
         range.setValue(value == null ? null : value.getInterval());
         changeRangePicker(value == null ? null : value.getIntervalType());
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
+    }
+
+    public void setDefaultType (En_DateIntervalType defaultType) {
+        this.defaultType = defaultType;
     }
 
     @Override
@@ -100,7 +104,7 @@ public class TypedToggleRangePicker extends Composite implements HasValue<DateIn
     @UiField
     HTMLPanel root;
 
-    En_DateIntervalType DEFAULT_TYPE = En_DateIntervalType.THIS_MONTH;
+    En_DateIntervalType defaultType = En_DateIntervalType.MONTH;
 
     interface TypedToggleRangePickerUiBinder extends UiBinder<Widget, TypedToggleRangePicker> { }
     private static TypedToggleRangePickerUiBinder ourUiBinder = GWT.create(TypedToggleRangePickerUiBinder.class);

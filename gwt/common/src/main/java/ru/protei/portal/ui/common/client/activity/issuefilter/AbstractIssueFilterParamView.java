@@ -97,6 +97,10 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     boolean isSearchFieldCorrect();
 
+    boolean isCreatedRangeValid();
+
+    boolean isModifiedRangeValid();
+
     void watchForScrollOf(Widget widget);
 
     void stopWatchForScrollOf(Widget widget);

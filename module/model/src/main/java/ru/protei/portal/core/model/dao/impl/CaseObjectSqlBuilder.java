@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
@@ -17,7 +16,7 @@ import java.util.List;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.DateRangeUtils.*;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
 public class CaseObjectSqlBuilder {
@@ -150,7 +149,7 @@ public class CaseObjectSqlBuilder {
                 }
             }
 
-            Interval created = createInterval(query.getCreatedRange());
+            Interval created = makeInterval(query.getCreatedRange());
 
             if ( created != null ) {
                 if (created.from != null) {
@@ -163,7 +162,7 @@ public class CaseObjectSqlBuilder {
                 }
             }
 
-            Interval modified = createInterval(query.getModifiedRange());
+            Interval modified = makeInterval(query.getModifiedRange());
 
             if ( modified != null ) {
                 if (modified.from != null) {
@@ -314,25 +313,5 @@ public class CaseObjectSqlBuilder {
                 args.add(query.getPlanId());
             }
         });
-    }
-
-
-    private Interval createInterval( DateRange dateRange ) {
-        if ( dateRange == null )
-            return null;
-
-        switch (dateRange.getIntervalType()) {
-            case FIXED      : return new Interval(dateRange.getFrom(), dateRange.getTo());
-            case TODAY      : return makeToday();
-            case YESTERDAY  : return makeYesterday();
-            case THIS_WEEK  : return makeThisWeek();
-            case LAST_WEEK  : return makeLastWeek();
-            case THIS_MONTH : return makeThisMonth();
-            case LAST_MONTH : return makeLastMonth();
-            case THIS_YEAR  : return makeThisYear();
-            case LAST_YEAR  : return makeLastYear();
-        }
-
-        return null;
     }
 }
