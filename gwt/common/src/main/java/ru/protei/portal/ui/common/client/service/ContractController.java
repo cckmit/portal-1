@@ -22,7 +22,7 @@ public interface ContractController extends RemoteService {
 
     List<String> getContractorCountryList() throws RequestFailedException;
 
-    List<ContractorAPI> findContractors(String contractorINN, String contractorKPP) throws RequestFailedException;
+    List<Contractor> findContractors(String contractorINN, String contractorKPP) throws RequestFailedException;
 
     Contractor createContractor(ContractorAPI contractorApi) throws RequestFailedException;
 }

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.selector.contractorcountry;
+package ru.protei.portal.ui.common.client.widget.selector.contractor.country;
 
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;

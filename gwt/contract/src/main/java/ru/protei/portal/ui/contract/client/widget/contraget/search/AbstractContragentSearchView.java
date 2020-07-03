@@ -2,19 +2,21 @@ package ru.protei.portal.ui.contract.client.widget.contraget.search;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
-public interface AbstractContragentSearchView extends IsWidget {
+import java.util.List;
+
+public interface AbstractContragentSearchView extends IsWidget, HasValidable {
     void setActivity(AbstractContragentSearchActivity activity);
 
     HasValue<String> contragentINN();
 
     HasValue<String> contragentKPP();
 
-    HasValue<String> contragentName();
+    HasValue<Contractor> contractor();
 
-    void setSearchSuccessResult(String name);
-
-    void setSearchFaultResult();
+    void setSearchResult(List<Contractor> result);
 
     void reset();
 }

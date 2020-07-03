@@ -24,6 +24,9 @@ import ru.protei.portal.ui.contract.client.widget.contraget.create.AbstractContr
 import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchActivity;
 import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchView;
 
+import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 abstract public class ContragentWidget extends Composite implements HasValue<Contractor>, Activity {
@@ -37,7 +40,11 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
         dialogDetailsSearchView.setActivity(new AbstractDialogDetailsActivity(){
             @Override
             public void onSaveClicked() {
-                name.setValue(searchView.contragentName().getValue());
+                if (searchView.contractor().getValue() == null) {
+                    fireEvent(new NotifyEvents.Show(lang.contractContragentFindNotChosenError(), NotifyEvents.NotifyType.INFO));
+                    return;
+                }
+                setValue(searchView.contractor().getValue());
                 dialogDetailsSearchView.hidePopup();
             }
             @Override
@@ -48,6 +55,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
         dialogDetailsSearchView.getBodyContainer().add(searchView.asWidget());
         dialogDetailsSearchView.removeButtonVisibility().setVisible(false);
         dialogDetailsSearchView.setHeader(lang.searchContragentTitle());
+        dialogDetailsSearchView.setSaveButtonName(lang.buttonApply());
 
         dialogDetailsCreateView.setActivity(new AbstractDialogDetailsActivity(){
             @Override
@@ -88,8 +96,21 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
         searchView.setActivity(new AbstractContragentSearchActivity() {
             @Override
             public void onSearchClicked() {
-//                searchView.setSearchSuccessResult("ПАО Никита крут");
-                searchView.setSearchFaultResult();
+                if (!searchView.isValid()) {
+                    fireEvent(new NotifyEvents.Show(lang.contractContragentValidationError(), NotifyEvents.NotifyType.ERROR));
+                    return;
+                }
+                controller.findContractors(searchView.contragentINN().getValue(), searchView.contragentKPP().getValue(), new FluentCallback<List<Contractor>>()
+                        .withError(t -> {
+                            fireEvent(new NotifyEvents.Show(lang.contractContragentFindError(), NotifyEvents.NotifyType.ERROR));
+                        })
+                        .withSuccess(value -> {
+                            if (isEmpty(value)) {
+                                fireEvent(new NotifyEvents.Show(lang.contractContragentNoFound(), NotifyEvents.NotifyType.INFO));
+                                return;
+                            }
+                            searchView.setSearchResult(value);
+                        }));
             }
 
             @Override

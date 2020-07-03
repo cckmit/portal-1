@@ -2070,8 +2070,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectContractContragent();
 
-    String notFoundContragentName();
-
     String searchContragentTitle();
 
     String createContragentTitle();
@@ -2091,6 +2089,14 @@ public interface Lang extends Messages, ContactItemLang {
     String contractContragentValidationError();
 
     String contractContragentSaveError();
+
+    String contractContragentFindError();
+
+    String contractContragentNoFound();
+
+    String contractContragentFindNotChosenError();
+
+    String contractContragentSelectorPlaceholder();
 
     String contractContragentCountryPlaceholder();
 

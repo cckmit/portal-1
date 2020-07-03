@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
-             xmlns:country="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractorcountry"
+             xmlns:country="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.country"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -45,7 +45,7 @@
                         <ui:text from="{lang.contractContragentCountry}"/>
                     </label>
                     <country:ContractorCountrySelector ui:field="contragentCountry"
-                                   defaultValue="{lang.contractContragentCountryPlaceholder}" validation="true"/>
+                                    defaultValue="{lang.contractContragentCountryPlaceholder}" validation="true"/>
                 </div>
                 <div class="form-group col-md-6">
                     <div>
@@ -54,9 +54,6 @@
                     <switcher:Switcher ui:field="contragentResident"/>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <small class="dn-msg"><span ui:field="error" class="text-danger hide"/></small>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

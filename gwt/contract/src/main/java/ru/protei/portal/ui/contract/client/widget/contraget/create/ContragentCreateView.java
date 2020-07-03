@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.contract.client.widget.contraget.create;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -11,19 +10,21 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.ContractorUtils;
-import ru.protei.portal.ui.common.client.widget.selector.contractorcountry.ContractorCountrySelector;
+import ru.protei.portal.ui.common.client.widget.selector.contractor.country.ContractorCountrySelector;
 import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
+
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContragentCreateView extends Composite implements AbstractContragentCreateView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        contragentINN.setRegexp("^(\\d{10}|\\d{12})$");
-        contragentKPP.setRegexp("^\\d{9}$");
-        contragentName.setRegexp("^.{1,100}$");
-        contragentFullname.setRegexp("^.{1,250}$");
+        contragentINN.setRegexp(CONTRACTOR_INN);
+        contragentKPP.setRegexp(CONTRACTOR_KPP);
+        contragentName.setRegexp(CONTRACTOR_NAME);
+        contragentFullname.setRegexp(CONTRACTOR_FULLNAME);
     }
 
     @Override
@@ -64,18 +65,6 @@ public class ContragentCreateView extends Composite implements AbstractContragen
         contragentFullname.setValue(null);
         contragentCountry.setValue(null);
         contragentResident.setValue(false);
-    }
-
-    @Override
-    public void setError(String value) {
-        if (value != null) {
-            error.removeClassName("hide");
-            error.setInnerText(value);
-            return;
-        }
-
-        error.addClassName("hide");
-        error.setInnerText(null);
     }
 
     @Override
@@ -124,9 +113,6 @@ public class ContragentCreateView extends Composite implements AbstractContragen
 
     @UiField
     Switcher contragentResident;
-
-    @UiField
-    SpanElement error;
 
     @UiField
     HTMLPanel root;

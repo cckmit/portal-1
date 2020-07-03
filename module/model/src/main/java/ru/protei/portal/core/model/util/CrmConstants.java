@@ -70,6 +70,10 @@ public class CrmConstants {
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
         String CONTRACT_SPECIFICATION_CLAUSE = "^\\d+(.\\d+)*$";
+        String CONTRACTOR_INN = "^(\\d{10}|\\d{12})$";
+        String CONTRACTOR_KPP = "^\\d{9}$";
+        String CONTRACTOR_NAME = "^.{1,100}$";
+        String CONTRACTOR_FULLNAME = "^.{1,250}$";
     }
 
     public interface Time {

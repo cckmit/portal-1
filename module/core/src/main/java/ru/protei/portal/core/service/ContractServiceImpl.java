@@ -139,30 +139,22 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<ContractorAPI>> findContractors(AuthToken token, String contractorINN, String contractorKPP) {
+    public Result<List<Contractor>> findContractors(AuthToken token, String contractorINN, String contractorKPP) {
         if (contractorINN == null || contractorKPP == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         // mock service 1cAPI
-        if ("123".equals(contractorINN) && "456".equals(contractorKPP)) {
-            ContractorAPI contractorAPI1 = new ContractorAPI();
-            contractorAPI1.setName("contractorAPI1");
-            contractorAPI1.setFullname("contractorAPI1 fullname");
-            contractorAPI1.setInn("123");
-            contractorAPI1.setKpp("456");
-            contractorAPI1.setCountry("RUSSIA");
-            contractorAPI1.setResident(true);
+        if ("2311113226".equals(contractorINN) && "111222333".equals(contractorKPP)) {
+            Contractor contractor1 = new Contractor();
+            contractor1.setName("contractor1");
+            contractor1.setRefKey("1C_KEY-ref-1");
 
-            ContractorAPI contractorAPI2 = new ContractorAPI();
-            contractorAPI2.setName("contractorAPI2");
-            contractorAPI2.setFullname("contractorAPI2 fullname");
-            contractorAPI2.setInn("123");
-            contractorAPI2.setKpp("456");
-            contractorAPI2.setCountry("USA");
-            contractorAPI2.setResident(false);
+            Contractor contractor2 = new Contractor();
+            contractor2.setName("contractor2");
+            contractor2.setRefKey("1C_KEY-ref-2");
 
-            return ok(Arrays.asList(contractorAPI1, contractorAPI2));
+            return ok(Arrays.asList(contractor1, contractor2));
         } else {
             return ok(new ArrayList<>());
         }

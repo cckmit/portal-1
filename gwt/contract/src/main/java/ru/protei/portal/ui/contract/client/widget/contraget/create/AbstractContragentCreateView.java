@@ -18,6 +18,4 @@ public interface AbstractContragentCreateView extends IsWidget, HasValidable {
     HasValue<Boolean> contragentResident();
 
     void reset();
-
-    void setError(String value);
 }

@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:contractor="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.contractor"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -8,40 +9,39 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin">
         <div class="card-body">
             <div class="row">
-                <div class="form-group col-md-5">
+                <div class="form-group col-md-6">
                     <label>
                         <ui:text from="{lang.contractContragentINN}"/>
                     </label>
                     <validablefield:ValidableTextBox ui:field="contragentINN" styleName="form-control"/>
                 </div>
-                <div class="form-group col-md-5">
+                <div class="form-group col-md-6">
                     <label>
                         <ui:text from="{lang.contractContragentKPP}"/>
                     </label>
                     <validablefield:ValidableTextBox ui:field="contragentKPP" styleName="form-control"/>
                 </div>
-                <div class="form-group col-md-2">
-                    <g:Button ui:field="search" styleName="btn btn-complete" text="{lang.buttonSearch}"/>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <g:Button ui:field="search" styleName="btn btn-complete pull-right" text="{lang.buttonSearch}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.contractContragent}"/>
+                    </label>
+                    <contractor:ContractorSelector ui:field="contractor"
+                               defaultValue="{lang.contractContragentSelectorPlaceholder}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <g:Button ui:field="create" styleName="btn btn-complete pull-right" text="{lang.buttonCreate}"/>
                 </div>
             </div>
         </div>
-
-        <g:HTMLPanel styleName="row" ui:field="successContainer">
-            <div class="form-group col-md-5">
-                <label>
-                    <ui:text from="{lang.contractContragentName}"/>
-                </label>
-                <g:TextBox ui:field="contragentName" styleName="form-control"/>
-            </div>
-        </g:HTMLPanel>
-        <g:HTMLPanel styleName="row" ui:field="faultContainer">
-            <div class="form-group col-md-10">
-                <label>
-                    <ui:text from="{lang.notFoundContragentName}"/>
-                </label>
-            </div>
-            <g:Button ui:field="create" styleName="btn btn-complete" text="{lang.buttonCreate}"/>
-        </g:HTMLPanel>
 
     </g:HTMLPanel>
 </ui:UiBinder>
