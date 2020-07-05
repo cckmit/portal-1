@@ -20,5 +20,10 @@
   <include file="2020-05-28-add-common_manager_id-column-to-dev_unit-table.xml" relativeToChangelogFile="true" />
   <include file="2020-05-30-add-with_crosslink-column-to-case_link-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-06-02-add-plan-and-history-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-17-add-with_description-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-15-add-person-to-case-filter-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-18-contract-specification.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-23-add-department_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-25-modify-history-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -16,18 +16,20 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.struct.JiraExtAppData;
+import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.query.PlanQuery;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -41,8 +43,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
@@ -530,7 +531,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber) {
+    public Result<CaseInfo> getCaseInfo(AuthToken token, Long caseNumber) {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
@@ -546,8 +547,9 @@ public class CaseServiceImpl implements CaseService {
         info.setPrivateCase(caseObject.isPrivateCase());
         info.setName(caseObject.getName());
         info.setImpLevel(caseObject.getImpLevel());
-        info.setStateId(caseObject.getStateId());
         info.setInfo(caseObject.getInfo());
+        info.setStateId(caseObject.getStateId());
+        info.setState(caseStateDAO.get(caseObject.getStateId()));
 
         return ok(info);
     }
@@ -1023,6 +1025,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     JiraSLAMapEntryDAO jiraSLAMapEntryDAO;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @Autowired
     PolicyService policyService;

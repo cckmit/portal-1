@@ -14,6 +14,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewActivity;
 import ru.protei.portal.ui.contract.client.activity.preview.AbstractContractPreviewView;
+import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
+
+import java.util.List;
 
 public class ContractPreviewView extends Composite implements AbstractContractPreviewView {
 
@@ -84,7 +87,13 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
 
     @Override
     public void setDates(String value) {
-        this.dates.setInnerText(value);
+        this.dates.setInnerHTML(value);
+    }
+
+    @Override
+    public void setSpecifications(List<ContractSpecificationPreviewItem> value) {
+        this.specifications.clear();
+        value.forEach(item -> this.specifications.add(item));
     }
 
     @Override
@@ -164,6 +173,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     Anchor header;
     @UiField
     LabelElement dates;
+    @UiField
+    HTMLPanel specifications;
     @UiField
     SpanElement contractParent;
     @UiField

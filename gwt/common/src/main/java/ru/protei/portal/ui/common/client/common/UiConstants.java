@@ -1,7 +1,5 @@
 package ru.protei.portal.ui.common.client.common;
 
-import com.google.gwt.core.client.GWT;
-
 /**
  * Системные константы приложения
  */

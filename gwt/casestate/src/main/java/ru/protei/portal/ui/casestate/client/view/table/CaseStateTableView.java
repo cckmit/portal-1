@@ -24,9 +24,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.NONE;
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.ALL;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.NONE;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.SELECTED;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.ALL;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
 public class CaseStateTableView extends Composite implements AbstractCaseStateTableView {

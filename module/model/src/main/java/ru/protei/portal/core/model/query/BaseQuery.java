@@ -13,6 +13,8 @@ public class BaseQuery implements Serializable, DataQuery {
 
     public String searchString;
 
+    private String alternativeSearchString;
+
     public En_SortField sortField;
 
     public En_SortDir sortDir;
@@ -69,6 +71,14 @@ public class BaseQuery implements Serializable, DataQuery {
         this.searchString = searchString;
     }
 
+    public void setAlternativeSearchString( String searchString) {
+        this.alternativeSearchString = searchString;
+    }
+
+    public String getAlternativeSearchString() {
+        return alternativeSearchString;
+    }
+
     @Override
     public En_SortField getSortField() {
         return sortField;
@@ -93,6 +103,7 @@ public class BaseQuery implements Serializable, DataQuery {
     public String toString() {
         return "BaseQuery{" +
                 "searchString='" + searchString + '\'' +
+                ", alternativeSearchString=" + alternativeSearchString +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +
                 ", limit=" + limit +
@@ -103,4 +114,5 @@ public class BaseQuery implements Serializable, DataQuery {
     public boolean isParamsPresent() {
         return StringUtils.isNotBlank(searchString);
     }
+
 }

@@ -8,7 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
+import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.SELECTED;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 

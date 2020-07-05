@@ -256,7 +256,7 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
 
     // Condition begin
     @Override
-    public Condition condition( String arbitrarySqlCondition ) {
+    public Condition condition( CharSequence arbitrarySqlCondition ) {
         if (arbitrarySqlCondition == null) return this;
         this.where.append( arbitrarySqlCondition );
         return this;

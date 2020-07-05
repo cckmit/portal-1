@@ -345,6 +345,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return mock(PersonCaseFilterDAO.class);
+    }
+
+    @Bean
     public PlanDAO getPlanDAO() {
         return mock(PlanDAO.class);
     }
@@ -357,5 +362,10 @@ public class DaoMockTestConfiguration {
     @Bean
     public HistoryDAO getHistoryDAO() {
         return mock(HistoryDAO.class);
+    }
+
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return mock(ContractSpecificationDAO.class);
     }
 }

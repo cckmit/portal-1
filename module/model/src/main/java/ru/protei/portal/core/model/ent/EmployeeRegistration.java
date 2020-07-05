@@ -96,6 +96,15 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     private String headOfDepartmentShortName;
 
     /**
+     * Отдел
+     */
+    @JdbcColumn(name = "department_id")
+    private Long departmentId;
+
+    @JdbcJoinedColumn(localColumn = "department_id", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_name")
+    private String department;
+
+    /**
      * Комментарий
      */
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "INFO")
@@ -386,6 +395,25 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public EmployeeRegistration() {
     }
 
     @Override

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.employeeregistration.client.view.create;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -13,11 +14,14 @@ import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.employeedepartment.EmployeeDepartmentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -208,6 +212,28 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
         return company;
     }
 
+    @Override
+    public HasValue<EntityOption> department() {
+        return department;
+    }
+
+    @Override
+    public HasEnabled departmentEnabled() {
+        return department;
+    }
+
+    @Override
+    public void setDepartmentModel(SelectorModel<EntityOption> model) {
+        department.setModel(model);
+    }
+
+    @UiHandler("headOfDepartment")
+    public void onHeadOfDepartment(ValueChangeEvent<PersonShortView> event) {
+        if (activity != null) {
+            activity.onHeadOfDepartmentChanged();
+        }
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -299,6 +325,8 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector curators;
+    @UiField
+    EmployeeDepartmentButtonSelector department;
 
     private AbstractEmployeeRegistrationCreateActivity activity;
 

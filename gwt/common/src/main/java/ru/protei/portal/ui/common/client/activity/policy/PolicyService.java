@@ -4,6 +4,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -32,6 +33,13 @@ public abstract class PolicyService implements Activity {
             return false;
         }
         return profile.hasSystemScopeForPrivilege( privilege );
+    }
+
+    public boolean hasScopeForPrivilege(En_Privilege privilege, En_Scope scope) {
+        if (profile == null) {
+            return false;
+        }
+        return profile.hasScopeForPrivilege(privilege, scope);
     }
 
     public boolean hasAnyPrivilegeOf( En_Privilege... privileges ) {

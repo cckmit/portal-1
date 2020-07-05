@@ -182,6 +182,12 @@ public class DebugIds {
         }
     }
 
+    public interface PERSON_CASE_FILTER {
+        String ITEM_CONTAINER = "person-case-filter-item-container";
+        String ITEM = "person-case-filter-item";
+        String FILTER_SELECTOR = "person-case-filter-filter-selector";
+    }
+
     public interface COMPANY_CATEGORY_BUTTON {
         String DEFAULT = "company-category-button-";
         String CUSTOMER = "company-category-button-customer";
@@ -317,6 +323,7 @@ public class DebugIds {
         String REPORT_TYPE = "issue-report-type";
         String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
         String IMPORTANCE_CHECK_HISTORY ="issue-report-importance-check-history";
+        String WITH_DESCRIPTION = "issue-report-with-description";
         String CREATE_BUTTON = "issue-report-create-button";
         String CANCEL_BUTTON = "issue-report-cancel-button";
     }
@@ -344,6 +351,17 @@ public class DebugIds {
             String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
             String CREATE_DATE = "issue-preview-comment-item-create-date";
             String EDIT_TIME_ELAPSED_TYPE_POPUP = "issue-preview-comment-item-edit-time-elapsed-type-popup";
+        }
+    }
+
+    public interface CASE_HISTORY {
+        interface ITEM {
+            String CREATE_DATE = "issue-case-history-item-create-date";
+            String ADDED_VALUE = "issue-case-history-item-added-value";
+            String REMOVED_VALUE = "issue-case-history-item-removed-value";
+            String OLD_VALUE = "issue-case-history-item-old-value";
+            String NEW_VALUE = "issue-case-history-item-new-value";
+            String HISTORY_TYPE = "issue-case-history-item-history-type";
         }
     }
 
@@ -738,6 +756,7 @@ public class DebugIds {
         String MANAGER_SELECTOR = "contract-manager-selector";
         String CONTRAGENT_SELECTOR = "contract-contragent-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
+        String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
 
@@ -745,6 +764,7 @@ public class DebugIds {
             String COMMON_HEADER = "contract-common-header";
             String WORKGROUP_HEADER = "contract-workgroup-header";
             String DELIVERY_AND_PAYMENTS_PERIOD_HEADER = "contract-delivery-and-payments-period-header";
+            String SPECIFICATION_HEADER = "contract-specification-header";
             String NUMBER = "contract-number-label";
             String TYPE = "contract-type-label";
             String STATE = "contract-state-label";
@@ -769,6 +789,13 @@ public class DebugIds {
             String NOTIFY_LABEL = "contract-date-item-notify-label";
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
+        }
+
+        interface SPECIFICATION_ITEM {
+            String ITEM = "contract-specification-item";
+            String CLAUSE_INPUT = "contract-specification-item-clause-input";
+            String TEXT_INPUT = "contract-specification-item-text-input";
+            String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
     }
 

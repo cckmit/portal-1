@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
-import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public abstract class IssueReportCreateActivity implements Activity,
@@ -58,7 +57,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -96,6 +95,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         report.setScheduledType(scheduledType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+        report.setWithDescription(view.withDescription().getValue());
         report.setCaseQuery(query);
 
         if (isSaving) {
@@ -124,15 +124,21 @@ public abstract class IssueReportCreateActivity implements Activity,
         En_ReportType reportType = view.reportType().getValue();
         if (reportType == En_ReportType.PROJECT) {
             projectFilterView.resetFilter();
+            view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(projectFilterView.asWidget());
             view.scheduledTypeContainerVisibility().setVisible(false);
             view.checkImportanceHistoryContainerVisibility().setVisible(false);
+            view.withDescriptionContainerVisibility().setVisible(false);
+            view.checkImportanceHistory().setValue(false);
+            view.withDescription().setValue(false);
         } else {
             view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
             view.checkImportanceHistory().setValue(false);
+            view.withDescription().setValue(false);
             view.scheduledTypeContainerVisibility().setVisible(isScheduledTypeContainerVisible(reportType));
             view.checkImportanceHistoryContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+            view.withDescriptionContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
             issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
             applyIssueFilterVisibilityByPrivileges();
             view.getIssueFilterContainer().clear();
@@ -216,6 +222,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.reportType().setValue(En_ReportType.CASE_OBJECTS, true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.checkImportanceHistory().setValue(false);
+        view.withDescription().setValue(false);
     }
 
     private boolean isScheduledTypeContainerVisible(En_ReportType reportType) {

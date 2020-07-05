@@ -3,13 +3,16 @@ package ru.protei.portal.ui.employeeregistration.client.activity.edit;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.EmployeeRegistrationShortView;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
@@ -33,6 +36,11 @@ public abstract class EmployeeRegistrationEditActivity implements AbstractEmploy
 
     @Event
     public void onShow(EmployeeRegistrationEvents.Edit event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_EDIT)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         requestEmployeeRegistrationShortView(event.employeeRegistrationId, this::fillView);
     }
 
@@ -99,6 +107,9 @@ public abstract class EmployeeRegistrationEditActivity implements AbstractEmploy
 
     @Inject
     EmployeeRegistrationControllerAsync employeeRegistrationService;
+
+    @Inject
+    private PolicyService policyService;
 
     @Inject
     Lang lang;

@@ -5,8 +5,8 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.LinkData;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -80,4 +80,7 @@ public interface TemplateService {
 
     PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd);
 
+    PreparedTemplate getPersonCaseFilterNotificationSubject();
+
+    PreparedTemplate getPersonCaseFilterNotificationBody(List<CaseObject> issues, String urlTemplate);
 }

@@ -51,7 +51,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     @Event
     public void onShowFullScreen( EquipmentEvents.ShowFullScreen event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

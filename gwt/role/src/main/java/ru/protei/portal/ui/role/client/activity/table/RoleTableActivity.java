@@ -49,7 +49,7 @@ public abstract class RoleTableActivity
     @Event
     public void onShow( RoleEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ROLE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

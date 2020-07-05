@@ -71,6 +71,7 @@ public class BootstrapService {
         //fillWithCrossLinkColumn();
         transferYoutrackLinks();
         addCommonManager();
+        updateHistoryTable();
     }
 
     private void fillWithCrossLinkColumn() {
@@ -574,6 +575,25 @@ if(true) return; //TODO remove
         log.info("Add Common Manager ended");
     }
 
+    private void updateHistoryTable() {
+        List<History> histories = historyDAO.getListByCondition("old_value is null and new_value is null");
+        for (History history : histories) {
+            if (history.getOldId()!= null) {
+                Plan oldPlan = planDAO.get(history.getOldId());
+                if (oldPlan != null) {
+                    history.setOldValue(oldPlan.getName());
+                }
+            }
+            if (history.getNewId() != null) {
+                Plan newPlan = planDAO.get(history.getNewId());
+                if (newPlan != null) {
+                    history.setNewValue(newPlan.getName());
+                }
+            }
+        }
+        historyDAO.mergeBatch(histories);
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -629,4 +649,8 @@ if(true) return; //TODO remove
     YoutrackService youtrackService;
     @Autowired
     PortalConfig config;
+    @Autowired
+    HistoryDAO historyDAO;
+    @Autowired
+    PlanDAO planDAO;
 }

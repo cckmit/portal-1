@@ -49,6 +49,11 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
 
     @Event(Type.FILL_CONTENT)
     public void onShow(EmployeeRegistrationEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
 

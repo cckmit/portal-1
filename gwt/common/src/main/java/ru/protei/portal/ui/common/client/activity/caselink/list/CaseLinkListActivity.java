@@ -193,10 +193,11 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        controller.createLinkWithPublish(value, caseType, createCrossLinks, new FluentCallback<Long>()
+        controller.createLinkWithPublish(value, caseType, createCrossLinks, new FluentCallback<CaseLink>()
                 .withError(this::showErrorFromServer)
-                .withSuccess(id -> {
-                    value.setId(id);
+                .withSuccess(caseLink -> {
+                    value.setId(caseLink.getId());
+                    value.setCaseInfo(caseLink.getCaseInfo());
                     addLinkToParentAndModifyLinksCount(value);
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));

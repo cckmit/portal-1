@@ -59,7 +59,7 @@ public abstract class EquipmentTableActivity
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

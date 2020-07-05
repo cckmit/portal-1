@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +17,9 @@ public interface CaseLinkControllerAsync {
 
     void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
 
-    void createLink(CaseLink value, boolean createCrossLinks, AsyncCallback<Long> async);
+    void createLink(CaseLink value, boolean createCrossLinks, AsyncCallback<CaseLink> async);
 
-    void createLinkWithPublish(CaseLink value, En_CaseType caseType, boolean createCrossLinks, AsyncCallback<Long> async);
+    void createLinkWithPublish(CaseLink value, En_CaseType caseType, boolean createCrossLinks, AsyncCallback<CaseLink> async);
 
     void deleteLink(Long id, AsyncCallback<Void> async);
 

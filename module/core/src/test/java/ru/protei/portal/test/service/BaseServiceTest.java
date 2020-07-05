@@ -129,6 +129,18 @@ public class BaseServiceTest {
         return caseTag;
     }
 
+    protected Plan createPlan() {
+        return createPlan("");
+    }
+
+    protected Plan createPlan(String name) {
+        Plan plan = new Plan();
+        plan.setName(name + "test" + new Date().getTime());
+        plan.setStartDate(new Date());
+        plan.setFinishDate(new Date());
+        return plan;
+    }
+
     public static void checkResult( Result result ) {
         assertNotNull( "Expected result", result );
         assertTrue( "Expected ok result", result.isOk() );

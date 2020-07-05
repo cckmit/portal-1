@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.ALL;
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.NONE;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.ALL;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.NONE;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 public abstract class CaseStateFilterProvider implements Activity

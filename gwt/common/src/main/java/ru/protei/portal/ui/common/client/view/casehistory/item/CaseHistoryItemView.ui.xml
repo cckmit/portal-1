@@ -1,0 +1,26 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel tag="li" styleName="row">
+        <div class="col-md-9">
+            <span ui:field="historyType" class="history-item-history-type"/>
+            <g:HTMLPanel ui:field="addedValueContainer" tag="span" styleName="history-item-added-value">
+                <span ui:field="addedValue"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="changedValueContainer" tag="span" styleName="history-item-changed-value">
+                <span ui:field="oldValue" class="history-item-old-value"/>
+                <i class="fas fa-long-arrow-alt-right history-arrow-icon"/>
+                <span ui:field="newValue" class="history-item-new-value"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="removedValueContainer" tag="span" styleName="history-item-removed-value">
+                <strike ui:field="removedValue"/>
+            </g:HTMLPanel>
+        </div>
+        <div class="col-md-3 text-right">
+            <span class="case-history-item-date" ui:field="date"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

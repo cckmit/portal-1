@@ -61,7 +61,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Edit event) {
         if (!hasPrivileges(event.platformId)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

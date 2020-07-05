@@ -1190,6 +1190,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountFor();
 
+    String accountSubscribeCaseFilter();
+
     String accountRolesNotFound();
 
     String roleName();
@@ -2102,6 +2104,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDeliveryAndPaymentsPeriodHeader();
 
+    String contractSpecificationHeader();
+
+    String contractSpecificationClausePlaceholder();
+
+    String contractSpecificationTextPlaceholder();
+
     String contractPaymentCommentPlaceholder();
 
     String contractDateSigning();
@@ -2131,6 +2139,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyDateSigning();
 
     String contractValidationEmptyDateValid();
+
+    String contractValidationContractSpecification();
+
+    String contractValidationContractSpecificationClauseDuplication();
 
     String contractOrganization();
 
@@ -2699,4 +2711,20 @@ public interface Lang extends Messages, ContactItemLang {
     String errIssueAlreadyExistInPlan();
 
     String planIssueNumber();
+
+    String issueReportWithDescription();
+
+    String issueReportWithDescriptionTitle();
+
+    String personCaseFilterChange();
+
+    String errPersonCaseFilterChangeError();
+
+    String errPersonCaseFilterInUse();
+
+    String employeeRegistrationDepartment();
+
+    String caseHistory();
+
+    String errPlanNotFound();
 }

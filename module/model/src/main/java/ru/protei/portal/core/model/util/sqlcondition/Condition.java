@@ -15,7 +15,7 @@ public interface Condition {
 
     Condition or( Condition inCondition );
 
-    Condition condition( String arbitrarySqlCondition );
+    Condition condition( CharSequence arbitrarySqlCondition );
 
     Condition attribute( Object attr );
 

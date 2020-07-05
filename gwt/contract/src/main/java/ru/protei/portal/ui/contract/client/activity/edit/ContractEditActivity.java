@@ -2,7 +2,6 @@ package ru.protei.portal.ui.contract.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -39,7 +38,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Event
     public void onShow(ContractEvents.Edit event) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -134,6 +133,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValid().setValue(contract.getDateValid());
         view.contractDates().setValue(contract.getContractDates());
+        view.contractSpecifications().setValue(contract.getContractSpecifications());
 
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
@@ -159,6 +159,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setDateSigning(view.dateSigning().getValue());
         contract.setDateValid(view.dateValid().getValue());
         contract.setContractDates(view.contractDates().getValue());
+        contract.setContractSpecifications(view.contractSpecifications().getValue());
 
         contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
         contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
@@ -201,6 +202,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
             return lang.contractValidationEmptyDirection();
+
+        if (!view.validateContractSpecifications().isValid())
+            return lang.contractValidationContractSpecification();
 
         return null;
     }

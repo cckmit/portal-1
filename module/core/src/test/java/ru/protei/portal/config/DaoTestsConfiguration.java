@@ -352,6 +352,10 @@ public class DaoTestsConfiguration {
         return new RoomReservationDAO_Impl();
     }
 
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return new PersonCaseFilterDAO_Impl();
+    }
 
     @Bean
     public PlanDAO getPlanDAO() {
@@ -368,4 +372,8 @@ public class DaoTestsConfiguration {
         return new HistoryDAO_Impl();
     }
 
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return new ContractSpecificationDAO_Impl();
+    }
 }

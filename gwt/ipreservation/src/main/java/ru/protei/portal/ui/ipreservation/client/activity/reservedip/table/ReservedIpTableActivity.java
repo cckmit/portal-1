@@ -8,7 +8,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
@@ -64,7 +63,7 @@ public abstract class ReservedIpTableActivity
     @Event
     public void onShow( IpReservationEvents.ShowReservedIp event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -100,7 +99,7 @@ public abstract class ReservedIpTableActivity
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

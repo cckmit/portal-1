@@ -293,6 +293,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
         return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
+                "\n", "Отдел: ", er.getDepartment(),
                 "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
                 "\n", "Расположение рабочего места: ", er.getWorkplace()
         );

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.contact.client.activity.edit;
 
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -46,7 +45,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Event
     public void onShow( ContactEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

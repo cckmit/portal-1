@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -42,7 +41,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     @Event
     public void onShow(SiteFolderPlatformEvents.ShowFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
         initDetails.parent.clear();

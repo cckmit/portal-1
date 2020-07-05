@@ -27,6 +27,9 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.StringUtils.*;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.*;
+
 /**
  * Активность таблицы контактов
  */
@@ -56,7 +59,7 @@ public abstract class ContactTableActivity
     @Event(Type.FILL_CONTENT)
     public void onShow( ContactEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -172,11 +175,14 @@ public abstract class ContactTableActivity
     }
 
     private ContactQuery makeQuery() {
-        return new ContactQuery( filterView.company().getValue(),
+        ContactQuery query = new ContactQuery( filterView.company().getValue(),
                 filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
                 false,
-                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+                nullIfEmpty( filterView.searchPattern().getValue() ), filterView.sortField().getValue(),
+                filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
+
+        query.setAlternativeSearchString( makeAlternativeSearchString( filterView.searchPattern().getValue() ) );
+        return query;
 
     };
 

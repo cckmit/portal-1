@@ -36,7 +36,7 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderAppEvents.Edit event) {
         if (!hasPrivileges(event.appId)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

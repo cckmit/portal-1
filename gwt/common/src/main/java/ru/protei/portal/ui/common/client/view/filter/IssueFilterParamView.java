@@ -35,25 +35,27 @@ import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.*;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterParamView {
 
@@ -280,6 +282,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         companies.setValue(applyCompanies(filter, caseQuery.getCompanyIds()));
         managerCompanies.setValue(applyCompanies(filter, caseQuery.getManagerCompanyIds()));
 
+        updateManagers();
         updateInitiators();
 
         initiators.setValue(applyPersons(filter, caseQuery.getInitiatorIds()));
@@ -319,6 +322,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 if (query.getCaseNumbers() == null) {
                     query.setSearchStringAtComments(searchByComments.getValue());
                     query.setSearchString(isBlank(searchString) ? null : searchString);
+                    query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
                 }
                 query.setViewPrivate(searchPrivate.getValue());
                 query.setSortField(sortField.getValue());

@@ -92,8 +92,14 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and cname like ?");
+                condition.append(" and (cname like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+
+                if (query.getAlternativeSearchString() != null) {
+                    condition.append(" or cname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getAlternativeSearchString(), true));
+                }
+                condition.append(" )");
             }
 
             if (query.getShowDeprecated() != null && !query.getShowDeprecated()) {
