@@ -832,6 +832,8 @@ public class DebugIds {
     }
 
     public interface ABSENCE_REPORT {
+        String NAME_LABEL = "absence-report-name-label";
+        String NAME_INPUT = "absence-report-name-input";
         String DATE_RANGE_INPUT = "absence-report-date-range-input";
         String DATE_RANGE_BUTTON = "absence-report-date-range-button";
         String DATE_RANGE_LABEL = "absence-report-date-range-label";

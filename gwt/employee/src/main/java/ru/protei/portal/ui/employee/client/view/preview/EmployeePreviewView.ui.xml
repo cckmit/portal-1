@@ -40,7 +40,7 @@
                 <span ui:field="ip"/>
             </div>
 
-            <h5 class="m-b-0"><ui:text from="{lang.absences}"/></h5>
+            <h5 ui:field="absencesLabel" class="m-b-0 hide"><ui:text from="{lang.absences}"/></h5>
             <g:HTMLPanel ui:field="absencesContainer"/>
         </div>
 

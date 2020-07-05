@@ -42,6 +42,11 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     }
 
     @Override
+    public HasValue<String> name() {
+        return name;
+    }
+
+    @Override
     public HasValue<DateInterval> dateRange() {
         return dateRange;
     }
@@ -73,14 +78,20 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
 
     @UiHandler("reportButton")
     public void reportButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onReportClicked();
+        }
+/*
+
         if (!dateRange.getValue().isValid()) return;
-        Window.open(DOWNLOAD_PATH +
-                "from_time=" + dateRange.getValue().from.getTime() +
+        Window.open(DOWNLOAD_PATH + "&name=" + name.getValue() +
+                "&from_time=" + dateRange.getValue().from.getTime() +
                 "&till_time=" + dateRange.getValue().to.getTime() +
                 "&employees="+ employees.getValue().stream().map(PersonShortView::getId).map(Object::toString).collect(Collectors.joining(",")) +
                 "&reasons="+ reasons.getValue().stream().map(En_AbsenceReason::getId).map(Object::toString).collect(Collectors.joining(",")) +
                 "&sort_field=" + sortField.getValue() + "&sort_dir=" + (sortDir.getValue() ? En_SortDir.ASC : En_SortDir.DESC),
                 "_blank", "");
+*/
     }
 
     @UiHandler("resetButton")
@@ -90,7 +101,16 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
         }
     }
 
+    @UiHandler("cancelButton")
+    public void cancelButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCancelClicked();
+        }
+    }
+
     private void ensureDebugIds() {
+        absenceReportTitleLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.NAME_LABEL);
+        name.ensureDebugId(DebugIds.ABSENCE_REPORT.NAME_INPUT);
         absenceReportDateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.DATE_RANGE_LABEL);
         dateRange.setEnsureDebugId(DebugIds.ABSENCE_REPORT.DATE_RANGE_INPUT);
         dateRange.getRelative().ensureDebugId(DebugIds.ABSENCE_REPORT.DATE_RANGE_BUTTON);
@@ -109,6 +129,10 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
         resetButton.ensureDebugId(DebugIds.ABSENCE_REPORT.RESET_BUTTON);
     }
 
+    @UiField
+    LabelElement absenceReportTitleLabel;
+    @UiField
+    TextBox name;
     @UiField
     LabelElement absenceReportDateRangeLabel;
     @Inject
@@ -131,6 +155,8 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     Button reportButton;
     @UiField
     Button resetButton;
+    @UiField
+    Button cancelButton;
     @Inject
     @UiField
     Lang lang;

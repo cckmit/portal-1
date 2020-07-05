@@ -27,11 +27,6 @@ public class EmployeeInfoColumn extends ClickColumn<EmployeeShortView> {
     @Override
     protected void fillColumnValue(Element cell, EmployeeShortView value) {
 
-        if (value.getCurrentAbsence() != null) {
-            cell.addClassName(reasonLang.getStyle(value.getCurrentAbsence().getReason()));
-            cell.setTitle(reasonLang.getName(value.getCurrentAbsence().getReason()));
-        }
-
         com.google.gwt.dom.client.Element employeeInfo = DOM.createDiv();
 
         if (value.isFired()) {

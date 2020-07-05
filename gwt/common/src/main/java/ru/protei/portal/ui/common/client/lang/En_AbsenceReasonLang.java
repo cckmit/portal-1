@@ -40,22 +40,23 @@ public class En_AbsenceReasonLang {
         }
     }
 
-    public String getStyle(En_AbsenceReason state) {
-        if(state == null)
-            return "fa fa-unknown";
+    public String getIcon(En_AbsenceReason reason) {
+        if(reason == null)
+            return "";
 
-        switch (state){
-            case PERSONAL_AFFAIR: return "bg-primary-lighter";
+        switch (reason){
+            case PERSONAL_AFFAIR: return "linearicons-user";
             case BUSINESS_TRIP:
-            case LOCAL_BUSINESS_TRIP: return "bg-success-lighter";
-            case STUDY: return "bg-danger-lighter";
+            case LOCAL_BUSINESS_TRIP: return "linearicons-briefcase";
+            case STUDY: return "linearicons-library2";
             case DISEASE:
-            case SICK_LEAVE: return "bg-info-lighter";
+            case SICK_LEAVE: return "linearicons-first-aid";
             case NIGHT_WORK:
-            case DUTY: return "bg-complete-lighter";
+            case DUTY: return "linearicons-moon";
             case LEAVE_WITHOUT_PAY:
-            case LEAVE: return "bg-warning-lighter";
-
+            case LEAVE: return "linearicons-sun";
+            case REMOTE_WORK: return "linearicons-home";
+            case GUEST_PASS: return "linearicons-profile";
             default:
                 return "";
         }

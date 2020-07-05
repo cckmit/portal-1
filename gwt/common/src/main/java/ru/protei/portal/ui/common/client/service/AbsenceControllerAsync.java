@@ -35,4 +35,9 @@ public interface AbsenceControllerAsync {
      * Завершение отсутствия
      */
     void completeAbsence(Long id, AsyncCallback<Boolean> callback);
+
+    /**
+     * Создание отчёта
+     */
+    void createReport(String name, AbsenceQuery query, AsyncCallback<Void> callback);
 }

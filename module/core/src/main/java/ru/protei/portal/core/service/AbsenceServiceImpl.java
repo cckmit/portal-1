@@ -1,24 +1,21 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
+import ru.protei.portal.core.event.MailAbsenceReportEvent;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
-import ru.protei.portal.core.model.dict.En_ContactDataAccess;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.struct.ContactItem;
-import ru.protei.portal.core.model.struct.NotificationEntry;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -31,6 +28,7 @@ import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
@@ -50,6 +48,13 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Autowired
     HttpServletResponse response;
+
+    @Autowired
+    EventPublisherService publisherService;
+
+    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+
+    private static Logger log = LoggerFactory.getLogger(AbsenceServiceImpl.class);
 
     @Override
     public Result<List<PersonAbsence>> getAbsences(AuthToken token, AbsenceQuery query) {
@@ -189,6 +194,26 @@ public class AbsenceServiceImpl implements AbsenceService {
                         oldState,
                         newState,
                         getAbsenceNotifiers(newState)));
+    }
+
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public Result<Void> createReport(AuthToken token, String name, AbsenceQuery query) {
+
+        if (query == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            boolean result = reportAbsence.writeReport(buffer, query, dateFormat);
+            if (result) {
+                publisherService.publishEvent(new MailAbsenceReportEvent(this, name, new ByteArrayInputStream(buffer.toByteArray())));
+            }
+        } catch (Exception e) {
+            log.error("createReport(): uncaught exception", e);
+        }
+
+        return ok();
     }
 
     private boolean validateFields(PersonAbsence absence) {

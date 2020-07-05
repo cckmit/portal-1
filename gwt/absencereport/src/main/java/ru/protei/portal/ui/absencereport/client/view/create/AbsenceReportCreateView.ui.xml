@@ -13,6 +13,18 @@
                 <div class="card card-transparent no-margin">
                     <div class="card-body">
                         <div class="row">
+                            <div class="form-group col-md-6">
+                                <label ui:field="absenceReportTitleLabel"><ui:text from="{lang.absenceReportTitle}"/></label>
+                                <g:TextBox ui:field="name" styleName="form-control" maxLength="64"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid padding-15 bg-white">
+                <div class="card card-transparent no-margin">
+                    <div class="card-body">
+                        <div class="row">
                             <person:EmployeeMultiSelector ui:field="employees"
                                                           header="{lang.absenceReportEmployees}"
                                                           addStyleNames="form-group col-md-6"
@@ -41,6 +53,7 @@
                 <div class="text-right">
                     <g:Button ui:field="reportButton" styleName="btn btn-complete" text="{lang.buttonReport}"/>
                     <g:Button ui:field="resetButton" styleName="btn btn-default" text="{lang.buttonReset}"/>
+                    <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
                 </div>
             </div>
         </div>

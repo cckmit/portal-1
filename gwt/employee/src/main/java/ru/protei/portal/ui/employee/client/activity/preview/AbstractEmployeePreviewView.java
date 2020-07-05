@@ -38,4 +38,6 @@ public interface AbstractEmployeePreviewView extends IsWidget {
     HasWidgets absencesContainer();
 
     void showFullScreen(boolean isFullScreen);
+
+    void showAbsencesLabel();
 }

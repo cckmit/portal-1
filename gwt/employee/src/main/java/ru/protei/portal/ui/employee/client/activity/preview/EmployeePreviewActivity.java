@@ -133,6 +133,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         view.setIP(employee.getIpAddress());
 
         if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
+            view.showAbsencesLabel();
             fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employee.getId()));
         }
     }

@@ -11,6 +11,7 @@ import java.util.Set;
 
 public interface AbstractAbsenceReportCreateView extends IsWidget {
     void setActivity(AbstractAbsenceReportCreateActivity activity);
+    HasValue<String> name();
     HasValue<DateInterval> dateRange();
     HasValue<Set<PersonShortView>> employees();
     HasValue<Set<En_AbsenceReason>> reasons();

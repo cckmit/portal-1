@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.core.service.session.SessionService;
@@ -33,6 +34,7 @@ public class AbsenceReportController {
     public void downloadReport(
             HttpServletRequest request,
             HttpServletResponse response,
+            @RequestParam("name") String name,
             @RequestParam("from_time") Long fromTime,
             @RequestParam("till_time") Long tillTime,
             @RequestParam("employees") Set<Long> employees,
@@ -40,8 +42,8 @@ public class AbsenceReportController {
             @RequestParam("sort_field") En_SortField sortField,
             @RequestParam("sort_dir") En_SortDir sortDir)
     {
-        log.debug("downloadReport(): from_time = {}, till_time = {}, employees = {}, reasons = {}, sort_field = {}, sort_dir = {}",
-                new Date(fromTime), new Date(tillTime), employees, reasons, sortField, sortDir);
+        log.debug("downloadReport(): name = {}, from_time = {}, till_time = {}, employees = {}, reasons = {}, sort_field = {}, sort_dir = {}",
+                name, new Date(fromTime), new Date(tillTime), employees, reasons, sortField, sortDir);
 
         AuthToken token = sessionService.getAuthToken(request);
         if (token == null) {
@@ -59,7 +61,8 @@ public class AbsenceReportController {
                 try (ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer.toByteArray())) {
                     response.setStatus(HttpStatus.OK.value());
                     response.setContentType("application/octet-stream");
-                    response.setHeader("Content-Disposition", "attachment; filename*=utf-8''" + encodeToRFC2231("absence_report.xlsx"));
+                    response.setHeader("Content-Disposition", "attachment; filename*=utf-8''" +
+                            encodeToRFC2231(HelperFunc.isEmpty(name) ? "absence_report.xlsx" : name + ".xlsx"));
                     IOUtils.copy(inputStream, response.getOutputStream());
                     response.flushBuffer();
                 }

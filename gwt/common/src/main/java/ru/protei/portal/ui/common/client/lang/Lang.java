@@ -2668,4 +2668,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceStartDateRange();
 
+    String absenceReportTitle();
+
+    String absenceButtonReport();
 }

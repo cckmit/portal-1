@@ -38,4 +38,9 @@ public interface AbsenceController extends RemoteService {
      * Завершение отсутствия
      */
     Boolean completeAbsence(Long id) throws RequestFailedException;
+
+    /**
+     * Создание отчёта
+     */
+    void createReport(String name, AbsenceQuery query) throws RequestFailedException;
 }

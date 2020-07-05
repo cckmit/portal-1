@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.absencereport.client.activity.create;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -28,7 +29,7 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     }
 
     @Event(Type.FILL_CONTENT)
-    public void onShow(AbsenceReportEvents.Show event) {
+    public void onShow(AbsenceEvents.CreateReport event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
             fireEvent(new ForbiddenEvents.Show());
             return;
@@ -39,11 +40,22 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     }
 
     @Override
+    public void onReportClicked() {
+
+    }
+
+    @Override
     public void onResetClicked() {
         resetView();
     }
 
+    @Override
+    public void onCancelClicked() {
+        fireEvent(new Back());
+    }
+
     private void resetView() {
+        view.name().setValue(null);
         view.dateRange().setValue(null);
         view.markDateRangeError();
         view.employees().setValue(null);

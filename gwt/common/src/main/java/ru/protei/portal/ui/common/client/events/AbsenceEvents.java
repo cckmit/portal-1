@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 
 public class AbsenceEvents {
@@ -24,5 +25,10 @@ public class AbsenceEvents {
         public Edit (Long id) {
             this.id = id;
         }
+    }
+
+    @Url(value = "absence_report", primary = true)
+    public static class CreateReport {
+        public CreateReport () {}
     }
 }

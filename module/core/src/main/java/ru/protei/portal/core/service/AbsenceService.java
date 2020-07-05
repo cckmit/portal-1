@@ -34,4 +34,7 @@ public interface AbsenceService {
     @Privileged(En_Privilege.ABSENCE_EDIT)
     @Auditable(En_AuditType.ABSENCE_MODIFY)
     Result<Boolean> completeAbsence(AuthToken token, Long absenceId);
+
+    @Privileged(En_Privilege.ABSENCE_REPORT)
+    Result<Void> createReport(AuthToken token, String name, AbsenceQuery query);
 }

@@ -1,29 +1,24 @@
 package ru.protei.portal.ui.employee.client.view.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.model.struct.WorkerEntryFacade;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.view.EmployeeShortView;
-import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.DynamicColumn;
-import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.EmailRender;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableView;
+import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeAbsenceColumn;
 import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeContactsColumn;
 import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeDepartmentColumn;
 import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeInfoColumn;
@@ -33,8 +28,9 @@ import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeInfoColumn
  */
 public class EmployeeTableView extends Composite implements AbstractEmployeeTableView {
     @Inject
-    public void onInit() {
+    public void onInit(EditClickColumn<EmployeeShortView> editClickColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        this.editClickColumn = editClickColumn;
         initTable();
     }
 
@@ -48,6 +44,11 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         contacts.setColumnProvider(columnProvider);
         department.setHandler(activity);
         department.setColumnProvider(columnProvider);
+        absence.setHandler(activity);
+        absence.setColumnProvider(columnProvider);
+        editClickColumn.setHandler(activity);
+        editClickColumn.setEditHandler(activity);
+        editClickColumn.setColumnProvider(columnProvider);
         table.setLoadHandler(activity);
         table.setPagerListener(activity);
     }
@@ -113,10 +114,15 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         name = new EmployeeInfoColumn(lang, reasonLang);
         contacts = new EmployeeContactsColumn(lang, reasonLang);
         department = new EmployeeDepartmentColumn(lang, reasonLang);
+        absence = new EmployeeAbsenceColumn(reasonLang, policyService);
 
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT));
+
+        table.addColumn(absence.header, absence.values);
         table.addColumn(name.header, name.values);
         table.addColumn(contacts.header, contacts.values);
         table.addColumn(department.header, department.values);
+        table.addColumn(editClickColumn.header, editClickColumn.values);
     }
 
     @UiField
@@ -130,6 +136,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     HTMLPanel filterContainer;
     @UiField
     HTMLPanel pagerContainer;
+    @Inject
+    PolicyService policyService;
 
     @Inject
     @UiField
@@ -142,6 +150,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     EmployeeInfoColumn name;
     EmployeeContactsColumn contacts;
     EmployeeDepartmentColumn department;
+    EmployeeAbsenceColumn absence;
+    EditClickColumn<EmployeeShortView> editClickColumn;
 
     AbstractEmployeeTableActivity activity;
 

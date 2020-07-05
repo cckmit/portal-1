@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -91,6 +92,9 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         return absencesContainer;
     }
 
+    public void showAbsencesLabel() {
+        absencesLabel.removeClassName("hide");
+    }
     @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
@@ -160,6 +164,9 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     HTMLPanel emailContainer;
+
+    @UiField
+    HeadingElement absencesLabel;
 
     @UiField
     HTMLPanel absencesContainer;
