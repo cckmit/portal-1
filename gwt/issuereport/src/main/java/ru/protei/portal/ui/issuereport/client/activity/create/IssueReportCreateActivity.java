@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -23,12 +24,10 @@ import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
-import static ru.protei.portal.core.model.helper.StringUtils.nullIfEmpty;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 
 public abstract class IssueReportCreateActivity implements Activity,
@@ -170,17 +169,28 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         switch (reportType) {
             case CASE_RESOLUTION_TIME:
-                if (validateDateRange(query)) {
+            case CASE_TIME_ELAPSED :
+                boolean dateRangeValid = validateDateRange(query.getCreatedRange(), true);
+                validateCreatedRange(dateRangeValid);
+
+                if (!dateRangeValid) {
                     fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
-                if (query.getStateIds() == null)  {
+                if (Objects.equals(reportType, En_ReportType.CASE_RESOLUTION_TIME)
+                    && query.getStateIds() == null)  {
                     fireEvent(new NotifyEvents.Show( lang.reportMissingState(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
                 break;
             case CASE_OBJECTS:
-                if (validateDateRange(query)) {
+                boolean createdRangeValid = validateDateRange(query.getCreatedRange(), false);
+                validateCreatedRange(createdRangeValid);
+
+                boolean modifiedRangeValid = validateDateRange(query.getModifiedRange(), false);
+                validateModifiedRange(modifiedRangeValid);
+
+                if (!createdRangeValid || !modifiedRangeValid) {
                     fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
                     return false;
                 }
@@ -189,18 +199,22 @@ public abstract class IssueReportCreateActivity implements Activity,
         return true;
     }
 
-    private boolean validateDateRange(CaseQuery query) {
-        if (query.getCreatedRange() == null
-            || query.getCreatedRange().getIntervalType() == null
-            || !Objects.equals(query.getCreatedRange().getIntervalType(), En_DateIntervalType.FIXED)
-        ) {
-            return true;
-        }
+    private boolean validateDateRange(DateRange dateRange, boolean isMandatory) {
+        if (dateRange == null || dateRange.getIntervalType() == null)
+            return !isMandatory;
 
-        Date from = query.getCreatedRange().getFrom();
-        Date to = query.getCreatedRange().getTo();
-        return from.after(to);
+        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
+                || (dateRange.getFrom() != null
+                    && dateRange.getTo() != null
+                    && dateRange.getFrom().before(dateRange.getTo()));
+    }
 
+    private void validateCreatedRange(boolean isValid){
+        issueFilterWidget.getIssueFilterParams().setCreatedRangeValid(isValid);
+    }
+
+    private void validateModifiedRange(boolean isValid){
+        issueFilterWidget.getIssueFilterParams().setModifiedRangeValid(isValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
