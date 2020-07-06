@@ -92,6 +92,7 @@
                         <argument>notification/email/reservation.room.body.ftl</argument>
                         <argument>notification/email/absence.subject.ftl</argument>
                         <argument>notification/email/absence.body.ftl</argument>
+                        <argument>notification/email/absence.report.subject.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

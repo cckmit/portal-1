@@ -1,31 +1,27 @@
-package ru.protei.portal.ui.absencereport.client.view.create;
+package ru.protei.portal.ui.absence.client.view.report;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
-import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.absencereport.client.activity.create.AbstractAbsenceReportCreateActivity;
-import ru.protei.portal.ui.absencereport.client.activity.create.AbstractAbsenceReportCreateView;
+import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportCreateActivity;
+import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportCreateView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AbsenceReportCreateView extends Composite implements AbstractAbsenceReportCreateView {
 

@@ -5,7 +5,6 @@ import com.google.gwt.inject.client.GinModules;
 import ru.brainworm.factory.generator.injector.client.FactoryInjector;
 import ru.protei.portal.app.portal.client.activity.app.AppActivity;
 import ru.protei.portal.ui.absence.client.factory.AbsenceClientModule;
-import ru.protei.portal.ui.absencereport.client.factory.AbsenceReportClientModule;
 import ru.protei.portal.ui.account.client.factory.AccountClientModule;
 import ru.protei.portal.ui.casestate.client.factory.CaseStateClientModule;
 import ru.protei.portal.ui.common.client.factory.CommonClientModule;
@@ -33,7 +32,7 @@ import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
  */
 @GinModules({
         ClientModule.class, CommonClientModule.class, IssueAssignmentClientModule.class,
-        EmployeeClientModule.class, AbsenceReportClientModule.class, RoomReservationClientModule.class, CompanyClientModule.class, ContactClientModule.class,
+        EmployeeClientModule.class, RoomReservationClientModule.class, CompanyClientModule.class, ContactClientModule.class,
         ProductClientModule.class, ProjectClientModule.class, RegionClientModule.class, EmployeeRegistrationClientModule.class,
         IssueClientModule.class, IssueReportClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
         DocumentClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class, SiteFolderClientModule.class,

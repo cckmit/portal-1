@@ -51,7 +51,7 @@
                 <tbody>
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_absenceEmployee}</td>
-                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${person_absent}</td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${absentEmployee}</td>
                     </tr>
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_absenceDateRange}</td>

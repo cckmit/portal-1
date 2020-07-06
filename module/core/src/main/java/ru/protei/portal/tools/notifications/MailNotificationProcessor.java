@@ -619,7 +619,6 @@ public class MailNotificationProcessor {
                     bodyTemplate, subjectTemplate,
                     true);
         }
-
     }
 
     // -----------------------
@@ -731,6 +730,33 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onAbsenceReportEvent(AbsenceReportEvent event) {
+        Person initiator = event.getInitiator();
+        String title = event.getName();
+
+        PreparedTemplate subjectTemplate = templateService.getAbsenceReportSubject(event.getName());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for absence report initiator={}", initiator);
+            return;
+        }
+
+        NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(initiator);
+
+        try (InputStream inputStream = event.getContent()) {
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+            msg.setSubject(subject);
+            msg.setFrom(getFromAddress());
+            msg.setText("", true);
+            msg.setTo(notificationEntry.getAddress());
+            msg.addAttachment(title + ".xlsx", new ByteArrayResource(IOUtils.toByteArray(inputStream)));
+            mailSendChannel.send(msg.getMimeMessage());
+        } catch (Exception e) {
+            log.error("Failed to make MimeMessage", e);
+        }
     }
 
     // -----

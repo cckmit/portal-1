@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.report.ReportWriter;
-import sun.util.locale.LocaleUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;

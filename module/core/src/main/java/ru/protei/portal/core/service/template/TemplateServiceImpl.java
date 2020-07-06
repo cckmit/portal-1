@@ -545,7 +545,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence) {
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("person_absent", absence.getPerson().getDisplayName());
+        templateModel.put("absentEmployee", absence.getPerson().getDisplayName());
         templateModel.put("initiator", initiator.getDisplayName());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/absence.subject.%s.ftl");
@@ -564,7 +564,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("is_updated", action == EventAction.UPDATED);
         templateModel.put("is_removed", action == EventAction.REMOVED);
 
-        templateModel.put("person_absent", newState.getPerson().getDisplayName());
+        templateModel.put("absentEmployee", newState.getPerson().getDisplayName());
 
         templateModel.put("fromTimeChanged", event.isFromTimeChanged());
         templateModel.put("oldFromTime", oldState == null ? null : dateFormat.format(oldState.getFromTime()));
@@ -583,6 +583,17 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/absence.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getAbsenceReportSubject(String title) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportTitle", title);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/absence.report.subject.%s.ftl");
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
         return template;

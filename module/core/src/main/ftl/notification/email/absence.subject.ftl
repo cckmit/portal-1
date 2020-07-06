@@ -1,1 +1,1 @@
-${absent}<#noparse> ${person_absent} [${initiator}]</#noparse>
+${absent}<#noparse> ${absentEmployee} [${initiator}]</#noparse>

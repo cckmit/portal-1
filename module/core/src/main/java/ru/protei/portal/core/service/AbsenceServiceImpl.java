@@ -7,12 +7,13 @@ import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
-import ru.protei.portal.core.event.MailAbsenceReportEvent;
+import ru.protei.portal.core.event.AbsenceReportEvent;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -24,13 +25,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 public class AbsenceServiceImpl implements AbsenceService {
 
@@ -196,24 +195,36 @@ public class AbsenceServiceImpl implements AbsenceService {
                         getAbsenceNotifiers(newState)));
     }
 
-    @Async(BACKGROUND_TASKS)
-    @Override
-    public Result<Void> createReport(AuthToken token, String name, AbsenceQuery query) {
 
-        if (query == null) {
+    @Override
+    public Result createReport(AuthToken token, String name, AbsenceQuery query) {
+
+        if (HelperFunc.isEmpty(name) || query == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        processReport(token, name, query);
+
+        return ok();
+    }
+
+    @Async(BACKGROUND_TASKS)
+    protected void processReport(AuthToken token, String name, AbsenceQuery query) {
+
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-            boolean result = reportAbsence.writeReport(buffer, query, dateFormat);
-            if (result) {
-                publisherService.publishEvent(new MailAbsenceReportEvent(this, name, new ByteArrayInputStream(buffer.toByteArray())));
+
+            if (reportAbsence.writeReport(buffer, query, dateFormat)) {
+
+                Person initiator = personDAO.get(token.getPersonId());
+                publisherService.publishEvent(new AbsenceReportEvent(
+                        this,
+                        initiator,
+                        name,
+                        new ByteArrayInputStream(buffer.toByteArray())));
             }
         } catch (Exception e) {
             log.error("createReport(): uncaught exception", e);
         }
-
-        return ok();
     }
 
     private boolean validateFields(PersonAbsence absence) {

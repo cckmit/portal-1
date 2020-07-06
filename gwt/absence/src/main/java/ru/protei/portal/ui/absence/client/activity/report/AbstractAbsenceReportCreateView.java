@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absencereport.client.activity.create;
+package ru.protei.portal.ui.absence.client.activity.report;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
