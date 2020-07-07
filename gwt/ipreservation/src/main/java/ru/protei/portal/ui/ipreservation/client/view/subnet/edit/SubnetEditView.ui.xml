@@ -25,6 +25,9 @@
                     <validablefield:ValidableTextBox ui:field="mask" styleName="form-control" />
                 </div>
                 <div class="form-group col-md-12">
+                    <g:CheckBox ui:field="local" styleName="checkbox" text="{lang.reservedIpSubnetLocal}"/>
+                </div>
+                <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.comment}"/>
                     </label>

@@ -14,6 +14,7 @@ public interface AbstractSubnetEditView extends IsWidget {
     void setAddressStatus (NameStatus status);
     HasValue<String> address();
     HasValue<String> mask();
+    HasValue<Boolean> local();
     HasText comment();
 
     HasValidable addressValidator();

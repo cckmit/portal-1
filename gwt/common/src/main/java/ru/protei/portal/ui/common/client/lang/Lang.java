@@ -2731,4 +2731,6 @@ public interface Lang extends Messages, ContactItemLang {
     String commentNewDisabled();
 
     String commentNewDisabledReasonTerminal();
+
+    String reservedIpSubnetLocal();
 }
