@@ -1624,6 +1624,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueReportsError();
 
+    String issueReportsCancelled();
+
     String issueReportsTitle();
 
     String issueReportsNew();

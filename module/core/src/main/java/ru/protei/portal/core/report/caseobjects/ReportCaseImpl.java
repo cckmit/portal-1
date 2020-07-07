@@ -7,6 +7,8 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
@@ -37,6 +39,8 @@ public class ReportCaseImpl implements ReportCase {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
+    @Autowired
+    ReportDAO reportDAO;
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
@@ -46,10 +50,14 @@ public class ReportCaseImpl implements ReportCase {
 
         int sheetNumber = writer.createSheet();
 
-        int limit = config.data().reportConfig().getChunkSize();
+        final int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
         try {
             while (true) {
+                if (!isProcessed( report.getId() )) {
+                    log.info( "writeReport(): Stop processing of report {}", report.getId() );
+                    break;
+                }
                 CaseQuery query = report.getCaseQuery();
                 query.setOffset( offset );
                 query.setLimit( limit );
@@ -65,6 +73,13 @@ public class ReportCaseImpl implements ReportCase {
         }
 
         writer.collect( buffer );
+        return true;
+    }
+
+    private boolean isProcessed( Long id ) {
+        Report report = reportDAO.partialGet( id, Report.Columns.STATUS );
+        if(report == null) return false;
+        if (!En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
         return true;
     }
 
