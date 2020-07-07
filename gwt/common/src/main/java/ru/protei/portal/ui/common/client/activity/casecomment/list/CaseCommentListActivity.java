@@ -92,6 +92,7 @@ public abstract class CaseCommentListActivity
         this.isModifyEnabled = event.isModifyEnabled;
         this.isPrivateVisible = event.isPrivateVisible;
         this.isPrivateCase = event.isPrivateCase;
+        this.isNewCommentEnabled = event.isNewCommentEnabled;
 
         comment = null;
         lastCommentView = null;
@@ -104,7 +105,8 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
-        view.enabledNewComment(isModifyEnabled);
+        view.setNewCommentHidden(!isModifyEnabled);
+        view.setNewCommentDisabled(!isNewCommentEnabled);
         if (textMarkup == En_TextMarkup.MARKDOWN) {
             view.setMarkupLabel(lang.textMarkdownSupport(), configStorage.getConfigData().markupHelpLinkMarkdown);
         } else {
@@ -315,7 +317,8 @@ public abstract class CaseCommentListActivity
     private void fillView(List<CaseComment> comments){
         itemViewToModel.clear();
         view.clearCommentsContainer();
-        view.enabledNewComment(isModifyEnabled);
+        view.setNewCommentHidden(!isModifyEnabled);
+        view.setNewCommentDisabled(!isNewCommentEnabled);
 
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
@@ -477,6 +480,10 @@ public abstract class CaseCommentListActivity
 
 
     private void send() {
+
+        if (!isNewCommentEnabled) {
+            return;
+        }
 
         if (isLockedSave()) {
             return;
@@ -713,6 +720,7 @@ public abstract class CaseCommentListActivity
     private Long caseId;
     private boolean isPrivateVisible = false;
     private boolean isPrivateCase = false;
+    private boolean isNewCommentEnabled = true;
 
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();

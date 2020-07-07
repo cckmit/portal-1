@@ -6,6 +6,7 @@
 
     <changeSet id="modify-case_state-table" author="buchmastov">
         <renameColumn tableName="case_state"
+                      columnDataType="BOOLEAN"
                       oldColumnName="is_terminal"
                       newColumnName="is_completed"/>
         <addColumn tableName="case_state">
