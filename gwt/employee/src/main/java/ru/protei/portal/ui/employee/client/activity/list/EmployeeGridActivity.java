@@ -103,6 +103,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             return;
         }
 
+        fireEvent(new ActionBarEvents.Clear());
         fireEvent(new EmployeeEvents.Edit());
     }
 

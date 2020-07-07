@@ -7,55 +7,36 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card card-transparent no-margin card-with-fixable-footer">
-        <div class="card-body no-padding">
-            <div class="container-fluid padding-15">
-                <div class="card card-transparent no-margin">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                <label ui:field="absenceReportTitleLabel"><ui:text from="{lang.absenceReportTitle}"/></label>
-                                <g:TextBox ui:field="name" styleName="form-control" maxLength="64"/>
-                            </div>
-                        </div>
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <g:HTMLPanel ui:field="content" styleName="card-body">
+            <div class="row">
+                <div class="form-group col-md-12 small hint-text">
+                    <ui:text from="{lang.absenceReportHint}"/>
+                </div>
+                <div class="form-group col-md-12">
+                    <label ui:field="absenceReportTitleLabel"><ui:text from="{lang.absenceReportTitle}"/></label>
+                    <g:TextBox ui:field="name" styleName="form-control" maxLength="64"/>
+                </div>
+                <div class="form-group col-md-12">
+                    <label ui:field="absenceReportDateRangeLabel"><ui:text from="{lang.absenceReportDateRange}"/></label>
+                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" mandatory="true"/>
+                </div>
+                <person:EmployeeMultiSelector ui:field="employees"
+                                              header="{lang.absenceReportEmployees}"
+                                              addStyleNames="form-group col-md-12"
+                                              firedEmployeesVisible="true"/>
+                <absencereason:AbsenceReasonMultiSelector ui:field="reasons"
+                                                          header="{lang.absenceReportReasons}"
+                                                          addStyleNames="form-group col-md-12"/>
+                <div class="form-group col-md-12">
+                    <label ui:field="absenceReportSortByLabel"><ui:text from="{lang.sortBy}"/></label>
+                    <div class="control-group">
+                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="ABSENCE" />
+                        <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                     </div>
                 </div>
+
             </div>
-            <div class="container-fluid padding-15 bg-white">
-                <div class="card card-transparent no-margin">
-                    <div class="card-body">
-                        <div class="row">
-                            <person:EmployeeMultiSelector ui:field="employees"
-                                                          header="{lang.absenceReportEmployees}"
-                                                          addStyleNames="form-group col-md-6"
-                                                          firedEmployeesVisible="true"/>
-                            <absencereason:AbsenceReasonMultiSelector ui:field="reasons"
-                                                                      header="{lang.absenceReportReasons}"
-                                                                      addStyleNames="form-group col-md-6"/>
-                            <div class="form-group col-md-6">
-                                <label ui:field="absenceReportDateRangeLabel"><ui:text from="{lang.absenceReportDateRange}"/></label>
-                                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" mandatory="true"/>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label ui:field="absenceReportSortByLabel"><ui:text from="{lang.sortBy}"/></label>
-                                <div class="control-group">
-                                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="ABSENCE" />
-                                    <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-footer">
-            <div class="card card-transparent no-margin">
-                <div class="text-right">
-                    <g:Button ui:field="reportButton" styleName="btn btn-complete" text="{lang.buttonReport}"/>
-                    <g:Button ui:field="resetButton" styleName="btn btn-default" text="{lang.buttonReset}"/>
-                    <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
-                </div>
-            </div>
-        </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

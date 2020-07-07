@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:reason='urn:import:ru.protei.portal.ui.absence.client.widget.selector'
              xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
              xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'
              xmlns:absencereason="urn:import:ru.protei.portal.ui.common.client.widget.selector.absencereason">

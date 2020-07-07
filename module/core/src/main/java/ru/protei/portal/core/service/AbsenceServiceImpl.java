@@ -43,13 +43,7 @@ public class AbsenceServiceImpl implements AbsenceService {
     PersonNotifierDAO personNotifierDAO;
 
     @Autowired
-    ReportAbsence reportAbsence;
-
-    @Autowired
-    HttpServletResponse response;
-
-    @Autowired
-    EventPublisherService publisherService;
+    ReportControlService reportControlService;
 
     private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
@@ -195,36 +189,19 @@ public class AbsenceServiceImpl implements AbsenceService {
                         getAbsenceNotifiers(newState)));
     }
 
-
     @Override
     public Result createReport(AuthToken token, String name, AbsenceQuery query) {
 
-        if (HelperFunc.isEmpty(name) || query == null) {
+        if (query == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        processReport(token, name, query);
+        String title = HelperFunc.isEmpty(name) ? ("Отсутствия от " + dateFormat.format(new Date())) : name.trim();
+        Person initiator = personDAO.get(token.getPersonId());
+
+        reportControlService.processAbsenceReport(initiator, title, query);
 
         return ok();
-    }
-
-    @Async(BACKGROUND_TASKS)
-    protected void processReport(AuthToken token, String name, AbsenceQuery query) {
-
-        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-
-            if (reportAbsence.writeReport(buffer, query, dateFormat)) {
-
-                Person initiator = personDAO.get(token.getPersonId());
-                publisherService.publishEvent(new AbsenceReportEvent(
-                        this,
-                        initiator,
-                        name,
-                        new ByteArrayInputStream(buffer.toByteArray())));
-            }
-        } catch (Exception e) {
-            log.error("createReport(): uncaught exception", e);
-        }
     }
 
     private boolean validateFields(PersonAbsence absence) {

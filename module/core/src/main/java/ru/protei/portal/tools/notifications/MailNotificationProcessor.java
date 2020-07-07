@@ -36,6 +36,7 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -735,9 +736,9 @@ public class MailNotificationProcessor {
     @EventListener
     public void onAbsenceReportEvent(AbsenceReportEvent event) {
         Person initiator = event.getInitiator();
-        String title = event.getName();
+        String title = event.getTitle();
 
-        PreparedTemplate subjectTemplate = templateService.getAbsenceReportSubject(event.getName());
+        PreparedTemplate subjectTemplate = templateService.getAbsenceReportSubject(event.getTitle());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for absence report initiator={}", initiator);
             return;
@@ -745,14 +746,14 @@ public class MailNotificationProcessor {
 
         NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(initiator);
 
-        try (InputStream inputStream = event.getContent()) {
+        try {
             String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
             MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
             msg.setSubject(subject);
             msg.setFrom(getFromAddress());
             msg.setText("", true);
             msg.setTo(notificationEntry.getAddress());
-            msg.addAttachment(title + ".xlsx", new ByteArrayResource(IOUtils.toByteArray(inputStream)));
+            msg.addAttachment(title + ".xlsx", new ByteArrayResource(IOUtils.toByteArray(event.getContent())));
             mailSendChannel.send(msg.getMimeMessage());
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);

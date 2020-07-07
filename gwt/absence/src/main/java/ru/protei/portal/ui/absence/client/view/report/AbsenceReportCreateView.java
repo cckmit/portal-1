@@ -72,38 +72,6 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
         dateRange.markInputValid(false);
     }
 
-    @UiHandler("reportButton")
-    public void reportButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onReportClicked();
-        }
-/*
-
-        if (!dateRange.getValue().isValid()) return;
-        Window.open(DOWNLOAD_PATH + "&name=" + name.getValue() +
-                "&from_time=" + dateRange.getValue().from.getTime() +
-                "&till_time=" + dateRange.getValue().to.getTime() +
-                "&employees="+ employees.getValue().stream().map(PersonShortView::getId).map(Object::toString).collect(Collectors.joining(",")) +
-                "&reasons="+ reasons.getValue().stream().map(En_AbsenceReason::getId).map(Object::toString).collect(Collectors.joining(",")) +
-                "&sort_field=" + sortField.getValue() + "&sort_dir=" + (sortDir.getValue() ? En_SortDir.ASC : En_SortDir.DESC),
-                "_blank", "");
-*/
-    }
-
-    @UiHandler("resetButton")
-    public void resetButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onResetClicked();
-        }
-    }
-
-    @UiHandler("cancelButton")
-    public void cancelButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onCancelClicked();
-        }
-    }
-
     private void ensureDebugIds() {
         absenceReportTitleLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.NAME_LABEL);
         name.ensureDebugId(DebugIds.ABSENCE_REPORT.NAME_INPUT);
@@ -121,8 +89,6 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
         absenceReportSortByLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.SORT_FIELD_LABEL);
         sortField.setEnsureDebugId(DebugIds.ABSENCE_REPORT.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.ABSENCE_REPORT.SORT_DIR_BUTTON);
-        reportButton.ensureDebugId(DebugIds.ABSENCE_REPORT.REPORT_BUTTON);
-        resetButton.ensureDebugId(DebugIds.ABSENCE_REPORT.RESET_BUTTON);
     }
 
     @UiField
@@ -147,19 +113,11 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     SortFieldSelector sortField;
     @UiField
     ToggleButton sortDir;
-    @UiField
-    Button reportButton;
-    @UiField
-    Button resetButton;
-    @UiField
-    Button cancelButton;
     @Inject
     @UiField
     Lang lang;
 
     private AbstractAbsenceReportCreateActivity activity;
-
-    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/report?";
 
     private static AbsenceReportCreateViewUiBinder ourUiBinder = GWT.create(AbsenceReportCreateViewUiBinder.class);
     interface AbsenceReportCreateViewUiBinder extends UiBinder<HTMLPanel, AbsenceReportCreateView> {}

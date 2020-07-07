@@ -3,19 +3,24 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.event.AbsenceReportEvent;
 import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
@@ -27,12 +32,14 @@ import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
@@ -40,6 +47,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     private final ThreadPoolExecutor reportExecutorService = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     private final Object sync = new Object();
     private final Set<Long> reportsInProcess = new HashSet<>();
+    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     @Autowired
     Lang lang;
@@ -60,6 +68,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportCaseTimeElapsed reportCaseTimeElapsed;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    ReportAbsence reportAbsence;
 
     @PostConstruct
     public void init() {
@@ -275,6 +285,25 @@ public class ReportControlServiceImpl implements ReportControlService {
         CompletableFuture.allOf(futures).join();
         log.info("processScheduledMailReports end");
         return ok();
+    }
+
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public Result<Void> processAbsenceReport(Person initiator, String title, AbsenceQuery query) {
+        try {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            if (reportAbsence.writeReport(buffer, query, dateFormat)) {
+
+                publisherService.publishEvent(new AbsenceReportEvent(
+                        this,
+                        initiator,
+                        title,
+                        new ByteArrayInputStream(buffer.toByteArray())));
+            }
+        } catch (Exception e) {
+            log.error("processAbsenceReport(): uncaught exception", e);
+        }
+        return new Result<>();
     }
 
     private CompletableFuture<MailReportEvent> createScheduledMailReportsTask(Report report) {

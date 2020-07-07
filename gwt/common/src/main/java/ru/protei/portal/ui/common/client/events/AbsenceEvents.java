@@ -27,8 +27,5 @@ public class AbsenceEvents {
         }
     }
 
-    @Url(value = "absence_report", primary = true)
-    public static class CreateReport {
-        public CreateReport () {}
-    }
+    public static class CreateReport {}
 }

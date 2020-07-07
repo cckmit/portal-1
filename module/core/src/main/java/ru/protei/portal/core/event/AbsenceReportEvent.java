@@ -7,13 +7,13 @@ import java.io.InputStream;
 
 public class AbsenceReportEvent extends ApplicationEvent {
     private final Person initiator;
-    private final String name;
+    private final String title;
     private final InputStream content;
 
-    public AbsenceReportEvent(Object source, Person initiator, String name, InputStream content) {
+    public AbsenceReportEvent(Object source, Person initiator, String title, InputStream content) {
         super(source);
         this.initiator = initiator;
-        this.name = name;
+        this.title = title;
         this.content = content;
     }
 
@@ -21,8 +21,8 @@ public class AbsenceReportEvent extends ApplicationEvent {
         return initiator;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public InputStream getContent() {

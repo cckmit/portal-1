@@ -2658,7 +2658,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeShowAbsent();
 
-    String absenceReports();
+    String absenceReport();
 
     String absenceReportEmployees();
 
@@ -2671,4 +2671,8 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceReportTitle();
 
     String absenceButtonReport();
+
+    String absenceReportHint();
+
+    String absenceReportAt();
 }
