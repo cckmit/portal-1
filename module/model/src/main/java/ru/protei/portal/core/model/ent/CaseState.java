@@ -25,6 +25,9 @@ public class CaseState implements Serializable {
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
     public List<Company> companies;
 
+    @JdbcColumn(name = "is_completed")
+    private boolean completed;
+
     @JdbcColumn(name = "is_terminal")
     private boolean terminal;
 
@@ -91,6 +94,14 @@ public class CaseState implements Serializable {
         return this;
     }
 
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
     public boolean isTerminal() {
         return terminal;
     }
@@ -118,6 +129,8 @@ public class CaseState implements Serializable {
                 "id=" + id +
                 ", state='" + state + '\'' +
                 ", info='" + info + '\'' +
+                ", completed=" + completed +
+                ", terminal=" + terminal +
                 ", usageInCompanies=" + usageInCompanies +
                 ", companies=" + companies +
                 '}';

@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="modify-case_state-table" author="buchmastov">
+        <renameColumn tableName="case_state"
+                      oldColumnName="is_terminal"
+                      newColumnName="is_completed"/>
+        <addColumn tableName="case_state">
+            <column name="is_terminal" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="update-case_state-table" author="buchmastov">
+        <update tableName="case_state">
+            <column name="is_terminal" valueBoolean="true"/>
+            <where>id = 5</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>
