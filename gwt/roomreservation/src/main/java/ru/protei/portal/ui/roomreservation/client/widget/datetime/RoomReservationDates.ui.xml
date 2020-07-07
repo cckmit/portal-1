@@ -5,11 +5,11 @@
 
     <g:HTMLPanel>
         <g:HTMLPanel ui:field="root" styleName="row"/>
-        <g:HTMLPanel styleName="btn-group" ui:field="controls">
-            <g:Button styleName="btn btn-default" ui:field="createAddWeek">
+        <g:HTMLPanel styleName="btn-group col-md-12 p-0" ui:field="controls">
+            <g:Button styleName="btn btn-default col-md-6" ui:field="createAddWeek">
                 <i class="fas fa-plus-circle"/> <ui:text from="{lang.roomReservationDatesCreateAddWeek}"/>
             </g:Button>
-            <g:Button styleName="btn btn-default" ui:field="createAddDay">
+            <g:Button styleName="btn btn-default col-md-6" ui:field="createAddDay">
                 <i class="fas fa-plus-circle"/> <ui:text from="{lang.roomReservationDatesCreateAddDay}"/>
             </g:Button>
         </g:HTMLPanel>

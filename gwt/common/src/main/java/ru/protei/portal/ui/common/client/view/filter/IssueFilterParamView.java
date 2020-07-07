@@ -119,10 +119,29 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void setCreatedRangeValid(boolean isValid) { dateCreatedRange.setRangeValid(isValid); }
+    public void setCreatedRangeMandatory(boolean isMandatory) {
+        dateCreatedRange.setTypeMandatory(isMandatory);
+    }
 
     @Override
-    public void setModifiedRangeValid(boolean isValid) { dateModifiedRange.setRangeValid(isValid); }
+    public void setCreatedRangeValid(boolean isValid) {
+        dateCreatedRange.setValid(true, isValid);
+    }
+
+    @Override
+    public void setCreatedRangeValid(boolean isTypeValid, boolean isRangeValid) {
+        dateCreatedRange.setValid(isTypeValid, isRangeValid);
+    }
+
+    @Override
+    public void setModifiedRangeValid(boolean isValid) {
+        dateModifiedRange.setValid(true, isValid);
+    }
+
+    @Override
+    public void setModifiedRangeValid(boolean isTypeValid, boolean isRangeValid) {
+        dateModifiedRange.setValid(isTypeValid, isRangeValid);
+    }
 
     @Override
     public HasValue<En_SortField> sortField() {
@@ -571,6 +590,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     public boolean isSearchFieldCorrect(){
         return !searchByComments.getValue() ||
                 search.getValue().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
+    }
+
+    public boolean isCreatedRangeTypeValid() {
+        return !dateCreatedRange.isTypeMandatory()
+               || (dateCreatedRange.getValue() != null
+                   && dateCreatedRange.getValue().getIntervalType() != null);
     }
 
     public boolean isCreatedRangeValid() {

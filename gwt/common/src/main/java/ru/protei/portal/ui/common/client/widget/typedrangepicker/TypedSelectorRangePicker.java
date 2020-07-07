@@ -63,6 +63,7 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
 
     @UiHandler("rangeType")
     void onChangeRangeType(ValueChangeEvent<En_DateIntervalType> event) {
+        rangeType.setValid(!isTypeMandatory || rangeType != null);
         changeRangePicker(event.getValue());
         ValueChangeEvent.fire(this, this.getValue());
     }
@@ -74,9 +75,16 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
 
     public void setFormatValue(String value) { range.setFormatValue(value); }
 
+    public boolean isTypeMandatory() { return isTypeMandatory; }
+
+    public void setTypeMandatory(boolean value) { isTypeMandatory = value; }
+
     public void setRangeMandatory(boolean value) { range.setMandatory(value); }
 
-    public void setRangeValid(boolean isValid) { range.markInputValid(isValid); }
+    public void setValid(boolean isTypeValid, boolean isRangeValid) {
+        rangeType.setValid(isTypeValid);
+        range.markInputValid(isRangeValid);
+    }
 
     public void setEnsureDebugId(String debugId) {
         root.ensureDebugId(debugId);
@@ -101,6 +109,8 @@ public class TypedSelectorRangePicker extends Composite implements HasValue<Date
 
     @UiField
     HTMLPanel root;
+
+    private boolean isTypeMandatory = false;
 
     interface TypedSelectorRangePickerUiBinder extends UiBinder<Widget, TypedSelectorRangePicker> { }
     private static TypedSelectorRangePickerUiBinder ourUiBinder = GWT.create(TypedSelectorRangePickerUiBinder.class);

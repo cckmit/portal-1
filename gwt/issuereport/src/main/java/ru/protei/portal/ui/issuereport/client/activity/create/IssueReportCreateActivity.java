@@ -142,6 +142,7 @@ public abstract class IssueReportCreateActivity implements Activity,
             view.checkImportanceHistoryContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
             view.withDescriptionContainerVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
             issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
+            validateDateRanges(reportType);
             applyIssueFilterVisibilityByPrivileges();
             view.getIssueFilterContainer().clear();
             view.getIssueFilterContainer().add(issueFilterWidget.asWidget());
@@ -155,7 +156,23 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     @Override
     public void onUserFilterChanged() {
-        // ничего не делаем, мы используем фильтр при создании отчета
+        // почти ничего не делаем, только валидацию dateRange, мы используем фильтр при создании отчета
+        validateDateRanges(view.reportType().getValue());
+    }
+
+    // валидация виджетов выбора временных периодов в зависимости от типа отчета
+    private void validateDateRanges(En_ReportType reportType) {
+        boolean isTimeLimitMandatory = reportType == null ?
+                false :
+                En_ReportType.isTimeLimitMandatory(reportType);
+
+        issueFilterWidget.getIssueFilterParams().setCreatedRangeMandatory(isTimeLimitMandatory);
+        validateCreatedRange(
+                issueFilterWidget.getIssueFilterParams().isCreatedRangeTypeValid(),
+                issueFilterWidget.getIssueFilterParams().isCreatedRangeValid());
+        validateModifiedRange(
+                true,
+                issueFilterWidget.getIssueFilterParams().isModifiedRangeValid());
     }
 
     private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
@@ -167,11 +184,12 @@ public abstract class IssueReportCreateActivity implements Activity,
             return false;
         }
 
+        boolean rangeTypeMandatory = En_ReportType.isTimeLimitMandatory(reportType);
+
         switch (reportType) {
             case CASE_RESOLUTION_TIME:
             case CASE_TIME_ELAPSED :
-                boolean dateRangeValid = validateDateRange(query.getCreatedRange(), true);
-                validateCreatedRange(dateRangeValid);
+                boolean dateRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
 
                 if (!dateRangeValid) {
                     fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
@@ -184,11 +202,8 @@ public abstract class IssueReportCreateActivity implements Activity,
                 }
                 break;
             case CASE_OBJECTS:
-                boolean createdRangeValid = validateDateRange(query.getCreatedRange(), false);
-                validateCreatedRange(createdRangeValid);
-
-                boolean modifiedRangeValid = validateDateRange(query.getModifiedRange(), false);
-                validateModifiedRange(modifiedRangeValid);
+                boolean createdRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
+                boolean modifiedRangeValid = validateModifiedRange(query.getModifiedRange(), rangeTypeMandatory);
 
                 if (!createdRangeValid || !modifiedRangeValid) {
                     fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
@@ -199,22 +214,43 @@ public abstract class IssueReportCreateActivity implements Activity,
         return true;
     }
 
-    private boolean validateDateRange(DateRange dateRange, boolean isMandatory) {
-        if (dateRange == null || dateRange.getIntervalType() == null)
-            return !isMandatory;
-
-        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
-                || (dateRange.getFrom() != null
-                    && dateRange.getTo() != null
-                    && dateRange.getFrom().before(dateRange.getTo()));
+    private boolean validateTypeRange(DateRange dateRange, boolean isMandatory) {
+        return !isMandatory || (dateRange != null && dateRange.getIntervalType() != null);
     }
 
-    private void validateCreatedRange(boolean isValid){
-        issueFilterWidget.getIssueFilterParams().setCreatedRangeValid(isValid);
+    private boolean validateDateRange(DateRange dateRange) {
+        if (dateRange == null
+            || dateRange.getIntervalType() == null
+            || !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED))
+        return true;
+
+        return dateRange.getFrom() != null
+                && dateRange.getTo() != null
+                && dateRange.getFrom().before(dateRange.getTo());
     }
 
-    private void validateModifiedRange(boolean isValid){
-        issueFilterWidget.getIssueFilterParams().setModifiedRangeValid(isValid);
+    private boolean validateCreatedRange(DateRange dateRange, boolean isMandatory) {
+        boolean typeValid = validateTypeRange(dateRange, isMandatory);
+        boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
+
+        validateCreatedRange(typeValid, rangeValid);
+        return typeValid && rangeValid;
+    }
+
+    private boolean validateModifiedRange(DateRange dateRange, boolean isMandatory) {
+        boolean typeValid = validateTypeRange(dateRange, isMandatory);
+        boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
+
+        validateModifiedRange(typeValid, rangeValid);
+        return typeValid && rangeValid;
+    }
+
+    private void validateCreatedRange(boolean isTypeValid, boolean isRangeValid) {
+        issueFilterWidget.getIssueFilterParams().setCreatedRangeValid(isTypeValid, isRangeValid);
+    }
+
+    private void validateModifiedRange(boolean isTypeValid, boolean isRangeValid) {
+        issueFilterWidget.getIssueFilterParams().setModifiedRangeValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
