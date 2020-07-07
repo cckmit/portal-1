@@ -7,6 +7,8 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentTimeElapsedSumDAO;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
+import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
@@ -34,6 +36,8 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
     CaseShortViewDAO caseShortViewDAO;
     @Autowired
     CaseCommentTimeElapsedSumDAO caseCommentTimeElapsedSumDAO;
+    @Autowired
+    ReportDAO reportDAO;
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
@@ -57,6 +61,10 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         log.info( "writeReport(): Start report {}", report );
         try {
             while (true) {
+                if (!isProcessed( report.getId() )) {
+                    log.info( "writeReport(): Stop processing of report {}", report.getId() );
+                    break;
+                }
                 caseQuery.setOffset( offset );
                 caseQuery.setLimit( step );
                 List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( caseQuery );
@@ -78,6 +86,13 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         }
 
         writer.collect( buffer );
+        return true;
+    }
+
+    private boolean isProcessed( Long id ) {
+        Report report = reportDAO.partialGet( id, Report.Columns.STATUS );
+        if(report == null) return false;
+        if (!En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
         return true;
     }
 
