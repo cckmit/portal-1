@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -313,6 +314,7 @@ public abstract class IssueEditActivity implements
                 .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
                 .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
                 .withPrivateCase( issue.isPrivateCase() )
+                .withNewCommentEnabled( !isTerminalState(issue.getStateId()) )
                 .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
     }
 

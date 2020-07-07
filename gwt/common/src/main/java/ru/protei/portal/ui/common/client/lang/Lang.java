@@ -2727,4 +2727,8 @@ public interface Lang extends Messages, ContactItemLang {
     String caseHistory();
 
     String errPlanNotFound();
+
+    String commentNewDisabled();
+
+    String commentNewDisabledReasonTerminal();
 }
