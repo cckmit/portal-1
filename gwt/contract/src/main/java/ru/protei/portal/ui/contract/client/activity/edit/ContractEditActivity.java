@@ -93,10 +93,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 .withSuccess(project -> {
                     view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
                     view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
-                    view.contragent().setValue(project.getContragent() == null ? null : project.getContragent());
                     view.directionEnabled().setEnabled(false);
                     view.managerEnabled().setEnabled(false);
-                    view.contragentEnabled().setEnabled(false);
                 })
         );
     }
@@ -104,10 +102,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void clearProjectSpecificFields() {
         view.direction().setValue(null);
         view.manager().setValue(null);
-        view.contragent().setValue(null);
         view.directionEnabled().setEnabled(true);
         view.managerEnabled().setEnabled(true);
-        view.contragentEnabled().setEnabled(true);
     }
 
     private void requestData(Long id){
@@ -141,8 +137,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
         refreshProjectSpecificFields();
 
+        view.contragent().setValue(contract.getContractor());
+
         if (view.project().getValue() == null) {
-            view.contragent().setValue(createOptionOrNull(contract.getCaseContragentId(), contract.getCaseContragentName()));
             view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
             view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
         }
@@ -165,13 +162,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
 
         contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
+        contract.setContractor((view.contragent().getValue()));
 
         if (contract.getProjectId() == null) {
-            contract.setCaseContragentId(getOptionIdOrNull(view.contragent().getValue()));
             contract.setCaseManagerId(getPersonIdOrNull(view.manager().getValue()));
             contract.setCaseDirectionId(getProductIdOrNull(view.direction().getValue()));
         } else {
-            contract.setCaseContragentId(null);
             contract.setCaseManagerId(null);
             contract.setCaseDirectionId(null);
         }

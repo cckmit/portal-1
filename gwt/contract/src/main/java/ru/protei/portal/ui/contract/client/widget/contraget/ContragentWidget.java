@@ -29,15 +29,82 @@ import java.util.List;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-abstract public class ContragentWidget extends Composite implements HasValue<Contractor>, Activity {
+abstract public class ContragentWidget extends Composite implements HasValue<Contractor>, HasEnabled, Activity {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.selectContractContragent());
+        prepareSearchDialog(dialogDetailsSearchView);
+        prepareCreateDialog(dialogDetailsCreateView);
+        searchView.setActivity(makeSearchViewActivity());
+    }
 
-        dialogDetailsSearchView.setActivity(new AbstractDialogDetailsActivity(){
+    @Override
+    public Contractor getValue() {
+        return value;
+    }
+
+    @Override
+    public void setValue(Contractor value) {
+        setValue(value, false);
+    }
+
+    @Override
+    public void setValue(Contractor value, boolean fireEvents) {
+        this.value = value;
+        name.setValue(value != null ? value.getName() : null, fireEvents);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return button.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        button.setEnabled(enabled);
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Contractor> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @UiHandler( "button" )
+    public void onButtonClicked ( ClickEvent event ) {
+        searchView.reset();
+        dialogDetailsSearchView.showPopup();
+    }
+
+    private void ensureDebugIds() {
+        name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRAGENT.NAME);
+        button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRAGENT.SEARCH_BUTTON);
+    }
+
+    public void setEnsureDebugId( String debugId ) {
+        button.ensureDebugId(debugId);
+    }
+
+    private void prepareSearchDialog(AbstractDialogDetailsView dialog) {
+        dialog.setActivity(makeSearchDialogActivity());
+        dialog.getBodyContainer().add(searchView.asWidget());
+        dialog.removeButtonVisibility().setVisible(false);
+        dialog.setHeader(lang.searchContragentTitle());
+        dialog.setSaveButtonName(lang.buttonApply());
+    }
+
+    private void prepareCreateDialog(AbstractDialogDetailsView dialog) {
+        dialog.setActivity(makeCreateDialogActivity());
+        dialog.getBodyContainer().add(createView.asWidget());
+        dialog.removeButtonVisibility().setVisible(false);
+        dialog.setHeader(lang.createContragentTitle());
+        dialog.setSaveButtonName(lang.buttonCreate());
+    }
+
+    private AbstractDialogDetailsActivity makeSearchDialogActivity() {
+        return new AbstractDialogDetailsActivity(){
             @Override
             public void onSaveClicked() {
                 if (searchView.contractor().getValue() == null) {
@@ -51,13 +118,11 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
             public void onCancelClicked() {
                 dialogDetailsSearchView.hidePopup();
             }
-        });
-        dialogDetailsSearchView.getBodyContainer().add(searchView.asWidget());
-        dialogDetailsSearchView.removeButtonVisibility().setVisible(false);
-        dialogDetailsSearchView.setHeader(lang.searchContragentTitle());
-        dialogDetailsSearchView.setSaveButtonName(lang.buttonApply());
+        };
+    }
 
-        dialogDetailsCreateView.setActivity(new AbstractDialogDetailsActivity(){
+    private AbstractDialogDetailsActivity makeCreateDialogActivity() {
+        return new AbstractDialogDetailsActivity(){
             @Override
             public void onSaveClicked() {
                 if (!createView.isValid()) {
@@ -65,13 +130,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
                     return;
                 }
 
-                ContractorAPI contractorAPI = new ContractorAPI();
-                contractorAPI.setInn(createView.contragentINN().getValue());
-                contractorAPI.setKpp(createView.contragentKPP().getValue());
-                contractorAPI.setName(createView.contragentName().getValue());
-                contractorAPI.setFullname(createView.contragentFullname().getValue());
-                contractorAPI.setCountry(createView.contragentCountry().getValue());
-                contractorAPI.setResident(createView.contragentResident().getValue());
+                ContractorAPI contractorAPI = makeContractorAPIDTO();
 
                 controller.createContractor(contractorAPI, new FluentCallback<Contractor>()
                         .withError(t -> {
@@ -87,13 +146,22 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
             public void onCancelClicked() {
                 dialogDetailsCreateView.hidePopup();
             }
-        });
-        dialogDetailsCreateView.getBodyContainer().add(createView.asWidget());
-        dialogDetailsCreateView.removeButtonVisibility().setVisible(false);
-        dialogDetailsCreateView.setHeader(lang.createContragentTitle());
-        dialogDetailsCreateView.setSaveButtonName(lang.buttonCreate());
+        };
+    }
 
-        searchView.setActivity(new AbstractContragentSearchActivity() {
+    private ContractorAPI makeContractorAPIDTO() {
+        ContractorAPI contractorAPI = new ContractorAPI();
+        contractorAPI.setInn(createView.contragentINN().getValue());
+        contractorAPI.setKpp(createView.contragentKPP().getValue());
+        contractorAPI.setName(createView.contragentName().getValue());
+        contractorAPI.setFullname(createView.contragentFullname().getValue());
+        contractorAPI.setCountry(createView.contragentCountry().getValue());
+        contractorAPI.setResident(createView.contragentResident().getValue());
+        return contractorAPI;
+    }
+
+    private AbstractContragentSearchActivity makeSearchViewActivity() {
+        return new AbstractContragentSearchActivity() {
             @Override
             public void onSearchClicked() {
                 if (!searchView.isValid()) {
@@ -119,41 +187,8 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
                 dialogDetailsSearchView.hidePopup();
                 dialogDetailsCreateView.showPopup();
             }
-        });
+        };
     }
-
-    @Override
-    public Contractor getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(Contractor value) {
-        setValue(value, false);
-    }
-
-    @Override
-    public void setValue(Contractor value, boolean fireEvents) {
-        this.value = value;
-        name.setValue(value.getName(), fireEvents);
-    }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Contractor> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
-    }
-
-    private void ensureDebugIds() {
-        name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRAGENT.NAME);
-        button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRAGENT.SEARCH_BUTTON);
-    }
-
-    @UiHandler( "button" )
-    public void onButtonClicked ( ClickEvent event ) {
-        searchView.reset();
-        dialogDetailsSearchView.showPopup();
-    }
-
 
     @Inject
     AbstractContragentSearchView searchView;

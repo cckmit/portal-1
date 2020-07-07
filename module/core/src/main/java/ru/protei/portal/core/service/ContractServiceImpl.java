@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.dao.ContractDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -34,6 +31,8 @@ public class ContractServiceImpl implements ContractService {
     CaseTypeDAO caseTypeDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    ContractorDAO contractorDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
@@ -98,6 +97,17 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.NOT_CREATED);
 
         contract.setId(id);
+
+        Contractor contractor = contract.getContractor();
+        if (contractor != null) {
+            Result<Long> result = saveContractor(contractor);
+            if (result.isOk()) {
+                contract.setContractorId(result.getData());
+            } else {
+                return result;
+            }
+        }
+
         Long contractId = contractDAO.persist(contract);
 
         if (contractId == null)
@@ -125,6 +135,17 @@ public class ContractServiceImpl implements ContractService {
         }
         fillCaseObjectFromContract(caseObject, contract);
         caseObjectDAO.merge(caseObject);
+
+        Contractor contractor = contract.getContractor();
+        if (contractor != null) {
+            Result<Long> result = saveContractor(contractor);
+            if (result.isOk()) {
+                contract.setContractorId(result.getData());
+            } else {
+                return result;
+            }
+        }
+
         contractDAO.merge(contract);
         jdbcManyRelationsHelper.persist(contract, "contractDates");
         jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
@@ -193,6 +214,25 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setProductId(contract.getCaseDirectionId());
 
         return caseObject;
+    }
+
+    private Result<Long> saveContractor(Contractor contractor) {
+        if (contractor.getRefKey() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        List<Contractor> contractorByRefKey = contractorDAO.getContractorByRefKey(contractor.getRefKey());
+        if (contractorByRefKey.size() > 1) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        if (contractorByRefKey.size() == 0) {
+            contractorDAO.persist(contractor);
+        } else {
+            contractor.setId(contractorByRefKey.get(0).getId());
+            contractorDAO.merge(contractor);
+        }
+
+        return ok(contractor.getId());
     }
 
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {

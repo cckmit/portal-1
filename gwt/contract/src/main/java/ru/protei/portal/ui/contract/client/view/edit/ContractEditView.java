@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -25,7 +26,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
@@ -142,8 +142,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<EntityOption> contragent() {
-        return contragent;
+    public HasValue<Contractor> contragent() {
+        return contragentWidget;
     }
 
     @Override
@@ -156,7 +156,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     public HasEnabled contragentEnabled() {
-        return contragent;
+        return contragentWidget;
     }
 
     public HasEnabled directionEnabled() {
@@ -238,7 +238,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         manager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
 
         contragentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRAGENT);
-        contragent.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
+        contragentWidget.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
 
         dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
         specificationList.setEnsureDebugId(DebugIds.CONTRACT.ADD_SPECIFICATIONS_BUTTON);
@@ -295,9 +295,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
-    @Inject
-    @UiField(provided = true)
-    CompanySelector contragent;
     @Inject
     @UiField(provided = true)
     ContragentWidget contragentWidget;
