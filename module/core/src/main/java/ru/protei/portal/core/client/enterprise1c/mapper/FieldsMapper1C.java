@@ -9,4 +9,5 @@ public interface FieldsMapper1C {
 
     String getField(Field field);
 
+    boolean isId1C(Field field);
 }

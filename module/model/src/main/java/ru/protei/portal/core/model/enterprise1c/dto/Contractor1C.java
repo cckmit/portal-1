@@ -1,16 +1,21 @@
 package ru.protei.portal.core.model.enterprise1c.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.protei.portal.core.model.enterprise1c.annotation.Id1C;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @UrlName1C("Catalog_Контрагенты")
 public class Contractor1C {
 
+    @Id1C
     @JsonProperty("Ref_Key")
     private String refKey;
 
+    @Id1C
     @JsonProperty("Parent_Key")
     private String parentKey;
 
@@ -20,6 +25,7 @@ public class Contractor1C {
     @JsonProperty("НаименованиеПолное")
     private String fullName;
 
+    @Id1C
     @JsonProperty("СтранаРегистрации_Key")
     private String registrationCountryKey;
 

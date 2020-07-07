@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface Api1C {
 
-    Result<List<Contractor1C>> getContractor(Contractor1C contractor1C);
+    Result<List<Contractor1C>> getContractors(Contractor1C contractor1C);
 
-    Result<Contractor1C> saveContractor(Contractor1C contractor1C) throws JsonProcessingException;
+    Result<Contractor1C> saveContractor(Contractor1C contractor1C);
 
-    Result<List<Country1C>> getCountry(Country1C Country1C);
+    Result<List<Country1C>> getCountries(Country1C Country1C);
 
     Result<List<Country1C>> getCountryVocabulary();
 }
