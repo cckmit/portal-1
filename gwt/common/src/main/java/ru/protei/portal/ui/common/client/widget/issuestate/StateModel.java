@@ -108,6 +108,7 @@ public abstract class StateModel implements Activity {
     private List<CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
+            // TODO terminal state
             if (currentCaseState != null && CrmConstants.State.VERIFIED == currentCaseState.getId()) {
                 return Collections.singletonList(currentCaseState);
             } else {

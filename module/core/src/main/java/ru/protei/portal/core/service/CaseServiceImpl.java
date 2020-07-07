@@ -764,6 +764,7 @@ public class CaseServiceImpl implements CaseService {
 
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
+        // TODO terminal state
         return CrmConstants.State.VERIFIED == oldMeta.getStateId() &&
                 CrmConstants.State.VERIFIED != newMeta.getStateId()  &&
                 !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);

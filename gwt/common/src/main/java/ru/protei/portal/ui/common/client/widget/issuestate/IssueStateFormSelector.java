@@ -63,19 +63,10 @@ public class IssueStateFormSelector extends FormSelector<CaseState> implements S
                 return displayOption;
             };
         }
-        return new DisplayOptionCreator<CaseState>() {
-            @Override
-            public DisplayOption makeDisplayOption(CaseState caseState) {
-                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState));
-                displayOption.setTitle(makeCaseStateTitle(caseState));
-                return displayOption;
-            }
-            @Override
-            public DisplayOption makeDisplaySelectedOption(CaseState caseState) {
-                DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "far fa-dot-circle case-state-item");
-                displayOption.setTitle(makeCaseStateTitle(caseState));
-                return displayOption;
-            }
+        return caseState -> {
+            DisplayOption displayOption = new DisplayOption(makeCaseStateName(caseState), "", "fas fa-dot-circle m-r-5 state-" + makeCaseStateStyle(caseState));
+            displayOption.setTitle(makeCaseStateTitle(caseState));
+            return displayOption;
         };
     }
 
