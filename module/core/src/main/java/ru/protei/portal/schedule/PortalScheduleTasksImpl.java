@@ -55,12 +55,12 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         );
     }
 
-    @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
-    public void processHangReportsSchedule() {
-        reportControlService.processHangReports().ifError(response ->
-                log.warn("fail to process reports : status={}", response.getStatus() )
-         );
-    }
+//    @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
+//    public void processHangReportsSchedule() {
+//        reportControlService.processHangReports().ifError(response ->
+//                log.warn("fail to process reports : status={}", response.getStatus() )
+//         );
+//    }
 
     public void processScheduledMailReportsDaily() {
         reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
