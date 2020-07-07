@@ -213,6 +213,9 @@ public abstract class CaseCommentListActivity
 
     @Override
     public void onSendClicked() {
+        if (!isNewCommentEnabled) {
+            return;
+        }
         send();
     }
 
@@ -480,10 +483,6 @@ public abstract class CaseCommentListActivity
 
 
     private void send() {
-
-        if (!isNewCommentEnabled) {
-            return;
-        }
 
         if (isLockedSave()) {
             return;

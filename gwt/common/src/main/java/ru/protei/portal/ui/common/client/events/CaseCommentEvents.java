@@ -44,8 +44,8 @@ public class CaseCommentEvents {
             this.isPrivateCase = b;
             return this;
         }
-        public Show withNewCommentEnabled(boolean b) {
-            this.isNewCommentEnabled = b;
+        public Show withNewCommentEnabled(boolean isNewCommentEnabled) {
+            this.isNewCommentEnabled = isNewCommentEnabled;
             return this;
         }
         public Show withTextMarkup(En_TextMarkup textMarkup) {

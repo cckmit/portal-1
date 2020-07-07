@@ -26,9 +26,6 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
     private String stateName;
 
-    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "is_terminal")
-    private boolean stateTerminal;
-
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
@@ -172,14 +169,6 @@ public class CaseObjectMeta extends AuditableObject {
 
     public void setStateName(String stateName) {
         this.stateName = stateName;
-    }
-
-    public boolean isStateTerminal() {
-        return stateTerminal;
-    }
-
-    public void setStateTerminal(boolean stateTerminal) {
-        this.stateTerminal = stateTerminal;
     }
 
     public Integer getImpLevel() {
@@ -360,7 +349,6 @@ public class CaseObjectMeta extends AuditableObject {
                 ", modified=" + modified +
                 ", stateId=" + stateId +
                 ", stateName='" + stateName + '\'' +
-                ", stateTerminal=" + stateTerminal +
                 ", impLevel=" + impLevel +
                 ", initiatorId=" + initiatorId +
                 ", initiator=" + initiator +

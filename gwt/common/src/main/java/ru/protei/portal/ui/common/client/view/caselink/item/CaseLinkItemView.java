@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isCompletedState;
 
 public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemView {
 
@@ -50,7 +51,7 @@ public class CaseLinkItemView extends Composite implements AbstractCaseLinkItemV
     public void setState(CaseState value) {
         if (value == null) return;
         state.addClassName("state-" + CaseStateUtils.makeStyleName(value.getState()));
-        if (value.isCompleted()) {
+        if (isCompletedState(value.getId())) {
             addStyleName("case-link-completed");
         }
     }

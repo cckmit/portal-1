@@ -21,6 +21,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
+
 /**
  * Модель статусов
  */
@@ -107,7 +109,7 @@ public abstract class StateModel implements Activity {
     private List<CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            if (currentCaseState != null && currentCaseState.isTerminal()) {
+            if (currentCaseState != null && isTerminalState(currentCaseState.getId())) {
                 return Collections.singletonList(currentCaseState);
             } else {
                 return new ArrayList<>(caseStatesList);
