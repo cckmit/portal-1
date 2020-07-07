@@ -2066,39 +2066,39 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDescription();
 
-    String contractContragent();
+    String contractContractor();
 
-    String selectContractContragent();
+    String selectContractContractor();
 
-    String searchContragentTitle();
+    String searchContractorTitle();
 
-    String createContragentTitle();
+    String createContractorTitle();
 
-    String contractContragentName();
+    String contractContractorName();
 
-    String contractContragentFullname();
+    String contractContractorFullname();
 
-    String contractContragentINN();
+    String contractContractorINN();
 
-    String contractContragentKPP();
+    String contractContractorKPP();
 
-    String contractContragentCountry();
+    String contractContractorCountry();
 
-    String contractContragentResident();
+    String contractContractorResident();
 
-    String contractContragentValidationError();
+    String contractContractorValidationError();
 
-    String contractContragentSaveError();
+    String contractContractorSaveError();
 
-    String contractContragentFindError();
+    String contractContractorFindError();
 
-    String contractContragentNoFound();
+    String contractContractorNotFound();
 
-    String contractContragentFindNotChosenError();
+    String contractContractorFindNotChosenError();
 
-    String contractContragentSelectorPlaceholder();
+    String contractContractorSelectorPlaceholder();
 
-    String contractContragentCountryPlaceholder();
+    String contractContractorCountryPlaceholder();
 
     String contractProject();
 

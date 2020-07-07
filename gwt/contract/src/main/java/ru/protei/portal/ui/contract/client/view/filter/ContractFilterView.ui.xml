@@ -3,7 +3,7 @@
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
-             xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.selector.company"
+             xmlns:contractor="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.filtercontractor"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany">
@@ -44,9 +44,9 @@
                                               addStyleNames="form-group col-md-12"
                                               firedEmployeesVisible="true"/>
 
-                <company:CompanyMultiSelector ui:field="contragents"
-                                              header="{lang.contractContragent}"
-                                              addStyleNames="form-group col-md-12"/>
+                <contractor:MultiContractorSelector ui:field="contractors"
+                                                    header="{lang.contractContractor}"
+                                                    addStyleNames="form-group col-md-12"/>
 
                 <homecompany:HomeCompanyMultiSelector ui:field="organizations"
                                                       header="{lang.contractOrganization}"

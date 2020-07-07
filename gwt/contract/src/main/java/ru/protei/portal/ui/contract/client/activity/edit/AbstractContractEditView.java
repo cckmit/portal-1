@@ -53,7 +53,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<EntityOption> project();
 
-    HasValue<Contractor> contragent();
+    HasValue<Contractor> contractor();
 
     HasValue<PersonShortView> manager();
 

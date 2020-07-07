@@ -160,6 +160,11 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
+    public Result<List<Contractor>> getContractorList(AuthToken token) {
+        return ok(contractorDAO.getAll());
+    }
+
+    @Override
     public Result<List<Contractor>> findContractors(AuthToken token, String contractorINN, String contractorKPP) {
         if (contractorINN == null || contractorKPP == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

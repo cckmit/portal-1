@@ -19,6 +19,8 @@ public interface ContractControllerAsync {
 
     void getContractorCountryList(AsyncCallback<List<String>> callback);
 
+    void getContractorList(AsyncCallback<List<Contractor>> callback);
+
     void findContractors(String contractorINN, String contractorKPP, AsyncCallback< List<Contractor>> callback);
 
     void createContractor(ContractorAPI contractor, AsyncCallback<Contractor> callback);

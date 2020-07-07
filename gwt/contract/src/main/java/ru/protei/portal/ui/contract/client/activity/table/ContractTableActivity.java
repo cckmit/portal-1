@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -147,7 +148,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.searchString = filterView.searchString().getValue();
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
-        query.setContragentIds(getCompaniesIdList(filterView.contragents().getValue()));
+        query.setContractorIds(getContractorIdList(filterView.contractors().getValue()));
         query.setOrganizationIds(getCompaniesIdList(filterView.organizations().getValue()));
         query.setManagerIds(getManagersIdList(filterView.managers().getValue()));
         query.setType(filterView.type().getValue());
@@ -201,6 +202,17 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         return personSet
                 .stream()
                 .map( PersonShortView::getId )
+                .collect( Collectors.toList() );
+    }
+
+    public static List< Long > getContractorIdList( Set<Contractor> companySet ) {
+
+        if ( companySet == null || companySet.isEmpty() ) {
+            return null;
+        }
+        return companySet
+                .stream()
+                .map( Contractor::getId )
                 .collect( Collectors.toList() );
     }
 

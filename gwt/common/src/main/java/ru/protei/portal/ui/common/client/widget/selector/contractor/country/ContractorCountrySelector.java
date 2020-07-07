@@ -5,8 +5,8 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingl
 
 public class ContractorCountrySelector extends ButtonPopupSingleSelector<String> {
     @Inject
-    public void init( ContractorCountryModel companyModel ) {
-        setAsyncModel( companyModel );
+    public void init( ContractorCountryModel model ) {
+        setAsyncModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option );
     }
 }

@@ -142,7 +142,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<Contractor> contragent() {
+    public HasValue<Contractor> contractor() {
         return contragentWidget;
     }
 

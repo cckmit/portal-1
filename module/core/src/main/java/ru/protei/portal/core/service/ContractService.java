@@ -33,6 +33,9 @@ public interface ContractService {
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
     Result<List<String>> getContractorCountryList(AuthToken token);
 
+    @Privileged(En_Privilege.CONTRACT_VIEW)
+    Result<List<Contractor>> getContractorList(AuthToken token);
+
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
     Result<List<Contractor>> findContractors(AuthToken token, String contractorINN, String contractorKPP);
 

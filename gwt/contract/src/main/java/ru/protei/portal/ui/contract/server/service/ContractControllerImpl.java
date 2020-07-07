@@ -83,6 +83,12 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
+    public List<Contractor> getContractorList() throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.getContractorList(token));
+    }
+
+    @Override
     public List<Contractor> findContractors(String contractorINN, String contractorKPP) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, contractorINN, contractorKPP));

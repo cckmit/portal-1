@@ -98,7 +98,7 @@
                                 <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization" reverseOrder="true"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <label ui:field="contragentLabel"><ui:text from="{lang.contractContragent}"/></label>
+                                <label ui:field="contragentLabel"><ui:text from="{lang.contractContractor}"/></label>
                                 <contraget:ContragentWidget ui:field="contragentWidget"/>
                             </div>
                             <div class="form-group col-md-6">

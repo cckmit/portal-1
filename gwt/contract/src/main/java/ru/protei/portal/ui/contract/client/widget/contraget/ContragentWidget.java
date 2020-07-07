@@ -35,7 +35,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        name.getElement().setAttribute("placeholder", lang.selectContractContragent());
+        name.getElement().setAttribute("placeholder", lang.selectContractContractor());
         prepareSearchDialog(dialogDetailsSearchView);
         prepareCreateDialog(dialogDetailsCreateView);
         searchView.setActivity(makeSearchViewActivity());
@@ -91,7 +91,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
         dialog.setActivity(makeSearchDialogActivity());
         dialog.getBodyContainer().add(searchView.asWidget());
         dialog.removeButtonVisibility().setVisible(false);
-        dialog.setHeader(lang.searchContragentTitle());
+        dialog.setHeader(lang.searchContractorTitle());
         dialog.setSaveButtonName(lang.buttonApply());
     }
 
@@ -99,7 +99,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
         dialog.setActivity(makeCreateDialogActivity());
         dialog.getBodyContainer().add(createView.asWidget());
         dialog.removeButtonVisibility().setVisible(false);
-        dialog.setHeader(lang.createContragentTitle());
+        dialog.setHeader(lang.createContractorTitle());
         dialog.setSaveButtonName(lang.buttonCreate());
     }
 
@@ -108,7 +108,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
             @Override
             public void onSaveClicked() {
                 if (searchView.contractor().getValue() == null) {
-                    fireEvent(new NotifyEvents.Show(lang.contractContragentFindNotChosenError(), NotifyEvents.NotifyType.INFO));
+                    fireEvent(new NotifyEvents.Show(lang.contractContractorFindNotChosenError(), NotifyEvents.NotifyType.INFO));
                     return;
                 }
                 setValue(searchView.contractor().getValue());
@@ -126,7 +126,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
             @Override
             public void onSaveClicked() {
                 if (!createView.isValid()) {
-                    fireEvent(new NotifyEvents.Show(lang.contractContragentValidationError(), NotifyEvents.NotifyType.ERROR));
+                    fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
                     return;
                 }
 
@@ -134,7 +134,7 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
 
                 controller.createContractor(contractorAPI, new FluentCallback<Contractor>()
                         .withError(t -> {
-                            fireEvent(new NotifyEvents.Show(lang.contractContragentSaveError(), NotifyEvents.NotifyType.ERROR));
+                            fireEvent(new NotifyEvents.Show(lang.contractContractorSaveError(), NotifyEvents.NotifyType.ERROR));
                         })
                         .withSuccess(value -> {
                             setValue(value);
@@ -165,16 +165,16 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
             @Override
             public void onSearchClicked() {
                 if (!searchView.isValid()) {
-                    fireEvent(new NotifyEvents.Show(lang.contractContragentValidationError(), NotifyEvents.NotifyType.ERROR));
+                    fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
                     return;
                 }
                 controller.findContractors(searchView.contragentINN().getValue(), searchView.contragentKPP().getValue(), new FluentCallback<List<Contractor>>()
                         .withError(t -> {
-                            fireEvent(new NotifyEvents.Show(lang.contractContragentFindError(), NotifyEvents.NotifyType.ERROR));
+                            fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
                         })
                         .withSuccess(value -> {
                             if (isEmpty(value)) {
-                                fireEvent(new NotifyEvents.Show(lang.contractContragentNoFound(), NotifyEvents.NotifyType.INFO));
+                                fireEvent(new NotifyEvents.Show(lang.contractContractorNotFound(), NotifyEvents.NotifyType.INFO));
                                 return;
                             }
                             searchView.setSearchResult(value);

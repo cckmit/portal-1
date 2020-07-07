@@ -189,7 +189,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "contractor_id")
     private Long contractorId;
 
-    @JdbcJoinedObject( localColumn = "contractor_id", remoteColumn = "id")
+    @JdbcJoinedObject( localColumn = "contractor_id", remoteColumn = "id", sqlTableAlias = "C")
     private Contractor contractor;
 
     @Override
