@@ -1379,7 +1379,7 @@ td.info {
 
 .state-canceled,
 .state-paused,
-.state-customer_responsibility {
+.state-request_to_partner {
   color: #868686 !important;
 }
 
@@ -1507,16 +1507,16 @@ td.info {
 
 .label-canceled,
 .label-paused,
-.label-customer_responsibility,
+.label-request_to_partner,
 .option-canceled .option-name,
 .option-paused .option-name,
-.option-customer_responsibility .option-name {
+.option-request_to_partner .option-name {
   background-color: #868686;
 }
 
 .case-canceled,
 .case-paused,
-.case-customer_responsibility {
+.case-request_to_partner {
   color: #868686;
   font-weight: bold;
 }

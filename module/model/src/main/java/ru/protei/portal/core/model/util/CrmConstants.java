@@ -164,7 +164,7 @@ public class CrmConstants {
         long CUST_PENDING = 34;
         long CLOSED = 3;
         long IGNORED = 10;
-        long CUSTOMER_RESPONSIBILITY = 37;
+        long REQUEST_TO_PARTNER = 37;
         long SOLVED_NOT_A_PROBLEM = 7;
         long SOLVED_FIXED = 8;
         long SOLVED_DUPLICATED = 9;

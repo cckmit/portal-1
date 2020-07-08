@@ -492,9 +492,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, final CaseObjectMeta caseObjectMeta, boolean isReadOnly) {
-        issueMetaView.managerEnabled().setEnabled(!isReadOnly && policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
-        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
-
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
             issueMetaView.updateManagersCompanyFilter(caseObjectMeta.getManagerCompanyId());
@@ -507,6 +504,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         issueMetaView.setManager(caseObjectMeta.getManager());
+
+        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
+        issueMetaView.managerEnabled().setEnabled(!isReadOnly && (policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT) ||
+                Objects.equals(issueMetaView.getManagerCompany().getId(), policyService.getProfile().getCompany().getId())));
     }
 
     private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
@@ -683,7 +684,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.REQUEST_TO_PARTNER);
     }
 
     private void fillPlatformValueAndUpdateProductsFilter(final Company company) {
