@@ -35,6 +35,7 @@ import java.util.concurrent.*;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_ReportStatus.CANCELLED;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
@@ -126,8 +127,10 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
         }
         Result storageResult = null;
+        String threadName = Thread.currentThread().getName();
         try {
-            log.debug("start process report : reportId={}", report.getId());
+            Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " reportId=" + report.getId());
+            log.info("start process report : reportId={} {}", report.getId(), report.getReportType());
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             if (!writeReport(report, buffer)) {
@@ -143,6 +146,16 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return;
             }
 
+            Report currentReportStatus = reportDAO.partialGet( report.getId(), Report.Columns.STATUS );
+            if (currentReportStatus == null) {
+                log.warn( "processReport(): Can't get processed report {}", report.getId() );
+                return;
+            }
+            if (CANCELLED.equals( currentReportStatus.getStatus() )) {
+                log.warn( "processReport(): Report {} is canceled", report.getId() );
+                return;
+            }
+
             mergeReport(report, En_ReportStatus.READY);
         } catch (Throwable th) {
             log.debug("process report : reportId={}, throwable={}", report.getId(), th.getMessage());
@@ -153,6 +166,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             mergeerroratus(report);
         } finally {
             reportsInProcess.remove(report.getId());
+            Thread.currentThread().setName(threadName);
         }
     }
 
@@ -166,7 +180,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     private void mergeerroratus(Report report) {
         report.setStatus(En_ReportStatus.ERROR);
         report.setModified(new Date());
-        reportDAO.partialMerge(report, "status", "modified");
+        reportDAO.partialMerge(report, Report.Columns.STATUS, Report.Columns.MODIFIED);
         log.debug("process report : reportId={}, status={}", report.getId(), En_ReportStatus.ERROR);
     }
 

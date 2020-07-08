@@ -20,5 +20,10 @@ public enum En_ReportStatus {
     /**
      * отчет не готов, произошла ошибка
      */
-    ERROR
+    ERROR,
+
+    /**
+     * отчет отменен
+     */
+    CANCELLED
 }

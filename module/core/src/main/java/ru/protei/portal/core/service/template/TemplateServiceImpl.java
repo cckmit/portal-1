@@ -413,7 +413,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("created", report.getCreated());
         templateModel.put("creator", report.getCreator().getDisplayShortName());
         templateModel.put("type", report.getReportType());
-        templateModel.put("status", report.getStatus());
+        templateModel.put(Report.Columns.STATUS, report.getStatus());
         templateModel.put("filter", report.getCaseQuery());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/report.body.%s.ftl");
