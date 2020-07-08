@@ -3410,12 +3410,16 @@ label {
       }
     }
 
+    .local {
+      text-align: center;
+      width: 5%;
+    }
+
     .creator {
       width: 15%;
     }
 
     .ip-count {
-      text-align: center;
     }
 
     .comment {
@@ -3462,7 +3466,6 @@ label {
 
     .ip-address {
       width: 15%;
-      text-align: center;
 
       .address-size {
         font-size: 16px;

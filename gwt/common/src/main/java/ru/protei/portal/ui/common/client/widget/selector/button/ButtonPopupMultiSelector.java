@@ -13,14 +13,13 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
-import ru.protei.portal.ui.common.client.widget.selector.button.ValueButton;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Set;
 
@@ -28,7 +27,7 @@ import java.util.Set;
  * Cелектор c выпадающим списком, множественный выбор
  */
 public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
-        implements HasValue<Set<T>>, HasEnabled, HasVisibility {
+        implements HasValue<Set<T>>, HasEnabled, HasVisibility, HasValidable {
 
     public ButtonPopupMultiSelector() {
         initWidget(bsUiBinder.createAndBindUi(this));
@@ -50,6 +49,10 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         showValue(selectorValue);
         if (fireEvents) {
             ValueChangeEvent.fire(this, selectorValue);
+        }
+
+        if (isValidable) {
+            setValid(isValid());
         }
     }
 
@@ -101,6 +104,23 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
         return selector.getSelection().isEmpty();
     }
 
+    @Override
+    public boolean isValid() {
+        return true;
+    };
+
+    @Override
+    public void setValid(boolean isValid){
+        if(isValid)
+            button.removeStyleName(ERROR_STYLENAME);
+        else
+            button.addStyleName(ERROR_STYLENAME);
+    }
+
+    public void setValidation(boolean isValidable){
+        this.isValidable = isValidable;
+    }
+
     protected void showValue(Set<T> values) {
         StringBuilder sb = new StringBuilder();
         for (T value : values) {
@@ -131,6 +151,9 @@ public class ButtonPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     @UiField
     Lang lang;
+
+    private static final String ERROR_STYLENAME ="has-error";
+    private boolean isValidable;
 
     interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupMultiSelector> {
     }

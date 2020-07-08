@@ -99,6 +99,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     }
 
     @Override
+    public void onSubnetsChanged() {
+        view.subnetValidator().setValid(view.owner().getValue() != null);
+        checkCreateAvailable();
+    }
+
+    @Override
     public void onOwnerChanged() {
         view.ownerValidator().setValid(view.owner().getValue() != null);
     }
@@ -128,9 +134,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Override
     public void checkCreateAvailable() {
-        List<Long> subnetIds = CollectionUtils.isEmpty(view.subnets().getValue()) ?
-                null :
-                view.subnets().getValue().stream().map(SubnetOption::getId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(view.subnets().getValue())) {
+            freeIpCount = 0;
+            showCreateAvailable();
+        }
+
+        List<Long> subnetIds = view.subnets().getValue().stream().map(SubnetOption::getId).collect(Collectors.toList());
 
         ipReservationService.getFreeIpsCountBySubnets(subnetIds,
                 new RequestCallback<Long>() {
@@ -175,6 +184,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.comment().setText("");
 
         view.ownerValidator().setValid(view.owner().getValue() != null);
+        view.subnetValidator().setValid(view.subnets().getValue() != null);
         view.setEnableUnlimited(hasSystemPrivileges());
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(isCreateAvailable());
@@ -229,6 +239,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 return false;
             }
         } else {
+
+            if(!view.subnetValidator().isValid()){
+                showError(lang.errSaveReservedIpNeedSelectSubnet());
+                return false;
+            }
+
             Long number = StringUtils.isBlank(view.number().getValue()) ?
                     null : new Long(view.number().getValue());
 

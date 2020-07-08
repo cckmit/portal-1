@@ -3,6 +3,7 @@ package ru.protei.portal.ui.ipreservation.client.view.subnet.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -88,6 +89,20 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
         refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW) );
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE) );
 
+        ClickColumn<Subnet> local = new ClickColumn<Subnet>() {
+            @Override
+            protected void fillColumnHeader(Element columnHeader) {
+            }
+            @Override
+            public void fillColumnValue(Element cell, Subnet value) {
+                Element lock = DOM.createElement( "i" );
+                lock.addClassName( value.isLocal() ?
+                        "fas fa-network-wired fa-lg text-primary" :
+                        "fas fa-network-wired fa-lg text-warning-dark" );
+                cell.appendChild( lock );
+            }
+        };
+
         address = new AddressColumn( lang );
 
         ClickColumn<Subnet> creator = new ClickColumn<Subnet>() {
@@ -125,10 +140,24 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
             @Override
             public void fillColumnValue(Element cell, Subnet value) {
                 cell.addClassName("ip-count");
-                cell.setInnerText(value.getReservedIPs()+"/"+value.getFreeIps());
+
+                Element use = DOM.createElement( "span" );
+                use.addClassName("text-danger");
+                use.setInnerText(String.valueOf(value.getReservedIPs()));
+                cell.appendChild( use );
+
+                Element separator = DOM.createElement( "span" );
+                separator.setInnerText(" | ");
+                cell.appendChild(separator);
+
+                Element free = DOM.createElement( "span" );
+                free.addClassName("text-success");
+                free.setInnerText(String.valueOf(value.getFreeIps()));
+                cell.appendChild( free );
             }
         };
 
+        columns.add(local);
         columns.add(address);
         columns.add(creator);
         columns.add(comment);
