@@ -52,8 +52,7 @@
                     <label>
                         <ui:text from="{lang.contractContractorCountry}"/>
                     </label>
-                    <country:ContractorCountrySelector ui:field="contractorCountry"
-                                                       defaultValue="{lang.contractContractorCountryPlaceholder}" validation="true"/>
+                    <country:ContractorCountrySelector ui:field="contractorCountry"/>
                 </div>
             </div>
         </div>

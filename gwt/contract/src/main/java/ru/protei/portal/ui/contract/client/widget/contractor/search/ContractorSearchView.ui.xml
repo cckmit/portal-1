@@ -40,8 +40,7 @@
                     <label>
                         <ui:text from="{lang.contractContractor}"/>
                     </label>
-                    <contractor:contractor.ContractorSelector ui:field="contractor"
-                               defaultValue="{lang.contractContractorSelectorPlaceholder}"/>
+                    <contractor:contractor.ContractorSelector ui:field="contractor"/>
                 </div>
             </div>
             <div class="row">

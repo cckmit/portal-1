@@ -12,6 +12,10 @@ public class ContractorSelector extends ButtonPopupSingleSelector<Contractor> {
         this.model = model;
         setModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option.getName() );
+        setValidation(true);
+        setSearchEnabled(false);
+        setHideSelectedFromChose(true);
+        setDefaultValue(lang.contractContractorSelectorPlaceholder());
     }
 
     public void fill(List<Contractor> list) {

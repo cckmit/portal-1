@@ -8,5 +8,8 @@ public class ContractorCountrySelector extends ButtonPopupSingleSelector<String>
     public void init( ContractorCountryModel model ) {
         setAsyncModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option );
+        setValidation(true);
+        setHideSelectedFromChose(true);
+        setDefaultValue(lang.contractContractorCountryPlaceholder());
     }
 }

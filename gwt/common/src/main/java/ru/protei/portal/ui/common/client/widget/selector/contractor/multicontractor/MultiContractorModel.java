@@ -7,25 +7,26 @@ import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-public abstract class MultiContractorModel extends LifecycleSelectorModel<Contractor> implements Activity {
+public abstract class MultiContractorModel extends BaseSelectorModel<Contractor> implements Activity {
 
     @Event
     public void onContractListChanged(ContractEvents.ChangeModel event) {
-        refreshOptions();
+        clean();
     }
 
     @Override
-    protected void refreshOptions() {
+    protected void requestData(LoadingHandler selector, String searchText) {
         controller.getContractorList(new FluentCallback<List<Contractor>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(list -> {
-                    notifySubscribers(list);
+                    updateElements( list, selector );
                 })
         );
     }

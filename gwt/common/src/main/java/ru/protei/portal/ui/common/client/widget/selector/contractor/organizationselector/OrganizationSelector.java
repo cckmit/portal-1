@@ -3,26 +3,18 @@ package ru.protei.portal.ui.common.client.widget.selector.contractor.organizatio
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
-public class OrganizationSelector extends ButtonSelector<En_Organization> {
+public class OrganizationSelector extends ButtonPopupSingleSelector<En_Organization> {
 
     @Inject
-    public void init(Lang lang) {
+    public void onInit(OrganizationModel model) {
+        setModel( model );
+        setItemRenderer( option -> option == null ? defaultValue : codeLang.getCompanyName(option) );
         setValidation(true);
-        setDisplayOptionCreator(value -> value == null ?
-                new DisplayOption(lang.selectContractOrganization()) :
-                new DisplayOption(codeLang.getCompanyName(value)));
-        fillOptions();
-    }
-
-    private void fillOptions() {
-        addOption(null);
-        for (En_Organization value : En_Organization.values()) {
-            addOption(value);
-        }
+        setSearchEnabled(false);
+        setHideSelectedFromChose(true);
+        setDefaultValue(lang.selectContractOrganization());
     }
 
     @Inject
