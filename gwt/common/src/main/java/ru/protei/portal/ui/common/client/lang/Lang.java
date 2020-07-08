@@ -1036,9 +1036,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String equipmentNameBySpecification();
 
-    String equipmentOrganizationProtei();
+    String organizationProtei();
 
-    String equipmentOrganizationProteiST();
+    String organizationProteiST();
 
     String equipmentOrganization();
 
@@ -2070,9 +2070,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectContractContractor();
 
+    String selectContractOrganization();
+
     String searchContractorTitle();
 
     String createContractorTitle();
+
+    String contractContractorOrganization();
 
     String contractContractorName();
 
@@ -2083,8 +2087,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractContractorKPP();
 
     String contractContractorCountry();
-
-    String contractContractorResident();
 
     String contractContractorValidationError();
 

@@ -3,7 +3,6 @@
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
-             xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.selector.company"
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:contractwidgets="urn:import:ru.protei.portal.ui.contract.client.widget"
@@ -13,7 +12,7 @@
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
-             xmlns:contraget="urn:import:ru.protei.portal.ui.contract.client.widget.contraget">
+             xmlns:contractor="urn:import:ru.protei.portal.ui.contract.client.widget.contractor">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -98,8 +97,8 @@
                                 <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization" reverseOrder="true"/>
                             </div>
                             <div class="form-group col-md-6">
-                                <label ui:field="contragentLabel"><ui:text from="{lang.contractContractor}"/></label>
-                                <contraget:ContragentWidget ui:field="contragentWidget"/>
+                                <label ui:field="contractorLabel"><ui:text from="{lang.contractContractor}"/></label>
+                                <contractor:ContractorWidget ui:field="contractorWidget"/>
                             </div>
                             <div class="form-group col-md-6">
                                 <label ui:field="curatorLabel"><ui:text from="{lang.contractCurator}"/></label>

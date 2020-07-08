@@ -65,7 +65,7 @@
 
                     <div class="small">
                         <b><ui:text from="{lang.contractContractor}: "/></b>
-                        <span ui:field="contragent"/>
+                        <span ui:field="contractor"/>
                     </div>
 
                     <div class="small">

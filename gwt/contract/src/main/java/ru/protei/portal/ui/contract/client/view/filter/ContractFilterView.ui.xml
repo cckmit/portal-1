@@ -3,7 +3,7 @@
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
-             xmlns:contractor="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.filtercontractor"
+             xmlns:contractor="urn:import:ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany">

@@ -8,9 +8,9 @@ import java.util.List;
 
 public class ContractorSelector extends ButtonPopupSingleSelector<Contractor> {
     @Inject
-    public void init( ContractorModel companyModel ) {
-        this.model = companyModel;
-        setModel( companyModel );
+    public void init( ContractorModel model ) {
+        this.model = model;
+        setModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option.getName() );
     }
 

@@ -1,13 +1,13 @@
 package ru.protei.portal.ui.common.client.widget.organization;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 public class OrganizationButtonSelector
-        extends ButtonSelector<En_OrganizationCode> {
+        extends ButtonSelector<En_Organization> {
 
     @Inject
     public void init() {
@@ -20,7 +20,7 @@ public class OrganizationButtonSelector
 
     public void fillOptions() {
         clearOptions();
-        for (En_OrganizationCode code : En_OrganizationCode.values())
+        for (En_Organization code : En_Organization.values())
             addOption(code);
     }
 

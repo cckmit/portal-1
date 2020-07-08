@@ -4711,16 +4711,16 @@ table {
   }
 }
 
-/** CONTRAGENT **/
-.contragent {
+/** CONTRACTOR **/
+.contractor {
   position: relative;
 }
 
-.contragent input {
+.contractor input {
   padding-right: 28px !important;
 }
 
-.contragent .contragent-search-icon {
+.contractor .contractor-search-icon {
   position: absolute;
   font-weight: 600;
   height: 30px;
@@ -4730,7 +4730,7 @@ table {
   margin-right: 0;
 }
 
-.contragent-search-icon:before {
+.contractor-search-icon:before {
   content: "\f002";
   position: relative;
   display: inline-block;

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contract.client.widget.contraget;
+package ru.protei.portal.ui.contract.client.widget.contractor;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,16 +20,16 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.contract.client.widget.contraget.create.AbstractContragentCreateView;
-import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchActivity;
-import ru.protei.portal.ui.contract.client.widget.contraget.search.AbstractContragentSearchView;
+import ru.protei.portal.ui.contract.client.widget.contractor.create.AbstractContractorCreateView;
+import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchActivity;
+import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchView;
 
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-abstract public class ContragentWidget extends Composite implements HasValue<Contractor>, HasEnabled, Activity {
+abstract public class ContractorWidget extends Composite implements HasValue<Contractor>, HasEnabled, Activity {
 
     @Inject
     public void onInit() {
@@ -79,8 +79,8 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
     }
 
     private void ensureDebugIds() {
-        name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRAGENT.NAME);
-        button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRAGENT.SEARCH_BUTTON);
+        name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.NAME);
+        button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.SEARCH_BUTTON);
     }
 
     public void setEnsureDebugId( String debugId ) {
@@ -151,24 +151,28 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
 
     private ContractorAPI makeContractorAPIDTO() {
         ContractorAPI contractorAPI = new ContractorAPI();
-        contractorAPI.setInn(createView.contragentINN().getValue());
-        contractorAPI.setKpp(createView.contragentKPP().getValue());
-        contractorAPI.setName(createView.contragentName().getValue());
-        contractorAPI.setFullname(createView.contragentFullname().getValue());
-        contractorAPI.setCountry(createView.contragentCountry().getValue());
-        contractorAPI.setResident(createView.contragentResident().getValue());
+        contractorAPI.setOrganization(createView.organization().getValue());
+        contractorAPI.setInn(createView.contractorINN().getValue());
+        contractorAPI.setKpp(createView.contractorKPP().getValue());
+        contractorAPI.setName(createView.contractorName().getValue());
+        contractorAPI.setFullname(createView.contractorFullname().getValue());
+        contractorAPI.setCountry(createView.contractorCountry().getValue());
         return contractorAPI;
     }
 
-    private AbstractContragentSearchActivity makeSearchViewActivity() {
-        return new AbstractContragentSearchActivity() {
+    private AbstractContractorSearchActivity makeSearchViewActivity() {
+        return new AbstractContractorSearchActivity() {
             @Override
             public void onSearchClicked() {
                 if (!searchView.isValid()) {
                     fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
                     return;
                 }
-                controller.findContractors(searchView.contragentINN().getValue(), searchView.contragentKPP().getValue(), new FluentCallback<List<Contractor>>()
+                controller.findContractors(
+                        searchView.organization().getValue(),
+                        searchView.contractorINN().getValue(),
+                        searchView.contractorKPP().getValue(),
+                        new FluentCallback<List<Contractor>>()
                         .withError(t -> {
                             fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
                         })
@@ -191,10 +195,10 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
     }
 
     @Inject
-    AbstractContragentSearchView searchView;
+    AbstractContractorSearchView searchView;
 
     @Inject
-    AbstractContragentCreateView createView;
+    AbstractContractorCreateView createView;
 
     @Inject
     AbstractDialogDetailsView dialogDetailsSearchView;
@@ -216,6 +220,6 @@ abstract public class ContragentWidget extends Composite implements HasValue<Con
 
     private Contractor value;
 
-    interface ContragentWidgetUiBinder extends UiBinder<HTMLPanel, ContragentWidget> {}
-    private static ContragentWidgetUiBinder ourUiBinder = GWT.create( ContragentWidgetUiBinder.class );
+    interface ContractorWidgetUiBinder extends UiBinder<HTMLPanel, ContractorWidget> {}
+    private static ContractorWidgetUiBinder ourUiBinder = GWT.create( ContractorWidgetUiBinder.class );
 }

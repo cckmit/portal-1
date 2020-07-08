@@ -4,8 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -16,7 +14,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.*;
@@ -42,7 +40,7 @@ public class DecimalNumberBox extends Composite
         classifierCode.getElement().setAttribute("placeholder", lang.equipmentClassifierCode().toLowerCase());
         regNum.getElement().setAttribute("placeholder", lang.equipmentRegisterNumber().toLowerCase());
         regNumModification.getElement().setAttribute("placeholder", lang.equipmentRegisterNumberModification().toLowerCase());
-        organizationCode.setValue(En_OrganizationCode.PAMR);
+        organizationCode.setValue(En_Organization.PROTEI);
     }
 
     @Override
@@ -265,7 +263,7 @@ public class DecimalNumberBox extends Composite
     }
 
     @UiHandler("organizationCode")
-    public void onSelectOrganizationCode(ValueChangeEvent<En_OrganizationCode> event) {
+    public void onSelectOrganizationCode(ValueChangeEvent<En_Organization> event) {
         value.setOrganizationCode(event.getValue());
         resetTimer();
     }

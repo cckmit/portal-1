@@ -61,7 +61,5 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled managerEnabled();
 
-    HasEnabled contragentEnabled();
-
     HasEnabled directionEnabled();
 }

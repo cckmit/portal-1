@@ -1,8 +1,12 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_Organization;
+
 import java.io.Serializable;
 
 public class ContractorAPI implements Serializable {
+    private En_Organization organization;
+
     private String refKey;
 
     private String name;
@@ -15,7 +19,13 @@ public class ContractorAPI implements Serializable {
 
     private String country;
 
-    private boolean resident;
+    public En_Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(En_Organization organization) {
+        this.organization = organization;
+    }
 
     public String getRefKey() {
         return refKey;
@@ -65,24 +75,16 @@ public class ContractorAPI implements Serializable {
         this.country = country;
     }
 
-    public boolean isResident() {
-        return resident;
-    }
-
-    public void setResident(boolean resident) {
-        this.resident = resident;
-    }
-
     @Override
     public String toString() {
         return "ContractorAPI{" +
-                "refKey='" + refKey + '\'' +
+                "organization=" + organization +
+                ", refKey='" + refKey + '\'' +
                 ", name='" + name + '\'' +
                 ", fullname='" + fullname + '\'' +
                 ", inn='" + inn + '\'' +
                 ", kpp='" + kpp + '\'' +
                 ", country='" + country + '\'' +
-                ", resident=" + resident +
                 '}';
     }
 }

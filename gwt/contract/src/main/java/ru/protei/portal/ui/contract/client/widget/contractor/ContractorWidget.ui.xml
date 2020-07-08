@@ -4,11 +4,11 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <div class="contragent input-group">
+        <div class="contractor input-group">
             <g:TextBox ui:field="name" styleName="form-control rounded-left-3" enabled="false"/>
             <div class="input-group-append">
                 <g:Button ui:field="button" styleName="btn btn-complete rounded-right-3">
-                    <i class="icon contragent-search-icon"/>
+                    <i class="icon contractor-search-icon"/>
                 </g:Button>
             </div>
         </div>

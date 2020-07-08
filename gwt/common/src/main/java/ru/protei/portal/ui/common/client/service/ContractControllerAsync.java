@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
@@ -21,7 +22,7 @@ public interface ContractControllerAsync {
 
     void getContractorList(AsyncCallback<List<Contractor>> callback);
 
-    void findContractors(String contractorINN, String contractorKPP, AsyncCallback< List<Contractor>> callback);
+    void findContractors(En_Organization organization, String contractorINN, String contractorKPP, AsyncCallback< List<Contractor>> callback);
 
     void createContractor(ContractorAPI contractor, AsyncCallback<Contractor> callback);
 }

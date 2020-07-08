@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -20,7 +20,7 @@ public class DecimalNumber implements Serializable {
      */
     @JdbcColumn( name = "org_code" )
     @JdbcEnumerated(EnumType.STRING)
-    private En_OrganizationCode organizationCode;
+    private En_Organization organizationCode;
 
     /**
      * Код по классификатору ЕСКД
@@ -46,7 +46,7 @@ public class DecimalNumber implements Serializable {
     @JdbcColumn( name = "is_reserve")
     private boolean isReserve;
 
-    public DecimalNumber( En_OrganizationCode organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {
+    public DecimalNumber(En_Organization organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {
         this.organizationCode = organizationCode;
         this.classifierCode = classifierCode;
         this.registerNumber = registerNumber;
@@ -75,11 +75,11 @@ public class DecimalNumber implements Serializable {
         this.id = id;
     }
 
-    public En_OrganizationCode getOrganizationCode() {
+    public En_Organization getOrganizationCode() {
         return organizationCode;
     }
 
-    public void setOrganizationCode( En_OrganizationCode organizationCode ) {
+    public void setOrganizationCode( En_Organization organizationCode ) {
         this.organizationCode = organizationCode;
     }
 

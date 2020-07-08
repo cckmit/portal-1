@@ -36,7 +36,7 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditAct
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
-import ru.protei.portal.ui.contract.client.widget.contraget.ContragentWidget;
+import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
@@ -143,7 +143,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     @Override
     public HasValue<Contractor> contractor() {
-        return contragentWidget;
+        return contractorWidget;
     }
 
     @Override
@@ -153,10 +153,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     public HasEnabled managerEnabled() {
         return manager;
-    }
-
-    public HasEnabled contragentEnabled() {
-        return contragentWidget;
     }
 
     public HasEnabled directionEnabled() {
@@ -237,8 +233,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.MANAGER);
         manager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
 
-        contragentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRAGENT);
-        contragentWidget.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
+        contractorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACTOR);
+        contractorWidget.setEnsureDebugId(DebugIds.CONTRACT.CONTRACTOR_SELECTOR);
 
         dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
         specificationList.setEnsureDebugId(DebugIds.CONTRACT.ADD_SPECIFICATIONS_BUTTON);
@@ -297,7 +293,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     EmployeeButtonSelector manager;
     @Inject
     @UiField(provided = true)
-    ContragentWidget contragentWidget;
+    ContractorWidget contractorWidget;
     @UiField
     LabelElement numberLabel;
     @UiField
@@ -325,7 +321,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     LabelElement managerLabel;
     @UiField
-    LabelElement contragentLabel;
+    LabelElement contractorLabel;
     @UiField
     DivElement commonHeader;
     @UiField

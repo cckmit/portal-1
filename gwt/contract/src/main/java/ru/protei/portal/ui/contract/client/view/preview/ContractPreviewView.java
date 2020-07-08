@@ -71,8 +71,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setContragent(String value) {
-        this.contragent.setInnerText(value);
+    public void setContractor(String value) {
+        this.contractor.setInnerText(value);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement curator;
     @UiField
-    SpanElement contragent;
+    SpanElement contractor;
     @UiField
     Anchor header;
     @UiField

@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -95,7 +95,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     @Override
-    public HasValue<Set<En_OrganizationCode>> organizationCodes() {
+    public HasValue<Set<En_Organization>> organizationCodes() {
         return organizationCode;
     }
 
@@ -158,7 +158,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     @UiHandler("organizationCode")
-    public void onSelectOrganizationCode(ValueChangeEvent<Set<En_OrganizationCode>> event) {
+    public void onSelectOrganizationCode(ValueChangeEvent<Set<En_Organization>> event) {
         fireChangeTimer();
     }
 
@@ -222,8 +222,8 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         projects.setClearEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_CLEAR_BUTTON);
         projects.setItemContainerEnsureDebugId(DebugIds.DOCUMENT.FILTER.PROJECT_SELECTOR_ITEM_CONTAINER);
         organizationCodeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_LABEL);
-        organizationCode.setEnsureDebugId(En_OrganizationCode.PAMR, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI);
-        organizationCode.setEnsureDebugId(En_OrganizationCode.PDRA, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI_ST);
+        organizationCode.setEnsureDebugId(En_Organization.PROTEI, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI);
+        organizationCode.setEnsureDebugId(En_Organization.PROTEI_ST, DebugIds.DOCUMENT.FILTER.ORGANIZATION_CODE_PROTEI_ST);
         documentCategoryLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_CATEGORY_LABEL);
         documentCategory.ensureDebugId(DebugIds.DOCUMENT.FILTER.DOCUMENT_CATEGORY_SELECTOR);
         documentTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.FILTER.DOCUMENT_TYPE_LABEL);

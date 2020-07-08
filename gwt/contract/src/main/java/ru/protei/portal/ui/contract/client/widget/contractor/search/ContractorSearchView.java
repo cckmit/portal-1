@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contract.client.widget.contraget.search;
+package ru.protei.portal.ui.contract.client.widget.contractor.search;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -8,9 +8,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.contractor.ContractorSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contractor.organizationselector.OrganizationSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.ArrayList;
@@ -19,33 +21,40 @@ import java.util.List;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
-public class ContragentSearchView extends Composite implements AbstractContragentSearchView {
+public class ContractorSearchView extends Composite implements AbstractContractorSearchView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        contragentINN.setRegexp(CONTRACTOR_INN);
-        contragentKPP.setRegexp(CONTRACTOR_KPP);
+        contractorINN.setRegexp(CONTRACTOR_INN);
+        contractorKPP.setRegexp(CONTRACTOR_KPP);
+        organization.setValidation(true);
+        organization.setValue(null);
     }
 
     @Override
-    public void setActivity(AbstractContragentSearchActivity activity){
+    public void setActivity(AbstractContractorSearchActivity activity){
         this.activity = activity;
     }
 
     @Override
-    public HasValue<String> contragentINN() {
-        return contragentINN;
+    public HasValue<String> contractorINN() {
+        return contractorINN;
     }
 
     @Override
-    public HasValue<String> contragentKPP() {
-        return contragentKPP;
+    public HasValue<String> contractorKPP() {
+        return contractorKPP;
     }
 
     @Override
     public HasValue<Contractor> contractor() {
         return contractor;
+    }
+
+    @Override
+    public HasValue<En_Organization> organization() {
+        return organization;
     }
 
     @Override
@@ -58,9 +67,10 @@ public class ContragentSearchView extends Composite implements AbstractContragen
 
     @Override
     public void reset() {
-        contragentINN.setValue(null);
-        contragentKPP.setValue(null);
+        contractorINN.setValue(null);
+        contractorKPP.setValue(null);
         contractor.setValue(null);
+        organization.setValue(null);
         contractor.fill(new ArrayList<>());
     }
 
@@ -71,9 +81,10 @@ public class ContragentSearchView extends Composite implements AbstractContragen
 
     @Override
     public boolean isValid() {
-        return contragentINN.isValid() &
-                contragentKPP.isValid() &
-                isValidInn(contragentINN);
+        return contractorINN.isValid() &
+                contractorKPP.isValid() &&
+                organization.isValid() &&
+                isValidInn(contractorINN);
     }
 
     private boolean isValidInn(ValidableTextBox inn) {
@@ -92,18 +103,22 @@ public class ContragentSearchView extends Composite implements AbstractContragen
         activity.onCreateClicked();
     }
 
-    @UiHandler( "contragentINN" )
+    @UiHandler("contractorINN")
     public void onChangeClause(KeyUpEvent event) {
-        if (contragentINN.isValid()) {
-            contragentINN.setValid( ContractorUtils.checkInn(contragentINN.getValue()));
+        if (contractorINN.isValid()) {
+            contractorINN.setValid( ContractorUtils.checkInn(contractorINN.getValue()));
         }
     }
 
-    @UiField
-    ValidableTextBox contragentINN;
+    @Inject
+    @UiField(provided = true)
+    OrganizationSelector organization;
 
     @UiField
-    ValidableTextBox contragentKPP;
+    ValidableTextBox contractorINN;
+
+    @UiField
+    ValidableTextBox contractorKPP;
 
     @UiField
     Button search;
@@ -118,8 +133,8 @@ public class ContragentSearchView extends Composite implements AbstractContragen
     @UiField(provided = true)
     ContractorSelector contractor;
 
-    AbstractContragentSearchActivity activity;
+    AbstractContractorSearchActivity activity;
 
-    private static ContragentSearchViewUiBinder ourUiBinder = GWT.create(ContragentSearchViewUiBinder.class);
-    interface ContragentSearchViewUiBinder extends UiBinder<HTMLPanel, ContragentSearchView> {}
+    private static ContractorSearchViewUiBinder ourUiBinder = GWT.create(ContractorSearchViewUiBinder.class);
+    interface ContractorSearchViewUiBinder extends UiBinder<HTMLPanel, ContractorSearchView> {}
 }

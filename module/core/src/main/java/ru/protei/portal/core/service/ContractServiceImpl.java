@@ -6,6 +6,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -165,8 +166,8 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<Contractor>> findContractors(AuthToken token, String contractorINN, String contractorKPP) {
-        if (contractorINN == null || contractorKPP == null) {
+    public Result<List<Contractor>> findContractors(AuthToken token, En_Organization organization, String contractorINN, String contractorKPP) {
+        if (organization == null || contractorINN == null || contractorKPP == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 

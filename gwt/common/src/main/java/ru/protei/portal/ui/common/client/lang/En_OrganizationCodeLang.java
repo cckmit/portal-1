@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.core.model.dict.En_Organization;
 
 
 /**
@@ -9,11 +9,11 @@ import ru.protei.portal.core.model.dict.En_OrganizationCode;
  */
 public class En_OrganizationCodeLang {
 
-    public String getName( En_OrganizationCode value ) {
+    public String getName( En_Organization value ) {
         switch (value) {
-            case PAMR:
+            case PROTEI:
                 return lang.equipmentOrganizationCodePAMR();
-            case PDRA:
+            case PROTEI_ST:
                 return lang.equipmentOrganizationCodePDRA();
 
             default:
@@ -21,12 +21,12 @@ public class En_OrganizationCodeLang {
         }
     }
 
-    public String getCompanyName( En_OrganizationCode value ) {
+    public String getCompanyName( En_Organization value ) {
         switch (value) {
-            case PAMR:
-                return lang.equipmentOrganizationProtei();
-            case PDRA:
-                return lang.equipmentOrganizationProteiST();
+            case PROTEI:
+                return lang.organizationProtei();
+            case PROTEI_ST:
+                return lang.organizationProteiST();
 
             default:
                 return lang.unknownField();

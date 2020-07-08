@@ -754,7 +754,7 @@ public class DebugIds {
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
-        String CONTRAGENT_SELECTOR = "contract-contragent-selector";
+        String CONTRACTOR_SELECTOR = "contract-contractor-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
@@ -778,7 +778,7 @@ public class DebugIds {
             String ORGANIZATION = "contract-organization-label";
             String CURATOR = "contract-curator-label";
             String MANAGER = "contract-manager-label";
-            String CONTRAGENT = "contract-contragent-label";
+            String CONTRACTOR = "contract-contractor-label";
         }
 
         interface DATE_ITEM {
@@ -798,9 +798,9 @@ public class DebugIds {
             String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
 
-        interface CONTRAGENT {
-            String NAME = "contract-contragent-name";
-            String SEARCH_BUTTON = "contract-contragent-search-button";
+        interface CONTRACTOR {
+            String NAME = "contract-contractor-name";
+            String SEARCH_BUTTON = "contract-contractor-search-button";
         }
     }
 

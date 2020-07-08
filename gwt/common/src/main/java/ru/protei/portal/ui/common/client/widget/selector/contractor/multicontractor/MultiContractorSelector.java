@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.selector.contractor.filtercontractor;
+package ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Contractor;

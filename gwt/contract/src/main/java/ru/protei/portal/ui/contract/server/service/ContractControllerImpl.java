@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
@@ -89,9 +90,9 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public List<Contractor> findContractors(String contractorINN, String contractorKPP) throws RequestFailedException {
+    public List<Contractor> findContractors(En_Organization organization, String contractorINN, String contractorKPP) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, contractorINN, contractorKPP));
+        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, organization, contractorINN, contractorKPP));
     }
 
     @Override

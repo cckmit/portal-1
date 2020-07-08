@@ -10,7 +10,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -78,7 +78,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @Override
-    public HasValue< Set<En_OrganizationCode> > organizationCodes() {
+    public HasValue< Set<En_Organization> > organizationCodes() {
         return organizationCode;
     }
 
@@ -136,7 +136,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @UiHandler( "organizationCode" )
-    public void onSelectOrganizationCode( ValueChangeEvent<Set<En_OrganizationCode > > event ) {
+    public void onSelectOrganizationCode( ValueChangeEvent<Set<En_Organization> > event ) {
         fireChangeTimer();
     }
 
