@@ -3,7 +3,8 @@ package ru.protei.portal.core.model.enterprise1c.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ru.protei.portal.core.model.enterprise1c.annotation.Id1C;
+import ru.protei.portal.core.model.dict.lang.En_1CParamType;
+import ru.protei.portal.core.model.enterprise1c.annotation.SpecialParam1C;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -11,7 +12,7 @@ import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 @UrlName1C("Catalog_СтраныМира")
 public class Country1C {
 
-    @Id1C
+    @SpecialParam1C(En_1CParamType.ID)
     @JsonProperty("Ref_Key")
     private String refKey;
 

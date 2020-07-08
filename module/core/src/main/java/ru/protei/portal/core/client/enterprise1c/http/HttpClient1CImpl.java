@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.function.BiFunction;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -29,7 +30,7 @@ public class HttpClient1CImpl implements HttpClient1C{
     @PostConstruct
     public void init() {
         headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString((portalConfig.data().enterprise1C().getLogin() + ":" + portalConfig.data().enterprise1C().getPassword()).getBytes()));
     }

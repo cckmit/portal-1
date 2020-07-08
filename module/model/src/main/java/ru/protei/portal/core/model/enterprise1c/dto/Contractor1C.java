@@ -3,7 +3,8 @@ package ru.protei.portal.core.model.enterprise1c.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ru.protei.portal.core.model.enterprise1c.annotation.Id1C;
+import ru.protei.portal.core.model.dict.lang.En_1CParamType;
+import ru.protei.portal.core.model.enterprise1c.annotation.SpecialParam1C;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -11,21 +12,21 @@ import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 @UrlName1C("Catalog_Контрагенты")
 public class Contractor1C {
 
-    @Id1C
+    @SpecialParam1C(En_1CParamType.ID)
     @JsonProperty("Ref_Key")
     private String refKey;
 
-    @Id1C
+    @SpecialParam1C(En_1CParamType.ID)
     @JsonProperty("Parent_Key")
     private String parentKey;
 
     @JsonProperty("Description")
-    private String description;
+    private String name;
 
     @JsonProperty("НаименованиеПолное")
     private String fullName;
 
-    @Id1C
+    @SpecialParam1C(En_1CParamType.ID)
     @JsonProperty("СтранаРегистрации_Key")
     private String registrationCountryKey;
 
@@ -50,6 +51,7 @@ public class Contractor1C {
     @JsonProperty("DeletionMark")
     private Boolean deletionMark;
 
+    @SpecialParam1C(En_1CParamType.TEXT)
     @JsonProperty("Комментарий")
     private String comment;
 
@@ -69,12 +71,12 @@ public class Contractor1C {
         this.parentKey = parentKey;
     }
 
-    public String getDescription() {
-        return description;
+    public String getName() {
+        return name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getFullName() {
@@ -162,7 +164,7 @@ public class Contractor1C {
         return "Contractor1C{" +
                 "refKey='" + refKey + '\'' +
                 ", parentKey='" + parentKey + '\'' +
-                ", description='" + description + '\'' +
+                ", name='" + name + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", registrationCountryKey='" + registrationCountryKey + '\'' +
                 ", inn='" + inn + '\'' +
@@ -171,7 +173,7 @@ public class Contractor1C {
                 ", correctKpp=" + correctKpp +
                 ", extendedInn='" + extendedInn + '\'' +
                 ", extendedKpp='" + extendedKpp + '\'' +
-                ", deletionMark='" + deletionMark + '\'' +
+                ", deletionMark=" + deletionMark +
                 ", comment='" + comment + '\'' +
                 '}';
     }

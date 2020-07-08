@@ -630,7 +630,8 @@ public class PortalConfigData {
     }
 
     public static class Enterprise1CConfig {
-        private final String apiBaseUrl;
+        private final String apiBaseProteiUrl;
+        private final String apiBaseProteiStUrl;
         private final String login;
         private final String password;
         private final String parentKeyST;
@@ -638,7 +639,8 @@ public class PortalConfigData {
         private final String parentKeyNotResident;
 
         public Enterprise1CConfig(PropertiesWrapper properties) {
-            apiBaseUrl = properties.getProperty("enterprise1c.api.baseurl");
+            apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
+            apiBaseProteiStUrl = properties.getProperty("enterprise1c.api.base_protei_st_url");
             login = properties.getProperty("enterprise1c.api.login");
             password = properties.getProperty("enterprise1c.api.password");
             parentKeyST = properties.getProperty("enterprise1c.api.parent_key_st");
@@ -646,8 +648,12 @@ public class PortalConfigData {
             parentKeyNotResident = properties.getProperty("enterprise1c.api.parent_key_not_resident");
         }
 
-        public String getApiBaseUrl() {
-            return apiBaseUrl;
+        public String getApiBaseProteiUrl() {
+            return apiBaseProteiUrl;
+        }
+
+        public String getApiBaseProteiStUrl() {
+            return apiBaseProteiStUrl;
         }
 
         public String getLogin() {

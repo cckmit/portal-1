@@ -2,7 +2,8 @@ package ru.protei.portal.core.client.enterprise1c.mapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import ru.protei.portal.core.model.enterprise1c.annotation.Id1C;
+import ru.protei.portal.core.model.dict.lang.En_1CParamType;
+import ru.protei.portal.core.model.enterprise1c.annotation.SpecialParam1C;
 import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.lang.reflect.Field;
@@ -44,7 +45,12 @@ public class FieldsMapper1CImpl implements FieldsMapper1C{
     }
 
     @Override
-    public boolean isId1C(Field field) {
-        return field.getAnnotation(Id1C.class) != null;
+    public En_1CParamType getSpecialParamType(Field field) {
+        SpecialParam1C specialParam1C = field.getAnnotation(SpecialParam1C.class);
+        if(specialParam1C != null) {
+            return specialParam1C.value();
+        }
+
+        return null;
     }
 }
