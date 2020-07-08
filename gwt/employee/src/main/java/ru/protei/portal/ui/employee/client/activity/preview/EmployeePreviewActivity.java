@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -45,7 +45,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     @Event
     public void onShow(EmployeeEvents.ShowFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -76,12 +76,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new EmployeeEvents.Show());
-    }
-
-    @Override
-    public void onEditClicked() {
-        fireEvent(new EmployeeEvents.Edit(employeeId));
+        fireEvent(new EmployeeEvents.Show(true));
     }
 
     private void fillView(Long employeeId) {
@@ -89,8 +84,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView(EmployeeShortView employee) {
-
-        view.editIconVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT));
 
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
@@ -152,7 +145,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         }
 
         if (head != null && !head.getId().equals(employeeId)) {
-            itemView.setDepartmentHead(head.getName(), LinkUtils.makeLink(EmployeeShortView.class, head.getId()));
+            itemView.setDepartmentHead(head.getName(), LinkUtils.makePreviewLink(EmployeeShortView.class, head.getId()));
             itemView.departmentHeadContainerVisibility().setVisible(true);
         }
 

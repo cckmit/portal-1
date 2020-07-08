@@ -343,4 +343,29 @@ public class DaoMockTestConfiguration {
     public RoomReservationDAO getRoomReservationDAO() {
         return mock(RoomReservationDAO.class);
     }
+
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return mock(PersonCaseFilterDAO.class);
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return mock(PlanDAO.class);
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return mock(PlanToCaseObjectDAO.class);
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return mock(HistoryDAO.class);
+    }
+
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return mock(ContractSpecificationDAO.class);
+    }
 }

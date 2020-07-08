@@ -9,9 +9,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.profile.subscription.AbstractProfileSubscriptionActivity;
 import ru.protei.portal.app.portal.client.activity.profile.subscription.AbstractProfileSubscriptionView;
+import ru.protei.portal.app.portal.client.widget.casefilter.group.PersonCaseFilterWidget;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
@@ -44,6 +46,11 @@ public class ProfileSubscriptionView extends Composite implements AbstractProfil
         return persons;
     }
 
+    @Override
+    public void setPersonId(Long personId) {
+        personCaseFilterWidget.setPersonId(personId);
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -57,6 +64,10 @@ public class ProfileSubscriptionView extends Composite implements AbstractProfil
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector persons;
+
+    @Inject
+    @UiField( provided = true )
+    PersonCaseFilterWidget personCaseFilterWidget;
 
     private AbstractProfileSubscriptionActivity activity;
 

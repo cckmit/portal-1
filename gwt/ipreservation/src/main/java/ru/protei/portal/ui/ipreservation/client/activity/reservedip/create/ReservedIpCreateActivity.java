@@ -9,12 +9,14 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.ReservedIp;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.IpReservationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -27,6 +29,8 @@ import ru.protei.portal.ui.ipreservation.client.view.widget.mode.En_ReservedMode
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Активность карточки резервирования IP адресов
@@ -40,8 +44,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Event
     public void onShow (IpReservationEvents.CreateReservedIp event) {
-        if (!hasPrivileges()) {
-            fireEvent(new ForbiddenEvents.Show());
+        if (!hasCreatePrivileges()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -53,22 +57,29 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Override
     public void onSaveClicked() {
-        if (!hasPrivileges() || !validateView()) {
+        if (!hasCreatePrivileges() || !validateView()) {
             return;
         }
 
         view.saveEnabled().setEnabled(false);
 
-        ipReservationService.createReservedIp(fillReservedIpRequest(), new FluentCallback<List<ReservedIp>>()
+        ReservedIpRequest reservedIpRequest = fillReservedIpRequest();
+
+        ipReservationService.createReservedIp(reservedIpRequest, new FluentCallback<List<ReservedIp>>()
                 .withError(throwable -> {
-                    view.saveEnabled().setEnabled(true);
+                    view.saveEnabled().setEnabled(isCreateAvailable());
                     showErrorFromServer(throwable);
                 })
                 .withSuccess(reservedIpList -> {
-                    view.saveEnabled().setEnabled(true);
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IpReservationEvents.ShowReservedIp(true));
-                    fireEvent(new IpReservationEvents.CloseEdit());
+                    view.saveEnabled().setEnabled(isCreateAvailable());
+                    if (reservedIpList.isEmpty()) {
+                        fireEvent(new NotifyEvents.Show(lang.errNotCreated(), NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        fireEvent(new NotifyEvents.Show(lang.reservedIpPartiallyCreated(reservedIpList.size(),
+                                reservedIpRequest.getNumber().intValue()), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new IpReservationEvents.ShowReservedIp(true));
+                        fireEvent(new IpReservationEvents.CloseEdit());
+                    }
                 })
         );
     }
@@ -84,18 +95,24 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
         view.exaсtIpVisibility().setVisible(En_ReservedMode.EXACT_IP.equals(mode));
         view.anyFreeIpsVisibility().setVisible(En_ReservedMode.ANY_FREE_IPS.equals(mode));
+        view.saveEnabled().setEnabled(isCreateAvailable());
+    }
+
+    @Override
+    public void onOwnerChanged() {
+        view.ownerValidator().setValid(view.owner().getValue() != null);
     }
 
     @Override
     public void onChangeIpAddress() {
-        String value = view.ipAddress().getValue().trim();
 
-        if (value.isEmpty()) {
+        if (!view.ipAddressValidator().isValid()) {
             view.setIpAddressStatus(NameStatus.NONE);
             return;
         }
+
         ipReservationService.isReservedIpAddressExists(
-                value,
+                view.ipAddress().getValue().trim(),
                 null,
                 new RequestCallback<Boolean>() {
                     @Override
@@ -109,20 +126,43 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         );
     }
 
+    @Override
+    public void checkCreateAvailable() {
+        List<Long> subnetIds = CollectionUtils.isEmpty(view.subnets().getValue()) ?
+                null :
+                view.subnets().getValue().stream().map(SubnetOption::getId).collect(Collectors.toList());
+
+        ipReservationService.getFreeIpsCountBySubnets(subnetIds,
+                new RequestCallback<Long>() {
+                    @Override
+                    public void onError(Throwable throwable) {
+                        freeIpCount = 0;
+                        showCreateAvailable();
+                    }
+
+                    @Override
+                    public void onSuccess(Long count) {
+                        freeIpCount = count == null ? 0 : count.intValue();
+                        showCreateAvailable();
+                    }
+                }
+        );
+    }
+
     private void resetView () {
         view.ipAddress().setValue("");
         view.macAddress().setValue("");
         view.subnets().setValue(null);
-        view.number().setValue(null);
+        view.number().setValue(String.valueOf(CrmConstants.IpReservation.MIN_IPS_COUNT));
+        checkCreateAvailable();
 
-        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)) {
-            view.reservedMode().setValue(En_ReservedMode.EXACT_IP, true);
-            view.reserveModeVisibility().setVisible(true);
+        view.reservedMode().setValue(En_ReservedMode.EXACT_IP, true);
+        view.reserveModeVisibility().setVisible(true);
+
+        if (hasSystemPrivileges()) {
             view.owner().setValue(null);
             view.ownerEnabled().setEnabled(true);
         } else {
-            view.reservedMode().setValue(En_ReservedMode.ANY_FREE_IPS, true);
-            view.reserveModeVisibility().setVisible(false);
             PersonShortView ipOwner = new PersonShortView(
                     policyService.getProfile().getShortName(),
                     policyService.getProfile().getId(),
@@ -134,8 +174,10 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 new DateInterval(new Date(), null), En_DateIntervalType.MONTH));
         view.comment().setText("");
 
+        view.ownerValidator().setValid(view.owner().getValue() != null);
+        view.setEnableUnlimited(hasSystemPrivileges());
         view.saveVisibility().setVisible( true );
-        view.saveEnabled().setEnabled(true);
+        view.saveEnabled().setEnabled(isCreateAvailable());
 
         resetValidationStatus();
     }
@@ -147,6 +189,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         switch (mode) {
             case EXACT_IP:
                 reservedIpRequest.setExact(true);
+                reservedIpRequest.setNumber(new Long(CrmConstants.IpReservation.MIN_IPS_COUNT));
                 reservedIpRequest.setIpAddress(view.ipAddress().getValue());
                 reservedIpRequest.setMacAddress(view.macAddress().getValue());
                 break;
@@ -199,7 +242,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             }
         }
 
-        if(view.owner().getValue() == null){
+        if(!view.ownerValidator().isValid()){
             showError(lang.errSaveReservedIpNeedSelectOwner());
             return false;
         }
@@ -215,16 +258,30 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         return true;
     }
 
+    private void showCreateAvailable() {
+        view.setFreeIpCountLabel(freeIpCount);
+        view.saveEnabled().setEnabled(isCreateAvailable());
+    }
+
+    private boolean isCreateAvailable() {
+        boolean isExactMode = Objects.equals(view.reservedMode().getValue(), En_ReservedMode.EXACT_IP);
+        boolean isFreeIpsEnough = view.number().getValue() != null &&
+                                  freeIpCount > 0 &&
+                                  freeIpCount >= Long.parseLong(view.number().getValue());
+
+        return isExactMode || isFreeIpsEnough;
+    }
+
     private void resetValidationStatus() {
         view.setIpAddressStatus(NameStatus.NONE);
     }
 
-    private boolean hasPrivileges() {
-        if (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE)) {
-            return true;
-        }
+    private boolean hasSystemPrivileges() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_CREATE);
+    }
 
-        return false;
+    private boolean hasCreatePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_CREATE);
     }
 
     private void showErrorFromServer(Throwable throwable) {
@@ -245,4 +302,6 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
     PolicyService policyService;
     @Inject
     DefaultErrorHandler errorHandler;
+
+    private int freeIpCount = 0;
 }

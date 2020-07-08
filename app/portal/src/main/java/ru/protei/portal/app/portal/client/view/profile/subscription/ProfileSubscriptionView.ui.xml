@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:casefilter='urn:import:ru.protei.portal.app.portal.client.widget.casefilter.group'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -10,5 +11,9 @@
                                       addStyleNames="form-group col-md-12 person-subscribers"
                                       buttonStyle="btn-info btn-xs"/>
 
+        <div class="form-group col-md-12">
+            <label><ui:text from="{lang.accountSubscribeCaseFilter}"/></label>
+            <casefilter:PersonCaseFilterWidget ui:field="personCaseFilterWidget"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -10,6 +10,7 @@ public class CaseLinkQuery extends BaseQuery {
     private Boolean showOnlyPrivate;
     private String remoteId;
     private En_CaseLink type;
+    private Boolean withCrosslink;
 
     public CaseLinkQuery() {}
 
@@ -58,5 +59,13 @@ public class CaseLinkQuery extends BaseQuery {
 
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public Boolean getWithCrosslink() {
+        return withCrosslink;
+    }
+
+    public void setWithCrosslink(Boolean withCrosslink) {
+        this.withCrosslink = withCrosslink;
     }
 }

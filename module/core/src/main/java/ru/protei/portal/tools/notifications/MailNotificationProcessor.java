@@ -41,6 +41,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
@@ -215,6 +216,8 @@ public class MailNotificationProcessor {
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
+        log.info("performCaseObjectNotification() : isProteiRecipients={}, notifiers={}", isProteiRecipients, join(notifiers, ni->ni.getAddress(), ","));
+
         if (CollectionUtils.isEmpty(notifiers)) {
             return;
         }
@@ -344,22 +347,23 @@ public class MailNotificationProcessor {
     // -----------------------
 
     @EventListener
-    public void onEmployeeRegistrationEvent(EmployeeRegistrationEvent event) {
-        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
-        if (employeeRegistration == null) {
-            log.info("Failed to send employee registration notification: employee registration is null");
+    public void onEmployeeRegistrationEvent(AssembledEmployeeRegistrationEvent event) {
+        if (!isSendEmployeeRegistrationNotification(event)) {
             return;
         }
 
+        EmployeeRegistration employeeRegistration = event.getNewState();
+
         Set<NotificationEntry> notifiers = subscriptionService.subscribers(event);
-        if (CollectionUtils.isEmpty(notifiers))
+        if (CollectionUtils.isEmpty(notifiers)) {
             return;
+        }
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
         String urlTemplate = getEmployeeRegistrationUrl();
 
-        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
+        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(event, urlTemplate, recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for employeeRegistrationId={}", employeeRegistration.getId());
             return;
@@ -529,11 +533,15 @@ public class MailNotificationProcessor {
     public void onDocumentMemberAddedEvent(DocumentMemberAddedEvent event) {
         Document document = event.getDocument();
         List<Person> personList = event.getPersonList();
-        if (document == null || CollectionUtils.isEmpty(personList)) {
-            log.error("Failed to send document member added notification: incomplete data provided: " +
-                    "document={}, personList={}", document, personList);
+        if (document == null) {
+            log.error("Failed to send document member added notification: document is null");
             return;
         }
+
+        if (CollectionUtils.isEmpty(personList)) {
+            return;
+        }
+
         List<NotificationEntry> recipients = personList.stream()
                 .map(this::fetchNotificationEntryFromPerson)
                 .filter(Objects::nonNull)
@@ -697,6 +705,117 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
+    }
+
+    // -----------------------------
+    // IP reservation notifications
+    // -----------------------------
+
+    @EventListener
+    public void onSubnetNotificationEvent(SubnetNotificationEvent event) {
+        Subnet subnet = event.getSubnet();
+        Person initiator = event.getInitiator();
+        SubnetNotificationEvent.Action action = event.getAction();
+        List<NotificationEntry> notifiers = event.getNotificationEntryList();
+
+        if (isEmpty(notifiers) || action == null || subnet == null) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getSubnetNotificationSubject(subnet, initiator, action);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for subnet notification with id={} and action={}",
+                    subnet.getId(), action);
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        PreparedTemplate bodyTemplate = templateService.getSubnetNotificationBody(subnet, action, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for subnet notification with id={} and action={}",
+                    subnet.getId(), action);
+            return;
+        }
+
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onReservedIpNotificationEvent(ReservedIpNotificationEvent event) {
+        List<ReservedIp> reservedIps = event.getReservedIps();
+        Person initiator = event.getInitiator();
+        ReservedIpNotificationEvent.Action action = event.getAction();
+        List<NotificationEntry> notifiers = event.getNotificationEntryList();
+
+        if (isEmpty(notifiers) || action == null || CollectionUtils.isEmpty(reservedIps)) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getReservedIpNotificationSubject(reservedIps, initiator, action);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for reserved IP notification: action={}", action);
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for reserved IP notification: action={}", action);
+            return;
+        }
+
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onReleaseIpRemainingEvent(ReservedIpReleaseRemainingEvent event) {
+        List<ReservedIp> reservedIps = event.getReservedIpList();
+        Date releaseDateStart = event.getReleaseDateStart();
+        Date releaseDateEnd = event.getReleaseDateEnd();
+        List<NotificationEntry> notifiers = event.getNotificationEntryList();
+
+        if (isEmpty(notifiers)) {
+            log.info("Failed to send release reserved IPs remaining notification: empty notifiers set");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getReservedIpRemainingNotificationSubject(releaseDateStart, releaseDateEnd);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for release reserved IPs notification");
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        PreparedTemplate bodyTemplate = templateService.getReservedIpNotificationBody(reservedIps, recipients);
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release reserved IPs notification");
+            return;
+        }
+
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onPersonCaseFilterEvent(PersonCaseFilterEvent event) {
+        NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getRecipient());
+
+        PreparedTemplate subjectTemplate = templateService.getPersonCaseFilterNotificationSubject();
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for PersonCaseFilter notification");
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getPersonCaseFilterNotificationBody( event.getIssues(), getCrmCaseUrl(true));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for release PersonCaseFilter notification");
+            return;
+        }
+
+        sendMailToRecipients(Collections.singletonList(notifier), bodyTemplate, subjectTemplate, true);
     }
 
 
@@ -876,6 +995,7 @@ public class MailNotificationProcessor {
                 || assembledCaseEvent.isPauseDateChanged()
                 || assembledCaseEvent.isInitiatorChanged()
                 || assembledCaseEvent.isInitiatorCompanyChanged()
+                || assembledCaseEvent.isManagerCompanyChanged()
                 || assembledCaseEvent.isManagerChanged()
                 || assembledCaseEvent.getName().hasDifferences()
                 || assembledCaseEvent.getInfo().hasDifferences()
@@ -910,6 +1030,30 @@ public class MailNotificationProcessor {
                 || event.isSlaChanged()
                 || event.isCommentsChanged()
                 || event.isLinksChanged();
+    }
+
+    private boolean isSendEmployeeRegistrationNotification(AssembledEmployeeRegistrationEvent event) {
+        if (!event.isEditEvent()) {
+            return true;
+        }
+
+        if (isEmployeeRegistrationChanged(event)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isEmployeeRegistrationChanged(AssembledEmployeeRegistrationEvent event) {
+        if (event.isEmploymentDateChanged()) {
+            return true;
+        }
+
+        if (event.isCuratorsChanged()) {
+            return true;
+        }
+
+        return false;
     }
 
     private String getCrmProjectUrl() {

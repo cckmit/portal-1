@@ -18,6 +18,10 @@ public class EntityOption implements Serializable {
     public EntityOption() {
     }
 
+    public EntityOption(Long id) {
+        this(null, id, null);
+    }
+
     public EntityOption(String displayText, Long id) {
         this(displayText, id, null);
     }

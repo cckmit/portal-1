@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
              xmlns:reporttype='urn:import:ru.protei.portal.ui.issuereport.client.widget.reporttype'
         >
 
@@ -19,10 +20,18 @@
                                 <label><ui:text from="{lang.issueReportsTitle}"/></label>
                                 <g:TextBox ui:field="name" styleName="form-control"/>
                             </div>
-                            <div class="form-group col-md-4">
-                                <g:Label ui:field="scheduledTypeLabel"><ui:text from="{lang.reportScheduledType}"/></g:Label>
+                            <g:HTMLPanel ui:field="scheduledTypeContainer" styleName="form-group col-md-4">
+                                <label><ui:text from="{lang.reportScheduledType}"/></label>
                                 <reporttype:ReportScheduledTypeButtonSelector ui:field="scheduledType"/>
-                            </div>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="checkImportanceHistoryContainer" styleName="form-group col-md-4" title="{lang.issueImportanceCheckHistoryTitle}">
+                                <switcher:Switcher ui:field="checkImportanceHistory"/>
+                                <label class="m-l-5"><ui:text from="{lang.issueImportanceCheckHistory}"/></label>
+                            </g:HTMLPanel>
+                            <g:HTMLPanel ui:field="withDescriptionContainer" styleName="form-group col-md-4" title="{lang.issueReportWithDescriptionTitle}">
+                                <switcher:Switcher ui:field="withDescription"/>
+                                <label class="m-l-5"><ui:text from="{lang.issueReportWithDescription}"/></label>
+                            </g:HTMLPanel>
                         </div>
                     </div>
                 </div>

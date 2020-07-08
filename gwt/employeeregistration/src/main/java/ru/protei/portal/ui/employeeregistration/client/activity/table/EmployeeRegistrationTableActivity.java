@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employeeregistration.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -8,15 +9,13 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -25,6 +24,7 @@ import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractE
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class EmployeeRegistrationTableActivity implements AbstractEmployeeRegistrationTableActivity,
         AbstractEmployeeRegistrationFilterActivity, Activity {
@@ -42,8 +42,18 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         this.init = event;
     }
 
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        filterView.resetFilter();
+    }
+
     @Event(Type.FILL_CONTENT)
     public void onShow(EmployeeRegistrationEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         init.parent.clear();
         init.parent.add(view.asWidget());
 
@@ -52,7 +62,8 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
                 new ActionBarEvents.Clear()
         );
 
-        filterView.resetFilter();
+        this.preScroll = event.preScroll;
+
         loadTable();
     }
 
@@ -67,8 +78,16 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         fireEvent(new EmployeeRegistrationEvents.Create());
     }
 
+    @Event
+    public void onEmployeeRegistrationChanged(EmployeeRegistrationEvents.ChangeEmployeeRegistration event) {
+        employeeRegistrationService.getEmployeeRegistration(event.employeeRegistrationId, new FluentCallback<EmployeeRegistration>()
+                .withSuccess(view::updateRow)
+        );
+    }
+
     @Override
     public void onItemClicked(EmployeeRegistration value) {
+        persistScroll();
         showPreview(value);
     }
 
@@ -92,8 +111,29 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
                     asyncCallback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
+                        restoreScroll();
                     }
                 }));
+    }
+
+    @Override
+    public void onEditClicked(EmployeeRegistration value) {
+        fireEvent(new EmployeeRegistrationEvents.Edit(value.getId()));
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void loadTable() {
@@ -107,7 +147,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         query.searchString = filterView.searchString().getValue();
         query.setCreatedFrom(filterView.dateRange().getValue().from);
         query.setCreatedTo(filterView.dateRange().getValue().to);
-        query.setStates(filterView.states().getValue());
+        query.setStates(filterView.states().getValue() == null ? null : filterView.states().getValue().stream().map(CaseState::getId).collect(Collectors.toSet()));
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;
@@ -136,4 +176,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
 
     private AppEvents.InitDetails init;
+
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

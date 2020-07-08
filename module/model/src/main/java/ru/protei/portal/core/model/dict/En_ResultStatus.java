@@ -202,7 +202,7 @@ public enum En_ResultStatus {
     /**
      * Нельзя уволить сотрудника, работающего в текущих компаниях
      */
-    EMPLOYEE_NOT_FIRED_FROM_THIS_COMPANY,
+    EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
 
     /**
      * Подсеть не существует
@@ -223,6 +223,11 @@ public enum En_ResultStatus {
      * Резервирование комнат: найдены пересечения с другими событиями
      */
     ROOM_RESERVATION_HAS_INTERSECTIONS,
+
+    /**
+     * Фильты обращений : фильтр используется
+     */
+    ISSUE_FILTER_IS_USED,
 
     /**
      * Найдено пересечение с другими отсутствиями

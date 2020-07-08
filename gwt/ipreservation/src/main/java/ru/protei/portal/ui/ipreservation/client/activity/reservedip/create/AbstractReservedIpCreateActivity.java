@@ -7,5 +7,7 @@ public interface AbstractReservedIpCreateActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onReservedModeChanged();
+    void onOwnerChanged();
     void onChangeIpAddress();
+    void checkCreateAvailable();
 }

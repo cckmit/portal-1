@@ -4,9 +4,12 @@
 
     <g:HTMLPanel tag="li" styleName="employee">
         <div class="header-block no-hover" ui:field="employeeContainer">
+
             <h2 class="name border-line">
+                <g:Anchor  ui:field="editIcon" styleName="fas fa-edit p-r-5" href="#" visible="false"/>
                 <g:Anchor ui:field="name" href="#"/>
             </h2>
+
             <div class="employee-item-container">
                 <div class="photo">
                     <g:Image ui:field="photo" styleName="employee-list-image"/>

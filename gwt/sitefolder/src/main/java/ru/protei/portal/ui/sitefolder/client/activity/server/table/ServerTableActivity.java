@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.server.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -61,7 +62,7 @@ public abstract class ServerTableActivity implements
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -75,6 +76,7 @@ public abstract class ServerTableActivity implements
         }
 
         platformId = event.platformId;
+        this.preScroll = event.preScroll;
 
         if (platformId != null) {
             requestPlatformAndLoadTable();
@@ -91,6 +93,8 @@ public abstract class ServerTableActivity implements
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             return;
         }
+
+        view.clearSelection();
 
         fireEvent(new SiteFolderServerEvents.Edit());
     }
@@ -120,11 +124,13 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()));
+        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
     }
 
     @Override
     public void onEditClicked(Server value) {
+        persistScroll();
+
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
             return;
         }
@@ -133,7 +139,7 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderServerEvents.Edit(value.getId()));
+        fireEvent(new SiteFolderServerEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
     }
 
     @Override
@@ -152,7 +158,7 @@ public abstract class ServerTableActivity implements
     @Override
     public void onOpenAppsClicked(Server value) {
         if (value != null) {
-            fireEvent(new SiteFolderAppEvents.Show(value.getId()));
+            fireEvent(new SiteFolderAppEvents.Show(value.getId(), false));
         }
     }
 
@@ -173,6 +179,7 @@ public abstract class ServerTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScroll();
                     }
                 }));
     }
@@ -210,6 +217,21 @@ public abstract class ServerTableActivity implements
                     filterView.platforms().setValue(options);
                     loadTable();
                 }));
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void loadTable() {
@@ -252,7 +274,7 @@ public abstract class ServerTableActivity implements
             public void onSuccess(Boolean result) {
                 if (result) {
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
-                    fireEvent(new SiteFolderServerEvents.Show(platformId));
+                    fireEvent(new SiteFolderServerEvents.Show(platformId, false));
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -278,4 +300,7 @@ public abstract class ServerTableActivity implements
 
     private Long platformId = null;
     private AppEvents.InitDetails initDetails;
+
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

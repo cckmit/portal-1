@@ -245,7 +245,7 @@ public class ProjectQuery extends BaseQuery {
 
         if (CollectionUtils.isNotEmpty(this.getStates())) {
             caseQuery.setStateIds(this.getStates().stream()
-                    .map((state) -> new Long(state.getId()).intValue())
+                    .map(state -> state.getId())
                     .collect(toList())
             );
         }

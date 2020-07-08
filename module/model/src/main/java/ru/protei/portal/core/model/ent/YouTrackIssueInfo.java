@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.Pair;
 
@@ -14,7 +13,7 @@ public class YouTrackIssueInfo implements Serializable {
     private String id;
     private String summary;
     private String description;
-    private En_CaseState caseState;
+    private CaseState state;
     private En_ImportanceLevel importance;
     private List<CaseComment> comments;
     private List<Pair<Attachment, CaseAttachment>> attachments;
@@ -43,20 +42,16 @@ public class YouTrackIssueInfo implements Serializable {
         this.description = description;
     }
 
-    public void setState( En_CaseState caseState ) {
-        this.caseState = caseState;
+    public CaseState getState() {
+        return state;
     }
 
-    public void setImportance( En_ImportanceLevel importance ) {
+    public void setState(CaseState state) {
+        this.state = state;
+    }
+
+    public void setImportance(En_ImportanceLevel importance ) {
         this.importance = importance;
-    }
-
-    public En_CaseState getCaseState() {
-        return caseState;
-    }
-
-    public void setCaseState( En_CaseState caseState ) {
-        this.caseState = caseState;
     }
 
     public En_ImportanceLevel getImportance() {
@@ -82,7 +77,7 @@ public class YouTrackIssueInfo implements Serializable {
     @Override
     public String toString() {
         return "YouTrackIssueInfo{" +
-                "caseState=" + caseState +
+                "stateId=" + state +
                 ", importance=" + importance +
                 ", id='" + id + '\'' +
                 ", summary='" + summary + '\'' +

@@ -21,7 +21,7 @@
         </div>
 
         <div class="col-md-1">
-            <g:Button ui:field="remove" styleName="btn btn-danger">
+            <g:Button ui:field="remove" styleName="btn btn-danger pull-right">
                 <i class="fa fa-trash"/>
             </g:Button>
         </div>

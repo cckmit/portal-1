@@ -27,6 +27,10 @@ public class AvatarUtils {
         return getAvatarUrlByGender(gender);
     }
 
+    public static String setAvatarUrl(Long personId) {
+        return UPLOAD_AVATAR_URL + personId;
+    }
+
     public static String getPhotoUrl(Long accountId) {
         return LOAD_AVATAR_URL + accountId + ".jpg";
     }
@@ -50,4 +54,5 @@ public class AvatarUtils {
     public static final String MALE_AVATAR_URL = "./images/user-icon-m.svg";
     public static final String FEMALE_AVATAR_URL = "./images/user-icon-f.svg";
     private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
+    private static final String UPLOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatar-upload/";
 }

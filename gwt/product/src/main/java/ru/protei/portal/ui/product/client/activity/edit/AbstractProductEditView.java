@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -39,8 +40,6 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setInfoPreviewAllowed(boolean isPreviewAllowed);
 
-    void setMutableState(En_DevUnitType value);
-
     void setTypeImage(String src, String title);
 
     void setTypeImageVisibility(boolean isVisible);
@@ -68,6 +67,32 @@ public interface AbstractProductEditView extends IsWidget {
     HasVisibility aliasesVisibility();
 
     HasValue<ProductDirectionInfo> direction();
+
+    void setCommonManagerCompanyId(Long id);
+
+    HasValue<PersonShortView> commonManager();
+
+    HasVisibility commonManagerContainerVisibility();
+
+    HasVisibility parentsContainerVisibility();
+
+    void makeChildrenContainerShortView();
+
+    void makeChildrenContainerFullView();
+
+    void makeDirectionContainerShortView();
+
+    void makeDirectionContainerFullView();
+
+    void setParentTypes(En_DevUnitType... types);
+
+    void setChildrenTypes(En_DevUnitType... types);
+
+    void setNameLabel(String label);
+
+    void setDescriptionLabel(String label);
+
+    void setChildrenContainerLabel(String label);
 
     String HISTORY_VERSION = "historyVersion";
     String CONFIGURATION = "configuration";

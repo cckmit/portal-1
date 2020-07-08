@@ -7,7 +7,10 @@ import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.util.UiResult;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
+
+import java.util.Set;
 
 /**
  * Асинхронный сервис управления обращениями
@@ -31,4 +34,6 @@ public interface IssueControllerAsync {
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
 
     void updateManagerOfIssue(long issueId, long personId, AsyncCallback<Void> async);
+
+    void updatePlans(Set<PlanOption> plans, Long caseId, AsyncCallback<Set<PlanOption>> async);
 }

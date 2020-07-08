@@ -1,11 +1,17 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +19,7 @@ import java.util.List;
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.helper.StringUtils.*;
 
 public class CaseObjectSqlBuilder {
 
@@ -63,13 +70,43 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and caseno in " + makeInArg(query.getCaseNumbers(), false));
             }
 
-            if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
-                condition.append(" and initiator_company in " + makeInArg(query.getCompanyIds(), false));
+            boolean isInitiatorCompaniesNotEmpty = isNotEmpty(query.getCompanyIds());
+
+            if (isInitiatorCompaniesNotEmpty) {
+                condition.append(" and (initiator_company in " + makeInArg(query.getCompanyIds(), false));
+
+                if (isNotEmpty(query.getInitiatorIds())) {
+                    condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
+                }
             }
 
-            if ( query.getInitiatorIds() != null && !query.getInitiatorIds().isEmpty() ) {
-                condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
+            if (isNotEmpty(query.getManagerCompanyIds())) {
+                String logicOperator = isInitiatorCompaniesNotEmpty && Boolean.TRUE.equals(query.getManagerOrInitiatorCondition()) ? " or " : " and ";
+
+                condition.append(logicOperator + "manager_company_id in " + makeInArg(query.getManagerCompanyIds(), false));
+
+                if (isNotEmpty(query.getManagerIds())) {
+                    List<Long> managerIds = new ArrayList<>(query.getManagerIds());
+                    boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
+
+                    if (!isWithoutManager) {
+                        condition
+                                .append(" and manager IN ")
+                                .append(makeInArg(managerIds, false));
+                    } else if (managerIds.isEmpty()) {
+                        condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                        args.add(En_Gender.UNDEFINED.getCode());
+                    } else {
+                        condition
+                                .append(" and (manager IN ")
+                                .append(makeInArg(managerIds, false))
+                                .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                        args.add(En_Gender.UNDEFINED.getCode());
+                    }
+                }
             }
+
+            condition.append(isInitiatorCompaniesNotEmpty ? ")" : "");
 
             if (isNotEmpty(query.getProductIds())) {
                 if (query.getType() != null && query.getType().equals(En_CaseType.PROJECT)) {
@@ -99,21 +136,8 @@ public class CaseObjectSqlBuilder {
                         "WHERE case_location.location_id in (SELECT location.id FROM location WHERE location.parent_id in " + makeInArg(query.getDistrictIds(), false) + "))");
             }
 
-            if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                List<Long> managerIds = new ArrayList<>(query.getManagerIds());
-                boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
-
-                if (!isWithoutManager) {
-                    condition.append(" and manager IN " + makeInArg(managerIds, false));
-                } else if (managerIds.isEmpty()) {
-                    condition.append(" and manager IS NULL");
-                } else {
-                    condition.append(" and (manager IN " + makeInArg(managerIds, false) + " OR manager IS NULL)");
-                }
-            }
-
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
-                condition.append(" and state in " + makeInArg(query.getStateIds(), false));
+                condition.append(" and case_object.state in " + makeInArg(query.getStateIds(), false));
             }
 
             if ( query.getImportanceIds() != null && !query.getImportanceIds().isEmpty() ) {
@@ -149,15 +173,20 @@ public class CaseObjectSqlBuilder {
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-                condition.append( " and ( case_name like ? or case_object.info like ?");
-                if (isSearchAtComments(query)) {
-                    condition.append(" or case_comment.comment_text like ?");
-                    args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+                Condition searchCondition = SqlQueryBuilder.condition()
+                        .or( "case_name" ).like( query.getSearchString() )
+                        .or( "case_name" ).like( query.getAlternativeSearchString() )
+                        .or( "case_object.info" ).like( query.getSearchString() )
+                        .or( "case_object.info" ).like( query.getAlternativeSearchString() );
+                if (isSearchAtComments( query )) {
+                    searchCondition
+                            .or( "case_comment.comment_text" ).like( query.getSearchString() )
+                            .or( "case_comment.comment_text" ).like( query.getAlternativeSearchString() );
                 }
-                condition.append( ")" );
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                args.add(likeArg);
-                args.add(likeArg);
+                condition.append( " and (" )
+                        .append( searchCondition.getSqlCondition() )
+                        .append( ")" );
+                args.addAll( searchCondition.getSqlParameters() );
             }
 
             if (query.getSearchCasenoString() != null && !query.getSearchCasenoString().isEmpty()) {
@@ -271,6 +300,11 @@ public class CaseObjectSqlBuilder {
                             .append(makeInArg(query.getCaseMemberIds(), false))
                             .append(")");
                 }
+            }
+
+            if (query.getPlanId() != null) {
+                condition.append(" and case_object.id IN (SELECT case_object_id FROM plan_to_case_object WHERE plan_id = ?)");
+                args.add(query.getPlanId());
             }
         });
     }

@@ -65,6 +65,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "is_deprecated")
     private boolean isArchived;
 
+    @JdbcColumn(name = "auto_open_issue")
+    private Boolean autoOpenIssue;
+
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
             return null;
@@ -235,6 +238,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         return ids;
     }
 
+    public Boolean getAutoOpenIssue() {
+        return autoOpenIssue;
+    }
+
+    public void setAutoOpenIssue(Boolean autoOpenIssue) {
+        this.autoOpenIssue = autoOpenIssue;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -262,6 +273,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", subscriptions=" + subscriptions +
                 ", caseStates=" + caseStates +
                 ", isArchived=" + isArchived +
+                ", autoOpenIssue=" + autoOpenIssue +
                 '}';
     }
 }

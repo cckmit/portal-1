@@ -5,15 +5,17 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
@@ -32,7 +34,9 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -49,6 +53,9 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Inject
     HTMLRenderer htmlRenderer;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @PostConstruct
     public void onInit() {
@@ -133,10 +140,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldImportanceLevel", oldMetaState == null || oldMetaState.getImportance() == null ? null : oldMetaState.getImportance().getCode());
 
         templateModel.put("caseChanged", event.isCaseStateChanged());
-        templateModel.put("caseState", newMetaState.getState() == null ? null : newMetaState.getState().getName());
-        templateModel.put("oldCaseState", oldMetaState == null || oldMetaState.getState() == null ? null : oldMetaState.getState().getName());
+        templateModel.put("caseState", newMetaState.getStateName());
+        templateModel.put("oldCaseState", oldMetaState == null ? null : oldMetaState.getStateName());
 
-        templateModel.put("isPausedState", En_CaseState.PAUSED.equals(newMetaState.getState()));
+        templateModel.put("isPausedState", CrmConstants.State.PAUSED == newMetaState.getStateId());
         templateModel.put("pauseDateChanged", event.isPauseDateChanged());
         templateModel.put("pauseDate", newMetaState.getPauseDate() == null ? null : new Date(newMetaState.getPauseDate()));
         templateModel.put("oldPauseDate", (oldMetaState == null || oldMetaState.getPauseDate() == null) ? null : new Date(oldMetaState.getPauseDate()));
@@ -153,9 +160,10 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("managerChanged", event.isManagerChanged());
         templateModel.put("manager", newMetaState.getManager() == null ? null : newMetaState.getManager().getDisplayName());
-        templateModel.put("managerCompany", newMetaState.getManager() == null || newMetaState.getManager().getCompany() == null ? null : newMetaState.getManager().getCompany().getCname());
         templateModel.put("oldManager", oldMetaState == null || oldMetaState.getManager() == null ? null : oldMetaState.getManager().getDisplayName());
-        templateModel.put("oldManagerCompany", oldMetaState == null || oldMetaState.getManager() == null || oldMetaState.getManager().getCompany() == null ? null : oldMetaState.getManager().getCompany().getCname());
+
+        templateModel.put("managerCompany", newMetaState.getManagerCompanyName());
+        templateModel.put("oldManagerCompany", oldMetaState == null ? null : oldMetaState.getManagerCompanyName());
 
         templateModel.put("platformChanged", event.isPlatformChanged());
         templateModel.put("platform", newMetaState.getPlatformName());
@@ -176,7 +184,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "TranslitUtils", new TransliterationUtils() );
         templateModel.put( "author", currentPerson );
         templateModel.put( "caseNumber", caseObject.getCaseNumber() );
-        templateModel.put( "caseState", caseMeta.getState() == null ? null : caseMeta.getState().getName() );
+        templateModel.put( "caseState", caseMeta.getStateName());
         templateModel.put( "importanceLevel", caseMeta.getImportance() == null ? null : caseMeta.getImportance().getCode() );
         templateModel.put( "productName", caseMeta.getProduct() == null ? null : caseMeta.getProduct().getName() );
 
@@ -250,15 +258,38 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients) {
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
-        templateModel.put( "er", employeeRegistration );
-        templateModel.put( "recipients", recipients );
+        EmployeeRegistration newState = event.getNewState();
+        EmployeeRegistration oldState = event.getOldState();
 
-        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.body.%s.ftl" );
-        template.setModel( templateModel );
-        template.setTemplateConfiguration( templateConfiguration );
+        templateModel.put("TransliterationUtils", new TransliterationUtils());
+
+        templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
+        templateModel.put("employeeFullName", newState.getEmployeeFullName());
+        templateModel.put("headOfDepartmentShortName", newState.getHeadOfDepartmentShortName());
+        templateModel.put("employmentType", newState.getEmploymentType().name());
+        templateModel.put("withRegistration", newState.isWithRegistration());
+        templateModel.put("position", newState.getPosition());
+        templateModel.put("state", newState.getStateName());
+        templateModel.put("employmentDateChanged", event.isEmploymentDateChanged());
+        templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
+        templateModel.put("newEmploymentDate", newState.getEmploymentDate());
+        templateModel.put("created", newState.getCreated());
+        templateModel.put("workplace", newState.getWorkplace());
+        templateModel.put("equipmentList", newState.getEquipmentList());
+        templateModel.put("operatingSystem", newState.getOperatingSystem());
+        templateModel.put("additionalSoft", newState.getAdditionalSoft());
+        templateModel.put("resourceList", newState.getResourceList());
+        templateModel.put("resourceComment", newState.getResourceComment());
+        templateModel.put("phoneOfficeTypeList", newState.getPhoneOfficeTypeList());
+        templateModel.put("comment", newState.getComment());
+        templateModel.put("recipients", recipients);
+        templateModel.put("curatorsDiff", event.getCuratorsDiff());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/employee.registration.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 
@@ -599,6 +630,111 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getSubnetNotificationSubject(Subnet subnet, Person initiator, SubnetNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
+        templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/subnet.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getSubnetNotificationBody(Subnet subnet, SubnetNotificationEvent.Action action, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == SubnetNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
+        templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
+        templateModel.put("comment", subnet.getComment());
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/subnet.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpNotificationSubject(List<ReservedIp> reservedIps, Person initiator,
+                                                             ReservedIpNotificationEvent.Action action) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == ReservedIpNotificationEvent.Action.CREATED);
+        templateModel.put("is_updated", action == ReservedIpNotificationEvent.Action.UPDATED);
+        templateModel.put("is_removed", action == ReservedIpNotificationEvent.Action.REMOVED);
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpNotificationBody(List<ReservedIp> reservedIps, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reservedIps", reservedIps);
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "releaseDateStart", releaseDateStart != null ?
+                new SimpleDateFormat("dd.MM.yyyy").format(releaseDateStart) : null);
+        templateModel.put( "releaseDateEnd", releaseDateEnd != null ?
+                        new SimpleDateFormat("dd.MM.yyyy").format(releaseDateEnd) : "?" );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/reserved.ip.remaining.subject.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getPersonCaseFilterNotificationSubject() {
+        Map<String, Object> templateModel = new HashMap<>();
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/person.case.filter.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+
+    }
+
+    @Override
+    public PreparedTemplate getPersonCaseFilterNotificationBody(List<CaseObject> issue, String urlTemplate) {
+        Map<String, List<CaseObject>> stateToIssues = issue
+                .stream().collect(groupingBy(CaseObject::getStateName));
+
+        List<String> stateOrder = stateToIssues.values().stream()
+                .map(list -> list.get(0))
+                .sorted(Comparator.comparing(CaseObject::getStateId))
+                .map(CaseObject::getStateName)
+                .collect(Collectors.toList());
+
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("stateToIssues", stateToIssues);
+        templateModel.put("urlTemplate", urlTemplate);
+        templateModel.put("stateOrder", stateOrder);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/person.case.filter.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
     }
@@ -615,9 +751,10 @@ public class TemplateServiceImpl implements TemplateService {
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
-                    mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
-                    mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
-                    mailComment.put( "caseManager", comment.getCaseManagerShortName() );
+                    mailComment.put( "caseState", comment.getCaseStateName() );
+                    mailComment.put( "caseImportance", comment.getCaseImportance() == null ? null : comment.getCaseImportance().getCode() );
+                    mailComment.put( "caseManager", comment.getCaseManagerId());
+                    mailComment.put( "caseManagerAndCompany", comment.getCaseManagerShortName() + " (" + comment.getManagerCompanyName() + ")");
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
                     mailComment.put( "added", isNew);
                     if (isChanged) {

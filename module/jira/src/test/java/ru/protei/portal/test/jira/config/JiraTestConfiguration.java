@@ -23,6 +23,8 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
@@ -211,6 +213,16 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public CaseStateDAO getCaseStateDAO() {
+        return new CaseStateDAO_Impl();
+    }
+
+    @Bean
+    public AuditObjectDAO getAuditDAO() {
+        return new AuditObjectDAO_Impl();
+    }
+
+    @Bean
     public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
         return new CaseStateWorkflowDAO_Impl();
     }
@@ -348,5 +360,90 @@ public class JiraTestConfiguration {
     @Bean
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return new CompanyImportanceItemDAO_Impl();
+    }
+
+    @Bean
+    public SiteFolderService getSiteFolderService() {
+        return new SiteFolderServiceImpl();
+    }
+
+    @Bean
+    public ProductService getProductService() {
+        return new ProductServiceImpl();
+    }
+
+    @Bean
+    public PlatformDAO getPlatformDAO() {
+        return new PlatformDAO_Impl();
+    }
+
+    @Bean
+    public ServerDAO getServerDAO() {
+        return new ServerDAO_Impl();
+    }
+
+    @Bean
+    public ServerSqlBuilder getServerSqlBuilder() {
+        return new ServerSqlBuilder();
+    }
+
+    @Bean
+    public ApplicationDAO getApplicationDAO() {
+        return new ApplicationDAO_Impl();
+    }
+
+    @Bean
+    public ServerApplicationDAO getServerApplicationDAO() {
+        return new ServerApplicationDAO_Impl();
+    }
+
+    @Bean
+    public ProductSubscriptionDAO getProductSubscriptionDAO() {
+        return new ProductSubscriptionDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitDAO getDevUnitDAO() {
+        return new DevUnitDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitChildRefDAO getDevUnitChildRefDAO() {
+        return new DevUnitChildRefDAO_Impl();
+    }
+
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return new AutoOpenCaseServiceImpl();
+    }
+
+    @Bean
+    public UserRoleDAO getUserRoleDAO() {
+        return new UserRoleDAO_impl();
+    }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
     }
 }

@@ -83,6 +83,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasValue<PersonShortView> owner() { return ipOwner; }
 
     @Override
+    public HasValidable ownerValidator() { return ipOwner; }
+
+    @Override
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
     @Override
@@ -112,6 +115,14 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @Override
     public HasEnabled saveEnabled() { return saveButton; }
 
+    @Override
+    public void setFreeIpCountLabel(int count ) {
+        this.freeIpCountLabel.setInnerText(String.valueOf(count));
+    }
+
+    @Override
+    public void setEnableUnlimited(boolean value) { useRange.setEnableUnlimited(value); }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -136,8 +147,28 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @UiHandler("ipAddress")
     public void onChangeIpAddress( KeyUpEvent event ) {
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
-        timer.cancel();
-        timer.schedule( 300 );
+        ipTimer.cancel();
+        ipTimer.schedule( 200 );
+    }
+
+    @UiHandler("number")
+    public void onChangeNumber( KeyUpEvent event ) {
+        numberTimer.cancel();
+        numberTimer.schedule( 200 );
+    }
+
+    @UiHandler("subnets")
+    public void onSubnetSelected(ValueChangeEvent<Set<SubnetOption>> event)  {
+        if ( activity != null ) {
+            activity.checkCreateAvailable();
+        }
+    }
+
+    @UiHandler("ipOwner")
+    public void onOwnerSelected(ValueChangeEvent<PersonShortView> event)  {
+        if ( activity != null ) {
+            activity.onOwnerChanged();
+        }
     }
 
     private void ensureDebugIds() {
@@ -148,6 +179,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         ipAddress.ensureDebugId(DebugIds.RESERVED_IP.IP_ADDRESS_INPUT);
         macAddress.ensureDebugId(DebugIds.RESERVED_IP.MAC_ADDRESS_INPUT);
         number.ensureDebugId(DebugIds.RESERVED_IP.NUMBER_INPUT);
+        freeIpCountLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.RESERVED_IP.FREE_IP_COUNT_LABEL);
         comment.ensureDebugId(DebugIds.RESERVED_IP.COMMENT_INPUT);
         ipOwner.ensureDebugId(DebugIds.RESERVED_IP.OWNER_SELECTOR);
         /*
@@ -157,11 +189,20 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
     }
 
-    Timer timer = new Timer() {
+    Timer ipTimer = new Timer() {
         @Override
         public void run() {
             if ( activity != null ) {
                 activity.onChangeIpAddress();
+            }
+        }
+    };
+
+    Timer numberTimer = new Timer() {
+        @Override
+        public void run() {
+            if ( activity != null ) {
+                activity.checkCreateAvailable();
             }
         }
     };
@@ -175,6 +216,8 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     Element verifiableIcon;
     @UiField
     ValidableTextBox number;
+    @UiField
+    Element freeIpCountLabel;
     @UiField
     ValidableTextBox macAddress;
     @UiField

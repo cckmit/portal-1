@@ -118,6 +118,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     public void setDownloadLinkApprovalSheet(String link) {
         if (StringUtils.isEmpty(link)) {
             downloadApprovalSheetButton.setVisible(false);
+            return;
         }
         downloadApprovalSheetButton.setVisible(true);
         downloadApprovalSheetButton.setHref(link);

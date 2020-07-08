@@ -248,7 +248,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeAlreadyExist();
 
-    String errEmployeeNotFiredFromThisCompany();
+    String errEmployeeNotFiredFromTheseCompanies();
 
     String errDepartmentAlreadyExistInThisCompany();
 
@@ -486,6 +486,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueManager();
 
+    String issueManagerCompany();
+
     String issueHeader( String p0 );
 
     String issueCurrentStateHeader();
@@ -520,6 +522,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueInitiatorInfo();
 
+    String issueManagerInfo();
+
     String issueEdit();
 
     String newIssue();
@@ -553,6 +557,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFilterNotDefined();
 
     String initiatorSelectACompany();
+
+    String managerSelectACompany();
 
     String issueCommentAuthor();
 
@@ -758,6 +764,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String msgObjectSaved();
 
+    String reservedIpPartiallyCreated(int p0, int p1 );
+
     String msgStatusChanged();
 
     String msgOK();
@@ -825,6 +833,8 @@ public interface Lang extends Messages, ContactItemLang {
     String requestNXCaseState();
 
     String requestCustomerCaseState();
+
+    String customerResponsibilityState();
 
     String criticalImportance();
 
@@ -1179,6 +1189,8 @@ public interface Lang extends Messages, ContactItemLang {
     String accountSecondName();
 
     String accountFor();
+
+    String accountSubscribeCaseFilter();
 
     String accountRolesNotFound();
 
@@ -1562,6 +1574,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentTypeName();
 
+    String documentTypeNameValidationError();
+
     String documentTypeShortName();
 
     String documentTypeGost();
@@ -1609,6 +1623,8 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportsReady();
 
     String issueReportsError();
+
+    String issueReportsCancelled();
 
     String issueReportsTitle();
 
@@ -1833,6 +1849,22 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeTopBrassBtn();
 
     String employeeTopBrassLabel();
+
+    String employeeAvatarLabelEnabled();
+
+    String employeeAvatarLabelDisabled();
+
+    String employeeAvatarUploadSuccessful();
+
+    String employeeAvatarUploadingFailed();
+
+    String employeePositionAddButton();
+
+    String errEmployeePositionEmpty();
+
+    String employeePositions();
+
+    String errEmployeePositionAlreadeyAdded();
 
     String backToEmployees();
 
@@ -2074,6 +2106,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDeliveryAndPaymentsPeriodHeader();
 
+    String contractSpecificationHeader();
+
+    String contractSpecificationClausePlaceholder();
+
+    String contractSpecificationTextPlaceholder();
+
     String contractPaymentCommentPlaceholder();
 
     String contractDateSigning();
@@ -2103,6 +2141,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyDateSigning();
 
     String contractValidationEmptyDateValid();
+
+    String contractValidationContractSpecification();
+
+    String contractValidationContractSpecificationClauseDuplication();
 
     String contractOrganization();
 
@@ -2581,6 +2623,117 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonReload();
 
     String issueAssignmentDeskOverflow(long limit);
+
+    String employeeRegistrationEditHeader();
+
+    String reservedIpAvailableCount();
+
+    String companyAutoOpenIssues();
+
+    String productSelectCommonManager();
+
+    String productCommonManager();
+
+    String reloadPageAfterUpdateHeader();
+
+    String reloadPageAfterUpdateMessage();
+
+    String reloadPageAfterUpdateDoReloadPage();
+
+    String plan();
+
+    String plans();
+
+    String planNameColumn();
+
+    String planPeriodColumn();
+
+    String planCreatorColumn();
+
+    String planIssueQuantityColumn();
+
+    String planSelectCreator();
+
+    String planCreationDate();
+
+    String planStartDate();
+
+    String planFinishDate();
+
+    String planIssuesList();
+
+    String goToPlans();
+
+    String planPeriod();
+
+    String planHeader( String planName );
+
+    String errGetConcreteList(String listName);
+
+    String selectPlan();
+
+    String planHeaderNew();
+
+    String planName();
+
+    String planMainInfoTitle();
+
+    String planSaved();
+
+    String planIssueConfirmRemove();
+
+    String planConfirmRemove();
+
+    String planIssueAdded();
+
+    String planIssueRemoved();
+
+    String planRemoved();
+
+    String planIssueMoved();
+
+    String planAddIssueToPlan();
+
+    String planMoveIssueToAnotherPlan();
+
+    String planEditButton();
+
+    String planEditPopupHeader();
+
+    String errPlanAlreadyExisted();
+
+    String planIssueList();
+
+    String planUnplannedTableFilterDefault();
+
+    String planUnplannedTableFilter();
+
+    String planUnplannedTableLimit( String p0 );
+
+    String errIssueAlreadyExistInPlan();
+
+    String planIssueNumber();
+
+    String issueReportWithDescription();
+
+    String issueReportWithDescriptionTitle();
+
+    String personCaseFilterChange();
+
+    String errPersonCaseFilterChangeError();
+
+    String errPersonCaseFilterInUse();
+
+    String employeeRegistrationDepartment();
+
+    String caseHistory();
+
+    String errPlanNotFound();
+
+    String commentNewDisabled();
+
+    String commentNewDisabledReasonTerminal();
+
 
     String absenceEmployee();
 

@@ -31,8 +31,6 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     HasVisibility emailContainerVisibility();
 
-    HasVisibility editIconVisibility();
-
     HasWidgets positionsContainer();
 
     HasWidgets absencesContainer();

@@ -33,6 +33,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="cstate_id")
     private Long caseStateId;
 
+    @JdbcJoinedColumn(localColumn = "cstate_id", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String caseStateName;
+
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
 
@@ -78,6 +81,12 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name = "private_flag")
     private boolean privateComment;
+
+    @JdbcJoinedColumn(mappedColumn = "cname", joinPath = {
+            @JdbcJoinPath(localColumn = "cmanager_id", remoteColumn = "id", table = "person"),
+            @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company")
+    })
+    private String managerCompanyName;
 
     // not db column
     private Date updated;
@@ -150,6 +159,14 @@ public class CaseComment extends AuditableObject {
         this.caseStateId = caseStateId;
     }
 
+    public String getCaseStateName() {
+        return caseStateName;
+    }
+
+    public void setCaseStateName(String caseStateName) {
+        this.caseStateName = caseStateName;
+    }
+
     public Integer getCaseImpLevel() {
         return caseImpLevel;
     }
@@ -158,13 +175,13 @@ public class CaseComment extends AuditableObject {
         this.caseImpLevel = caseImpLevel;
     }
 
+    public En_ImportanceLevel getCaseImportance() {
+        return En_ImportanceLevel.getById(this.caseImpLevel);
+    }
+
     public void setCaseImportance( En_ImportanceLevel caseImportance ) {
         if(caseImportance == null) caseImpLevel = null;
         this.caseImpLevel = caseImportance.getId();
-    }
-
-    public En_ImportanceLevel getCaseImportance() {
-        return En_ImportanceLevel.getById( caseImpLevel );
     }
 
     public Long getCaseManagerId() {
@@ -295,6 +312,14 @@ public class CaseComment extends AuditableObject {
         this.deleted = deleted;
     }
 
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -317,12 +342,13 @@ public class CaseComment extends AuditableObject {
     public String toString() {
         return "CaseComment{" +
                 "id=" + id +
-                ", caseId=" + caseId +
-                ", caseImpLevel=" + caseImpLevel +
-                ", caseStateId=" + caseStateId +
                 ", created=" + created +
                 ", clientIp='" + clientIp + '\'' +
+                ", caseId=" + caseId +
                 ", author=" + author +
+                ", caseStateId=" + caseStateId +
+                ", caseStateName=" + caseStateName +
+                ", caseImpLevel=" + caseImpLevel +
                 ", caseManagerId=" + caseManagerId +
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", replyTo=" + replyTo +
@@ -337,6 +363,7 @@ public class CaseComment extends AuditableObject {
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 ", privateComment=" + privateComment +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", updated=" + updated +
                 ", deleted=" + deleted +
                 '}';

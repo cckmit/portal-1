@@ -19,10 +19,10 @@ public class EquipmentEvents {
     @Url( value = "equipments", primary = true )
     public static class Show {
         @Omit
-        public Boolean clearScroll = false;
+        public Boolean preScroll = false;
         public Show () {}
-        public Show (Boolean clearScroll) {
-            this.clearScroll = clearScroll;
+        public Show (Boolean preScroll) {
+            this.preScroll = preScroll;
         }
     }
 

@@ -14,6 +14,8 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -156,8 +158,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public List<Person> getPersons(PersonQuery query) {
-
         return listByQuery( query );
+    }
+
+    @Override
+    public Person getCommonManagerByProductId(Long productId) {
+        return getByCondition("person.id = (SELECT dev_unit.common_manager_id FROM dev_unit WHERE dev_unit.ID = ?)", productId);
     }
 
     /**
@@ -167,32 +173,20 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     @SqlConditionBuilder
     public SqlCondition createContactSqlCondition(ContactQuery query) {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append(buildHomeCompanyFilter(true));
-
-            if (query.getCompanyId() != null) {
-                condition.append(" and person.company_id=?");
-                args.add(query.getCompanyId());
-            }
-
-            if (query.getFired() != null) {
-                condition.append(" and person.isfired=?");
-                args.add(query.getFired() ? 1 : 0);
-            }
-
-            if (query.getDeleted() != null) {
-                condition.append(" and person.isdeleted=?");
-                args.add(query.getDeleted() ? 1 : 0);
-            }
-
-            if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (person.displayName like ? or person.contactInfo like ?)");
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                args.add(likeArg);
-                args.add(likeArg);
-            }
-        });
+        Condition cnd = SqlQueryBuilder.condition()
+                .condition( buildHomeCompanyFilter( true ) )
+                .and( "person.company_id" ).equal( query.getCompanyId() )
+                .and( "person.isfired" ).equal( booleanAsNumber( query.getFired() ) )
+                .and( "person.isdeleted" ).equal( booleanAsNumber( query.getDeleted() ) )
+                .and( SqlQueryBuilder.condition()
+                        .or("person.displayName").like( query.getSearchString() )
+                        .or("person.displayName").like( query.getAlternativeSearchString() )
+                        .or("person.contactInfo").like( query.getSearchString() )
+                        .or("person.contactInfo").like( query.getAlternativeSearchString() )
+                );
+        return new SqlCondition(cnd.getSqlCondition(), cnd.getSqlParameters());
     }
+
 
     @Override
     @SqlConditionBuilder
@@ -228,9 +222,21 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add(query.getDeleted() ? 1 : 0);
             }
 
-            if (query.getOnlyPeople() != null) {
-                condition.append(" and person.sex != ?");
+            if (query.getPeople() != null) {
+                String eqSign = query.getPeople() ? "!=" : "=";
+
+                condition
+                        .append(" and person.sex ")
+                        .append(eqSign)
+                        .append(" ?");
+
                 args.add(En_Gender.UNDEFINED.getCode());
+            }
+
+            if (query.getHasCaseFilter() != null) {
+
+                condition.append(" and person.id in ");
+                condition.append(" (select distinct(person_id) from person_to_case_filter)" );
             }
         });
     }

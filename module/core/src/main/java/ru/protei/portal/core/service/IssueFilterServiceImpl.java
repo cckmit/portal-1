@@ -5,18 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
+import ru.protei.portal.core.model.dao.PlanDAO;
+import ru.protei.portal.core.model.dao.PersonCaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 
@@ -37,6 +35,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     @Autowired
     CaseFilterDAO caseFilterDAO;
     @Autowired
+    PersonCaseFilterDAO personCaseFilterDAO;
+    @Autowired
     AuthService authService;
     @Autowired
     PolicyService policyService;
@@ -48,6 +48,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     ProductService productService;
     @Autowired
     CaseTagService caseTagService;
+    @Autowired
+    PlanDAO planDAO;
 
     @Override
     public Result< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
@@ -90,8 +92,9 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         log.debug( "getSelectorsParams(): caseQuery={} ", caseQuery );
         SelectorsParams selectorsParams = new SelectorsParams();
 
-        if (!isEmpty( caseQuery.getCompanyIds())) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds( filterToList( caseQuery.getCompanyIds(), Objects::nonNull ));
+        List<Long> companyIds = collectCompanyIds(caseQuery);
+        if (!isEmpty(companyIds)) {
+            Result<List<EntityOption>> result = companyService.companyOptionListByIds( filterToList(companyIds, Objects::nonNull ));
             if (result.isOk()) {
                 selectorsParams.setCompanyEntityOptions(result.getData());
             } else {
@@ -132,6 +135,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
             }
         }
 
+        if (caseQuery.getPlanId() != null) {
+            Plan plan = planDAO.get(caseQuery.getPlanId());
+            selectorsParams.setPlanOption(new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId()));
+        }
+
         return ok(selectorsParams);
     }
 
@@ -167,8 +175,12 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         log.debug( "removeIssueFilter(): id={} ", id );
 
+        if (personCaseFilterDAO.isUsed(id)) {
+            return error(En_ResultStatus.ISSUE_FILTER_IS_USED);
+        }
+
         if ( caseFilterDAO.removeByKey( id ) ) {
-            return ok(true );
+            return ok(true);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR );
@@ -211,4 +223,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         return personsIds;
     }
 
+    private List<Long> collectCompanyIds(CaseQuery caseQuery) {
+        List<Long> companyIds = new ArrayList<>();
+        companyIds.addAll(emptyIfNull(caseQuery.getCompanyIds()));
+        companyIds.addAll(emptyIfNull(caseQuery.getManagerCompanyIds()));
+
+        return companyIds;
+    }
 }

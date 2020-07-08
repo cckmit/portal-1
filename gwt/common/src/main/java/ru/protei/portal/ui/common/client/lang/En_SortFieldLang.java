@@ -52,6 +52,10 @@ public class En_SortFieldLang {
                 return lang.reservedIpIpAddress();
             case check_date:
                 return lang.reservedIpCheckDate();
+            case start_date:
+                return lang.planStartDate();
+            case finish_date:
+                return lang.planFinishDate();
             case absence_date:
                 return lang.absenceStartDateRange();
             case absence_person:

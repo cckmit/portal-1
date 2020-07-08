@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.app.portal.client.widget.casefilter.group.PersonCaseFilterWidget;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 

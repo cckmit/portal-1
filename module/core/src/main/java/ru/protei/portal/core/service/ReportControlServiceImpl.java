@@ -13,10 +13,12 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -40,6 +42,7 @@ import java.util.concurrent.*;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.dict.En_ReportStatus.CANCELLED;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
@@ -134,8 +137,10 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
         }
         Result storageResult = null;
+        String threadName = Thread.currentThread().getName();
         try {
-            log.debug("start process report : reportId={}", report.getId());
+            Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " reportId=" + report.getId());
+            log.info("start process report : reportId={} {}", report.getId(), report.getReportType());
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             if (!writeReport(report, buffer)) {
@@ -151,6 +156,16 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return;
             }
 
+            Report currentReportStatus = reportDAO.partialGet( report.getId(), Report.Columns.STATUS );
+            if (currentReportStatus == null) {
+                log.warn( "processReport(): Can't get processed report {}", report.getId() );
+                return;
+            }
+            if (CANCELLED.equals( currentReportStatus.getStatus() )) {
+                log.warn( "processReport(): Report {} is canceled", report.getId() );
+                return;
+            }
+
             mergeReport(report, En_ReportStatus.READY);
         } catch (Throwable th) {
             log.debug("process report : reportId={}, throwable={}", report.getId(), th.getMessage());
@@ -161,6 +176,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             mergeerroratus(report);
         } finally {
             reportsInProcess.remove(report.getId());
+            Thread.currentThread().setName(threadName);
         }
     }
 
@@ -174,7 +190,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     private void mergeerroratus(Report report) {
         report.setStatus(En_ReportStatus.ERROR);
         report.setModified(new Date());
-        reportDAO.partialMerge(report, "status", "modified");
+        reportDAO.partialMerge(report, Report.Columns.STATUS, Report.Columns.MODIFIED);
         log.debug("process report : reportId={}, status={}", report.getId(), En_ReportStatus.ERROR);
     }
 
@@ -330,8 +346,26 @@ public class ReportControlServiceImpl implements ReportControlService {
             case DAILY:
             default: days = 1;
         }
+
         Date now = new Date();
-        report.getCaseQuery().setCreatedFrom(new Date(now.getTime() - days * CrmConstants.Time.DAY));
-        report.getCaseQuery().setCreatedTo(now);
+
+        if (En_ReportType.CASE_TIME_ELAPSED.equals(report.getReportType())) {
+            setCreatedDates(report.getCaseQuery(), new Date(now.getTime() - days * CrmConstants.Time.DAY), now);
+        }
+
+        if (En_ReportType.CASE_OBJECTS.equals(report.getReportType())) {
+            setCreatedDates(report.getCaseQuery(), null, null);
+            setModifiedDates(report.getCaseQuery(), new Date(now.getTime() - days * CrmConstants.Time.DAY), now);
+        }
+    }
+
+    private void setCreatedDates(CaseQuery query, Date from, Date to) {
+        query.setCreatedFrom(from);
+        query.setCreatedTo(to);
+    }
+
+    private void setModifiedDates(CaseQuery query, Date from, Date to) {
+        query.setModifiedFrom(from);
+        query.setModifiedTo(to);
     }
 }

@@ -8,7 +8,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
@@ -29,6 +28,7 @@ import ru.protei.portal.ui.ipreservation.client.activity.reservedip.filter.Abstr
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -63,7 +63,7 @@ public abstract class ReservedIpTableActivity
     @Event
     public void onShow( IpReservationEvents.ShowReservedIp event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -99,7 +99,7 @@ public abstract class ReservedIpTableActivity
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -131,7 +131,7 @@ public abstract class ReservedIpTableActivity
 
     @Override
     public void onEditClicked( ReservedIp value ) {
-        if ( !hasEditPrivileges(value == null ? null : value.getOwnerId())) {
+        if ( value != null && !hasEditPrivileges(value.getOwnerId())) {
             return;
         }
 
@@ -261,24 +261,25 @@ public abstract class ReservedIpTableActivity
         }
     }
 
-    private boolean hasEditPrivileges(Long ownerId) {
-        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
-            || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
-                && policyService.getProfile().getId().equals(ownerId))) {
-            return true;
-        }
-
-        return false;
+    @Override
+    public boolean hasEditPrivileges(Long ownerId) {
+        boolean isAdmin = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_EDIT);
+        boolean isUserWithAccess = policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
+                && Objects.equals(ownerId, policyService.getProfile().getId());
+        return isAdmin || isUserWithAccess;
     }
 
-    private boolean hasRemovePrivileges(Long ownerId) {
-        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
-                || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)
-                && ownerId.equals(policyService.getProfile().getId()))) {
-            return true;
-        }
+    @Override
+    public boolean hasRemovePrivileges(Long ownerId) {
+        boolean isAdmin = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_REMOVE);
+        boolean isUserWithAccess = policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE)
+                && Objects.equals(ownerId, policyService.getProfile().getId());
+        return isAdmin || isUserWithAccess;
+    }
 
-        return false;
+    @Override
+    public boolean hasRefreshPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW);
     }
 
     private void showError(String error) {

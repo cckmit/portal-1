@@ -18,10 +18,8 @@ import ru.protei.portal.core.model.struct.FileStream;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.util.Base64;
 
@@ -45,41 +43,52 @@ public class FileStorage {
      * Saves file to storage
      * @return Saved file's path or IOException
      */
-    public String save(String fileName, FileStream fileStream) throws IOException{
+    public String save(String fileName, FileStream fileStream) throws IOException {
 
         logger.debug("save: fileName=" + fileName);
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()){
-
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             String currentYearMonth = YearMonth.now().toString();
-            String filePath = currentYearMonth +"/"+ fileName;
+            String filePath = currentYearMonth + "/" + fileName;
             HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, fileStream);
 
-            CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);
-            logFileCreationResponse(fileName, "1", fileCreationResponse);
-            int fileCreationStatus = getStatus(fileCreationResponse);
+            HttpUriRequest checkFolderExistsRequest = buildCheckFolderExists(currentYearMonth);
 
-            if(fileCreationStatus == HttpStatus.NOT_FOUND.value()){ //folder not exists
-                HttpUriRequest folderCreationRequest = buildFolderCreationRequest(currentYearMonth);
-                int folderCreationStatus = getStatus(httpClient.execute(folderCreationRequest));
-                logger.debug("save: fileName=" + fileName + ", folderCreationRequest, statusCode=" + folderCreationStatus);
+            try (CloseableHttpResponse checkFolderExistsResponse = httpClient.execute(checkFolderExistsRequest)) {
+                int checkFolderExistsStatus = getStatus(checkFolderExistsResponse);
 
-                if (folderCreationStatus == HttpStatus.CREATED.value()) {
-                    fileCreationResponse = httpClient.execute(fileCreationRequest);
-                    logFileCreationResponse(fileName, "2", fileCreationResponse);
-                    fileCreationStatus = getStatus(fileCreationResponse);
-                } else {
-                    throw new IOException("Unable create folder on fileStorage. status code " + folderCreationStatus);
+                if (checkFolderExistsStatus == HttpStatus.NOT_FOUND.value()) {
+                    HttpUriRequest folderCreationRequest = buildFolderCreationRequest(currentYearMonth);
+
+                    try (CloseableHttpResponse folderCreationResponse = httpClient.execute(folderCreationRequest)) {
+                        int folderCreationStatus = getStatus(folderCreationResponse);
+
+                        if (folderCreationStatus != HttpStatus.CREATED.value()) {
+                            throw new IOException("Unable create folder on fileStorage. status code " + folderCreationStatus);
+                        }
+                    }
                 }
             }
 
-            if(fileCreationStatus == HttpStatus.CREATED.value())
-                return filePath;
-            else
-                throw new IOException("Unable upload file to fileStorage. status code "+ fileCreationStatus);
+            try (CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest)) {
+                logFileCreationResponse(fileName, fileCreationResponse);
+                int fileCreationStatus = getStatus(fileCreationResponse);
+
+                if (fileCreationStatus == HttpStatus.CREATED.value()) {
+                    return filePath;
+                } else {
+                    throw new IOException("Unable upload file to fileStorage. status code " + fileCreationStatus);
+                }
+            }
         }
     }
 
+    private HttpUriRequest buildCheckFolderExists(String folderName) {
+        RequestBuilder request = RequestBuilder.create("GET");
+        request.setUri(storagePath + folderName);
+        request.addHeader("Authorization", "Basic " + authentication);
+        return request.build();
+    }
 
     private HttpUriRequest buildFileCreationRequest(String filePath, FileStream fileStream) throws IOException {
         RequestBuilder request = RequestBuilder.create("PUT");
@@ -137,11 +146,11 @@ public class FileStorage {
             request.setUri(storagePath + filePath);
             request.addHeader("Authorization", "Basic " + authentication);
 
-            CloseableHttpResponse response = httpClient.execute(request.build());
+            try (CloseableHttpResponse response = httpClient.execute(request.build())) {
+                logger.debug("deleteFile: filePath=" + filePath + ", statusCode=" + getStatus(response));
+                return HttpStatus.valueOf(getStatus(response)).is2xxSuccessful();
+            }
 
-            logger.debug("deleteFile: filePath=" + filePath + ", statusCode=" + getStatus(response));
-
-            return HttpStatus.valueOf(getStatus(response)).is2xxSuccessful();
         }catch (IOException e){
             logger.error("deleteFile", e);
         }
@@ -174,27 +183,15 @@ public class FileStorage {
         );
     }
 
-    private String encodePath(String path) throws UnsupportedEncodingException{
-        final Base64.Encoder enc = Base64.getUrlEncoder();
-        int lastDotPos = path.lastIndexOf('.');
-        int firstUnderscorePos = path.indexOf('_');
-        if (lastDotPos == -1) {
-            lastDotPos = path.length();
-        }
-        return path.substring(0, firstUnderscorePos + 1)
-                + enc.encodeToString(path.substring(firstUnderscorePos + 1, lastDotPos).getBytes(StandardCharsets.UTF_8))
-                + path.substring(lastDotPos);
-    }
-
     private int getStatus(HttpResponse response){
         return response.getStatusLine().getStatusCode();
     }
 
-    private void logFileCreationResponse(String fileName, String attempt, CloseableHttpResponse fileCreationResponse) {
+    private void logFileCreationResponse(String fileName, CloseableHttpResponse fileCreationResponse) {
         StringBuilder sb = new StringBuilder();
         int statusCode = getStatus(fileCreationResponse);
         sb.append("save: fileName=").append(fileName);
-        sb.append(", fileCreationResponse#").append(attempt);
+        sb.append(", fileCreationResponse");
         sb.append(", statusCode=").append(statusCode);
         if (statusCode != HttpStatus.CREATED.value()) {
             sb.append(", headers={");

@@ -5,12 +5,17 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -22,6 +27,9 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setActivity(AbstractIssueMetaActivity activity);
 
+    void setManagerCompany(EntityOption managerCompany);
+
+    EntityOption getManagerCompany();
 
     void setCaseMetaNotifiers(Set<Person> caseObjectMetaNotifiers);
     void setCaseMetaJira(CaseObjectMetaJira caseObjectMetaJira);
@@ -33,12 +41,12 @@ public interface AbstractIssueMetaView extends IsWidget {
     void setSubscriptionEmails(String value);
     void initiatorSelectorAllowAddNew(boolean isVisible);
     void initiatorUpdateCompany(Company company);
-    void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
+    void updateManagersCompanyFilter(Long managerCompanyId);
+    void setStateFilter(Selector.SelectorFilter<CaseState> filter);
     void setPlatformFilter(Selector.SelectorFilter<PlatformOption> filter);
     void fillImportanceOptions(List<En_ImportanceLevel> options);
 
     void setTimeElapsedType(En_TimeElapsedType timeElapsedType);
-    void setProductTypes(En_DevUnitType... enDevUnitTypes);
 
     void setInitiator(Person initiator);
     Person getInitiator();
@@ -70,12 +78,13 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasVisibility platformVisibility();
     HasVisibility jiraSlaSelectorVisibility();
 
+    void setInitiatorBorderBottomVisible(boolean isVisible);
+
     HasValue<En_TimeElapsedType> timeElapsedType();
-    HasValue<En_CaseState> state();
+    HasValue<CaseState> state();
     HasValue<En_ImportanceLevel> importance();
 
-    void setProduct(DevUnit product);
-    DevUnit getProduct();
+    HasValue<ProductShortView> product();
 
     void setManager(Person manager);
     Person getManager();
@@ -105,4 +114,24 @@ public interface AbstractIssueMetaView extends IsWidget {
     HasValue<Date> pauseDate();
 
     void setPauseDateValid(boolean isValid);
+
+    HasEnabled managerCompanyEnabled();
+
+    void updateProductsByPlatformIds(Set<Long> platformIds);
+
+    void setProductModel(ProductModel productModel);
+
+    void setProductMandatory(boolean isProductMandatory);
+
+    void setPlanCreatorId(Long creatorId);
+
+    HasValue<Set<PlanOption>> ownerPlans();
+
+    HasVisibility ownerPlansContainerVisibility();
+
+    HasVisibility otherPlansContainerVisibility();
+
+    void setOtherPlans(String value);
+
+    void setPlansLabelVisible(boolean isVisible);
 }

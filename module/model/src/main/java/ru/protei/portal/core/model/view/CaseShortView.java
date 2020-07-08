@@ -12,7 +12,7 @@ import java.util.List;
  * Сокращенное представление кейса
  */
 @JdbcEntity(table = "case_object")
-public class CaseShortView implements Serializable {
+public class CaseShortView implements Serializable, Identifiable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -38,6 +38,9 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "STATE")
     private long stateId;
 
+    @JdbcJoinedColumn(mappedColumn = "STATE", table = "case_state", localColumn = "STATE", remoteColumn = "id" )
+    private String stateName;
+
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
@@ -47,7 +50,6 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
-    // Вариант 1: mappedColumn + table + localColumn + remoteColumn + опционально sqlTableAlias
     @JdbcJoinedColumn( mappedColumn = "displayname", table = "person", localColumn = "INITIATOR", remoteColumn = "ID" )
     private String initiatorName;
 
@@ -78,14 +80,14 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "MANAGER", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id" )
-    })
-    private String managerCompanyName;
-
     @JdbcColumn(name = "pause_date")
     private Long pauseDate;
+
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
+
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String managerCompanyName;
 
     // ManyToMany via CaseTagService
     private List<CaseTag> tags;
@@ -145,10 +147,6 @@ public class CaseShortView implements Serializable {
 
     public long getStateId() {
         return stateId;
-    }
-
-    public void setStateId( long stateId ) {
-        this.stateId = stateId;
     }
 
     public Integer getImpLevel() {
@@ -279,12 +277,24 @@ public class CaseShortView implements Serializable {
         this.pauseDate = pauseDate;
     }
 
+    public String getStateName() {
+        return stateName;
+    }
+
     public List<CaseTag> getTags() {
         return tags;
     }
 
     public void setTags(List<CaseTag> tags) {
         this.tags = tags;
+    }
+
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
     }
 
     @Override
@@ -306,6 +316,7 @@ public class CaseShortView implements Serializable {
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
+                ", stateName=" + stateName +
                 ", impLevel=" + impLevel +
                 ", privateCase=" + privateCase +
                 ", initiatorId=" + initiatorId +
@@ -319,8 +330,9 @@ public class CaseShortView implements Serializable {
                 ", managerName='" + managerName + '\'' +
                 ", managerShortName='" + managerShortName + '\'' +
                 ", isAttachmentExists=" + isAttachmentExists +
-                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", tags=" + tags +
                 '}';
     }

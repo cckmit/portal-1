@@ -2,7 +2,6 @@ package ru.protei.portal.ui.equipment.client.activity.edit;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -50,7 +49,7 @@ public abstract class EquipmentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -119,14 +118,14 @@ public abstract class EquipmentEditActivity
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
-                    fireEvent(isNew(this.equipment) ? new EquipmentEvents.Show(true) : new Back());
+                    fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
     }
 
     @Override

@@ -12,12 +12,12 @@ import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
@@ -91,8 +91,8 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Result<RedmineStatusMapEntry> getRedmineStatus( En_CaseState initState, En_CaseState lastState, long statusMapId ) {
-        return ok( statusMapEntryDAO.getRedmineStatus( initState, lastState, statusMapId) );
+    public Result<RedmineStatusMapEntry> getRedmineStatus(long initStateId, long lastStateId, long statusMapId ) {
+        return ok( statusMapEntryDAO.getRedmineStatus(initStateId, lastStateId, statusMapId) );
     }
 
     @Override
@@ -155,8 +155,9 @@ public final class CommonServiceImpl implements CommonService {
         final CaseObjectMeta oldMeta = new CaseObjectMeta( object );
 
         object.setStateId( redmineStatusEntry.getLocalStatusId() );
+        object.setStateName( redmineStatusEntry.getLocalStatusName() );
         caseObjectDAO.merge( object );
-        logger.debug( "Updated case state for case with id {}, old={}, new={}", object.getId(), En_CaseState.getById( oldMeta.getStateId() ), En_CaseState.getById( object.getStateId() ) );
+        logger.debug( "Updated case state for case with id {}, old={}, new={}", object.getId(), oldMeta.getStateId(), object.getStateId());
 
         Result<Long> stateCommentId = createAndStoreStateComment( creationOn, author.getId(), redmineStatusEntry.getLocalStatusId().longValue(), object.getId() );
         if (stateCommentId.isError()) {
@@ -311,6 +312,12 @@ public final class CommonServiceImpl implements CommonService {
                 .collect(Collectors.toSet()));
     }
 
+    @Override
+    public List<Platform> getPlatforms(Long companyId) {
+        PlatformQuery query = new PlatformQuery();
+        query.setCompanyId(companyId);
+        return platformDAO.listByQuery(query);
+    }
 
     @Autowired
     private FileController fileController;
@@ -341,6 +348,9 @@ public final class CommonServiceImpl implements CommonService {
 
     @Autowired
     private PersonDAO personDAO;
+
+    @Autowired
+    PlatformDAO platformDAO;
 
     private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 }

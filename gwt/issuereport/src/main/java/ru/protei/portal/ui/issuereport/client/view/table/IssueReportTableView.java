@@ -79,7 +79,7 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     private void initTable() {
         numberColumn = new NumberColumn(lang, reportStatusLang);
         infoColumn = new InfoColumn(lang, reportTypeLang, scheduledTypeLang);
-        filterColumn = new FilterColumn(lang, sortFieldLang, sortDirLang, caseImportanceLang, caseStateLang, regionStateLang);
+        filterColumn = new FilterColumn(lang, sortFieldLang, sortDirLang, caseImportanceLang, regionStateLang);
         refreshClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.ERROR);
         removeClickColumn.setDisplayPredicate(v -> v.getStatus() != En_ReportStatus.PROCESS);
         downloadClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.READY);
@@ -115,8 +115,6 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     private En_SortDirLang sortDirLang;
     @Inject
     private En_CaseImportanceLang caseImportanceLang;
-    @Inject
-    private En_CaseStateLang caseStateLang;
     @Inject
     private En_ReportTypeLang reportTypeLang;
     @Inject

@@ -110,13 +110,18 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         animation.setContainers(tableContainer, previewContainer, filterContainer);
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
         name = new EmployeeInfoColumn(lang, reasonLang);
         contacts = new EmployeeContactsColumn(lang, reasonLang);
         department = new EmployeeDepartmentColumn(lang, reasonLang);
         absence = new EmployeeAbsenceColumn(reasonLang, policyService);
 
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT));
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT) );
 
         table.addColumn(absence.header, absence.values);
         table.addColumn(name.header, name.values);

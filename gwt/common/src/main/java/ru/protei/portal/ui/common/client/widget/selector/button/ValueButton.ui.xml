@@ -2,6 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
         <g:Button ui:field="button" styleName="btn btn-default btn-flat dropdown-toggle">
-            <span ui:field="value"></span>
+            <span class="selector-val" ui:field="value"></span>
         </g:Button>
 </ui:UiBinder>

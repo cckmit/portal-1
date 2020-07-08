@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="quickview" styleName="quickview-wrapper quickview-wrapper-below-header quickview-wrapper-75-percent">
+            <g:HTMLPanel ui:field="content"/>
+        </g:HTMLPanel>
+        <g:FocusPanel ui:field="substrate" styleName="quickview-wrapper-substrate">
+            <g:HTMLPanel styleName="substrate-close">
+                <i class="far fa-2x fa-times-circle"/>
+            </g:HTMLPanel>
+        </g:FocusPanel>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

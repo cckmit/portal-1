@@ -92,6 +92,7 @@ public abstract class CaseCommentListActivity
         this.isModifyEnabled = event.isModifyEnabled;
         this.isPrivateVisible = event.isPrivateVisible;
         this.isPrivateCase = event.isPrivateCase;
+        this.isNewCommentEnabled = event.isNewCommentEnabled;
 
         comment = null;
         lastCommentView = null;
@@ -104,7 +105,8 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
-        view.enabledNewComment(isModifyEnabled);
+        view.setNewCommentHidden(!isModifyEnabled);
+        view.setNewCommentDisabled(!isNewCommentEnabled);
         if (textMarkup == En_TextMarkup.MARKDOWN) {
             view.setMarkupLabel(lang.textMarkdownSupport(), configStorage.getConfigData().markupHelpLinkMarkdown);
         } else {
@@ -211,6 +213,9 @@ public abstract class CaseCommentListActivity
 
     @Override
     public void onSendClicked() {
+        if (!isNewCommentEnabled) {
+            return;
+        }
         send();
     }
 
@@ -315,7 +320,8 @@ public abstract class CaseCommentListActivity
     private void fillView(List<CaseComment> comments){
         itemViewToModel.clear();
         view.clearCommentsContainer();
-        view.enabledNewComment(isModifyEnabled);
+        view.setNewCommentHidden(!isModifyEnabled);
+        view.setNewCommentDisabled(!isNewCommentEnabled);
 
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
@@ -378,17 +384,15 @@ public abstract class CaseCommentListActivity
         }
 
         if ( isStateChangeComment ) {
-            En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
-            itemView.setStatus( caseState );
+            itemView.setStatus( value.getCaseStateName() );
         }
 
         if ( isImportanceChangeComment ) {
-            En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
-            itemView.setImportanceLevel(importance);
+            itemView.setImportanceLevel( value.getCaseImportance() );
         }
 
         if ( isManagerChangeComment ) {
-            itemView.setManager(transliteration(value.getCaseManagerShortName()));
+            itemView.setManagerInfo(makeManagerInfo(value.getCaseManagerShortName(), value.getManagerCompanyName()));
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
@@ -401,6 +405,10 @@ public abstract class CaseCommentListActivity
         itemViewToModel.put( itemView, value );
 
         return itemView;
+    }
+
+    private String makeManagerInfo(String managerShortName, String managerCompanyName) {
+        return transliteration(managerShortName + " (" + managerCompanyName + ")");
     }
 
     private void updateTimeElapsedType(En_TimeElapsedType type, CaseComment value, AbstractCaseCommentItemView itemView) {
@@ -711,6 +719,7 @@ public abstract class CaseCommentListActivity
     private Long caseId;
     private boolean isPrivateVisible = false;
     private boolean isPrivateCase = false;
+    private boolean isNewCommentEnabled = true;
 
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();

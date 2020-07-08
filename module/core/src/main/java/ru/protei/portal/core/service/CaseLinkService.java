@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -7,9 +8,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.portal.core.model.ent.*;
 
 import java.util.List;
 import java.util.Map;
@@ -24,19 +23,13 @@ public interface CaseLinkService {
 
     Result<YouTrackIssueInfo> getYoutrackIssueInfo(AuthToken authToken, String ytId );
 
+    @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
-    Result<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
-
-    @Auditable(En_AuditType.LINK_REMOVE)
-    Result<Long> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
+    Result<CaseLink> createLink(AuthToken authToken, CaseLink value, boolean createCrossLinks);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
-    Result<Long> createLink(AuthToken authToken, CaseLink value, boolean createCrossLinks);
-
-    @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
-    @Auditable(En_AuditType.LINK_CREATE)
-    Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink value, En_CaseType caseType, boolean createCrossLinks);
+    Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink value, En_CaseType caseType, boolean createCrossLinks);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
@@ -45,4 +38,8 @@ public interface CaseLinkService {
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
     Result deleteLinkWithPublish(AuthToken authToken, Long id, En_CaseType caseType);
+
+    Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList);
+
+    Result<String> changeYoutrackId(AuthToken token, String oldYoutrackId, String newYoutrackId);
 }

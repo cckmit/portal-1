@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.account.client.activity.table;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -12,7 +11,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -24,7 +22,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collections;
@@ -62,7 +59,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     @Event( Type.FILL_CONTENT )
     public void onShow( AccountEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -75,7 +72,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 new ActionBarEvents.Clear()
         );
 
-        clearScroll( event );
+        this.preScroll = event.preScroll;
 
         requestAccounts( this.page );
     }
@@ -103,7 +100,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onEditClicked( UserLogin value ) {
-        persistScrollTopPosition();
+        persistScroll();
         fireEvent( new AccountEvents.Edit( value.getId() ) );
     }
 
@@ -146,7 +143,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                         }
                         pagerView.setCurrentPage( page );
                         view.addRecords( r.getResults() );
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
                 } )
                 .withErrorMessage( lang.errGetList() ) );
@@ -183,33 +180,24 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         );
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
+    private void restoreScroll() {
+        if (!preScroll) {
             view.clearSelection();
             return;
         }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }
 
-    private void clearScroll(AccountEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-            this.page = 0;
-        }
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private Runnable removeAction(Long accountId) {
         return () -> accountService.removeAccount(accountId, new FluentCallback<Boolean>().withSuccess(result -> {
-            fireEvent(new AccountEvents.Show());
+            fireEvent(new AccountEvents.Show(false));
             fireEvent(new NotifyEvents.Show(lang.accountRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
         }));
     }
@@ -241,7 +229,9 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     private long marker;
 
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+
+    private Boolean preScroll = false;
 
     private int page = 0;
 }

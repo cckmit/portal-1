@@ -54,10 +54,11 @@ public abstract class DocumentEditActivity
     @Event
     public void onCreateFromWizard(DocumentEvents.CreateFromWizard event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
-            fireEvent(new ForbiddenEvents.Show(event.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new DocumentEvents.Show(false));
         placeView(event.parent);
         view.drawInWizardContainer(true);
         this.document = new Document();
@@ -67,7 +68,7 @@ public abstract class DocumentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onEquipmentCreate(DocumentEvents.CreateWithEquipment event){
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         if (event.projectId == null || event.equipmentId == null) {
@@ -76,18 +77,26 @@ public abstract class DocumentEditActivity
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new Back());
+
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
         Document document = makeDocumentFromEvent(event);
+        this.document = document;
         requestEquipmentAndFillView(event.equipmentId, document);
     }
 
     @Event(Type.FILL_CONTENT)
     public void onEdit(DocumentEvents.Edit event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
+
+        fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
@@ -186,7 +195,7 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onCancelClicked() {
-       fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
@@ -222,6 +231,7 @@ public abstract class DocumentEditActivity
 
     private void placeView(HasWidgets container) {
         container.clear();
+        Window.scrollTo(0, 0);
         container.add(view.asWidget());
     }
 
@@ -343,9 +353,8 @@ public abstract class DocumentEditActivity
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             if (stayOnPage){
                                 fillView(makeDocumentToContinue());
-                            }
-                            else {
-                                fireEvent(new Back());
+                            } else {
+                                fireBackEvent.run();
                             }
                         }
         ))));
@@ -497,7 +506,7 @@ public abstract class DocumentEditActivity
     }
 
     private void fillView(Document document) {
-        boolean isNew = document.getId() == null;
+        boolean isNew = isNew(document);
 
         view.setDownloadCloudsVisible(!isNew);
         view.name().setValue(document.getName());
@@ -585,6 +594,10 @@ public abstract class DocumentEditActivity
         return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
     }
 
+    private boolean isNew(Document document) {
+        return document == null || document.getId() == null;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -607,4 +620,5 @@ public abstract class DocumentEditActivity
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
     private AppEvents.InitDetails initDetails;
     private List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>(Arrays.asList(En_DocumentCategory.values()));
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

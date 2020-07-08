@@ -92,37 +92,47 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
         ClickColumn<Subnet> creator = new ClickColumn<Subnet>() {
             @Override
-            protected void fillColumnHeader(Element columnHeader) { columnHeader.setInnerText(lang.reservedIpCreateBy()); }
+            protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("creator");
+                columnHeader.setInnerText(lang.reservedIpCreateBy());
+            }
             @Override
-            public void fillColumnValue(Element cell, Subnet value) { cell.setInnerText(value.getCreator()); }
+            public void fillColumnValue(Element cell, Subnet value) {
+                cell.addClassName("creator");
+                cell.setInnerText(value.getCreator());
+            }
         };
 
         ClickColumn<Subnet> comment = new ClickColumn<Subnet>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("comment");
                 columnHeader.setInnerText(lang.comment());
             }
             @Override
             public void fillColumnValue(Element cell, Subnet value) {
+                cell.addClassName("comment");
                 cell.setInnerText(value.getComment());
             }
         };
 
-/*    ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.reservedIpState());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Subnet value) {
-            cell.setInnerText("Registered : " + value.getRegisteredIPs() + "  "
-                    + " Free : " + value.getFreeIps());
-        }
-    };*/
+        ClickColumn<Subnet> state = new ClickColumn<Subnet>() {
+            @Override
+            protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("ip-count");
+                columnHeader.setInnerText(lang.reservedIpState());
+            }
+            @Override
+            public void fillColumnValue(Element cell, Subnet value) {
+                cell.addClassName("ip-count");
+                cell.setInnerText(value.getReservedIPs()+"/"+value.getFreeIps());
+            }
+        };
 
         columns.add(address);
         columns.add(creator);
         columns.add(comment);
+        columns.add(state);
         columns.add(editClickColumn);
         columns.add(refreshClickColumn);
         columns.add(removeClickColumn);

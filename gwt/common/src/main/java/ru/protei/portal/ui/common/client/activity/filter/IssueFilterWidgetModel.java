@@ -57,9 +57,7 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
     public void onUserFilterChanged(Long id, Consumer<CaseFilter> afterChange) {
         filterService.getIssueFilter(id, new FluentCallback<CaseFilter>()
                 .withErrorMessage(lang.errNotFound())
-                .withSuccess(caseFilter -> {
-                    afterChange.accept(caseFilter);
-                })
+                .withSuccess(afterChange)
         );
     }
 
@@ -71,7 +69,7 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
     private Runnable removeAction(Long filterId, Runnable afterRemove) {
         return () -> filterService.removeIssueFilter(filterId, new FluentCallback<Boolean>()
                 .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                    defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(aBoolean -> {
                     fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));

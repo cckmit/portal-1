@@ -1,10 +1,18 @@
 package ru.protei.portal.ui.employee.client.activity.edit;
 
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.TimeZone;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
@@ -13,6 +21,8 @@ import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.UploadResult;
+import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
@@ -21,18 +31,19 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemActivity;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
  * Активность создания и редактирования сотрудников
  */
-public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivity, Activity {
+public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivity, AbstractPositionEditItemActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -47,13 +58,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Event
     public void onShow( EmployeeEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
-        personId = null;
-        workerId = null;
+
+        setAvatarHandlers();
 
         initDetails.parent.clear();
+        Window.scrollTo(0,0);
         initDetails.parent.add(view.asWidget());
 
         companyService.getCompanyOptionList(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
@@ -63,6 +75,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                             companiesWithoutSync.addAll(companies);
 
                             if (event.id == null) {
+                                personId = null;
                                 fillView(new EmployeeShortView());
                             } else {
                                 personId = event.id;
@@ -71,7 +84,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
                         }));
     }
-
 
 
     @Event
@@ -138,55 +150,35 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         fireEvent(new WorkerPositionEvents.Edit(workerPosition));
     }
 
-
     @Override
     public void onSaveClicked() {
-        if (employee.isFired()){
-            fireEvent(new Back());
-            return;
-        }
-
         String errorMsg = validate();
 
         if (errorMsg != null) {
+            if (employee.isFired()){
+                fireEvent(new Back());
+                return;
+            }
+
             fireErrorMessage(errorMsg);
             return;
         }
 
-        WorkerEntry worker = new WorkerEntry();
-        worker.setPositionId(view.workerPosition().getValue().getId());
-        worker.setDepartmentId(view.companyDepartment().getValue().getId());
-        worker.setCompanyId(view.company().getValue().getId());
+        List<WorkerEntry> workers = fillWorkers();
 
         if (personId == null) {
-            createPersonAndCreateWorker(worker);
-            return;
-        }
-
-        worker.setPersonId(personId);
-
-        if (workerId == null){
-            if (isEditablePerson){
-                updatePersonAndCreateWorker(worker);
-            } else {
-                createEmployeeWorker(worker);
-            }
-            return;
-        }
-
-        worker.setId(workerId);
-
-        if (isEditablePerson){
-            updatePersonAndUpdateWorker(worker);
+            createPersonAndUpdateWorkers(workers);
         } else {
-            updateEmployeeWorker(worker);
+            if (isEditablePerson){
+                updatePerson();
+            }
+            updateEmployeeWorkers(workers);
         }
-
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EmployeeEvents.Show(!isNew(personId)));
     }
 
     @Override
@@ -228,7 +220,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Override
     public void onCompanySelected() {
         boolean isValid = view.company().getValue() != null;
-        view.companyValidator().setValid(isValid);
         view.setAddButtonCompanyDepartmentVisible(isValid);
         view.setAddButtonWorkerPositionVisible(isValid);
 
@@ -244,6 +235,94 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     @Override
     public void onGenderSelected() {
         checkGenderValid();
+    }
+
+    @Override
+    public void onAddPositionBtnClicked() {
+        if (view.workerPosition().getValue() != null && view.companyDepartment().getValue() != null && view.company().getValue() != null) {
+
+            for (WorkerEntryShortView value : positionMap.values()) {
+                if (value.getPositionId().equals(view.workerPosition().getValue().getId())
+                    && value.getCompanyId().equals(view.company().getValue().getId())
+                    && value.getDepId().equals(view.companyDepartment().getValue().getId())) {
+
+                    fireErrorMessage(lang.errEmployeePositionAlreadeyAdded());
+                    return;
+                }
+            }
+
+            WorkerEntryShortView worker = new WorkerEntryShortView();
+
+            worker.setCompanyId(view.company().getValue().getId());
+            worker.setCompanyName(view.company().getValue().getDisplayText());
+
+            worker.setDepId(view.companyDepartment().getValue().getId());
+            worker.setDepartmentName(view.companyDepartment().getValue().getDisplayText());
+
+            worker.setPositionId(view.workerPosition().getValue().getId());
+            worker.setPositionName(view.workerPosition().getValue().getDisplayText());
+
+            view.getPositionsContainer().add(makePositionView(worker).asWidget());
+
+            view.company().setValue(null);
+            view.companyDepartment().setValue(null);
+            view.workerPosition().setValue(null);
+        }
+    }
+
+    @Override
+    public void onRemovePositionClicked(IsWidget positionItem) {
+        if (workerOfSyncCompany(positionMap.get(positionItem))){
+            return;
+        }
+
+        view.getPositionsContainer().remove(positionItem.asWidget());
+        positionMap.remove(positionItem);
+    }
+
+    private List<WorkerEntry> fillWorkers () {
+        List<WorkerEntry> workers = new ArrayList<>();
+
+        for (WorkerEntryShortView value : positionMap.values()) {
+            WorkerEntry worker = new WorkerEntry();
+            worker.setPositionId(value.getPositionId());
+            worker.setDepartmentId(value.getDepId());
+            worker.setCompanyId(value.getCompanyId());
+            worker.setId(value.getId());
+            worker.setPersonId(personId);
+            worker.setActiveFlag(value.getActiveFlag());
+            workers.add(worker);
+        }
+
+        return workers;
+    }
+
+    private void setAvatarHandlers() {
+        if (changeAvatarHandlerRegistration != null){
+            changeAvatarHandlerRegistration.removeHandler();
+        }
+
+        changeAvatarHandlerRegistration = view.addChangeHandler(changeEvent -> {
+            if (personId != null){
+                view.submitAvatar(AvatarUtils.setAvatarUrl(personId));
+            }
+        });
+
+        if (submitAvatarHandlerRegistration != null){
+            submitAvatarHandlerRegistration.removeHandler();
+        }
+
+        submitAvatarHandlerRegistration = view.addSubmitCompleteHandler(submitCompleteEvent -> {
+            view.setAvatarUrl(AvatarUtils.getPhotoUrl(personId));
+
+            UploadResult result = parseUploadResult(submitCompleteEvent.getResults());
+
+            if (En_FileUploadStatus.OK.equals(result.getStatus())) {
+                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadSuccessful(), NotifyEvents.NotifyType.SUCCESS));
+            } else {
+                fireEvent(new NotifyEvents.Show(lang.employeeAvatarUploadingFailed(), NotifyEvents.NotifyType.ERROR));
+            }
+        });
     }
 
     private boolean validateSaveButton() {
@@ -287,23 +366,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private String validate() {
-        if (!view.companyValidator().isValid()) {
-            return lang.errFieldsRequired();
-        }
 
         if (!view.firstNameValidator().isValid()) {
             return lang.errFieldsRequired();
         }
 
         if (!view.lastNameValidator().isValid()) {
-            return lang.errFieldsRequired();
-        }
-
-        if (!view.companyDepartmentValidator().isValid()){
-            return lang.errFieldsRequired();
-        }
-
-        if(!view.workerPositionValidator().isValid()){
             return lang.errFieldsRequired();
         }
 
@@ -331,6 +399,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errorFieldHasInvalidValue(view.secondNameLabel());
         }
 
+        if (positionMap.isEmpty()){
+            return lang.errEmployeePositionEmpty();
+        }
+
         return null;
     }
 
@@ -339,6 +411,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(EmployeeShortView employee){
+
         this.employee.setFired(employee.isFired());
         view.gender().setValue(employee.getGender());
         checkGenderValid();
@@ -346,6 +419,9 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.lastName().setValue(employee.getLastName());
         personLastName = employee.getLastName();
         view.secondName().setText(employee.getSecondName());
+        if (employee.getBirthday() != null ) {
+            view.setBirthDayTimeZone(TimeZone.createTimeZone(employee.getBirthday().getTimezoneOffset()));
+        }
         view.birthDay().setValue(employee.getBirthday());
         view.ipAddress().setValue(employee.getIpAddress());
 
@@ -356,39 +432,80 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
         view.firedMsgVisibility().setVisible(employee.isFired());
         view.fireBtnVisibility().setVisible(employee.getId() != null && !employee.isFired());
-        WorkerEntryShortView workerEntry = getWorkerEntryWithoutSync (employee.getWorkerEntries());
-        boolean isEmployeeInSyncCompanies = workerEntry != null;
+        boolean isWorkerInSyncCompany = isAnyWorkerInSyncCompany(employee.getWorkerEntries());
 
-        if (!isEmployeeInSyncCompanies){
-            workerEntry = new WorkerEntryShortView();
-            workerId = null;
-        } else {
-            workerId = workerEntry.getId();
-        }
-
-        view.company().setValue(workerEntry.getCompanyId() == null ? null : new EntityOption(workerEntry.getCompanyName(), workerEntry.getCompanyId()));
-        onCompanySelected();
-        view.companyDepartment().setValue(workerEntry.getDepId() == null ? null : new EntityOption(workerEntry.getDepartmentName(), workerEntry.getDepId()));
-        view.workerPosition().setValue(workerEntry.getPersonId() == null ? null : new EntityOption(workerEntry.getPositionName(), workerEntry.getPositionId()));
-
-        view.companyValidator().setValid(workerEntry.getCompanyId() != null);
-        view.companyDepartmentValidator().setValid(workerEntry.getDepId() != null);
-        view.workerPositionValidator().setValid(workerEntry.getPersonId() != null);
-
+        view.company().setValue(null);
+        view.companyDepartment().setValue(null);
+        view.workerPosition().setValue(null);
 
         view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
         view.lastNameErrorLabel().setText(lang.contactFieldLengthExceed(view.lastNameLabel(), LAST_NAME_SIZE));
 
-        boolean isEnabled = (employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0) || (isEmployeeInSyncCompanies && employee.getWorkerEntries().size() == 1);
-        view.fireBtnVisibility().setVisible(personId!= null & isEnabled & !employee.isFired());
+        boolean isEnabled = !employee.isFired() && (employee.getWorkerEntries() == null || employee.getWorkerEntries().size() == 0 || !isWorkerInSyncCompany);
+        view.fireBtnVisibility().setVisible(personId != null & isEnabled & !employee.isFired());
 
         setPersonFieldsEnabled (isEnabled);
-        if (employee.isFired()) {
-            setAllFieldsEnabled(false);
-        }
+
         view.changeAccount().setValue(false);
         view.changeAccountVisibility().setVisible(false);
+
+        view.getPositionsContainer().clear();
+
+        positionMap.clear();
+        if (employee.getWorkerEntries() != null && !employee.getWorkerEntries().isEmpty()) {
+            WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
+            entryFacade.getSortedEntries().forEach(worker -> {
+                AbstractPositionEditItemView positionItemView = makePositionView(worker);
+                view.getPositionsContainer().add(positionItemView.asWidget());
+            });
+        }
+
+        setAvatar(employee.getId(), isEnabled);
+    }
+
+    private AbstractPositionEditItemView makePositionView(WorkerEntryShortView workerEntry) {
+
+        AbstractPositionEditItemView itemView = positionEditProvider.get();
+        itemView.setActivity(this);
+
+        if (workerOfSyncCompany(workerEntry)){
+            itemView.setRemovePositionEnable(false);
+        }
+
+        itemView.setDepartment(workerEntry.getDepartmentName());
+        itemView.setPosition(workerEntry.getPositionName());
+        itemView.setCompany(workerEntry.getCompanyName());
+
+        positionMap.put(itemView, workerEntry);
+        return itemView;
+    }
+
+    private boolean workerOfSyncCompany(WorkerEntryShortView workerEntry) {
+        if (workerEntry == null || workerEntry.getCompanyId() == null){
+            return true;
+        }
+
+        for (EntityOption entityOption : companiesWithoutSync) {
+            if (workerEntry.getCompanyId().equals(entityOption.getId())){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void setAvatar(Long employeeId, boolean isEnabled) {
+        view.setAvatarUrl(AvatarUtils.getPhotoUrl(employeeId));
+
+        if (employeeId == null) {
+            view.setAvatarLabelText(lang.employeeAvatarLabelDisabled());
+        } else if (!isEnabled){
+            view.setAvatarLabelText("");
+        } else {
+            view.setAvatarLabelText(lang.employeeAvatarLabelEnabled());
+        }
+
+        view.setFileUploadEnabled(employeeId != null && isEnabled);
     }
 
     private void setPersonFieldsEnabled (boolean isEnabled) {
@@ -402,68 +519,47 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.mobilePhoneEnabled().setEnabled(isEnabled);
         view.workPhoneEnabled().setEnabled(isEnabled);
         view.ipAddressEnabled().setEnabled(isEnabled);
-        view.companyEnabled().setEnabled(true);
-        view.companyDepartmentEnabled().setEnabled(true);
-        view.workerPositionEnabled().setEnabled(true);
     }
 
-    private void setAllFieldsEnabled(boolean isEnabled){
-        setPersonFieldsEnabled(isEnabled);
-        view.companyEnabled().setEnabled(isEnabled);
-        view.companyDepartmentEnabled().setEnabled(isEnabled);
-        view.workerPositionEnabled().setEnabled(isEnabled);
-    }
-
-    private void createEmployeeWorker (WorkerEntry worker){
-        employeeService.createEmployeeWorker(worker, new FluentCallback<WorkerEntry>()
-                .withSuccess(workerEntry -> {
+    private void updateEmployeeWorkers (List<WorkerEntry> workers){
+        employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
+                .withSuccess(workerEntryList -> {
                     fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
+                    fireEvent(new EmployeeEvents.Show(!isNew(personId)));
                 }));
     }
 
-    private void updateEmployeeWorker (WorkerEntry worker){
-        employeeService.updateEmployeeWorker(worker, new FluentCallback<Boolean>()
-                .withSuccess(workerEntry -> {
-                    fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new Back());
-                }));
-    }
-
-    private void createPersonAndCreateWorker(WorkerEntry worker){
+    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers){
         employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
                 .withSuccess(person -> {
-                    worker.setPersonId(person.getId());
-                    createEmployeeWorker(worker);
+                    workers.forEach(workerEntry -> workerEntry.setPersonId(person.getId()));
+                    updateEmployeeWorkers(workers);
                 }));
     }
 
-    private void updatePersonAndCreateWorker(WorkerEntry worker){
+    private void updatePerson(){
         employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
-                .withSuccess(success -> {
-                    createEmployeeWorker(worker);
-                }));
+                .withSuccess(success -> {}));
     }
 
-    private void updatePersonAndUpdateWorker(WorkerEntry worker){
-        employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
-                .withSuccess(success -> {
-                    updateEmployeeWorker(worker);
-                }));
-    }
-
-    private WorkerEntryShortView getWorkerEntryWithoutSync (List<WorkerEntryShortView> workerEntryShortViews) {
+    private boolean isAnyWorkerInSyncCompany(List<WorkerEntryShortView> workerEntryShortViews) {
+        boolean isInSyncCompany = true;
         if (workerEntryShortViews != null){
             for (WorkerEntryShortView workerEntryShortView : workerEntryShortViews) {
                 for (EntityOption entityOption : companiesWithoutSync) {
                     if (workerEntryShortView.getCompanyId().equals(entityOption.getId())){
-                        return workerEntryShortView;
+                        isInSyncCompany = false;
+                        break;
                     }
                 }
+
+                if (isInSyncCompany){
+                    return true;
+                }
+                isInSyncCompany = true;
             }
         }
-
-        return null;
+        return false;
     }
 
     private boolean hasPrivileges(Long personId) {
@@ -496,6 +592,30 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.genderValidator().setValid(isValid);
     }
 
+    private UploadResult parseUploadResult(String json){
+        UploadResult result;
+
+        if (json == null || json.isEmpty()) {
+            result = new UploadResult(En_FileUploadStatus.PARSE_ERROR, "");
+        } else {
+            result = new UploadResult();
+            try {
+                JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
+                result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
+                result.setDetails(jsonObj.get("details").isString().stringValue());
+            } catch (Exception e){
+                result.setStatus(En_FileUploadStatus.PARSE_ERROR);
+                result.setDetails(json);
+            }
+        }
+
+        return result;
+    }
+
+    private boolean isNew(Long personId) {
+        return personId == null;
+    }
+
     @Inject
     AbstractEmployeeEditView view;
     @Inject
@@ -506,13 +626,16 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     CompanyControllerAsync companyService;
     @Inject
     PolicyService policyService;
+    @Inject
+    Provider<AbstractPositionEditItemView> positionEditProvider;
 
-
+    private HandlerRegistration changeAvatarHandlerRegistration;
+    private HandlerRegistration submitAvatarHandlerRegistration;
     private List<EntityOption> companiesWithoutSync = new ArrayList<>();
+    private Map<IsWidget, WorkerEntryShortView> positionMap = new HashMap<>();
     private Person employee = new Person();
     private Long personId;
     private String personLastName;
     private boolean isEditablePerson;
-    private Long workerId;
     private AppEvents.InitDetails initDetails;
 }

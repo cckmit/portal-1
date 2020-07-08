@@ -30,7 +30,6 @@
                                     <g:HTMLPanel ui:field="subscriptionsContainer"/>
                                 </tab:pane.TabWidgetPane>
                             </tab:TabWidget>
-
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employee.client.activity.item;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 
@@ -32,6 +31,8 @@ public interface AbstractEmployeeItemView extends IsWidget {
     void setIP( String value );
 
     void setFireDate ( String value );
+
+    void setEditIcon( String link );
 
     void setAbsenceReason( En_AbsenceReason absence );
 }

@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -9,12 +9,14 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
@@ -50,11 +52,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     @Event
     public void onShow (ProductEvents.Edit event) {
         if (!hasPrivileges(event.productId)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         init.parent.clear();
+        Window.scrollTo(0, 0);
         init.parent.add(view.asWidget());
 
         productId = event.productId;
@@ -91,14 +94,14 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             public void onSuccess(DevUnit result) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
-                fireEvent(isNew(product) ? new ProductEvents.Show(true) : new Back());
+                fireEvent(new ProductEvents.Show(!isNew(product)));
             }
         });
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new ProductEvents.Show(!isNew(product)));
     }
 
     @Override
@@ -129,7 +132,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.aliasesVisibility().setVisible(type.equals(En_DevUnitType.PRODUCT));
         view.directionVisibility().setVisible(!En_DevUnitType.COMPONENT.equals(type));
 
-        view.setMutableState(type);
+        setMutableState(view, type);
         String trim = view.name().getValue().trim();
         checkName(trim);
     }
@@ -192,7 +195,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.typeVisibility().setVisible(isNew);
         view.setTypeImage(isNew || devUnit.getType() == null  ? null : devUnit.getType().getImgSrc(), typeLang.getName(devUnit.getType()));
         view.setTypeImageVisibility(!isNew);
-        view.setMutableState(currType);
+        setMutableState(view, currType);
         isNameUnique = true;
 
         view.productSubscriptions().setValue(devUnit.getSubscriptions() == null ? null : devUnit.getSubscriptions().stream()
@@ -225,6 +228,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         view.aliases().setValue(product.getAliases());
         view.aliasesVisibility().setVisible(currType.equals(En_DevUnitType.PRODUCT));
+
+        view.setCommonManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+        view.commonManager().setValue(devUnit.getCommonManagerId() == null ? null : new PersonShortView(devUnit.getCommonManagerName(), devUnit.getCommonManagerId()));
     }
 
     private boolean isPreviewDisplayed(String key) {
@@ -266,6 +272,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         product.setHistoryVersion(view.historyVersion().getValue());
 
         product.setAliases(view.aliases().getValue());
+
+        product.setCommonManagerId(view.commonManager().getValue() == null ? null : view.commonManager().getValue().getId());
     }
 
     private void resetValidationStatus(){
@@ -288,6 +296,45 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         }
 
         return false;
+    }
+
+    private void setMutableState(AbstractProductEditView view, En_DevUnitType type) {
+        view.commonManagerContainerVisibility().setVisible(En_DevUnitType.PRODUCT.equals(type));
+        view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(type));
+
+        if (En_DevUnitType.COMPLEX.equals(type)) {
+            view.setNameLabel(lang.complexName());
+            view.setDescriptionLabel(lang.complexDescription());
+            view.setChildrenContainerLabel(lang.products());
+
+            view.makeChildrenContainerFullView();
+
+            view.setChildrenTypes(En_DevUnitType.PRODUCT);
+
+            view.makeDirectionContainerFullView();
+        } else if (En_DevUnitType.PRODUCT.equals(type)) {
+            view.setNameLabel(lang.productName());
+            view.setDescriptionLabel(lang.productDescription());
+            view.setChildrenContainerLabel(lang.components());
+
+            view.makeChildrenContainerShortView();
+
+            view.setParentTypes(En_DevUnitType.COMPLEX);
+            view.setChildrenTypes(En_DevUnitType.COMPONENT);
+
+            view.makeDirectionContainerShortView();
+        } else if (En_DevUnitType.COMPONENT.equals(type)) {
+            view.setNameLabel(lang.componentName());
+            view.setDescriptionLabel(lang.componentDescription());
+            view.setChildrenContainerLabel(lang.components());
+
+            view.makeChildrenContainerShortView();
+
+            view.setParentTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
+            view.setChildrenTypes(En_DevUnitType.COMPONENT);
+
+            view.makeDirectionContainerFullView();
+        }
     }
 
     @Inject

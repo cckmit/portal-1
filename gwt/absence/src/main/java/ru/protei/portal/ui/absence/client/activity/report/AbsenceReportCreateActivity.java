@@ -38,7 +38,7 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     @Event
     public void onShow(AbsenceEvents.CreateReport event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

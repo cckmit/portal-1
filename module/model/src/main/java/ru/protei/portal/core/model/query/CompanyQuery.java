@@ -15,7 +15,12 @@ public class CompanyQuery extends BaseQuery {
      */
     private List<Integer> categoryIds;
 
-    private boolean onlyHome;
+    /**
+     * true - only home group companies. Attention! With Universum! Use isShowHidden=false to hide it.
+     * false - without home group companies
+     * null - all companies. Attention! With Universum! Use isShowHidden=false to hide it.
+     */
+    private Boolean homeGroupFlag = false;
 
     private Boolean synchronizeWith1C;
 
@@ -42,14 +47,14 @@ public class CompanyQuery extends BaseQuery {
         this.onlyVisibleFields = true;
         return this;
     }
-    public CompanyQuery(boolean onlyHome) {
+    public CompanyQuery(Boolean homeGroupFlag) {
         super("", En_SortField.comp_name, En_SortDir.ASC);
-        this.onlyHome = onlyHome;
+        this.homeGroupFlag = homeGroupFlag;
     }
 
-    public CompanyQuery(boolean onlyHome, boolean isShowHidden) {
+    public CompanyQuery(Boolean homeGroupFlag, boolean isShowHidden) {
         super("", En_SortField.comp_name, En_SortDir.ASC);
-        this.onlyHome = onlyHome;
+        this.homeGroupFlag = homeGroupFlag;
         this.isShowHidden = isShowHidden;
     }
 
@@ -74,8 +79,8 @@ public class CompanyQuery extends BaseQuery {
         this.categoryIds = categoryIds;
     };
 
-    public boolean getOnlyHome() {
-        return onlyHome;
+    public Boolean getHomeGroupFlag() {
+        return homeGroupFlag;
     }
 
     public Boolean getSynchronizeWith1C() {
@@ -86,8 +91,8 @@ public class CompanyQuery extends BaseQuery {
         this.synchronizeWith1C = synchronizeWith1C;
     }
 
-    public void setOnlyHome(boolean onlyHome) {
-        this.onlyHome = onlyHome;
+    public void setHomeGroupFlag(Boolean homeGroupFlag) {
+        this.homeGroupFlag = homeGroupFlag;
     }
 
     public void setOnlyParentCompanies( boolean parentIdIsNull ) {
@@ -148,7 +153,7 @@ public class CompanyQuery extends BaseQuery {
     @Override
     public String toString() {
         return "CompanyQuery{" +
-                ", onlyHome=" + onlyHome +
+                ", onlyHome=" + homeGroupFlag +
                 ", isOnlyParentCompanies=" + isOnlyParentCompanies +
                 ", categoryIds=" + categoryIds +
                 ", companyIds=" + companyIds +

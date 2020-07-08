@@ -90,6 +90,13 @@
                         <argument>notification/email/project.subject.ftl</argument>
                         <argument>notification/email/reservation.room.subject.ftl</argument>
                         <argument>notification/email/reservation.room.body.ftl</argument>
+                        <argument>notification/email/subnet.subject.ftl</argument>
+                        <argument>notification/email/subnet.body.ftl</argument>
+                        <argument>notification/email/reserved.ip.subject.ftl</argument>
+                        <argument>notification/email/reserved.ip.body.ftl</argument>
+                        <argument>notification/email/reserved.ip.remaining.subject.ftl</argument>
+                        <argument>notification/email/person.case.filter.subject.ftl</argument>
+                        <argument>notification/email/person.case.filter.body.ftl</argument>
                         <argument>notification/email/absence.subject.ftl</argument>
                         <argument>notification/email/absence.body.ftl</argument>
                         <argument>notification/email/absence.report.subject.ftl</argument>

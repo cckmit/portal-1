@@ -78,11 +78,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public HasVisibility editIconVisibility() {
-        return editIcon;
-    }
-
-    @Override
     public HasWidgets positionsContainer() {
         return positionsContainer;
     }
@@ -117,15 +112,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         }
     }
 
-    @UiHandler("editIcon")
-    public void onEditClicked(ClickEvent event) {
-        event.preventDefault();
-
-        if (activity != null) {
-            activity.onEditClicked();
-        }
-    }
-
     @UiField
     HTMLPanel rootWrapper;
 
@@ -143,9 +129,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     Anchor employeeName;
-
-    @UiField
-    Anchor editIcon;
 
     @UiField
     SpanElement birthday;

@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -17,6 +16,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.service.CommonService;
@@ -357,13 +357,20 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
             obj.setStateId(redmineStatusMapEntry.getLocalStatusId());
         } else {
             logger.warn("Object status was not found, setting default");
-            obj.setStateId(En_CaseState.CREATED.getId());
+            obj.setStateId(CrmConstants.State.CREATED);
         }
 
         obj.setName(issue.getSubject());
         obj.setInfo(issue.getDescription());
         obj.setLocal(0);
         obj.setInitiatorCompanyId(companyId);
+        obj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+
+        List<Platform> platforms = commonService.getPlatforms(obj.getInitiatorCompanyId());
+        if (platforms != null && platforms.size() == 1) {
+            obj.setPlatformId(platforms.get(0).getId());
+        }
+
         return obj;
     }
 

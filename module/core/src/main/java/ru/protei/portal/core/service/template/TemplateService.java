@@ -2,14 +2,15 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.portal.core.utils.LinkData;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public interface TemplateService {
 
     PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson );
 
-    PreparedTemplate getEmployeeRegistrationEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients);
+    PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients);
 
     PreparedTemplate getEmployeeRegistrationEmailNotificationSubject( EmployeeRegistration employeeRegistration);
 
@@ -68,6 +69,20 @@ public interface TemplateService {
     PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action);
 
     PreparedTemplate getRoomReservationNotificationBody(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action, Collection<String> recipients);
+
+    PreparedTemplate getSubnetNotificationSubject(Subnet subnet, Person initiator, SubnetNotificationEvent.Action action);
+
+    PreparedTemplate getSubnetNotificationBody(Subnet subnet, SubnetNotificationEvent.Action action, Collection<String> recipients);
+
+    PreparedTemplate getReservedIpNotificationSubject(List<ReservedIp> reservedIps, Person initiator, ReservedIpNotificationEvent.Action action);
+
+    PreparedTemplate getReservedIpNotificationBody(List<ReservedIp> reservedIps, Collection<String> recipients);
+
+    PreparedTemplate getReservedIpRemainingNotificationSubject(Date releaseDateStart, Date releaseDateEnd);
+
+    PreparedTemplate getPersonCaseFilterNotificationSubject();
+
+    PreparedTemplate getPersonCaseFilterNotificationBody(List<CaseObject> issues, String urlTemplate);
 
     PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence);
 

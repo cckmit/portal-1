@@ -31,7 +31,7 @@ public abstract class SiteFolderPage implements Activity {
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.SITE_FOLDER, TAB, DebugIds.SIDEBAR_MENU.SITE_FOLDER));
-            fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show(true)));
+            fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show(false)));
         }
     }
 
@@ -60,7 +60,7 @@ public abstract class SiteFolderPage implements Activity {
         if (!TAB.equals(event.identity)) {
             return;
         }
-        fireEvent(new SiteFolderPlatformEvents.Show(true));
+        fireEvent(new SiteFolderPlatformEvents.Show(false));
     }
 
     private void fireSelectTab() {

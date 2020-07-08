@@ -10,10 +10,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -119,9 +117,9 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     }
 
     private void initTable () {
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT) );
-        refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW) );
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_REMOVE) );
+        editClickColumn.setEnabledPredicate(v -> activity.hasEditPrivileges(v.getOwnerId()) );
+        refreshClickColumn.setEnabledPredicate(v -> activity.hasRefreshPrivileges() );
+        removeClickColumn.setEnabledPredicate(v -> activity.hasRemovePrivileges(v.getOwnerId()) );
 
         address = new AddressColumn( lang );
         lastCheck = new LastCheckColumn( lang );
@@ -148,12 +146,14 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
         ClickColumn<ReservedIp> ipOwner = new ClickColumn<ReservedIp>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName( "ip-owner" );
                 columnHeader.setInnerText(lang.reservedIpOwner());
             }
 
             @Override
             public void fillColumnValue(Element cell, ReservedIp value) {
-                cell.setInnerText(value.getOwnerShortName());
+                cell.addClassName( "ip-owner" );
+                cell.setInnerText(value.getOwnerName());
             }
         };
 
@@ -208,9 +208,6 @@ public class ReservedIpTableView extends Composite implements AbstractReservedIp
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    PolicyService policyService;
 
     @Inject
     EditClickColumn<ReservedIp> editClickColumn;

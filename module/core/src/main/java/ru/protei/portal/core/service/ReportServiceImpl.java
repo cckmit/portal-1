@@ -21,7 +21,6 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -183,6 +182,7 @@ public class ReportServiceImpl implements ReportService {
             report.setReportType( En_ReportType.CASE_OBJECTS);
             CaseQuery query = report.getCaseQuery();
             query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
+            query.setManagerOrInitiatorCondition(true);
             query.setAllowViewPrivate(false);
         }
     }

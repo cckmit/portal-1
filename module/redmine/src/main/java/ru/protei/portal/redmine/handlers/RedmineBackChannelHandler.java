@@ -8,7 +8,6 @@ import org.springframework.context.event.EventListener;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -19,6 +18,7 @@ import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public final class RedmineBackChannelHandler implements BackchannelEventHandler {
 
@@ -93,7 +93,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
                 || !issueAndCompanyIds[0].matches("^[0-9]+$")
                 || !issueAndCompanyIds[1].matches("^[0-9]+$")) {
 
-            return error(En_ResultStatus.INTERNAL_ERROR, String.format("case has invalid ext-app-id : {}", extAppId));
+            return error(En_ResultStatus.INTERNAL_ERROR, String.format("case has invalid ext-app-id : %s", extAppId));
         }
         return ok(issueAndCompanyIds);
     }
@@ -136,8 +136,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         if (event.isCaseStateChanged()) {
             final long statusMapId = endpoint.getStatusMapId();
             logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
-            RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getState(), event.getLastCaseMeta().getState(), statusMapId).getData();
-            if (redmineStatusMapEntry != null) {
+            RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId(), statusMapId).getData();
+            if (redmineStatusMapEntry != null && !isTerminalState(event.getLastCaseMeta().getStateId())) {
                 logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
                 issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
             } else {

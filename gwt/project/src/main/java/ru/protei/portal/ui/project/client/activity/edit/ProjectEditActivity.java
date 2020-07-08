@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -47,11 +47,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     @Event
     public void onShow (ProjectEvents.Edit event) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
         if (event.id == null) {
@@ -84,7 +85,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(isNew(project) ? new ProjectEvents.Show(true) : new Back());
+                    fireEvent(new ProjectEvents.Show(!isNew(project)));
                 })
         );
     }
@@ -105,7 +106,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new ProjectEvents.Show(!isNew(project)));
     }
 
     @Override

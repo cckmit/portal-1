@@ -5,13 +5,27 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <include file="01-init-database.xml" relativeToChangelogFile="true" />
-  <include file="2020-04-13-create-person_absence-table.xml" relativeToChangelogFile="true" />
   <include file="2020-04-16-dropnotnullconstraint-in-company_dep-and-worker_entry-and-add-field-sync_1c.xml" relativeToChangelogFile="true" />
   <include file="2020-04-17-set-linked_equipment_id-equipment-fk.xml" relativeToChangelogFile="true" />
   <include file="2020-04-20-add-pause_date-to-case_object.xml" relativeToChangelogFile="true" />
   <include file="2020-03-18-ip-reservation.xml" relativeToChangelogFile="true"/>
   <include file="2020-04-17-add-room-reservation-tables.xml" relativeToChangelogFile="true"/>
   <include file="2020-04-30-add-redmine-workflow.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-28-add-company_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-05-16-add-manager_company_id-column-to-case_object-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-05-18-add-customer_responsibility-state.xml" relativeToChangelogFile="true"/>
+  <include file="2020-05-21-modify-case-state-table.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-21-add-states-to-employee_registration.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-28-add-auto_open_issue-column-to-company-table.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-28-add-common_manager_id-column-to-dev_unit-table.xml" relativeToChangelogFile="true" />
+  <include file="2020-05-30-add-with_crosslink-column-to-case_link-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-02-add-plan-and-history-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-17-add-with_description-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-15-add-person-to-case-filter-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-18-contract-specification.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-23-add-department_id-column-to-employee_registration-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-06-25-modify-history-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-07-07-modify-case_state-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-04-13-create-person_absence-table.xml" relativeToChangelogFile="true" />
   <include file="2020-06-12-create-person_notifier-table.xml" relativeToChangelogFile="true"/>
-
 </databaseChangeLog>

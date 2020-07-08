@@ -319,4 +319,43 @@ public class CollectionUtils {
     public static <T> Predicate<T> not(Predicate<T> predicate) {
         return predicate.negate();
     }
+
+
+    /**
+     * Равенство коллекций, без учета пордяка элементов
+     */
+    public static <T> boolean equals(Collection<T> firstCollection, Collection<T> secondCollection) {
+        if (firstCollection == null || secondCollection == null) {
+            return firstCollection == null && secondCollection == null;
+        }
+
+        if (firstCollection.size() != secondCollection.size()) {
+            return false;
+        }
+
+        if (!firstCollection.containsAll(secondCollection)) {
+            return false;
+        }
+
+        if (!secondCollection.containsAll(firstCollection)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Проход по списку в обратном направлении
+     */
+    public static <T> void forEachReverse(List<T> elements, Consumer<T> elementConsumer) {
+        if (isEmpty(elements) || elementConsumer == null) {
+            return;
+        }
+
+        ListIterator<T> listIterator = elements.listIterator(elements.size());
+
+        while (listIterator.hasPrevious()) {
+            elementConsumer.accept(listIterator.previous());
+        }
+    }
 }

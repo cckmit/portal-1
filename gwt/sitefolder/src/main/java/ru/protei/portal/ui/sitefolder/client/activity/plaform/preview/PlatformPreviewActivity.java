@@ -41,7 +41,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     @Event
     public void onShow(SiteFolderPlatformEvents.ShowFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
         initDetails.parent.clear();
@@ -62,7 +62,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     @Override
     public void onOpenServersClicked() {
         if (platformId != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platformId));
+            fireEvent(new SiteFolderServerEvents.Show(platformId, false));
         }
     }
 
@@ -75,7 +75,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
 
     @Override
     public void onGoToIssuesClicked() {
-        fireEvent(new SiteFolderPlatformEvents.Show());
+        fireEvent(new SiteFolderPlatformEvents.Show(true));
     }
 
     private void platformRequest(Long platformId, Consumer<Platform> consumer) {
@@ -89,7 +89,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     private void fillProjectSpecificFields (ProjectInfo project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
         view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
-        view.setProject(project.getName(), LinkUtils.makeLink(Project.class, project.getId()));
+        view.setProject(project.getName(), LinkUtils.makePreviewLink(Project.class, project.getId()));
         view.setTechnicalSupportValidity(formatTechnicalSupportValidityOrErrorMsg(project));
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }

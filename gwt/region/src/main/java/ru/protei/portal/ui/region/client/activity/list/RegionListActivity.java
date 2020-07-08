@@ -48,7 +48,7 @@ public abstract class RegionListActivity
     @Event
     public void onShow( RegionEvents.Show event ) {
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.REGION_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

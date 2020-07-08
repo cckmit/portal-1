@@ -14,5 +14,9 @@ public interface AbstractDashboardView extends IsWidget {
 
     HasVisibility emptyViewVisibility();
 
+    HasWidgets quickview();
+
+    void showQuickview(boolean isShow);
+
     void setFailedViewText(String text);
 }

@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -194,10 +193,11 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        controller.createLinkWithPublish(value, caseType, createCrossLinks, new FluentCallback<Long>()
+        controller.createLinkWithPublish(value, caseType, createCrossLinks, new FluentCallback<CaseLink>()
                 .withError(this::showErrorFromServer)
-                .withSuccess(id -> {
-                    value.setId(id);
+                .withSuccess(caseLink -> {
+                    value.setId(caseLink.getId());
+                    value.setCaseInfo(caseLink.getCaseInfo());
                     addLinkToParentAndModifyLinksCount(value);
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
@@ -216,12 +216,12 @@ public abstract class CaseLinkListActivity
             linkId = String.valueOf(value.getCaseInfo().getCaseNumber());
             itemWidget.setNumber(lang.crmPrefix() + linkId);
             itemWidget.setName(value.getCaseInfo().getName());
-            itemWidget.setState(En_CaseState.getById(value.getCaseInfo().getStateId()));
+            itemWidget.setState(value.getCaseInfo().getState());
         } else if ( Objects.equals(value.getType(), YT) && value.getYouTrackInfo() != null) {
             linkId = value.getRemoteId();
             itemWidget.setNumber(linkId);
             itemWidget.setName(value.getYouTrackInfo().getSummary());
-            itemWidget.setState(value.getYouTrackInfo().getCaseState());
+            itemWidget.setState(value.getYouTrackInfo().getState());
         } else {
             itemWidget.setName(value.getRemoteId());
             itemWidget.setNumber(lang.errCaseLinkNotFound());

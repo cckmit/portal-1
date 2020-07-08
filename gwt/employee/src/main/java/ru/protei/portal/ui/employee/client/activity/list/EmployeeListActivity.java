@@ -23,7 +23,7 @@ import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonUtils;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
@@ -31,7 +31,9 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -118,7 +120,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 } ) );
     }
 
-
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
                 filterView.organizations().getValue(),
@@ -130,7 +131,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null,
+                filterView.showTopBrass().getValue() ? TopBrassPersonUtils.getPersonIds() : null,
                 filterView.showAbsent().getValue());
     }
 
@@ -138,7 +139,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         AbstractEmployeeItemView itemView = factory.get();
         itemView.setActivity( this );
 
-        itemView.setName( employee.getDisplayName(), LinkUtils.makeLink(EmployeeShortView.class, employee.getId()) );
+        itemView.setName( employee.getDisplayName(), LinkUtils.makePreviewLink(EmployeeShortView.class, employee.getId()) );
+        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT)) {
+            itemView.setEditIcon(LinkUtils.makeEditLink(EmployeeShortView.class, employee.getId()));
+        }
+
         itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );

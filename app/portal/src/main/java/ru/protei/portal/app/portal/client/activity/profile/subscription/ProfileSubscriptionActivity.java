@@ -6,10 +6,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.app.portal.client.service.PersonSubscriptionControllerAsync;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -25,7 +27,8 @@ public abstract class ProfileSubscriptionActivity implements AbstractProfileSubs
     public void onShow(AppEvents.ShowProfileSubscriptions event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-        requestPersonSubscriptions(this::fillView);
+        requestPersonSubscriptions(this::fillPersonSubscriptionsView);
+        fillFilterSubscriptionsView(policyService.getProfile());
     }
 
     private void requestPersonSubscriptions(Consumer<Set<PersonShortView>> successAction) {
@@ -34,8 +37,12 @@ public abstract class ProfileSubscriptionActivity implements AbstractProfileSubs
                         .withSuccess(persons -> successAction.accept(persons)));
     }
 
-    private void fillView(Set<PersonShortView> persons) {
+    private void fillPersonSubscriptionsView(Set<PersonShortView> persons) {
         view.persons().setValue(persons);
+    }
+
+    private void fillFilterSubscriptionsView(Profile profile) {
+        view.setPersonId(profile.getId());
     }
 
     @Override
@@ -57,4 +64,7 @@ public abstract class ProfileSubscriptionActivity implements AbstractProfileSubs
 
     @Inject
     PersonSubscriptionControllerAsync personSubscriptionController;
+
+    @Inject
+    PolicyService policyService;
 }

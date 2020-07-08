@@ -1,0 +1,65 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-action_type-column-in-history-table" author="turik">
+        <addColumn tableName="history">
+            <column name="action_type" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="update-action_type-and-value_type-in-history-table" author="turik">
+        <update tableName="history">
+            <column name="action_type" value="0"/>
+            <where>value_type = 0</where>
+        </update>
+        <update tableName="history">
+            <column name="action_type" value="1"/>
+            <where>value_type = 1</where>
+        </update>
+        <update tableName="history">
+            <column name="action_type" value="2"/>
+            <where>value_type = 2</where>
+        </update>
+        <update tableName="history">
+            <column name="value_type" value="0"/>
+        </update>
+    </changeSet>
+
+    <changeSet id="add-action_type-notnull-constraint-in-history-table" author="turik">
+        <addNotNullConstraint columnDataType="int"
+                              columnName="action_type"
+                              tableName="history"/>
+    </changeSet>
+
+    <changeSet id="rename-old_value-column-in-history-table" author="turik">
+        <renameColumn tableName="history"
+                      oldColumnName="old_value"
+                      newColumnName="old_id"
+                      columnDataType="bigint"/>
+
+    </changeSet>
+
+    <changeSet id="rename-new_value-column-in-history-table" author="turik">
+        <renameColumn tableName="history"
+                      oldColumnName="new_value"
+                      newColumnName="new_id"
+                      columnDataType="bigint"/>
+
+    </changeSet>
+
+    <changeSet id="add-old_value-column-in-history-table" author="turik">
+        <addColumn tableName="history">
+            <column name="old_value" type="varchar(256)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-new_value-column-in-history-table" author="turik">
+        <addColumn tableName="history">
+            <column name="new_value" type="varchar(256)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

@@ -9,10 +9,38 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcHelper;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements ReservedIpDAO {
 
     @Override
     public ReservedIp getReservedIpByAddress(String address) { return getByCondition("ip_address=?", address); }
+
+    @Override
+    public List<ReservedIp> getReservedIpsBySubnetId(Long subnetId) { return getListByCondition("subnet_id=?", subnetId); }
+
+    @Override
+    public Map<Long, Long> countBySubnetIds(List<Long> subnetIds) {
+        StringBuilder sb = new StringBuilder()
+                .append("SELECT subnet_id, COUNT(*) AS cnt FROM ")
+                .append(getTableName());
+
+        if (CollectionUtils.isNotEmpty(subnetIds)) {
+            sb.append(" WHERE subnet_id IN ").append(HelperFunc.makeInArg(subnetIds, String::valueOf));
+        }
+
+        sb.append(" GROUP BY subnet_id");
+        Map<Long, Long> result = new HashMap<>();
+        jdbcTemplate.query(sb.toString(), (rs, rowNum) -> {
+            long id = rs.getLong("subnet_id");
+            long count = rs.getLong("cnt");
+            result.put(id, count);
+            return null;
+        });
+        return result;
+    }
 
     @SqlConditionBuilder
     public SqlCondition createReservedIpSqlCondition(ReservedIpQuery query) {
@@ -21,7 +49,10 @@ public class ReservedIpDAO_Impl extends PortalBaseJdbcDAO<ReservedIp> implements
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 String arg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                condition.append(" and (ip_address like ? or mac_address like ?)");
+                condition.append(" and (ip_address like ? or mac_address like ? or ")
+                         .append(getTableName())
+                         .append(".comment like ? )");
+                args.add(arg);
                 args.add(arg);
                 args.add(arg);
             }

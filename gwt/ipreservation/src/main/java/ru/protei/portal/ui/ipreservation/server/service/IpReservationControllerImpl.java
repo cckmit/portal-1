@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.ReservedIpRequest;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.ent.Subnet;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ReservedIpQuery;
 import ru.protei.portal.core.model.view.SubnetOption;
 import ru.protei.portal.core.service.IpReservationService;
@@ -20,6 +21,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -91,22 +93,14 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public Map<Subnet, List<ReservedIp>> getReservedIpsBySubnets(ReservedIpQuery reservedIpQuery ) throws RequestFailedException {
+    public Long getFreeIpsCountBySubnets(List<Long> subnetIds) throws RequestFailedException {
 
-        log.info( "getReservedIpsBySubnets(): search={} | sortField={} | order={}",
-                reservedIpQuery.getSearchString(), reservedIpQuery.getSortField(), reservedIpQuery.getSortDir() );
+        log.info( "getFreeIpCountBySubnets(): selected subnets size={}",
+                CollectionUtils.isEmpty(subnetIds) ? 0 : subnetIds.size());
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(ipReservationService.getReservedIpsBySubnets(token, reservedIpQuery));
-
+        return ServiceUtils.checkResultAndGetData(ipReservationService.getFreeIpsCountBySubnets(token, subnetIds));
     }
-
-/*    @Override
-    public SearchResult<ReservedIp> getReservedIpsBySubnet(Long subnetId) throws RequestFailedException {
-        log.info("getReservedIpsBySubnet(): subnet_id={}", subnetId);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
-    }*/
 
     @Override
     public SearchResult<ReservedIp> getReservedIpList( ReservedIpQuery reservedIpQuery ) throws RequestFailedException {
@@ -179,10 +173,10 @@ public class IpReservationControllerImpl implements IpReservationController {
     public Long removeSubnet(Subnet subnet, boolean removeWithIps) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<Long> response = ipReservationService.removeSubnet(token, subnet, removeWithIps);
+        Result<Subnet> response = ipReservationService.removeSubnet(token, subnet, removeWithIps);
 
         if (response.isOk()) {
-            return response.getData();
+            return response.getData().getId();
         }
 
         throw new RequestFailedException(response.getStatus());
@@ -191,10 +185,10 @@ public class IpReservationControllerImpl implements IpReservationController {
     @Override
     public Long removeReservedIp(ReservedIp reservedIp) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Long> response = ipReservationService.removeReservedIp(token, reservedIp);
+        Result<ReservedIp> response = ipReservationService.removeReservedIp(token, reservedIp);
 
         if (response.isOk()) {
-            return response.getData();
+            return response.getData().getId();
         }
 
         throw new RequestFailedException(response.getStatus());

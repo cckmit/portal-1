@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.query.RoomReservationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
@@ -45,7 +45,7 @@ public abstract class RoomReservationCalendarActivity implements Activity, Abstr
     @Event(Type.FILL_CONTENT)
     public void onShow(RoomReservationEvents.Show event) {
         if (!canView(policyService)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         date = new Date();

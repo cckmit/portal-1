@@ -27,7 +27,7 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
     @Event(Type.FILL_CONTENT)
     public void onShow(IssueAssignmentEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_ASSIGNMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         showActionBarActions();
@@ -47,6 +47,11 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
         fireEvent(new IssueEvents.Create());
     }
 
+    @Event
+    public void onShowIssuePreview(IssueAssignmentEvents.ShowIssuePreview event) {
+        showIssuePreview(event.caseNumber);
+    }
+
     @Override
     public void onToggleTableClicked() {
         boolean isTableVisible = !getTableVisibility();
@@ -62,6 +67,7 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
     private void showView() {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        view.showQuickview(false);
     }
 
     private void showActionBarActions() {
@@ -92,6 +98,12 @@ public abstract class IssueAssignmentActivity implements Activity, AbstractIssue
 
     private boolean getTableVisibility() {
         return Boolean.parseBoolean(localStorageService.getOrDefault(TABLE_VISIBILITY_KEY, "true"));
+    }
+
+    private void showIssuePreview(Long caseNumber) {
+        view.showQuickview(false);
+        fireEvent(new IssueEvents.ShowPreview(view.quickview(), caseNumber));
+        view.showQuickview(true);
     }
 
     @Inject

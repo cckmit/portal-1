@@ -33,7 +33,7 @@ public class YtEntityTest {
     @Test
     public void testIssueWithFieldsCommentsAttachments() {
         String fields = getMapper().getFields(YtIssue.class, true, YtIssueComment.class, YtIssueAttachment.class, YtUser.class, YtIssueCustomField.class);
-        String expected = "$type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),comments($type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),author($type,avatarUrl,email,fullName,id,login),created,deleted,id,text,textPreview,updated,usesMarkdown),customFields($type,id,name,value($type,archived,description,id,isResolved,localizedName,name)),description,id,idReadable,reporter($type,avatarUrl,email,fullName,id,login),summary,updater($type,avatarUrl,email,fullName,id,login)";
+        String expected = "$type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),comments($type,attachments($type,author($type,avatarUrl,email,fullName,id,login),charset,created,extension,id,metaData,mimeType,name,removed,size,thumbnailURL,updated,url),author($type,avatarUrl,email,fullName,id,login),created,deleted,id,text,textPreview,updated,usesMarkdown),customFields($type,id,name,value($type,archived,description,id,isResolved,localizedName,markdownText,name,text)),description,id,idReadable,reporter($type,avatarUrl,email,fullName,id,login),summary,updater($type,avatarUrl,email,fullName,id,login)";
         Assert.assertEquals(expected, fields);
     }
 

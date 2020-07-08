@@ -29,7 +29,6 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         dateRange.setPlaceholder(lang.selectDate());
-        dateRange.setHasPredefinedPeriods(true);
         ensureDebugIds();
     }
 

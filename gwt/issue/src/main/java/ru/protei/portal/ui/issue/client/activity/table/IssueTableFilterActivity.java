@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issue.client.activity.table;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -17,7 +16,6 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
@@ -70,6 +68,10 @@ public abstract class IssueTableFilterActivity
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
+        if (!policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW )) {
+            return;
+        }
+
         filterView.resetFilter();
         filterView.presetFilterType();
         updateCaseStatesFilter();
@@ -85,7 +87,6 @@ public abstract class IssueTableFilterActivity
         view.getPagerContainer().add( pagerView.asWidget() );
 
         filterView.showUserFilterControls();
-        filterView.setCheckImportanceHistoryVisibility( false );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -94,9 +95,10 @@ public abstract class IssueTableFilterActivity
 
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
+            filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
         }
 
-        clearScroll(event);
+        this.preScroll = event.preScroll;
 
         if (event.query != null) {
             fillFilterFieldsByCaseQuery(event.query);
@@ -134,13 +136,14 @@ public abstract class IssueTableFilterActivity
 
     @Override
     public void onItemClicked( CaseShortView value ) {
+        persistScroll();
         showPreview( value );
     }
 
     @Override
     public void onEditClicked( CaseShortView value ) {
-        persistScrollTopPosition();
-        fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+        persistScroll();
+        fireEvent(new IssueEvents.Edit(value.getCaseNumber()).withBackEvent(() -> fireEvent(new IssueEvents.Show(true))));
     }
 
     @Override
@@ -191,7 +194,7 @@ public abstract class IssueTableFilterActivity
                             view.setTotalRecords(sr.getTotalCount());
                             pagerView.setTotalPages(view.getPageCount());
                             pagerView.setTotalCount(sr.getTotalCount());
-                            restoreScrollTopPositionOrClearSelection();
+                            restoreScroll();
                         }
                     }
                 }));
@@ -236,20 +239,19 @@ public abstract class IssueTableFilterActivity
         view.triggerTableLoad();
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
+    private void restoreScroll() {
+        if (!preScroll) {
             view.clearSelection();
             return;
         }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void fillFilterFieldsByCaseQuery( CaseQuery caseQuery ) {
@@ -283,8 +285,8 @@ public abstract class IssueTableFilterActivity
 
     private void applyFilterViewPrivileges() {
         filterView.getIssueFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterView.getIssueFilterParams().managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
         filterView.getIssueFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        filterView.getIssueFilterParams().planVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
     }
 
     private void updateCaseStatesFilter() {
@@ -312,13 +314,6 @@ public abstract class IssueTableFilterActivity
             animation.filterCollapse();
         } else {
             animation.filterRestore();
-        }
-    }
-
-    private void clearScroll(IssueEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
         }
     }
 
@@ -368,5 +363,6 @@ public abstract class IssueTableFilterActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

@@ -7,6 +7,9 @@ import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentV
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
+import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemView;
+import ru.protei.portal.ui.common.client.activity.casehistory.list.AbstractCaseHistoryListView;
+import ru.protei.portal.ui.common.client.activity.casehistory.list.CaseHistoryListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
@@ -28,8 +31,8 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
-import ru.protei.portal.ui.common.client.activity.forbidden.AbstractForbiddenPageView;
-import ru.protei.portal.ui.common.client.activity.forbidden.ForbiddenPageActivity;
+import ru.protei.portal.ui.common.client.activity.errorpage.AbstractErrorPageView;
+import ru.protei.portal.ui.common.client.activity.errorpage.ErrorPageActivity;
 import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoActivity;
 import ru.protei.portal.ui.common.client.activity.info.AbstractJiraInfoView;
 import ru.protei.portal.ui.common.client.activity.info.JiraInfoActivity;
@@ -46,11 +49,12 @@ import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPosi
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemView;
+import ru.protei.portal.ui.common.client.view.casehistory.list.CaseHistoryListView;
 import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
 import ru.protei.portal.ui.common.client.view.caselink.list.CaseLinkListView;
 import ru.protei.portal.ui.common.client.view.casetag.edit.CaseTagEditView;
@@ -62,13 +66,14 @@ import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
-import ru.protei.portal.ui.common.client.view.forbidden.ForbiddenPageView;
+import ru.protei.portal.ui.common.client.view.errorpage.ErrorPageView;
 import ru.protei.portal.ui.common.client.view.info.JiraInfoView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
+import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
@@ -94,8 +99,8 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( AbstractDialogDetailsView.class ).to( DialogDetailsView.class );
 
-        bind( ForbiddenPageActivity.class ).asEagerSingleton();
-        bind( AbstractForbiddenPageView.class ).to(ForbiddenPageView.class).in( Singleton.class );
+        bind( ErrorPageActivity.class ).asEagerSingleton();
+        bind( AbstractErrorPageView.class ).to(ErrorPageView.class).in( Singleton.class );
 
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );
@@ -107,6 +112,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateModel.class ).asEagerSingleton();
         bind( StateSelectorModel.class ).asEagerSingleton();
+        bind( EmployeeRegistrationStateModel.class ).asEagerSingleton();
 
         bind( HomeCompanyService.class ).asEagerSingleton();
 
@@ -114,7 +120,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( AbstractPagerView.class ).to( PagerView.class );
 
-        bind( IssueStates.class ).asEagerSingleton();
         bind( AbstractAttachmentView.class ).to( AttachmentView.class );
 
         bind( ConfirmDialogActivity.class ).asEagerSingleton();
@@ -166,6 +171,11 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( IssueFilterWidgetModel.class ).asEagerSingleton();
         bind( AbstractIssueFilterParamView.class ).to( IssueFilterParamView.class );
+
+        bind(CaseHistoryListActivity.class).asEagerSingleton();
+        bind(AbstractCaseHistoryListView.class).to(CaseHistoryListView.class).in(Singleton.class);
+
+        bind(AbstractCaseHistoryItemView.class).to(CaseHistoryItemView.class);
     }
 }
 

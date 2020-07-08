@@ -26,8 +26,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CompanyCategory.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления компаниями
@@ -121,16 +120,16 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId ) {
-        if ( companyId == null ) {
+    public Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions(AuthToken authToken, Set<Long> companyIds) {
+        if (isEmpty(companyIds)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Company company = companyDAO.get( companyId );
-        if (company == null || company.getParentCompanyId() == null) return getCompanySubscriptions( companyId );
+        Set<Long> companyAndParentCompanyIds = new HashSet<>();
+        companyAndParentCompanyIds.addAll(companyIds);
+        companyAndParentCompanyIds.addAll(collectParentCompanyIds(companyDAO.getListByKeys(companyIds)));
 
-        List<CompanySubscription> result = companySubscriptionDAO.listByCompanyIds( new HashSet<>( Arrays.asList( companyId, company.getParentCompanyId() ) ) );
-        return ok(result );
+        return ok(companySubscriptionDAO.listByCompanyIds(companyAndParentCompanyIds));
     }
 
     @Override
@@ -306,14 +305,22 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<Long>> getAllHomeCompanyIds(AuthToken token) {
-        return ok(companyDAO.getAllHomeCompanyIds());
+    public Result<List<Company>> getAllHomeCompanies(AuthToken token) {
+        return ok(companyDAO.getAllHomeCompanies());
     }
 
     @Override
     public Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
+    }
+
+    private List<Long> collectParentCompanyIds(List<Company> companies) {
+        return emptyIfNull(companies)
+                .stream()
+                .map(Company::getParentCompanyId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private void addCommonImportanceLevels(Long companyId) {

@@ -2,10 +2,6 @@ package ru.protei.portal.ui.employeeregistration.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseLink;
-
-import java.util.Set;
 
 public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setActivity(AbstractEmployeeRegistrationPreviewActivity activity);
@@ -32,7 +28,7 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setCreatedBy(String created);
 
-    void setState(En_CaseState state);
+    void setState(String state);
 
     void setPhoneOfficeTypeList( String phoneOfficeTypeList );
 
@@ -46,7 +42,11 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setAdditionalSoft( String additionalSoft );
 
+    void setCompany(String company);
+
     void showFullScreen(boolean isFullScreen);
 
     HasWidgets getCommentsContainer();
+
+    void setDepartment(String value);
 }

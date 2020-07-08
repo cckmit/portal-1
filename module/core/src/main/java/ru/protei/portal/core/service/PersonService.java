@@ -19,4 +19,5 @@ public interface PersonService {
     Result<List<PersonShortView>> shortViewList(AuthToken authToken, PersonQuery query);
     Result<List<PersonShortView>> shortViewListByIds(List<Long> ids);
     Result<Map<Long, String>> getPersonNames(Collection<Long> ids);
+    Result<Person> getCommonManagerByProductId(AuthToken authToken, Long productId);
 }

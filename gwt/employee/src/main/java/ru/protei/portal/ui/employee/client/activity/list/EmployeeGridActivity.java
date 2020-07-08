@@ -3,16 +3,17 @@ package ru.protei.portal.ui.employee.client.activity.list;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.ui.common.client.util.TopBrassPersonIdsUtil;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonUtils;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
@@ -32,10 +33,10 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(EmployeeEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -54,7 +55,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
             fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
         }
 
-        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
+        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
 
         if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.absenceButtonCreate(), "", UiConstants.ActionBarIdentity.ABSENCE));
@@ -72,7 +73,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         currentViewType = currentViewType == ViewType.TABLE ? ViewType.LIST : ViewType.TABLE;
-        onShow(new EmployeeEvents.Show());
+        onShow(new EmployeeEvents.Show(false));
 
         localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
     }
@@ -84,7 +85,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -99,7 +100,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -114,7 +115,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -128,7 +129,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -152,7 +153,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonIdsUtil.getPersonIds() : null,
+                filterView.showTopBrass().getValue() ? TopBrassPersonUtils.getPersonIds() : null,
                 filterView.showAbsent().getValue());
     }
 

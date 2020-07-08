@@ -146,6 +146,21 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public Company getCompanyUnsafe(long id) throws RequestFailedException {
+        log.info("getCompanyUnsafe(): id={}", id);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Company> response = companyService.getCompanyUnsafe(token, id);
+
+        log.info("getCompanyUnsafe(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData());
+
+        if (response.isError()) throw new RequestFailedException(response.getStatus());
+
+        return response.getData();
+    }
+
+    @Override
     public List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException {
         log.info( "getCompanyOptionList()" );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -207,37 +222,35 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException {
-        log.info( "getCompanyWithParentCompanySubscriptions() companyId={}", companyId );
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return ServiceUtils.checkResultAndGetData( companyService.getCompanyWithParentCompanySubscriptions( authToken, companyId ));
+    public List<CompanySubscription> getCompanyWithParentCompanySubscriptions(Set<Long> companyIds) throws RequestFailedException {
+        log.info("getCompanyWithParentCompanySubscriptions() companyIds={}", companyIds);
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(companyService.getCompanyWithParentCompanySubscriptions(authToken, companyIds));
     }
 
     @Override
     public List<CaseState> getCompanyCaseStates(Long companyId) throws RequestFailedException {
-        log.info( "getCompanyCaseStates() companyId={}", companyId );
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        log.info("getCompanyCaseStates() companyId={}", companyId);
         return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
     }
 
     @Override
-    public List<Long> getAllHomeCompanyIds() throws RequestFailedException {
-        log.info("getAllHomeCompanyIds()");
+    public List<EntityOption> getAllHomeCompanies() throws RequestFailedException {
+        log.info("getAllHomeCompanies()");
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
+        List<Company> companies = checkResultAndGetData(companyService.getAllHomeCompanies(authToken));
+
+        return companies.stream().map(company -> new EntityOption(company.getCname(), company.getId())).collect(Collectors.toList());
     }
 
     @Override
     public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
         log.info("getImportanceLevels() companyId={}", companyId);
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-
         List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
         List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
                 .map(CompanyImportanceItem::getImportanceLevelId)
                 .map(En_ImportanceLevel::getById)
                 .collect(Collectors.toList());
-
         log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
 
         return importanceLevels;

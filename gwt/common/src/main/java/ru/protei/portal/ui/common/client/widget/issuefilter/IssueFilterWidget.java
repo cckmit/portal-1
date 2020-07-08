@@ -11,8 +11,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -21,14 +21,13 @@ import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidg
 import ru.protei.portal.ui.common.client.activity.filter.IssueFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
@@ -45,14 +44,10 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setInitiatorModel(initiatorModel);
-        issueFilterParamView.setCreatorModel(personModel);
-        issueFilterParamView.setInitiatorCompaniesSupplier(() -> new HashSet<>( issueFilterParamView.companies().getValue()));
+        issueFilterParamView.setInitiatorsModel(personModelProvider.get());
+        issueFilterParamView.setManagersModel(personModelProvider.get());
+        issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
-    }
-
-    public void setCheckImportanceHistoryVisibility( boolean isCheckImportanceHistoryVisible ) {
-        issueFilterParamView.setCheckImportanceHistoryVisibility(isCheckImportanceHistoryVisible);
     }
 
     @Override
@@ -85,7 +80,7 @@ public class IssueFilterWidget extends Composite {
 
         setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
-            issueFilterParamView.states().setValue(new HashSet<>(activeStates));
+            issueFilterParamView.states().setValue(CaseStateUtils.getFilterCaseResolutionTimeActiveStates());
         }
     }
 
@@ -165,10 +160,7 @@ public class IssueFilterWidget extends Composite {
         if (value == null || value.getId() == null) {
             return;
         }
-        model.onRemoveClicked(value.getId(), () -> {
-            resetFilter();
-            issueFilterParamView.resetFilter();
-        });
+        model.onRemoveClicked(value.getId(), this::resetFilter);
     }
 
     @UiHandler( "filterName" )
@@ -319,18 +311,14 @@ public class IssueFilterWidget extends Composite {
     DivElement footer;
 
     @Inject
-    PersonModel personModel;
+    AsyncPersonModel asyncPersonModel;
     @Inject
-    InitiatorModel initiatorModel;
+    Provider<PersonModel> personModelProvider;
 
     AbstractIssueFilterWidgetModel model;
 
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
-    private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,
-            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND,
-            En_CaseState.INFO_REQUEST, En_CaseState.NX_REQUEST, En_CaseState.CUST_REQUEST));
-
     private static IssueFilterWidget.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterWidget.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterWidget> {}
 }

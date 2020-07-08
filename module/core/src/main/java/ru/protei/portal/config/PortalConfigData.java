@@ -148,6 +148,7 @@ public class PortalConfigData {
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
             crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
             crmUrlFiles = properties.getProperty( "crm.url.files", "http://newportal/crm/" );
+            isProductionServer = properties.getProperty( "is.production.server", Boolean.class, false );
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -165,10 +166,15 @@ public class PortalConfigData {
             return crmUrlFiles;
         }
 
+        public boolean isProductionServer() {
+            return isProductionServer;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
         private final String crmUrlFiles;
+        private final Boolean isProductionServer;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
@@ -179,6 +185,7 @@ public class PortalConfigData {
         private final String crmEmployeeRegistrationUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
         private final String[] crmRoomReservationNotificationsRecipients;
+        private final String[] crmIpReservationNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
@@ -189,6 +196,7 @@ public class PortalConfigData {
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
             crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
+            crmIpReservationNotificationsRecipients = properties.getProperty("crm.ip_reservation.recipients", "").split(",");
         }
 
         public String getCrmCaseUrl() {
@@ -217,6 +225,10 @@ public class PortalConfigData {
 
         public String[] getCrmRoomReservationNotificationsRecipients() {
             return crmRoomReservationNotificationsRecipients;
+        }
+
+        public String[] getCrmIpReservationNotificationsRecipients() {
+            return crmIpReservationNotificationsRecipients;
         }
     }
 
@@ -325,7 +337,7 @@ public class PortalConfigData {
 
         public LegacySystemConfig(PropertiesWrapper properties) throws ConfigException {
             this.jdbcDriver = properties.getProperty("syb.jdbc.driver", "net.sourceforge.jtds.jdbc.Driver");
-            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.1.55:2638/PORTAL2017");
+            this.jdbcURL = properties.getProperty("syb.jdbc.url", "jdbc:sybase:Tds:192.168.101.140:2642/RESV3");
             this.login = properties.getProperty("syb.jdbc.login", "dba");
             this.passwd = properties.getProperty("syb.jdbc.pwd", "sql");
 
@@ -384,6 +396,7 @@ public class PortalConfigData {
         private final boolean youtrackEnabled;
         private final boolean youtrackCompanySyncEnabled;
         private final boolean youtrackEmployeeSyncEnabled;
+        private final boolean youtrackLinksMigrationEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -395,6 +408,7 @@ public class PortalConfigData {
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
             youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
+            youtrackLinksMigrationEnabled = properties.getProperty("migration.youtrack.links", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -418,6 +432,9 @@ public class PortalConfigData {
         }
         public boolean isYoutrackEmployeeSyncEnabled() {
             return youtrackEmployeeSyncEnabled;
+        }
+        public boolean isYoutrackLinksMigrationEnabled() {
+            return youtrackLinksMigrationEnabled;
         }
 
         public boolean isJiraEnabled() {
@@ -525,10 +542,12 @@ public class PortalConfigData {
     public static class CaseLinkConfig {
         private final String linkCrm;
         private final String linkYouTrack;
+        private final String crosslinkYoutrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
+            this.crosslinkYoutrack = properties.getProperty("case.crosslink.youtrack", "http://newportal/crm/#issues/issue:id=%id%");
         }
 
         public String getLinkCrm() {
@@ -538,10 +557,15 @@ public class PortalConfigData {
         public String getLinkYouTrack() {
             return linkYouTrack;
         }
+
+        public String getCrosslinkYoutrack() {
+            return crosslinkYoutrack;
+        }
     }
 
     public static class YoutrackConfig {
         private final String apiBaseUrl;
+        private final String login;
         private final String authToken;
         private final String employeeRegistrationSyncSchedule;
         private final String equipmentProject;
@@ -552,6 +576,7 @@ public class PortalConfigData {
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
+            login = properties.getProperty("youtrack.api.login", "portal");
             authToken = properties.getProperty("youtrack.api.auth_token");
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
@@ -563,6 +588,10 @@ public class PortalConfigData {
 
         public String getApiBaseUrl() {
             return apiBaseUrl;
+        }
+
+        public String getLogin() {
+            return login;
         }
 
         public String getAuthToken() {

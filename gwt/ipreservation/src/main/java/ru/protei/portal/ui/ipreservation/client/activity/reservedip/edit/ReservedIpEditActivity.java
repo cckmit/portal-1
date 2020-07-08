@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Активность карточки редактирования зарезервированного IP
@@ -34,7 +35,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
             return;
         }
 
-        if (!hasPrivileges(event.reservedIp)) {
+        if (!hasAccess(event.reservedIp)) {
             fireEvent(new IpReservationEvents.CloseEdit());
             return;
         }
@@ -49,7 +50,7 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
 
     @Override
     public void onSaveClicked() {
-        if (!hasPrivileges(reservedIp) || !validateView()) {
+        if (!hasAccess(reservedIp) || !validateView()) {
             return;
         }
 
@@ -82,11 +83,11 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         view.useRange().setValue(new DateInterval(reservedIp.getReserveDate(), reservedIp.getReleaseDate()));
         view.comment().setText(reservedIp.getComment());
         PersonShortView ipOwner = new PersonShortView(
-                reservedIp.getOwnerShortName(),
+                reservedIp.getOwnerName(),
                 reservedIp.getOwnerId());
         view.owner().setValue(ipOwner);
 
-        view.saveVisibility().setVisible(hasPrivileges(reservedIp));
+        view.saveVisibility().setVisible(hasAccess(reservedIp));
     }
 
     private ReservedIp fillReservedIp() {
@@ -116,8 +117,12 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         Date from = view.useRange().getValue().from;
         Date to = view.useRange().getValue().to;
 
+        boolean isAllowToSetNullDate = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_EDIT)
+                || null == reservedIp.getReleaseDate();
+
         if ( from == null
-             || (to == null && !policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE))) {
+             || (to == null && !isAllowToSetNullDate)
+             || (to != null && from.after(to))) {
             showError(lang.errSaveReservedIpUseInterval());
             return false;
         }
@@ -130,14 +135,11 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
         return true;
     }
 
-    private boolean hasPrivileges(ReservedIp value) {
-        if (policyService.hasPrivilegeFor(En_Privilege.SUBNET_CREATE)
-            || (policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
-                 && value.getOwnerId().equals(policyService.getProfile().getId()))
-        ) {
-            return true;
-        }
-        return false;
+    private boolean hasAccess(ReservedIp reservedIp) {
+        boolean isAdmin = policyService.hasSystemScopeForPrivilege(En_Privilege.RESERVED_IP_EDIT);
+        boolean isUserWithAccess = policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_EDIT)
+                && Objects.equals(reservedIp.getOwnerId(), policyService.getProfile().getId());
+        return isAdmin || isUserWithAccess;
     }
 
     private void showErrorFromServer(Throwable throwable) {

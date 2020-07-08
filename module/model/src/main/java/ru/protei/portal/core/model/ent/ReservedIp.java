@@ -12,6 +12,8 @@ import java.util.Date;
 @JdbcEntity(table = "reserved_ip")
 public class ReservedIp extends AuditableObject {
 
+    public static final String AUDIT_TYPE = "ReservedIp";
+
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTOINCREMENT)
     private Long id;
 
@@ -33,8 +35,8 @@ public class ReservedIp extends AuditableObject {
     @JdbcColumn(name="owner_id")
     private Long ownerId;
 
-    @JdbcJoinedColumn( localColumn = "owner_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName")
-    private String ownerShortName;
+    @JdbcJoinedColumn( localColumn = "owner_id", table = "person", remoteColumn = "id", mappedColumn = "displayName")
+    private String ownerName;
 
     @JdbcColumn(name="ip_address")
     private String ipAddress;
@@ -88,9 +90,9 @@ public class ReservedIp extends AuditableObject {
 
     public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
 
-    public String getOwnerShortName() { return ownerShortName; }
+    public String getOwnerName() { return ownerName; }
 
-    public void setOwnerShortName(String ownerShortName) { this.ownerShortName = ownerShortName; }
+    public void setOwnerName(String ownerName) { this.ownerName = ownerName; }
 
     public String getIpAddress() { return ipAddress; }
 
@@ -140,7 +142,7 @@ public class ReservedIp extends AuditableObject {
 
     @Override
     public String getAuditType() {
-        return "ReservedIp";
+        return AUDIT_TYPE;
     }
 
     @Override
@@ -149,9 +151,11 @@ public class ReservedIp extends AuditableObject {
                 "id=" + id +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
+                ", creator='" + creator + '\'' +
                 ", subnetId=" + subnetId +
                 ", subnet=" + subnet +
                 ", ownerId=" + ownerId +
+                ", ownerName='" + ownerName + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", macAddress='" + macAddress + '\'' +
                 ", reserveDate=" + reserveDate +

@@ -141,6 +141,21 @@ public enum En_SortField {
     check_date("last_check_date"),
 
     /**
+     * state order
+     */
+    state_order("VIEW_ORDER"),
+
+    /**
+     * start_date
+     */
+    start_date("start_date"),
+
+    /**
+     * finish_date
+     */
+    finish_date("finish_date"),
+
+    /**
      * from time absence
      */
     from_time("from_time"),

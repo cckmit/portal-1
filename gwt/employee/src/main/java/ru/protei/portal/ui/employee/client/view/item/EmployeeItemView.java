@@ -22,6 +22,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
+    @Override
     public void setActivity( AbstractEmployeeItemActivity activity ) {
         this.activity = activity;
     }
@@ -94,6 +95,12 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
+    @Override
+    public void setEditIcon (String link) {
+        editIcon.setHref(link);
+        editIcon.setVisible(link != null && !link.isEmpty());
+    }
+
     public void setAbsenceReason(En_AbsenceReason reason) {
         addStyleName("absent");
         absenceReason.removeClassName("hide");
@@ -103,6 +110,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     Anchor name;
+
+    @UiField
+    Anchor editIcon;
 
     @UiField
     HTMLPanel birthdayContainer;

@@ -1,6 +1,9 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
+import ru.protei.portal.core.model.query.CompanyDepartmentQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
 
@@ -13,5 +16,9 @@ public interface CompanyDepartmentDAO extends PortalBaseDAO<CompanyDepartment> {
     boolean checkExistsByName(String name, Long companyId);
     boolean checkExistsByNameAndDepId(String name, Long companyId, Long departmentId);
     CompanyDepartment getByExternalId(String extId, Long companyId);
-    List<CompanyDepartment> getListByCompanyId(Long companyId);
+
+    List<CompanyDepartment> getListByQuery(CompanyDepartmentQuery query);
+
+    @SqlConditionBuilder
+    SqlCondition createSqlCondition(CompanyDepartmentQuery query);
 }

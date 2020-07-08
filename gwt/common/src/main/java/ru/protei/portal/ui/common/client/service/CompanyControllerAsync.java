@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Асинхронный сервис по работе с компаниями
@@ -83,7 +84,7 @@ public interface CompanyControllerAsync {
      * @param companyId
      */
     void getCompanySubscription( Long companyId, AsyncCallback< List< CompanySubscription > > async );
-    void getCompanyWithParentCompanySubscriptions( Long companyId, AsyncCallback<List<CompanySubscription>> async );
+    void getCompanyWithParentCompanySubscriptions(Set<Long> companyIds, AsyncCallback<List<CompanySubscription>> async );
 
     /**
      * Получить список доступных статусов обращения
@@ -92,7 +93,9 @@ public interface CompanyControllerAsync {
 
     void updateState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
 
-    void getAllHomeCompanyIds(AsyncCallback<List<Long>> async);
-
     void getImportanceLevels(Long id, AsyncCallback<List<En_ImportanceLevel>> async);
+
+    void getAllHomeCompanies(AsyncCallback<List<EntityOption>> async);
+
+    void getCompanyUnsafe(long id, AsyncCallback<Company> async);
 }

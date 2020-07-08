@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.ent.WorkerPosition;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -55,4 +56,7 @@ public interface EmployeeService {
     @Auditable(En_AuditType.EMPLOYEE_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> fireEmployee(AuthToken token, Person person);
+
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> workerEntryList);
 }

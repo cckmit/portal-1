@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.SubnetOption;
 
 import java.io.Serializable;
@@ -11,7 +12,9 @@ import java.util.Set;
 /**
  * Объект-wrapper для запроса резервирования IP адресов по параметрам
  */
-public class ReservedIpRequest implements Serializable{
+public class ReservedIpRequest extends AuditableObject {
+
+    public static final String AUDIT_TYPE = "ReservedIpRequest";
 
     private Set<SubnetOption> subnets;
 
@@ -34,6 +37,9 @@ public class ReservedIpRequest implements Serializable{
     private String comment;
 
     public ReservedIpRequest() {}
+
+    @Override
+    public Long getId() { return null; }
 
     public Set<SubnetOption> getSubnets() { return subnets; }
 
@@ -82,5 +88,26 @@ public class ReservedIpRequest implements Serializable{
             return null;
 
         return ipAddress.substring(0, ipAddress.lastIndexOf("."));
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservedIpRequest{" +
+                "exact=" + exact +
+                ", subnets=" + subnets +
+                ", ownerId=" + ownerId +
+                ", number=" + number +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", macAddress='" + macAddress + '\'' +
+                ", dateIntervalType=" + dateIntervalType +
+                ", reserveDate=" + reserveDate +
+                ", releaseDate=" + releaseDate +
+                ", comment='" + comment + '\'' +
+                '}';
     }
 }

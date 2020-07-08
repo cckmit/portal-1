@@ -2,7 +2,6 @@ package ru.protei.portal.ui.contract.client.activity.table;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -15,7 +14,6 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -60,7 +58,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Event(Type.FILL_CONTENT)
     public void onShow(ContractEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -73,7 +71,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
                 new ActionBarEvents.Clear()
         );
 
-        clearScroll(event);
+        this.preScroll = event.preScroll;
 
         loadTable();
     }
@@ -91,12 +89,13 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
     @Override
     public void onItemClicked(Contract value) {
+        persistScroll();
         showPreview(value);
     }
 
     @Override
     public void onEditClicked(Contract value) {
-        persistScrollTopPosition();
+        persistScroll();
         fireEvent(new ContractEvents.Edit(value.getId()));
     }
 
@@ -122,7 +121,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
-                        restoreScrollTopPositionOrClearSelection();
+                        restoreScroll();
                     }
                 }));
     }
@@ -167,27 +166,19 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         }
     }
 
-    private void persistScrollTopPosition() {
-        scrollTop = Window.getScrollTop();
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
-    private void restoreScrollTopPositionOrClearSelection() {
-        if (scrollTop == null) {
+    private void restoreScroll() {
+        if (!preScroll) {
             view.clearSelection();
             return;
         }
-        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
-        if (scrollTop <= trh) {
-            Window.scrollTo(0, scrollTop);
-            scrollTop = null;
-        }
-    }
 
-    private void clearScroll(ContractEvents.Show event) {
-        if (event.clearScroll) {
-            event.clearScroll = false;
-            this.scrollTop = null;
-        }
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     public static List< Long > getCompaniesIdList( Set<EntityOption> companySet ) {
@@ -230,6 +221,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Inject
     AbstractPagerView pagerView;
 
-    private Integer scrollTop;
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
     private AppEvents.InitDetails init;
 }

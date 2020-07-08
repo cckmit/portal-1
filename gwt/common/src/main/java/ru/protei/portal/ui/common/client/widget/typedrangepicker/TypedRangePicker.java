@@ -25,6 +25,7 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
             @Override
             public void onValueChange(ValueChangeEvent<En_DateIntervalType> event) {
                 range.setVisible(btnGroup.getValue().equals(En_DateIntervalType.FIXED));
+                range.setMandatory(btnGroup.getValue().equals(En_DateIntervalType.FIXED));
             }
         });
         btnGroup.setValue(En_DateIntervalType.MONTH);
@@ -59,6 +60,12 @@ public class TypedRangePicker extends Composite implements HasValue<DateInterval
 
     public void setRangeMandatory(boolean value) {
         range.setMandatory(value);
+    }
+
+    public void setEnableUnlimited(boolean value) {
+        btnGroup.itemViewToModel.entrySet().stream()
+                .filter(e -> e.getValue().equals(En_DateIntervalType.UNLIMITED))
+                .findFirst().get().getKey().setEnabled(value);
     }
 
     @UiField

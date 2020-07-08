@@ -44,6 +44,10 @@ public class CaseCommentEvents {
             this.isPrivateCase = b;
             return this;
         }
+        public Show withNewCommentEnabled(boolean isNewCommentEnabled) {
+            this.isNewCommentEnabled = isNewCommentEnabled;
+            return this;
+        }
         public Show withTextMarkup(En_TextMarkup textMarkup) {
             this.textMarkup = textMarkup;
             return this;
@@ -56,6 +60,7 @@ public class CaseCommentEvents {
         public boolean isModifyEnabled = false;
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
+        public boolean isNewCommentEnabled = true;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
 

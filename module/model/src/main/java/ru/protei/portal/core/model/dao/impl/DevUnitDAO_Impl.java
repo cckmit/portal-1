@@ -8,12 +8,13 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.winter.core.utils.collections.CollectionUtils.isNotEmpty;
 
 /**
  * Created by michael on 23.05.16.
@@ -37,20 +38,20 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
 
     @Override
     public List<DevUnit> getParents(Long productId) {
-        return getListByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID != ?",
+        return getListByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID != ?",
                 productId,
                 En_DevUnitType.DIRECTION.getId()
         );
     }
 
     @Override
-    public List<DevUnit> getChildren(Long productId) {
-        return getListByCondition("ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)", productId);
+    public List<DevUnit> getChildren(Set<Long> productIds) {
+        return getListByCondition("dev_unit.ID IN (SELECT dev_unit_children.CHILD_ID FROM dev_unit_children WHERE dev_unit_children.DUNIT_ID IN " + HelperFunc.makeInArg(productIds, false) + ")");
     }
 
     @Override
     public DevUnit getProductDirection(Long productId) {
-        return getByCondition("ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
+        return getByCondition("dev_unit.ID IN (SELECT DUNIT_ID FROM dev_unit_children WHERE CHILD_ID = ?) AND UTYPE_ID = ?",
                 productId,
                 En_DevUnitType.DIRECTION.getId()
         );
@@ -66,39 +67,35 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
 
     @SqlConditionBuilder
     public SqlCondition createProductSqlCondition(ProductQuery query) {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1");
+        Condition condition = SqlQueryBuilder.condition()
+                .and( SqlQueryBuilder.condition()
+                        .or( "UNIT_NAME" ).like( query.getSearchString() )
+                        .or( "ALIASES" ).like( query.getSearchString() )
+                        .or( "UNIT_NAME" ).like( query.getAlternativeSearchString() )
+                        .or( "ALIASES" ).like( query.getAlternativeSearchString() )
+                )
+                .and( "UNIT_STATE" ).equal( query.getState() == null ? null : query.getState().getId() )
+                .and( "UTYPE_ID" ).in( collectIds( query.getTypes() ) );
 
-            if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                String arg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                condition.append(" and (UNIT_NAME like ? or ALIASES like ?)");
-                args.add(arg);
-                args.add(arg);
-            }
+        if (isEmpty( query.getTypes() )) {
+            condition.and( "UTYPE_ID" ).not().equal( En_DevUnitType.DIRECTION.getId() );
+        }
 
-            if (query.getState() != null) {
-                condition.append(" and UNIT_STATE=?");
-                args.add(query.getState().getId());
-            }
+        if (query.getDirectionId() != null) {
+            condition.condition( " and dev_unit.ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)" )
+                    .attribute( query.getDirectionId() );
+        }
 
-            if (!CollectionUtils.isEmpty(query.getTypes())) {
-                condition
-                        .append(" and UTYPE_ID in (")
-                        .append(query.getTypes().stream()
-                                .map((type) -> String.valueOf(type.getId()))
-                                .collect(Collectors.joining(","))
-                        )
-                        .append(")");
-            } else {
-                condition.append(" and UTYPE_ID <> ?");
-                args.add(En_DevUnitType.DIRECTION.getId());
-            }
+        if (isNotEmpty( query.getPlatformIds() )) {
+            condition.condition(
+                    " and dev_unit.ID IN " +
+                            "(SELECT project_to_product.product_id FROM project_to_product WHERE project_to_product.project_id IN " +
+                            "(SELECT platform.project_id FROM platform WHERE platform.id IN " + HelperFunc.makeInArg( query.getPlatformIds(), false ) + ")" +
+                            ")"
+            );
+        }
 
-            if (query.getDirectionId() != null) {
-                condition.append(" and ID IN (SELECT CHILD_ID FROM dev_unit_children WHERE DUNIT_ID = ?)");
-                args.add(query.getDirectionId());
-            }
-        });
+        return new SqlCondition( condition.getSqlCondition(), condition.getSqlParameters() );
     }
 
     @SqlConditionBuilder

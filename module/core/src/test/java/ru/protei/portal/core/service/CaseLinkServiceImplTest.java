@@ -57,15 +57,14 @@ public class CaseLinkServiceImplTest {
     }
 
     @Test
-    public void sendMailNotificationOnAddLinks() {
+    public void sendMailNotificationOnSetLinks() {
 
         when( caseObjectDAO.getCaseIdByNumber( eq( CASE_NUMBER ) ) ).thenReturn( CASE_ID );
         when( caseObjectDAO.getCaseByCaseno( eq( CASE_NUMBER ) ) ).thenReturn( new CaseObject() );
         when( caseLinkDAO.getListByQuery( any( CaseLinkQuery.class ) ) ).thenReturn( Collections.EMPTY_LIST );
         when( caseLinkDAO.persist( any( CaseLink.class ) ) ).thenReturn( CASELINK_ID );
 
-        Long link_id = caseLinkService.addYoutrackLink( ((AuthServiceMock) authService).getAuthToken(), CASE_NUMBER, "YouTrack_ID" ).getData();
-        assertEquals( "Expected id of added lik", CASELINK_ID, link_id );
+        caseLinkService.setYoutrackIdToCaseNumbers( ((AuthServiceMock) authService).getAuthToken(), "YouTrack_ID", Collections.singletonList(CASE_NUMBER) );
 
         verify( publisherService, atLeastOnce() ).publishEvent( any() );
     }

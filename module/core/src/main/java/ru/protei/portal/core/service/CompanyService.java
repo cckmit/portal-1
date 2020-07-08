@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис управления компаниями
@@ -48,9 +49,9 @@ public interface CompanyService {
     Result<Boolean> isGroupNameExists( String name, Long excludeId);
 
     Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
-    Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
+    Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Set<Long> companyIds );
 
-    Result<List<Long>> getAllHomeCompanyIds(AuthToken token);
+    Result<List<Company>> getAllHomeCompanies(AuthToken token);
 
     Result<List<CompanyImportanceItem>> getImportanceLevels(Long companyId);
 }
