@@ -37,4 +37,6 @@ public interface AbstractDialogDetailsView extends IsWidget {
     void addStyleName( String value );
 
     void setSaveOnEnterClick(boolean isSaveOnEnterClick);
+
+    void setSaveButtonName(String value);
 }

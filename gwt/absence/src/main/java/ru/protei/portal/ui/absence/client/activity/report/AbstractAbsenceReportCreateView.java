@@ -17,5 +17,4 @@ public interface AbstractAbsenceReportCreateView extends IsWidget {
     HasValue<Set<En_AbsenceReason>> reasons();
     HasValue<En_SortField> sortField();
     HasValue<Boolean> sortDir();
-    void markDateRangeError();
 }

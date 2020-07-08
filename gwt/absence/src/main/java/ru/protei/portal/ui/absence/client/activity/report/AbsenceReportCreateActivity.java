@@ -28,8 +28,10 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     public void onInit() {
         view.setActivity(this);
         dialogView.setActivity(this);
+        dialogView.setHeader(lang.absenceReport());
         dialogView.removeButtonVisibility().setVisible(false);
         dialogView.setSaveOnEnterClick(false);
+        dialogView.setSaveButtonName(lang.buttonSend());
         dialogView.getBodyContainer().add(view.asWidget());
     }
 
@@ -40,7 +42,6 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
             return;
         }
 
-        dialogView.setHeader(lang.absenceReport());
         dialogView.showPopup();
 
         resetView();
@@ -48,7 +49,11 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
 
     @Override
     public void onSaveClicked() {
-        absenceController.createReport(view.name().getValue(), makeQuery(), new FluentCallback()
+        if (!validateView()) {
+            return;
+        }
+
+        absenceController.createReport(view.name().getValue(), makeQuery(), new FluentCallback<Void>()
                 .withSuccess(result -> dialogView.hidePopup()));
     }
 
@@ -60,7 +65,6 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     private void resetView() {
         view.name().setValue(null);
         view.dateRange().setValue(null);
-        view.markDateRangeError();
         view.employees().setValue(null);
         view.reasons().setValue(null);
         view.sortField().setValue(En_SortField.absence_person);
@@ -77,6 +81,16 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
                         view.reasons().getValue().stream().map(En_AbsenceReason::getId).collect(Collectors.toSet()),
                 view.sortField().getValue(),
                 view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+    }
+
+    private boolean validateView() {
+        if (view.dateRange().getValue() == null
+                || view.dateRange().getValue().from == null
+                || view.dateRange().getValue().to == null) {
+            fireEvent(new NotifyEvents.Show(lang.absenceReportValidationDateRange(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        return true;
     }
 
     @Inject

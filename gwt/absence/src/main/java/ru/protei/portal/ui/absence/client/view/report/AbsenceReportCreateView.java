@@ -29,6 +29,7 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         dateRange.setPlaceholder(lang.selectDate());
+        dateRange.setHasPredefinedPeriods(true);
         ensureDebugIds();
     }
 
@@ -65,11 +66,6 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
-    }
-
-    @Override
-    public void markDateRangeError() {
-        dateRange.markInputValid(false);
     }
 
     private void ensureDebugIds() {

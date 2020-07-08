@@ -19,7 +19,7 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label ui:field="absenceReportDateRangeLabel"><ui:text from="{lang.absenceReportDateRange}"/></label>
-                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" mandatory="true"/>
+                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
                 </div>
                 <person:EmployeeMultiSelector ui:field="employees"
                                               header="{lang.absenceReportEmployees}"

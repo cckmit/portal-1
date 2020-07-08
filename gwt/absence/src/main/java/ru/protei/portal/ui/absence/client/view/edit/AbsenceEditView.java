@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditActivity;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
@@ -23,6 +24,7 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        dateRange.setPlaceholder(lang.selectDate());
         ensureDebugIds();
     }
 
@@ -111,6 +113,10 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     HTMLPanel content;
     @UiField
     IndeterminateCircleLoading loading;
+
+    @Inject
+    @UiField
+    Lang lang;
 
     private AbstractAbsenceEditActivity activity;
 

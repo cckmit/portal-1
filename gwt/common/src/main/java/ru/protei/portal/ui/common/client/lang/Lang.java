@@ -2674,5 +2674,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceReportHint();
 
-    String absenceReportAt();
+    String buttonSend();
+
+    String absenceReportValidationDateRange();
 }

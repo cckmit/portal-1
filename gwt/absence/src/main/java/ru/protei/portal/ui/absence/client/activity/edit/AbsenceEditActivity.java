@@ -125,7 +125,9 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
             return false;
         }
 
-        if (view.dateRange().getValue() == null) {
+        if (view.dateRange().getValue() == null
+                || view.dateRange().getValue().from == null
+                || view.dateRange().getValue().to == null) {
             fireEvent(new NotifyEvents.Show(lang.absenceValidationDateRange(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
