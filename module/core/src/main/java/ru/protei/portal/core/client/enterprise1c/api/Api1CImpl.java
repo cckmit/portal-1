@@ -149,7 +149,7 @@ public class Api1CImpl implements Api1C{
     private String buildGetContractorUrl(Contractor1C contractor, String homeCompanyName){
         String url = buildCommonUrl(contractor.getClass(), homeCompanyName);
         url += "&" + URL_PARAM_SELECT + String.join(",", fieldsMapper.getFields(Contractor1C.class));
-        url += "&" + URL_PARAM_FILTER + buildFilter(contractor.getClass(), contractor);
+        url += "&" + URL_PARAM_FILTER + fillFilter(contractor.getClass(), contractor);
 
         log.debug("buildGetContractorUrl(): url={}", replaceSpaces(url));
 
@@ -165,7 +165,7 @@ public class Api1CImpl implements Api1C{
     private String buildGetCountryUrl(Country1C country1C, String homeCompanyName){
         String url = buildCommonUrl(country1C.getClass(), homeCompanyName);
         url += "&" + URL_PARAM_SELECT + String.join(",", fieldsMapper.getFields(Country1C.class));
-        url += "&" + URL_PARAM_FILTER + buildFilter(country1C.getClass(), country1C);
+        url += "&" + URL_PARAM_FILTER + fillFilter(country1C.getClass(), country1C);
 
         log.debug("buildGetCountryUrl(): url={}", replaceSpaces(url));
 
@@ -185,7 +185,7 @@ public class Api1CImpl implements Api1C{
         return url;
     }
 
-    private String buildFilter(Class<?> clazz, Object object){
+    private String fillFilter(Class<?> clazz, Object object){
         List<Field> fields = FieldUtils.getAllFieldsList(clazz);
         List<String> params = new ArrayList<>();
 
@@ -215,7 +215,7 @@ public class Api1CImpl implements Api1C{
                                 params.add(
                                         "substringof("
                                                 + "'" + fieldValue + "'"
-                                                + fieldName
+                                                + "," + fieldName
                                                 + ") eq true");
 
                                 break;
