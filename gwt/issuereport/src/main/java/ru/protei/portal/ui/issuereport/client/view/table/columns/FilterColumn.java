@@ -68,32 +68,34 @@ public class FilterColumn extends StaticColumn<Report> {
             element.appendChild(managerElement);
         }
 
-        // createdRange
-        if (caseQuery.getCreatedRange() == null || caseQuery.getCreatedRange().getIntervalType() == null) {
-             //для совместимости с созданными ранее фильтрами
-             //date CreatedFrom CreatedTo
-            if (caseQuery.getCreatedFrom() != null || caseQuery.getCreatedTo() != null) {
-                element.appendChild(makeDateRangeElement(
-                        lang.created(),
-                        caseQuery.getCreatedFrom(),
-                        caseQuery.getCreatedTo()));
+        if (en_reportType != En_ReportType.PROJECT) {
+            // createdRange
+            if (caseQuery.getCreatedRange() == null || caseQuery.getCreatedRange().getIntervalType() == null) {
+                //для совместимости с созданными ранее фильтрами
+                //date CreatedFrom CreatedTo
+                if (caseQuery.getCreatedFrom() != null || caseQuery.getCreatedTo() != null) {
+                    element.appendChild(makeDateRangeElement(
+                            lang.created(),
+                            caseQuery.getCreatedFrom(),
+                            caseQuery.getCreatedTo()));
+                }
+            } else {
+                element.appendChild(makeDateRangeElement(lang.created(), caseQuery.getCreatedRange()));
             }
-        } else {
-            element.appendChild(makeDateRangeElement(lang.created(), caseQuery.getCreatedRange()));
-        }
 
-        // modifiedRange
-        if (caseQuery.getModifiedRange() == null || caseQuery.getModifiedRange().getIntervalType() == null) {
-             //для совместимости с созданными ранее фильтрами
-             //date ModifiedFrom ModifiedTo
-            if (caseQuery.getModifiedFrom() != null || caseQuery.getModifiedTo() != null) {
-                element.appendChild(makeDateRangeElement(
-                        lang.updated(),
-                        caseQuery.getModifiedFrom(),
-                        caseQuery.getModifiedTo()));
+            // modifiedRange
+            if (caseQuery.getModifiedRange() == null || caseQuery.getModifiedRange().getIntervalType() == null) {
+                //для совместимости с созданными ранее фильтрами
+                //date ModifiedFrom ModifiedTo
+                if (caseQuery.getModifiedFrom() != null || caseQuery.getModifiedTo() != null) {
+                    element.appendChild(makeDateRangeElement(
+                            lang.updated(),
+                            caseQuery.getModifiedFrom(),
+                            caseQuery.getModifiedTo()));
+                }
+            } else {
+                element.appendChild(makeDateRangeElement(lang.updated(), caseQuery.getModifiedRange()));
             }
-        } else {
-            element.appendChild(makeDateRangeElement(lang.updated(), caseQuery.getModifiedRange()));
         }
 
         // sorting

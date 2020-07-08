@@ -56,6 +56,8 @@ public class En_SortFieldLang {
                 return lang.planStartDate();
             case finish_date:
                 return lang.planFinishDate();
+            case author_id:
+                return lang.issueCommentAuthor();
 
             default:
                 return lang.unknownField();
