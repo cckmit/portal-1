@@ -35,7 +35,7 @@ public class Report implements Serializable {
     /**
      * Текущее состояние отчета
      */
-    @JdbcColumn(name = "status")
+    @JdbcColumn(name = Columns.STATUS)
     @JdbcEnumerated(EnumType.STRING)
     private En_ReportStatus status;
 
@@ -63,7 +63,7 @@ public class Report implements Serializable {
     /**
      * Дата последней смены состояния отчета
      */
-    @JdbcColumn(name = "modified")
+    @JdbcColumn(name = Columns.MODIFIED)
     private Date modified;
 
     /**
@@ -207,4 +207,10 @@ public class Report implements Serializable {
                 ", withDescription=" + withDescription +
                 '}';
     }
+
+    public interface Columns{
+        String STATUS = "status";
+        String MODIFIED = "modified";
+    }
+
 }

@@ -16,8 +16,8 @@ public class PortalScheduleTasksStub extends PortalScheduleTasksImpl {
     @Override
     public void processOldReportsSchedule() {}
 
-    @Override
-    public void processHangReportsSchedule() {}
+//    @Override
+//    public void processHangReportsSchedule() {}
 
     @Override
     public void processScheduledMailReportsWeekly() {}

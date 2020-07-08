@@ -7,6 +7,8 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
@@ -39,6 +41,8 @@ public class ReportProjectImpl implements ReportProject {
     CaseCommentDAO caseCommentDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    ReportDAO reportDAO;
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report) throws IOException {
@@ -77,6 +81,10 @@ public class ReportProjectImpl implements ReportProject {
         int offset = 0;
 
         while (offset < limit) {
+            if (!isProcessed( report.getId() )) {
+                log.info( "writeReport(): Stop processing of report {}", report.getId() );
+                break;
+            }
             int amount = offset + step < limit ? step : limit - offset;
             CaseQuery query = report.getCaseQuery();
             query.setOffset(offset);
@@ -91,6 +99,13 @@ public class ReportProjectImpl implements ReportProject {
             offset += step;
         }
 
+        return true;
+    }
+
+    private boolean isProcessed( Long id ) {
+        Report report = reportDAO.partialGet( id, Report.Columns.STATUS );
+        if(report == null) return false;
+        if (!En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
         return true;
     }
 
