@@ -3,11 +3,9 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
-import ru.protei.portal.core.event.AbsenceReportEvent;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
@@ -15,12 +13,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.report.absence.ReportAbsence;
-import ru.protei.portal.core.service.events.EventPublisherService;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class AbsenceServiceImpl implements AbsenceService {
@@ -73,6 +65,10 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (isAbsenceFinished(absence)) {
+            return error(En_ResultStatus.ABSENCE_FINISHED);
+        }
+
         if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
             return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
         }
@@ -111,11 +107,15 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        if (isAbsenceFinished(absence)) {
+            return error(En_ResultStatus.ABSENCE_FINISHED);
+        }
+
         if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
             return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
         }
 
-        if (!personAbsenceDAO.partialMerge(absence, "till_time", "user_comment")) {
+        if (!personAbsenceDAO.partialMerge(absence, "from_time", "till_time", "user_comment")) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -169,6 +169,10 @@ public class AbsenceServiceImpl implements AbsenceService {
         PersonAbsence oldState = personAbsenceDAO.get(absenceId);
         if (oldState == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!isCurrentAbsence(oldState)) {
+            return error(En_ResultStatus.NOT_CURRENT_ABSENCE);
         }
 
         PersonAbsence newState = new PersonAbsence(oldState);
@@ -229,6 +233,16 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         return true;
+    }
+
+    private boolean isAbsenceFinished(PersonAbsence absence) {
+        Date now = new Date();
+        return now.after(absence.getTillTime());
+    }
+
+    private boolean isCurrentAbsence(PersonAbsence absence) {
+        Date now = new Date();
+        return now.after(absence.getFromTime()) && now.before(absence.getTillTime());
     }
 
     private boolean hasAbsenceIntersections(Long employeeId, Date dateFrom, Date dateTill, Long excludeId) {

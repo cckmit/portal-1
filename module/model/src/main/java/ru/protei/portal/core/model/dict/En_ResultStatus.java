@@ -230,8 +230,18 @@ public enum En_ResultStatus {
     ISSUE_FILTER_IS_USED,
 
     /**
+     * Отсутствие уже закончилось
+     */
+    ABSENCE_FINISHED,
+
+    /**
      * Найдено пересечение с другими отсутствиями
      */
     ABSENCE_HAS_INTERSECTIONS,
+
+    /**
+     * Отсутствие ещё не началось либо уже закончилось
+     */
+    NOT_CURRENT_ABSENCE
     ;
 }

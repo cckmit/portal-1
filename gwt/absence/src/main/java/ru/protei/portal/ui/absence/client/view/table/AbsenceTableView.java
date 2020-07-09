@@ -71,9 +71,9 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
 
     private void initTable() {
 
-        completeClickColumn = new ActionIconClickColumn<>("fas fa-lg fa-check", lang.absenceComplete(), null);
+        completeClickColumn = new ActionIconClickColumn<>("far fa-lg fa-check-circle", lang.absenceComplete(), "complete");
         completeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
-        completeClickColumn.setEnabledPredicate(value -> new Date().before(value.getTillTime()));
+        completeClickColumn.setEnabledPredicate(value -> new Date().after(value.getFromTime()) && new Date().before(value.getTillTime()));
         editClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
         removeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedRemove(policyService, value));
 

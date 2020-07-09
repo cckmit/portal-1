@@ -2830,4 +2830,8 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonSend();
 
     String absenceReportValidationDateRange();
+
+    String errAbsenceFinished();
+
+    String errNotCurrentAbsence();
 }
