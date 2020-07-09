@@ -106,12 +106,6 @@ public class ReportControlServiceImpl implements ReportControlService {
             if (CollectionUtils.isEmpty(reports)) {
                 return ok(reports);
             }
-            Date now = new Date();
-            for (Report report : reports) {
-                report.setStatus(En_ReportStatus.PROCESS);
-                report.setModified(now);
-            }
-            reportDAO.mergeBatch(reports);
             return ok(reports);
         } catch (Throwable t) {
             log.info("fail get reports to process", t);
@@ -132,6 +126,8 @@ public class ReportControlServiceImpl implements ReportControlService {
             Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " reportId=" + report.getId());
             log.info("start process report : reportId={} {}", report.getId(), report.getReportType());
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            mergeReport(report, En_ReportStatus.PROCESS);
 
             if (!writeReport(report, buffer)) {
                 mergeerroratus(report);
