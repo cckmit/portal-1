@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.absence.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -84,10 +85,18 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     }
 
     private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
         absenceEmployeeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.EMPLOYEE_SELECTOR_LABEL);
+        employee.setEnsureDebugId(DebugIds.ABSENCE.EMPLOYEE_SELECTOR);
         absenceDateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.DATE_RANGE_LABEL);
+        dateRange.setEnsureDebugId(DebugIds.ABSENCE.DATE_RANGE_INPUT);
+        dateRange.getRelative().ensureDebugId(DebugIds.ABSENCE.DATE_RANGE_BUTTON);
         absenceReasonLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.REASON_SELECTOR_LABEL);
+        reason.setEnsureDebugId(DebugIds.ABSENCE.REASON_SELECTOR);
         absenceCommentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE.COMMENT_LABEL);
+        comment.ensureDebugId(DebugIds.ABSENCE.COMMENT_INPUT);
     }
 
     @UiField

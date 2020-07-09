@@ -23,6 +23,12 @@ public class AbsenceQuery extends BaseQuery {
         this.employeeIds = employeeIds;
     }
 
+    public AbsenceQuery(Date fromTime, Date tillTime) {
+        super (null, En_SortField.from_time, En_SortDir.ASC);
+        this.fromTime = fromTime;
+        this.tillTime = tillTime;
+    }
+
     public AbsenceQuery(Date fromTime, Date tillTime, Set<Long> employeeIds, Set<Integer> reasonIds) {
         super (null, En_SortField.from_time, En_SortDir.ASC);
         this.fromTime = fromTime;

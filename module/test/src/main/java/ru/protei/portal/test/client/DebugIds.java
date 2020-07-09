@@ -885,9 +885,14 @@ public class DebugIds {
 
     public interface ABSENCE {
         String EMPLOYEE_SELECTOR_LABEL = "absence-employee-selector-label";
+        String EMPLOYEE_SELECTOR = "absence-employee-selector";
         String DATE_RANGE_LABEL = "absence-date-range-label";
+        String DATE_RANGE_INPUT = "absence-date-range-input";
+        String DATE_RANGE_BUTTON = "absence-date-range-button";
         String REASON_SELECTOR_LABEL = "absence-reason-selector-label";
+        String REASON_SELECTOR = "absence-reason-selector";
         String COMMENT_LABEL = "absence-comment-label";
+        String COMMENT_INPUT = "absence-comment-input";
     }
 
     public interface ABSENCE_REPORT {
@@ -907,7 +912,5 @@ public class DebugIds {
         String SORT_FIELD_LABEL = "absence-report-sort-field-selector-label";
         String SORT_FIELD_SELECTOR = "absence-report-sort-field-selector";
         String SORT_DIR_BUTTON = "absence-report-sort-dir-button";
-        String REPORT_BUTTON = "absence-report-report-button";
-        String RESET_BUTTON = "absence-report-reset-button";
     }
 }

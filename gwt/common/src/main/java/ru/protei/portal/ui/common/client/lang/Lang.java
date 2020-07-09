@@ -1190,7 +1190,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountFor();
 
-    String accountSubscribeCaseFilter();
+    String profileSubscriptionCaseFilter();
 
     String accountRolesNotFound();
 
@@ -2803,7 +2803,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String profileSubscriptions();
 
-    String profileInterestedEmployees();
+    String profileSubscriptionEmployees();
 
     String absenceCompletedSuccessfully();
 

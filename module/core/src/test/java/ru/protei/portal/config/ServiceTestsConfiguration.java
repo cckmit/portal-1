@@ -23,6 +23,8 @@ import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
 import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
+import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
@@ -334,6 +336,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public AbsenceService getAbsenceService() {
+        return new AbsenceServiceImpl();
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
@@ -346,6 +353,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportProject getReportProject() {
         return new ReportProjectImpl();
+    }
+
+    @Bean
+    public ReportAbsence getReportAbsence() {
+        return new ReportAbsenceImpl();
     }
 
     @Bean

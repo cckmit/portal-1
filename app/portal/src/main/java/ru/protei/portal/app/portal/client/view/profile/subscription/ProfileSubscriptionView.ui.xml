@@ -6,14 +6,13 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="row">
-        <person:EmployeeMultiSelector ui:field="persons"
-                                      header="{lang.profileInterestedEmployees}"
-                                      addStyleNames="form-group col-md-12 person-subscribers"
-                                      buttonStyle="btn-info btn-xs"/>
-
         <div class="form-group col-md-12">
-            <label><ui:text from="{lang.accountSubscribeCaseFilter}"/></label>
+            <label><ui:text from="{lang.profileSubscriptionCaseFilter}"/></label>
             <casefilter:PersonCaseFilterWidget ui:field="personCaseFilterWidget"/>
         </div>
+        <person:EmployeeMultiSelector ui:field="persons"
+                                      header="{lang.profileSubscriptionEmployees}"
+                                      addStyleNames="form-group col-md-12 person-subscribers"
+                                      buttonStyle="btn-info btn-xs"/>
     </g:HTMLPanel>
 </ui:UiBinder>

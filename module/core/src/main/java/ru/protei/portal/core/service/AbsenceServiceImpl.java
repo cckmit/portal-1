@@ -112,10 +112,10 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
-            return error(En_ResultStatus.ALREADY_EXIST);
+            return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
         }
 
-        if (!personAbsenceDAO.merge(absence)) {
+        if (!personAbsenceDAO.partialMerge(absence, "till_time", "user_comment")) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -163,7 +163,7 @@ public class AbsenceServiceImpl implements AbsenceService {
     public Result<Boolean> completeAbsence(AuthToken token, Long absenceId) {
 
         if (absenceId == null) {
-            return error( En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         PersonAbsence oldState = personAbsenceDAO.get(absenceId);
@@ -173,6 +173,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
         PersonAbsence newState = new PersonAbsence(oldState);
         newState.setTillTime(new Date());
+
         if (!personAbsenceDAO.partialMerge(newState, "till_time")) {
             error(En_ResultStatus.NOT_UPDATED);
         }

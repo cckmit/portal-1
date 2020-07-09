@@ -17,7 +17,7 @@
                 </g:HTMLPanel>
                 <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
             </div>
-            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container m-t-15 col-md-3"/>
+            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

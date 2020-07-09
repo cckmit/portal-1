@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.absence.client.view.report;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -68,6 +69,9 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     }
 
     private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
         absenceReportTitleLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.NAME_LABEL);
         name.ensureDebugId(DebugIds.ABSENCE_REPORT.NAME_INPUT);
         absenceReportDateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.DATE_RANGE_LABEL);
