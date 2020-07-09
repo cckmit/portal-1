@@ -141,12 +141,14 @@ public class BaseServiceTest {
         return plan;
     }
 
-    protected PersonAbsence createAbsence(Long personId, En_AbsenceReason reason) {
+    protected PersonAbsence createAbsence(Long personId) {
         PersonAbsence absence = new PersonAbsence();
+        absence.setCreated(new Date());
+        absence.setCreatorId(personId);
         absence.setPersonId(personId);
         absence.setFromTime(new Date());
         absence.setTillTime(new Date());
-        absence.setReason(reason);
+        absence.setReason(En_AbsenceReason.PERSONAL_AFFAIR);
         return absence;
     }
 
@@ -267,8 +269,8 @@ public class BaseServiceTest {
         return product;
     }
 
-    protected PersonAbsence makeAbsence(Long personId, En_AbsenceReason reason) {
-        PersonAbsence absence = createAbsence(personId, reason);
+    protected PersonAbsence makeAbsence(Long personId) {
+        PersonAbsence absence = createAbsence(personId);
         absence.setId(personAbsenceDAO.persist(absence));
         return absence;
     }

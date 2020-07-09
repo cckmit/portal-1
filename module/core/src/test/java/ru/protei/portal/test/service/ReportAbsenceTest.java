@@ -8,7 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
@@ -35,9 +34,9 @@ public class ReportAbsenceTest extends BaseServiceTest {
         Person person1 = makePerson(company);
         Person person2 = makePerson(company);
         Person person3 = makePerson(company);
-        makeAbsence(person1.getId(), En_AbsenceReason.BUSINESS_TRIP);
-        makeAbsence(person2.getId(), En_AbsenceReason.LEAVE);
-        makeAbsence(person3.getId(), En_AbsenceReason.DISEASE);
+        makeAbsence(person1.getId());
+        makeAbsence(person2.getId());
+        makeAbsence(person3.getId());
     }
 
     @Test
