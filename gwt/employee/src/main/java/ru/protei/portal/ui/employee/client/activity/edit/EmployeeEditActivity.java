@@ -413,6 +413,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     private void fillView(EmployeeShortView employee){
 
         this.employee.setFired(employee.isFired());
+        this.employee.setCompanyId(employee.getCompanyId());
+
         view.gender().setValue(employee.getGender());
         checkGenderValid();
         view.firstName().setValue(employee.getFirstName());
