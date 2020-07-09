@@ -2,13 +2,11 @@ package ru.protei.portal.core.model.dict;
 
 import ru.protei.winter.core.utils.enums.HasId;
 
-public enum En_HistoryValueType implements HasId {
-    ADD_TO_PLAN(0),
-    CHANGE_PLAN(1),
-    REMOVE_FROM_PLAN(2),
+public enum En_HistoryType implements HasId {
+    PLAN(0),
     ;
 
-    En_HistoryValueType(int id) {
+    En_HistoryType(int id) {
         this.id = id;
     }
 

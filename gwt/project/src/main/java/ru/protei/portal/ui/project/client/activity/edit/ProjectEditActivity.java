@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -49,7 +47,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     @Event
     public void onShow (ProjectEvents.Edit event) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

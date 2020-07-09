@@ -6,8 +6,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
-import ru.protei.winter.jdbc.annotations.ConverterType;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
 
 import java.util.*;
 

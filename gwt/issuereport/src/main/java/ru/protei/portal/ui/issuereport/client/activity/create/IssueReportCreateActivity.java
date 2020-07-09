@@ -59,7 +59,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Create event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

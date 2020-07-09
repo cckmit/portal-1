@@ -75,7 +75,7 @@ public interface CaseService {
     Result<Long> getAndIncrementEmailLastId( Long caseId );
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber);
+    Result<CaseInfo> getCaseInfo(AuthToken token, Long caseNumber);
 
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 

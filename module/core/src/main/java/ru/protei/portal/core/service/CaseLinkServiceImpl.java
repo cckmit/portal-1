@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,7 @@ import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
@@ -27,8 +25,6 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -87,7 +83,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<Long> createLink(AuthToken authToken, CaseLink link, boolean createCrossLinks) {
+    public Result<CaseLink> createLink(AuthToken authToken, CaseLink link, boolean createCrossLinks) {
 
         En_ResultStatus validationStatus = validateLinkBeforeAdd(link, authToken);
         if (!En_ResultStatus.OK.equals(validationStatus)) {
@@ -95,13 +91,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         Long createdLinkId = addLink(link, createCrossLinks).getData();
+        CaseLink createdLink = caseLinkDAO.get(createdLinkId);
 
-        return ok(createdLinkId);
+        return ok(createdLink);
     }
 
     @Override
     @Transactional
-    public Result<Long> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType, boolean createCrossLinks) {
+    public Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink link, En_CaseType caseType, boolean createCrossLinks) {
 
         En_ResultStatus validationStatus = validateLinkBeforeAdd(link, authToken);
         if (!En_ResultStatus.OK.equals(validationStatus)) {
@@ -109,7 +106,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         Long createdLinkId = addLink(link, createCrossLinks).getData();
-        Result<Long> completeResult = ok(createdLinkId);
+        CaseLink createdLink = caseLinkDAO.get(createdLinkId);
+
+        Result<CaseLink> completeResult = ok(createdLink);
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             completeResult.publishEvent(new CaseLinkEvent(this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null));
@@ -211,6 +210,39 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         return result;
+    }
+
+    @Override
+    @Transactional
+    public Result<String> changeYoutrackId(AuthToken token, String oldYoutrackId, String newYoutrackId) {
+        log.debug("changeYoutrackId(): oldYoutrackId={}, newYoutrackId={}", oldYoutrackId, newYoutrackId);
+
+        if (StringUtils.isEmpty(oldYoutrackId) || StringUtils.isEmpty(newYoutrackId)) {
+            return error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setType(En_CaseLink.YT);
+        query.setRemoteId(oldYoutrackId);
+
+        try {
+            List<CaseLink> caseLinkList = caseLinkDAO.getListByQuery(query);
+
+            log.debug("changeYoutrackId(): size caseLinkList={}", caseLinkList.size());
+
+            caseLinkList.forEach(caseLink -> caseLink.setRemoteId(newYoutrackId));
+
+            int batchSize = caseLinkDAO.mergeBatch(caseLinkList);
+
+            if (batchSize != caseLinkList.size()) {
+                log.warn("changeYoutrackId(): size caseLinkList={}, batchSize={}", caseLinkList.size(), batchSize);
+            }
+        } catch (Exception e){
+            log.error("changeYoutrackId(): change failed", e);
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        return ok();
     }
 
     private Result removeLink (CaseLink link){

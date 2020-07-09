@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.ent;
+package ru.protei.portal.core.model.dict;
 
 public enum En_CaseStateUsageInCompanies {
     NONE,

@@ -592,6 +592,11 @@ public class MainConfiguration {
         return new PersonCaseFilterDAO_Impl();
     }
 
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return new ContractSpecificationDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

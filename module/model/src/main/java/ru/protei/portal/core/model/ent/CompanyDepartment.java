@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -167,5 +168,9 @@ public class CompanyDepartment extends AuditableObject {
     @Override
     public String getAuditType() {
         return "Department";
+    }
+
+    public static EntityOption toOption(CompanyDepartment department) {
+        return new EntityOption(department.getName(), department.getId());
     }
 }

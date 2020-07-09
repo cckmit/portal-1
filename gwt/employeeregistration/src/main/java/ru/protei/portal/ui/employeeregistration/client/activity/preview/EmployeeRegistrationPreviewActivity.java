@@ -48,17 +48,17 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
 
     @Event
     public void onFullScreenShow(EmployeeRegistrationEvents.ShowFullScreen event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         if (event.id == null) {
             fireEvent(new Back());
             return;
         }
 
         employeeRegistrationId = event.id;
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
-            return;
-        }
 
         fullScreenContainer.clear();
         fullScreenContainer.add( view.asWidget() );
@@ -125,6 +125,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setAdditionalSoft(value.getAdditionalSoft());
         view.setHeadOfDepartment(value.getHeadOfDepartment() == null ? "" : value.getHeadOfDepartment().getName());
         view.setCompany(StringUtils.emptyIfNull(value.getCompanyName()));
+        view.setDepartment(StringUtils.emptyIfNull(value.getDepartment()));
 
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");

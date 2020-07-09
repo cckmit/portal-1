@@ -88,12 +88,7 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public void setAsyncModel( final AsyncSelectorModel<T> selectorModel) {
-        getSelector().setModel( new SelectorModel<T>() {
-            @Override
-            public T get(int elementIndex) {
-                return selectorModel.get(elementIndex, AbstractPopupSelector.this);
-            }
-        });
+        getSelector().setModel((SelectorModel<T>) elementIndex -> selectorModel.get(elementIndex, AbstractPopupSelector.this));
     }
 
     public void clearSelector(){
@@ -105,20 +100,12 @@ public abstract class AbstractPopupSelector<T> extends Composite
     }
 
     public void setAsyncSearchModel( final AsyncSearchSelectorModel<T> selectorModel) {
-        getSelector().setModel( new SelectorModel<T>() {
-            @Override
-            public T get(int elementIndex) {
-                return selectorModel.get(elementIndex, AbstractPopupSelector.this);
-            }
-        });
-        searchHandler = new SearchHandler() {
-            @Override
-            public void onSearch(String searchString) {
-                clearPopupItems();
-                selectorModel.setSearchString(searchString);
-                getSelector().fillFromBegin(AbstractPopupSelector.this);
-                checkNoElements();
-            }
+        getSelector().setModel((SelectorModel<T>) elementIndex -> selectorModel.get(elementIndex, AbstractPopupSelector.this));
+        searchHandler = searchString -> {
+            clearPopupItems();
+            selectorModel.setSearchString(searchString);
+            getSelector().fillFromBegin(AbstractPopupSelector.this);
+            checkNoElements();
         };
     }
 

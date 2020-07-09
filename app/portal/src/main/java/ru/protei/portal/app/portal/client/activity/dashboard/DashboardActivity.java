@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.Objects;
 
 public abstract class DashboardActivity implements AbstractDashboardActivity, Activity{
 
@@ -39,7 +38,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Event(Type.FILL_CONTENT)
     public void onShow(DashboardEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DASHBOARD_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         showView();

@@ -69,6 +69,7 @@ public class CrmConstants {
         String ONLY_DIGITS = "^\\d*$";
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
+        String CONTRACT_SPECIFICATION_CLAUSE = "^\\d{1,3}(\\.\\d{1,3})*$";
     }
 
     public interface Time {
@@ -164,5 +165,8 @@ public class CrmConstants {
         long CLOSED = 3;
         long IGNORED = 10;
         long CUSTOMER_RESPONSIBILITY = 37;
+        long SOLVED_NOT_A_PROBLEM = 7;
+        long SOLVED_FIXED = 8;
+        long SOLVED_DUPLICATED = 9;
     }
 }

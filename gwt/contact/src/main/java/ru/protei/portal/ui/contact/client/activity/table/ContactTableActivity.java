@@ -59,7 +59,7 @@ public abstract class ContactTableActivity
     @Event(Type.FILL_CONTENT)
     public void onShow( ContactEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

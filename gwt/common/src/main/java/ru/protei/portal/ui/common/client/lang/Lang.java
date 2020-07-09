@@ -762,8 +762,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSVN();
 
-    String errPersonCaseFilterChangeError();
-
     String msgHello();
 
     String msgObjectSaved();
@@ -1628,6 +1626,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueReportsError();
 
+    String issueReportsCancelled();
+
     String issueReportsTitle();
 
     String issueReportsNew();
@@ -2108,6 +2108,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDeliveryAndPaymentsPeriodHeader();
 
+    String contractSpecificationHeader();
+
+    String contractSpecificationClausePlaceholder();
+
+    String contractSpecificationTextPlaceholder();
+
     String contractPaymentCommentPlaceholder();
 
     String contractDateSigning();
@@ -2137,6 +2143,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationEmptyDateSigning();
 
     String contractValidationEmptyDateValid();
+
+    String contractValidationContractSpecification();
+
+    String contractValidationContractSpecificationClauseDuplication();
 
     String contractOrganization();
 
@@ -2711,6 +2721,20 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportWithDescriptionTitle();
 
     String personCaseFilterChange();
+
+    String errPersonCaseFilterChangeError();
+
+    String errPersonCaseFilterInUse();
+
+    String employeeRegistrationDepartment();
+
+    String caseHistory();
+
+    String errPlanNotFound();
+
+    String commentNewDisabled();
+
+    String commentNewDisabledReasonTerminal();
 
     String todayInterval();
 

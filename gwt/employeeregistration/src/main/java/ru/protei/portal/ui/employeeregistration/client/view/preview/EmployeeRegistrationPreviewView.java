@@ -104,6 +104,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
+    public void setDepartment(String value) {
+        department.setInnerText(value);
+    }
+
+    @Override
     public HasWidgets getLinksContainer() {
         return linksContainer;
     }
@@ -209,6 +214,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     Element createdBy;
     @UiField
     HTMLPanel linksContainer;
+    @UiField
+    SpanElement department;
 
     private AbstractEmployeeRegistrationPreviewActivity activity;
 

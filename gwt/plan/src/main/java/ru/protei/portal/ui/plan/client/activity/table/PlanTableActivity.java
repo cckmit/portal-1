@@ -53,7 +53,7 @@ public abstract class PlanTableActivity implements AbstractPlanTableActivity, Ab
         initDetails.parent.clear();
 
         if (!policyService.hasPrivilegeFor(En_Privilege.PLAN_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 

@@ -449,19 +449,6 @@ public class PlanServiceTest extends BaseServiceTest{
         Assert.assertTrue("All planToCaseObject by plaId should be removed", CollectionUtils.isEmpty(sortedListByPlanId));
     }
 
-
-    private Plan createPlan(){
-        return createPlan("");
-    }
-
-    private Plan createPlan (String name) {
-        Plan plan = new Plan();
-        plan.setName(name + "test" + new Date().getTime());
-        plan.setStartDate(new Date());
-        plan.setFinishDate(new Date());
-        return plan;
-    }
-
     private boolean compareOrder (List<CaseShortView> list1, List<CaseShortView> list2){
         if (list1.size() != list2.size()){
             return false;

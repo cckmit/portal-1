@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.ipreservation.client.activity.subnet.filter.AbstractSubnetFilterActivity;
 import ru.protei.portal.ui.ipreservation.client.activity.subnet.filter.AbstractSubnetFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -48,7 +47,7 @@ public abstract class SubnetTableActivity
     @Event
     public void onShow( IpReservationEvents.ShowSubnet event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -81,7 +80,7 @@ public abstract class SubnetTableActivity
         }
 
         if (!policyService.hasPrivilegeFor(En_Privilege.RESERVED_IP_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

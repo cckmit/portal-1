@@ -349,6 +349,17 @@ public class DebugIds {
         }
     }
 
+    public interface CASE_HISTORY {
+        interface ITEM {
+            String CREATE_DATE = "issue-case-history-item-create-date";
+            String ADDED_VALUE = "issue-case-history-item-added-value";
+            String REMOVED_VALUE = "issue-case-history-item-removed-value";
+            String OLD_VALUE = "issue-case-history-item-old-value";
+            String NEW_VALUE = "issue-case-history-item-new-value";
+            String HISTORY_TYPE = "issue-case-history-item-history-type";
+        }
+    }
+
     @Deprecated public interface ISSUE_PREVIEW {
         @Deprecated String FULL_SCREEN_BUTTON = DebugIds.ISSUE.SHOW_EDIT_BUTTON;
         @Deprecated String PLATFORM = DebugIds.SITE_FOLDER.LINK.PLATFORM;
@@ -740,6 +751,7 @@ public class DebugIds {
         String MANAGER_SELECTOR = "contract-manager-selector";
         String CONTRAGENT_SELECTOR = "contract-contragent-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
+        String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
 
@@ -747,6 +759,7 @@ public class DebugIds {
             String COMMON_HEADER = "contract-common-header";
             String WORKGROUP_HEADER = "contract-workgroup-header";
             String DELIVERY_AND_PAYMENTS_PERIOD_HEADER = "contract-delivery-and-payments-period-header";
+            String SPECIFICATION_HEADER = "contract-specification-header";
             String NUMBER = "contract-number-label";
             String TYPE = "contract-type-label";
             String STATE = "contract-state-label";
@@ -771,6 +784,13 @@ public class DebugIds {
             String NOTIFY_LABEL = "contract-date-item-notify-label";
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
+        }
+
+        interface SPECIFICATION_ITEM {
+            String ITEM = "contract-specification-item";
+            String CLAUSE_INPUT = "contract-specification-item-clause-input";
+            String TEXT_INPUT = "contract-specification-item-text-input";
+            String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
     }
 

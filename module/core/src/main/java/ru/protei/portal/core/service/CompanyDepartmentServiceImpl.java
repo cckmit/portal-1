@@ -8,10 +8,11 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.model.query.CompanyDepartmentQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -19,17 +20,14 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
 
     @Autowired
-    CompanyDepartmentDAO companyDepartmentDAO;
+    private CompanyDepartmentDAO companyDepartmentDAO;
 
     @Autowired
-    WorkerEntryDAO workerEntryDAO;
-
-    @Autowired
-    PolicyService policyService;
+    private WorkerEntryDAO workerEntryDAO;
 
     @Override
     public Result<List<CompanyDepartment>> getCompanyDepartments(AuthToken token, Long companyId) {
-        List<CompanyDepartment> list = companyDepartmentDAO.getListByCompanyId(companyId);
+        List<CompanyDepartment> list = companyDepartmentDAO.getListByQuery(new CompanyDepartmentQuery(companyId, null));
         return Result.ok(list);
     }
 
@@ -84,6 +82,29 @@ public class CompanyDepartmentServiceImpl implements CompanyDepartmentService{
             return error(En_ResultStatus.NOT_REMOVED);
 
         return ok(companyDepartment.getId());
+    }
+
+    @Override
+    public Result<List<EntityOption>> getPersonDepartments(AuthToken authToken, Long personId, boolean withParentDepartments) {
+        if (personId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<CompanyDepartment> personDepartments = companyDepartmentDAO.getListByQuery(new CompanyDepartmentQuery(null, personId));
+        if ( personDepartments == null ) {
+            return ok(null);
+        }
+        if (withParentDepartments) {
+            Set<Long> parentDepartmentsIds = personDepartments.stream()
+                    .map(CompanyDepartment::getParentId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            List<CompanyDepartment> parentDepartments = companyDepartmentDAO.getListByQuery(new CompanyDepartmentQuery(parentDepartmentsIds));
+            personDepartments.addAll(parentDepartments);
+        }
+
+        List<EntityOption> options = personDepartments.stream().map( CompanyDepartment::toOption ).collect(Collectors.toList());
+        return ok(options);
     }
 
     private boolean isValid (CompanyDepartment companyDepartment){

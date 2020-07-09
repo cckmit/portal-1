@@ -6,11 +6,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.HistoryDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_HistoryValueType;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.HistoryQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -23,7 +25,6 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -72,7 +73,7 @@ public class HistoryServiceTest extends BaseServiceTest {
         List<History> listBeforeAdding = historyService.listHistories(getAuthToken(), query).getData();
         Assert.assertNotNull(listBeforeAdding);
 
-        Long historyId = historyService.createHistory(getAuthToken(), issues.get(0).getId(), En_HistoryValueType.ADD_TO_PLAN, null, String.valueOf(planId)).getData();
+        Long historyId = createHistory(getAuthToken(), issues.get(0).getId(), En_HistoryAction.ADD, En_HistoryType.PLAN, null, plan).getData();
         Assert.assertNotNull("History not created, historyId is null", historyId);
 
         List<History> listAfterAdding = historyService.listHistories(getAuthToken(), query).getData();
@@ -83,16 +84,12 @@ public class HistoryServiceTest extends BaseServiceTest {
         Assert.assertTrue(historyDAO.removeByKey(historyId));
     }
 
-
-    private Plan createPlan() {
-        return createPlan("");
-    }
-
-    private Plan createPlan(String name) {
-        Plan plan = new Plan();
-        plan.setName(name + "test" + new Date().getTime());
-        plan.setStartDate(new Date());
-        plan.setFinishDate(new Date());
-        return plan;
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, En_HistoryType type, Plan oldPlan, Plan newPlan) {
+        return historyService.createHistory(token, id, action, type,
+                oldPlan == null ? null : oldPlan.getId(),
+                oldPlan == null ? null : oldPlan.getName(),
+                newPlan == null ? null : newPlan.getId(),
+                newPlan == null ? null : newPlan.getName()
+        );
     }
 }

@@ -21,6 +21,8 @@ public class LinkUtils {
                 return href.substring(0, href.indexOf("#") + 1) + "product_preview:id=" + id;
             case ("EmployeeShortView"):
                 return href.substring(0, href.indexOf("#") + 1) + "employee_preview:id=" + id;
+            case ("Plan"):
+                return href.substring(0, href.indexOf("#") + 1) + "plan_preview:id=" + id;
             default:
                 return "";
         }

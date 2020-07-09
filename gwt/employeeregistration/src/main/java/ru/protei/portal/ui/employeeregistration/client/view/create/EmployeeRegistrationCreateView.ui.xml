@@ -7,7 +7,8 @@
              xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.homecompany">
+             xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
+             xmlns:employeedepartment="urn:import:ru.protei.portal.ui.common.client.widget.selector.employeedepartment">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -22,7 +23,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <g:HTMLPanel styleName="form-group col-md-3">
+                        <g:HTMLPanel styleName="form-group col-md-9">
                             <label>
                                 <ui:text from="{lang.employeeRegistrationEmployeeFullName}"/>
                             </label>
@@ -32,9 +33,10 @@
 
                         <div class="form-group col-md-3">
                             <label>
-                                <ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/>
+                                <ui:text from="{lang.employeeRegistrationEmploymentDate}"/>
                             </label>
-                            <person:EmployeeButtonSelector ui:field="headOfDepartment" hasNullValue="false"/>
+                            <datepicker:SinglePicker ui:field="employmentDate" type="DATE" formatValue="dd.MM.yyyy"
+                                                     mandatory="true"/>
                         </div>
 
                         <div class="form-group col-md-3">
@@ -46,10 +48,16 @@
 
                         <div class="form-group col-md-3">
                             <label>
-                                <ui:text from="{lang.employeeRegistrationEmploymentDate}"/>
+                                <ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/>
                             </label>
-                            <datepicker:SinglePicker ui:field="employmentDate" type="DATE" formatValue="dd.MM.yyyy"
-                                                     mandatory="true"/>
+                            <person:EmployeeButtonSelector ui:field="headOfDepartment" hasNullValue="false" defaultValue="{lang.selectValue}"/>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.employeeRegistrationDepartment}"/>
+                            </label>
+                            <employeedepartment:EmployeeDepartmentButtonSelector ui:field="department" hasNullValue="false"/>
                         </div>
 
                         <div class="form-group col-md-3">

@@ -3,7 +3,7 @@ package ru.protei.portal.ui.casestate.client.activity.preview;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
+import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.Set;

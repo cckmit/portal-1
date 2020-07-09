@@ -15,6 +15,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -29,10 +30,12 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButton
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
+import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
@@ -100,6 +103,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasValue<List<ContractDate>> contractDates() {
         return dateList;
+    }
+
+    @Override
+    public HasValue<List<ContractSpecification>> contractSpecifications() {
+        return specificationList;
+    }
+
+    @Override
+    public HasValidable validateContractSpecifications() {
+        return specificationList;
     }
 
     @Override
@@ -183,8 +196,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
 
         commonHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COMMON_HEADER);
-        workGroupHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.WORKGROUP_HEADER);
-        deliveryAndPaymentsPeriodHeader.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DELIVERY_AND_PAYMENTS_PERIOD_HEADER);
 
         numberLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.NUMBER);
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
@@ -229,6 +240,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         contragent.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
 
         dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
+        specificationList.setEnsureDebugId(DebugIds.CONTRACT.ADD_SPECIFICATIONS_BUTTON);
 
         saveButton.ensureDebugId(DebugIds.CONTRACT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
@@ -267,6 +279,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractDatesList dateList;
+    @Inject
+    @UiField(provided = true)
+    ContractSpecificationList specificationList;
     @Inject
     @UiField(provided = true)
     ContractButtonSelector contractParent;
@@ -314,8 +329,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     DivElement commonHeader;
     @UiField
     DivElement workGroupHeader;
-    @UiField
-    DivElement deliveryAndPaymentsPeriodHeader;
     @UiField
     Button cancelButton;
 

@@ -19,6 +19,7 @@ public class En_ReportStatusLang {
             case PROCESS: return lang.issueReportsProcess();
             case READY: return lang.issueReportsReady();
             case ERROR: return lang.issueReportsError();
+            case CANCELLED: return lang.issueReportsCancelled();
             default: return lang.errUnknownResult();
         }
     }

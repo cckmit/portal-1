@@ -59,7 +59,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     @Event( Type.FILL_CONTENT )
     public void onShow( AccountEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ACCOUNT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

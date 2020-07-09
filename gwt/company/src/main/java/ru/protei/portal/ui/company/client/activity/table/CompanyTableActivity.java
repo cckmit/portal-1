@@ -2,7 +2,6 @@ package ru.protei.portal.ui.company.client.activity.table;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -63,7 +62,7 @@ public abstract class CompanyTableActivity implements
     @Event(Type.FILL_CONTENT)
     public void onShow(CompanyEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.COMPANY_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

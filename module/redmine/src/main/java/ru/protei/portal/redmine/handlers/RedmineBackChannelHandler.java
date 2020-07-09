@@ -11,7 +11,6 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.redmine.service.CommonService;
 import ru.protei.portal.redmine.service.RedmineService;
 
@@ -19,6 +18,7 @@ import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public final class RedmineBackChannelHandler implements BackchannelEventHandler {
 
@@ -137,7 +137,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             final long statusMapId = endpoint.getStatusMapId();
             logger.debug("Trying to get redmine status id matching with portal: {} -> {}", event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId());
             RedmineStatusMapEntry redmineStatusMapEntry = commonService.getRedmineStatus(event.getInitCaseMeta().getStateId(), event.getLastCaseMeta().getStateId(), statusMapId).getData();
-            if (redmineStatusMapEntry != null && event.getLastCaseMeta().getStateId() != CrmConstants.State.VERIFIED) {
+            if (redmineStatusMapEntry != null && !isTerminalState(event.getLastCaseMeta().getStateId())) {
                 logger.debug("Found redmine status id: {}", redmineStatusMapEntry.getRedmineStatusId());
                 issue.setStatusId(redmineStatusMapEntry.getRedmineStatusId());
             } else {

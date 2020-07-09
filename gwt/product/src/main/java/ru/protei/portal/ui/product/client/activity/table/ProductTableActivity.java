@@ -63,7 +63,7 @@ public abstract class ProductTableActivity implements
     @Event(Type.FILL_CONTENT)
     public void onShow( ProductEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.PRODUCT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
