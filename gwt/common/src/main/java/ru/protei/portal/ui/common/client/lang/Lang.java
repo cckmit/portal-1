@@ -542,6 +542,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectIssueManager();
 
+    String selectIssuePeriod();
+
     String selectDate();
 
     String issueAttachments();
@@ -2733,4 +2735,20 @@ public interface Lang extends Messages, ContactItemLang {
     String commentNewDisabled();
 
     String commentNewDisabledReasonTerminal();
+
+    String todayInterval();
+
+    String yesterdayInterval();
+
+    String thisWeekInterval();
+
+    String lastWeekInterval();
+
+    String thisMonthInterval();
+
+    String lastMonthInterval();
+
+    String thisYearInterval();
+
+    String lastYearInterval();
 }

@@ -9,13 +9,11 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
-import ru.protei.portal.core.model.dict.En_ReportScheduledType;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
-import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
@@ -327,12 +325,10 @@ public class ReportControlServiceImpl implements ReportControlService {
     }
 
     private void setCreatedDates(CaseQuery query, Date from, Date to) {
-        query.setCreatedFrom(from);
-        query.setCreatedTo(to);
+        query.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, from, to));
     }
 
     private void setModifiedDates(CaseQuery query, Date from, Date to) {
-        query.setModifiedFrom(from);
-        query.setModifiedTo(to);
-    }
+        query.setModifiedRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+     }
 }

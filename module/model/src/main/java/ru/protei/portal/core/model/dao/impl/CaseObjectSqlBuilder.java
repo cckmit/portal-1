@@ -1,14 +1,12 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
@@ -18,8 +16,8 @@ import java.util.List;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
-import static ru.protei.portal.core.model.helper.StringUtils.*;
 
 public class CaseObjectSqlBuilder {
 
@@ -148,28 +146,33 @@ public class CaseObjectSqlBuilder {
                     condition.append( " and (importance in " ).append( importantces )
                             .append( " or case_comment.cimp_level in " ).append( importantces )
                             .append( ")" );
-
                 }
             }
 
-            if ( query.getCreatedFrom() != null ) {
-                condition.append( " and case_object.created >= ?" );
-                args.add( query.getCreatedFrom() );
+            Interval created = makeInterval(query.getCreatedRange());
+
+            if ( created != null ) {
+                if (created.from != null) {
+                    condition.append( " and case_object.created >= ?" );
+                    args.add( created.from );
+                }
+                if (created.to != null) {
+                    condition.append( " and case_object.created < ?" );
+                    args.add( created.to );
+                }
             }
 
-            if ( query.getCreatedTo() != null ) {
-                condition.append( " and case_object.created < ?" );
-                args.add( query.getCreatedTo() );
-            }
+            Interval modified = makeInterval(query.getModifiedRange());
 
-            if ( query.getModifiedFrom() != null ) {
-                condition.append( " and case_object.modified >= ?" );
-                args.add( query.getModifiedFrom() );
-            }
-
-            if ( query.getModifiedTo() != null ) {
-                condition.append( " and case_object.modified < ?" );
-                args.add( query.getModifiedTo() );
+            if ( modified != null ) {
+                if (modified.from != null) {
+                    condition.append( " and case_object.modified >= ?" );
+                    args.add( modified.from );
+                }
+                if (modified.to != null) {
+                    condition.append( " and case_object.modified < ?" );
+                    args.add( modified.to );
+                }
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
@@ -198,14 +201,17 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and case_object.id in (SELECT case_comment.case_id FROM case_comment " +
                         "WHERE 2=2");
 
-                if ( query.getModifiedFrom() != null ) {
-                    condition.append( " and case_comment.created >= ?" );
-                    args.add(query.getModifiedFrom());
+                if ( modified != null ) {
+                    if (modified.from != null) {
+                        condition.append( " and case_comment.created >= ?" );
+                        args.add( modified.from );
+                    }
+                    if (modified.to != null) {
+                        condition.append( " and case_comment.created < ?" );
+                        args.add( modified.to );
+                    }
                 }
-                if ( query.getModifiedTo() != null ) {
-                    condition.append( " and case_comment.created < ?" );
-                    args.add(query.getModifiedTo());
-                }
+
                 if ( query.getStateIds() != null ) {
                     condition.append( " and case_comment.cstate_id in " + makeInArg(query.getStateIds()));
                 }

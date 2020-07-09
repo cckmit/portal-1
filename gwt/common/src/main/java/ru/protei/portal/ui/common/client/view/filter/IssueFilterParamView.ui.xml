@@ -4,7 +4,7 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:range='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag"
@@ -27,14 +27,12 @@
         </div>
 
         <div class="row">
-            <div class="form-group col-md-4 resize-md-12">
-                <label ui:field="labelCreated"><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
-            <div ui:field="modifiedRangeContainer" class="form-group col-md-4 resize-md-12">
-                <label ui:field="labelUpdated"><ui:text from="{lang.updated}"/></label>
-                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
+            <range:TypedSelectorRangePicker ui:field="dateCreatedRange" formatValue="dd.MM.yyyy HH:mm"
+                                            addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <range:TypedSelectorRangePicker ui:field="dateModifiedRange" formatValue="dd.MM.yyyy HH:mm"
+                                            addStyleNames="form-group col-md-4 resize-md-12"/>
+
             <div ui:field="sortByContainer" class="form-group col-md-4 resize-md-12">
                 <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">

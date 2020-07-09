@@ -2,7 +2,6 @@ package ru.protei.portal.ui.plan.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -15,14 +14,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.plan.client.activity.preview.AbstractPlanPreviewActivity;
 import ru.protei.portal.ui.plan.client.activity.preview.AbstractPlanPreviewView;
 import ru.protei.portal.ui.plan.client.view.columns.IssueColumn;
-import ru.protei.portal.ui.plan.client.view.edit.tables.PlannedIssuesTableView;
 
 import java.util.List;
 

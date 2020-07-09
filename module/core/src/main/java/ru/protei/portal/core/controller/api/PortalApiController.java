@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.*;
@@ -348,8 +349,10 @@ public class PortalApiController {
         query.setManagerIds(apiQuery.getManagerIds());
         query.setCompanyIds(apiQuery.getCompanyIds());
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
-        query.setCreatedFrom(parseDate(apiQuery.getCreatedFrom()));
-        query.setCreatedTo(parseDate(apiQuery.getCreatedTo()));
+        query.setCreatedRange(new DateRange(En_DateIntervalType.FIXED,
+                                            parseDate(apiQuery.getCreatedFrom()),
+                                            parseDate(apiQuery.getCreatedTo()))
+                             );
         query.setManagerCompanyIds(apiQuery.getManagerCompanyIds());
         return query;
     }

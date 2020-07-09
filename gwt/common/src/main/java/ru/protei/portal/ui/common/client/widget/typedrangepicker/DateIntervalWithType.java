@@ -3,9 +3,13 @@ package ru.protei.portal.ui.common.client.widget.typedrangepicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 
-public class DateIntervalWithType {
+import java.io.Serializable;
+
+public class DateIntervalWithType implements Serializable {
     private DateInterval interval;
     private En_DateIntervalType type;
+
+    public DateIntervalWithType() {}
 
     public DateIntervalWithType(DateInterval interval, En_DateIntervalType type) {
         this.interval = interval;

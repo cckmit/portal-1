@@ -117,13 +117,8 @@ public class DebugIds {
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
         String SORT_FIELD_LABEL = "filter-sort-field-label";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
-        String DATE_RANGE_SELECTOR = "filter-date-range-selector";
-        String DATE_CREATED_RANGE_INPUT = "filter-date-created-range-input";
-        String DATE_CREATED_RANGE_LABEL = "filter-date-created-range-label";
-        String DATE_MODIFIED_RANGE_INPUT = "filter-date-modified-range-input";
-        String DATE_MODIFIED_RANGE_LABEL = "filter-date-range-label";
-        String DATE_CREATED_RANGE_BUTTON = "filter-date-created-range-button";
-        String DATE_MODIFIED_RANGE_BUTTON = "filter-date-modified-range-button";
+        String DATE_CREATED_RANGE_CONTAINER = "filter-date-created-range-container";
+        String DATE_MODIFIED_RANGE_CONTAINER = "filter-date-modified-range-container";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
         String COMPANY_SELECTOR_ITEM_CONTAINER = "filter-company-selector-item-container";

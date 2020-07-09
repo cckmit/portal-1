@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
+import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,12 +51,13 @@ public class ReportCaseResolutionTime {
 
     public void run() {
         log.info( "run(): Start report. caseQuery: {}", caseQuery );
-        intervals = makeIntervals( caseQuery.getCreatedFrom(), caseQuery.getCreatedTo(), DAY );
+        intervals = makeIntervals( caseQuery.getCreatedRange(), DAY );
+        ru.protei.portal.core.model.struct.Interval createInterval = DateRangeUtils.makeInterval(caseQuery.getCreatedRange());
 
         long startQuery = System.currentTimeMillis();
         List<CaseResolutionTimeReportDto> comments = caseCommentDAO.reportCaseResolutionTime(
-                caseQuery.getCreatedFrom(),
-                caseQuery.getCreatedTo(),
+                (createInterval == null ? null : createInterval.from),
+                (createInterval == null ? null : createInterval.to),
                 caseQuery.getStateIds(),
                 caseQuery.getCompanyIds(),
                 caseQuery.getProductIds(),
@@ -108,9 +111,11 @@ public class ReportCaseResolutionTime {
         return cases;
     }
 
-    public static List<Interval> makeIntervals( Date fromdate, Date toDate, long step ) {
-        long from = fromdate.getTime();
-        long to = toDate.getTime();
+    public static List<Interval> makeIntervals(DateRange dateRange, long step ) {
+        ru.protei.portal.core.model.struct.Interval interval = DateRangeUtils.makeInterval(dateRange);
+
+        long from = interval.from.getTime();
+        long to = interval.to.getTime();
         ArrayList<Interval> intervals = new ArrayList<Interval>();
         for (; from < to; from = from + step) {
             intervals.add( new Interval( from, from + step ) );
