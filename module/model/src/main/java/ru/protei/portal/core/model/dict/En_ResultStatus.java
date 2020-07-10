@@ -229,5 +229,10 @@ public enum En_ResultStatus {
      */
     ISSUE_FILTER_IS_USED,
 
+    /**
+     * Ошибка при запросе в 1С
+     */
+    REQUEST_1C_FAILED,
+
     ;
 }
