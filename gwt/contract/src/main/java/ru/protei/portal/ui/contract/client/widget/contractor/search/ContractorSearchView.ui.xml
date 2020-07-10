@@ -57,11 +57,6 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group col-md-12">
-                    <g:Button ui:field="create" styleName="btn btn-complete pull-right" text="{lang.buttonCreate}"/>
-                </div>
-            </div>
         </div>
 
     </g:HTMLPanel>

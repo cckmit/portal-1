@@ -100,11 +100,6 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         activity.onSearchClicked();
     }
 
-    @UiHandler( "create" )
-    public void onCreateClicked ( ClickEvent event ) {
-        activity.onCreateClicked();
-    }
-
     @UiHandler("contractorINN")
     public void onChangeClause(KeyUpEvent event) {
         if (contractorINN.isValid()) {
@@ -125,6 +120,9 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     }
 
     @UiField
+    HTMLPanel root;
+
+    @UiField
     ValidableTextBox contractorINN;
 
     @UiField
@@ -132,6 +130,10 @@ public class ContractorSearchView extends Composite implements AbstractContracto
 
     @UiField
     Button search;
+
+    @Inject
+    @UiField(provided = true)
+    ContractorSelector contractor;
 
     @UiField
     SpanElement descriptionInn;
@@ -143,16 +145,6 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     SpanElement descriptionFullname;
     @UiField
     SpanElement descriptionCountry;
-
-    @UiField
-    HTMLPanel root;
-
-    @UiField
-    Button create;
-
-    @Inject
-    @UiField(provided = true)
-    ContractorSelector contractor;
 
     @UiField
     Lang lang;

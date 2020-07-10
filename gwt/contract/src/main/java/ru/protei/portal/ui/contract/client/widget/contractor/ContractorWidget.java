@@ -99,6 +99,8 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         dialog.removeButtonVisibility().setVisible(false);
         dialog.setHeader(lang.searchContractorTitle());
         dialog.setSaveButtonName(lang.buttonApply());
+        dialog.setAdditionalButtonName(lang.buttonCreate());
+        dialog.setAdditionalVisible(true);
     }
 
     private void prepareCreateDialog(AbstractDialogDetailsView dialog) {
@@ -123,6 +125,13 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
             @Override
             public void onCancelClicked() {
                 dialogDetailsSearchView.hidePopup();
+            }
+
+            @Override
+            public void onAdditionalClicked() {
+                    createView.reset();
+                    dialogDetailsSearchView.hidePopup();
+                    dialogDetailsCreateView.showPopup();
             }
         };
     }
@@ -167,36 +176,26 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     }
 
     private AbstractContractorSearchActivity makeSearchViewActivity() {
-        return new AbstractContractorSearchActivity() {
-            @Override
-            public void onSearchClicked() {
-                if (!searchView.isValid()) {
-                    fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
-                    return;
-                }
-                controller.findContractors(
-                        organization,
-                        searchView.contractorINN().getValue(),
-                        searchView.contractorKPP().getValue(),
-                        new FluentCallback<List<ContractorPair>>()
-                        .withError(t -> {
-                            fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
-                        })
-                        .withSuccess(value -> {
-                            if (isEmpty(value)) {
-                                fireEvent(new NotifyEvents.Show(lang.contractContractorNotFound(), NotifyEvents.NotifyType.INFO));
-                                return;
-                            }
-                            searchView.setSearchResult(value);
-                        }));
+        return () -> {
+            if (!searchView.isValid()) {
+                fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
+                return;
             }
-
-            @Override
-            public void onCreateClicked() {
-                createView.reset();
-                dialogDetailsSearchView.hidePopup();
-                dialogDetailsCreateView.showPopup();
-            }
+            controller.findContractors(
+                    organization,
+                    searchView.contractorINN().getValue(),
+                    searchView.contractorKPP().getValue(),
+                    new FluentCallback<List<ContractorPair>>()
+                    .withError(t -> {
+                        fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
+                    })
+                    .withSuccess(value -> {
+                        if (isEmpty(value)) {
+                            fireEvent(new NotifyEvents.Show(lang.contractContractorNotFound(), NotifyEvents.NotifyType.INFO));
+                            return;
+                        }
+                        searchView.setSearchResult(value);
+                    }));
         };
     }
 

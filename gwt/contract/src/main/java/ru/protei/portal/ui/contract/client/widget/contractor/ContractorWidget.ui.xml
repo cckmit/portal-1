@@ -8,7 +8,7 @@
             <g:TextBox ui:field="name" styleName="form-control rounded-left-3" enabled="false"/>
             <div class="input-group-append">
                 <g:Button ui:field="button" styleName="btn btn-complete rounded-right-3">
-                    <i class="icon contractor-search-icon"/>
+                    <i class="fa fa-search"/>
                 </g:Button>
             </div>
         </div>

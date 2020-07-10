@@ -815,6 +815,7 @@ public class DebugIds {
         String REMOVE_BUTTON = "dialog-details-remove-button";
         String SAVE_BUTTON = "dialog-details-save-button";
         String CANCEL_BUTTON = "dialog-details-cancel-button";
+        String ADDITIONAL_BUTTON = "dialog-details-additional-button";
 
         interface TAG {
             String NAME_LABEL = "dialog-details-tag-name-label";

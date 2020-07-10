@@ -4710,33 +4710,3 @@ table {
     margin-top: 5px;
   }
 }
-
-/** CONTRACTOR **/
-.contractor {
-  position: relative;
-}
-
-.contractor input {
-  padding-right: 28px !important;
-}
-
-.contractor .contractor-search-icon {
-  position: absolute;
-  font-weight: 600;
-  height: 30px;
-  width: 30px;
-  top: 0px;
-  right: 0px;
-  margin-right: 0;
-}
-
-.contractor-search-icon:before {
-  content: "\f002";
-  position: relative;
-  display: inline-block;
-  width: 30px;
-  text-align: center;
-  line-height: 34px;
-  font-family: "Font Awesome 5 Free";
-  z-index: 10;
-}
