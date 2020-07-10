@@ -5,10 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.dict.En_Currency;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
@@ -84,6 +81,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     @Override
+    public void onOrganizationChanged() {
+        view.contractorEnabled().setEnabled(view.organization().getValue() != null);
+        view.setOrganization(En_Organization.PROTEI);
+    }
+
+    @Override
     public void refreshProjectSpecificFields() {
         if (view.project().getValue() == null) {
             clearProjectSpecificFields();
@@ -137,6 +140,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
         refreshProjectSpecificFields();
 
+        view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
+        view.setOrganization(En_Organization.PROTEI);
         view.contractor().setValue(contract.getContractor());
 
         if (view.project().getValue() == null) {

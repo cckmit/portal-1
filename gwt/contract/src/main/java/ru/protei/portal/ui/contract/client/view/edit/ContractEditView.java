@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
@@ -159,6 +160,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return direction;
     }
 
+    @Override
+    public HasEnabled contractorEnabled() {
+        return contractorWidget;
+    }
+
+    @Override
+    public void setOrganization(En_Organization organization) {
+        contractorWidget.setOrganization(organization);
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -184,6 +195,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onValueChanged(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
             activity.refreshProjectSpecificFields();
+        }
+    }
+
+    @UiHandler("organization")
+    public void onOrganizationChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onOrganizationChanged();
         }
     }
 

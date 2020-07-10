@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -166,7 +167,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<Contractor>> findContractors(AuthToken token, En_Organization organization, String contractorINN, String contractorKPP) {
+    public Result<List<ContractorPair>> findContractors(AuthToken token, En_Organization organization, String contractorINN, String contractorKPP) {
         if (organization == null || contractorINN == null || contractorKPP == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -177,11 +178,25 @@ public class ContractServiceImpl implements ContractService {
             contractor1.setName("contractor1");
             contractor1.setRefKey("1C_KEY-ref-1");
 
+            ContractorAPI contractorAPI1 = new ContractorAPI();
+            contractorAPI1.setName("contractor1");
+            contractorAPI1.setRefKey("1C_KEY-ref-1");
+            contractorAPI1.setFullname("fullname contractor1");
+
             Contractor contractor2 = new Contractor();
             contractor2.setName("contractor2");
             contractor2.setRefKey("1C_KEY-ref-2");
 
-            return ok(Arrays.asList(contractor1, contractor2));
+            ContractorAPI contractorAPI2 = new ContractorAPI();
+            contractorAPI2.setName("contractor2");
+            contractorAPI2.setRefKey("1C_KEY-ref-2");
+            contractorAPI2.setFullname("fullname contractor2");
+            contractorAPI2.setCountry("RUSSIA");
+            contractorAPI2.setInn("2311113226");
+            contractorAPI2.setKpp("111222333");
+
+            return ok(Arrays.asList(new ContractorPair(contractor1, contractorAPI1),
+                                    new ContractorPair(contractor2, contractorAPI2)));
         } else {
             return ok(new ArrayList<>());
         }
@@ -226,15 +241,12 @@ public class ContractServiceImpl implements ContractService {
         if (contractor.getRefKey() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        List<Contractor> contractorByRefKey = contractorDAO.getContractorByRefKey(contractor.getRefKey());
-        if (contractorByRefKey.size() > 1) {
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
+        Contractor contractorByRefKey = contractorDAO.getContractorByRefKey(contractor.getRefKey());
 
-        if (contractorByRefKey.size() == 0) {
+        if (contractorByRefKey == null) {
             contractorDAO.persist(contractor);
         } else {
-            contractor.setId(contractorByRefKey.get(0).getId());
+            contractor.setId(contractorByRefKey.getId());
             contractorDAO.merge(contractor);
         }
 

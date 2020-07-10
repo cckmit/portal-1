@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -25,7 +26,7 @@ public interface ContractController extends RemoteService {
 
     List<Contractor> getContractorList() throws RequestFailedException;
 
-    List<Contractor> findContractors(En_Organization organization, String contractorINN, String contractorKPP) throws RequestFailedException;
+    List<ContractorPair> findContractors(En_Organization organization, String contractorINN, String contractorKPP) throws RequestFailedException;
 
     Contractor createContractor(ContractorAPI contractorApi) throws RequestFailedException;
 }

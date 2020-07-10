@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface ContractControllerAsync {
 
     void getContractorList(AsyncCallback<List<Contractor>> callback);
 
-    void findContractors(En_Organization organization, String contractorINN, String contractorKPP, AsyncCallback< List<Contractor>> callback);
+    void findContractors(En_Organization organization, String contractorINN, String contractorKPP, AsyncCallback< List<ContractorPair>> callback);
 
     void createContractor(ContractorAPI contractor, AsyncCallback<Contractor> callback);
 }

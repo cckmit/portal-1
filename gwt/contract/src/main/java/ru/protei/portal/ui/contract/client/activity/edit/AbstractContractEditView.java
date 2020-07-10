@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
@@ -62,4 +63,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasEnabled managerEnabled();
 
     HasEnabled directionEnabled();
+
+    HasEnabled contractorEnabled();
+
+    void setOrganization(En_Organization organization);
 }

@@ -9,11 +9,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.country.ContractorCountrySelector;
-import ru.protei.portal.ui.common.client.widget.selector.contractor.organizationselector.OrganizationSelector;
-import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
@@ -29,13 +26,6 @@ public class ContractorCreateView extends Composite implements AbstractContracto
         contractorFullname.setRegexp(CONTRACTOR_FULLNAME);
         contractorCountry.setValidation(true);
         contractorCountry.setValue(null);
-        organization.setValidation(true);
-        organization.setValue(null);
-    }
-
-    @Override
-    public HasValue<En_Organization> organization() {
-        return organization;
     }
 
     @Override
@@ -70,7 +60,6 @@ public class ContractorCreateView extends Composite implements AbstractContracto
         contractorName.setValue(null);
         contractorFullname.setValue(null);
         contractorCountry.setValue(null);
-        organization.setValue(null);
     }
 
     @Override
@@ -85,7 +74,6 @@ public class ContractorCreateView extends Composite implements AbstractContracto
                 contractorName.isValid() &
                 contractorFullname.isValid() &
                 contractorCountry.isValid() &
-                organization.isValid() &&
                 isValidInn(contractorINN);
     }
 
@@ -101,10 +89,6 @@ public class ContractorCreateView extends Composite implements AbstractContracto
             contractorINN.setValid( ContractorUtils.checkInn(contractorINN.getValue()));
         }
     }
-
-    @Inject
-    @UiField(provided = true)
-    OrganizationSelector organization;
 
     @UiField
     ValidableTextBox contractorINN;

@@ -11,8 +11,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
+import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -78,6 +80,10 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         dialogDetailsSearchView.showPopup();
     }
 
+    public void setOrganization(En_Organization organization) {
+        this.organization = organization;
+    }
+
     private void ensureDebugIds() {
         name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.NAME);
         button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.SEARCH_BUTTON);
@@ -111,7 +117,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
                     fireEvent(new NotifyEvents.Show(lang.contractContractorFindNotChosenError(), NotifyEvents.NotifyType.INFO));
                     return;
                 }
-                setValue(searchView.contractor().getValue());
+                setValue(searchView.contractor().getValue().getContractor());
                 dialogDetailsSearchView.hidePopup();
             }
             @Override
@@ -151,7 +157,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     private ContractorAPI makeContractorAPIDTO() {
         ContractorAPI contractorAPI = new ContractorAPI();
-        contractorAPI.setOrganization(createView.organization().getValue());
+        contractorAPI.setOrganization(organization);
         contractorAPI.setInn(createView.contractorINN().getValue());
         contractorAPI.setKpp(createView.contractorKPP().getValue());
         contractorAPI.setName(createView.contractorName().getValue());
@@ -169,10 +175,10 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
                     return;
                 }
                 controller.findContractors(
-                        searchView.organization().getValue(),
+                        organization,
                         searchView.contractorINN().getValue(),
                         searchView.contractorKPP().getValue(),
-                        new FluentCallback<List<Contractor>>()
+                        new FluentCallback<List<ContractorPair>>()
                         .withError(t -> {
                             fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
                         })
@@ -219,6 +225,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     ContractControllerAsync controller;
 
     private Contractor value;
+    private En_Organization organization;
 
     interface ContractorWidgetUiBinder extends UiBinder<HTMLPanel, ContractorWidget> {}
     private static ContractorWidgetUiBinder ourUiBinder = GWT.create( ContractorWidgetUiBinder.class );

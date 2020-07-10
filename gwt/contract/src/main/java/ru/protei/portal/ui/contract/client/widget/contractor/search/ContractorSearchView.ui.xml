@@ -9,14 +9,6 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin">
         <div class="card-body">
             <div class="row">
-                <div class="form-group col-md-12">
-                    <label>
-                        <ui:text from="{lang.contractContractorOrganization}"/>
-                    </label>
-                    <contractor:organizationselector.OrganizationSelector ui:field="organization"/>
-                </div>
-            </div>
-            <div class="row">
                 <div class="form-group col-md-6">
                     <label>
                         <ui:text from="{lang.contractContractorINN}"/>
@@ -41,6 +33,28 @@
                         <ui:text from="{lang.contractContractor}"/>
                     </label>
                     <contractor:contractor.ContractorSelector ui:field="contractor"/>
+                </div>
+            </div>
+            <div class="row contractor-description">
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.contractContractorDescription}"/>
+                    </label>
+                    <div>
+                        <span class="description-title"><ui:text from="{lang.contractContractorINN}"/></span>: <span ui:field="descriptionInn"/>
+                    </div>
+                    <div>
+                        <span class="description-title"><ui:text from="{lang.contractContractorKPP}"/></span>: <span ui:field="descriptionKpp"/>
+                    </div>
+                    <div>
+                        <span class="description-title"><ui:text from="{lang.contractContractorName}"/></span>: <span ui:field="descriptionName"/>
+                    </div>
+                    <div>
+                        <span class="description-title"><ui:text from="{lang.contractContractorFullname}"/></span>: <span ui:field="descriptionFullname"/>
+                    </div>
+                    <div>
+                        <span class="description-title"><ui:text from="{lang.contractContractorCountry}"/></span>: <span ui:field="descriptionCountry"/>
+                    </div>
                 </div>
             </div>
             <div class="row">

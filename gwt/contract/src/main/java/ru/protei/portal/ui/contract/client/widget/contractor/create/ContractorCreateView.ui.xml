@@ -10,14 +10,6 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin">
         <div class="card-body">
             <div class="row">
-                <div class="form-group col-md-12">
-                    <label>
-                        <ui:text from="{lang.contractContractorOrganization}"/>
-                    </label>
-                    <contractor:organizationselector.OrganizationSelector ui:field="organization"/>
-                </div>
-            </div>
-            <div class="row">
                 <div class="form-group col-md-6">
                     <label>
                         <ui:text from="{lang.contractContractorINN}"/>
@@ -48,7 +40,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.contractContractorCountry}"/>
                     </label>

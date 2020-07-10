@@ -24,7 +24,12 @@
         <addForeignKeyConstraint constraintName="fk-contractor-id-to-contract"
                                  baseTableName="contract" baseColumnNames="contractor_id"
                                  referencedTableName="contractor" referencedColumnNames="id"
-                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="add-unique_constraint-on-contractor-table" author="porubov">
+        <addUniqueConstraint constraintName="ref_key_unique"
+                             tableName="contractor" columnNames="ref_key"/>
     </changeSet>
 
 </databaseChangeLog>

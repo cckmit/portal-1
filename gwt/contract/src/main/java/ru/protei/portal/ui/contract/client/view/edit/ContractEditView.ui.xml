@@ -88,7 +88,6 @@
                         <div ui:field="workGroupHeader" class="card-title">
                             <ui:text from="{lang.contractWorkGroup}"/>
                         </div>
-                        <div><ui:text from="{lang.contractWorkGroupInfo}"/></div>
                     </div>
                     <div class="card-body">
                         <div class="row">

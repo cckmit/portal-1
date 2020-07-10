@@ -4,19 +4,17 @@ import ru.protei.portal.core.model.dao.ContractorDAO;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 
-import java.util.List;
-
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class ContractorDAO_Impl extends PortalBaseJdbcDAO<Contractor>
         implements ContractorDAO {
 
     @Override
-    public List<Contractor> getContractorByRefKey(String refKey) {
+    public Contractor getContractorByRefKey(String refKey) {
         Query query = query().asCondition()
                 .and("ref_key").equal(refKey)
                 .asQuery();
 
-        return getListByCondition(query.buildSql(), query.args());
+        return getByCondition(query.buildSql(), query.args());
     }
 }

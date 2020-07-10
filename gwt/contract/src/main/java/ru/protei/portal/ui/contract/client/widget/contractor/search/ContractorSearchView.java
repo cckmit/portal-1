@@ -1,25 +1,31 @@
 package ru.protei.portal.ui.contract.client.widget.contractor.search;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_Organization;
-import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.ent.ContractorAPI;
+import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.portal.core.model.util.ContractorUtils;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.contractor.ContractorSelector;
-import ru.protei.portal.ui.common.client.widget.selector.contractor.organizationselector.OrganizationSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_INN;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_KPP;
 
 public class ContractorSearchView extends Composite implements AbstractContractorSearchView {
 
@@ -28,8 +34,6 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         initWidget(ourUiBinder.createAndBindUi(this));
         contractorINN.setRegexp(CONTRACTOR_INN);
         contractorKPP.setRegexp(CONTRACTOR_KPP);
-        organization.setValidation(true);
-        organization.setValue(null);
     }
 
     @Override
@@ -48,20 +52,15 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     }
 
     @Override
-    public HasValue<Contractor> contractor() {
+    public HasValue<ContractorPair> contractor() {
         return contractor;
     }
 
     @Override
-    public HasValue<En_Organization> organization() {
-        return organization;
-    }
-
-    @Override
-    public void setSearchResult(List<Contractor> result) {
+    public void setSearchResult(List<ContractorPair> result) {
         contractor.fill(result);
         if (!isEmpty(result)) {
-            contractor.setValue(result.get(0));
+            contractor.setValue(result.get(0), true);
         }
     }
 
@@ -70,8 +69,12 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         contractorINN.setValue(null);
         contractorKPP.setValue(null);
         contractor.setValue(null);
-        organization.setValue(null);
         contractor.fill(new ArrayList<>());
+        descriptionInn.setInnerText(null);
+        descriptionKpp.setInnerText(null);
+        descriptionName.setInnerText(null);
+        descriptionFullname.setInnerText(null);
+        descriptionCountry.setInnerText(null);
     }
 
     @Override
@@ -83,7 +86,6 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     public boolean isValid() {
         return contractorINN.isValid() &
                 contractorKPP.isValid() &&
-                organization.isValid() &&
                 isValidInn(contractorINN);
     }
 
@@ -110,9 +112,17 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         }
     }
 
-    @Inject
-    @UiField(provided = true)
-    OrganizationSelector organization;
+    @UiHandler("contractor")
+    public void onContractorChanged(ValueChangeEvent<ContractorPair> event) {
+        if (event.getValue() != null) {
+            ContractorAPI contractorApi = event.getValue().getContractorAPI();
+            descriptionInn.setInnerText(contractorApi.getInn());
+            descriptionKpp.setInnerText(contractorApi.getKpp());
+            descriptionName.setInnerText(contractorApi.getName());
+            descriptionFullname.setInnerText(contractorApi.getFullname());
+            descriptionCountry.setInnerText(contractorApi.getCountry());
+        }
+    }
 
     @UiField
     ValidableTextBox contractorINN;
@@ -124,6 +134,17 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     Button search;
 
     @UiField
+    SpanElement descriptionInn;
+    @UiField
+    SpanElement descriptionKpp;
+    @UiField
+    SpanElement descriptionName;
+    @UiField
+    SpanElement descriptionFullname;
+    @UiField
+    SpanElement descriptionCountry;
+
+    @UiField
     HTMLPanel root;
 
     @UiField
@@ -132,6 +153,9 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     @Inject
     @UiField(provided = true)
     ContractorSelector contractor;
+
+    @UiField
+    Lang lang;
 
     AbstractContractorSearchActivity activity;
 

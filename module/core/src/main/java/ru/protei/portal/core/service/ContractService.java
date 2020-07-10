@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public interface ContractService {
     Result<List<Contractor>> getContractorList(AuthToken token);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
-    Result<List<Contractor>> findContractors(AuthToken token, En_Organization organization, String contractorINN, String contractorKPP);
+    Result<List<ContractorPair>> findContractors(AuthToken token, En_Organization organization, String contractorINN, String contractorKPP);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
     Result<Contractor> createContractor(AuthToken token, ContractorAPI contractor);
