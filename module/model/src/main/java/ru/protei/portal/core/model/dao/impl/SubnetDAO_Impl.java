@@ -25,6 +25,11 @@ public class SubnetDAO_Impl extends PortalBaseJdbcDAO<Subnet> implements SubnetD
                 args.add(arg);
                 args.add(arg);
             }
+
+            if (query.isLocal() != null) {
+                condition.append(" and is_local=");
+                args.add(query.isLocal()? "1" : "0");
+            }
         });
     }
 }

@@ -18,7 +18,7 @@
             <g:HTMLPanel ui:field="anyFreeIpsContainer" styleName="row">
                 <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}"
                                             addStyleNames="form-group col-md-9"
-                                            validation="true"/>
+                                            validation="true" onlyLocalVisible="true"/>
 
                 <div class="form-group col-md-3">
                     <label>

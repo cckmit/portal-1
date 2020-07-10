@@ -32,19 +32,18 @@ import java.util.Map;
 public class IpReservationControllerImpl implements IpReservationController {
 
     @Override
-    public SearchResult< Subnet > getSubnetList( ReservedIpQuery reservedIpQuery ) throws RequestFailedException {
+    public SearchResult< Subnet > getSubnetList( ReservedIpQuery query ) throws RequestFailedException {
 
-        log.info( "getSubnetList(): search={} | sortField={} | order={}",
-                reservedIpQuery.getSearchString(), reservedIpQuery.getSortField(), reservedIpQuery.getSortDir() );
+        log.info("getSubnetList(): query={}", query);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(ipReservationService.getSubnets(token, reservedIpQuery));
+        return ServiceUtils.checkResultAndGetData(ipReservationService.getSubnets(token, query));
     }
 
     @Override
     public List<SubnetOption> getSubnetsOptionList(ReservedIpQuery query) throws RequestFailedException {
 
-        log.info("getPlatformsOptionList(): query={}", query);
+        log.info("getSubnetsOptionList(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<List<SubnetOption>> response = ipReservationService.getSubnetsOptionList(token, query);
         if (response.isError()) {

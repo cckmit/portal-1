@@ -6,13 +6,15 @@ public class SubnetOption implements Serializable {
 
     private String displayText;
     private Long id;
+    private boolean isLocal;
 
     public SubnetOption() {
     }
 
-    public SubnetOption(String displayText, Long id) {
+    public SubnetOption(String displayText, Long id, boolean isLocal) {
         this.displayText = displayText;
         this.id = id;
+        this.isLocal = isLocal;
     }
 
     public String getDisplayText() {
@@ -30,6 +32,10 @@ public class SubnetOption implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public boolean isLocal() { return isLocal; }
+
+    public void setLocal(boolean local) { isLocal = local; }
 
     @Override
     public int hashCode() {
