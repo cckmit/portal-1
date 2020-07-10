@@ -3,10 +3,8 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.ent.ContractorCountryAPI;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -23,7 +21,7 @@ public interface ContractControllerAsync {
 
     void getContractorList(AsyncCallback<List<Contractor>> callback);
 
-    void findContractors(String organization, String contractorINN, String contractorKPP, AsyncCallback< List<ContractorPair>> callback);
+    void findContractors(String organization, String contractorInn, String contractorKpp, AsyncCallback< List<Contractor>> callback);
 
-    void createContractor(ContractorAPI contractor, AsyncCallback<Contractor> callback);
+    void createContractor(Contractor contractor, AsyncCallback<Contractor> callback);
 }

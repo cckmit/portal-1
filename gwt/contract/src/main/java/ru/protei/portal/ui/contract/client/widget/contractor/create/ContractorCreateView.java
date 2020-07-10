@@ -21,8 +21,8 @@ public class ContractorCreateView extends Composite implements AbstractContracto
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        contractorINN.setRegexp(CONTRACTOR_INN);
-        contractorKPP.setRegexp(CONTRACTOR_KPP);
+        contractorInn.setRegexp(CONTRACTOR_INN);
+        contractorKpp.setRegexp(CONTRACTOR_KPP);
         contractorName.setRegexp(CONTRACTOR_NAME);
         contractorFullName.setRegexp(CONTRACTOR_FULL_NAME);
         contractorCountry.setValidation(true);
@@ -30,13 +30,13 @@ public class ContractorCreateView extends Composite implements AbstractContracto
     }
 
     @Override
-    public HasValue<String> contractorINN() {
-        return contractorINN;
+    public HasValue<String> contractorInn() {
+        return contractorInn;
     }
 
     @Override
-    public HasValue<String> contractorKPP() {
-        return contractorKPP;
+    public HasValue<String> contractorKpp() {
+        return contractorKpp;
     }
 
     @Override
@@ -61,8 +61,8 @@ public class ContractorCreateView extends Composite implements AbstractContracto
 
     @Override
     public void reset() {
-        contractorINN.setValue(null);
-        contractorKPP.setValue(null);
+        contractorInn.setValue(null);
+        contractorKpp.setValue(null);
         contractorName.setValue(null);
         contractorFullName.setValue(null);
         contractorCountry.setValue(null);
@@ -75,12 +75,12 @@ public class ContractorCreateView extends Composite implements AbstractContracto
 
     @Override
     public boolean isValid() {
-        return contractorINN.isValid() &
-                contractorKPP.isValid() &
+        return contractorInn.isValid() &
+                contractorKpp.isValid() &
                 contractorName.isValid() &
                 contractorFullName.isValid() &
                 contractorCountry.isValid() &
-                isValidInn(contractorINN);
+                isValidInn(contractorInn);
     }
 
     private boolean isValidInn(ValidableTextBox inn) {
@@ -89,18 +89,18 @@ public class ContractorCreateView extends Composite implements AbstractContracto
         return isValid;
     }
 
-    @UiHandler("contractorINN")
+    @UiHandler("contractorInn")
     public void onChangeClause(KeyUpEvent event) {
-        if (contractorINN.isValid()) {
-            contractorINN.setValid( ContractorUtils.checkInn(contractorINN.getValue()));
+        if (contractorInn.isValid()) {
+            contractorInn.setValid( ContractorUtils.checkInn(contractorInn.getValue()));
         }
     }
 
     @UiField
-    ValidableTextBox contractorINN;
+    ValidableTextBox contractorInn;
 
     @UiField
-    ValidableTextBox contractorKPP;
+    ValidableTextBox contractorKpp;
 
     @UiField
     ValidableTextBox contractorName;

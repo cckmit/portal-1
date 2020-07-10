@@ -4,10 +4,8 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.ent.ContractorCountryAPI;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -26,7 +24,7 @@ public interface ContractController extends RemoteService {
 
     List<Contractor> getContractorList() throws RequestFailedException;
 
-    List<ContractorPair> findContractors(String organization, String contractorINN, String contractorKPP) throws RequestFailedException;
+    List<Contractor> findContractors(String organization, String contractorInn, String contractorKpp) throws RequestFailedException;
 
-    Contractor createContractor(ContractorAPI contractorApi) throws RequestFailedException;
+    Contractor createContractor(Contractor contractor) throws RequestFailedException;
 }

@@ -6,9 +6,9 @@ import ru.protei.portal.core.model.ent.ContractorCountryAPI;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractContractorCreateView extends IsWidget, HasValidable {
-    HasValue<String> contractorINN();
+    HasValue<String> contractorInn();
 
-    HasValue<String> contractorKPP();
+    HasValue<String> contractorKpp();
 
     HasValue<String> contractorName();
 

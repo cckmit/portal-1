@@ -11,13 +11,13 @@
             <div class="row">
                 <div class="form-group col-md-6">
                     <label>
-                        <ui:text from="{lang.contractContractorINN}"/>
+                        <ui:text from="{lang.contractContractorInn}"/>
                     </label>
-                    <validablefield:ValidableTextBox ui:field="contractorINN" styleName="form-control"/>
+                    <validablefield:ValidableTextBox ui:field="contractorInn" styleName="form-control"/>
                 </div>
                 <div class="form-group col-md-6">
                     <label>
-                        <ui:text from="{lang.contractContractorKPP}"/>
+                        <ui:text from="{lang.contractContractorKpp}"/>
                     </label>
                     <validablefield:ValidableTextBox ui:field="contractorKPP" styleName="form-control"/>
                 </div>
@@ -41,10 +41,10 @@
                         <ui:text from="{lang.contractContractorDescription}"/>
                     </label>
                     <div>
-                        <span class="description-title"><ui:text from="{lang.contractContractorINN}"/></span>: <span ui:field="descriptionInn"/>
+                        <span class="description-title"><ui:text from="{lang.contractContractorInn}"/></span>: <span ui:field="descriptionInn"/>
                     </div>
                     <div>
-                        <span class="description-title"><ui:text from="{lang.contractContractorKPP}"/></span>: <span ui:field="descriptionKpp"/>
+                        <span class="description-title"><ui:text from="{lang.contractContractorKpp}"/></span>: <span ui:field="descriptionKpp"/>
                     </div>
                     <div>
                         <span class="description-title"><ui:text from="{lang.contractContractorName}"/></span>: <span ui:field="descriptionName"/>

@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.portal.core.service.ContractService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ContractController;
@@ -87,15 +86,15 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public List<ContractorPair> findContractors(String organization, String contractorINN, String contractorKPP) throws RequestFailedException {
+    public List<Contractor> findContractors(String organization, String contractorInn, String contractorKpp) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, organization, contractorINN, contractorKPP));
+        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, organization, contractorInn, contractorKpp));
     }
 
     @Override
-    public Contractor createContractor(ContractorAPI contractorApi) throws RequestFailedException {
+    public Contractor createContractor(Contractor contractor) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractorApi));
+        return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractor));
     }
 
     @Autowired

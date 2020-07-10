@@ -2080,15 +2080,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String createContractorTitle();
 
-    String contractContractorOrganization();
-
     String contractContractorName();
 
     String contractContractorFullName();
 
-    String contractContractorINN();
+    String contractContractorInn();
 
-    String contractContractorKPP();
+    String contractContractorKpp();
 
     String contractContractorCountry();
 
@@ -2133,8 +2131,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contract();
 
     String contractWorkGroup();
-
-    String contractWorkGroupInfo();
 
     String contractCostNotDefined();
 
