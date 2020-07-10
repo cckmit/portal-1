@@ -250,6 +250,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeNotFiredFromTheseCompanies();
 
+    String errEmployeeMigrationFailed();
+
     String errDepartmentAlreadyExistInThisCompany();
 
     String companyInfoHeader();

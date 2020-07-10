@@ -18,6 +18,9 @@ public class EmployeeShortView implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
+    @JdbcColumn(name="company_id")
+    private Long companyId;
+
     @JdbcColumn(name="displayname")
     private String displayName;
 
@@ -57,6 +60,14 @@ public class EmployeeShortView implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public String getDisplayName() {

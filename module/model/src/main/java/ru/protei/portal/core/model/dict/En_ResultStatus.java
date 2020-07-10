@@ -205,6 +205,11 @@ public enum En_ResultStatus {
     EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
 
     /**
+     * Ошибка миграции сотрудника на старый портал
+     */
+    EMPLOYEE_MIGRATION_FAILED,
+
+    /**
      * Подсеть не существует
      */
     SUBNET_DOES_NOT_EXIST,

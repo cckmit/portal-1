@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -364,6 +365,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         personFromDb.setFired(new Date());
+        personFromDb.setIpAddress(personFromDb.getIpAddress() == null ? null : personFromDb.getIpAddress().replace(".", "_"));
+        PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(personFromDb.getContactInfo());
+        contactInfoFacade.setEmail(null);
 
         boolean result = personDAO.merge(personFromDb);
 
@@ -373,13 +377,18 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (!isRemoved){
                 return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
-            
-            userLoginDAO.removeByPersonId(personFromDb.getId());
+
+            UserLogin userLogin = userLoginDAO.findByPersonId(personFromDb.getId());
+            if(userLogin != null) {
+                userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                updateAccount(userLogin, token);
+            }
         }
 
         if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
-            if (!migrateToOldPortal(person.getId())) {
-                return error(En_ResultStatus.INTERNAL_ERROR);
+            if (!fireEmployeeInOldPortal(personFromDb)) {
+                log.warn("fireEmployee(): fail to migrate employee to old portal. Person={}", personFromDb);
+                return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
             }
         }
 
@@ -431,12 +440,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
-            if (!migrateToOldPortal(personId)) {
-                return error(En_ResultStatus.INTERNAL_ERROR);
+            if (!updateEmployeeInOldPortal(personId)) {
+                log.warn("updateEmployeeWorkers(): fail to migrate employee to old portal. personId={}", personId);
+                return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
             }
         }
 
        return ok(true);
+    }
+
+    private void updateAccount(UserLogin userLogin, AuthToken token) {
+        if (userLoginDAO.saveOrUpdate(userLogin)) {
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
+            makeAudit(userLogin, En_AuditType.ACCOUNT_MODIFY, token);
+        }
     }
 
     private void fillMapWorkersToRemove(Map<WorkerEntry, Integer> finalWorkersMap, List<WorkerEntry> newWorkerEntries, List<WorkerEntry> oldWorkerEntries, int TO_REMOVE) {
@@ -507,7 +524,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    private boolean migrateToOldPortal(Long personId) {
+    private boolean updateEmployeeInOldPortal(Long personId) {
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
 
         WorkerEntry activeWorker = workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
@@ -515,10 +532,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         Person person = personDAO.get(personId);
 
         if (activeWorker == null || person == null){
+            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", activeWorker, person);
             return false;
         }
 
         return migrationManager.saveExternalEmployee(person, activeWorker.getDepartmentName(), activeWorker.getPositionName()).equals(En_ResultStatus.OK);
+    }
+
+    private boolean fireEmployeeInOldPortal(Person person) {
+        if (person == null){
+            return false;
+        }
+
+        return migrationManager.saveExternalEmployee(person, "", "").equals(En_ResultStatus.OK);
     }
 
     private void checkActiveFlag(List<WorkerEntry> newWorkerEntries) {
