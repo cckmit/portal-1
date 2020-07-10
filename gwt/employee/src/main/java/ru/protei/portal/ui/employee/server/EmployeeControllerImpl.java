@@ -192,7 +192,11 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         log.info("fire employee, id: {} -> {} ", person.getId(), response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
 
-        return response.isOk() ? response.getData() : false;
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Override
