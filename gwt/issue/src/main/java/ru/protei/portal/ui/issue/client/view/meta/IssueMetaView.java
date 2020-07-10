@@ -94,7 +94,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public Person getManager() {
-        return Person.fromPersonShortView( manager.getValue() );
+        return Person.fromPersonFullNameShortView( manager.getValue() );
     }
 
     @Override
