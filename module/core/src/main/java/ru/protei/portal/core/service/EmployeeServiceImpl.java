@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -140,8 +141,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             Set<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toSet());
             List<WorkerEntryShortView> workerEntries = changeCompanyNameIfHidden(workerEntryShortViewDAO.listByPersonIds(employeeIds));
 
-            AbsenceQuery absenceQuery = new AbsenceQuery(new Date(), new Date(), employeeIds,
-                    Arrays.asList(En_AbsenceReason.values()).stream().filter(En_AbsenceReason::isActual).map(En_AbsenceReason::getId).collect(Collectors.toSet()));
+            AbsenceQuery absenceQuery = makeAbsenceQuery(employeeIds);
             List<PersonAbsence> personAbsences = personAbsenceDAO.listByQuery(absenceQuery);
 
             results.forEach(employee -> {
@@ -624,5 +624,16 @@ public class EmployeeServiceImpl implements EmployeeService {
                         : workerEntry.getCompanyName())
                 );
         return list;
+    }
+
+    AbsenceQuery makeAbsenceQuery(Set<Long> employeeIds) {
+        return new AbsenceQuery(
+                DateUtils.resetSeconds(new Date()),
+                DateUtils.resetSeconds(new Date()),
+                employeeIds,
+                Arrays.asList(En_AbsenceReason.values()).stream()
+                        .filter(En_AbsenceReason::isActual)
+                        .map(En_AbsenceReason::getId)
+                        .collect(Collectors.toSet()));
     }
 }

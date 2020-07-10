@@ -59,5 +59,4 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
             }
         });
     }
-
 }

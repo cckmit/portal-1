@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.PersonNotifierDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 
@@ -176,7 +177,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         PersonAbsence newState = new PersonAbsence(oldState);
-        newState.setTillTime(new Date());
+        newState.setTillTime(DateUtils.resetSeconds(new Date()));
 
         if (!personAbsenceDAO.partialMerge(newState, "till_time")) {
             error(En_ResultStatus.NOT_UPDATED);

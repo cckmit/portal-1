@@ -12,7 +12,7 @@ public enum En_AbsenceReason implements HasId {
     NIGHT_WORK(7, true),
     DUTY(8, true),
     STUDY(9, true),
-    REMOTE_WORK(10, false),
+    REMOTE_WORK(10, true),
     LEAVE(11, true),
     LEAVE_WITHOUT_PAY(12, true);
 
