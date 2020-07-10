@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorPair;
@@ -21,6 +23,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
@@ -48,6 +52,8 @@ public class ContractServiceImpl implements ContractService {
     PolicyService policyService;
     @Autowired
     AuthService authService;
+    @Autowired
+    Api1C api1CService;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -161,12 +167,14 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<ContractorCountryAPI>> getContractorCountryList(AuthToken token) {
-        // mock service 1cAPI
-        return ok(Arrays.asList(
-                new ContractorCountryAPI("1C_KEY-country-ref-1", "RUSSIA"),
-                new ContractorCountryAPI("1C_KEY-country-ref-2", "USA"),
-                new ContractorCountryAPI("1C_KEY-country-ref-3", "CHINA")));
+    public Result<List<ContractorCountryAPI>> getContractorCountryList(AuthToken token, String organization) {
+        if (organization == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        return api1CService.getCountryVocabulary(organization)
+                .map(list -> list.stream()
+                        .map(country1C -> new ContractorCountryAPI(country1C.getRefKey(), country1C.getName()))
+                        .collect(toList()));
     }
 
     @Override
@@ -175,7 +183,8 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<ContractorPair>> findContractors(AuthToken token, String organization, String contractorINN, String contractorKPP) {
+    public Result<List<ContractorPair>> findContractors(AuthToken token,
+                                            String organization, String contractorINN, String contractorKPP) {
         if (organization == null || contractorINN == null || contractorKPP == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -184,34 +193,34 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        // mock service 1cAPI
-        if ("2311113226".equals(contractorINN) && "111222333".equals(contractorKPP)) {
-            Contractor contractor1 = new Contractor();
-            contractor1.setRefKey("1C_KEY-ref-1");
-            contractor1.setName("contractor1");
+        Contractor1C contractor1C = new Contractor1C();
+        contractor1C.setInn(contractorINN);
+        contractor1C.setKpp(contractorKPP);
 
-            ContractorAPI contractorAPI1 = new ContractorAPI();
-            contractorAPI1.setRefKey("1C_KEY-ref-1");
-            contractorAPI1.setName("contractor1");
-            contractorAPI1.setFullname("fullname contractor1");
-
-            Contractor contractor2 = new Contractor();
-            contractor2.setRefKey("1C_KEY-ref-2");
-            contractor2.setName("contractor2");
-
-            ContractorAPI contractorAPI2 = new ContractorAPI();
-            contractorAPI2.setRefKey("1C_KEY-ref-2");
-            contractorAPI2.setName("contractor2");
-            contractorAPI2.setFullname("fullname contractor2");
-            contractorAPI2.setCountry("RUSSIA");
-            contractorAPI2.setInn("2311113226");
-            contractorAPI2.setKpp("111222333");
-
-            return ok(Arrays.asList(new ContractorPair(contractor1, contractorAPI1),
-                                    new ContractorPair(contractor2, contractorAPI2)));
-        } else {
-            return ok(new ArrayList<>());
+        Result<List<ContractorCountryAPI>> contractorCountryListResult = getContractorCountryList(token, organization);
+        if (contractorCountryListResult.isError()) {
+            return error(contractorCountryListResult.getStatus());
         }
+
+        Map<String, String> mapRefToName = contractorCountryListResult.getData().stream()
+                .collect(toMap(ContractorCountryAPI::getRefKey, ContractorCountryAPI::getName, (n1, n2) -> n1));
+
+        return api1CService.getContractors(contractor1C, organization)
+                .map(list -> list.stream().map(contractor -> {
+                    ContractorAPI contractorAPI = new ContractorAPI();
+                    contractorAPI.setRefKey(contractor.getRefKey());
+                    contractorAPI.setName(contractor.getName());
+                    contractorAPI.setFullName(contractor.getFullName());
+                    contractorAPI.setCountry(mapRefToName.get(contractor.getRegistrationCountryKey()));
+                    contractorAPI.setInn(contractor.getInn());
+                    contractorAPI.setKpp(contractor.getKpp());
+
+                    Contractor contractorDb = new Contractor();
+                    contractorDb.setRefKey(contractor.getRefKey());
+                    contractorDb.setName(contractor.getName());
+
+                    return new ContractorPair(contractorDb, contractorAPI);
+                }).collect(toList()));
     }
 
     @Override
@@ -224,12 +233,20 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        // mock service 1cAPI
-        Contractor contractor = new Contractor();
-        contractor.setName(contractorAPI.getName() + " [saved]");
-        contractor.setRefKey("1C_KEY-ref");
+        Contractor1C contractor1C = new Contractor1C();
+        contractor1C.setName(contractorAPI.getName());
+        contractor1C.setFullName(contractorAPI.getFullName());
+        contractor1C.setInn(contractorAPI.getInn());
+        contractor1C.setKpp(contractorAPI.getKpp());
+        contractor1C.setRegistrationCountryKey(contractorAPI.getCountryRef());
 
-        return ok(contractor);
+        return api1CService.saveContractor(contractor1C, contractorAPI.getOrganization())
+            .map(contractor -> {
+                Contractor contractorDb = new Contractor();
+                contractorDb.setRefKey(contractor.getRefKey());
+                contractorDb.setName(contractor.getName());
+                return contractorDb;
+            });
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {

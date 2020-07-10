@@ -17,7 +17,7 @@ public class Country1C {
     private String refKey;
 
     @JsonProperty("Description")
-    private String description;
+    private String name;
 
     @JsonProperty("НаименованиеПолное")
     private String fullName;
@@ -33,12 +33,12 @@ public class Country1C {
         this.refKey = refKey;
     }
 
-    public String getDescription() {
-        return description;
+    public String getName() {
+        return name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getFullName() {
@@ -61,7 +61,7 @@ public class Country1C {
     public String toString() {
         return "Country1C{" +
                 "refKey='" + refKey + '\'' +
-                ", description='" + description + '\'' +
+                ", name='" + name + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", deletionMark='" + deletionMark + '\'' +
                 '}';

@@ -73,7 +73,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         descriptionInn.setInnerText(null);
         descriptionKpp.setInnerText(null);
         descriptionName.setInnerText(null);
-        descriptionFullname.setInnerText(null);
+        descriptionFullName.setInnerText(null);
         descriptionCountry.setInnerText(null);
     }
 
@@ -114,7 +114,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
             descriptionInn.setInnerText(contractorApi.getInn());
             descriptionKpp.setInnerText(contractorApi.getKpp());
             descriptionName.setInnerText(contractorApi.getName());
-            descriptionFullname.setInnerText(contractorApi.getFullname());
+            descriptionFullName.setInnerText(contractorApi.getFullName());
             descriptionCountry.setInnerText(contractorApi.getCountry());
         }
     }
@@ -142,7 +142,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     @UiField
     SpanElement descriptionName;
     @UiField
-    SpanElement descriptionFullname;
+    SpanElement descriptionFullName;
     @UiField
     SpanElement descriptionCountry;
 

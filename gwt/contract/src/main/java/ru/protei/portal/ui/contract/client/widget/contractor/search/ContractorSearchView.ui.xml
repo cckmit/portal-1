@@ -50,7 +50,7 @@
                         <span class="description-title"><ui:text from="{lang.contractContractorName}"/></span>: <span ui:field="descriptionName"/>
                     </div>
                     <div>
-                        <span class="description-title"><ui:text from="{lang.contractContractorFullname}"/></span>: <span ui:field="descriptionFullname"/>
+                        <span class="description-title"><ui:text from="{lang.contractContractorFullName}"/></span>: <span ui:field="descriptionFullName"/>
                     </div>
                     <div>
                         <span class="description-title"><ui:text from="{lang.contractContractorCountry}"/></span>: <span ui:field="descriptionCountry"/>

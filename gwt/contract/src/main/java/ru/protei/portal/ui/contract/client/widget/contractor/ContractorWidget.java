@@ -81,6 +81,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     public void setOrganization(String organization) {
         this.organization = organization;
+        createView.setOrganization(organization);
     }
 
     private void ensureDebugIds() {
@@ -169,8 +170,8 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         contractorAPI.setInn(createView.contractorINN().getValue());
         contractorAPI.setKpp(createView.contractorKPP().getValue());
         contractorAPI.setName(createView.contractorName().getValue());
-        contractorAPI.setFullname(createView.contractorFullname().getValue());
-        contractorAPI.setCountry(createView.contractorCountry().getValue() == null ?
+        contractorAPI.setFullName(createView.contractorFullName().getValue());
+        contractorAPI.setCountryRef(createView.contractorCountry().getValue() == null ?
                 null : createView.contractorCountry().getValue().getRefKey() );
         return contractorAPI;
     }

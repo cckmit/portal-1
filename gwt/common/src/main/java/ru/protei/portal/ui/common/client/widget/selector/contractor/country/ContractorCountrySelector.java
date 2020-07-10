@@ -7,10 +7,18 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingl
 public class ContractorCountrySelector extends ButtonPopupSingleSelector<ContractorCountryAPI> {
     @Inject
     public void init( ContractorCountryModel model ) {
+        this.model = model;
         setAsyncModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option.getName() );
         setValidation(true);
         setHideSelectedFromChose(true);
         setDefaultValue(lang.contractContractorCountryPlaceholder());
     }
+
+    public void setOrganization(String organization) {
+        model.setOrganization(organization);
+        model.clean();
+    }
+    ContractorCountryModel model;
+
 }

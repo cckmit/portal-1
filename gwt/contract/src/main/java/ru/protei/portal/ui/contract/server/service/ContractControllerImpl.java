@@ -75,9 +75,9 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public List<ContractorCountryAPI> getContractorCountryList() throws RequestFailedException {
+    public List<ContractorCountryAPI> getContractorCountryList(String organization) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.getContractorCountryList(token));
+        return ServiceUtils.checkResultAndGetData(contractService.getContractorCountryList(token, organization));
     }
 
     @Override

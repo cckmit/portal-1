@@ -9,11 +9,13 @@ public class ContractorAPI implements Serializable {
 
     private String name;
 
-    private String fullname;
+    private String fullName;
 
     private String inn;
 
     private String kpp;
+
+    private String countryRef;
 
     private String country;
 
@@ -41,12 +43,12 @@ public class ContractorAPI implements Serializable {
         this.name = name;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getInn() {
@@ -65,6 +67,14 @@ public class ContractorAPI implements Serializable {
         this.kpp = kpp;
     }
 
+    public String getCountryRef() {
+        return countryRef;
+    }
+
+    public void setCountryRef(String countryRef) {
+        this.countryRef = countryRef;
+    }
+
     public String getCountry() {
         return country;
     }
@@ -79,9 +89,10 @@ public class ContractorAPI implements Serializable {
                 "organization=" + organization +
                 ", refKey='" + refKey + '\'' +
                 ", name='" + name + '\'' +
-                ", fullname='" + fullname + '\'' +
+                ", fullName='" + fullName + '\'' +
                 ", inn='" + inn + '\'' +
                 ", kpp='" + kpp + '\'' +
+                ", countryRef='" + countryRef + '\'' +
                 ", country='" + country + '\'' +
                 '}';
     }

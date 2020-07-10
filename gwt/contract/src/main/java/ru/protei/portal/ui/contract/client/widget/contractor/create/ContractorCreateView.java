@@ -24,7 +24,7 @@ public class ContractorCreateView extends Composite implements AbstractContracto
         contractorINN.setRegexp(CONTRACTOR_INN);
         contractorKPP.setRegexp(CONTRACTOR_KPP);
         contractorName.setRegexp(CONTRACTOR_NAME);
-        contractorFullname.setRegexp(CONTRACTOR_FULLNAME);
+        contractorFullName.setRegexp(CONTRACTOR_FULL_NAME);
         contractorCountry.setValidation(true);
         contractorCountry.setValue(null);
     }
@@ -45,8 +45,8 @@ public class ContractorCreateView extends Composite implements AbstractContracto
     }
 
     @Override
-    public HasValue<String> contractorFullname() {
-        return contractorFullname;
+    public HasValue<String> contractorFullName() {
+        return contractorFullName;
     }
 
     @Override
@@ -55,11 +55,16 @@ public class ContractorCreateView extends Composite implements AbstractContracto
     }
 
     @Override
+    public void setOrganization(String organization) {
+        contractorCountry.setOrganization(organization);
+    }
+
+    @Override
     public void reset() {
         contractorINN.setValue(null);
         contractorKPP.setValue(null);
         contractorName.setValue(null);
-        contractorFullname.setValue(null);
+        contractorFullName.setValue(null);
         contractorCountry.setValue(null);
     }
 
@@ -73,7 +78,7 @@ public class ContractorCreateView extends Composite implements AbstractContracto
         return contractorINN.isValid() &
                 contractorKPP.isValid() &
                 contractorName.isValid() &
-                contractorFullname.isValid() &
+                contractorFullName.isValid() &
                 contractorCountry.isValid() &
                 isValidInn(contractorINN);
     }
@@ -101,7 +106,7 @@ public class ContractorCreateView extends Composite implements AbstractContracto
     ValidableTextBox contractorName;
 
     @UiField
-    ValidableTextBox contractorFullname;
+    ValidableTextBox contractorFullName;
 
     @Inject
     @UiField(provided = true)

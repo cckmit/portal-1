@@ -16,7 +16,7 @@ public abstract class ContractorCountryModel extends BaseSelectorModel<Contracto
 
     @Override
     protected void requestData(LoadingHandler selector, String searchText) {
-        controller.getContractorCountryList(new FluentCallback<List<ContractorCountryAPI>>()
+        controller.getContractorCountryList(organization, new FluentCallback<List<ContractorCountryAPI>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(list -> {
                     updateElements(list, selector);
@@ -24,8 +24,14 @@ public abstract class ContractorCountryModel extends BaseSelectorModel<Contracto
         );
     }
 
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
     @Inject
     ContractControllerAsync controller;
     @Inject
     Lang lang;
+
+    String organization;
 }

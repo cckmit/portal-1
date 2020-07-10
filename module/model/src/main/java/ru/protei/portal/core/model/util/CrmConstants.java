@@ -73,7 +73,7 @@ public class CrmConstants {
         String CONTRACTOR_INN = "^(\\d{10}|\\d{12})$";
         String CONTRACTOR_KPP = "^\\d{9}$";
         String CONTRACTOR_NAME = "^.{1,100}$";
-        String CONTRACTOR_FULLNAME = "^.{1,250}$";
+        String CONTRACTOR_FULL_NAME = "^.{1,250}$";
     }
 
     public interface Time {

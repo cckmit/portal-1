@@ -2084,7 +2084,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractContractorName();
 
-    String contractContractorFullname();
+    String contractContractorFullName();
 
     String contractContractorINN();
 

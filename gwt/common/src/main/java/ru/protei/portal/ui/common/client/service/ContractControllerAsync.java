@@ -19,7 +19,7 @@ public interface ContractControllerAsync {
 
     void saveContract(Contract Contract, AsyncCallback<Long> callback);
 
-    void getContractorCountryList(AsyncCallback<List<ContractorCountryAPI>> callback);
+    void getContractorCountryList(String organization, AsyncCallback<List<ContractorCountryAPI>> callback);
 
     void getContractorList(AsyncCallback<List<Contractor>> callback);
 

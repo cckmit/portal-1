@@ -11,7 +11,7 @@ public class ContractorSelector extends ButtonPopupSingleSelector<ContractorPair
     public void init( ContractorPairModel model ) {
         this.model = model;
         setModel( model );
-        setItemRenderer( option -> option == null ? defaultValue : option.getContractorAPI().getFullname() );
+        setItemRenderer( option -> option == null ? defaultValue : option.getContractorAPI().getFullName() );
         setValidation(true);
         setSearchEnabled(false);
         setHideSelectedFromChose(true);

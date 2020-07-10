@@ -146,7 +146,7 @@ public class Api1CImpl implements Api1C{
             return false;
         }
 
-        if (!checkText(CrmConstants.Masks.CONTRACTOR_FULLNAME, contractor.getFullName())){
+        if (!checkText(CrmConstants.Masks.CONTRACTOR_FULL_NAME, contractor.getFullName())){
             log.warn("validateContractor(): contractor full name not valid");
             return false;
         }

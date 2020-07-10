@@ -12,9 +12,11 @@ public interface AbstractContractorCreateView extends IsWidget, HasValidable {
 
     HasValue<String> contractorName();
 
-    HasValue<String> contractorFullname();
+    HasValue<String> contractorFullName();
 
     HasValue<ContractorCountryAPI> contractorCountry();
+
+    void setOrganization(String organization);
 
     void reset();
 }

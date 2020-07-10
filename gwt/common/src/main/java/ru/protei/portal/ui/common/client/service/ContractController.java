@@ -22,7 +22,7 @@ public interface ContractController extends RemoteService {
 
     Long saveContract(Contract Contract) throws RequestFailedException;
 
-    List<ContractorCountryAPI> getContractorCountryList() throws RequestFailedException;
+    List<ContractorCountryAPI> getContractorCountryList(String organization) throws RequestFailedException;
 
     List<Contractor> getContractorList() throws RequestFailedException;
 
