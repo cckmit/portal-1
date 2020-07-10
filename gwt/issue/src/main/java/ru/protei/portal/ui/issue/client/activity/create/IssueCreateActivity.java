@@ -588,7 +588,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         CaseObject caseObject = new CaseObject();
         caseObject.setStateId(CrmConstants.State.CREATED);
         caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
-        caseObject.setPrivateCase(isSystemScope());
+        caseObject.setPrivateCase(true);
         caseObject.setInitiatorCompany(policyService.getUserCompany());
 
         return caseObject;
