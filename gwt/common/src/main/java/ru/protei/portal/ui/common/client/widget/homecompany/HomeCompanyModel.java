@@ -12,9 +12,12 @@ import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME;
 
 /**
  * Модель домашних компаний
@@ -69,4 +72,6 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
     private List< EntityOption > list;
     private boolean reverseOrder;
     private Boolean synchronizeWith1C;
+
+    static public List<String> superHomeCompany = Arrays.asList(MAIN_HOME_COMPANY_NAME, PROTEI_ST_HOME_COMPANY_NAME);
 }

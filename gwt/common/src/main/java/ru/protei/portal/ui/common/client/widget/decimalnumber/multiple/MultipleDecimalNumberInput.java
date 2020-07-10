@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.dict.En_Organization;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
@@ -99,7 +99,7 @@ public class MultipleDecimalNumberInput
 
     @UiHandler( "addPamr" )
     public void onAddPamrClicked( ClickEvent event )  {
-        createEmptyBox(En_Organization.PROTEI);
+        createEmptyBox(En_OrganizationCode.PAMR);
     }
 
     @UiHandler( "addPdra" )
@@ -148,7 +148,7 @@ public class MultipleDecimalNumberInput
 
         clearBoxes();
         if (this.values == null || this.values.isEmpty()) {
-            createEmptyBox(En_Organization.PROTEI);
+            createEmptyBox(En_OrganizationCode.PAMR);
         } else {
             this.values.forEach(number -> createBoxAndFillValue(number, isEnabled));
         }
@@ -200,7 +200,7 @@ public class MultipleDecimalNumberInput
         addPamr.setEnabled(false);
     }
 
-    private void createEmptyBox(En_Organization orgCode) {
+    private void createEmptyBox(En_OrganizationCode orgCode) {
         DecimalNumber emptyNumber = new DecimalNumber();
         emptyNumber.setOrganizationCode(orgCode);
         values.add( emptyNumber );
@@ -210,7 +210,7 @@ public class MultipleDecimalNumberInput
     }
 
     private void placeBox( DecimalNumber number, DecimalNumberBox box ) {
-        if (number.getOrganizationCode().equals(En_Organization.PROTEI)) {
+        if (number.getOrganizationCode().equals(En_OrganizationCode.PAMR)) {
             pamrList.add(box.asWidget());
         } else {
             pdraList.add(box.asWidget());
@@ -317,15 +317,15 @@ public class MultipleDecimalNumberInput
                 continue;
             }
 
-            if (!En_Organization.PROTEI_ST.equals(box.getValue().getOrganizationCode())) {
+            if (!En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode())) {
                 continue;
             }
 
             pdraList.remove(box.asWidget());
         }
 
-        numberBoxes.removeIf(box -> En_Organization.PROTEI_ST.equals(box.getValue().getOrganizationCode()) && isNew(box.getValue()));
-        values.removeIf(number -> En_Organization.PROTEI_ST.equals(number.getOrganizationCode()) && isNew(number));
+        numberBoxes.removeIf(box -> En_OrganizationCode.PDRA.equals(box.getValue().getOrganizationCode()) && isNew(box.getValue()));
+        values.removeIf(number -> En_OrganizationCode.PDRA.equals(number.getOrganizationCode()) && isNew(number));
 
         final List<DecimalNumber> pamrNumbers = getPamrNumbers();
 
@@ -342,7 +342,7 @@ public class MultipleDecimalNumberInput
     private DecimalNumber createPdraFromPamr(DecimalNumber number) {
         DecimalNumber decimalNumber = new DecimalNumber();
         decimalNumber.setReserve(false);
-        decimalNumber.setOrganizationCode(En_Organization.PROTEI_ST);
+        decimalNumber.setOrganizationCode(En_OrganizationCode.PDRA);
         decimalNumber.setClassifierCode(number.getClassifierCode());
         decimalNumber.setRegisterNumber(number.getRegisterNumber());
         decimalNumber.setModification(number.getModification());
@@ -365,7 +365,7 @@ public class MultipleDecimalNumberInput
     private List<DecimalNumber> getPamrNumbers() {
         return values
                 .stream()
-                .filter(decimalNumber -> En_Organization.PROTEI.equals(decimalNumber.getOrganizationCode()))
+                .filter(decimalNumber -> En_OrganizationCode.PAMR.equals(decimalNumber.getOrganizationCode()))
                 .collect(Collectors.toList());
     }
 

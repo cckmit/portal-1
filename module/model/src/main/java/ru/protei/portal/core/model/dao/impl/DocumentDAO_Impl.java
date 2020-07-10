@@ -140,10 +140,10 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                 condition.append(" ) ");
                 query.getOrganizationCodes().forEach(oc -> {
                     switch (oc) {
-                        case PROTEI:
+                        case PAMR:
                             args.add("ПАМР%");
                             break;
-                        case PROTEI_ST:
+                        case PDRA:
                             args.add("ПДРА%");
                             break;
                     }

@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.dict.En_Organization;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -29,7 +29,7 @@ public interface AbstractDocumentFilterView extends IsWidget {
 
     HasValue<Set<EntityOption>> projects();
 
-    HasValue<Set<En_Organization>> organizationCodes();
+    HasValue<Set<En_OrganizationCode>> organizationCodes();
 
     HasValue<DateInterval> dateRange();
 

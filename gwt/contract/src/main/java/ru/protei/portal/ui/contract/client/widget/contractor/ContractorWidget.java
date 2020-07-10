@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
-import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
 import ru.protei.portal.core.model.struct.ContractorPair;
@@ -80,7 +79,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         dialogDetailsSearchView.showPopup();
     }
 
-    public void setOrganization(En_Organization organization) {
+    public void setOrganization(String organization) {
         this.organization = organization;
     }
 
@@ -224,7 +223,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     ContractControllerAsync controller;
 
     private Contractor value;
-    private En_Organization organization;
+    private String organization;
 
     interface ContractorWidgetUiBinder extends UiBinder<HTMLPanel, ContractorWidget> {}
     private static ContractorWidgetUiBinder ourUiBinder = GWT.create( ContractorWidgetUiBinder.class );

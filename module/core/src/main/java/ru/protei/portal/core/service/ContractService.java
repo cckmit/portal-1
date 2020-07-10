@@ -4,7 +4,6 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_Organization;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
@@ -39,7 +38,7 @@ public interface ContractService {
     Result<List<Contractor>> getContractorList(AuthToken token);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
-    Result<List<ContractorPair>> findContractors(AuthToken token, En_Organization organization, String contractorINN, String contractorKPP);
+    Result<List<ContractorPair>> findContractors(AuthToken token, String organization, String contractorINN, String contractorKPP);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
     Result<Contractor> createContractor(AuthToken token, ContractorAPI contractor);

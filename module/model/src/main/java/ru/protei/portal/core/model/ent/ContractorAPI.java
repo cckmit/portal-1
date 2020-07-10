@@ -1,11 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_Organization;
-
 import java.io.Serializable;
 
 public class ContractorAPI implements Serializable {
-    private En_Organization organization;
+    private String organization;
 
     private String refKey;
 
@@ -19,11 +17,11 @@ public class ContractorAPI implements Serializable {
 
     private String country;
 
-    public En_Organization getOrganization() {
+    public String getOrganization() {
         return organization;
     }
 
-    public void setOrganization(En_Organization organization) {
+    public void setOrganization(String organization) {
         this.organization = organization;
     }
 

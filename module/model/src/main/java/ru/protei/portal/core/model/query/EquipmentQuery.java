@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class EquipmentQuery extends BaseQuery {
 
-    private Set<En_Organization> organizationCodes;
+    private Set<En_OrganizationCode> organizationCodes;
 
     private Set<En_EquipmentType> types;
 
@@ -31,7 +31,7 @@ public class EquipmentQuery extends BaseQuery {
         this.types = types;
     }
 
-    public Set<En_Organization> getOrganizationCodes() {
+    public Set<En_OrganizationCode> getOrganizationCodes() {
         return organizationCodes;
     }
 
@@ -51,7 +51,7 @@ public class EquipmentQuery extends BaseQuery {
         this.registerNumber = registerNumber;
     }
 
-    public void setOrganizationCodes( Set<En_Organization> organizationCodes ) {
+    public void setOrganizationCodes( Set<En_OrganizationCode> organizationCodes ) {
         this.organizationCodes = organizationCodes;
     }
 
@@ -86,7 +86,7 @@ public class EquipmentQuery extends BaseQuery {
         this.types = types;
     }
 
-    public EquipmentQuery( String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_Organization> organizationCodes,
+    public EquipmentQuery( String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes,
                            Set< En_EquipmentType > types, String classifierCode, String registerNumber, Long managerId, Long equipmentId  ) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;

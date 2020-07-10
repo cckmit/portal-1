@@ -83,7 +83,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void onOrganizationChanged() {
         view.contractorEnabled().setEnabled(view.organization().getValue() != null);
-        view.setOrganization(En_Organization.PROTEI);
+        view.setOrganization(view.organization().getValue().getDisplayText());
+        if (view.contractor().getValue() != null) fireEvent(new NotifyEvents.Show(lang.contractContractorDropped(), NotifyEvents.NotifyType.INFO));
+        view.contractor().setValue(null);
     }
 
     @Override
@@ -141,7 +143,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         refreshProjectSpecificFields();
 
         view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
-        view.setOrganization(En_Organization.PROTEI);
+        view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
 
         if (view.project().getValue() == null) {

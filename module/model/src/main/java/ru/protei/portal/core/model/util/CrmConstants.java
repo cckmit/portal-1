@@ -116,6 +116,7 @@ public class CrmConstants {
         long HOME_COMPANY_ID = 1L;
         long MAIN_HOME_COMPANY_ID = 3084L;
         String MAIN_HOME_COMPANY_NAME = "Протей";
+        String PROTEI_ST_HOME_COMPANY_NAME = "Протей СТ";
     }
 
     public interface LocaleTags {
