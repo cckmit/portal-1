@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorAPI;
+import ru.protei.portal.core.model.ent.ContractorCountryAPI;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -18,7 +19,7 @@ public interface ContractControllerAsync {
 
     void saveContract(Contract Contract, AsyncCallback<Long> callback);
 
-    void getContractorCountryList(AsyncCallback<List<String>> callback);
+    void getContractorCountryList(AsyncCallback<List<ContractorCountryAPI>> callback);
 
     void getContractorList(AsyncCallback<List<Contractor>> callback);
 

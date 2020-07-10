@@ -155,9 +155,12 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<String>> getContractorCountryList(AuthToken token) {
+    public Result<List<ContractorCountryAPI>> getContractorCountryList(AuthToken token) {
         // mock service 1cAPI
-        return ok(Arrays.asList("RUSSIA", "USA", "CHINA"));
+        return ok(Arrays.asList(
+                new ContractorCountryAPI("1C_KEY-country-ref-1", "RUSSIA"),
+                new ContractorCountryAPI("1C_KEY-country-ref-2", "USA"),
+                new ContractorCountryAPI("1C_KEY-country-ref-3", "CHINA")));
     }
 
     @Override
@@ -174,21 +177,21 @@ public class ContractServiceImpl implements ContractService {
         // mock service 1cAPI
         if ("2311113226".equals(contractorINN) && "111222333".equals(contractorKPP)) {
             Contractor contractor1 = new Contractor();
-            contractor1.setName("contractor1");
             contractor1.setRefKey("1C_KEY-ref-1");
+            contractor1.setName("contractor1");
 
             ContractorAPI contractorAPI1 = new ContractorAPI();
-            contractorAPI1.setName("contractor1");
             contractorAPI1.setRefKey("1C_KEY-ref-1");
+            contractorAPI1.setName("contractor1");
             contractorAPI1.setFullname("fullname contractor1");
 
             Contractor contractor2 = new Contractor();
-            contractor2.setName("contractor2");
             contractor2.setRefKey("1C_KEY-ref-2");
+            contractor2.setName("contractor2");
 
             ContractorAPI contractorAPI2 = new ContractorAPI();
-            contractorAPI2.setName("contractor2");
             contractorAPI2.setRefKey("1C_KEY-ref-2");
+            contractorAPI2.setName("contractor2");
             contractorAPI2.setFullname("fullname contractor2");
             contractorAPI2.setCountry("RUSSIA");
             contractorAPI2.setInn("2311113226");

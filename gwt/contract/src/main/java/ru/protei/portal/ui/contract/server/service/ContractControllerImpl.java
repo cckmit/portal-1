@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.ent.ContractorAPI;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorPair;
@@ -78,7 +75,7 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public List<String> getContractorCountryList() throws RequestFailedException {
+    public List<ContractorCountryAPI> getContractorCountryList() throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return ServiceUtils.checkResultAndGetData(contractService.getContractorCountryList(token));
     }

@@ -170,7 +170,8 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         contractorAPI.setKpp(createView.contractorKPP().getValue());
         contractorAPI.setName(createView.contractorName().getValue());
         contractorAPI.setFullname(createView.contractorFullname().getValue());
-        contractorAPI.setCountry(createView.contractorCountry().getValue());
+        contractorAPI.setCountry(createView.contractorCountry().getValue() == null ?
+                null : createView.contractorCountry().getValue().getRefKey() );
         return contractorAPI;
     }
 

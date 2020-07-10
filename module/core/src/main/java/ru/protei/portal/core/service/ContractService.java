@@ -5,10 +5,7 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.ent.ContractorAPI;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorPair;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -32,7 +29,7 @@ public interface ContractService {
     Result<Long> updateContract( AuthToken token, Contract contract);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
-    Result<List<String>> getContractorCountryList(AuthToken token);
+    Result<List<ContractorCountryAPI>> getContractorCountryList(AuthToken token);
 
     @Privileged(En_Privilege.CONTRACT_VIEW)
     Result<List<Contractor>> getContractorList(AuthToken token);
