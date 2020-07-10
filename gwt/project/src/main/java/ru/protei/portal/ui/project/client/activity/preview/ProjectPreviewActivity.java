@@ -145,7 +145,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                     .withCaseId(project.getId())
                     .withCaseType(En_CaseType.PROJECT)
-                    .withPageId(lang.projects())
                     .readOnly());
         }
         else {

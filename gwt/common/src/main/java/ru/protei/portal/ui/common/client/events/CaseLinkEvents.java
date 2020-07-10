@@ -5,10 +5,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseLink;
 
+import java.util.List;
+
 public class CaseLinkEvents {
-
-    private static final String PAGE_ID_DEFAULT_VALUE = "";
-
     public static class Show {
 
         public Show() {}
@@ -32,20 +31,20 @@ public class CaseLinkEvents {
             return this;
         }
 
-        public Show withPageId(String pageId){
-            this.pageId = pageId;
-            return this;
-        }
-
         public Show readOnly() {
             return withReadOnly(true);
+        }
+
+        public Show withLinks(List<CaseLink> links) {
+            this.links = links;
+            return this;
         }
 
         public HasWidgets parent;
         public Long caseId;
         public En_CaseType caseType;
         public boolean isEnabled = true;
-        public String pageId = PAGE_ID_DEFAULT_VALUE;
+        public List<CaseLink> links;
     }
 
     public static class Removed {
