@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 public class Api1CImpl implements Api1C{
@@ -34,6 +35,10 @@ public class Api1CImpl implements Api1C{
     @Override
     public Result<List<Contractor1C>> getContractors(Contractor1C contractor, String homeCompanyName) {
         log.debug("getContractor(): contractor={}, homeCompanyName={}", contractor, homeCompanyName);
+
+        if (contractor == null || homeCompanyName == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         return client.read(buildGetContractorUrl(contractor, homeCompanyName), Response1C.class)
                 .ifOk( value -> log.info( "getContractor(): OK " ) )
@@ -77,6 +82,10 @@ public class Api1CImpl implements Api1C{
     public Result<List<Country1C>> getCountries(Country1C country, String homeCompanyName) {
         log.debug("getCountry(): country={}, homeCompanyName={}", country, homeCompanyName);
 
+        if (country == null || homeCompanyName == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return client.read(buildGetCountryUrl(country, homeCompanyName), Response1C.class)
                 .ifOk( value -> log.info( "getCountry(): OK " ) )
                 .ifError( result -> log.warn( "getCountry(): Can`t get country={}. {}", country, result ))
@@ -87,6 +96,10 @@ public class Api1CImpl implements Api1C{
     public Result<List<Country1C>> getCountryVocabulary(String homeCompanyName) {
         log.debug("getCountryVocabulary()");
 
+        if (homeCompanyName == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Country1C country = new Country1C();
         country.setDeletionMark(false);
         return getCountries(country, homeCompanyName);
@@ -95,6 +108,11 @@ public class Api1CImpl implements Api1C{
     @Override
     public Result<Boolean> isResident(Contractor1C contractor, String homeCompanyName){
         log.debug("isResident(): contractor={}, homeCompanyName={}", contractor, homeCompanyName);
+
+        if (contractor == null || homeCompanyName == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return ok(checkResident(contractor, homeCompanyName));
     }
 
@@ -118,6 +136,11 @@ public class Api1CImpl implements Api1C{
     }
 
     private boolean validateContractor(Contractor1C contractor) {
+        if (contractor == null){
+            log.warn("validateContractor(): contractor is null");
+            return false;
+        }
+
         if (!checkText(CrmConstants.Masks.CONTRACTOR_NAME, contractor.getName())){
             log.warn("validateContractor(): contractor name not valid");
             return false;
