@@ -213,27 +213,24 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         fillImportanceSelector(companyOption.getId());
 
-        issueMetaView.initiatorUpdateCompany(companyOption);
-
-        initiatorSelectorAllowAddNew(companyOption.getId());
+        fillInitiatorValue(issueMetaView, companyOption);
 
         companyService.getCompanyUnsafe(companyOption.getId(), new FluentCallback<Company>()
                 .withSuccess(company -> {
                     setCurrentCompany(company);
-                    requestPlatforms(company.getId(), ((Consumer<List<PlatformOption>>) platformOptions -> fillPlatformValue(issueMetaView, platformOptions))
-                            .andThen(platformOptions -> {
+                    requestPlatforms(company.getId(), platformOptions -> {
+                                fillPlatformValue(issueMetaView, platformOptions);
+
                                 issueMetaView.product().setValue(null);
                                 updateProductsFilter(issueMetaView.platform().getValue(), platformOptions, company);
-                            })
-                            .andThen(platformOptions ->
-                                    requestSla(
-                                            issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                                            slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
-                                    )
-                            )
-                            .andThen(platformOptions ->
-                                    updateSubscriptions(issueMetaView.getManagerCompany().getId(), companyOption.getId())
-                            )
+
+                                requestSla(
+                                        issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                                );
+
+                                updateSubscriptions(issueMetaView.getManagerCompany().getId(), companyOption.getId());
+                            }
                     );
                 })
         );
@@ -241,8 +238,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setPlatformFilter(platformOption -> companyOption.getId().equals(platformOption.getCompanyId()));
 
         updateCompanyCaseStates(companyOption.getId());
-
-        updateInitiatorInfo(policyService.getProfile(), companyOption.getId());
     }
 
     @Override
@@ -355,13 +350,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         fillAttachmentsContainer(view.attachmentsContainer(), caseObject.getAttachments());
 
-        if (isEmpty(createRequest.getLinks())) {
-            fireEvent(new CaseLinkEvents.Show(view.getLinksContainer()).withCaseType(En_CaseType.CRM_SUPPORT));
-        }
-
-        if (isEmpty(createRequest.getTags())) {
-            fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), (Long) null, false, a -> tagListActivity = a));
-        }
+        fireEvent(new CaseLinkEvents.Show(view.getLinksContainer()).withCaseType(En_CaseType.CRM_SUPPORT).withLinks(createRequest.getLinks()));
+        fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), createRequest.getTags(), false, a -> tagListActivity = a));
 
         view.saveVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EDIT));
         unlockSave();
@@ -391,7 +381,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         setCurrentCompany(caseObjectMeta.getInitiatorCompany());
 
         issueMetaView.setInitiator(caseObjectMeta.getInitiator());
-        issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
         updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(caseObjectMeta.getInitiatorCompany()));
         issueMetaView.product().setValue(ProductShortView.fromProduct(caseObjectMeta.getProduct()));
@@ -417,30 +406,38 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         issueMetaView.setTimeElapsedType(timeElapsedType == null ? En_TimeElapsedType.NONE : timeElapsedType);
 
         Company initiatorCompany = caseObjectMeta.getInitiatorCompany();
+
         fillImportanceSelector(initiatorCompany.getId());
-        issueMetaView.initiatorUpdateCompany(initiatorCompany);
-        initiatorSelectorAllowAddNew(initiatorCompany.getId());
+
+        fillInitiatorValue(issueMetaView, initiatorCompany);
 
         companyService.getCompanyUnsafe(initiatorCompany.getId(), new FluentCallback<Company>()
                 .withSuccess(company -> {
                     setCurrentCompany(company);
-                    requestPlatforms(company.getId(), ((Consumer<List<PlatformOption>>) platforms -> fillPlatformValue(issueMetaView, caseObjectMeta, platforms))
-                            .andThen(platformOptions -> updateProductsFilter(issueMetaView.platform().getValue(), platformOptions, company))
-                            .andThen(platformOptions ->
-                                    requestSla(
-                                            issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
-                                            slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
-                                    )
-                            )
-                            .andThen(platformOptions ->
-                                    updateSubscriptions(caseObjectMeta.getManagerId(), caseObjectMeta.getInitiatorCompanyId())
-                            )
+                    requestPlatforms(company.getId(), platforms -> {
+                                fillPlatformValue(issueMetaView, caseObjectMeta, platforms);
+
+                                updateProductsFilter(issueMetaView.platform().getValue(), platforms, company);
+
+                                requestSla(
+                                        issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(),
+                                        slaList -> fillSla(getSlaByImportanceLevel(slaList, issueMetaView.importance().getValue().getId()))
+                                );
+
+                                updateSubscriptions(caseObjectMeta.getManagerCompanyId(), caseObjectMeta.getInitiatorCompanyId());
+                            }
                     );
                 })
         );
 
-        updateCompanyCaseStates(initiatorCompany.getId());
+        issueMetaView.setPlatformFilter(platformOption -> caseObjectMeta.getInitiatorCompanyId().equals(platformOption.getCompanyId()));
 
+        updateCompanyCaseStates(initiatorCompany.getId());
+    }
+
+    private void fillInitiatorValue(final AbstractIssueMetaView issueMetaView, Company initiatorCompany) {
+        issueMetaView.initiatorUpdateCompany(initiatorCompany);
+        initiatorSelectorAllowAddNew(initiatorCompany.getId());
         updateInitiatorInfo(policyService.getProfile(), initiatorCompany.getId());
     }
 

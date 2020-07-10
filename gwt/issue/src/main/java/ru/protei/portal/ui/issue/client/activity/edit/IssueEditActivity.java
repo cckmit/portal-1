@@ -287,7 +287,6 @@ public abstract class IssueEditActivity implements
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withPageId(lang.issues())
                 .withReadOnly(readOnly));
     }
 
