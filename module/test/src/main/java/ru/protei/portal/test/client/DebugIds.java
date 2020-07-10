@@ -237,7 +237,7 @@ public class DebugIds {
         String CUST_PENDING = "issue-state-cust-pending";
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
-        String CUSTOMER_RESPONSIBILITY = "issue-state-customer-responsibility";
+        String REQUEST_TO_PARTNER = "issue-state-request-to-partner";
     }
 
     public interface ISSUE {

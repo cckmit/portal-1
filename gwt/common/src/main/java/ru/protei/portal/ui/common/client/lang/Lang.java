@@ -784,60 +784,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCopiedToClipboard();
 
-    String createdCaseState();
-
-    String openedCaseState();
-
-    String closedCaseState();
-
-    String pausedCaseState();
-
-    String verifiedCaseState();
-
-    String reopenedCaseState();
-
-    String ignoredCaseState();
-
-    String assignedCaseState();
-
-    String estimatedCaseState();
-
-    String discussCaseState();
-
-    String plannedCaseState();
-
-    String activeCaseState();
-
-    String doneCaseState();
-
-    String testCaseState();
-
-    String testLocalCaseState();
-
-    String testCustCaseState();
-
-    String designCaseState();
-
-    String solvedNoapCaseState();
-
-    String solvedFixCaseState();
-
-    String solvedDupCaseState();
-
-    String workaroundCaseState();
-
-    String requestInfoCaseState();
-
-    String custPendingCaseState();
-
-    String canceledCaseState();
-
-    String requestNXCaseState();
-
-    String requestCustomerCaseState();
-
-    String customerResponsibilityState();
-
     String criticalImportance();
 
     String importantImportance();
