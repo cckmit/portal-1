@@ -162,10 +162,25 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException {
-        log.info( "getCompanyOptionList()" );
+        log.info( "getCompanyOptionList(): query={}", query  );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result< List< EntityOption > > result = companyService.companyOptionList(token, query);
+
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List< EntityOption > getCompanyOptionListIgnorePrivileges(CompanyQuery query) throws RequestFailedException {
+        log.info( "getCompanyOptionListIgnorePrivileges(): query={}", query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result< List< EntityOption > > result = companyService.companyOptionListIgnorePrivileges(token, query);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
