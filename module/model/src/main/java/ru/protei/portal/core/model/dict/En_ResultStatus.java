@@ -210,6 +210,11 @@ public enum En_ResultStatus {
     SUBNET_DOES_NOT_EXIST,
 
     /**
+     * Подсеть недоступна для резервирования
+     */
+    SUBNET_NOT_ALLOWED_FOR_RESERVE,
+
+    /**
      * Резервирование комнат: событие уже началось/закончилось
      */
     ROOM_RESERVATION_OUTDATED,

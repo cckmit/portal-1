@@ -33,7 +33,7 @@ public class Subnet extends AuditableObject {
     private String mask;
 
     @JdbcColumn(name = "is_local")
-    private boolean local;
+    private boolean allowForReserve;
 
     @JdbcColumn(name="comment")
     private String comment;
@@ -69,9 +69,9 @@ public class Subnet extends AuditableObject {
 
     public void setMask(String mask) { this.mask = mask; }
 
-    public boolean isLocal() { return local; }
+    public boolean isAllowForReserve() { return allowForReserve; }
 
-    public void setLocal(boolean local) { this.local = local; }
+    public void setAllowForReserve(boolean allowForReserve) { this.allowForReserve = allowForReserve; }
 
     public String getComment() { return comment; }
 
@@ -105,7 +105,7 @@ public class Subnet extends AuditableObject {
                 ", creatorId=" + creatorId +
                 ", address='" + address + '\'' +
                 ", mask='" + mask + '\'' +
-                ", local=" + local +
+                ", allowForReserve=" + allowForReserve +
                 ", comment='" + comment + '\'' +
                 '}';
     }

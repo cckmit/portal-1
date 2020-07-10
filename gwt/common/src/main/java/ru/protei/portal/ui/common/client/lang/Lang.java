@@ -2518,6 +2518,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveReservedIpSubnetDoesNotExist();
 
+    String errSaveReservedIpSubnetNotAvailable();
+
     String january();
 
     String february();
@@ -2734,5 +2736,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String commentNewDisabledReasonTerminal();
 
-    String reservedIpSubnetLocal();
+    String reservedIpSubnetAllowReserve();
 }

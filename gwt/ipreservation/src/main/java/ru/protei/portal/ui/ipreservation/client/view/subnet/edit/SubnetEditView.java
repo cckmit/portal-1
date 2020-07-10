@@ -52,7 +52,7 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
     public HasValue<String> mask() { return mask; }
 
     @Override
-    public HasValue<Boolean> local() { return local; }
+    public HasValue<Boolean> allowForReserve() { return allowForReserve; }
 
     @Override
     public HasText comment() { return comment; }
@@ -99,7 +99,7 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
         address.ensureDebugId(DebugIds.SUBNET.ADDRESS_INPUT);
         mask.ensureDebugId(DebugIds.SUBNET.MASK_INPUT);
         comment.ensureDebugId(DebugIds.SUBNET.COMMENT_INPUT);
-        local.ensureDebugId(DebugIds.SUBNET.LOCAL_CHECKBOX);
+        allowForReserve.ensureDebugId(DebugIds.SUBNET.ALLOW_RESERVE_CHECKBOX);
         saveButton.ensureDebugId(DebugIds.SUBNET.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.SUBNET.CANCEL_BUTTON);
     }
@@ -122,7 +122,7 @@ public class SubnetEditView extends Composite implements AbstractSubnetEditView 
     @UiField
     TextArea comment;
     @UiField
-    CheckBox local;
+    CheckBox allowForReserve;
 
     @UiField
     Button saveButton;

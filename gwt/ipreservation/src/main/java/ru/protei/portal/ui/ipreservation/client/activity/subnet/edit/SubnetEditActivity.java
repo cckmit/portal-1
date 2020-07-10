@@ -101,7 +101,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
         }
         view.address().setValue(subnet.getAddress());
         view.mask().setValue(CrmConstants.IpReservation.SUBNET_MASK);
-        view.local().setValue(subnet.isLocal());
+        view.allowForReserve().setValue(subnet.isAllowForReserve());
         view.comment().setText(subnet.getComment());
 
         view.addressEnabled().setEnabled(subnet.getId() == null);
@@ -113,7 +113,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     private Subnet fillSubnet() {
         subnet.setAddress(view.address().getValue());
         subnet.setMask(view.mask().getValue());
-        subnet.setLocal(view.local().getValue());
+        subnet.setAllowForReserve(view.allowForReserve().getValue());
         subnet.setComment(view.comment().getText());
         return subnet;
     }

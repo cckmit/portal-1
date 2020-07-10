@@ -89,14 +89,14 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
         refreshClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_VIEW) );
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SUBNET_REMOVE) );
 
-        ClickColumn<Subnet> local = new ClickColumn<Subnet>() {
+        ClickColumn<Subnet> allowForReserve = new ClickColumn<Subnet>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
             }
             @Override
             public void fillColumnValue(Element cell, Subnet value) {
                 Element lock = DOM.createElement( "i" );
-                lock.addClassName( value.isLocal() ?
+                lock.addClassName( value.isAllowForReserve() ?
                         "fas fa-network-wired fa-lg text-primary" :
                         "fas fa-network-wired fa-lg text-warning-dark" );
                 cell.appendChild( lock );
@@ -157,7 +157,7 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
             }
         };
 
-        columns.add(local);
+        columns.add(allowForReserve);
         columns.add(address);
         columns.add(creator);
         columns.add(comment);

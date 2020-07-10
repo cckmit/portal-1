@@ -130,8 +130,10 @@ public class IpReservationServiceImpl implements IpReservationService {
         }
 
         List<SubnetOption> options = result.stream()
-                .map(s -> new SubnetOption(s.getAddress() + "." +  s.getMask() + " " + s.getComment(),
-                        s.getId(), s.isLocal()))
+                .map(s -> new SubnetOption(
+                        s.getAddress() + "." +  s.getMask() + " " + s.getComment(),
+                        s.getId(),
+                        s.isAllowForReserve()))
                 .collect(Collectors.toList());
 
         return ok(options);
@@ -303,6 +305,9 @@ public class IpReservationServiceImpl implements IpReservationService {
             Subnet subnet = subnetDAO.getSubnetByAddress(reservedIpRequest.getSubnetAddress());
             if (subnet == null) {
                 return error(En_ResultStatus.SUBNET_DOES_NOT_EXIST);
+            }
+            if (!subnet.isAllowForReserve()) {
+                return error(En_ResultStatus.SUBNET_NOT_ALLOWED_FOR_RESERVE);
             }
             templateIp.setSubnetId(subnet.getId());
 
@@ -592,7 +597,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             subnets = selectedSubnets;
         } else {
             ReservedIpQuery query = new ReservedIpQuery("", En_SortField.address, En_SortDir.ASC);
-            query.setLocal(new Boolean(true));
+            query.setAllowForReserve(new Boolean(true));
             List<SubnetOption> result = getSubnetsOptionList(token, query).getData();
 
             if (CollectionUtils.isEmpty(result)) {
@@ -612,7 +617,7 @@ public class IpReservationServiceImpl implements IpReservationService {
 
     private String getAnyFreeIpInSubnet(Long subnetId) {
         Subnet subnet = subnetDAO.get(subnetId);
-        if (subnet == null || !subnet.isLocal()) {
+        if (subnet == null || !subnet.isAllowForReserve()) {
             return null;
         }
 

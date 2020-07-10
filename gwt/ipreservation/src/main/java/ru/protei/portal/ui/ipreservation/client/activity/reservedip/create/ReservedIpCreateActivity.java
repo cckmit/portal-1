@@ -96,12 +96,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.exaсtIpVisibility().setVisible(En_ReservedMode.EXACT_IP.equals(mode));
         view.anyFreeIpsVisibility().setVisible(En_ReservedMode.ANY_FREE_IPS.equals(mode));
         view.saveEnabled().setEnabled(isCreateAvailable());
-        view.subnetValidator().setValid(view.subnets().getValue() != null);
+        setSubnetValid();
     }
 
     @Override
     public void onSubnetsChanged() {
-        view.subnetValidator().setValid(view.subnets().getValue() != null);
+        setSubnetValid();
         checkCreateAvailable();
     }
 
@@ -187,7 +187,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.comment().setText("");
 
         view.ownerValidator().setValid(view.owner().getValue() != null);
-        view.subnetValidator().setValid(view.subnets().getValue() != null);
+        setSubnetValid();
         view.setEnableUnlimited(hasSystemPrivileges());
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(isCreateAvailable());
@@ -293,6 +293,10 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     private void resetValidationStatus() {
         view.setIpAddressStatus(NameStatus.NONE);
+    }
+
+    private void setSubnetValid() {
+        view.subnetValidator().setValid(CollectionUtils.isNotEmpty(view.subnets().getValue()));
     }
 
     private boolean hasSystemPrivileges() {

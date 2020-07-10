@@ -3402,7 +3402,6 @@ label {
 
     .address {
       width: 15%;
-      text-align: center;
 
       .address-size {
         font-size: 16px;
@@ -3420,6 +3419,7 @@ label {
     }
 
     .ip-count {
+      text-align: center;
     }
 
     .comment {

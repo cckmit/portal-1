@@ -67,6 +67,7 @@ public class En_ResultStatusLang {
             case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
             case EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES: return lang.errEmployeeNotFiredFromTheseCompanies();
             case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
+            case SUBNET_NOT_ALLOWED_FOR_RESERVE: return lang.errSaveReservedIpSubnetNotAvailable();
             case ROOM_RESERVATION_OUTDATED: return lang.errRoomReservationOutdated();
             case ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE: return lang.errRoomReservationRoomNotAccessible();
             case ROOM_RESERVATION_HAS_INTERSECTIONS: return lang.errRoomReservationHasIntersections();
