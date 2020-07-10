@@ -12,15 +12,21 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorPair;
+import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_INN;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_KPP;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -174,6 +180,10 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        if (!isValidContractor(organization, contractorINN, contractorKPP)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         // mock service 1cAPI
         if ("2311113226".equals(contractorINN) && "111222333".equals(contractorKPP)) {
             Contractor contractor1 = new Contractor();
@@ -208,6 +218,10 @@ public class ContractServiceImpl implements ContractService {
     public Result<Contractor> createContractor(AuthToken token, ContractorAPI contractorAPI) {
         if (contractorAPI == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValidContractor(contractorAPI)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         // mock service 1cAPI
@@ -259,4 +273,17 @@ public class ContractServiceImpl implements ContractService {
         Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
     }
+
+    private boolean isValidContractor(String organization, String contractorINN, String contractorKPP) {
+        return (MAIN_HOME_COMPANY_NAME.equals(organization) || PROTEI_ST_HOME_COMPANY_NAME.equals(organization)) &&
+                innPattern.matcher(contractorINN).matches() && ContractorUtils.checkInn(contractorINN) &&
+                kppPattern.matcher(contractorKPP).matches();
+    }
+
+    private boolean isValidContractor(ContractorAPI contractorAPI) {
+        return isValidContractor(contractorAPI.getOrganization(), contractorAPI.getInn(), contractorAPI.getKpp());
+    }
+
+    private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);
+    private final Pattern kppPattern = Pattern.compile(CONTRACTOR_KPP);
 }
