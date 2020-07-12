@@ -76,9 +76,6 @@ public class IpReservationControllerImpl implements IpReservationController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        if (isSubnetAddressExists(subnet.getAddress(), subnet.getId()))
-            throw new RequestFailedException(En_ResultStatus.ALREADY_EXIST);
-
         Result<Subnet> response = subnet.getId() == null
                 ? ipReservationService.createSubnet( token, subnet )
                 : ipReservationService.updateSubnet( token, subnet );

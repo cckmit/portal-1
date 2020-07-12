@@ -97,7 +97,7 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
             public void fillColumnValue(Element cell, Subnet value) {
                 Element lock = DOM.createElement( "i" );
                 lock.addClassName( value.isAllowForReserve() ?
-                        "fas fa-network-wired fa-lg text-primary" :
+                        "fas fa-network-wired fa-lg text-success" :
                         "fas fa-network-wired fa-lg text-warning-dark" );
                 cell.appendChild( lock );
             }
@@ -142,16 +142,12 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
                 cell.addClassName("ip-count");
 
                 Element use = DOM.createElement( "span" );
-                use.addClassName("text-danger");
+                use.addClassName("text-master w-50 p-l-10 pull-left");
                 use.setInnerText(String.valueOf(value.getReservedIPs()));
                 cell.appendChild( use );
 
-                Element separator = DOM.createElement( "span" );
-                separator.setInnerText(" | ");
-                cell.appendChild(separator);
-
                 Element free = DOM.createElement( "span" );
-                free.addClassName("text-success");
+                free.addClassName("text-success w-50 p-r-10 pull-right");
                 free.setInnerText(String.valueOf(value.getFreeIps()));
                 cell.appendChild( free );
             }

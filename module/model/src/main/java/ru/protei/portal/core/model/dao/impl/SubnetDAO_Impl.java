@@ -27,7 +27,7 @@ public class SubnetDAO_Impl extends PortalBaseJdbcDAO<Subnet> implements SubnetD
             }
 
             if (query.isAllowForReserve() != null) {
-                condition.append(" and is_local=");
+                condition.append(" and is_allow_reserve=");
                 args.add(query.isAllowForReserve());
             }
         });

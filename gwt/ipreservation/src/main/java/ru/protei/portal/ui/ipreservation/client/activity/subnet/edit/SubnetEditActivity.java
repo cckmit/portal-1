@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -51,7 +52,7 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
         ipReservationService.saveSubnet(fillSubnet(), new FluentCallback<Subnet>()
                 .withError(throwable -> {
                     view.saveEnabled().setEnabled(true);
-                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                    showErrorFromServer(throwable);
                 })
                 .withSuccess(subnet -> {
                     view.saveEnabled().setEnabled(true);
@@ -143,6 +144,10 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
         return false;
     }
 
+    private void showErrorFromServer(Throwable throwable) {
+        errorHandler.accept(throwable);
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -151,6 +156,8 @@ public abstract class SubnetEditActivity implements AbstractSubnetEditActivity, 
     IpReservationControllerAsync ipReservationService;
     @Inject
     PolicyService policyService;
+    @Inject
+    DefaultErrorHandler errorHandler;
 
     private Subnet subnet;
 }

@@ -597,14 +597,14 @@ public class IpReservationServiceImpl implements IpReservationService {
             subnets = selectedSubnets;
         } else {
             ReservedIpQuery query = new ReservedIpQuery("", En_SortField.address, En_SortDir.ASC);
-            query.setAllowForReserve(new Boolean(true));
+            query.setAllowForReserve(true);
             List<SubnetOption> result = getSubnetsOptionList(token, query).getData();
 
             if (CollectionUtils.isEmpty(result)) {
                 return null;
             }
 
-            subnets = result.stream().collect(Collectors.toSet());
+            subnets = new HashSet<>(result);
         }
 
         return subnets;

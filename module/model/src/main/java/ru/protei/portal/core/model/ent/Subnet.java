@@ -32,7 +32,7 @@ public class Subnet extends AuditableObject {
     @JdbcColumn(name="mask")
     private String mask;
 
-    @JdbcColumn(name = "is_local")
+    @JdbcColumn(name = "is_allow_reserve")
     private boolean allowForReserve;
 
     @JdbcColumn(name="comment")
