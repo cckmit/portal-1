@@ -158,6 +158,12 @@ div.select2-container ul.select2-choices li.select2-search-choice a.select2-sear
   font-weight: 900;
 }
 
+div.select2-container {
+  &.has-error {
+    border: 1px solid $error_color;
+  }
+}
+
 .card .card-body > .row {
   margin-right: -15px;
   margin-left: -15px;

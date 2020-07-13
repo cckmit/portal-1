@@ -72,6 +72,7 @@ public class BootstrapService {
         //fillWithCrossLinkColumn();
         transferYoutrackLinks();
         addCommonManager();
+        updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
     }

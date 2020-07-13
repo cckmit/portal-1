@@ -91,6 +91,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
     @Override
+    public HasValidable subnetValidator() { return subnets; }
+
+    @Override
     public HasValue<DateIntervalWithType> useRange() { return useRange; }
 
     @Override
@@ -162,7 +165,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @UiHandler("subnets")
     public void onSubnetSelected(ValueChangeEvent<Set<SubnetOption>> event)  {
         if ( activity != null ) {
-            activity.checkCreateAvailable();
+            activity.onSubnetsChanged();
         }
     }
 

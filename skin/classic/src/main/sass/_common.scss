@@ -3407,12 +3407,16 @@ label {
 
     .address {
       width: 15%;
-      text-align: center;
 
       .address-size {
         font-size: 16px;
         padding: 7px 0;
       }
+    }
+
+    .allow_reserve {
+      text-align: center;
+      width: 5%;
     }
 
     .creator {
@@ -3467,7 +3471,6 @@ label {
 
     .ip-address {
       width: 15%;
-      text-align: center;
 
       .address-size {
         font-size: 16px;

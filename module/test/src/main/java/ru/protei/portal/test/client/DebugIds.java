@@ -837,6 +837,7 @@ public class DebugIds {
         String ADDRESS_INPUT = "subnet-address-input";
         String MASK_INPUT = "subnet-mask-input";
         String COMMENT_INPUT = "subnet-comment-input";
+        String ALLOW_RESERVE_CHECKBOX = "subnet-allow-reserve-checkbox";
         String SAVE_BUTTON = "subnet-save-button";
         String CANCEL_BUTTON = "subnet-cancel-button";
     }

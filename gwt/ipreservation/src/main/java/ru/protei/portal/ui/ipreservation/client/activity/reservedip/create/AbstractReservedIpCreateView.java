@@ -33,6 +33,7 @@ public interface AbstractReservedIpCreateView extends IsWidget {
     HasValidable ipAddressValidator();
     HasValidable macAddressValidator();
     HasValidable numberValidator();
+    HasValidable subnetValidator();
     HasValidable ownerValidator();
 
     HasWidgets getExaсtIpContainer();

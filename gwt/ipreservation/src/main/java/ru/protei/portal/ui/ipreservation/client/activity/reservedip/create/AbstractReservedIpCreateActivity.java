@@ -8,6 +8,7 @@ public interface AbstractReservedIpCreateActivity {
     void onCancelClicked();
     void onReservedModeChanged();
     void onOwnerChanged();
+    void onSubnetsChanged();
     void onChangeIpAddress();
     void checkCreateAvailable();
 }

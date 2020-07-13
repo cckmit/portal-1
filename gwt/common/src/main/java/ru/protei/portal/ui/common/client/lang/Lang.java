@@ -2462,11 +2462,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveReservedIpNeedSelectOwner();
 
+    String errSaveReservedIpNeedSelectSubnet();
+
     String reservedIpWrongNumber(int minCount, int maxCount);
 
     String reservedIpCreateBy();
 
     String errSaveReservedIpSubnetDoesNotExist();
+
+    String errSaveReservedIpSubnetNotAvailable();
 
     String january();
 
@@ -2699,4 +2703,6 @@ public interface Lang extends Messages, ContactItemLang {
     String thisYearInterval();
 
     String lastYearInterval();
+
+    String reservedIpSubnetAllowReserve();
 }

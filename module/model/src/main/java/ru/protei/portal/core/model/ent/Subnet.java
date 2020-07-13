@@ -32,6 +32,9 @@ public class Subnet extends AuditableObject {
     @JdbcColumn(name="mask")
     private String mask;
 
+    @JdbcColumn(name = "is_allow_reserve")
+    private boolean allowForReserve;
+
     @JdbcColumn(name="comment")
     private String comment;
 
@@ -66,6 +69,10 @@ public class Subnet extends AuditableObject {
 
     public void setMask(String mask) { this.mask = mask; }
 
+    public boolean isAllowForReserve() { return allowForReserve; }
+
+    public void setAllowForReserve(boolean allowForReserve) { this.allowForReserve = allowForReserve; }
+
     public String getComment() { return comment; }
 
     public void setComment(String comment) { this.comment = comment; }
@@ -98,6 +105,7 @@ public class Subnet extends AuditableObject {
                 ", creatorId=" + creatorId +
                 ", address='" + address + '\'' +
                 ", mask='" + mask + '\'' +
+                ", allowForReserve=" + allowForReserve +
                 ", comment='" + comment + '\'' +
                 '}';
     }

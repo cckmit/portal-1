@@ -96,11 +96,19 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.exaсtIpVisibility().setVisible(En_ReservedMode.EXACT_IP.equals(mode));
         view.anyFreeIpsVisibility().setVisible(En_ReservedMode.ANY_FREE_IPS.equals(mode));
         view.saveEnabled().setEnabled(isCreateAvailable());
+        setSubnetValid();
+    }
+
+    @Override
+    public void onSubnetsChanged() {
+        setSubnetValid();
+        checkCreateAvailable();
     }
 
     @Override
     public void onOwnerChanged() {
         view.ownerValidator().setValid(view.owner().getValue() != null);
+        showCreateAvailable();
     }
 
     @Override
@@ -128,9 +136,13 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
 
     @Override
     public void checkCreateAvailable() {
-        List<Long> subnetIds = CollectionUtils.isEmpty(view.subnets().getValue()) ?
-                null :
-                view.subnets().getValue().stream().map(SubnetOption::getId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(view.subnets().getValue())) {
+            freeIpCount = 0;
+            showCreateAvailable();
+            return;
+        }
+
+        List<Long> subnetIds = view.subnets().getValue().stream().map(SubnetOption::getId).collect(Collectors.toList());
 
         ipReservationService.getFreeIpsCountBySubnets(subnetIds,
                 new RequestCallback<Long>() {
@@ -175,6 +187,7 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
         view.comment().setText("");
 
         view.ownerValidator().setValid(view.owner().getValue() != null);
+        setSubnetValid();
         view.setEnableUnlimited(hasSystemPrivileges());
         view.saveVisibility().setVisible( true );
         view.saveEnabled().setEnabled(isCreateAvailable());
@@ -229,6 +242,12 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                 return false;
             }
         } else {
+
+            if(!view.subnetValidator().isValid()){
+                showError(lang.errSaveReservedIpNeedSelectSubnet());
+                return false;
+            }
+
             Long number = StringUtils.isBlank(view.number().getValue()) ?
                     null : new Long(view.number().getValue());
 
@@ -269,11 +288,15 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
                                   freeIpCount > 0 &&
                                   freeIpCount >= Long.parseLong(view.number().getValue());
 
-        return isExactMode || isFreeIpsEnough;
+        return (isExactMode || isFreeIpsEnough) && view.ownerValidator().isValid();
     }
 
     private void resetValidationStatus() {
         view.setIpAddressStatus(NameStatus.NONE);
+    }
+
+    private void setSubnetValid() {
+        view.subnetValidator().setValid(CollectionUtils.isNotEmpty(view.subnets().getValue()));
     }
 
     private boolean hasSystemPrivileges() {
