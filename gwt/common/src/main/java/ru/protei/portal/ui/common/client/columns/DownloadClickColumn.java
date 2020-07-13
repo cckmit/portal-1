@@ -10,6 +10,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.*;
 
 public class DownloadClickColumn<T> extends ClickColumn<T> {
 
@@ -24,7 +25,7 @@ public class DownloadClickColumn<T> extends ClickColumn<T> {
 
     @Override
     protected String getColumnClassName() {
-        return "download";
+        return ColumnClassName.DOWNLOAD;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class DownloadClickColumn<T> extends ClickColumn<T> {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
         if ( imageUrl == null ) {
-            a.addClassName("fa fa-lg fa-cloud-download-alt");
+            a.addClassName("fa fa-lg " + Icons.DOWNLOAD);
         } else {
             ImageElement img = DOM.createImg().cast();
             img.setSrc(imageUrl);
@@ -45,9 +46,9 @@ public class DownloadClickColumn<T> extends ClickColumn<T> {
         a.setTitle(lang.download());
         a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.DOWNLOAD);
         if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {
-            a.removeClassName("link-disabled");
+            a.removeClassName(Styles.LINK_DISABLE);
         } else {
-            a.addClassName("link-disabled");
+            a.addClassName(Styles.LINK_DISABLE);
         }
         cell.appendChild(a);
     }

@@ -35,6 +35,12 @@ public class UiConstants {
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
         String NOT_APPROVED = "fa-clipboard";
+
+        String REMOVE = "fa-trash-alt";
+        String DOWNLOAD = "fa-cloud-download-alt";
+        String REFRESH = "fa-redo";
+        String CANCEL = "fa-window-close";
+
     }
 
     public interface ActionBarIcons {
@@ -85,6 +91,14 @@ public class UiConstants {
         String MULTIPLE_ANY = "multiple-any";
         String SHORT_VIEW = "col-md-6";
         String FULL_VIEW = "col-md-12";
+        String LINK_DISABLE = "link-disabled";
+    }
+
+    public interface ColumnClassName {
+        String REMOVE = "remove";
+        String DOWNLOAD = "download";
+        String REFRESH = "refresh";
+        String CANCEL = "cancel";
     }
 
     /**

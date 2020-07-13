@@ -114,6 +114,11 @@ public abstract class IssueReportTableActivity implements
     }
 
     @Override
+    public void onCancelClicked(Report value) {
+        // todo
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Report>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
         ReportQuery query = getQuery();
