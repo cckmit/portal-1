@@ -28,7 +28,7 @@ public interface ContractService {
     Result<Long> updateContract( AuthToken token, Contract contract);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
-    Result<List<ContractorCountryAPI>> getContractorCountryList(AuthToken token, String organization);
+    Result<List<ContractorCountry>> getContractorCountryList(AuthToken token, String organization);
 
     @Privileged(En_Privilege.CONTRACT_VIEW)
     Result<List<Contractor>> getContractorList(AuthToken token);

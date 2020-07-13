@@ -43,15 +43,12 @@ import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel.superHomeCompany;
-
 public class ContractEditView extends Composite implements AbstractContractEditView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        organization.setFilter(value -> value == null || superHomeCompany.contains(value.getDisplayText()));
     }
 
     @Override

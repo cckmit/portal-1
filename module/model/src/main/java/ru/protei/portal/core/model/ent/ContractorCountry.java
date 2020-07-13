@@ -2,15 +2,15 @@ package ru.protei.portal.core.model.ent;
 
 import java.io.Serializable;
 
-public class ContractorCountryAPI implements Serializable {
+public class ContractorCountry implements Serializable {
     private String refKey;
 
     private String name;
 
-    public ContractorCountryAPI() {
+    public ContractorCountry() {
     }
 
-    public ContractorCountryAPI(String refKey, String name) {
+    public ContractorCountry(String refKey, String name) {
         this.refKey = refKey;
         this.name = name;
     }

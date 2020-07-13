@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ContractorSelector extends ButtonPopupSingleSelector<Contractor> {
     @Inject
-    public void init( ContractorPairModel model ) {
+    public void init( ContractorModel model ) {
         this.model = model;
         setModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option.getFullName() );
@@ -22,5 +22,5 @@ public class ContractorSelector extends ButtonPopupSingleSelector<Contractor> {
         model.fill(list);
     }
 
-    ContractorPairModel model;
+    ContractorModel model;
 }

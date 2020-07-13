@@ -5,7 +5,7 @@ import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 
 import java.util.List;
 
-public class ContractorPairModel extends BaseSelectorModel<Contractor> {
+public class ContractorModel extends BaseSelectorModel<Contractor> {
     public void fill(List<Contractor> list) {
         updateElements(list);
     }

@@ -166,13 +166,13 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<ContractorCountryAPI>> getContractorCountryList(AuthToken token, String organization) {
+    public Result<List<ContractorCountry>> getContractorCountryList(AuthToken token, String organization) {
         if (organization == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
         return api1CService.getAllCountries(organization)
                 .map(list -> list.stream()
-                        .map(country1C -> new ContractorCountryAPI(country1C.getRefKey(), country1C.getName()))
+                        .map(country1C -> new ContractorCountry(country1C.getRefKey(), country1C.getName()))
                         .collect(toList()));
     }
 
@@ -188,7 +188,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!isValidContractor(organization, contractorInn, contractorKpp)) {
+        if (!isValidContractor(contractorInn, contractorKpp)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -201,13 +201,13 @@ public class ContractServiceImpl implements ContractService {
             return error(contractors.getStatus());
         }
 
-        Result<List<ContractorCountryAPI>> contractorCountryListResult = getContractorCountryList(token, organization);
+        Result<List<ContractorCountry>> contractorCountryListResult = getContractorCountryList(token, organization);
         if (contractorCountryListResult.isError()) {
             return error(contractorCountryListResult.getStatus());
         }
 
         Map<String, String> mapRefToName = contractorCountryListResult.getData().stream()
-                .collect(toMap(ContractorCountryAPI::getRefKey, ContractorCountryAPI::getName, (n1, n2) -> n1));
+                .collect(toMap(ContractorCountry::getRefKey, ContractorCountry::getName, (n1, n2) -> n1));
 
         return contractors.map(list -> list.stream().map(contractor1C ->
                                 from1C(contractor1C, mapRefToName.get(contractor1C.getRegistrationCountryKey())))
@@ -273,14 +273,13 @@ public class ContractServiceImpl implements ContractService {
         return policyService.hasGrantAccessFor(roles, privilege);
     }
 
-    private boolean isValidContractor(String organization, String contractorInn, String contractorKpp) {
-        return (MAIN_HOME_COMPANY_NAME.equals(organization) || PROTEI_ST_HOME_COMPANY_NAME.equals(organization)) &&
-                innPattern.matcher(contractorInn).matches() && ContractorUtils.checkInn(contractorInn) &&
+    private boolean isValidContractor(String contractorInn, String contractorKpp) {
+        return innPattern.matcher(contractorInn).matches() && ContractorUtils.checkInn(contractorInn) &&
                 kppPattern.matcher(contractorKpp).matches();
     }
 
-    private boolean isValidContractor(Contractor contractorAPI) {
-        return isValidContractor(contractorAPI.getOrganization(), contractorAPI.getInn(), contractorAPI.getKpp());
+    private boolean isValidContractor(Contractor contractor) {
+        return isValidContractor(contractor.getInn(), contractor.getKpp());
     }
 
     public static Contractor from1C(Contractor1C contractor1C, String country) {

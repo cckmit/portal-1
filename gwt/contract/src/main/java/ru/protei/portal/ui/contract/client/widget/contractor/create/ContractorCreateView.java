@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.ContractorCountryAPI;
+import ru.protei.portal.core.model.ent.ContractorCountry;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.country.ContractorCountrySelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -50,7 +50,7 @@ public class ContractorCreateView extends Composite implements AbstractContracto
     }
 
     @Override
-    public HasValue<ContractorCountryAPI> contractorCountry() {
+    public HasValue<ContractorCountry> contractorCountry() {
         return contractorCountry;
     }
 
