@@ -71,7 +71,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         Window.scrollTo(0,0);
         initDetails.parent.add(view.asWidget());
 
-        companyService.getCompanyOptionList(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
+        companyService.getCompanyOptionListIgnorePrivileges(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
                 new FluentCallback<List<EntityOption>>()
                         .withSuccess(companies -> {
                             companiesWithoutSync.clear();
@@ -442,6 +442,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.company().setValue(null);
         view.companyDepartment().setValue(null);
         view.workerPosition().setValue(null);
+        onCompanySelected();
 
         view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));

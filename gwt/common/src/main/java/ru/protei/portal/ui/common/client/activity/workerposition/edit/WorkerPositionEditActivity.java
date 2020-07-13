@@ -49,7 +49,7 @@ public abstract class WorkerPositionEditActivity implements Activity, AbstractWo
     }
 
     private void setCompanyEntityOption (Long companyId){
-        companyService.getCompanyOptionList(new CompanyQuery(true).onlyVisibleFields(),
+        companyService.getCompanyOptionListIgnorePrivileges(new CompanyQuery(true).onlyVisibleFields(),
                 new FluentCallback<List<EntityOption>>()
                         .withSuccess(companies -> {
                             view.company().setValue(companies.stream().filter(company -> company.getId().equals(companyId)).findFirst().get());
