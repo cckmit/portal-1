@@ -15,13 +15,14 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -52,7 +53,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         name.setValue(null);
         sortField.setValue(En_SortField.creation_date);
         sortDir.setValue(false);
-        contragents.setValue(null);
+        contractors.setValue(null);
         organizations.setValue(null);
         managers.setValue(null);
         direction.setValue(null);
@@ -82,8 +83,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<Set<EntityOption>> contragents() {
-        return contragents;
+    public HasValue<Set<Contractor>> contractors() {
+        return contractors;
     }
 
     @Override
@@ -136,8 +137,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
-    @UiHandler("contragents")
-    public void onContragentsChanged(ValueChangeEvent<Set<EntityOption>> event) {
+    @UiHandler("contractors")
+    public void onContractorsChanged(ValueChangeEvent<Set<Contractor>> event) {
         restartChangeTimer();
     }
 
@@ -192,7 +193,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     EmployeeMultiSelector managers;
     @Inject
     @UiField(provided = true)
-    CompanyMultiSelector contragents;
+    MultiContractorSelector contractors;
     @Inject
     @UiField(provided = true)
     HomeCompanyMultiSelector organizations;

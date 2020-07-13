@@ -2018,7 +2018,43 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDescription();
 
-    String contractContragent();
+    String contractContractor();
+
+    String contractContractorDropped();
+
+    String contractContractorDescription();
+
+    String selectContractContractor();
+
+    String selectContractOrganization();
+
+    String searchContractorTitle();
+
+    String createContractorTitle();
+
+    String contractContractorName();
+
+    String contractContractorFullName();
+
+    String contractContractorInn();
+
+    String contractContractorKpp();
+
+    String contractContractorCountry();
+
+    String contractContractorValidationError();
+
+    String contractContractorSaveError();
+
+    String contractContractorFindError();
+
+    String contractContractorNotFound();
+
+    String contractContractorFindNotChosenError();
+
+    String contractContractorSelectorPlaceholder();
+
+    String contractContractorCountryPlaceholder();
 
     String contractProject();
 
@@ -2699,4 +2735,6 @@ public interface Lang extends Messages, ContactItemLang {
     String thisYearInterval();
 
     String lastYearInterval();
+
+    String errRequest1CFailed();
 }

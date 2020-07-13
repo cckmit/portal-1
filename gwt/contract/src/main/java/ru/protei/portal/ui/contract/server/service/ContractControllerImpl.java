@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.ContractService;
@@ -18,6 +17,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Service("ContractController")
 public class ContractControllerImpl implements ContractController {
@@ -71,6 +71,30 @@ public class ContractControllerImpl implements ContractController {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public List<ContractorCountry> getContractorCountryList(String organization) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.getContractorCountryList(token, organization));
+    }
+
+    @Override
+    public List<Contractor> getContractorList() throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.getContractorList(token));
+    }
+
+    @Override
+    public List<Contractor> findContractors(String organization, String contractorInn, String contractorKpp) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.findContractors(token, organization, contractorInn, contractorKpp));
+    }
+
+    @Override
+    public Contractor createContractor(Contractor contractor) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.createContractor(token, contractor));
     }
 
     @Autowired
