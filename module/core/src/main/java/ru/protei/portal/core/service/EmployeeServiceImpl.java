@@ -7,10 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -20,6 +17,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
@@ -75,6 +73,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     UserLoginDAO userLoginDAO;
+
+    @Autowired
+    private UserRoleDAO userRoleDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -275,7 +276,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (personId != null) {
             person.setId(personId);
-            return ok(person);
+            return createLDAPAccount(person)
+                    .flatMap(userLogin -> {
+                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                        saveAccount(userLogin, token);
+                        return ok();
+                    }).map(ignore -> person);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR);
@@ -718,5 +724,31 @@ public class EmployeeServiceImpl implements EmployeeService {
                         : workerEntry.getCompanyName())
                 );
         return list;
+    }
+
+    private Result<UserLogin> createLDAPAccount(Person person) {
+
+        ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+        if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
+            String login = email.value().substring(0, email.value().indexOf("@"));
+            if (!userLoginDAO.isUnique(login.trim())) {
+                log.debug("error: Login already exist.");
+                return error(En_ResultStatus.ALREADY_EXIST);
+            }
+
+            UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
+            userLogin.setUlogin(login.trim());
+            userLogin.setAuthType(En_AuthType.LDAP);
+            userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
+            return ok(userLogin);
+        }
+        return error(En_ResultStatus.INCORRECT_PARAMS);
+    }
+
+    private void saveAccount(UserLogin userLogin, AuthToken authToken) {
+        if (userLoginDAO.saveOrUpdate(userLogin)) {
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
+            makeAudit(userLogin, En_AuditType.ACCOUNT_CREATE, authToken);
+        }
     }
 }
