@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.winter.jdbc.annotations.JdbcColumn;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -89,6 +90,9 @@ public class Project extends AuditableObject {
     private Date technicalSupportValidity;
 
     private List<ProjectSla> projectSlas;
+
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
 
     public Long getId() {
         return id;
@@ -354,12 +358,22 @@ public class Project extends AuditableObject {
 
         project.setProjectSlas(caseObject.getProjectSlas());
 
+        project.setPauseDate( caseObject.getPauseDate() );
+
         return project;
     }
 
     @Override
     public String getAuditType() {
         return "Project";
+    }
+
+    public void setPauseDate( Long pauseDateTimestamp ) {
+        this.pauseDate = pauseDateTimestamp;
+    }
+
+    public Long getPauseDate() {
+        return pauseDate;
     }
 
     @Override

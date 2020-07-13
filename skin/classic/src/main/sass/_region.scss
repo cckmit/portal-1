@@ -116,6 +116,14 @@
     color: #A0A0A0;
   }
 
+  &.paused {
+    &:before {
+      content: "\f28b";//f28c
+      font-weight: 900;
+    }
+    color: #aa43b1;
+  }
+
   &.center {
     display: block;
     margin: 0 auto;

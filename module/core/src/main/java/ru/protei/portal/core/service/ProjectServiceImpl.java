@@ -167,6 +167,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .findFirst()
                 .orElse(null)
         );
+        caseObject.setPauseDate( project.getPauseDate() );
 
         caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
 
@@ -263,6 +264,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
         caseObject.setTechnicalSupportValidity(project.getTechnicalSupportValidity());
         caseObject.setProjectSlas(project.getProjectSlas());
+        caseObject.setPauseDate( project.getPauseDate() );
 
         if (project.getProductDirection() != null)
             caseObject.setProductId(project.getProductDirection().getId());

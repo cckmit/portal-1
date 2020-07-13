@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
@@ -65,4 +66,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);
+
+    HasVisibility pauseDateContainerVisibility();
+
+    HasValue<Date> pauseDate();
 }

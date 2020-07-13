@@ -880,6 +880,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regionNotSpecified();
 
+    String regionStatePaused();
+
     String projects();
 
     String projectDirection();
