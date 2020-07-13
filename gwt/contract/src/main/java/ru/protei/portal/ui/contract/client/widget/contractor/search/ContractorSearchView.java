@@ -41,6 +41,11 @@ public class ContractorSearchView extends Composite implements AbstractContracto
     }
 
     @Override
+    public void setOrganization(String value) {
+        contractOrganization.setInnerText(value);
+    }
+
+    @Override
     public HasValue<String> contractorInn() {
         return contractorInn;
     }
@@ -65,6 +70,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
 
     @Override
     public void reset() {
+        contractOrganization.setInnerText(null);
         contractorInn.setValue(null);
         contractorKPP.setValue(null);
         contractor.setValue(null);
@@ -120,6 +126,9 @@ public class ContractorSearchView extends Composite implements AbstractContracto
 
     @UiField
     HTMLPanel root;
+
+    @UiField
+    SpanElement contractOrganization;
 
     @UiField
     ValidableTextBox contractorInn;

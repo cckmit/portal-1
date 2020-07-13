@@ -10,6 +10,16 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin">
         <div class="card-body">
             <div class="row">
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.contractOrganization}"/>
+                    </label>
+                    <div>
+                        <span ui:field="contractOrganization"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-6">
                     <label>
                         <ui:text from="{lang.contractContractorInn}"/>

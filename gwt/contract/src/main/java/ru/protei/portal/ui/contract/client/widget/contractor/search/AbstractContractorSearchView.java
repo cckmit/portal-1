@@ -10,6 +10,8 @@ import java.util.List;
 public interface AbstractContractorSearchView extends IsWidget, HasValidable {
     void setActivity(AbstractContractorSearchActivity activity);
 
+    void setOrganization(String value);
+
     HasValue<String> contractorInn();
 
     HasValue<String> contractorKpp();

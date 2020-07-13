@@ -74,12 +74,12 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     @UiHandler( "button" )
     public void onButtonClicked ( ClickEvent event ) {
         searchView.reset();
+        searchView.setOrganization(organization);
         dialogDetailsSearchView.showPopup();
     }
 
     public void setOrganization(String organization) {
         this.organization = organization;
-        createView.setOrganization(organization);
     }
 
     private void ensureDebugIds() {
@@ -128,6 +128,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
             @Override
             public void onAdditionalClicked() {
                     createView.reset();
+                    createView.setOrganization(organization);
                     dialogDetailsSearchView.hidePopup();
                     dialogDetailsCreateView.showPopup();
             }

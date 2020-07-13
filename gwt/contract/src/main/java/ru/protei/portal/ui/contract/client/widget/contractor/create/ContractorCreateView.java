@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.widget.contractor.create;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -56,11 +57,13 @@ public class ContractorCreateView extends Composite implements AbstractContracto
 
     @Override
     public void setOrganization(String organization) {
+        contractOrganization.setInnerText(organization);
         contractorCountry.setOrganization(organization);
     }
 
     @Override
     public void reset() {
+        contractOrganization.setInnerText(null);
         contractorInn.setValue(null);
         contractorKpp.setValue(null);
         contractorName.setValue(null);
@@ -95,6 +98,9 @@ public class ContractorCreateView extends Composite implements AbstractContracto
             contractorInn.setValid( ContractorUtils.checkInn(contractorInn.getValue()));
         }
     }
+
+    @UiField
+    SpanElement contractOrganization;
 
     @UiField
     ValidableTextBox contractorInn;
