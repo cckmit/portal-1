@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -52,7 +53,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<EntityOption> project();
 
-    HasValue<EntityOption> contragent();
+    HasValue<Contractor> contractor();
 
     HasValue<PersonShortView> manager();
 
@@ -60,7 +61,9 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled managerEnabled();
 
-    HasEnabled contragentEnabled();
-
     HasEnabled directionEnabled();
+
+    HasEnabled contractorEnabled();
+
+    void setOrganization(String organization);
 }

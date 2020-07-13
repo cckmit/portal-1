@@ -29,6 +29,7 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final Enterprise1CConfig enterprise1CConfig;
     private final JiraConfig jiraConfig;
     private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
@@ -53,6 +54,7 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        enterprise1CConfig = new Enterprise1CConfig(wrapper);
         jiraConfig = new JiraConfig(wrapper);
         employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
@@ -114,6 +116,10 @@ public class PortalConfigData {
 
     public YoutrackConfig youtrack() {
         return youtrackConfig;
+    }
+
+    public Enterprise1CConfig enterprise1C() {
+        return enterprise1CConfig;
     }
 
     public JiraConfig jiraConfig() {
@@ -620,6 +626,54 @@ public class PortalConfigData {
 
         public String getYoutrackCustomFieldCompanyId() {
             return youtrackCustomFieldCompanyId;
+        }
+    }
+
+    public static class Enterprise1CConfig {
+        private final String apiBaseProteiUrl;
+        private final String apiBaseProteiStUrl;
+        private final String login;
+        private final String password;
+        private final String parentKeyST;
+        private final String parentKeyResident;
+        private final String parentKeyNotResident;
+
+        public Enterprise1CConfig(PropertiesWrapper properties) {
+            apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
+            apiBaseProteiStUrl = properties.getProperty("enterprise1c.api.base_protei_st_url");
+            login = properties.getProperty("enterprise1c.api.login");
+            password = properties.getProperty("enterprise1c.api.password");
+            parentKeyST = properties.getProperty("enterprise1c.api.parent_key_st");
+            parentKeyResident = properties.getProperty("enterprise1c.api.parent_key_resident");
+            parentKeyNotResident = properties.getProperty("enterprise1c.api.parent_key_not_resident");
+        }
+
+        public String getApiBaseProteiUrl() {
+            return apiBaseProteiUrl;
+        }
+
+        public String getApiBaseProteiStUrl() {
+            return apiBaseProteiStUrl;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getParentKeyST() {
+            return parentKeyST;
+        }
+
+        public String getParentKeyResident() {
+            return parentKeyResident;
+        }
+
+        public String getParentKeyNotResident() {
+            return parentKeyNotResident;
         }
     }
 

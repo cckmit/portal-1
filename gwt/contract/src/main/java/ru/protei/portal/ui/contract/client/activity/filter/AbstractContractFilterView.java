@@ -5,11 +5,11 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
-import java.util.List;
 import java.util.Set;
 
 public interface AbstractContractFilterView extends IsWidget {
@@ -26,7 +26,7 @@ public interface AbstractContractFilterView extends IsWidget {
 
     HasValue<Set<PersonShortView>> managers();
 
-    HasValue<Set<EntityOption>> contragents();
+    HasValue<Set<Contractor>> contractors();
 
     HasValue<Set<EntityOption>> organizations();
 

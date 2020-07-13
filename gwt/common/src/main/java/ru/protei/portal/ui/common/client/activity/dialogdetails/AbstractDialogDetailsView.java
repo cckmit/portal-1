@@ -38,4 +38,8 @@ public interface AbstractDialogDetailsView extends IsWidget {
     void setCancelVisible( boolean isCancelVisible);
 
     void setCloseVisible( boolean isCloseVisible);
+
+    void setAdditionalVisible( boolean isAdditionalVisible);
+
+    void setAdditionalButtonName( String name );
 }

@@ -2018,7 +2018,43 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDescription();
 
-    String contractContragent();
+    String contractContractor();
+
+    String contractContractorDropped();
+
+    String contractContractorDescription();
+
+    String selectContractContractor();
+
+    String selectContractOrganization();
+
+    String searchContractorTitle();
+
+    String createContractorTitle();
+
+    String contractContractorName();
+
+    String contractContractorFullName();
+
+    String contractContractorInn();
+
+    String contractContractorKpp();
+
+    String contractContractorCountry();
+
+    String contractContractorValidationError();
+
+    String contractContractorSaveError();
+
+    String contractContractorFindError();
+
+    String contractContractorNotFound();
+
+    String contractContractorFindNotChosenError();
+
+    String contractContractorSelectorPlaceholder();
+
+    String contractContractorCountryPlaceholder();
 
     String contractProject();
 
@@ -2462,8 +2498,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveReservedIpNeedSelectOwner();
 
-    String errSaveReservedIpNeedSelectSubnet();
-
     String reservedIpWrongNumber(int minCount, int maxCount);
 
     String reservedIpCreateBy();
@@ -2705,4 +2739,6 @@ public interface Lang extends Messages, ContactItemLang {
     String lastYearInterval();
 
     String reservedIpSubnetAllowReserve();
+
+    String errRequest1CFailed();
 }

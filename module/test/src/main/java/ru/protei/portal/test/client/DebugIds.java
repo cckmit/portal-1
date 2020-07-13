@@ -749,7 +749,7 @@ public class DebugIds {
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
-        String CONTRAGENT_SELECTOR = "contract-contragent-selector";
+        String CONTRACTOR_SELECTOR = "contract-contractor-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
@@ -773,7 +773,7 @@ public class DebugIds {
             String ORGANIZATION = "contract-organization-label";
             String CURATOR = "contract-curator-label";
             String MANAGER = "contract-manager-label";
-            String CONTRAGENT = "contract-contragent-label";
+            String CONTRACTOR = "contract-contractor-label";
         }
 
         interface DATE_ITEM {
@@ -792,6 +792,11 @@ public class DebugIds {
             String TEXT_INPUT = "contract-specification-item-text-input";
             String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
+
+        interface CONTRACTOR {
+            String NAME = "contract-contractor-name";
+            String SEARCH_BUTTON = "contract-contractor-search-button";
+        }
     }
 
     public interface CLEANABLE_SEARCH_BOX {
@@ -805,6 +810,7 @@ public class DebugIds {
         String REMOVE_BUTTON = "dialog-details-remove-button";
         String SAVE_BUTTON = "dialog-details-save-button";
         String CANCEL_BUTTON = "dialog-details-cancel-button";
+        String ADDITIONAL_BUTTON = "dialog-details-additional-button";
 
         interface TAG {
             String NAME_LABEL = "dialog-details-tag-name-label";
