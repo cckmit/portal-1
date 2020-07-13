@@ -170,7 +170,7 @@ public class ContractServiceImpl implements ContractService {
         if (organization == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return api1CService.getCountryVocabulary(organization)
+        return api1CService.getAllCountries(organization)
                 .map(list -> list.stream()
                         .map(country1C -> new ContractorCountryAPI(country1C.getRefKey(), country1C.getName()))
                         .collect(toList()));

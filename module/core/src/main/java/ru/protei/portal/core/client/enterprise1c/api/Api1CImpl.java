@@ -93,7 +93,7 @@ public class Api1CImpl implements Api1C{
     }
 
     @Override
-    public Result<List<Country1C>> getCountryVocabulary(String homeCompanyName) {
+    public Result<List<Country1C>> getAllCountries(String homeCompanyName) {
         log.debug("getCountryVocabulary()");
 
         if (homeCompanyName == null){
@@ -132,7 +132,8 @@ public class Api1CImpl implements Api1C{
             return false;
         }
 
-        return CrmConstants.Company.HOME_COUNTRY.equalsIgnoreCase(result.getData().get(0).getFullName());
+        return CrmConstants.Company.HOME_COUNTRY_NAME.equalsIgnoreCase(result.getData().get(0).getFullName())
+                || CrmConstants.Company.HOME_COUNTRY_SHORT_NAME.equalsIgnoreCase(result.getData().get(0).getName());
     }
 
     private boolean validateContractor(Contractor1C contractor) {

@@ -14,7 +14,7 @@ public interface Api1C {
 
     Result<List<Country1C>> getCountries(Country1C Country1C, String homeCompanyName);
 
-    Result<List<Country1C>> getCountryVocabulary(String homeCompanyName);
+    Result<List<Country1C>> getAllCountries(String homeCompanyName);
 
     Result<Boolean> isResident(Contractor1C contractor, String homeCompanyName);
 }
