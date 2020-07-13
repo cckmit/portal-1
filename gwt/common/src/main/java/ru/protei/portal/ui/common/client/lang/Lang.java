@@ -2498,6 +2498,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveReservedIpNeedSelectOwner();
 
+    String errSaveReservedIpNeedSelectSubnet();
+
     String reservedIpWrongNumber(int minCount, int maxCount);
 
     String reservedIpCreateBy();
