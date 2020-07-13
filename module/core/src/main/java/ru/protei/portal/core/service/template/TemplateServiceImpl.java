@@ -576,7 +576,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence) {
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("absentEmployee", absence.getPerson().getDisplayName());
+        templateModel.put("absentEmployee", absence.getPerson().getName());
         templateModel.put("initiator", initiator.getDisplayName());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/absence.subject.%s.ftl");
@@ -595,7 +595,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("is_updated", action == EventAction.UPDATED);
         templateModel.put("is_removed", action == EventAction.REMOVED);
 
-        templateModel.put("absentEmployee", newState.getPerson().getDisplayName());
+        templateModel.put("absentEmployee", newState.getPerson().getName());
 
         templateModel.put("fromTimeChanged", event.isFromTimeChanged());
         templateModel.put("oldFromTime", oldState == null ? null : dateFormat.format(oldState.getFromTime()));

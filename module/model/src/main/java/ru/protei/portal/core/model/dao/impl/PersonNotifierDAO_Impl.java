@@ -11,12 +11,12 @@ public class PersonNotifierDAO_Impl extends PortalBaseJdbcDAO<PersonNotifier> im
     @Override
     public List<PersonNotifier> getByPersonId(Long personId) {
         List<PersonNotifier> result = getListByCondition("person_id = ?", personId);
-        return result == null? Collections.emptyList(): result;
+        return result == null ? Collections.emptyList() : result;
     }
 
     @Override
     public List<PersonNotifier> getByNotifierId(Long notifierId) {
         List<PersonNotifier> result = getListByCondition("notifier_id = ?", notifierId);
-        return result == null? Collections.emptyList(): result;
+        return result == null ? Collections.emptyList() : result;
     }
 }

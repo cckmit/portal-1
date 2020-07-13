@@ -66,10 +66,6 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (isAbsenceFinished(absence)) {
-            return error(En_ResultStatus.ABSENCE_FINISHED);
-        }
-
         if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
             return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
         }
@@ -108,10 +104,6 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (isAbsenceFinished(absence)) {
-            return error(En_ResultStatus.ABSENCE_FINISHED);
-        }
-
         if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
             return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
         }
@@ -134,18 +126,18 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
-    public Result<Boolean> removeAbsence(AuthToken token, Long absenceId) {
+    public Result<Boolean> removeAbsence(AuthToken token, PersonAbsence absence) {
 
-        if (absenceId == null) {
+        if (absence == null || absence.getId() == null) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        PersonAbsence absence = personAbsenceDAO.get(absenceId);
-        if (absence == null) {
+        PersonAbsence storedAbsence = personAbsenceDAO.get(absence.getId());
+        if (storedAbsence == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (!personAbsenceDAO.removeByKey(absenceId)) {
+        if (!personAbsenceDAO.removeByKey(storedAbsence.getId())) {
             error(En_ResultStatus.NOT_REMOVED);
         }
 
@@ -156,18 +148,18 @@ public class AbsenceServiceImpl implements AbsenceService {
                 EventAction.REMOVED,
                 initiator,
                 null,
-                absence,
-                getAbsenceNotifiers(absence)));
+                storedAbsence,
+                getAbsenceNotifiers(storedAbsence)));
     }
 
     @Override
-    public Result<Boolean> completeAbsence(AuthToken token, Long absenceId) {
+    public Result<Boolean> completeAbsence(AuthToken token, PersonAbsence absence) {
 
-        if (absenceId == null) {
+        if (absence == null || absence.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        PersonAbsence oldState = personAbsenceDAO.get(absenceId);
+        PersonAbsence oldState = personAbsenceDAO.get(absence.getId());
         if (oldState == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
@@ -236,11 +228,6 @@ public class AbsenceServiceImpl implements AbsenceService {
         return true;
     }
 
-    private boolean isAbsenceFinished(PersonAbsence absence) {
-        Date now = new Date();
-        return now.after(absence.getTillTime());
-    }
-
     private boolean isCurrentAbsence(PersonAbsence absence) {
         Date now = new Date();
         return now.after(absence.getFromTime()) && now.before(absence.getTillTime());
@@ -255,6 +242,10 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     private Set<Person> getAbsenceNotifiers(PersonAbsence absence) {
-        return personNotifierDAO.getByPersonId(absence.getPersonId()).stream().map(PersonNotifier::getNotifier).collect(Collectors.toSet());
+        return stream(new ArrayList<Person>() {{
+            addAll(personNotifierDAO.getByPersonId(absence.getPersonId()).stream().map(PersonNotifier::getNotifier).collect(Collectors.toSet()));
+            add(personDAO.get(absence.getCreatorId()));
+            add(personDAO.get(absence.getPersonId()));
+        }}).collect(Collectors.toSet());
     }
 }

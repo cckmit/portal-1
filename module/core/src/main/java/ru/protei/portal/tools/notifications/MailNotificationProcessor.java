@@ -884,11 +884,8 @@ public class MailNotificationProcessor {
     // -----
 
     private List<NotificationEntry> collectNotifiers(AbsenceNotificationEvent event) {
-        PersonAbsence absence = event.getNewState();
         return stream(new ArrayList<Person>() {{
             addAll(event.getNotifiers());
-            add(absence.getCreator());
-            add(absence.getPerson());
             add(event.getInitiator());
         }}).map(this::fetchNotificationEntryFromPerson)
                 .filter(Objects::nonNull)

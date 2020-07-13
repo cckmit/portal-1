@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -23,14 +24,11 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     @JdbcColumn(name = "creator_id")
     private Long creatorId;
 
-    @JdbcJoinedObject(localColumn="creator_id", remoteColumn = "id")
-    private Person creator;
-
     @JdbcColumn(name = "person_id")
     private Long personId;
 
-    @JdbcJoinedObject(localColumn="person_id", remoteColumn = "id", sqlTableAlias = "pa")
-    private Person person;
+    @JdbcJoinedColumn(localColumn = "person_id", remoteColumn = "id", table = "person", mappedColumn = "displayname")
+    private String personDisplayName;
 
     @JdbcColumn(name = "reason_id")
     @JdbcEnumerated(EnumType.ID)
@@ -53,9 +51,8 @@ public class PersonAbsence extends AuditableObject implements Serializable {
         this.id = absence.getId();
         this.created = absence.getCreated();
         this.creatorId = absence.getCreatorId();
-        this.creator = absence.getCreator();
         this.personId = absence.getPersonId();
-        this.person = absence.getPerson();
+        this.personDisplayName = absence.getPersonDisplayName();
         this.reason = absence.getReason();
         this.fromTime = absence.getFromTime();
         this.tillTime = absence.getTillTime();
@@ -86,14 +83,6 @@ public class PersonAbsence extends AuditableObject implements Serializable {
         this.creatorId = creatorId;
     }
 
-    public Person getCreator() {
-        return creator;
-    }
-
-    public void setCreator(Person creator) {
-        this.creator = creator;
-    }
-
     public Long getPersonId() {
         return personId;
     }
@@ -102,13 +91,18 @@ public class PersonAbsence extends AuditableObject implements Serializable {
         this.personId = personId;
     }
 
-    public Person getPerson() {
-        return person;
+    public String getPersonDisplayName() {
+        return personDisplayName;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
-        this.personId = person == null ? null : person.getId();
+    public void setPersonDisplayName(String personDisplayName) {
+        this.personDisplayName = personDisplayName;
+    }
+
+    public PersonShortView getPerson() {
+        if (personId == null)
+            return null;
+        return new PersonShortView(personDisplayName, personId);
     }
 
     public En_AbsenceReason getReason() {

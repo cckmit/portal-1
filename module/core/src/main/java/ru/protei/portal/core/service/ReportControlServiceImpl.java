@@ -315,11 +315,12 @@ public class ReportControlServiceImpl implements ReportControlService {
                         initiator,
                         title,
                         new ByteArrayInputStream(buffer.toByteArray())));
+                return ok();
             }
         } catch (Exception e) {
             log.error("processAbsenceReport(): uncaught exception", e);
         }
-        return new Result<>();
+        return error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     private CompletableFuture<MailReportEvent> createScheduledMailReportsTask(Report report) {

@@ -41,6 +41,7 @@ public class ReportAbsenceImpl implements ReportAbsence {
         ReportWriter<PersonAbsence> writer = new ExcelReportWriter(localizedLang, dateFormat);
 
         int sheetNumber = writer.createSheet();
+        writer.setSheetName(sheetNumber, localizedLang.get("ar_absences"));
 
         int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;

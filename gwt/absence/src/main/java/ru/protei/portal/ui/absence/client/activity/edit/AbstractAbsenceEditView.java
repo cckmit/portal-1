@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractAbsenceEditView extends IsWidget {
 
@@ -21,4 +22,7 @@ public interface AbstractAbsenceEditView extends IsWidget {
     HasEnabled dateRangeEnabled();
     HasEnabled reasonEnabled();
     HasEnabled commentEnabled();
+    HasValidable employeeValidator();
+    HasValidable reasonValidator();
+    void setDateRangeValid(boolean isValid);
 }

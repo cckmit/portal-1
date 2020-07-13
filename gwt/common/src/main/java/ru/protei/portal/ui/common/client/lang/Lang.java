@@ -2831,7 +2831,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceReportValidationDateRange();
 
-    String errAbsenceFinished();
-
     String errNotCurrentAbsence();
 }

@@ -54,19 +54,19 @@ public class AbsenceControllerImpl implements AbsenceController {
     }
 
     @Override
-    public Boolean removeAbsence(Long id) throws RequestFailedException {
-        log.info("removeAbsence(): id={}", id);
+    public Boolean removeAbsence(PersonAbsence absence) throws RequestFailedException {
+        log.info("removeAbsence(): absence={}", absence);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> result = absenceService.removeAbsence(token, id);
+        Result<Boolean> result = absenceService.removeAbsence(token, absence);
         log.info("removeAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
         return checkResultAndGetData(result);
     }
 
     @Override
-    public Boolean completeAbsence(Long id) throws RequestFailedException {
-        log.info("completeAbsence(): id={}", id);
+    public Boolean completeAbsence(PersonAbsence absence) throws RequestFailedException {
+        log.info("completeAbsence(): absence={}", absence);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<Boolean> result = absenceService.completeAbsence(token, id);
+        Result<Boolean> result = absenceService.completeAbsence(token, absence);
         log.info("completeAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
         return checkResultAndGetData(result);
     }

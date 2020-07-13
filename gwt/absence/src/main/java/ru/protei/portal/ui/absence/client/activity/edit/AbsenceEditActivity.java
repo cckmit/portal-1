@@ -70,6 +70,11 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         dialogView.hidePopup();
     }
 
+    @Override
+    public void onDateRangeChanged() {
+        view.setDateRangeValid(isDateRangeValid(view.dateRange().getValue()));
+    }
+
     private boolean hasAccessCreate() {
         return isNew() && policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE);
     }
@@ -106,8 +111,9 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         boolean isAllowedModify = isAllowedCreate || AccessUtil.isAllowedEdit(policyService, absence);
 
         PersonShortView currentPerson = new PersonShortView(policyService.getProfile().getFullName(), policyService.getProfile().getId());
-        view.employee().setValue(absence.getPerson() == null ? currentPerson : absence.getPerson().toFullNameShortView());
+        view.employee().setValue(absence.getPerson() == null ? currentPerson : absence.getPerson());
         view.dateRange().setValue(new DateInterval(copyDate(absence.getFromTime()), copyDate(absence.getTillTime())));
+        view.setDateRangeValid(isDateRangeValid(view.dateRange().getValue()));
         view.reason().setValue(absence.getReason());
         view.comment().setValue(absence.getUserComment());
 
@@ -120,19 +126,17 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
     }
 
     private boolean validateView() {
-        if (view.employee().getValue() == null) {
+        if (!view.employeeValidator().isValid()) {
             fireEvent(new NotifyEvents.Show(lang.absenceValidationEmployee(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (view.dateRange().getValue() == null
-                || view.dateRange().getValue().from == null
-                || view.dateRange().getValue().to == null) {
+        if (!isDateRangeValid(view.dateRange().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.absenceValidationDateRange(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (view.reason().getValue() == null) {
+        if (!view.reasonValidator().isValid()) {
             fireEvent(new NotifyEvents.Show(lang.absenceValidationReason(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -181,6 +185,13 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
 
     private boolean isNew() {
         return absence == null || absence.getId() == null;
+    }
+
+    private boolean isDateRangeValid(DateInterval dateInterval) {
+        return dateInterval != null &&
+                dateInterval.from != null &&
+                dateInterval.to != null &&
+                dateInterval.from.before(dateInterval.to);
     }
 
     @Inject

@@ -3,7 +3,7 @@ package ru.protei.portal.ui.absence.client.view.report;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -66,6 +66,16 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
+    }
+
+    @Override
+    public void setDateRangeValid(boolean isValid) {
+        dateRange.markInputValid(isValid);
+    }
+
+    @UiHandler("dateRange")
+    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+        activity.onDateRangeChanged();
     }
 
     private void ensureDebugIds() {

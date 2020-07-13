@@ -30,10 +30,10 @@ public class AbsenceServiceTest extends BaseServiceTest {
         Assert.assertNotNull("Absence not updated", absenceService.updateAbsence(getAuthToken(), absence));
 
         /* complete */
-        Assert.assertNotNull("Absence not completed", absenceService.completeAbsence(getAuthToken(), absence.getId()));
+        Assert.assertNotNull("Absence not completed", absenceService.completeAbsence(getAuthToken(), absence));
 
         /* remove */
-        Assert.assertNotNull("Absence not removed", absenceService.removeAbsence(getAuthToken(), absence.getId()));
+        Assert.assertNotNull("Absence not removed", absenceService.removeAbsence(getAuthToken(), absence));
     }
 
     @Autowired

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.absence.client.activity.report;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -62,6 +63,11 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
         dialogView.hidePopup();
     }
 
+    @Override
+    public void onDateRangeChanged() {
+        view.setDateRangeValid(isDateRangeValid(view.dateRange().getValue()));
+    }
+
     private void resetView() {
         view.name().setValue(null);
         view.dateRange().setValue(null);
@@ -69,6 +75,7 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
         view.reasons().setValue(null);
         view.sortField().setValue(En_SortField.absence_person);
         view.sortDir().setValue(true);
+        view.setDateRangeValid(isDateRangeValid(view.dateRange().getValue()));
     }
 
     private AbsenceQuery makeQuery() {
@@ -84,13 +91,18 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     }
 
     private boolean validateView() {
-        if (view.dateRange().getValue() == null
-                || view.dateRange().getValue().from == null
-                || view.dateRange().getValue().to == null) {
+        if (!isDateRangeValid(view.dateRange().getValue())) {
             fireEvent(new NotifyEvents.Show(lang.absenceReportValidationDateRange(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
         return true;
+    }
+
+    private boolean isDateRangeValid(DateInterval dateInterval) {
+        return dateInterval != null &&
+                dateInterval.from != null &&
+                dateInterval.to != null &&
+                dateInterval.from.before(dateInterval.to);
     }
 
     @Inject

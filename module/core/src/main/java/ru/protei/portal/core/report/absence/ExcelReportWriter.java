@@ -64,7 +64,7 @@ public class ExcelReportWriter implements
     @Override
     public Object[] getColumnValues(PersonAbsence object) {
         List<Object> values = new ArrayList<>();
-        values.add(object.getPerson() != null && HelperFunc.isNotEmpty(object.getPerson().getDisplayName()) ? object.getPerson().getDisplayName() : "");
+        values.add(object.getPerson() != null && HelperFunc.isNotEmpty(object.getPerson().getName()) ? object.getPerson().getName() : "");
         values.add(object.getFromTime() != null ? dateFormat.format(object.getFromTime()) : "");
         values.add(object.getTillTime() != null ? dateFormat.format(object.getTillTime()) : "");
         values.add(object.getReason() != null ? lang.get("absenceReasonValue" + object.getReason().getId()) : "");

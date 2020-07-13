@@ -3,8 +3,10 @@ package ru.protei.portal.ui.absence.client.view.edit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
@@ -19,6 +21,9 @@ import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceRe
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+
+import java.util.Date;
 
 public class AbsenceEditView extends Composite implements AbstractAbsenceEditView {
 
@@ -82,6 +87,26 @@ public class AbsenceEditView extends Composite implements AbstractAbsenceEditVie
     @Override
     public HasEnabled commentEnabled() {
         return comment;
+    }
+
+    @Override
+    public HasValidable employeeValidator() {
+        return employee;
+    }
+
+    @Override
+    public HasValidable reasonValidator() {
+        return reason;
+    }
+
+    @Override
+    public void setDateRangeValid(boolean isValid) {
+        dateRange.markInputValid(isValid);
+    }
+
+    @UiHandler("dateRange")
+    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+        activity.onDateRangeChanged();
     }
 
     private void ensureDebugIds() {
