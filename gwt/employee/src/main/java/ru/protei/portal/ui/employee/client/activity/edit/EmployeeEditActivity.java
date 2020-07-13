@@ -437,6 +437,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.company().setValue(null);
         view.companyDepartment().setValue(null);
         view.workerPosition().setValue(null);
+        onCompanySelected();
 
         view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
