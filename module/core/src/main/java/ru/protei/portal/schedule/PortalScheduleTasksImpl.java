@@ -16,6 +16,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @PostConstruct
     public void init() {
+        projectService.schedulePauseTimeNotification();//todo debug
+
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
             return;
@@ -32,6 +34,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
+
+        projectService.schedulePauseTimeNotification();
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -105,6 +109,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     IpReservationService ipReservationService;
     @Autowired
     PersonCaseFilterService personCaseFilterService;
+    @Autowired
+    ProjectService projectService;
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasksImpl.class );
 }

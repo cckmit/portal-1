@@ -74,4 +74,9 @@ public interface ProjectService {
     @Privileged(En_Privilege.PROJECT_REMOVE)
     @Auditable(En_AuditType.PROJECT_REMOVE)
     Result<Boolean> removeProject(AuthToken token, Long projectId);
+
+    Result<Void> runPauseTimeNotification( Long projectId, Long pauseDate );
+
+    Result<Void> schedulePauseTimeNotification();
+
 }

@@ -8,16 +8,19 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
+import ru.protei.winter.jdbc.annotations.JdbcEntity;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Информация о проекте в регионе
  */
-public class Project extends AuditableObject {
+@JdbcEntity(table = "case_object")
+public class ProjectEntity extends AuditableObject {
 
-    public static final String AUDIT_TYPE_PROJECT = "Project";
     /**
      * Идентификатор записи о проекте
      */
@@ -296,77 +299,9 @@ public class Project extends AuditableObject {
         this.projectSlas = projectSlas;
     }
 
-    public static Project fromCaseObject(CaseObject caseObject) {
-        if (caseObject == null) {
-            return null;
-        }
-
-        Project project = new Project();
-        project.setId( caseObject.getId() );
-        project.setName( caseObject.getName() );
-        project.setCreator(caseObject.getCreator());
-        project.setDescription(caseObject.getInfo());
-        project.setState( En_RegionState.forId( caseObject.getStateId() ) );
-        project.setDeleted(caseObject.isDeleted());
-        if ( caseObject.getProduct() != null ) {
-            project.setProductDirection( new EntityOption(
-                caseObject.getProduct().getName(), caseObject.getProduct().getId()
-            ) );
-        }
-
-        project.setCustomerType(En_CustomerType.find(caseObject.getLocal()));
-        project.setCustomer(caseObject.getInitiatorCompany());
-
-        project.setTeam(new ArrayList<>());
-        if (caseObject.getMembers() != null) {
-            List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
-            caseObject.getMembers().stream()
-                    .filter(member -> projectRoles.contains(member.getRole()))
-                    .map(member -> PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()))
-                    .forEach(project::addTeamMember);
-        }
-
-        project.setCreated( caseObject.getCreated() );
-
-        List<CaseLocation> locations = caseObject.getLocations();
-        if ( locations != null && !locations.isEmpty() ) {
-            project.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
-        }
-
-        if (caseObject.getProducts() != null) {
-            project.setProducts( caseObject.getProducts().stream()
-                                        .map(ProductShortView::fromProduct)
-                                        .collect(Collectors.toSet()) );
-        }
-
-        project.setContracts(caseObject.getContracts());
-
-        if (caseObject.getManager() != null) {
-            project.setManager(new EntityOption(caseObject.getManager().getDisplayShortName(), caseObject.getManagerId()));
-        }
-
-        if (caseObject.getInitiatorCompany() != null) {
-            project.setContragent(new EntityOption(caseObject.getInitiatorCompany().getCname(), caseObject.getInitiatorCompanyId()));
-        }
-
-        if (caseObject.getPlatformId() != null){
-            project.setPlatformId(caseObject.getPlatformId());
-            project.setPlatformName(caseObject.getPlatformName());
-
-        }
-
-        project.setTechnicalSupportValidity(caseObject.getTechnicalSupportValidity());
-
-        project.setProjectSlas(caseObject.getProjectSlas());
-
-        project.setPauseDate( caseObject.getPauseDate() );
-
-        return project;
-    }
-
     @Override
     public String getAuditType() {
-        return AUDIT_TYPE_PROJECT;
+        return Project.AUDIT_TYPE_PROJECT;
     }
 
     public void setPauseDate( Long pauseDateTimestamp ) {
@@ -382,7 +317,7 @@ public class Project extends AuditableObject {
         if ( this == o ) return true;
         if ( o == null || getClass() != o.getClass() ) return false;
 
-        Project that = (Project) o;
+        ProjectEntity that = (ProjectEntity) o;
 
         if ( id != null ? !id.equals( that.id ) : that.id != null ) return false;
 
@@ -421,4 +356,5 @@ public class Project extends AuditableObject {
                 ", projectSlas=" + projectSlas +
                 '}';
     }
+
 }

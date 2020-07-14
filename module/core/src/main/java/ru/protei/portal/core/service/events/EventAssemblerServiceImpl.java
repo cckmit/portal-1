@@ -23,8 +23,8 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void onCaseObjectCreateEvent(CaseObjectCreateEvent event) {
-        publishCreateEvent(new AssembledCaseEvent(event));
         log.info( "onCaseObjectCreateEvent(): CaseObjectId={}", event.getCaseObjectId() );
+        assemblerService.proceed(new AssembledCaseEvent(event));
     }
 
     @Override
@@ -89,11 +89,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
             log.debug("publish set of events, initiators : {}", events.size());
             events.forEach(this::publishAndClear);
         }
-    }
-
-    private void publishCreateEvent(AssembledCaseEvent event) {
-        assemblerService.proceed(event);
-        log.info("publishCreate event, caseId:{}", event.getCaseObjectId());
     }
 
     private void publishAndClear(Tuple<Long, Long> key) {

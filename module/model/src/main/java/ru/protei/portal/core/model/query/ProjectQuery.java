@@ -40,6 +40,8 @@ public class ProjectQuery extends BaseQuery {
 
     private Date createdTo;
 
+    private Long pauseDate;
+
     private Boolean platformIndependentProject;
 
     public ProjectQuery() {

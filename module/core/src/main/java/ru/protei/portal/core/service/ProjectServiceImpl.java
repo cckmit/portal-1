@@ -3,6 +3,10 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.ProjectCreateEvent;
@@ -26,12 +30,16 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 import static ru.protei.portal.api.struct.Result.*;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -295,6 +303,31 @@ public class ProjectServiceImpl implements ProjectService {
                                 caseLinkService.deleteLink(token, caseLink.getId()));
 
         return ok(result);
+    }
+
+    private static volatile int cnt = 0;
+    @Async(BACKGROUND_TASKS)
+    public Result<Void> schedulePauseTimeNotification(){
+        log.info( "schedulePauseTimeNotification(): "+ (++cnt) );
+//        caseObjectDAO.
+        return ok();
+    }
+
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public Result<Void> runPauseTimeNotification( Long projectId, Long pauseDate ) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
+        log.info( "runPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format(  pauseDate ));
+
+            CaseObject caseObject = caseObjectDAO.get( projectId );
+            if(!Objects.equals( pauseDate, caseObject.getPauseDate() )) {
+                log.info( "runPauseTimeNotification(): Ignore: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
+                return ok();
+            }
+
+        log.info( "runPauseTimeNotification(): Do notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
+int stop = 0;
+        return ok();
     }
 
     @Override
