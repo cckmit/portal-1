@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ReportProjectImpl implements ReportProject {
@@ -45,7 +46,7 @@ public class ReportProjectImpl implements ReportProject {
     ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report) throws IOException {
+    public boolean writeReport(OutputStream buffer, Report report, Supplier<Boolean> cancelTest) throws IOException {
 
         int count = caseObjectDAO.countByQuery(report.getCaseQuery());
 
@@ -61,29 +62,30 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
 
-        ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang);
-
-        int sheetNumber = writer.createSheet();
-
-        if (writeReport(writer, sheetNumber, report, count)) {
-            writer.collect(buffer);
+        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang)) {
+            int sheetNumber = writer.createSheet();
+            if (writeReport(writer, sheetNumber, report, count, cancelTest)) {
+                writer.collect(buffer);
+            }
             return true;
-        } else {
-            writer.close();
+        } catch (Exception ex) {
+            log.warn("writeReport : fail to process reportId={} query: {} ",
+                    report.getId(), report.getCaseQuery(), ex);
             return false;
         }
     }
 
-    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer, int sheetNumber, Report report, int count) {
+    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer, int sheetNumber, Report report, int count,
+                                    Supplier<Boolean> cancelTest) {
 
         final int step = config.data().reportConfig().getChunkSize();
         final int limit = count;
         int offset = 0;
 
         while (offset < limit) {
-            if (!isProcessed( report.getId() )) {
-                log.info( "writeReport(): Stop processing of report {}", report.getId() );
-                break;
+            if (cancelTest.get()) {
+                log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+                return true;
             }
             int amount = offset + step < limit ? step : limit - offset;
             CaseQuery query = report.getCaseQuery();
@@ -99,13 +101,6 @@ public class ReportProjectImpl implements ReportProject {
             offset += step;
         }
 
-        return true;
-    }
-
-    private boolean isProcessed( Long id ) {
-        Report report = reportDAO.partialGet( id, Report.Columns.STATUS );
-        if(report == null) return false;
-        if (!En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
         return true;
     }
 

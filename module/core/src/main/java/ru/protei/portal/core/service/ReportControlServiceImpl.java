@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -132,22 +133,17 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return;
             }
 
+            Report currentReportStatus = reportDAO.partialGet( report.getId(), Report.Columns.STATUS );
+            if (currentReportStatus == null || CANCELLED.equals( currentReportStatus.getStatus() )) {
+                log.warn( "processReport(): Report {} is canceled", report.getId() );
+                return;
+            }
+
             ReportContent reportContent = new ReportContent(report.getId(), new ByteArrayInputStream(buffer.toByteArray()));
             storageResult = reportStorageService.saveContent(reportContent);
 
             if (!storageResult.isOk()) {
                 mergeerroratus(report);
-                return;
-            }
-
-            Report currentReportStatus = reportDAO.partialGet( report.getId(), Report.Columns.STATUS );
-            if (currentReportStatus == null) {
-                log.warn( "processReport(): Can't get processed report {}", report.getId() );
-                return;
-            }
-            if (CANCELLED.equals( currentReportStatus.getStatus() )) {
-                log.warn( "processReport(): Report {} is canceled", report.getId() );
-                reportStorageService.removeContent(report.getId());
                 return;
             }
 
@@ -189,13 +185,15 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return reportCase.writeReport(
                         buffer, report,
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                        new TimeFormatter()
+                        new TimeFormatter(),
+                        makeCancelTest(report.getId())
                 );
             case CASE_TIME_ELAPSED:
                 return reportCaseTimeElapsed.writeReport(
                         buffer, report,
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                        new TimeFormatter()
+                        new TimeFormatter(),
+                        makeCancelTest(report.getId())
                 );
             case CASE_RESOLUTION_TIME:
                 log.info( "writeReport(): Start report {}", report.getName() );
@@ -204,9 +202,18 @@ public class ReportControlServiceImpl implements ReportControlService {
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
             case PROJECT:
-                return reportProject.writeReport(buffer, report);
+                return reportProject.writeReport(buffer, report, makeCancelTest(report.getId()));
         }
         return false;
+    }
+
+    private Supplier<Boolean> makeCancelTest(Long reportId) {
+        return () -> {
+            Report report = reportDAO.partialGet( reportId, Report.Columns.STATUS );
+            if (report == null) return true;
+            if (En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
+            return true;
+        };
     }
 
     // -------------------

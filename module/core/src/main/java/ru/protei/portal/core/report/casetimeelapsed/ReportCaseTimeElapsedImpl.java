@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
@@ -40,7 +41,8 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
     ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
+    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter,
+                                    Supplier<Boolean> cancelTest) throws IOException {
 
         CaseQuery caseQuery = report.getCaseQuery();
         if (caseQuery == null) {
@@ -50,8 +52,6 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         }
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
-
         caseQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
 
         final Processor processor = new Processor();
@@ -59,11 +59,13 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         int offset = 0;
 
         log.info( "writeReport(): Start report {}", report );
-        try {
+        try (ReportWriter<CaseCommentTimeElapsedSum> writer =
+                    new ExcelReportWriter(localizedLang, dateFormat, timeFormatter)) {
+
             while (true) {
-                if (!isProcessed( report.getId() )) {
-                    log.info( "writeReport(): Stop processing of report {}", report.getId() );
-                    break;
+                if (cancelTest.get()) {
+                    log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+                    return true;
                 }
                 caseQuery.setOffset( offset );
                 caseQuery.setLimit( step );
@@ -79,21 +81,13 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
                     break;
                 }
             }
+
+            writer.collect( buffer );
+            return true;
         } catch (Throwable th) {
-            writer.close();
             log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} e: ", offset, offset + step, report.getId(), th );
             return false;
         }
-
-        writer.collect( buffer );
-        return true;
-    }
-
-    private boolean isProcessed( Long id ) {
-        Report report = reportDAO.partialGet( id, Report.Columns.STATUS );
-        if(report == null) return false;
-        if (!En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
-        return true;
     }
 
     private class Processor {

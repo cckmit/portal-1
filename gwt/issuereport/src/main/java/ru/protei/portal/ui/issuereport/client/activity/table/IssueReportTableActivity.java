@@ -123,7 +123,7 @@ public abstract class IssueReportTableActivity implements
 
             @Override
             public void onSuccess(Void result) {
-                fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new NotifyEvents.Show(lang.reportCanceled(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new IssueReportEvents.Show());
             }
         });

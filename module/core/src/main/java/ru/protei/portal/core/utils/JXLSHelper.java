@@ -71,7 +71,6 @@ public final class JXLSHelper {
 
         public void collect(OutputStream outputStream) throws IOException {
             workbook.write(outputStream);
-            close();
         }
 
         public void close() throws IOException {

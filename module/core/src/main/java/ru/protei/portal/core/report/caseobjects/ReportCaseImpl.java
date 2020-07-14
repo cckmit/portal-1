@@ -7,8 +7,6 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.ReportDAO;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
@@ -24,8 +22,10 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 public class ReportCaseImpl implements ReportCase {
 
@@ -39,24 +39,24 @@ public class ReportCaseImpl implements ReportCase {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
-    @Autowired
-    ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
+    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter,
+                                    Supplier<Boolean> cancelTest) throws IOException {
         log.info("writeReport : reportId={}", report.getId());
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted(), report.isWithDescription());
-
-        int sheetNumber = writer.createSheet();
 
         final int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
-        try {
+        try (ReportWriter<CaseObjectComments> writer =
+                    new ExcelReportWriter(localizedLang, dateFormat, timeFormatter, report.isRestricted(), report.isWithDescription())) {
+
+            int sheetNumber = writer.createSheet();
+
             while (true) {
-                if (!isProcessed( report.getId() )) {
-                    log.info( "writeReport(): Stop processing of report {}", report.getId() );
-                    break;
+                if (cancelTest.get()) {
+                    log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+                    return true;
                 }
                 CaseQuery query = report.getCaseQuery();
                 query.setOffset( offset );
@@ -66,21 +66,14 @@ public class ReportCaseImpl implements ReportCase {
                 if (size( comments ) < limit) break;
                 offset += limit;
             }
+
+            writer.collect( buffer );
+            return true;
         } catch (Exception ex) {
-            log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} query: {} ", offset, limit, report.getId(), report.getCaseQuery(), ex );
-            writer.close();
+            log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} query: {} ",
+                                                offset, limit, report.getId(), report.getCaseQuery(), ex );
             return false;
         }
-
-        writer.collect( buffer );
-        return true;
-    }
-
-    private boolean isProcessed( Long id ) {
-        Report report = reportDAO.partialGet( id, Report.Columns.STATUS );
-        if(report == null) return false;
-        if (!En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
-        return true;
     }
 
     public List<CaseObjectComments> processChunk( CaseQuery query ) {
