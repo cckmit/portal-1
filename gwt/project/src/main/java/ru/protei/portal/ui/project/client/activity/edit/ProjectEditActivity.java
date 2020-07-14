@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
+import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -56,13 +57,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
 
-
         if (event.id == null) {
             project = new Project();
-//            resetView();
             fillView( project );
         } else {
-//            resetView();
             requestProject(event.id, this::fillView);
         }
 
@@ -127,7 +125,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onStateChanged() {
-        view.pauseDateContainerVisibility().setVisible( En_RegionState.PAUSED == view.state().getValue() );
+        view.pauseDateContainerVisibility().setVisible( PAUSED == view.state().getValue() );
     }
 
     private boolean isNew(Project project) {
@@ -147,38 +145,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         });
     }
 
-    private void resetView1 () {
-//        view.setNumber(null);
-//        view.name().setValue("");
-//        view.description().setText("");
-//        view.state().setValue(En_RegionState.UNKNOWN);
-//        view.region().setValue(null);
-//        view.direction().setValue(null);
-//        view.customerType().setValue(null);
-//        view.company().setValue(null);
-//        view.companyEnabled().setEnabled(true);
-//        view.team().setValue(null);
-//        view.product().setValue(null);
-//        view.setHideNullValue(true);
-//        view.updateProductDirection(null);
-
-//        view.getDocumentsContainer().clear();
-//        view.getCommentsContainer().clear();
-//        view.showComments(false);
-//        view.showDocuments(false);
-
-//        view.technicalSupportValidity().setValue(null);
-//        view.setDateValid(true);
-
-//        view.numberVisibility().setVisible(false);
-
-//        view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
-//        view.saveEnabled().setEnabled(true);
-//        view.slaInput().setValue(null);
-
-//        if (project == null || project.getId() == null) fillCaseLinks(null);
-    }
-
     private void fillView(Project project) {
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
@@ -194,7 +160,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
         view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
-        view.pauseDateContainerVisibility().setVisible( En_RegionState.PAUSED == project.getState() );
+        view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
         view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
         view.slaInput().setValue(project.getProjectSlas());
@@ -228,7 +194,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         project.setName(view.name().getValue());
         project.setDescription(view.description().getText());
         project.setState(view.state().getValue());
-        project.setPauseDate( (En_RegionState.PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
+        project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
@@ -278,8 +244,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if(En_RegionState.PAUSED.equals( view.state().getValue() )){
-            if(view.pauseDate().getValue()==null)                    return false;//TODO error message
+        if(PAUSED.equals( view.state().getValue() )){
+            Date pauseDate = view.pauseDate().getValue();
+            if (pauseDate == null || pauseDate.getTime() < System.currentTimeMillis()) {
+                fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
         }
 
         return true;

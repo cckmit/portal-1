@@ -972,6 +972,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveProjectCannotChangeCompany();
 
+    String errSaveProjectPauseDate();
+
     String classifier();
 
     String equipmentName();
