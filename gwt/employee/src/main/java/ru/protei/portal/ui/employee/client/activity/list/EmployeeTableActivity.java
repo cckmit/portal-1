@@ -66,6 +66,15 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         loadTable();
     }
 
+    @Event
+    public void onUpdate(EmployeeEvents.UpdateDefinite event) {
+        if(event.viewType != ViewType.TABLE)
+            return;
+
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(event.id, new FluentCallback<EmployeeShortView>()
+                .withSuccess(employee -> view.updateRow(employee)));
+    }
+
     @Override
     public void onPageSelected(int page) {
         view.scrollTo(page);

@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.utils.DateUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,12 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                 "(person_absence.from_time < ? AND ? < person_absence.till_time) OR " +
                 "(person_absence.from_time = ? AND person_absence.till_time = ?)" +
                 ")", employeeId, from, till, from, till, from, from, till, till, from, till);
+    }
+
+    @Override
+    public PersonAbsence currentAbsence(Long employeeId) {
+        return getByCondition("person_absence.person_id = ? and person_absence.from_time <= ? and person_absence.till_time >= ?",
+                employeeId, DateUtils.resetSeconds(new Date()), DateUtils.resetSeconds(new Date()));
     }
 
     @Override

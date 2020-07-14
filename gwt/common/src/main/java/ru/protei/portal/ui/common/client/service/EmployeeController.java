@@ -46,7 +46,7 @@ public interface EmployeeController extends RemoteService {
      */
     PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
 
-    EmployeeShortView getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException;
+    EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException;
 
     Person createEmployeePerson (Person person) throws RequestFailedException;
 

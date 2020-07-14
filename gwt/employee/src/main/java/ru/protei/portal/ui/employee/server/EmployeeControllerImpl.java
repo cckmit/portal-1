@@ -75,7 +75,7 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public EmployeeShortView getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
+    public EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
         log.info("getEmployeeShortViewWithChangedHiddenCompanyNames(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeWithChangedHiddenCompanyNames(token, employeeId));

@@ -102,10 +102,17 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     public void setAbsenceReason(En_AbsenceReason reason) {
-        addStyleName("absent");
-        absenceReason.removeClassName("hide");
-        absenceReason.setTitle(reasonLang.getName(reason));
-        absenceIcon.addClassName(reasonLang.getIcon(reason));
+        if (reason == null) {
+            removeStyleName("absent");
+            absenceReason.addClassName("hide");
+            absenceReason.setTitle("");
+            absenceIcon.setClassName("");
+        } else {
+            addStyleName("absent");
+            absenceReason.removeClassName("hide");
+            absenceReason.setTitle(reasonLang.getName(reason));
+            absenceIcon.addClassName(reasonLang.getIcon(reason));
+        }
     }
 
     @UiField

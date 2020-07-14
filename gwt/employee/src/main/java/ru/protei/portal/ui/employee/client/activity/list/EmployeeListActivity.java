@@ -87,6 +87,19 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         requestEmployees( 0 );
     }
 
+    @Event
+    public void onUpdate(EmployeeEvents.UpdateDefinite event) {
+        if(event.viewType != ViewType.LIST)
+            return;
+
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(event.id, new FluentCallback<EmployeeShortView>()
+                .withSuccess(employee -> {
+                    AbstractEmployeeItemView itemView = modelToItemView.get(employee);
+                    itemView.setAbsenceReason(
+                            employee.getCurrentAbsence() == null ? null : employee.getCurrentAbsence().getReason());
+                }));
+    }
+
     @Override
     public void onPageSelected( int page ) {
         pagerView.setCurrentPage( page );
@@ -181,6 +194,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
 
             itemViewToModel.put( itemView, employee );
+            modelToItemView.put( employee, itemView );
             view.getChildContainer().add( itemView.asWidget() );
         }
     };
@@ -201,5 +215,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     private long marker;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
+    private Map< EmployeeShortView, AbstractEmployeeItemView > modelToItemView = new HashMap<>();
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

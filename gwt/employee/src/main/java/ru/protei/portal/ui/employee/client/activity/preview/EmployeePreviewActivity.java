@@ -27,6 +27,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
+import java.util.Objects;
+
 /**
  * Активность превью сотрудника
  */
@@ -80,7 +82,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee) {
@@ -125,10 +127,23 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
 
-        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
-            view.showAbsencesLabel();
-            fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employee.getId()));
-        }
+        showAbsences(employee.getId());
+    }
+
+    @Event
+    public void onUpdate(EmployeeEvents.Update event) {
+        if(event.id == null || !Objects.equals(event.id, employeeId))
+            return;
+
+        showAbsences(event.id);
+    }
+
+    private void showAbsences(Long employeeId) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
+            return;
+
+        view.showAbsencesLabel();
+        fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employeeId));
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {

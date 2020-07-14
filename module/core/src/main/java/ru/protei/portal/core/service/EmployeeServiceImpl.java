@@ -180,6 +180,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
+        employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
 
         return ok(employeeShortView);
     }

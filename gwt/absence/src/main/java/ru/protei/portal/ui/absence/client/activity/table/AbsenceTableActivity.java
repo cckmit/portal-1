@@ -49,7 +49,7 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
         absenceController.completeAbsence(value, new FluentCallback<Boolean>()
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceCompletedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new EmployeeEvents.Show());
+                    fireEvent(new EmployeeEvents.Update(value.getPersonId()));
                 }));
     }
 
@@ -79,7 +79,7 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
         return () -> absenceController.removeAbsence(value, new FluentCallback<Boolean>()
                 .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.absenceRemovedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new EmployeeEvents.Show());
+                    fireEvent(new EmployeeEvents.Update(value.getPersonId()));
                 }));
     }
 

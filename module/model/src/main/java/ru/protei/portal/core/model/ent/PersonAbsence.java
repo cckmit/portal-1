@@ -27,7 +27,7 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     @JdbcColumn(name = "person_id")
     private Long personId;
 
-    @JdbcJoinedColumn(localColumn = "person_id", remoteColumn = "id", table = "person", mappedColumn = "displayname")
+    @JdbcJoinedColumn(localColumn = "person_id", remoteColumn = "id", table = "person", mappedColumn = "displayname", sqlTableAlias = "pa")
     private String personDisplayName;
 
     @JdbcColumn(name = "reason_id")

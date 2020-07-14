@@ -15,6 +15,8 @@ public interface PersonAbsenceDAO extends PortalBaseDAO<PersonAbsence> {
 
     List<PersonAbsence> listByEmployeeAndDateBounds(Long absenceId, Date from, Date till);
 
+    PersonAbsence currentAbsence(Long employeeId);
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition(AbsenceQuery query);
 }

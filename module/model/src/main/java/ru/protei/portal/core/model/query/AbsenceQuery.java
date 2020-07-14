@@ -15,22 +15,22 @@ public class AbsenceQuery extends BaseQuery {
     private Set<Integer> reasonIds;
 
     public AbsenceQuery() {
-        super (null, En_SortField.from_time, En_SortDir.ASC);
+        super (null, En_SortField.absence_date, En_SortDir.ASC);
     }
 
     public AbsenceQuery(Set<Long> employeeIds) {
-        super (null, En_SortField.from_time, En_SortDir.ASC);
+        super (null, En_SortField.absence_date, En_SortDir.ASC);
         this.employeeIds = employeeIds;
     }
 
     public AbsenceQuery(Date fromTime, Date tillTime) {
-        super (null, En_SortField.from_time, En_SortDir.ASC);
+        super (null, En_SortField.absence_date, En_SortDir.ASC);
         this.fromTime = fromTime;
         this.tillTime = tillTime;
     }
 
     public AbsenceQuery(Date fromTime, Date tillTime, Set<Long> employeeIds, Set<Integer> reasonIds) {
-        super (null, En_SortField.from_time, En_SortDir.ASC);
+        super (null, En_SortField.absence_date, En_SortDir.ASC);
         this.fromTime = fromTime;
         this.tillTime = tillTime;
         this.employeeIds = employeeIds;

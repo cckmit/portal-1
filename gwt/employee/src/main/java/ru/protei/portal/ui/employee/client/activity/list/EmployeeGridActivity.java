@@ -136,6 +136,14 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         fireEvent(new AbsenceEvents.CreateReport());
     }
 
+    @Event
+    public void onUpdate(EmployeeEvents.Update event) {
+        if(event.id == null || !policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
+            return;
+
+        fireEvent(new EmployeeEvents.UpdateDefinite(currentViewType, event.id));
+    }
+
     @Override
     public void onFilterChanged() {
         query = makeQuery();
