@@ -13,12 +13,11 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.En_ContractKind;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -31,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSel
 import ru.protei.portal.ui.common.client.widget.money.CostCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -43,7 +43,9 @@ import ru.protei.portal.ui.contract.client.widget.contractspecification.list.Con
 import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
@@ -52,6 +54,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         dateValid.getElement().setAttribute("placeholder", lang.days());
+        initCuratorSelector();
         ensureDebugIds();
     }
 
@@ -225,6 +228,12 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
+    private void initCuratorSelector() {
+        EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
+        query.setDepartmentIds(new HashSet<>(Collections.singletonList(384L)));
+        curator.setEmployeeQuery(query);
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -296,7 +305,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     HomeCompanyButtonSelector organization;
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector curator;
+    EmployeeCustomButtonSelector curator;
     @Inject
     @UiField(provided = true)
     ContractStateSelector state;

@@ -115,6 +115,13 @@ public class EmployeeSqlBuilder {
                         .append(HelperFunc.makeInArg(query.getHomeCompanies(), s -> String.valueOf(s.getId())))
                         .append(")");
             }
+
+            if (CollectionUtils.isNotEmpty(query.getDepartmentIds())) {
+                condition.append(" and person.id in ")
+                        .append("(select personId from worker_entry where worker_entry.dep_id in ")
+                        .append(HelperFunc.makeInArg(query.getDepartmentIds(), String::valueOf))
+                        .append(")");
+            }
         });
     }
 }

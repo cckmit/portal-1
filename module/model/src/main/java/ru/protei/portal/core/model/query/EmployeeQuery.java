@@ -41,6 +41,8 @@ public class EmployeeQuery extends BaseQuery {
 
     private Date birthday;
 
+    private Set<Long> departmentIds;
+
     public EmployeeQuery() {
         fired = false;
     }
@@ -184,6 +186,14 @@ public class EmployeeQuery extends BaseQuery {
         this.birthday = birthday;
     }
 
+    public Set<Long> getDepartmentIds() {
+        return departmentIds;
+    }
+
+    public void setDepartmentIds(Set<Long> departmentIds) {
+        this.departmentIds = departmentIds;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
@@ -205,6 +215,7 @@ public class EmployeeQuery extends BaseQuery {
                 ", lastName=" + lastName +
                 ", secondName=" + secondName +
                 ", birthday=" + birthday +
+                ", departmentIds=" + departmentIds +
                 '}';
     }
 }
