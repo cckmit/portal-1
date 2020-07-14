@@ -20,6 +20,8 @@ import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
+
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
     @PostConstruct
@@ -89,6 +91,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     @Override
+    public void onContractParentChanged() {
+        boolean contractParentExists = view.contractParent().getValue() != null;
+        view.kind().setValue(getContractKind(contractParentExists));
+    }
+
+    @Override
     public void refreshProjectSpecificFields() {
         if (view.project().getValue() == null) {
             clearProjectSpecificFields();
@@ -138,6 +146,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
+
+        boolean contractParentExists = contract.getParentContractId() != null;
+        view.kind().setValue(getContractKind(contractParentExists));
 
         view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
         refreshProjectSpecificFields();

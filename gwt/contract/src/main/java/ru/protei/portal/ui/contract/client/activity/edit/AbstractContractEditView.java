@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.contract.client.activity.edit;
 
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
@@ -28,6 +30,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasValue<String> number();
 
     HasValue<En_ContractType> type();
+
+    TakesValue<En_ContractKind> kind();
 
     HasValue<En_ContractState> state();
 

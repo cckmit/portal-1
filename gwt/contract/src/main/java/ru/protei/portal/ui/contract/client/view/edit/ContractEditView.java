@@ -9,9 +9,11 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
@@ -22,6 +24,7 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
@@ -74,6 +77,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasValue<En_ContractType> type() {
         return type;
+    }
+
+    @Override
+    public TakesValue<En_ContractKind> kind() {
+        return new TakesValue<En_ContractKind>() {
+            public void setValue(En_ContractKind value) {
+                kind.setValue(contractKindLang.getName(value));
+            }
+            public En_ContractKind getValue() { throw new UnsupportedOperationException(); }
+        };
     }
 
     @Override
@@ -204,6 +217,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
+    @UiHandler("contractParent")
+    public void onContractParentChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onContractParentChanged();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -263,8 +283,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     Button saveButton;
 
+    @Inject
+    En_ContractKindLang contractKindLang;
+
     @UiField
+    @Inject
     Lang lang;
+
     @Inject
     @UiField(provided = true)
     HomeCompanyButtonSelector organization;
@@ -277,6 +302,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractTypeSelector type;
+    @UiField
+    TextBox kind;
     @Inject
     @UiField(provided = true)
     CostWithCurrencyView costWithCurrency;
@@ -315,6 +342,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     LabelElement numberLabel;
     @UiField
     LabelElement typeLabel;
+    @UiField
+    LabelElement kindLabel;
     @UiField
     LabelElement stateLabel;
     @UiField
