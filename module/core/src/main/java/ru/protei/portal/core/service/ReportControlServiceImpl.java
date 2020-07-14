@@ -147,6 +147,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
             if (CANCELLED.equals( currentReportStatus.getStatus() )) {
                 log.warn( "processReport(): Report {} is canceled", report.getId() );
+                reportStorageService.removeContent(report.getId());
                 return;
             }
 

@@ -101,4 +101,17 @@ public class ReportControllerImpl implements ReportController {
             throw new RequestFailedException(response.getStatus());
         }
     }
+
+    @Override
+    public void cancelReport(Long id) throws RequestFailedException {
+        log.info("cancelReport(): id={}", id);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result response = reportService.cancelReport(token, id);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+    }
 }

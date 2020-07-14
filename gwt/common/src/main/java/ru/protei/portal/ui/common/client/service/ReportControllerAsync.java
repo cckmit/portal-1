@@ -18,4 +18,6 @@ public interface ReportControllerAsync {
     void removeReports(Set<Long> include, Set<Long> exclude, AsyncCallback<Void> async);
 
     void recreateReport(Long id, AsyncCallback<Void> async);
+
+    void cancelReport(Long id, AsyncCallback<Void> async);
 }

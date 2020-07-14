@@ -1584,6 +1584,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportRequested();
 
+    String reportCanceled();
+
     String issueReportNew();
 
     String reportTypeCaseObjects();

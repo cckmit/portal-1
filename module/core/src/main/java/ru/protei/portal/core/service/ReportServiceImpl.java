@@ -2,6 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.ReportDAO;
@@ -153,6 +154,27 @@ public class ReportServiceImpl implements ReportService {
 
         SearchResult<Report> sr = reportDAO.getSearchResult(token.getPersonId(), query, exclude);
         removeReports(sr.getResults());
+
+        return ok();
+    }
+
+    @Override
+    @Transactional
+    public Result cancelReport(AuthToken authToken, Long id) {
+        if (id == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Report report = reportDAO.getReport(authToken.getPersonId(), id);
+
+        if (report == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        report.setStatus(En_ReportStatus.CANCELLED);
+        report.setModified(new Date());
+
+        reportDAO.merge(report);
 
         return ok();
     }
