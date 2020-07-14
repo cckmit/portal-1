@@ -5,10 +5,15 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
+import java.util.List;
+
 public interface AbstractEmployeeTableView extends IsWidget {
+
     void setActivity(AbstractEmployeeTableActivity activity);
 
     void clearRecords();
+
+    void addRecords(List<EmployeeShortView> employees);
 
     HasWidgets getPreviewContainer();
 
@@ -16,13 +21,6 @@ public interface AbstractEmployeeTableView extends IsWidget {
 
     HasWidgets getPagerContainer();
 
-    void triggerTableLoad();
-
-    void setTotalRecords(int totalRecords);
-
-    int getPageCount();
-
-    void scrollTo(int page);
 
     void updateRow(EmployeeShortView item);
 

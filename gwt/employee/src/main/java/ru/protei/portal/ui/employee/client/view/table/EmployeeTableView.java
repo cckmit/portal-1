@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -22,6 +22,8 @@ import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeAbsenceCol
 import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeContactsColumn;
 import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeDepartmentColumn;
 import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeInfoColumn;
+
+import java.util.List;
 
 /**
  * Представление списка сотрудников
@@ -49,13 +51,15 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         editClickColumn.setHandler(activity);
         editClickColumn.setEditHandler(activity);
         editClickColumn.setColumnProvider(columnProvider);
-        table.setLoadHandler(activity);
-        table.setPagerListener(activity);
+    }
+
+    @Override
+    public void addRecords(List<EmployeeShortView> employees) {
+        employees.forEach(employee -> table.addRow(employee));
     }
 
     @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
     }
 
@@ -72,26 +76,6 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     @Override
     public HasWidgets getPagerContainer() {
         return pagerContainer;
-    }
-
-    @Override
-    public void triggerTableLoad() {
-        table.setTotalRecords(table.getPageSize());
-    }
-
-    @Override
-    public void setTotalRecords(int totalRecords) {
-        table.setTotalRecords(totalRecords);
-    }
-
-    @Override
-    public int getPageCount() {
-        return table.getPageCount();
-    }
-
-    @Override
-    public void scrollTo(int page) {
-        table.scrollToPage(page);
     }
 
     @Override
@@ -132,7 +116,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     }
 
     @UiField
-    InfiniteTableWidget<EmployeeShortView> table;
+    TableWidget<EmployeeShortView> table;
 
     @UiField
     HTMLPanel tableContainer;
