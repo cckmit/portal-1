@@ -6,11 +6,11 @@ import ru.protei.portal.core.utils.TimeFormatter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 
 public interface ReportCaseTimeElapsed {
     boolean writeReport(OutputStream buffer,
                         Report report, DateFormat dateFormat,
                         TimeFormatter timeFormatter,
-                        Supplier<Boolean> cancelTest) throws IOException;
+                        Predicate<Long> isCancel) throws IOException;
 }

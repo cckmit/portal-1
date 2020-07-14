@@ -8,7 +8,6 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentTimeElapsedSumDAO;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
@@ -21,7 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
@@ -42,7 +41,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter,
-                                    Supplier<Boolean> cancelTest) throws IOException {
+                                    Predicate<Long> isCancel) throws IOException {
 
         CaseQuery caseQuery = report.getCaseQuery();
         if (caseQuery == null) {
@@ -63,7 +62,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
                     new ExcelReportWriter(localizedLang, dateFormat, timeFormatter)) {
 
             while (true) {
-                if (cancelTest.get()) {
+                if (isCancel.test(report.getId())) {
                     log.info( "writeReport(): Cancel processing of report {}", report.getId() );
                     return true;
                 }

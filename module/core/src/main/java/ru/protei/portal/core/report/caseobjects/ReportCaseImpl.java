@@ -22,7 +22,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
@@ -42,7 +42,7 @@ public class ReportCaseImpl implements ReportCase {
 
     @Override
     public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter,
-                                    Supplier<Boolean> cancelTest) throws IOException {
+                                    Predicate<Long> isCancel) throws IOException {
         log.info("writeReport : reportId={}", report.getId());
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
@@ -54,7 +54,7 @@ public class ReportCaseImpl implements ReportCase {
             int sheetNumber = writer.createSheet();
 
             while (true) {
-                if (cancelTest.get()) {
+                if (isCancel.test(report.getId())) {
                     log.info( "writeReport(): Cancel processing of report {}", report.getId() );
                     return true;
                 }

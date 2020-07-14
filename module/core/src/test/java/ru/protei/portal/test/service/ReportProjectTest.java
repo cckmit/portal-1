@@ -103,7 +103,7 @@ public class ReportProjectTest extends BaseServiceTest {
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, () -> false);
+            result = reportProject.writeReport(buffer, report, id -> false);
         } catch (Exception exception) {
             Assert.fail();
         }
@@ -126,7 +126,7 @@ public class ReportProjectTest extends BaseServiceTest {
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, () -> false);
+            result = reportProject.writeReport(buffer, report, id -> false);
         } catch (Exception exception) {
             Assert.fail();
         }

@@ -124,6 +124,11 @@ public class MainConfiguration {
         return new BackgroundTaskThreadPoolTaskExecutor( maxDbConnectionPoolSize );
     }
 
+    @Bean(name = REPORT_TASKS)
+    public Executor getReportThreadPoolTaskExecutor(@Autowired PortalConfig config) {
+        return Executors.newFixedThreadPool(config.data().reportConfig().getThreadsNumber());
+    }
+
     @Bean
     public FileStorage getFileStorage(@Autowired PortalConfig config) {
         PortalConfigData.CloudConfig cloud = config.data().cloud();
@@ -958,6 +963,7 @@ public class MainConfiguration {
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";
+    public static final String REPORT_TASKS = "reportTasks";
 
     private static final Logger log = LoggerFactory.getLogger( MainConfiguration.class );
 }

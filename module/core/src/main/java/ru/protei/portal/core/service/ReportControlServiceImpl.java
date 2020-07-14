@@ -3,6 +3,8 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
@@ -29,17 +31,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.Supplier;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.REPORT_TASKS;
 import static ru.protei.portal.core.model.dict.En_ReportStatus.CANCELLED;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
-    private final ThreadPoolExecutor reportExecutorService = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     private final Object sync = new Object();
     private final Set<Long> reportsInProcess = new HashSet<>();
 
@@ -62,6 +64,9 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportCaseTimeElapsed reportCaseTimeElapsed;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    @Qualifier(REPORT_TASKS)
+    Executor reportExecutorService;
 
     @PostConstruct
     public void init() {
@@ -76,7 +81,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     public Result processNewReports() {
         synchronized (sync) {
             int reportThreadsNumber = config.data().reportConfig().getThreadsNumber();
-            int activeThreads = reportExecutorService.getActiveCount();
+            int activeThreads = ((ThreadPoolTaskExecutor)reportExecutorService).getActiveCount();
             if (activeThreads >= reportThreadsNumber) {
                 log.info("all threads to process reports are busy");
                 return error(En_ResultStatus.NOT_AVAILABLE);
@@ -90,7 +95,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return ok();
             }
             for (final Report report : result.getData()) {
-                reportExecutorService.submit(() -> processReport(report));
+                ((ThreadPoolTaskExecutor)reportExecutorService).submit(() -> processReport(report));
             }
             return ok();
         }
@@ -186,14 +191,14 @@ public class ReportControlServiceImpl implements ReportControlService {
                         buffer, report,
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
                         new TimeFormatter(),
-                        makeCancelTest(report.getId())
+                        this::isCancel
                 );
             case CASE_TIME_ELAPSED:
                 return reportCaseTimeElapsed.writeReport(
                         buffer, report,
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
                         new TimeFormatter(),
-                        makeCancelTest(report.getId())
+                        this::isCancel
                 );
             case CASE_RESOLUTION_TIME:
                 log.info( "writeReport(): Start report {}", report.getName() );
@@ -202,18 +207,16 @@ public class ReportControlServiceImpl implements ReportControlService {
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
             case PROJECT:
-                return reportProject.writeReport(buffer, report, makeCancelTest(report.getId()));
+                return reportProject.writeReport(buffer, report, this::isCancel);
         }
         return false;
     }
 
-    private Supplier<Boolean> makeCancelTest(Long reportId) {
-        return () -> {
-            Report report = reportDAO.partialGet( reportId, Report.Columns.STATUS );
-            if (report == null) return true;
-            if (En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
-            return true;
-        };
+    private Boolean isCancel(Long reportId) {
+        Report report = reportDAO.partialGet( reportId, Report.Columns.STATUS );
+        if (report == null) return true;
+        if (En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
+        return true;
     }
 
     // -------------------
@@ -227,12 +230,24 @@ public class ReportControlServiceImpl implements ReportControlService {
                 new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime()),
                 Arrays.asList(En_ReportScheduledType.NONE)
         );
-        if (CollectionUtils.isEmpty(reports)) {
-            log.debug("old reports to process : 0");
-            return ok();
-        }
+
         log.info("old reports to process : {}", reports.size());
-        removeReports(reports);
+        if (!CollectionUtils.isEmpty(reports)) {
+            removeReports(reports);
+        }
+
+        List<Report> processReports = reportDAO.getReportsByStatuses(
+                Arrays.asList(En_ReportStatus.PROCESS),
+                new Date(),
+                Arrays.asList(En_ReportScheduledType.NONE)
+        );
+
+        log.info("old reports in Process to cancel : {}", processReports.size());
+        if (!CollectionUtils.isEmpty(processReports)) {
+            processReports.forEach(report -> report.setStatus(CANCELLED));
+            reportDAO.mergeBatch(processReports);
+        }
+
         return ok();
     }
 

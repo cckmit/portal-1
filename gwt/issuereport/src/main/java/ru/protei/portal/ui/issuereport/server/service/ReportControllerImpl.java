@@ -108,7 +108,7 @@ public class ReportControllerImpl implements ReportController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result response = reportService.cancelReport(token, id);
+        Result<?> response = reportService.cancelReport(token, id);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
