@@ -51,6 +51,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        dateValid.getElement().setAttribute("placeholder", lang.days());
         ensureDebugIds();
     }
 
@@ -110,7 +111,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<Date> dateValid() {
+    public HasValue<Long> dateValidDays() {
         return dateValid;
     }
 
@@ -250,7 +251,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateSigning.setEnsureDebugId(DebugIds.CONTRACT.DATE_SIGNING_CONTAINER);
 
         dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_VALID);
-        dateValid.setEnsureDebugId(DebugIds.CONTRACT.DATE_VALID_CONTAINER);
+        dateValid.ensureDebugId(DebugIds.CONTRACT.DATE_VALID_CONTAINER);
 
         costWithCurrencyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COST_WITH_CURRENCY);
         costWithCurrency.setEnsureDebugId(DebugIds.CONTRACT.COST_WITH_CURRENCY_CONTAINER);
@@ -311,9 +312,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ValidableTextBox number;
     @UiField
     ValiableAutoResizeTextArea description;
-    @Inject
-    @UiField(provided = true)
-    SinglePicker dateValid;
+    @UiField
+    LongBox dateValid;
     @Inject
     @UiField(provided = true)
     SinglePicker dateSigning;

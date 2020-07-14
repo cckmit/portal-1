@@ -2749,4 +2749,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractKindReceipt();
 
     String contractKindExpenditure();
+
+    String days();
 }

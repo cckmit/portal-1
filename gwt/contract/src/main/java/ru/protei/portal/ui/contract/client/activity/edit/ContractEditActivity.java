@@ -20,6 +20,10 @@ import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Date;
+
+import static ru.protei.portal.core.model.helper.DateUtils.addDays;
+import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
@@ -140,7 +144,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.description().setValue(contract.getDescription());
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
         view.dateSigning().setValue(contract.getDateSigning());
-        view.dateValid().setValue(contract.getDateValid());
+        view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
         view.contractDates().setValue(contract.getContractDates());
         view.contractSpecifications().setValue(contract.getContractSpecifications());
 
@@ -172,7 +176,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setDescription(view.description().getValue());
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
         contract.setDateSigning(view.dateSigning().getValue());
-        contract.setDateValid(view.dateValid().getValue());
+        contract.setDateValid(addDays(contract.getDateSigning(), view.dateValidDays().getValue()));
         contract.setContractDates(view.contractDates().getValue());
         contract.setContractSpecifications(view.contractSpecifications().getValue());
 
@@ -210,9 +214,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         if (contract.getDateSigning() == null)
             return lang.contractValidationEmptyDateSigning();
-
-        if (contract.getDateValid() == null)
-            return lang.contractValidationEmptyDateValid();
 
         if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
             return lang.contractValidationEmptyDirection();

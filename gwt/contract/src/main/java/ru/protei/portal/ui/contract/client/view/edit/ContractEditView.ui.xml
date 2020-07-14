@@ -75,7 +75,7 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="dateValidLabel"><ui:text from="{lang.contractDateValid}"/></label>
-                                <single:SinglePicker ui:field="dateValid" type="DATE" formatValue="dd.MM.yyyy" />
+                                <g:LongBox ui:field="dateValid" styleName="form-control"/>
                             </div>
                             <div class="form-group col-md-3">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
