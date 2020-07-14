@@ -49,7 +49,7 @@
 
                             <div class="form-group col-md-12">
                                 <label ui:field="descriptionLabel"><ui:text from="{lang.contractDescription}"/></label>
-                                <textarea:AutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
+                                <textarea:ValiableAutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
                             </div>
 
                             <div class="form-group col-md-4">

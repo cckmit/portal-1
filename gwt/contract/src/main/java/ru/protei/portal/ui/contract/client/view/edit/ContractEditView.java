@@ -23,7 +23,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
@@ -283,7 +283,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     ValidableTextBox number;
     @UiField
-    AutoResizeTextArea description;
+    ValiableAutoResizeTextArea description;
     @Inject
     @UiField(provided = true)
     SinglePicker dateValid;
