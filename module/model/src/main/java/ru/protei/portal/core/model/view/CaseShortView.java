@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -17,7 +18,7 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "case_type")
+    @JdbcColumn(name = CaseObject.Columns.CASE_TYPE)
     private int typeId;
 
     @JdbcColumn(name = "CASENO")
@@ -80,7 +81,7 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    @JdbcColumn(name = "pause_date")
+    @JdbcColumn(name = CaseObject.Columns.PAUSE_DATE)
     private Long pauseDate;
 
     @JdbcColumn(name = "manager_company_id")

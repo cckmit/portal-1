@@ -77,6 +77,6 @@ public interface ProjectService {
 
     Result<Void> runPauseTimeNotification( Long projectId, Long pauseDate );
 
-    Result<Void> schedulePauseTimeNotification();
+    Result<Void> schedulePauseTimeNotifications();
 
 }

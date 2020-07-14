@@ -68,7 +68,7 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcColumn(name = CaseObject.Columns.EXT_APP)
     private String extAppType;
 
-    @JdbcColumn(name = "pause_date")
+    @JdbcColumn(name = CaseObject.Columns.PAUSE_DATE)
     private Long pauseDate;
 
     @JdbcColumn(name = "manager_company_id")

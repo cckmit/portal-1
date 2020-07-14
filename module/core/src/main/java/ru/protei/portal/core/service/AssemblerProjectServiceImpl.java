@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledProjectEvent;
@@ -18,6 +16,7 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Calendar;
@@ -62,7 +61,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     }
 
     private void schedulePauseTimeNotification(final Long projectId, final Long pauseDate ) {
-        ScheduledFuture<?> scheduledFuture = taskScheduler.schedule( () -> projectService.runPauseTimeNotification( projectId, pauseDate ), new Date(pauseDate));
+        portalScheduleTasks.scheduleProjectPauseTimeNotification(projectId, pauseDate );
     }
 
     private Result<AssembledProjectEvent> fillInitiator(AssembledProjectEvent event) {
@@ -133,7 +132,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     @Autowired
     CaseLinkDAO caseLinkDAO;
     @Autowired
-    ProjectService projectService;
+    PortalScheduleTasks portalScheduleTasks;
 
     @Autowired
     EventPublisherService publisherService;

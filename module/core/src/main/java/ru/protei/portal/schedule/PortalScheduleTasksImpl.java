@@ -11,12 +11,14 @@ import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.service.*;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.concurrent.ScheduledFuture;
 
 public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     @PostConstruct
     public void init() {
-        projectService.schedulePauseTimeNotification();//todo debug
+        projectService.schedulePauseTimeNotifications();//todo debug
 
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
@@ -35,7 +37,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
 
-        projectService.schedulePauseTimeNotification();
+        projectService.schedulePauseTimeNotifications();
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -91,6 +93,11 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
     public void processPersonCaseFilterMailNotification() {
         personCaseFilterService.processMailNotification();
+    }
+
+    @Override
+    public void scheduleProjectPauseTimeNotification( Long projectId, Long pauseDate ) {
+        scheduler.schedule( () -> projectService.runPauseTimeNotification( projectId, pauseDate ), new Date(pauseDate));
     }
 
     @Autowired

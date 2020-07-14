@@ -3,9 +3,6 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -19,26 +16,27 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.struct.ProjectEntity;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
-import static ru.protei.portal.api.struct.Result.*;
+import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
@@ -305,11 +303,22 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(result);
     }
 
+    @Autowired
+    ProjectEntityDAO projectEntityDAO;
+    @Autowired
+    PortalScheduleTasks scheduledTasksService;
+
     private static volatile int cnt = 0;
+
     @Async(BACKGROUND_TASKS)
-    public Result<Void> schedulePauseTimeNotification(){
-        log.info( "schedulePauseTimeNotification(): "+ (++cnt) );
-//        caseObjectDAO.
+    public Result<Void> schedulePauseTimeNotifications() {
+        Collection<ProjectEntity> projectEntities = projectEntityDAO.selectScheduledPauseTime( System.currentTimeMillis() );
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
+        for (ProjectEntity project : CollectionUtils.emptyIfNull( projectEntities )) {
+            log.info( "schedulePauseTimeNotifications(): projectId={} date={}", project.getId(), simpleDateFormat.format( project.getPauseDate() ) );
+            scheduledTasksService.scheduleProjectPauseTimeNotification( project.getId(), project.getPauseDate() );
+        }
+
         return ok();
     }
 
@@ -317,16 +326,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Result<Void> runPauseTimeNotification( Long projectId, Long pauseDate ) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
-        log.info( "runPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format(  pauseDate ));
+        log.info( "runPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
 
-            CaseObject caseObject = caseObjectDAO.get( projectId );
-            if(!Objects.equals( pauseDate, caseObject.getPauseDate() )) {
-                log.info( "runPauseTimeNotification(): Ignore: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
-                return ok();
-            }
+        CaseObject caseObject = caseObjectDAO.get( projectId );
+        if (!Objects.equals( pauseDate, caseObject.getPauseDate() )) {
+            log.info( "runPauseTimeNotification(): Ignore: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
+            return ok();
+        }
 
         log.info( "runPauseTimeNotification(): Do notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
-int stop = 0;
         return ok();
     }
 

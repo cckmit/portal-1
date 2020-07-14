@@ -92,7 +92,6 @@ public class Project extends AuditableObject {
 
     private List<ProjectSla> projectSlas;
 
-    @JdbcColumn(name = "pause_date")
     private Long pauseDate;
 
     public Long getId() {

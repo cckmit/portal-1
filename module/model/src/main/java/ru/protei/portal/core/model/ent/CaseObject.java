@@ -22,7 +22,7 @@ public class CaseObject extends AuditableObject {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "case_type")
+    @JdbcColumn(name = Columns.CASE_TYPE)
     @JdbcEnumerated( EnumType.ID )
     private En_CaseType type;
 
@@ -98,7 +98,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "creator_info")
     private String creatorInfo;
 
-    @JdbcColumn(name = "deleted")
+    @JdbcColumn(name = Columns.DELETED)
     private boolean deleted;
 
     @JdbcColumn(name = "private_flag")
@@ -146,7 +146,7 @@ public class CaseObject extends AuditableObject {
     }, mappedColumn = "name")
     private String regionName;
 
-    @JdbcColumn(name = "pause_date")
+    @JdbcColumn(name = Columns.PAUSE_DATE)
     private Long pauseDate;
 
     @JdbcColumn(name = "manager_company_id")
@@ -601,7 +601,12 @@ public class CaseObject extends AuditableObject {
 
     public interface Columns {
         String EXT_APP = "EXT_APP";
+        String CASE_TYPE = "case_type";
+        String PAUSE_DATE = "pause_date";
+        String DELETED = "deleted";
     }
+
+    public static final int NOT_DELETED = 0;
 
     @Override
     public String toString() {

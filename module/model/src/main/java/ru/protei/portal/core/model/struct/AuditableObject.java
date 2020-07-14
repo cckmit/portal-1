@@ -21,7 +21,7 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = Person.class, name = "Person"),
         @JsonSubTypes.Type(value = Equipment.class, name = "Equipment"),
         @JsonSubTypes.Type(value = DevUnit.class, name = "DevUnit"),
-        @JsonSubTypes.Type(value = Project.class, name = "Project"),
+        @JsonSubTypes.Type(value = Project.class, name = Project.AUDIT_TYPE_PROJECT),
         @JsonSubTypes.Type(value = UserRole.class, name = "UserRole"),
         @JsonSubTypes.Type(value = CompanyDepartment.class, name = "Department"),
         @JsonSubTypes.Type(value = WorkerPosition.class, name = "Position"),

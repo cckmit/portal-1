@@ -16,6 +16,8 @@ import static java.util.stream.Collectors.toList;
  * Запрос по регионам
  */
 public class ProjectQuery extends BaseQuery {
+    private En_CaseType type = En_CaseType.PROJECT;
+
     private List<Long> caseIds;
 
     private Set<En_RegionState> states;
@@ -172,6 +174,14 @@ public class ProjectQuery extends BaseQuery {
 
     public void setCaseMembers(Set<PersonShortView> caseMembers) {
         this.caseMembers = caseMembers;
+    }
+
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate( Long pauseDate ) {
+        this.pauseDate = pauseDate;
     }
 
     @Override

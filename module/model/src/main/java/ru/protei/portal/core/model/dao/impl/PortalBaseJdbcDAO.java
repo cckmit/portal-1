@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -8,10 +9,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.enums.HasId;
-import ru.protei.winter.jdbc.JdbcBaseDAO;
-import ru.protei.winter.jdbc.JdbcHelper;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
-import ru.protei.winter.jdbc.JdbcSort;
+import ru.protei.winter.jdbc.*;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
 import java.lang.reflect.Field;

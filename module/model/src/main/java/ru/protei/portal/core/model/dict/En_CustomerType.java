@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.dict;
 
-public enum En_CustomerType {
+import ru.protei.winter.core.utils.enums.HasId;
+
+public enum En_CustomerType implements HasId {
     /**
      * Министерство обороны
      */

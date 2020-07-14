@@ -24,4 +24,7 @@ public class PortalScheduleTasksStub extends PortalScheduleTasksImpl {
 
     @Override
     public void processScheduledMailReportsDaily() {}
+
+    @Override
+    public void scheduleProjectPauseTimeNotification( Long projectId, Long pauseDate ) {}
 }
