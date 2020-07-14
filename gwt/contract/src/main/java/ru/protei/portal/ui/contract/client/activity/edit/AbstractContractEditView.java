@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.struct.CostWithCurrency;
+import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -25,7 +25,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    HasValue<CostWithCurrency> cost();
+    HasValue<CostWithCurrencyWithVat> cost();
 
     HasValue<String> number();
 

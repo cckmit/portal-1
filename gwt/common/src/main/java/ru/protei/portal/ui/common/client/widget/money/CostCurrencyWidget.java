@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 
-public class CostWithCurrencyView extends Composite implements HasValue<CostWithCurrency>, HasEnabled {
+public class CostCurrencyWidget extends Composite implements HasValue<CostWithCurrency>, HasEnabled {
 
     @Inject
     public void init() {
@@ -73,6 +73,6 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
 
     private En_Currency defaultCurrency;
 
-    interface CostWithCurrencyViewUiBinder extends UiBinder<HTMLPanel, CostWithCurrencyView> {}
+    interface CostWithCurrencyViewUiBinder extends UiBinder<HTMLPanel, CostCurrencyWidget> {}
     private static CostWithCurrencyViewUiBinder ourUiBinder = GWT.create(CostWithCurrencyViewUiBinder.class);
 }

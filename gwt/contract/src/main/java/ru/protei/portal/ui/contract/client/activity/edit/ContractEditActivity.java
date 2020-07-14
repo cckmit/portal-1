@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
+import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -82,7 +83,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         view.costEnabled().setEnabled(!isFrameworkContract);
         if ( isFrameworkContract ) {
-            view.cost().setValue(new CostWithCurrency(0L, En_Currency.RUB));
+            view.cost().setValue(new CostWithCurrencyWithVat(0L, En_Currency.RUB, null));
         }
     }
 
@@ -140,7 +141,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if ( contract.getCost() == null ) {
             contract.setCost(0L);
         }
-        view.cost().setValue(new CostWithCurrency(contract.getCost(), contract.getCurrency()));
+        view.cost().setValue(new CostWithCurrencyWithVat(contract.getCost(), contract.getCurrency(), contract.getVat()));
         view.description().setValue(contract.getDescription());
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
         view.dateSigning().setValue(contract.getDateSigning());
@@ -173,6 +174,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setNumber(view.number().getValue());
         contract.setCost(view.cost().getValue().getCost());
         contract.setCurrency(view.cost().getValue().getCurrency());
+        contract.setVat(view.cost().getValue().getVatPercent());
         contract.setDescription(view.description().getValue());
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
         contract.setDateSigning(view.dateSigning().getValue());

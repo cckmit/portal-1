@@ -2751,4 +2751,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractKindExpenditure();
 
     String days();
+
+    String withoutVat();
+
+    String vat(long percent);
 }

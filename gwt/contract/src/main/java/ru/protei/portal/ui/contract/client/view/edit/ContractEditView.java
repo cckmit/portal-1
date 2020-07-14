@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.struct.CostWithCurrency;
+import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -28,7 +28,7 @@ import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
-import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
+import ru.protei.portal.ui.common.client.widget.money.CostCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
@@ -66,7 +66,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<CostWithCurrency> cost() {
+    public HasValue<CostWithCurrencyWithVat> cost() {
         return costWithCurrency;
     }
 
@@ -307,7 +307,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     TextBox kind;
     @Inject
     @UiField(provided = true)
-    CostWithCurrencyView costWithCurrency;
+    CostCurrencyVatWidget costWithCurrency;
     @UiField
     ValidableTextBox number;
     @UiField
