@@ -238,7 +238,7 @@ public class AbsenceServiceImpl implements AbsenceService {
                 employeeId,
                 dateFrom,
                 dateTill
-        )).anyMatch(r -> excludeId != r.getId());
+        )).anyMatch(r -> !Objects.equals(excludeId, r.getId()));
     }
 
     private Set<Person> getAbsenceNotifiers(PersonAbsence absence) {

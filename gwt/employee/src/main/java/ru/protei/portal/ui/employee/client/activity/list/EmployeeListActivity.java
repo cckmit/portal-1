@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
@@ -51,11 +50,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     public void init() {
         view.setActivity( this );
         pagerView.setActivity( this );
-    }
-
-    @Event
-    public void onAuthSuccess ( AuthEvents.Success event ) {
-        filterView.resetFilter();
     }
 
     @Event
@@ -76,6 +70,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getPagerContainer().add( pagerView.asWidget() );
         view.getFilterContainer().add(event.filter);
 
+        this.query = event.query;
+
         requestEmployees( 0 );
     }
 
@@ -83,6 +79,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     public void onFilterChange(EmployeeEvents.UpdateData event) {
         if(event.viewType != ViewType.LIST)
             return;
+
+        this.query = event.query;
 
         requestEmployees( 0 );
     }
@@ -94,9 +92,27 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         employeeService.getEmployeeWithChangedHiddenCompanyNames(event.id, new FluentCallback<EmployeeShortView>()
                 .withSuccess(employee -> {
+
                     AbstractEmployeeItemView itemView = modelToItemView.get(employee);
+
+                    if (itemView == null && query.getAbsent()) {
+                        fireEvent(new EmployeeEvents.Show());
+                        return;
+                    }
+
+                    if (itemView == null) {
+                        return;
+                    }
+
+                    if (employee.getCurrentAbsence() == null && query.getAbsent()) {
+                        view.getChildContainer().remove(itemView.asWidget());
+                        modelToItemView.remove(employee);
+                        return;
+                    }
+
                     itemView.setAbsenceReason(
                             employee.getCurrentAbsence() == null ? null : employee.getCurrentAbsence().getReason());
+
                 }));
     }
 
@@ -110,12 +126,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         view.getChildContainer().clear();
         view.showLoader( true );
-        itemViewToModel.clear();
+        modelToItemView.clear();
 
         boolean isFirstChunk = page == 0;
         marker = new Date().getTime();
 
-        EmployeeQuery query = makeQuery();
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
@@ -131,21 +146,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                         view.showLoader( false );
                     }
                 } ) );
-    }
-
-    private EmployeeQuery makeQuery() {
-        return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
-                filterView.organizations().getValue(),
-                filterView.searchPattern().getValue(),
-                normalizePhoneNumber(filterView.workPhone().getValue()),
-                normalizePhoneNumber(filterView.mobilePhone().getValue()),
-                filterView.ipAddress().getValue(),
-                filterView.email().getValue(),
-                filterView.departmentParent().getValue(),
-                filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonUtils.getPersonIds() : null,
-                filterView.showAbsent().getValue());
     }
 
     private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {
@@ -191,9 +191,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         @Override
         public void accept( EmployeeShortView employee ) {
             AbstractEmployeeItemView itemView = makeView( employee );
-
-
-            itemViewToModel.put( itemView, employee );
             modelToItemView.put( employee, itemView );
             view.getChildContainer().add( itemView.asWidget() );
         }
@@ -201,8 +198,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     @Inject
     AbstractEmployeeListView view;
-    @Inject
-    AbstractEmployeeFilterView filterView;
     @Inject
     Provider< AbstractEmployeeItemView > factory;
     @Inject
@@ -214,7 +209,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private long marker;
     private AppEvents.InitDetails init;
-    private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
+    private EmployeeQuery query;
     private Map< EmployeeShortView, AbstractEmployeeItemView > modelToItemView = new HashMap<>();
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

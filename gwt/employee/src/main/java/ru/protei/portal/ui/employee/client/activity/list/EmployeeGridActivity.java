@@ -18,6 +18,8 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 
+import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
+
 public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivity, AbstractEmployeeFilterActivity, Activity {
 
     @PostConstruct
@@ -154,8 +156,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
                 filterView.organizations().getValue(),
                 filterView.searchPattern().getValue(),
-                filterView.workPhone().getValue(),
-                filterView.mobilePhone().getValue(),
+                normalizePhoneNumber(filterView.workPhone().getValue()),
+                normalizePhoneNumber(filterView.mobilePhone().getValue()),
                 filterView.ipAddress().getValue(),
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),

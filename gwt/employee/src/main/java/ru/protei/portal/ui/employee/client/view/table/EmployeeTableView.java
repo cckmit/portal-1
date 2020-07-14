@@ -75,11 +75,6 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     }
 
     @Override
-    public void setPersonsCount(Long issuesCount) {
-        table.setTotalRecords(issuesCount.intValue());
-    }
-
-    @Override
     public void triggerTableLoad() {
         table.setTotalRecords(table.getPageSize());
     }
@@ -103,6 +98,12 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     public void updateRow(EmployeeShortView item) {
         if (item != null)
             table.updateRow(item);
+    }
+
+    @Override
+    public void removeRow(EmployeeShortView item) {
+        if (item != null)
+            table.removeRow(item);
     }
 
     @Override

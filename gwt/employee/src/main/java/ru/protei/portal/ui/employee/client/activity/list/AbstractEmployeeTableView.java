@@ -16,8 +16,6 @@ public interface AbstractEmployeeTableView extends IsWidget {
 
     HasWidgets getPagerContainer();
 
-    void setPersonsCount(Long issuesCount);
-
     void triggerTableLoad();
 
     void setTotalRecords(int totalRecords);
@@ -27,6 +25,8 @@ public interface AbstractEmployeeTableView extends IsWidget {
     void scrollTo(int page);
 
     void updateRow(EmployeeShortView item);
+
+    void removeRow(EmployeeShortView item);
 
     void setAnimation(TableAnimation animation);
 

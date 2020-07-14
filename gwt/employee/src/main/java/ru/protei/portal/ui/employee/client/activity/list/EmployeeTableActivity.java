@@ -22,7 +22,10 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class EmployeeTableActivity implements AbstractEmployeeTableActivity, AbstractPagerActivity, Activity {
     @PostConstruct
@@ -71,8 +74,24 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         if(event.viewType != ViewType.TABLE)
             return;
 
+        if (!model.contains(event.id)) {
+            fireEvent(new EmployeeEvents.Show(true));
+            return;
+        }
+
         employeeService.getEmployeeWithChangedHiddenCompanyNames(event.id, new FluentCallback<EmployeeShortView>()
-                .withSuccess(employee -> view.updateRow(employee)));
+                .withSuccess(employee -> {
+
+                    if (employee.getCurrentAbsence() == null && query.getAbsent()) {
+                        view.removeRow(employee);
+                        model.remove(employee.getId());
+                        animation.closeDetails();
+                        return;
+                    }
+
+                    view.updateRow(employee);
+                }));
+
     }
 
     @Override
@@ -121,7 +140,12 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
+
                     asyncCallback.onSuccess(sr.getResults());
+
+                    model.clear();
+                    model.addAll(sr.getResults().stream().map(EmployeeShortView::getId).collect(Collectors.toSet()));
+
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
@@ -168,4 +192,5 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
 
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
+    private Set<Long> model = new HashSet<>();
 }

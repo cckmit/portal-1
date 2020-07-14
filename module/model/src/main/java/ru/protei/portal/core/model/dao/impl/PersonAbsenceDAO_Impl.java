@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -9,8 +10,11 @@ import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.DateUtils;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 05.07.16.
@@ -30,7 +34,8 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
 
     @Override
     public PersonAbsence currentAbsence(Long employeeId) {
-        return getByCondition("person_absence.person_id = ? and person_absence.from_time <= ? and person_absence.till_time >= ?",
+        return getByCondition("person_absence.person_id = ? and person_absence.from_time <= ? and person_absence.till_time >= ?" +
+                        " and person_absence.reason_id in " + HelperFunc.makeInArg(actualReasons(), false),
                 employeeId, DateUtils.resetSeconds(new Date()), DateUtils.resetSeconds(new Date()));
     }
 
@@ -65,5 +70,13 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                 condition.append(" and person_absence.reason_id in " + HelperFunc.makeInArg(query.getReasonIds(), false));
             }
         });
+    }
+
+    private Set<Integer> actualReasons() {
+        return Arrays.asList(En_AbsenceReason.values())
+                .stream()
+                .filter(En_AbsenceReason::isActual)
+                .map(En_AbsenceReason::getId)
+                .collect(Collectors.toSet());
     }
 }
