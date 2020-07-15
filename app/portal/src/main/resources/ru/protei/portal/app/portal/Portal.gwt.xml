@@ -24,6 +24,7 @@
     <inherits name="ru.protei.portal.ui.ipreservation.IpReservation"/>
     <inherits name="ru.protei.portal.ui.roomreservation.RoomReservation"/>
     <inherits name="ru.protei.portal.ui.plan.Plan"/>
+    <inherits name="ru.protei.portal.ui.absence.Absence"/>
 
     <entry-point class='ru.protei.portal.app.portal.client.Main'/>
 

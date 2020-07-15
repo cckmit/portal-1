@@ -92,6 +92,11 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue<Boolean> showAbsent() {
+        return showAbsent;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
@@ -104,6 +109,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         showFired.setValue(false);
         showTopBrass.setValue(false);
         organizations.setValue(null);
+        showAbsent.setValue(false);
     }
 
     @UiHandler( "resetBtn" )
@@ -115,7 +121,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @UiHandler( "showFired" )
-    public void onShowFireClicked( ClickEvent event ) {
+    public void onShowFiredClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -177,6 +183,13 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         }
     }
 
+    @UiHandler( "showAbsent" )
+    public void onShowAbsentClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
@@ -223,6 +236,8 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     Lang lang;
+    @UiField
+    CheckBox showAbsent;
 
     private AbstractEmployeeFilterActivity activity;
 

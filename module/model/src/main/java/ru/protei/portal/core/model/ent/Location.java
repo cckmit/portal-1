@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 

@@ -1,11 +1,7 @@
 package ru.protei.portal.app.portal.client.activity.profile;
 
 /**
- * Абстракция активности превью контакта
+ * Абстракция активности профиля
  */
 public interface AbstractProfilePageActivity {
-
-    void onChangePasswordButtonClicked();
-
-    void onSavePasswordButtonClicked();
 }

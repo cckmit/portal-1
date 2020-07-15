@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.struct;
 
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 
 public class ReportProjectWithLastComment {

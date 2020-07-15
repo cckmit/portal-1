@@ -10,10 +10,10 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 

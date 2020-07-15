@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonPopupSingleSelector;
 
-import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.getMonthName;
+import static ru.protei.portal.ui.common.client.util.DateUtils.getMonthName;
 
 public class MonthButtonSelector extends ButtonPopupSingleSelector<Integer> {
 

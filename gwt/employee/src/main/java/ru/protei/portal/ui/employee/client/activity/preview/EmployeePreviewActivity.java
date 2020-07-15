@@ -16,15 +16,18 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
+import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
+
+import java.util.Objects;
 
 /**
  * Активность превью сотрудника
@@ -79,7 +82,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee) {
@@ -112,17 +115,35 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             view.phonesContainerVisibility().setVisible(true);
         }
 
-        view.getPositionsContainer().clear();
+        view.positionsContainer().clear();
         WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
         entryFacade.getSortedEntries().forEach(workerEntry -> employeeService.getDepartmentHead(workerEntry.getDepId(), new FluentCallback<PersonShortView>()
                 .withSuccess(head -> {
                     AbstractPositionItemView positionItemView = makePositionView(workerEntry, head);
-                    view.getPositionsContainer().add(positionItemView.asWidget());
+                    view.positionsContainer().add(positionItemView.asWidget());
                 })
         ));
 
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
+
+        showAbsences(employee.getId());
+    }
+
+    @Event
+    public void onUpdate(EmployeeEvents.Update event) {
+        if(event.id == null || !Objects.equals(event.id, employeeId))
+            return;
+
+        showAbsences(event.id);
+    }
+
+    private void showAbsences(Long employeeId) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
+            return;
+
+        view.showAbsencesLabel();
+        fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employeeId));
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {

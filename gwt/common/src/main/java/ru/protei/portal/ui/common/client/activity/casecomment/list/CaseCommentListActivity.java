@@ -25,7 +25,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;

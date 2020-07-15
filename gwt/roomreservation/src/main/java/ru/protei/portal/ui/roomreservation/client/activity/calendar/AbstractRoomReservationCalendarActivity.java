@@ -2,7 +2,7 @@ package ru.protei.portal.ui.roomreservation.client.activity.calendar;
 
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.core.model.ent.RoomReservation;
-import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
+import ru.protei.portal.ui.common.client.common.YearMonthDay;
 
 public interface AbstractRoomReservationCalendarActivity {
 

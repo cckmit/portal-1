@@ -244,5 +244,14 @@ public enum En_ResultStatus {
      */
     REQUEST_1C_FAILED,
 
+    /**
+     * Найдено пересечение с другими отсутствиями
+     */
+    ABSENCE_HAS_INTERSECTIONS,
+
+    /**
+     * Отсутствие ещё не началось либо уже закончилось
+     */
+    NOT_CURRENT_ABSENCE
     ;
 }

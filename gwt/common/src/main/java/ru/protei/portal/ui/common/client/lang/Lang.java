@@ -1140,7 +1140,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountFor();
 
-    String accountSubscribeCaseFilter();
+    String profileSubscriptionCaseFilter();
 
     String accountRolesNotFound();
 
@@ -2743,4 +2743,102 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpSubnetAllowReserve();
 
     String errRequest1CFailed();
+
+    String absenceEmployee();
+
+    String selectAbsenceEmployee();
+
+    String absenceDateRange();
+
+    String absenceReason();
+
+    String absenceComment();
+
+    String absenceReasonPersonAffair();
+
+    String absenceReasonBusinessTrip();
+
+    String absenceReasonLocalBusinessTrip();
+
+    String absenceReasonStudy();
+
+    String absenceReasonDisease();
+
+    String absenceReasonSickLeave();
+
+    String absenceReasonGuestPass();
+
+    String absenceReasonNightWork();
+
+    String absenceReasonLeaveWithoutPay();
+
+    String absenceReasonDuty();
+
+    String absenceReasonRemoteWork();
+
+    String selectAbsenceReason();
+
+    String absenceUpdated();
+
+    String absenceValidationEmployee();
+
+    String absenceValidationDateRange();
+
+    String absenceValidationReason();
+
+    String absenceCreation();
+
+    String absenceEditing();
+
+    String absenceButtonCreate();
+
+    String absenceCreated();
+
+    String absences();
+
+    String absenceFromTime();
+
+    String absenceTillTime();
+
+    String absenceRemoveConfirmMessage();
+
+    String absenceRemovedSuccessfully();
+
+    String absenceReasonLeave();
+
+    String errAbsenceHasIntersections();
+
+    String profileGeneral();
+
+    String profileSubscriptions();
+
+    String profileSubscriptionEmployees();
+
+    String absenceCompletedSuccessfully();
+
+    String absenceComplete();
+
+    String employeeShowAbsent();
+
+    String absenceReport();
+
+    String absenceReportEmployees();
+
+    String absenceReportReasons();
+
+    String absenceReportDateRange();
+
+    String absenceStartDateRange();
+
+    String absenceReportTitle();
+
+    String absenceButtonReport();
+
+    String absenceReportHint();
+
+    String buttonSend();
+
+    String absenceReportValidationDateRange();
+
+    String errNotCurrentAbsence();
 }

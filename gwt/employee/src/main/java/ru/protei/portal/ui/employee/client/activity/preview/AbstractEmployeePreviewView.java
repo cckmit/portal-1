@@ -31,7 +31,11 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     HasVisibility emailContainerVisibility();
 
-    HasWidgets getPositionsContainer();
+    HasWidgets positionsContainer();
+
+    HasWidgets absencesContainer();
 
     void showFullScreen(boolean isFullScreen);
+
+    void showAbsencesLabel();
 }

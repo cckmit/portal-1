@@ -10,11 +10,9 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
+import ru.protei.portal.ui.common.client.widget.wizard.pane.WizardWidgetPane;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler {
 
@@ -52,6 +50,10 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
             tabNameToNavItem.remove(pane.getTabName());
         }
         return tabContent.remove(widget);
+    }
+
+    public void selectFirstTab() {
+        findFirstPane().ifPresent(p -> onTabSelected(p.getTabName()));
     }
 
     public void setTabNameActiveByDefault(String tabNameActiveByDefault) {
@@ -139,6 +141,10 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
                 entry.getValue().setActive();
             }
         }
+    }
+
+    private Optional<TabWidgetPane> findFirstPane() {
+        return tabNameToPane.values().stream().findFirst();
     }
 
     @UiHandler("navDropdownTabsSelected")

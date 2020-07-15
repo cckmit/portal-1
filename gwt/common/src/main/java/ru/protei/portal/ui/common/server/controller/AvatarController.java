@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.service.session.SessionService;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;

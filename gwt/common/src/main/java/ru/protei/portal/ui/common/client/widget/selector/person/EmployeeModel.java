@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -74,19 +75,23 @@ public abstract class EmployeeModel implements Activity,
         };
     }
 
-    private void requestCurrentPerson( Long myId ) {
+    private void requestCurrentPerson(Long myId) {
         if(currentPerson!=null && Objects.equals(currentPerson.getId(), myId)){
             return;
         }
         currentPerson = null;
-        employeeService.getEmployee(myId, new FluentCallback<PersonShortView>().withSuccess( r->currentPerson=r ) );
+        personService.getPersonShortView(myId, new FluentCallback<PersonShortView>().withSuccess(r->currentPerson=r));
     }
+
     private List<PersonShortView> transliteration(List<PersonShortView> options) {
         return options;
     }
 
     @Inject
     EmployeeControllerAsync employeeService;
+
+    @Inject
+    PersonControllerAsync personService;
 
     @Inject
     Lang lang;

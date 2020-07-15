@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
-import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
+import ru.protei.portal.ui.common.client.common.YearMonthDay;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.Objects;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.canView;
 import static ru.protei.portal.ui.roomreservation.client.util.AccessUtil.hasAccessToRoom;
-import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
+import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 
 public abstract class RoomReservationCalendarActivity implements Activity, AbstractRoomReservationCalendarActivity {
 

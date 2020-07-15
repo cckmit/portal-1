@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.List;

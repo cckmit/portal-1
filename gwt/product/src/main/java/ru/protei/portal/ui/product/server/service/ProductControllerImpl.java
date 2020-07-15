@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ProductController;

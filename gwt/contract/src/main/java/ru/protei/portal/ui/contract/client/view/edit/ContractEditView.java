@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;

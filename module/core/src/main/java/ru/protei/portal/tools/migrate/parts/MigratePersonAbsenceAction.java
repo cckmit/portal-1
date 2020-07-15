@@ -41,6 +41,7 @@ public class MigratePersonAbsenceAction implements MigrateAction {
     @Override
     public void migrate(Connection sourceConnection) throws SQLException {
 
+/*
         BatchProcess<PersonAbsence> batchProcess = new BaseBatchProcess<PersonAbsence>() {
             @Override
             protected void processUpdate(JdbcDAO<Long, PersonAbsence> dao, List<PersonAbsence> entries) {
@@ -107,6 +108,7 @@ public class MigratePersonAbsenceAction implements MigrateAction {
 
                     return x;
                 });
+*/
     }
 
     private String getHMS(Date date){
