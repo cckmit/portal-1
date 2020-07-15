@@ -24,8 +24,10 @@ import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
@@ -202,6 +204,10 @@ public abstract class IssueReportCreateActivity implements Activity,
                 }
                 break;
             case CASE_OBJECTS:
+                if (query.getCreatedRange() == null && query.getModifiedRange() == null) {
+                    fireEvent(new NotifyEvents.Show(lang.reportPeriodNotSelected(), NotifyEvents.NotifyType.ERROR));
+                    return false;
+                }
                 boolean createdRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
                 boolean modifiedRangeValid = validateModifiedRange(query.getModifiedRange(), rangeTypeMandatory);
 
@@ -210,6 +216,19 @@ public abstract class IssueReportCreateActivity implements Activity,
                     return false;
                 }
                 break;
+        }
+        if (!isValidLessYear(query.getCreatedRange()) || !isValidLessYear(query.getModifiedRange())) {
+            fireEvent(new NotifyEvents.Show(lang.reportPeriodMoreYear(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidLessYear(DateRange dateRange) {
+        if (dateRange != null && dateRange.getIntervalType() == En_DateIntervalType.FIXED &&
+                dateRange.getTo() != null && dateRange.getFrom() != null) {
+            Date yearAgo = new Date(dateRange.getTo().getTime() - TimeUnit.DAYS.toMillis(365));
+            return yearAgo.before(dateRange.getFrom());
         }
         return true;
     }

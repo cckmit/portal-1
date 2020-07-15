@@ -2152,6 +2152,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportMissingPeriod();
 
+    String reportPeriodNotSelected();
+
+    String reportPeriodMoreYear();
+
     String reportMissingState();
 
     String reportTypeCaseResolutionTime();
