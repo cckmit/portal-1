@@ -176,4 +176,8 @@ public class CrmConstants {
         long SOLVED_FIXED = 8;
         long SOLVED_DUPLICATED = 9;
     }
+
+    public interface Department {
+        Long CONTRACT = 384L;
+    }
 }

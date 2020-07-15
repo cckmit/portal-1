@@ -122,6 +122,13 @@ public class EmployeeSqlBuilder {
                 args.add(DateUtils.resetSeconds(new Date()));
                 args.add(DateUtils.resetSeconds(new Date()));
             }
+
+            if (CollectionUtils.isNotEmpty(query.getDepartmentIds())) {
+                condition.append(" and person.id in ")
+                        .append("(select personId from worker_entry where worker_entry.dep_id in ")
+                        .append(HelperFunc.makeInArg(query.getDepartmentIds(), String::valueOf))
+                        .append(")");
+            }
         });
     }
 }

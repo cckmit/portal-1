@@ -14,12 +14,16 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.LongBox;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.money.CostCurrencyWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -37,6 +41,7 @@ public class ContractSpecificationItem
         clause.setRegexp(CrmConstants.Masks.CONTRACT_SPECIFICATION_CLAUSE);
         clause.getElement().setAttribute( "placeholder", lang.contractSpecificationClausePlaceholder() );
         text.getElement().setAttribute( "placeholder", lang.contractSpecificationTextPlaceholder() );
+        quantity.getElement().setAttribute( "placeholder", lang.contractSpecificationQuantityPlaceholder() );
     }
 
     @Override
@@ -53,6 +58,8 @@ public class ContractSpecificationItem
 
         clause.setValue( value.getClause() );
         text.setValue( value.getText() );
+        quantity.setValue(value.getQuantity());
+        costWithCurrency.setValue(new CostWithCurrency(value.getCost(), value.getCurrency()));
     }
 
     @Override
@@ -80,6 +87,24 @@ public class ContractSpecificationItem
     @UiHandler( "text" )
     public void onChangeText(KeyUpEvent event) {
         value.setText(text.getValue());
+    }
+
+    @UiHandler("quantity")
+    public void onQuantityText(ValueChangeEvent<Long> event) {
+        value.setQuantity(quantity.getValue());
+    }
+
+    @UiHandler("costWithCurrency")
+    public void onCostWithCurrencyChanged(ValueChangeEvent<CostWithCurrency> event) {
+        CostWithCurrency val = costWithCurrency.getValue();
+        Long cost = val != null
+                ? val.getCost()
+                : null;
+        En_Currency currency = val != null
+                ? val.getCurrency()
+                : null;
+        value.setCost(cost);
+        value.setCurrency(currency);
     }
 
     public void setError(boolean isError, String error) {
@@ -125,6 +150,11 @@ public class ContractSpecificationItem
     ValidableTextBox clause;
     @UiField
     ValiableAutoResizeTextArea text;
+    @UiField
+    LongBox quantity;
+    @Inject
+    @UiField(provided = true)
+    CostCurrencyWidget costWithCurrency;
     @UiField
     Button remove;
     @UiField

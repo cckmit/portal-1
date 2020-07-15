@@ -41,6 +41,7 @@ public class EmployeeMultiSelector
 
     @Override
     public void onUnload() {
+        super.onUnload();
         model.clear();
     }
 

@@ -43,6 +43,8 @@ public class EmployeeQuery extends BaseQuery {
 
     private Boolean absent;
 
+    private Set<Long> departmentIds;
+
     public EmployeeQuery() {
         fired = false;
     }
@@ -195,6 +197,14 @@ public class EmployeeQuery extends BaseQuery {
         this.absent = absent;
     }
 
+    public Set<Long> getDepartmentIds() {
+        return departmentIds;
+    }
+
+    public void setDepartmentIds(Set<Long> departmentIds) {
+        this.departmentIds = departmentIds;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
@@ -213,6 +223,7 @@ public class EmployeeQuery extends BaseQuery {
                 ", secondName='" + secondName + '\'' +
                 ", birthday=" + birthday +
                 ", absent=" + absent +
+                ", departmentIds=" + departmentIds +
                 '}';
     }
 }
