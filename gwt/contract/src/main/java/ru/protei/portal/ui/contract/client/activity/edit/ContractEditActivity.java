@@ -24,8 +24,8 @@ import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
-import static ru.protei.portal.core.utils.DateUtils.addDays;
-import static ru.protei.portal.core.utils.DateUtils.getDaysBetween;
+import static ru.protei.portal.core.model.helper.DateUtils.addDays;
+import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
