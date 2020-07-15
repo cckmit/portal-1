@@ -4,7 +4,7 @@ import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
