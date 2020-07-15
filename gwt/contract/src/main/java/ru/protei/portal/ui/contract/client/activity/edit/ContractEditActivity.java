@@ -5,13 +5,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.CostWithCurrency;
-import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
+import ru.protei.portal.core.model.dict.En_ContractState;
+import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_Currency;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -21,11 +23,9 @@ import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Date;
-
+import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 import static ru.protei.portal.core.model.helper.DateUtils.addDays;
 import static ru.protei.portal.core.model.helper.DateUtils.getDaysBetween;
-import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 

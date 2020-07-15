@@ -116,6 +116,13 @@ public class EmployeeSqlBuilder {
                         .append(")");
             }
 
+            if (query.getAbsent() != null && query.getAbsent()) {
+                condition.append(" and person.id in ")
+                        .append("(select person_id from person_absence where from_time <= ? and till_time >= ?)");
+                args.add(DateUtils.resetSeconds(new Date()));
+                args.add(DateUtils.resetSeconds(new Date()));
+            }
+
             if (CollectionUtils.isNotEmpty(query.getDepartmentIds())) {
                 condition.append(" and person.id in ")
                         .append("(select personId from worker_entry where worker_entry.dep_id in ")

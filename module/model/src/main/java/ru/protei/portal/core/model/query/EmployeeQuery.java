@@ -41,9 +41,9 @@ public class EmployeeQuery extends BaseQuery {
 
     private Date birthday;
 
-    private Set<Long> departmentIds;
-
     private Boolean absent;
+
+    private Set<Long> departmentIds;
 
     public EmployeeQuery() {
         fired = false;
@@ -189,14 +189,6 @@ public class EmployeeQuery extends BaseQuery {
         this.birthday = birthday;
     }
 
-    public Set<Long> getDepartmentIds() {
-        return departmentIds;
-    }
-
-    public void setDepartmentIds(Set<Long> departmentIds) {
-        this.departmentIds = departmentIds;
-    }
-
     public Boolean getAbsent() {
         return absent;
     }
@@ -205,11 +197,19 @@ public class EmployeeQuery extends BaseQuery {
         this.absent = absent;
     }
 
+    public Set<Long> getDepartmentIds() {
+        return departmentIds;
+    }
+
+    public void setDepartmentIds(Set<Long> departmentIds) {
+        this.departmentIds = departmentIds;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
                 "ids=" + ids +
-                "fired=" + fired +
+                ", fired=" + fired +
                 ", deleted=" + deleted +
                 ", onlyPeople=" + onlyPeople +
                 ", homeCompanies=" + homeCompanies +
@@ -218,15 +218,11 @@ public class EmployeeQuery extends BaseQuery {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", email='" + email + '\'' +
                 ", departmentParent='" + departmentParent + '\'' +
-                ", searchString='" + searchString + '\'' +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
-                ", firstName=" + firstName +
-                ", lastName=" + lastName +
-                ", secondName=" + secondName +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", secondName='" + secondName + '\'' +
                 ", birthday=" + birthday +
+                ", absent=" + absent +
                 ", departmentIds=" + departmentIds +
                 ", absent=" + absent +
                 '}';

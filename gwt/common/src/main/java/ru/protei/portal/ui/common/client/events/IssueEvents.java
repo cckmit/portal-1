@@ -168,5 +168,12 @@ public class IssueEvents {
         }
         public Long issueId;
     }
+
+    public static class IssueMetaChanged {
+        public IssueMetaChanged(CaseObjectMeta meta) {
+            this.meta = meta;
+        }
+        public CaseObjectMeta meta;
+    }
 }
 
