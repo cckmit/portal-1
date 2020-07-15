@@ -29,5 +29,6 @@
   <include file="2020-07-08-modify-case_state-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-07-02-add-contractor-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-07-12-modify-subnet-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-07-15-modify-report-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

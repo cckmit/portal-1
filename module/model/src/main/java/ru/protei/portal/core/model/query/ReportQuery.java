@@ -29,6 +29,8 @@ public class ReportQuery extends BaseQuery {
 
     private List<En_ReportScheduledType> scheduledTypes;
 
+    private Boolean isRemoved = false;
+
     public ReportQuery() {}
 
     public ReportQuery(List<En_ReportStatus> statuses, String name, String locale, Date fromCreated, Date toCreated) {
@@ -125,6 +127,14 @@ public class ReportQuery extends BaseQuery {
         this.scheduledTypes = scheduledTypes;
     }
 
+    public Boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(Boolean removed) {
+        isRemoved = removed;
+    }
+
     @Override
     public String toString () {
         return "ReportQuery{" +
@@ -141,6 +151,7 @@ public class ReportQuery extends BaseQuery {
                 ", includeIds=" + includeIds +
                 ", excludeIds=" + excludeIds +
                 ", enReportScheduledType=" + scheduledTypes +
+                ", isRemoved=" + isRemoved +
                 '}';
     }
 }

@@ -92,7 +92,8 @@ public class ReportServiceImpl implements ReportService {
 
         Report report = reportDAO.getReport(token.getPersonId(), id);
 
-        if (report == null || report.getStatus() != En_ReportStatus.ERROR) {
+        if (report == null ||
+                !(report.getStatus() == En_ReportStatus.ERROR || report.getStatus() == En_ReportStatus.CANCELLED)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -187,7 +188,13 @@ public class ReportServiceImpl implements ReportService {
             idsToRemove.add(report.getId());
         }
         reportStorageService.removeContent(idsToRemove);
-        reportDAO.removeByKeys(idsToRemove);
+
+        Date now = new Date();
+        reports.forEach(report -> {
+            report.setRemoved(true);
+            report.setModified(now);
+        });
+        reportDAO.mergeBatch(reports);
     }
 
     private Lang getLang() {

@@ -82,7 +82,8 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
         numberColumn = new NumberColumn(lang, reportStatusLang);
         infoColumn = new InfoColumn(lang, reportTypeLang, scheduledTypeLang);
         filterColumn = new FilterColumn(lang, sortFieldLang, sortDirLang, caseImportanceLang, regionStateLang, intervalLang);
-        refreshClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.ERROR);
+        refreshClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.ERROR ||
+                                                        v.getStatus() == En_ReportStatus.CANCELLED);
         removeClickColumn.setDisplayPredicate(v -> v.getStatus() != En_ReportStatus.PROCESS);
         downloadClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.READY);
         cancelClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.PROCESS);

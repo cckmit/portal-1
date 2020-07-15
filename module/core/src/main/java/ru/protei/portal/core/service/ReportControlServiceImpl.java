@@ -139,7 +139,8 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
 
             Report currentReportStatus = reportDAO.partialGet( report.getId(), Report.Columns.STATUS );
-            if (currentReportStatus == null || CANCELLED.equals( currentReportStatus.getStatus() )) {
+            if (currentReportStatus == null || currentReportStatus.isRemoved()
+                    || CANCELLED.equals( currentReportStatus.getStatus() )) {
                 log.warn( "processReport(): Report {} is canceled", report.getId() );
                 return;
             }
@@ -214,7 +215,7 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     private Boolean isCancel(Long reportId) {
         Report report = reportDAO.partialGet( reportId, Report.Columns.STATUS );
-        if (report == null) return true;
+        if (report == null || report.isRemoved()) return true;
         if (En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
         return true;
     }
@@ -257,7 +258,13 @@ public class ReportControlServiceImpl implements ReportControlService {
             idsToRemove.add(report.getId());
         }
         reportStorageService.removeContent(idsToRemove);
-        reportDAO.removeByKeys(idsToRemove);
+
+        Date now = new Date();
+        reports.forEach(report -> {
+            report.setRemoved(true);
+            report.setModified(now);
+        });
+        reportDAO.mergeBatch(reports);
     }
 
     // --------------------
@@ -314,7 +321,8 @@ public class ReportControlServiceImpl implements ReportControlService {
         return CompletableFuture.supplyAsync(() -> {
             processReport(report);
             Report processedReport = reportDAO.get(report.getId());
-            if (!processedReport.getStatus().equals(En_ReportStatus.READY)) {
+            if (processedReport == null || processedReport.isRemoved() ||
+                    !processedReport.getStatus().equals(En_ReportStatus.READY)) {
                 log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport, processedReport.getStatus());
                 return new MailReportEvent(this, processedReport, null);
             }

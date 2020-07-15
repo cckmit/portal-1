@@ -85,6 +85,9 @@ public class Report implements Serializable {
     @JdbcColumn(name = "with_description")
     private boolean withDescription;
 
+    @JdbcColumn(name = "is_removed")
+    private boolean isRemoved = false;
+
     public Long getId() {
         return id;
     }
@@ -189,6 +192,14 @@ public class Report implements Serializable {
         this.withDescription = withDescription;
     }
 
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(boolean removed) {
+        isRemoved = removed;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
@@ -205,6 +216,7 @@ public class Report implements Serializable {
                 ", isRestricted=" + isRestricted +
                 ", scheduledType=" + scheduledType +
                 ", withDescription=" + withDescription +
+                ", isRemoved=" + isRemoved +
                 '}';
     }
 
