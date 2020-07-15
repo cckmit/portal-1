@@ -110,7 +110,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setPauseDateValid(true);
 
-        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId())));
     }
 
     @Override
@@ -174,7 +174,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setPauseDate(metaView.pauseDate().getValue().getTime());
         metaView.setPauseDateValid(true);
 
-        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
+        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId())));
     }
 
     @Override

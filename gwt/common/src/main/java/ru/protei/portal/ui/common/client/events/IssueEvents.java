@@ -147,10 +147,12 @@ public class IssueEvents {
     }
 
     public static class IssueStateChanged {
-        public IssueStateChanged( Long issueId ) {
+        public IssueStateChanged( Long issueId, Long stateId ) {
             this.issueId = issueId;
+            this.stateId = stateId;
         }
         public Long issueId;
+        public Long stateId;
     }
 
     public static class IssueImportanceChanged {

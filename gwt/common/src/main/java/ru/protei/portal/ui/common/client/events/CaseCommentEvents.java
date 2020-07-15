@@ -70,4 +70,8 @@ public class CaseCommentEvents {
     public static class Reload {
         public Reload() {}
     }
+
+    public static class DisableNewComment {
+        public DisableNewComment() {}
+    }
 }
