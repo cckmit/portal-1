@@ -98,7 +98,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void onContractParentChanged() {
         boolean contractParentExists = view.contractParent().getValue() != null;
-        view.kind().setValue(getContractKind(contractParentExists));
+        view.setKind(getContractKind(contractParentExists));
     }
 
     @Override
@@ -153,7 +153,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
 
         boolean contractParentExists = contract.getParentContractId() != null;
-        view.kind().setValue(getContractKind(contractParentExists));
+        view.setKind(getContractKind(contractParentExists));
 
         view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
         refreshProjectSpecificFields();

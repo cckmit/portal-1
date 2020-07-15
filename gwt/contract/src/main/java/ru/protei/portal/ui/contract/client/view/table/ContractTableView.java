@@ -154,7 +154,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
                             : "";
                     String vat = contract.getVat() != null
                             ? lang.vat(contract.getVat())
-                            : "";
+                            : lang.withoutVat();
                     return trim(cost + " " + currency + " " + vat);
                 }
         );

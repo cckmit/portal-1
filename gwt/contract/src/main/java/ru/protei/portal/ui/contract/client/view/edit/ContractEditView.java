@@ -9,7 +9,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
@@ -20,6 +19,7 @@ import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -84,13 +84,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public TakesValue<En_ContractKind> kind() {
-        return new TakesValue<En_ContractKind>() {
-            public void setValue(En_ContractKind value) {
-                kind.setValue(contractKindLang.getName(value));
-            }
-            public En_ContractKind getValue() { throw new UnsupportedOperationException(); }
-        };
+    public void setKind(En_ContractKind value) {
+        kind.setValue(contractKindLang.getName(value));
     }
 
     @Override
@@ -230,7 +225,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     private void initCuratorSelector() {
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
-        query.setDepartmentIds(new HashSet<>(Collections.singletonList(384L)));
+        query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
         curator.setEmployeeQuery(query);
     }
 
