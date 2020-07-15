@@ -156,6 +156,9 @@ public abstract class IssueEditActivity implements
         if (view.isAttached()) {
             reloadComments();
         }
+        if (isTerminalState(event.stateId)) {
+            fireEvent(new CaseCommentEvents.DisableNewComment());
+        }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
 

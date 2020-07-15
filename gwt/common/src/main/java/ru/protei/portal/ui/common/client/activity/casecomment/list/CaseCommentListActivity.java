@@ -124,6 +124,12 @@ public abstract class CaseCommentListActivity
         reloadComments();
     }
 
+    @Event
+    public void onDisableNewComment(CaseCommentEvents.DisableNewComment event) {
+        this.isNewCommentEnabled = false;
+        view.setNewCommentDisabled(true);
+    }
+
     @Override
     public void onRemoveClicked(final AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
