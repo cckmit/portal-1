@@ -221,7 +221,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                     requestPlatforms(company.getId(), platformOptions -> {
                                 fillPlatformValue(issueMetaView, platformOptions);
 
-                                issueMetaView.product().setValue(null);
+                                if (isCompanyWithAutoOpenIssues(company)) {
+                                    issueMetaView.product().setValue(null);
+                                }
+
                                 updateProductsFilter(issueMetaView.platform().getValue(), platformOptions, company);
 
                                 requestSla(
@@ -460,7 +463,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private void updateProductsFilter(PlatformOption selectedPlatform, List<PlatformOption> platforms, Company company) {
         updateProductModelAndMandatory(issueMetaView, isCompanyWithAutoOpenIssues(company));
 
-        if (isCompanyWithAutoOpenIssues(company)) {
+        if (!isCompanyWithAutoOpenIssues(company)) {
+            issueMetaView.updateProductsByPlatformIds(new HashSet<>());
+        } else {
             updateProductsFilter(
                     issueMetaView,
                     selectedPlatform == null ?
