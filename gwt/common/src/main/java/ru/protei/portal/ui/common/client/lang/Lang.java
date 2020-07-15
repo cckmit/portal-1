@@ -2100,6 +2100,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractSpecificationTextPlaceholder();
 
+    String contractSpecificationQuantityPlaceholder();
+
     String contractPaymentCommentPlaceholder();
 
     String contractDateSigning();

@@ -6,6 +6,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
@@ -61,6 +62,18 @@ public class CostCurrencyWidget extends Composite implements HasValue<CostWithCu
 
     public void setEnsureDebugId(String debugId) {
         root.ensureDebugId(debugId);
+    }
+
+    @UiHandler("cost")
+    public void onCostChanged(ValueChangeEvent<Long> event) {
+        CostWithCurrency value = getValue();
+        ValueChangeEvent.fire(this, value);
+    }
+
+    @UiHandler("currency")
+    public void onCurrencyChanged(ValueChangeEvent<En_Currency> event) {
+        CostWithCurrency value = getValue();
+        ValueChangeEvent.fire(this, value);
     }
 
     @UiField

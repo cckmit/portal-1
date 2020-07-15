@@ -146,13 +146,16 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
                 contract -> {
-                    String cost = contract.getCost() == null ?
-                            lang.contractCostNotDefined() :
-                            contract.getCost().toString() + " " + contract.getCurrency().getCode();
+                    String cost = contract.getCost() != null
+                            ? contract.getCost().toString()
+                            : "";
+                    String currency = contract.getCurrency() != null
+                            ? contract.getCurrency().getCode()
+                            : "";
                     String vat = contract.getVat() != null
                             ? lang.vat(contract.getVat())
                             : "";
-                    return trim(cost + " " + vat);
+                    return trim(cost + " " + currency + " " + vat);
                 }
         );
         clickColumns.add(costColumn);

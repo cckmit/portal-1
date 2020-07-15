@@ -9,4 +9,12 @@
             <column name="cost_vat" type="BIGINT"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="add-quantity-and-cost-and-currency-columns-to-contract_specification-table" author="buchmastov">
+        <addColumn tableName="contract_specification">
+            <column name="quantity" type="BIGINT"/>
+            <column name="cost" type="BIGINT"/>
+            <column name="cost_currency" type="INT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

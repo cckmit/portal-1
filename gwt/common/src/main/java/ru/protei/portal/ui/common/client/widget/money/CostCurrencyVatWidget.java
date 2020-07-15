@@ -6,10 +6,10 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
-import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.vat.VatButtonSelector;
@@ -90,6 +90,24 @@ public class CostCurrencyVatWidget extends Composite implements HasValue<CostWit
         return Objects.equals(vat, "no")
                 ? null
                 : parseLong(vat);
+    }
+
+    @UiHandler("cost")
+    public void onCostChanged(ValueChangeEvent<Long> event) {
+        CostWithCurrencyWithVat value = getValue();
+        ValueChangeEvent.fire(this, value);
+    }
+
+    @UiHandler("currency")
+    public void onCurrencyChanged(ValueChangeEvent<En_Currency> event) {
+        CostWithCurrencyWithVat value = getValue();
+        ValueChangeEvent.fire(this, value);
+    }
+
+    @UiHandler("vat")
+    public void onVatChanged(ValueChangeEvent<Long> event) {
+        CostWithCurrencyWithVat value = getValue();
+        ValueChangeEvent.fire(this, value);
     }
 
     @UiField
