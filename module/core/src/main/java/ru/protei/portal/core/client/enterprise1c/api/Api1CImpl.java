@@ -14,6 +14,7 @@ import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.lang.En_1CParamType;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
+import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Country1C;
 import ru.protei.portal.core.model.enterprise1c.Response1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
@@ -106,6 +107,39 @@ public class Api1CImpl implements Api1C{
     }
 
     @Override
+    public Result<Contract1C> saveContract(Contract1C contract, String homeCompanyName) {
+        log.debug("saveContract(): contract={}, homeCompanyName={}", contract, homeCompanyName);
+
+        if (!validateContract(contract)){
+            log.warn("saveContract(): contract is not valid");
+            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        try {
+            return client.save(buildSaveContractUrl(homeCompanyName), jsonMapper.writeValueAsString(contract), Contract1C.class)
+                    .ifOk(value -> log.info("saveContract(): OK "))
+                    .ifError(result -> log.warn("saveContract(): Can`t save contract={}. {}", contract, result));
+        } catch (JsonProcessingException e){
+            log.error("saveContract(): failed to serialize contract", e);
+            return Result.error(En_ResultStatus.INTERNAL_ERROR);
+        }
+    }
+
+    @Override
+    public Result<List<Contract1C>> getContracts(Contract1C contract, String homeCompanyName) {
+        log.debug("getContract(): contract={}, homeCompanyName={}", contract, homeCompanyName);
+
+        if (contract == null || homeCompanyName == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return client.read(buildGetContractUrl(contract, homeCompanyName), Response1C.class)
+                .ifOk( value -> log.info( "getContract(): OK " ) )
+                .ifError( result -> log.warn( "getContract(): Can`t get contract={}. {}", contract, result ))
+                .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<List<Contract1C>>() {}));
+    }
+
+    @Override
     public Result<Boolean> isResident(Contractor1C contractor, String homeCompanyName){
         log.debug("isResident(): contractor={}, homeCompanyName={}", contractor, homeCompanyName);
 
@@ -170,6 +204,30 @@ public class Api1CImpl implements Api1C{
         return true;
     }
 
+    private boolean validateContract(Contract1C contract) {
+        if (contract == null){
+            log.warn("validateContract(): contract is null");
+            return false;
+        }
+
+        if (!checkText(CrmConstants.Masks.CONTRACT_NUMBER, contract.getNumber())){
+            log.warn("validateContract(): contract number not valid");
+            return false;
+        }
+
+        if (contract.getDateSigning() == null){
+            log.warn("validateContract(): signing date is mandatory");
+            return false;
+        }
+
+        if (StringUtils.isEmpty(contract.getContractorKey())){
+            log.warn("validateContract(): contractor key is mandatory");
+            return false;
+        }
+
+        return true;
+    }
+
     private String buildGetContractorUrl(Contractor1C contractor, String homeCompanyName){
         String url = buildCommonUrl(contractor.getClass(), homeCompanyName);
         url += "&" + URL_PARAM_SELECT + String.join(",", fieldsMapper.getFields(Contractor1C.class));
@@ -192,6 +250,22 @@ public class Api1CImpl implements Api1C{
         url += "&" + URL_PARAM_FILTER + fillFilter(country1C.getClass(), country1C);
 
         log.debug("buildGetCountryUrl(): url={}", replaceSpaces(url));
+
+        return replaceSpaces(url);
+    }
+
+    private String buildSaveContractUrl(String homeCompanyName){
+        String url = buildCommonUrl(Contract1C.class, homeCompanyName);
+        log.debug("buildSaveContractUrl(): url={}", url);
+        return url;
+    }
+
+    private String buildGetContractUrl(Contract1C contract, String homeCompanyName){
+        String url = buildCommonUrl(contract.getClass(), homeCompanyName);
+        url += "&" + URL_PARAM_SELECT + String.join(",", fieldsMapper.getFields(Contract1C.class));
+        url += "&" + URL_PARAM_FILTER + fillFilter(contract.getClass(), contract);
+
+        log.debug("buildGetContractorUrl(): url={}", replaceSpaces(url));
 
         return replaceSpaces(url);
     }
