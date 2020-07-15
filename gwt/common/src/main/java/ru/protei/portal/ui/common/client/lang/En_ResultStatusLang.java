@@ -74,6 +74,8 @@ public class En_ResultStatusLang {
             case ROOM_RESERVATION_HAS_INTERSECTIONS: return lang.errRoomReservationHasIntersections();
             case ISSUE_FILTER_IS_USED: return lang.errPersonCaseFilterInUse();
             case REQUEST_1C_FAILED: return lang.errRequest1CFailed();
+            case ABSENCE_HAS_INTERSECTIONS: return lang.errAbsenceHasIntersections();
+            case NOT_CURRENT_ABSENCE: return lang.errNotCurrentAbsence();
             default: return lang.errUnknownResult();
         }
     }

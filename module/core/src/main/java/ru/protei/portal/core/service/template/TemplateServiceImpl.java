@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -47,6 +47,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class TemplateServiceImpl implements TemplateService {
     public static final String BASE_TEMPLATE_PATH = "notification/email/";
     private static Logger log = getLogger(TemplateServiceImpl.class);
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     Configuration templateConfiguration;
 
@@ -567,6 +568,63 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/reservation.room.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("absentEmployee", absence.getPerson().getName());
+        templateModel.put("initiator", initiator.getDisplayName());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/absence.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients) {
+        PersonAbsence oldState = event.getOldState();
+        PersonAbsence newState = event.getNewState();
+
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("is_created", action == EventAction.CREATED);
+        templateModel.put("is_updated", action == EventAction.UPDATED);
+        templateModel.put("is_removed", action == EventAction.REMOVED);
+
+        templateModel.put("absentEmployee", newState.getPerson().getName());
+
+        templateModel.put("fromTimeChanged", event.isFromTimeChanged());
+        templateModel.put("oldFromTime", oldState == null ? null : dateFormat.format(oldState.getFromTime()));
+        templateModel.put("fromTime", dateFormat.format(newState.getFromTime()));
+
+        templateModel.put("tillTimeChanged", event.isTillTimeChanged());
+        templateModel.put("oldTillTime", oldState == null ? null : dateFormat.format(oldState.getTillTime()));
+        templateModel.put("tillTime", dateFormat.format(newState.getTillTime()));
+
+        templateModel.put("reason", newState.getReason().getId());
+
+        templateModel.put("commentChanged", event.isUserCommentChanged());
+        templateModel.put("oldComment", getNullOrElse(oldState, PersonAbsence::getUserComment));
+        templateModel.put("comment", newState.getUserComment());
+
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/absence.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getAbsenceReportSubject(String title) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("reportTitle", title);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/absence.report.subject.%s.ftl");
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
         return template;

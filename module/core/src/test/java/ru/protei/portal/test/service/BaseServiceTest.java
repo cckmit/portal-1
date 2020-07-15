@@ -141,6 +141,17 @@ public class BaseServiceTest {
         return plan;
     }
 
+    protected PersonAbsence createAbsence(Long personId) {
+        PersonAbsence absence = new PersonAbsence();
+        absence.setCreated(new Date());
+        absence.setCreatorId(personId);
+        absence.setPersonId(personId);
+        absence.setFromTime(new Date());
+        absence.setTillTime(new Date());
+        absence.setReason(En_AbsenceReason.PERSONAL_AFFAIR);
+        return absence;
+    }
+
     public static void checkResult( Result result ) {
         assertNotNull( "Expected result", result );
         assertTrue( "Expected ok result", result.isOk() );
@@ -258,6 +269,12 @@ public class BaseServiceTest {
         return product;
     }
 
+    protected PersonAbsence makeAbsence(Long personId) {
+        PersonAbsence absence = createAbsence(personId);
+        absence.setId(personAbsenceDAO.persist(absence));
+        return absence;
+    }
+
     // Remove
 
     protected boolean removeCaseObjectAndComments(CaseObject caseObject) {
@@ -319,4 +336,6 @@ public class BaseServiceTest {
     protected UserRoleDAO userRoleDAO;
     @Autowired
     protected ProjectService projectService;
+    @Autowired
+    protected PersonAbsenceDAO personAbsenceDAO;
 }

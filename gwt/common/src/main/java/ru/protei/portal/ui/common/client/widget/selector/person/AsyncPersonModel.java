@@ -68,8 +68,7 @@ public abstract class AsyncPersonModel implements AsyncSearchSelectorModel<Perso
         }
 
         currentPerson = null;
-        personService.getPerson(myId, new FluentCallback<Person>()
-                .withSuccess(this::savePerson)
+        personService.getPersonShortView(myId, new FluentCallback<PersonShortView>().withSuccess(r->currentPerson=r)
         );
     }
 

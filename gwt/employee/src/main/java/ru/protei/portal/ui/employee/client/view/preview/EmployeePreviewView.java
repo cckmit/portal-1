@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,7 +9,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewActivity;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewView;
 
@@ -20,38 +19,27 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @Inject
     public void onInit() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
+        initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
-    public void setActivity( AbstractEmployeePreviewActivity activity ) {
+    public void setActivity(AbstractEmployeePreviewActivity activity) {
         this.activity = activity;
     }
 
     @Override
-    public void setID( String value ) {
-        this.id.setInnerText( value );
+    public void setID(String value) {
+        this.id.setInnerText(value);
     }
 
     @Override
-    public void setIP( String ip ) {
-        this.ip.setInnerText( ip );
-    }
-
-    @Override
-    public HasWidgets getPositionsContainer() {
-        return positionsContainer;
+    public void setIP(String ip) {
+        this.ip.setInnerText(ip);
     }
 
     @Override
     public void setPhotoUrl(String url) {
         photo.setUrl(url);
-    }
-
-    @Override
-    public void showFullScreen(boolean isFullScreen) {
-        backButtonPanel.setVisible(isFullScreen);
-        rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
     @Override
@@ -87,6 +75,25 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     @Override
     public HasVisibility emailContainerVisibility() {
         return emailContainer;
+    }
+
+    @Override
+    public HasWidgets positionsContainer() {
+        return positionsContainer;
+    }
+
+    @Override
+    public HasWidgets absencesContainer() {
+        return absencesContainer;
+    }
+
+    public void showAbsencesLabel() {
+        absencesLabel.removeClassName("hide");
+    }
+    @Override
+    public void showFullScreen(boolean isFullScreen) {
+        backButtonPanel.setVisible(isFullScreen);
+        rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
     @UiHandler("backButton")
@@ -140,6 +147,12 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     HTMLPanel emailContainer;
+
+    @UiField
+    HeadingElement absencesLabel;
+
+    @UiField
+    HTMLPanel absencesContainer;
 
     @UiField
     HTMLPanel backButtonPanel;

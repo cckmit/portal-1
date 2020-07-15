@@ -36,6 +36,7 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -627,7 +628,6 @@ public class MailNotificationProcessor {
                     bodyTemplate, subjectTemplate,
                     true);
         }
-
     }
 
     // -----------------------
@@ -818,9 +818,80 @@ public class MailNotificationProcessor {
         sendMailToRecipients(Collections.singletonList(notifier), bodyTemplate, subjectTemplate, true);
     }
 
+
+    // -----------------------
+    // Absence notifications
+    // -----------------------
+
+    @EventListener
+    public void onAbsenceNotificationEvent(AbsenceNotificationEvent event) {
+        Person initiator = event.getInitiator();
+        PersonAbsence absence = event.getNewState();
+        EventAction action = event.getAction();
+        List<NotificationEntry> notificationEntries = collectNotifiers(event);
+        List<String> recipients = getNotifiersAddresses(notificationEntries);
+
+        if (isEmpty(notificationEntries) || action == null || absence == null) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getAbsenceNotificationSubject(initiator, absence);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for absence notification with id={} and action={}",
+                    absence.getId(), action);
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for absence notification with id={} and action={}",
+                    absence.getId(), action);
+            return;
+        }
+
+        sendMailToRecipients(notificationEntries, bodyTemplate, subjectTemplate, true);
+    }
+
+    @EventListener
+    public void onAbsenceReportEvent(AbsenceReportEvent event) {
+        Person initiator = event.getInitiator();
+        String title = event.getTitle();
+
+        PreparedTemplate subjectTemplate = templateService.getAbsenceReportSubject(event.getTitle());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for absence report initiator={}", initiator);
+            return;
+        }
+
+        NotificationEntry notificationEntry = fetchNotificationEntryFromPerson(initiator);
+
+        try {
+            String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), true);
+            MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+            msg.setSubject(subject);
+            msg.setFrom(getFromAddress());
+            msg.setText("", true);
+            msg.setTo(notificationEntry.getAddress());
+            msg.addAttachment(title + ".xlsx", new ByteArrayResource(IOUtils.toByteArray(event.getContent())));
+            mailSendChannel.send(msg.getMimeMessage());
+        } catch (Exception e) {
+            log.error("Failed to make MimeMessage", e);
+        }
+    }
+
     // -----
     // Utils
     // -----
+
+    private List<NotificationEntry> collectNotifiers(AbsenceNotificationEvent event) {
+        return stream(new ArrayList<Person>() {{
+            addAll(event.getNotifiers());
+            add(event.getInitiator());
+        }}).map(this::fetchNotificationEntryFromPerson)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 
     private void sendMailToRecipients(Collection<NotificationEntry> recipients, PreparedTemplate bodyTemplate, PreparedTemplate subjectTemplate, boolean isShowPrivacy) {
         recipients.forEach(entry -> {

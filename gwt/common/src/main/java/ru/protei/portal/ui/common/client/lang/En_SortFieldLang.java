@@ -58,6 +58,12 @@ public class En_SortFieldLang {
                 return lang.planFinishDate();
             case author_id:
                 return lang.issueCommentAuthor();
+            case absence_date:
+                return lang.absenceStartDateRange();
+            case absence_person:
+                return lang.contactFullName();
+            case absence_reason:
+                return lang.absenceReason();
 
             default:
                 return lang.unknownField();

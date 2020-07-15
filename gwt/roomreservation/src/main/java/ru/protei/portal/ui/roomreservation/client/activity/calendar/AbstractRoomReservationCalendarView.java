@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.RoomReservable;
 import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
-import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
+import ru.protei.portal.ui.common.client.common.YearMonthDay;
 
 public interface AbstractRoomReservationCalendarView extends IsWidget {
 

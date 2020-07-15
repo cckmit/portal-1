@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;

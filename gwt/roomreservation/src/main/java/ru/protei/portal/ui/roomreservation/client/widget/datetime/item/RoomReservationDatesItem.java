@@ -19,7 +19,7 @@ import ru.protei.portal.ui.roomreservation.client.widget.datetime.HasVaryAbility
 
 import java.util.Date;
 
-import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.resetTime;
+import static ru.protei.portal.ui.common.client.util.DateUtils.resetTime;
 
 public class RoomReservationDatesItem extends Composite implements HasValue<DateInterval>, HasEnabled, HasVaryAbility {
 
