@@ -699,7 +699,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
             updateProductModelAndMandatory(metaView, isCompanyWithAutoOpenIssues(company));
 
-            if (isCompanyWithAutoOpenIssues(company)) {
+            if (!isCompanyWithAutoOpenIssues(company)) {
+                metaView.updateProductsByPlatformIds(new HashSet<>());
+            } else {
                 resetProduct(meta, metaView);
                 updateProductsFilter(
                         metaView,
