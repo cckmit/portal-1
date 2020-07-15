@@ -62,13 +62,13 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getPagerContainer().clear();
         init.parent.clear();
 
-        init.parent.add( view.asWidget() );
-        view.getPagerContainer().add( pagerView.asWidget() );
+        init.parent.add(view.asWidget());
+        view.getPagerContainer().add(pagerView.asWidget());
         view.getFilterContainer().add(event.filter);
 
         this.query = event.query;
 
-        requestEmployees( 0 );
+        requestEmployees(0);
     }
 
     @Event
@@ -78,7 +78,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         this.query = event.query;
 
-        requestEmployees( 0 );
+        requestEmployees(0);
     }
 
     @Event
@@ -136,8 +136,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                         if ( isFirstChunk ) {
                             pagerView.setTotalCount( r.getTotalCount() );
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
-                            pagerView.setCurrentPage( 0 );
                         }
+                        pagerView.setCurrentPage( page );
                         r.getResults().forEach( fillViewer );
                         view.showLoader( false );
                     }

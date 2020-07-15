@@ -20,6 +20,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         view.getPagerContainer().clear();
         init.parent.clear();
 
-        init.parent.add( view.asWidget() );
+        init.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
         view.getFilterContainer().add(event.filter);
 
@@ -145,8 +146,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
                         }
                         pagerView.setCurrentPage( page );
                         view.addRecords( r.getResults() );
-                        model.clear();
-                        model.addAll( r.getResults().stream().map( EmployeeShortView::getId ).collect( Collectors.toSet() ) );
+                        updateModel( r.getResults() );
                         restoreScroll();
                     }
                 } ) );
@@ -165,6 +165,11 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         Window.scrollTo(0, scrollTo);
         preScroll = false;
         scrollTo = 0;
+    }
+
+    private void updateModel(List<EmployeeShortView> result) {
+        model.clear();
+        model.addAll(result.stream().map(EmployeeShortView::getId).collect(Collectors.toSet()));
     }
 
     @Inject
