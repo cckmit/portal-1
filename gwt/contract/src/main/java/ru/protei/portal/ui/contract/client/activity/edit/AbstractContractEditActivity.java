@@ -10,5 +10,7 @@ public interface AbstractContractEditActivity {
 
     void onOrganizationChanged();
 
+    void onContractParentChanged();
+
     void refreshProjectSpecificFields();
 }

@@ -6,13 +6,14 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 
-public class CostWithCurrencyView extends Composite implements HasValue<CostWithCurrency>, HasEnabled {
+public class CostCurrencyWidget extends Composite implements HasValue<CostWithCurrency>, HasEnabled {
 
     @Inject
     public void init() {
@@ -63,6 +64,18 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
         root.ensureDebugId(debugId);
     }
 
+    @UiHandler("cost")
+    public void onCostChanged(ValueChangeEvent<Long> event) {
+        CostWithCurrency value = getValue();
+        ValueChangeEvent.fire(this, value);
+    }
+
+    @UiHandler("currency")
+    public void onCurrencyChanged(ValueChangeEvent<En_Currency> event) {
+        CostWithCurrency value = getValue();
+        ValueChangeEvent.fire(this, value);
+    }
+
     @UiField
     LongBox cost;
     @Inject
@@ -73,6 +86,6 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
 
     private En_Currency defaultCurrency;
 
-    interface CostWithCurrencyViewUiBinder extends UiBinder<HTMLPanel, CostWithCurrencyView> {}
+    interface CostWithCurrencyViewUiBinder extends UiBinder<HTMLPanel, CostCurrencyWidget> {}
     private static CostWithCurrencyViewUiBinder ourUiBinder = GWT.create(CostWithCurrencyViewUiBinder.class);
 }

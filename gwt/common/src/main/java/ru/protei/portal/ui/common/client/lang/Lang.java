@@ -2072,6 +2072,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractType();
 
+    String contractKind();
+
     String contractNumber();
 
     String contractCommonHeader();
@@ -2097,6 +2099,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractSpecificationClausePlaceholder();
 
     String contractSpecificationTextPlaceholder();
+
+    String contractSpecificationQuantityPlaceholder();
 
     String contractPaymentCommentPlaceholder();
 
@@ -2743,4 +2747,14 @@ public interface Lang extends Messages, ContactItemLang {
     String reservedIpSubnetAllowReserve();
 
     String errRequest1CFailed();
+
+    String contractKindReceipt();
+
+    String contractKindExpenditure();
+
+    String days();
+
+    String withoutVat();
+
+    String vat(long percent);
 }

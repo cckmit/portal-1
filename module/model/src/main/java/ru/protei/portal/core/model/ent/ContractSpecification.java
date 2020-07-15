@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -24,6 +25,16 @@ public class ContractSpecification implements Serializable, Comparable<ContractS
 
     @JdbcColumn(name = "text")
     private String text;
+
+    @JdbcColumn(name = "quantity")
+    private Long quantity;
+
+    @JdbcColumn(name = "cost")
+    private Long cost;
+
+    @JdbcColumn(name = "cost_currency")
+    @JdbcEnumerated(EnumType.ID)
+    private En_Currency currency;
 
     @JdbcPostGet
     void parseClause() {
@@ -74,6 +85,30 @@ public class ContractSpecification implements Serializable, Comparable<ContractS
         return emptyIfNull(clauseNumbers).size();
     }
 
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
+
+    public Long getCost() {
+        return cost;
+    }
+
+    public void setCost(Long cost) {
+        this.cost = cost;
+    }
+
+    public En_Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(En_Currency currency) {
+        this.currency = currency;
+    }
+
     @Override
     public int compareTo(ContractSpecification o) {
         List<Integer> o1 = this.getClauseNumbers();
@@ -95,6 +130,9 @@ public class ContractSpecification implements Serializable, Comparable<ContractS
                 ", contractId=" + contractId +
                 ", clause=" + clause +
                 ", text=" + text +
+                ", quantity=" + quantity +
+                ", cost=" + cost +
+                ", currency=" + currency +
                 '}';
     }
 }
