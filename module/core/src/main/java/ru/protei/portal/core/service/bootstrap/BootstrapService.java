@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service.bootstrap;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
+import ru.protei.portal.tools.migrate.struct.ExternalPersonAbsence;
+import ru.protei.portal.tools.migrate.struct.ExternalPersonLeave;
 import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
 import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -32,6 +35,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,6 +79,7 @@ public class BootstrapService {
         updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
+        migratePersonAbsences();
     }
 
     private void fillWithCrossLinkColumn() {
@@ -660,6 +665,96 @@ if(true) return; //TODO remove
         return new DateRange(En_DateIntervalType.FIXED, from, to);
     }
 
+    private void migratePersonAbsences() {
+
+        log.info("Migrate absences started");
+
+        try {
+            List<PersonAbsence> absences = personAbsenceDAO.getAll();
+            if (CollectionUtils.isNotEmpty(absences)) {
+                log.info("Need no to migrate absences data cause some data is already exist");
+                return;
+            }
+
+            List<ExternalPersonAbsence> extAbsences = legacySystemDAO.getExternalAbsences(dateTimeFormatter.format(new Date()));
+
+            if (CollectionUtils.isEmpty(extAbsences)) {
+                log.info("Need no to migrate absences data cause source is empty");
+                return;
+            }
+
+            log.info("Count of absences {}", extAbsences.size());
+            extAbsences.forEach(extAbsence -> {
+
+                try {
+                    PersonAbsence absence = new PersonAbsence();
+                    absence.setCreated(extAbsence.getCreated());
+                    Long creatorId = personDAO.getEmployeeByOldId(extAbsence.getSubmitterID()).getId();
+                    Long personId = personDAO.getEmployeeByOldId(extAbsence.getPersonID()).getId();
+                    absence.setCreatorId(creatorId);
+                    absence.setPersonId(personId);
+                    absence.setFromTime(extAbsence.getFromTime() == null ? extAbsence.getFromDate() : joinDateTime(extAbsence.getFromDate(), extAbsence.getFromTime()));
+                    absence.setTillTime(extAbsence.getToTime() == null ?  setEndOfDay(extAbsence.getToDate()) : joinDateTime(extAbsence.getToDate(), extAbsence.getToTime()));
+                    absence.setReason(absenceReasonMap.get(extAbsence.getReasonID()));
+                    absence.setUserComment(extAbsence.getComment());
+                    personAbsenceDAO.persist(absence);
+                } catch (Exception e) {
+                    log.warn("Not saved absence entry with id {}", extAbsence.getId());
+                }
+            });
+
+            List<ExternalPersonLeave> extLeaves = legacySystemDAO.getExternalLeaves(dateTimeFormatter.format(new Date()));
+
+            if (CollectionUtils.isEmpty(extLeaves)) {
+                log.info("Need no to migrate leaves data cause source is empty");
+                return;
+            }
+
+            log.info("Count of leaves {}", extLeaves.size());
+            extLeaves.forEach(extLeave -> {
+
+                try {
+                    PersonAbsence absence = new PersonAbsence();
+                    absence.setCreated(extLeave.getCreated());
+                    Long creatorId = personDAO.getEmployeeByOldId(extLeave.getSubmitterID()).getId();
+                    Long personId = personDAO.getEmployeeByOldId(extLeave.getPersonID()).getId();
+                    absence.setCreatorId(creatorId);
+                    absence.setPersonId(personId);
+                    absence.setFromTime(extLeave.getFromDate());
+                    absence.setTillTime(setEndOfDay(extLeave.getToDate()));
+                    absence.setReason(En_AbsenceReason.LEAVE);
+                    absence.setUserComment(extLeave.getComment());
+                    personAbsenceDAO.persist(absence);
+                } catch (Exception e) {
+                    log.warn("Not saved leave entry with id {}", extLeave.getId());
+                }
+            });
+
+        } catch (Exception e) {
+            log.warn("Unable to get absences data from prod DB", e);
+        }
+
+        log.info("Migrate absences ended");
+    }
+
+    private Date joinDateTime(Date date, Date time) {
+        Date date_part = new Date(date.getTime());
+        Date time_part = new Date(time.getTime());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time_part);
+        date_part = DateUtils.setHours(date_part, calendar.get(Calendar.HOUR_OF_DAY));
+        date_part = DateUtils.setMinutes(date_part, calendar.get(Calendar.MINUTE));
+        return date_part;
+    }
+
+    private Date setEndOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        return calendar.getTime();
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -721,4 +816,24 @@ if(true) return; //TODO remove
     HistoryDAO historyDAO;
     @Autowired
     PlanDAO planDAO;
+    @Autowired
+    PersonAbsenceDAO personAbsenceDAO;
+
+    SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    private static Map<Long, En_AbsenceReason> absenceReasonMap = new HashMap<>();
+    static {
+        absenceReasonMap.put(1L, En_AbsenceReason.BUSINESS_TRIP);
+        absenceReasonMap.put(2L, En_AbsenceReason.LEAVE);
+        absenceReasonMap.put(3L, En_AbsenceReason.DISEASE);
+        absenceReasonMap.put(4L, En_AbsenceReason.PERSONAL_AFFAIR);
+        absenceReasonMap.put(5L, En_AbsenceReason.LOCAL_BUSINESS_TRIP);
+        absenceReasonMap.put(6L, En_AbsenceReason.STUDY);
+        absenceReasonMap.put(7L, En_AbsenceReason.SICK_LEAVE);
+        absenceReasonMap.put(8L, En_AbsenceReason.GUEST_PASS);
+        absenceReasonMap.put(9L, En_AbsenceReason.NIGHT_WORK);
+        absenceReasonMap.put(10L, En_AbsenceReason.LEAVE_WITHOUT_PAY);
+        absenceReasonMap.put(11L, En_AbsenceReason.DUTY);
+        absenceReasonMap.put(12L, En_AbsenceReason.REMOTE_WORK);
+    }
 }
