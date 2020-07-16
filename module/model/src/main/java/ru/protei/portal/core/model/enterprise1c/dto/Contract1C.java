@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.enterprise1c.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,8 +25,8 @@ public class Contract1C {
     private String number;
 
     //"Зак.-спец.№29 от 06.08.18г. к Дог.№217091/0501  РТК Оренбург"
-    @JsonProperty("Description")
-    private String name;
+/*    @JsonProperty("Description")
+    private String name;*/
 
     //"a191c4b8-67c7-11de-a54e-001f3c01f807"
     @SpecialParam1C(En_1CParamType.ID)
@@ -33,8 +34,9 @@ public class Contract1C {
     private String contractorKey;
 
     //"Дата": "2018-08-06T00:00:00",
-    //@SpecialParam1C(En_1CParamType.DATE)
+    @SpecialParam1C(En_1CParamType.DATE)
     @JsonProperty("Дата")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     private Date dateSigning;
 
     public String getRefKey() {
@@ -47,8 +49,7 @@ public class Contract1C {
 
 /*    public String getName() { return name; }
 
-    public void setName(String name) { this.name = name; }
-*/
+    public void setName(String name) { this.name = name; }*/
 
     public String getNumber() {
         return number;

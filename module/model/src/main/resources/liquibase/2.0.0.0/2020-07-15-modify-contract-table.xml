@@ -10,9 +10,9 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="add-unique_constraint-on-contract-table" author="frost">
+<!--    <changeSet id="add-unique_constraint-on-contract-table" author="frost">
         <addUniqueConstraint constraintName="ref_key_unique"
                              tableName="contract" columnNames="ref_key"/>
-    </changeSet>
+    </changeSet>-->
 
 </databaseChangeLog>

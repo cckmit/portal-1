@@ -183,6 +183,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractSpecifications(view.contractSpecifications().getValue());
 
         contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
+        contract.setOrganizationName(view.organization().getValue() == null ? "" : view.organization().getValue().getDisplayText());
         contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
 
         contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());

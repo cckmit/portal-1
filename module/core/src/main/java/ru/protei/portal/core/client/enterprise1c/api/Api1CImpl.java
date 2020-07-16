@@ -126,14 +126,14 @@ public class Api1CImpl implements Api1C{
     }
 
     @Override
-    public Result<List<Contract1C>> getContracts(Contract1C contract, String homeCompanyName) {
+    public Result<Contract1C> getContract(Contract1C contract, String homeCompanyName) {
         log.debug("getContract(): contract={}, homeCompanyName={}", contract, homeCompanyName);
 
-        if (contract == null || homeCompanyName == null){
+        if (contract == null || homeCompanyName == null || StringUtils.isBlank(contract.getRefKey())){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return client.read(buildGetContractUrl(contract, homeCompanyName), Response1C.class)
+        return client.read(buildGetContractByKeyUrl(contract, homeCompanyName), Response1C.class)
                 .ifOk( value -> log.info( "getContract(): OK " ) )
                 .ifError( result -> log.warn( "getContract(): Can`t get contract={}. {}", contract, result ))
                 .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<List<Contract1C>>() {}));
@@ -260,13 +260,9 @@ public class Api1CImpl implements Api1C{
         return url;
     }
 
-    private String buildGetContractUrl(Contract1C contract, String homeCompanyName){
-        String url = buildCommonUrl(contract.getClass(), homeCompanyName);
-        url += "&" + URL_PARAM_SELECT + String.join(",", fieldsMapper.getFields(Contract1C.class));
-        url += "&" + URL_PARAM_FILTER + fillFilter(contract.getClass(), contract);
-
-        log.debug("buildGetContractorUrl(): url={}", replaceSpaces(url));
-
+    private String buildGetContractByKeyUrl(Contract1C contract, String homeCompanyName){
+        String url = buildCommonUrl(contract.getClass(), homeCompanyName, contract.getRefKey());
+        log.debug("buildGetContractByKeyUrl(): url={}", replaceSpaces(url));
         return replaceSpaces(url);
     }
 
@@ -280,6 +276,30 @@ public class Api1CImpl implements Api1C{
         }
 
         url += "/" + annotation.value() + "?" + URL_PARAM_FORMAT;
+        return url;
+    }
+
+    private String buildCommonUrl (Class<?> clazz, String homeCompanyName, String refKey){
+
+        if (StringUtils.isBlank(refKey)){
+            return buildCommonUrl(clazz, homeCompanyName);
+        }
+
+        String url = getBaseUrl(homeCompanyName);
+        UrlName1C annotation = clazz.getAnnotation(UrlName1C.class);
+
+        if (annotation == null || StringUtils.isEmpty(annotation.value())){
+            log.error("buildCommonUrl(): class={} does not have annotation @UrlName1C", clazz.getSimpleName());
+            return "";
+        }
+
+        url += "/" + annotation.value() ;
+
+        if (StringUtils.isNotBlank(refKey)){
+            url += "(guid'" + refKey + "')";
+        }
+
+        url += "?" + URL_PARAM_FORMAT;
         return url;
     }
 

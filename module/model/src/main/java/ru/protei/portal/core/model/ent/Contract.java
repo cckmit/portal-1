@@ -403,6 +403,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return organizationName;
     }
 
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
     public Long getParentContractId() {
         return parentContractId;
     }

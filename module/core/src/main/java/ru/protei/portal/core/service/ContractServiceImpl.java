@@ -133,6 +133,8 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
+        contractDAO.merge(contract);
+
         jdbcManyRelationsHelper.persist(contract, "contractDates");
         jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
 
@@ -166,8 +168,6 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
-        contractDAO.merge(contract);
-
         if (StringUtils.isEmpty(contract.getRefKey())) {
             contract.setContractor(contractor);
 
@@ -178,6 +178,8 @@ public class ContractServiceImpl implements ContractService {
                 return error(En_ResultStatus.INTERNAL_ERROR);
             }
         }
+
+        contractDAO.merge(contract);
 
         jdbcManyRelationsHelper.persist(contract, "contractDates");
         jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
@@ -299,11 +301,10 @@ public class ContractServiceImpl implements ContractService {
 
         Contract1C queryContract1C = to1C(contract);
 
-        Result<List<Contract1C>> contracts = api1CService.getContracts(queryContract1C, contract.getContractor().getOrganization());
-        if (contracts.isOk()) {
-            return ok(contracts.getData().get(0));
+        if (StringUtils.isNotBlank(contract.getRefKey())){
+            return api1CService.getContract(queryContract1C, contract.getOrganizationName());
         } else {
-            return api1CService.saveContract(queryContract1C, contract.getContractor().getOrganization());
+            return api1CService.saveContract(queryContract1C, contract.getOrganizationName());
         }
     }
 
@@ -353,6 +354,7 @@ public class ContractServiceImpl implements ContractService {
 
     public static Contract1C to1C(Contract contract) {
         Contract1C contract1C = new Contract1C();
+        contract1C.setRefKey(contract.getRefKey());
         contract1C.setNumber(contract.getNumber());
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(contract.getDateSigning());

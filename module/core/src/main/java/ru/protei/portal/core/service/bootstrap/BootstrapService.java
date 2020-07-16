@@ -5,14 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.SVNException;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
@@ -663,41 +660,6 @@ if(true) return; //TODO remove
         return new DateRange(En_DateIntervalType.FIXED, from, to);
     }
 
-    private void testHttp1C(){
-        /**
-         *  Создавать контрагентов можно только для одной из двух компаний.
-         *  По компании определяем, в какую базу будем лезть
-         */
-        // String homeCompanyName = "Протей СТ";
-        String homeCompanyName = "Протей";
-
-        /**
-         *  Заполняем контрагента. Нижеуказанные поля обязательные
-         *  ИНН должно быть корректным с точки зрения налоговой (алгоритм проверки указан в заадче родительской)
-         *  Код страны регистрации - ключ сущности из 1С. На UI мы тоже будем доставать ключи и именно в таком виде засовывать в апи
-         */
-        Contractor1C contractor1C = new Contractor1C();
-        contractor1C.setKpp("777777888");
-        contractor1C.setInn("7801126047");
-        contractor1C.setFullName("ООО Тест Портала13");
-        contractor1C.setName("ООО Тест Портала13");
-        contractor1C.setRegistrationCountryKey("042a9171-7bc0-11e8-80cb-ac1f6b010113");
-
-        /**
-         *  Создаем контрагента. В ответ получаем полностью заполненного из 1С.
-         *  Полей там очень много, но мы лишние игнорим (@JsonIgnoreProperties(ignoreUnknown = true))
-         */
-        Result<Contractor1C> contractor1CResult = api1C.saveContractor(contractor1C, homeCompanyName);
-        Contractor1C c = contractor1CResult.getData();
-
-        /**
-         *  Получаем контрагента. Запрос посылаем с полностью заполненным контрагентом, чтобы проверить правильно ли строится фильтр
-         */
-        Result<List<Contractor1C>> contractor = api1C.getContractors(c, homeCompanyName);
-        List<Contractor1C> finish = contractor.getData();
-        Contractor1C finish1 = finish.get(0);
-    }
-
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -759,6 +721,4 @@ if(true) return; //TODO remove
     HistoryDAO historyDAO;
     @Autowired
     PlanDAO planDAO;
-    @Autowired
-    Api1C api1C;
 }
