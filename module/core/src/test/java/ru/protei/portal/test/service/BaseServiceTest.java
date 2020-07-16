@@ -266,7 +266,7 @@ public class BaseServiceTest {
         return caseObjectDAO.remove(caseObject);
     }
 
-    private static Long generateNextCaseNumber( En_CaseType caseType ) {
+    protected static Long generateNextCaseNumber( En_CaseType caseType ) {
         return caseNumberRepo.get( caseType ).incrementAndGet();
     }
 

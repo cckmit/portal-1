@@ -41,5 +41,7 @@ public interface CaseLinkService {
 
     Result<String> setYoutrackIdToCaseNumbers(AuthToken token, String youtrackId, List<Long> caseNumberList);
 
+    Result<String> setYoutrackIdToProjectNumbers(AuthToken token, String youtrackId, List<Long> projectNumberList);
+
     Result<String> changeYoutrackId(AuthToken token, String oldYoutrackId, String newYoutrackId);
 }

@@ -230,7 +230,7 @@ public class PortalApiController {
         List<Long> crmNumberList;
 
         try {
-            crmNumberList = makeCrmNumberList(crmNumbers);
+            crmNumberList = makeNumberList(crmNumbers);
 
             removeDuplicates(crmNumberList);
 
@@ -253,6 +253,48 @@ public class PortalApiController {
 
         } catch (NumberFormatException e) {
             log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers", e);
+            return INCORRECT_PARAMS;
+        }
+    }
+
+    @PostMapping(value = "/updateYoutrackProjectNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
+    public String updateYoutrackProjectNumbers( HttpServletRequest request, HttpServletResponse response,
+                                            @RequestBody (required = false) String projectNumbers,
+                                            @PathVariable("youtrackId") String youtrackId ) {
+
+        final String OK = "";
+        final String PROJECT_NUMBERS_NOT_FOUND = "Не найдены проекты с номерами: ";
+        final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
+        final String INCORRECT_PARAMS = "Некорректно заданы номера проектов. Номера проектов должны содержать только цифры";
+
+        log.info( "updateYoutrackProjectNumbers() projectNumbers={} youtrackId={}", projectNumbers, youtrackId );
+
+        List<Long> projectNumberList;
+
+        try {
+            projectNumberList = makeNumberList(projectNumbers);
+
+            removeDuplicates(projectNumberList);
+
+            Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
+                    .flatMap( token -> caseLinkService.setYoutrackIdToProjectNumbers( token, youtrackId, projectNumberList ));
+
+            if (updateResult.isOk()) {
+                log.info( "updateYoutrackProjectNumbers(): OK" );
+                return OK;
+            }
+
+            log.warn( "updateYoutrackProjectNumbers(): Can`t change youtrack id {} in projects with numbers {}. status: {}",
+                    youtrackId, projectNumbers, updateResult.getStatus() );
+
+            if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
+                return PROJECT_NUMBERS_NOT_FOUND + updateResult.getMessage();
+            }
+
+            return INTERNAL_ERROR;
+
+        } catch (NumberFormatException e) {
+            log.error("updateYoutrackProjectNumbers(): failed to parse project numbers", e);
             return INCORRECT_PARAMS;
         }
     }
@@ -406,7 +448,7 @@ public class PortalApiController {
         crmNumberList.addAll(uniqueNumbers);
     }
 
-    private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
+    private List<Long> makeNumberList(String crmNumbers) throws NumberFormatException{
         if (crmNumbers == null) {
             return new ArrayList<>();
         }

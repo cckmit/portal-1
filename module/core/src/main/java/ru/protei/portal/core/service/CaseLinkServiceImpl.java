@@ -1,7 +1,6 @@
 package ru.protei.portal.core.service;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -165,7 +165,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         if (youtrackId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
 
-        Result<List<Long>> newCaseIdsResult = getCaseIdsByCaseNumbers(caseNumberList);
+        Result<List<Long>> newCaseIdsResult = getCaseIdsByCaseNumbers(caseNumberList, En_CaseType.CRM_SUPPORT);
         if (newCaseIdsResult.isError()) {
             log.warn("setYoutrackIdToCaseNumbers(): fail to get newCaseIds, status={}", newCaseIdsResult.getStatus());
             return error(newCaseIdsResult.getStatus(), newCaseIdsResult.getMessage());
@@ -173,7 +173,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         log.debug("setYoutrackIdToCaseNumbers(): newCaseIds={}", newCaseIdsResult.getData());
 
-        List<Long> currentCaseIds = findAllCaseIdsByYoutrackId(youtrackId, true);
+        List<Long> currentCaseIds =  findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.CRM_SUPPORT, youtrackId);
         List<Long> newCaseIds = newCaseIdsResult.getData();
 
         log.debug("setYoutrackIdToCaseNumbers(): current case ids={}, new case ids={}", currentCaseIds, newCaseIds);
@@ -207,6 +207,55 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
 
             removeResult.getEvents().forEach(event -> result.publishEvent(event));
+        }
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Result<String> setYoutrackIdToProjectNumbers(AuthToken token, String youtrackId, List<Long> projectNumberList) {
+        log.debug("setYoutrackIdToProjectNumbers(): youtrackId={}, case list size={}, caseList={}", youtrackId, projectNumberList.size(), projectNumberList);
+
+        if (youtrackId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
+
+        Result<String> unexistedProjects = findUnexistedProjects(projectNumberList);
+
+        if (unexistedProjects.isError()){
+            return error(unexistedProjects.getStatus(), unexistedProjects.getMessage());
+        }
+
+        List<Long> currentProjectIds = findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, youtrackId);
+        List<Long> newProjectIds = projectNumberList;
+
+        log.debug("setYoutrackIdToProjectNumbers(): current case ids={}, new case ids={}", currentProjectIds, newProjectIds);
+
+        List<Long> listCaseIdsToAdd = makeListCaseIdsToAddYoutrackLink(currentProjectIds, newProjectIds);
+        List<Long> listCaseIdsToRemove = makeListCaseIdsToRemoveYoutrackLink(currentProjectIds, newProjectIds);
+
+        log.debug("setYoutrackIdToProjectNumbers(): listCaseIdsToAdd={}, listCaseIdsToRemove={}", listCaseIdsToAdd, listCaseIdsToRemove);
+
+        Result<String> result = ok("");
+
+        for (Long caseId : listCaseIdsToAdd) {
+            Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
+            log.debug("setYoutrackIdToProjectNumbers(): adding caseId={}, status={}", caseId, addResult.getStatus());
+
+            if (addResult.isError()){
+                return error(addResult.getStatus(), addResult.getMessage());
+            }
+
+            makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
+        }
+
+        for (Long caseId : listCaseIdsToRemove) {
+            makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
+            Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
+            log.debug("setYoutrackIdToProjectNumbers(): removing caseId={}, status={}", caseId, removeResult.getStatus());
+
+            if (removeResult.isError()){
+                return error(removeResult.getStatus(), removeResult.getMessage());
+            }
         }
 
         return result;
@@ -407,13 +456,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return addList;
     }
 
-    private Result<List<Long>> getCaseIdsByCaseNumbers(List<Long> caseNumberList) {
+    private Result<List<Long>> getCaseIdsByCaseNumbers(List<Long> caseNumberList, En_CaseType caseType) {
         List<Long> caseIds = new ArrayList<>();
         List<Long> errorCaseId = new ArrayList<>();
 
         for (Long number : caseNumberList) {
             log.debug("getCaseIdsByCaseNumbers(): case number={}", number);
-            Long caseId = caseObjectDAO.getCaseIdByNumber(number);
+            Long caseId = caseObjectDAO.getCaseId(caseType, number);
             log.debug("getCaseIdsByCaseNumbers(): case id={}", caseId);
             if (caseId == null) {
                 errorCaseId.add(number);
@@ -427,6 +476,39 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                         .collect(Collectors.joining(",")));
     }
 
+    private List<Long> findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId){
+        List<Long> linkedCaseIds = findAllCaseIdsByYoutrackId(youtrackId, true);
+
+        if (linkedCaseIds != null && linkedCaseIds.isEmpty()){
+            return new ArrayList<>();
+        }
+
+        CaseQuery query = new CaseQuery();
+        query.setCaseIds(linkedCaseIds);
+        query.setType(caseType);
+        List<CaseObject> cases = caseObjectDAO.getCases(query);
+
+        return cases.stream().map(caseObject -> caseObject.getId()).collect(Collectors.toList());
+    }
+
+    private Result<String> findUnexistedProjects (List<Long> projectNumberList){
+        if (projectNumberList == null) {
+            return ok();
+        }
+
+        List<Long> unexistedProjectList = new ArrayList<>();
+
+        for (Long aLong : projectNumberList) {
+            if (!caseObjectDAO.checkExistsByKey(aLong)){
+                unexistedProjectList.add(aLong);
+            }
+        }
+
+        return unexistedProjectList.isEmpty() ? ok() :
+                error(En_ResultStatus.NOT_FOUND,  unexistedProjectList.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(",")));
+    }
 
     private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
         CaseLinkQuery caseLinkQuery = new CaseLinkQuery();

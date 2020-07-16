@@ -598,8 +598,8 @@ public class CaseServiceImpl implements CaseService {
 
 
     @Override
-    public Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber ) {
-        Long caseId = caseObjectDAO.getCaseIdByNumber( caseNumber );
+    public Result<Long> getCaseId(AuthToken token, Long caseNumber, En_CaseType type ) {
+        Long caseId = caseObjectDAO.getCaseId( type, caseNumber );
         if(caseId==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseId);
     }

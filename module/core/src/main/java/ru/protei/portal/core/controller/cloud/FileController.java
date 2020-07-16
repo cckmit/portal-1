@@ -161,7 +161,8 @@ public class FileController {
         }
 
         if (!isEmpty( bindAttachments )) {
-            caseService.getCaseIdByNumber( authToken, caseNumber ).ifOk(caseId->
+            En_CaseType caseType = En_CaseType.find(caseTypeId);
+            caseService.getCaseId( authToken, caseNumber, caseType ).ifOk(caseId->
                 shareNotification(caseId, authToken.getPersonId(), bindAttachments )  );
         }
 

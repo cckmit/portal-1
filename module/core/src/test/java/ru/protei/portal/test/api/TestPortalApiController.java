@@ -378,11 +378,11 @@ public class TestPortalApiController extends BaseServiceTest {
         numbers = "";
         createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
 
-        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        List<Long> caseNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
 
         Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
 
-        removeCaseObjectsAndCaseLinks(crmNumbers);
+        removeAllCaseObjectsAndCaseLinks();
     }
 
     @Test
@@ -419,7 +419,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
-        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        List<Long> caseNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
 
         Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
 
@@ -432,16 +432,16 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        caseNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
 
         Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
 
-        removeCaseObjectsAndCaseLinks(caseNumbersCreated);
+        removeAllCaseObjectsAndCaseLinks();
     }
 
     @Test
     @Transactional
-    public void removeLinkWithYoutrackIdInLowercase() throws Exception {
+    public void removeLinkFromCrmWithYoutrackIdInLowercase() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
         final String YOUTRACK_ID_LOWERCASE = YOUTRACK_ID.toLowerCase();
 
@@ -459,11 +459,11 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
-        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        List<Long> caseNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
 
         Assert.assertTrue("Case link must be removed!", caseNumbersFromDB.isEmpty());
 
-        removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
+        removeAllCaseObjectsAndCaseLinks();
     }
 
     @Test
@@ -485,11 +485,215 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
-        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        List<Long> caseNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
 
         Assert.assertTrue("List must contain only unique numbers", compareLists(caseNumbersCreated, caseNumbersFromDB));
 
-        removeCaseObjectsAndCaseLinks(caseNumbersFromDB);
+        removeAllCaseObjectsAndCaseLinks();
+    }
+
+
+    @Test
+    public void setYoutrackIdToEmptyProject() throws Exception {
+        final String YOUTRACK_ID = "PROJECT_TEST-1";
+        String numbers = "";
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertTrue("Error message must be empty", accept.andReturn().getResponse().getContentAsString().isEmpty());
+
+        List<Long> projectNumbersCreated = fillAndCreateProjects(3);
+
+        numbers = projectNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        //Устанавливаем 3 корректных номера
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        numbers = "";
+        createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
+
+        removeAllCaseObjectsAndCaseLinks();
+    }
+
+    @Test
+    public void setYoutrackIdToInvalidProjectNumber() throws Exception {
+        final String YOUTRACK_ID = "PROJECT_TEST-2";
+        String numbers = "NOT_NUMBER";
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertFalse("Error message must be not empty", accept.andReturn().getResponse().getContentAsString().isEmpty());
+    }
+
+    @Test
+    public void setYoutrackIdToUncreatedProjectNumber() throws Exception {
+        final String YOUTRACK_ID = "PROJECT_TEST-3";
+        String numbers = "9999999" + "," + "8888888";
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertTrue("Error message must contains wrong numbers", accept.andReturn().getResponse().getContentAsString().contains(numbers));
+    }
+
+    @Test
+    @Transactional
+    public void setYoutrackIdToCorrectProjectNumbers() throws Exception {
+        final String YOUTRACK_ID = "PROJECT_TEST-4";
+
+        List<Long> projectNumbersCreated = fillAndCreateProjects(3);
+
+        String numbers = projectNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        //Устанавливаем 3 корректных номера
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> projectNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Invalid list of project numbers", compareLists(projectNumbersFromDB, projectNumbersCreated));
+
+        numbers = projectNumbersCreated.get(1) + ",\n" + projectNumbersCreated.get(2);
+
+        projectNumbersCreated.remove(0);
+
+        //Устанавливаем 2 корректных номера (то есть один удалится)
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        projectNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Invalid list of project numbers", compareLists(projectNumbersFromDB, projectNumbersCreated));
+
+        removeAllCaseObjectsAndCaseLinks();
+    }
+
+    @Test
+    @Transactional
+    public void removeLinkFromProjectWithYoutrackIdInLowercase() throws Exception {
+        final String YOUTRACK_ID = "PROJECT_TEST-5";
+        final String YOUTRACK_ID_LOWERCASE = YOUTRACK_ID.toLowerCase();
+
+        List<Long> projectNumbersCreated = fillAndCreateProjects(1);
+
+        String numbers = projectNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        numbers = "";
+
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID_LOWERCASE, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> projectNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("Case link must be removed!", projectNumbersFromDB.isEmpty());
+
+        removeAllCaseObjectsAndCaseLinks();
+    }
+
+    @Test
+    @Transactional
+    public void setYoutrackIdToDuplicatedProjectNumbers() throws Exception {
+        final String YOUTRACK_ID = "PROJECT_TEST-6";
+
+        List<Long> projectNumbersCreated = fillAndCreateProjects(3);
+
+        String numbers = projectNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        numbers += ",\n" + projectNumbersCreated.get(0);
+
+        //Устанавливаем 4 номера (один - дубликат)
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, numbers).andExpect(status().isOk());
+
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> projectNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+
+        Assert.assertTrue("List must contain only unique numbers", compareLists(projectNumbersCreated, projectNumbersFromDB));
+
+        removeAllCaseObjectsAndCaseLinks();
+    }
+
+
+    @Test
+    @Transactional
+    public void setYoutrackIdToProjectAndCrm() throws Exception {
+        final String YOUTRACK_ID = "PROJECT_AND_CRM_TEST";
+
+        removeAllCaseObjectsAndCaseLinks();
+
+        List<Long> projectIdsCreated = fillAndCreateProjects(3);
+        List<Long> crmNumbersCreated = fillAndCreateCaseObjects(3);
+
+        String projectIds = projectIdsCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        String crmNumbers = crmNumbersCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, projectIds).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> projectNumbersFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        Assert.assertTrue("DB List must contain only project numbers. projectNumbersCreated = " + projectIdsCreated + " and projectNumbersFromDB = " + projectNumbersFromDB, compareLists(projectIdsCreated, projectNumbersFromDB));
+
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, crmNumbers).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        List<Long> crmAndProjectIdsFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        List<Long> crmAndProjectNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
+        Assert.assertTrue("DB List must contain project ids. projectNumbersCreated = " + projectIdsCreated + " and crmAndProjectIdsFromDB = " + crmAndProjectIdsFromDB, crmAndProjectIdsFromDB.containsAll(projectIdsCreated));
+        Assert.assertTrue("DB List must contain crm numbers. crmNumbersCreated = " + crmNumbersCreated + " and crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, crmAndProjectNumbersFromDB.containsAll(crmNumbersCreated));
+
+        //удаляем один линк с проектом. Должно остаться 2 линка с проектами и 3 линка с crm
+        List<Long> projectIdsCreatedAfterRemove = new ArrayList<>(projectIdsCreated);
+        projectIdsCreatedAfterRemove.remove(0);
+        projectIds = projectIdsCreatedAfterRemove.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, projectIds).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        crmAndProjectIdsFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        crmAndProjectNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
+        Assert.assertTrue("DB List must contain project ids. projectIdsCreatedAfterRemove = " + projectIdsCreatedAfterRemove + " and crmAndProjectIdsFromDB = " + crmAndProjectIdsFromDB, crmAndProjectIdsFromDB.containsAll(projectIdsCreatedAfterRemove));
+        Assert.assertTrue("DB List must contain crm numbers. crmNumbersCreated = " + crmNumbersCreated + " and crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, crmAndProjectNumbersFromDB.containsAll(crmNumbersCreated));
+        Assert.assertEquals("DB List must contain 5 numbers. crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, 5, crmAndProjectIdsFromDB.size());
+
+        //удаляем один линк с crm. Должно остаться 2 линка с проектами и 2 линка с crm
+        List<Long> crmNumbersCreatedAfterRemove = new ArrayList<>(crmNumbersCreated);
+        crmNumbersCreatedAfterRemove.remove(0);
+        crmNumbers = crmNumbersCreatedAfterRemove.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        accept = createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + YOUTRACK_ID, crmNumbers).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        crmAndProjectIdsFromDB = findAllCaseIdsByYoutrackId(YOUTRACK_ID);
+        crmAndProjectNumbersFromDB = findAllCaseNumbersByYoutrackId(YOUTRACK_ID);
+        Assert.assertTrue("DB List must contain project ids. projectIdsCreatedAfterRemove = " + projectIdsCreatedAfterRemove + " and crmAndProjectIdsFromDB = " + crmAndProjectIdsFromDB, crmAndProjectIdsFromDB.containsAll(projectIdsCreatedAfterRemove));
+        Assert.assertTrue("DB List must contain crm numbers. crmNumbersCreatedAfterRemove = " + crmNumbersCreatedAfterRemove + " and crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, crmAndProjectNumbersFromDB.containsAll(crmNumbersCreatedAfterRemove));
+        Assert.assertEquals("DB List must contain 4 numbers. crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, 4, crmAndProjectIdsFromDB.size());
+
+        removeAllCaseObjectsAndCaseLinks();
     }
 
     @Test
@@ -499,7 +703,7 @@ public class TestPortalApiController extends BaseServiceTest {
         final String NEW_YOUTRACK_ID = "CHANGE_TEST-2" + System.currentTimeMillis();
         final int CASE_COUNT = 3;
 
-        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
+        List<Long> caseNumbersFromDB = findAllCaseNumbersByYoutrackId(OLD_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
 
         List<Long> caseNumbersCreated = fillAndCreateCaseObjects(CASE_COUNT);
@@ -509,19 +713,19 @@ public class TestPortalApiController extends BaseServiceTest {
                 .collect(Collectors.joining(",\n"));
         createPostResultActionWithStringBody("/api/updateYoutrackCrmNumbers/" + OLD_YOUTRACK_ID, numbers).andExpect(status().isOk());
 
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
+        caseNumbersFromDB = findAllCaseNumbersByYoutrackId(OLD_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", CASE_COUNT, caseNumbersFromDB.size());
 
         createPostResultActionWithStringBody("/api/changeyoutrackid/" + OLD_YOUTRACK_ID + "/" + NEW_YOUTRACK_ID, null)
                 .andExpect(status().isOk());
 
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
+        caseNumbersFromDB = findAllCaseNumbersByYoutrackId(OLD_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
 
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(NEW_YOUTRACK_ID);
+        caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with new link", CASE_COUNT, caseNumbersFromDB.size());
 
-        removeCaseObjectsAndCaseLinks(caseNumbersCreated);
+        removeAllCaseObjectsAndCaseLinks();
     }
 
     @Test
@@ -533,20 +737,20 @@ public class TestPortalApiController extends BaseServiceTest {
 
         List<Long> caseNumbersCreated = fillAndCreateCaseObjects(CASE_COUNT);
 
-        List<Long> caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
+        List<Long> caseNumbersFromDB = findAllCaseNumbersByYoutrackId(OLD_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(NEW_YOUTRACK_ID);
+        caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
 
         createPostResultActionWithStringBody("/api/changeyoutrackid/" + OLD_YOUTRACK_ID + "/" + NEW_YOUTRACK_ID, null)
                 .andExpect(status().isOk());
 
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(OLD_YOUTRACK_ID);
+        caseNumbersFromDB = findAllCaseNumbersByYoutrackId(OLD_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
-        caseNumbersFromDB = findAllCaseIdsByYoutrackId(NEW_YOUTRACK_ID);
+        caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
 
-        removeCaseObjectsAndCaseLinks(caseNumbersCreated);
+        removeAllCaseObjectsAndCaseLinks();
     }
 
     @Test
@@ -741,7 +945,7 @@ public class TestPortalApiController extends BaseServiceTest {
         return list1.equals(list2);
     }
 
-    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId) {
+    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId) {
         CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
         caseLinkQuery.setRemoteId( youtrackId );
         caseLinkQuery.setType( En_CaseLink.YT );
@@ -753,7 +957,20 @@ public class TestPortalApiController extends BaseServiceTest {
                 .collect(Collectors.toList());
     }
 
-    private void removeCaseObjectsAndCaseLinks(List<Long> caseIds) {
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
+
+        return listByQuery.stream()
+                .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
+    }
+
+    private void removeAllCaseObjectsAndCaseLinks() {
+        List<Long> caseIds = caseObjectDAO.getAll().stream().map(CaseObject::getId).collect(Collectors.toList());
+
         caseIds.forEach(caseId -> {
             CaseLinkQuery query = new CaseLinkQuery(caseId, false);
             caseLinkDAO.getListByQuery(query)
@@ -768,6 +985,15 @@ public class TestPortalApiController extends BaseServiceTest {
         String json = resultActions.andReturn().getResponse().getContentAsString();
 
         int startIndex = json.indexOf("caseNumber")+12;
+        int endIndex = json.indexOf(",", startIndex);
+
+        return Long.parseLong(json.substring(startIndex, endIndex));
+    }
+
+    private Long getIdFromResult (ResultActions resultActions) throws UnsupportedEncodingException {
+        String json = resultActions.andReturn().getResponse().getContentAsString();
+
+        int startIndex = json.indexOf("id")+4;
         int endIndex = json.indexOf(",", startIndex);
 
         return Long.parseLong(json.substring(startIndex, endIndex));
@@ -818,6 +1044,19 @@ public class TestPortalApiController extends BaseServiceTest {
         }
 
         return crmNumberList;
+    }
+
+    private List<Long> fillAndCreateProjects (int count) throws Exception {
+        List<Long> projectNumberList = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            CaseObject caseObject = createNewCaseObject(En_CaseType.PROJECT, generateNextCaseNumber(En_CaseType.CRM_SUPPORT), person);
+            caseObject.setInitiatorCompany( company );
+            ResultActions accept = createPostResultAction("/api/cases/create", caseObject).andExpect(status().isOk());
+            projectNumberList.add(getIdFromResult(accept));
+        }
+
+        return projectNumberList;
     }
 
 
