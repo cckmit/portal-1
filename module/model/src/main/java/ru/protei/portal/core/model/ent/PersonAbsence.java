@@ -1,39 +1,38 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 05.07.16.
  */
 @JdbcEntity(table = "person_absence")
-public class PersonAbsence {
+public class PersonAbsence extends AuditableObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "old_id")
-    private Long old_id;
-
     @JdbcColumn(name = "created")
     private Date created;
-
-    @JdbcColumn(name = "updated")
-    private Date updated;
 
     @JdbcColumn(name = "creator_id")
     private Long creatorId;
 
-
     @JdbcColumn(name = "person_id")
     private Long personId;
 
+    @JdbcJoinedColumn(localColumn = "person_id", remoteColumn = "id", table = "person", mappedColumn = "displayname", sqlTableAlias = "pa")
+    private String personDisplayName;
+
     @JdbcColumn(name = "reason_id")
-    private int reasonId;
+    @JdbcEnumerated(EnumType.ID)
+    private En_AbsenceReason reason;
 
     @JdbcColumn(name = "from_time")
     private Date fromTime;
@@ -44,9 +43,20 @@ public class PersonAbsence {
     @JdbcColumn(name = "user_comment")
     private String userComment;
 
-    private String creator;
+    public static final String AUDIT_TYPE = "PersonAbsence";
 
-    public PersonAbsence() {
+    public PersonAbsence() {}
+
+    public PersonAbsence(PersonAbsence absence) {
+        this.id = absence.getId();
+        this.created = absence.getCreated();
+        this.creatorId = absence.getCreatorId();
+        this.personId = absence.getPersonId();
+        this.personDisplayName = absence.getPersonDisplayName();
+        this.reason = absence.getReason();
+        this.fromTime = absence.getFromTime();
+        this.tillTime = absence.getTillTime();
+        this.userComment = absence.getUserComment();
     }
 
     public Long getId() {
@@ -81,12 +91,26 @@ public class PersonAbsence {
         this.personId = personId;
     }
 
-    public int getReasonId() {
-        return reasonId;
+    public String getPersonDisplayName() {
+        return personDisplayName;
     }
 
-    public void setReasonId(int reasonId) {
-        this.reasonId = reasonId;
+    public void setPersonDisplayName(String personDisplayName) {
+        this.personDisplayName = personDisplayName;
+    }
+
+    public PersonShortView getPerson() {
+        if (personId == null)
+            return null;
+        return new PersonShortView(personDisplayName, personId);
+    }
+
+    public En_AbsenceReason getReason() {
+        return reason;
+    }
+
+    public void setReason(En_AbsenceReason reason) {
+        this.reason = reason;
     }
 
     public Date getFromTime() {
@@ -113,27 +137,21 @@ public class PersonAbsence {
         this.userComment = userComment;
     }
 
-    public Date getUpdated() {
-        return updated;
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
-    public void setUpdated(Date updated) {
-        this.updated = updated;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Long getOldId() {
-        return old_id;
-    }
-
-    public void setOldId(Long old_id) {
-        this.old_id = old_id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PersonAbsence person = (PersonAbsence) o;
+        return Objects.equals(id, person.id);
     }
 }

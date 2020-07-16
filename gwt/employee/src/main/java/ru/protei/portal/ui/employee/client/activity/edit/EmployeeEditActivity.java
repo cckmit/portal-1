@@ -30,9 +30,9 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -410,7 +410,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee){

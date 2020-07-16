@@ -7,9 +7,9 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.struct.RegionInfo;
+import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 

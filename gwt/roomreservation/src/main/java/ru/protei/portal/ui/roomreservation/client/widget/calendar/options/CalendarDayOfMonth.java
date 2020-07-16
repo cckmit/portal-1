@@ -10,14 +10,13 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.roomreservation.client.struct.Day;
-import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
+import ru.protei.portal.ui.common.client.common.YearMonthDay;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
-import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.*;
+import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeDiv;
 import static ru.protei.portal.ui.roomreservation.client.util.WidgetUtils.makeStyledDiv;
 

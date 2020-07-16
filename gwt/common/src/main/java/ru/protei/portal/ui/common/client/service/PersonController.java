@@ -21,9 +21,9 @@ public interface PersonController extends RemoteService {
      * Получение списка сокращенного представления person
      * @return
      */
-    List< PersonShortView > getPersonViewList( PersonQuery query ) throws RequestFailedException;
+    List<PersonShortView> getPersonViewList(PersonQuery query) throws RequestFailedException;
 
     Map<Long, String> getPersonNames(Collection<Long> ids) throws RequestFailedException;
 
-    Person getPerson(Long id) throws RequestFailedException;
+    PersonShortView getPersonShortView(Long id) throws RequestFailedException;
 }

@@ -56,6 +56,8 @@ public class En_PrivilegeEntityLang {
                 return lang.roomReservation();
             case PLAN:
                 return lang.plans();
+            case ABSENCE:
+                return lang.absences();
             default:
                 return lang.unknownField();
         }

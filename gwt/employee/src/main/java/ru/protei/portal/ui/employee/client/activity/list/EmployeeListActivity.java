@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
@@ -18,15 +17,12 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.util.TopBrassPersonUtils;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -37,7 +33,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
@@ -54,11 +49,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onAuthSuccess ( AuthEvents.Success event ) {
-        filterView.resetFilter();
-    }
-
-    @Event
     public void onInitDetails( AppEvents.InitDetails event ) {
         this.init = event;
     }
@@ -72,11 +62,13 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getPagerContainer().clear();
         init.parent.clear();
 
-        init.parent.add( view.asWidget() );
-        view.getPagerContainer().add( pagerView.asWidget() );
+        init.parent.add(view.asWidget());
+        view.getPagerContainer().add(pagerView.asWidget());
         view.getFilterContainer().add(event.filter);
 
-        requestEmployees( 0 );
+        this.query = event.query;
+
+        requestEmployees(0);
     }
 
     @Event
@@ -84,7 +76,40 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         if(event.viewType != ViewType.LIST)
             return;
 
-        requestEmployees( 0 );
+        this.query = event.query;
+
+        requestEmployees(0);
+    }
+
+    @Event
+    public void onUpdate(EmployeeEvents.UpdateDefinite event) {
+        if(event.viewType != ViewType.LIST)
+            return;
+
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(event.id, new FluentCallback<EmployeeShortView>()
+                .withSuccess(employee -> {
+
+                    AbstractEmployeeItemView itemView = modelToItemView.get(employee);
+
+                    if (itemView == null && query.getAbsent()) {
+                        fireEvent(new EmployeeEvents.Show());
+                        return;
+                    }
+
+                    if (itemView == null) {
+                        return;
+                    }
+
+                    if (employee.getCurrentAbsence() == null && query.getAbsent()) {
+                        view.getChildContainer().remove(itemView.asWidget());
+                        modelToItemView.remove(employee);
+                        return;
+                    }
+
+                    itemView.setAbsenceReason(
+                            employee.getCurrentAbsence() == null ? null : employee.getCurrentAbsence().getReason());
+
+                }));
     }
 
     @Override
@@ -97,12 +122,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         view.getChildContainer().clear();
         view.showLoader( true );
-        itemViewToModel.clear();
+        modelToItemView.clear();
 
         boolean isFirstChunk = page == 0;
         marker = new Date().getTime();
 
-        EmployeeQuery query = makeQuery();
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
@@ -112,26 +136,12 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                         if ( isFirstChunk ) {
                             pagerView.setTotalCount( r.getTotalCount() );
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
-                            pagerView.setCurrentPage( 0 );
                         }
+                        pagerView.setCurrentPage( page );
                         r.getResults().forEach( fillViewer );
                         view.showLoader( false );
                     }
                 } ) );
-    }
-
-    private EmployeeQuery makeQuery() {
-        return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
-                filterView.organizations().getValue(),
-                filterView.searchPattern().getValue(),
-                normalizePhoneNumber(filterView.workPhone().getValue()),
-                normalizePhoneNumber(filterView.mobilePhone().getValue()),
-                filterView.ipAddress().getValue(),
-                filterView.email().getValue(),
-                filterView.departmentParent().getValue(),
-                filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonUtils.getPersonIds() : null);
     }
 
     private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {
@@ -164,9 +174,12 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
         itemView.setPhoto(AvatarUtils.getPhotoUrl(employee.getId()));
         itemView.setIP(employee.getIpAddress());
-        if(employee.isFired())
+        if(employee.isFired()) {
             itemView.setFireDate(DateFormatter.formatDateOnly(employee.getFireDate()));
-
+        }
+        if(employee.getCurrentAbsence() != null && policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
+            itemView.setAbsenceReason(employee.getCurrentAbsence().getReason());
+        }
         return itemView;
     }
 
@@ -174,17 +187,13 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         @Override
         public void accept( EmployeeShortView employee ) {
             AbstractEmployeeItemView itemView = makeView( employee );
-
-
-            itemViewToModel.put( itemView, employee );
+            modelToItemView.put( employee, itemView );
             view.getChildContainer().add( itemView.asWidget() );
         }
     };
 
     @Inject
     AbstractEmployeeListView view;
-    @Inject
-    AbstractEmployeeFilterView filterView;
     @Inject
     Provider< AbstractEmployeeItemView > factory;
     @Inject
@@ -196,6 +205,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private long marker;
     private AppEvents.InitDetails init;
-    private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
+    private EmployeeQuery query;
+    private Map< EmployeeShortView, AbstractEmployeeItemView > modelToItemView = new HashMap<>();
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

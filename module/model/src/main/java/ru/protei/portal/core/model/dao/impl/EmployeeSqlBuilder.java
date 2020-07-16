@@ -5,8 +5,10 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.utils.DateUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EmployeeSqlBuilder {
@@ -22,7 +24,6 @@ public class EmployeeSqlBuilder {
                 condition.append(" and person.isfired=?");
                 args.add(query.getFired() ? 1 : 0);
             }
-
 
             if (query.getDeleted() != null) {
                 condition.append(" and person.isdeleted=?");
@@ -48,7 +49,6 @@ public class EmployeeSqlBuilder {
                 condition.append(" and person.secondname=?");
                 args.add(query.getSecondName());
             }
-
 
             if (query.getOnlyPeople() != null) {
                 condition.append(" and person.sex != ?");
@@ -114,6 +114,27 @@ public class EmployeeSqlBuilder {
                         .append("(select personId from worker_entry where active > 0 and companyId in ")
                         .append(HelperFunc.makeInArg(query.getHomeCompanies(), s -> String.valueOf(s.getId())))
                         .append(")");
+            }
+
+            if (query.getAbsent() != null && query.getAbsent()) {
+                condition.append(" and person.id in ")
+                        .append("(select person_id from person_absence where from_time <= ? and till_time >= ?)");
+                args.add(DateUtils.resetSeconds(new Date()));
+                args.add(DateUtils.resetSeconds(new Date()));
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getDepartmentIds())) {
+                condition.append(" and person.id in ")
+                        .append("(select personId from worker_entry where worker_entry.dep_id in ")
+                        .append(HelperFunc.makeInArg(query.getDepartmentIds(), String::valueOf))
+                        .append(")");
+            }
+
+            if (query.getAbsent() != null && query.getAbsent()) {
+                condition.append(" and person.id in ")
+                        .append("(select person_id from person_absence where from_time <= ? and till_time >= ?)");
+                args.add(DateUtils.resetSeconds(new Date()));
+                args.add(DateUtils.resetSeconds(new Date()));
             }
         });
     }

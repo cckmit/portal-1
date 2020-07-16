@@ -155,6 +155,9 @@ public abstract class IssueEditActivity implements
         if (isReadOnly()) return;
         if (view.isAttached()) {
             reloadComments();
+            if (isTerminalState(event.stateId)) {
+                fireEvent(new CaseCommentEvents.DisableNewComment());
+            }
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -175,6 +178,18 @@ public abstract class IssueEditActivity implements
             reloadComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
+    @Event
+    public void onIssueMetaChanged( IssueEvents.IssueMetaChanged event ) {
+        if (issue == null) {
+            return;
+        }
+        if (view.isAttached()) {
+            if (isTerminalState(event.meta.getStateId())) {
+                fireEvent(new CaseCommentEvents.DisableNewComment());
+            }
+        }
     }
 
     @Override

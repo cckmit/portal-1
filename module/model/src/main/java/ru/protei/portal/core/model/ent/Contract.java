@@ -150,6 +150,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     private En_Currency currency;
 
     /**
+     * НДС
+     */
+    @JdbcColumn(name = "cost_vat")
+    private Long vat;
+
+    /**
      * Тип
      */
     @JdbcColumn(name = "contract_type")
@@ -311,6 +317,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setCurrency(En_Currency currency) {
         this.currency = currency;
+    }
+
+    public Long getVat() {
+        return vat;
+    }
+
+    public void setVat(Long vat) {
+        this.vat = vat;
     }
 
     public String getNumber() {
@@ -517,6 +531,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", number='" + number + '\'' +
                 ", cost=" + cost +
                 ", currency=" + currency +
+                ", vat=" + vat +
                 ", contractType=" + contractType +
                 ", dateSigning=" + dateSigning +
                 ", dateValid=" + dateValid +

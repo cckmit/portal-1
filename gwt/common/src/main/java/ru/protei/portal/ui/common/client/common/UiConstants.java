@@ -75,6 +75,8 @@ public class UiConstants {
         String RESERVED_IP = "reserved_ip";
         String RESERVED_IP_CREATE = "reserved_ip_create";
         String PLAN_CREATE = "plan_create";
+        String ABSENCE = "absence";
+        String ABSENCE_REPORT = "absence_report";
     }
 
     public interface Styles {

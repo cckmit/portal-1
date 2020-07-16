@@ -1,7 +1,8 @@
 package ru.protei.portal.ui.employee.client.activity.item;
 
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
+
 /**
  * Представление сотрудника
  */
@@ -19,7 +20,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhoto ( String photo );
 
-    void setDepartmentParent( String value);
+    void setDepartmentParent( String value );
 
     void setDepartment( String value );
 
@@ -29,7 +30,9 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setIP( String value );
 
-    void setFireDate (String value );
+    void setFireDate ( String value );
 
-    void setEditIcon(String link);
+    void setEditIcon( String link );
+
+    void setAbsenceReason( En_AbsenceReason absence );
 }

@@ -13,7 +13,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 

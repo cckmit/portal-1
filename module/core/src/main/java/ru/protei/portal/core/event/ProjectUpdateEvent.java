@@ -1,7 +1,7 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 
 public class ProjectUpdateEvent extends ApplicationEvent implements AbstractProjectEvent {
     private Project oldProjectState;

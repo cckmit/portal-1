@@ -30,6 +30,8 @@ import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableV
 import java.util.LinkedList;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.StringUtils.trim;
+
 public class ContractTableView extends Composite implements AbstractContractTableView {
 
     @Inject
@@ -143,9 +145,18 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(workGroupColumn);
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
-                contract -> contract.getCost() == null ?
-                        lang.contractCostNotDefined() :
-                        contract.getCost().toString() + " " + contract.getCurrency().getCode()
+                contract -> {
+                    String cost = contract.getCost() != null
+                            ? contract.getCost().toString()
+                            : "";
+                    String currency = contract.getCurrency() != null
+                            ? contract.getCurrency().getCode()
+                            : "";
+                    String vat = contract.getVat() != null
+                            ? lang.vat(contract.getVat())
+                            : lang.withoutVat();
+                    return trim(cost + " " + currency + " " + vat);
+                }
         );
         clickColumns.add(costColumn);
 

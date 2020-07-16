@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static com.google.gwt.user.datepicker.client.CalendarUtil.addDaysToDate;
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.resetTime;
+import static ru.protei.portal.ui.common.client.util.DateUtils.resetTime;
 
 public class RoomReservationDates extends Composite implements HasValue<List<DateInterval>>, HasEnabled, HasVaryAbility {
 

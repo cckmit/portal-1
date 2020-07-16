@@ -2,6 +2,7 @@
 <module rename-to='Model'>
     <source path='dict'/>
     <source path='ent'/>
+    <source path='dto'/>
     <source path='view'/>
     <source path='struct'/>
     <source path='helper'/>

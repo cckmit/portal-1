@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoadi
 import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractRoomReservationCalendarActivity;
 import ru.protei.portal.ui.roomreservation.client.activity.calendar.AbstractRoomReservationCalendarView;
 import ru.protei.portal.ui.roomreservation.client.struct.RoomReservationCalendar;
-import ru.protei.portal.ui.roomreservation.client.struct.YearMonthDay;
+import ru.protei.portal.ui.common.client.common.YearMonthDay;
 import ru.protei.portal.ui.roomreservation.client.widget.calendar.container.CalendarContainer;
 import ru.protei.portal.ui.roomreservation.client.widget.calendar.options.CalendarDayOfMonth;
 import ru.protei.portal.ui.roomreservation.client.widget.selector.month.MonthButtonSelector;

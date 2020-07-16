@@ -35,6 +35,17 @@
                                 <validatefield:ValidableTextBox ui:field="number" styleName="form-control" notNull="true"/>
                             </div>
                             <div class="form-group col-md-3">
+                                <label ui:field="organizationLabel"><ui:text from="{lang.contractOrganization}"/></label>
+                                <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization"
+                                                                       reverseOrder="true" synchronizeWith1C="true"/>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label ui:field="contractorLabel"><ui:text from="{lang.contractContractor}"/></label>
+                                <contractor:ContractorWidget ui:field="contractorWidget"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-3">
                                 <label ui:field="typeLabel"><ui:text from="{lang.contractType}"/></label>
                                 <selector:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}" validation="true" hideNullValue="true"/>
                             </div>
@@ -46,33 +57,37 @@
                                 <label ui:field="contractParentLabel"><ui:text from="{lang.contractParent}"/></label>
                                 <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
                             </div>
-
+                            <div class="form-group col-md-3">
+                                <label ui:field="kindLabel"><ui:text from="{lang.contractKind}"/></label>
+                                <g:TextBox ui:field="kind" styleName="form-control" enabled="false"/>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="form-group col-md-12">
                                 <label ui:field="descriptionLabel"><ui:text from="{lang.contractDescription}"/></label>
-                                <textarea:AutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
+                                <textarea:ValiableAutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
                             </div>
-
-                            <div class="form-group col-md-4">
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-3">
                                 <label ui:field="dateSigningLabel"><ui:text from="{lang.contractDateSigning}"/></label>
                                 <single:SinglePicker ui:field="dateSigning" type="DATE" formatValue="dd.MM.yyyy" />
                             </div>
-
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label ui:field="dateValidLabel"><ui:text from="{lang.contractDateValid}"/></label>
-                                <single:SinglePicker ui:field="dateValid" type="DATE" formatValue="dd.MM.yyyy" />
+                                <g:LongBox ui:field="dateValid" styleName="form-control"/>
                             </div>
-
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label ui:field="costWithCurrencyLabel"><ui:text from="{lang.contractCost}"/></label>
-                                <money:CostWithCurrencyView ui:field="costWithCurrency" defaultCurrency="RUB"/>
+                                <money:CostCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB" vatOptions="20,0,no"/>
                             </div>
-
-                            <div class="form-group col-md-6">
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-3">
                                 <label ui:field="projectLabel"><ui:text from="{lang.contractProject}"/></label>
                                 <project:ProjectButtonSelector ui:field="project" hasNullValue="true" defaultValue="{lang.contractProjectNotDefined}"/>
                             </div>
-
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label ui:field="directionLabel"><ui:text from="{lang.contractDirection}"/></label>
                                 <productdirection:ProductDirectionButtonSelector ui:field="direction" validation="true" hideNullValue="true" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
                             </div>
@@ -80,7 +95,6 @@
                     </div>
                 </div>
             </div>
-
 
             <div class="container-fluid padding-15 bg-white">
                 <div class="card card-transparent no-margin">
@@ -91,20 +105,11 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="form-group col-md-6">
-                                <label ui:field="organizationLabel"><ui:text from="{lang.contractOrganization}"/></label>
-                                <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization"
-                                                                       reverseOrder="true" synchronizeWith1C="true"/>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label ui:field="contractorLabel"><ui:text from="{lang.contractContractor}"/></label>
-                                <contractor:ContractorWidget ui:field="contractorWidget"/>
-                            </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label ui:field="curatorLabel"><ui:text from="{lang.contractCurator}"/></label>
-                                <person:EmployeeButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
+                                <person:EmployeeCustomButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label ui:field="managerLabel"><ui:text from="{lang.contractManager}"/></label>
                                 <person:EmployeeButtonSelector ui:field="manager" enabled="false" defaultValue="{lang.selectAccountPerson}"/>
                             </div>
@@ -113,7 +118,7 @@
                 </div>
             </div>
 
-            <g:HTMLPanel  styleName="container-fluid padding-15 bg-white">
+            <g:HTMLPanel  styleName="container-fluid padding-15">
                 <tab:TabWidget styleName="">
                     <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
                         <g:HTMLPanel>
@@ -134,7 +139,6 @@
                     </tab:pane.TabWidgetPane>
                 </tab:TabWidget>
             </g:HTMLPanel>
-
         </div>
         <div class="card-footer">
             <div class="card card-transparent no-margin">

@@ -69,7 +69,7 @@
                 <module>gwt/ipreservation</module>
                 <module>gwt/roomreservation</module>
                 <module>gwt/plan</module>
-
+                <module>gwt/absence</module>
                 <module>app/portal</module>
             </modules>
         </profile>

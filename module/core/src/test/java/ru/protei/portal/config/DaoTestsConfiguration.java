@@ -381,4 +381,9 @@ public class DaoTestsConfiguration {
     public ContractorDAO getContractorDAO() {
         return new ContractorDAO_Impl();
     }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
+    }
 }

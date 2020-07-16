@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;

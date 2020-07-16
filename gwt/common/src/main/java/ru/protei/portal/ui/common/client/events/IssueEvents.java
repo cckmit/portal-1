@@ -147,10 +147,12 @@ public class IssueEvents {
     }
 
     public static class IssueStateChanged {
-        public IssueStateChanged( Long issueId ) {
+        public IssueStateChanged( Long issueId, Long stateId ) {
             this.issueId = issueId;
+            this.stateId = stateId;
         }
         public Long issueId;
+        public Long stateId;
     }
 
     public static class IssueImportanceChanged {
@@ -165,6 +167,13 @@ public class IssueEvents {
             this.issueId = issueId;
         }
         public Long issueId;
+    }
+
+    public static class IssueMetaChanged {
+        public IssueMetaChanged(CaseObjectMeta meta) {
+            this.meta = meta;
+        }
+        public CaseObjectMeta meta;
     }
 }
 

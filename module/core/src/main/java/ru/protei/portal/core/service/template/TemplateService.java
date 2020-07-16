@@ -3,7 +3,7 @@ package ru.protei.portal.core.service.template;
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
@@ -83,4 +83,10 @@ public interface TemplateService {
     PreparedTemplate getPersonCaseFilterNotificationSubject();
 
     PreparedTemplate getPersonCaseFilterNotificationBody(List<CaseObject> issues, String urlTemplate);
+
+    PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence);
+
+    PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients);
+
+    PreparedTemplate getAbsenceReportSubject(String title);
 }

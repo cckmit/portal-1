@@ -37,6 +37,8 @@ import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
@@ -623,6 +625,11 @@ public class MainConfiguration {
         return new ContractorDAO_Impl();
     }
 
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -916,6 +923,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public AbsenceService getAbsenceService() {
+        return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public PersonSubscriptionService getPersonSubscriptionService() {
+        return new PersonSubscriptionServiceImpl();
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
@@ -928,6 +945,11 @@ public class MainConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportAbsence getReportAbsence() {
+        return new ReportAbsenceImpl();
     }
 
     @Bean
