@@ -164,9 +164,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     // валидация виджетов выбора временных периодов в зависимости от типа отчета
     private void validateDateRanges(En_ReportType reportType) {
-        boolean isTimeLimitMandatory = reportType == null ?
-                false :
-                En_ReportType.isTimeLimitMandatory(reportType);
+        boolean isTimeLimitMandatory = En_ReportType.isTimeLimitMandatory(reportType);
 
         issueFilterWidget.getIssueFilterParams().setCreatedRangeMandatory(isTimeLimitMandatory);
         validateCreatedRange(
@@ -346,5 +344,5 @@ public abstract class IssueReportCreateActivity implements Activity,
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
 
-    static public int LITTLE_OVER_YEAR_DAYS = 400;
+    static public int LITTLE_OVER_YEAR_DAYS = 370;
 }
