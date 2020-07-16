@@ -13,10 +13,10 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -49,7 +49,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
     @Event
     public void onShow( ContactEvents.ShowFullScreen event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -69,7 +69,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new ContactEvents.Show());
+        fireEvent(new ContactEvents.Show(true));
     }
 
     private void fillView( Person value ) {

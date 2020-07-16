@@ -157,7 +157,6 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
-        item.getElement().addClassName( UiConstants.Styles.TEXT_CENTER);
         return item;
     }
 
@@ -176,7 +175,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     @UiField
     LabelElement label;
     @UiField
-    Lang lang;
+    protected Lang lang;
 
     private static final String ERROR_STYLENAME ="has-error";
     private boolean isValidable;

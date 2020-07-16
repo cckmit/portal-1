@@ -7,19 +7,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseLinkService;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.ProductService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -54,6 +53,10 @@ public class PortalApiController {
     CaseCommentService caseCommentService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private CaseTagService caseTagService;
 
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
@@ -190,6 +193,16 @@ public class PortalApiController {
                         productId, result ) );
     }
 
+    @PostMapping(value = "/products/create")
+    public Result<DevUnitInfo> createProductByInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody DevUnitInfo product) {
+        log.info("createProduct() product={} ", product);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> productService.createProductByInfo(authToken, product))
+                .ifOk(devUnit -> log.info("createProduct(): OK"))
+                .ifError(devUnitResult -> log.warn("createProduct(): Can't create product={}. {}", product, devUnitResult));
+    }
+
     @PostMapping(value = "/products/update")
     public Result<Long> updateProductByInfo( HttpServletRequest request, HttpServletResponse response,
                                              @RequestBody DevUnitInfo product) {
@@ -202,48 +215,69 @@ public class PortalApiController {
                         product, result ) );
     }
 
-
-    @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public Result<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                @PathVariable("caseNumber") Long caseNumber,
-                                                @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
-                .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
-                .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
-                        youtrackId, caseNumber, result ) );
-
-    }
-
-    @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public Result<Long> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                      @PathVariable("caseNumber") Long caseNumber,
-                                                      @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
-                .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
-                .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
-                        youtrackId, caseNumber, result ) );
-    }
-
-    @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
-    public Result<Long> changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
-                                                 @PathVariable("oldCaseNumber") Long oldCaseNumber,
-                                                 @PathVariable("newCaseNumber") Long newCaseNumber,
+    @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
+    public String updateYoutrackCrmNumbers( HttpServletRequest request, HttpServletResponse response,
+                                                 @RequestBody (required = false) String crmNumbers,
                                                  @PathVariable("youtrackId") String youtrackId ) {
-        log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
-        // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
-        return authenticate(request, response, authService, sidGen, log).flatMap( token ->
-                caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
-                caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
-                .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
-                .ifError( result -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
-                        youtrackId, oldCaseNumber, result ) );
+        final String OK = "";
+        final String CRM_NUMBERS_NOT_FOUND = "Не найдены задачи с номерами: ";
+        final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
+        final String INCORRECT_PARAMS = "Некорректно заданы номера обращений. Номера обращений должны содержать только цифры";
+
+        log.info( "updateYoutrackCrmNumbers() crmNumbers={} youtrackId={}", crmNumbers, youtrackId );
+
+        List<Long> crmNumberList;
+
+        try {
+            crmNumberList = makeCrmNumberList(crmNumbers);
+
+            removeDuplicates(crmNumberList);
+
+            Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
+                    .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, crmNumberList ));
+
+            if (updateResult.isOk()) {
+                log.info( "updateYoutrackCrmNumbers(): OK" );
+                return OK;
+            }
+
+            log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
+                    youtrackId, crmNumbers, updateResult.getStatus() );
+
+            if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
+                return CRM_NUMBERS_NOT_FOUND + updateResult.getMessage();
+            }
+
+            return INTERNAL_ERROR;
+
+        } catch (NumberFormatException e) {
+            log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers", e);
+            return INCORRECT_PARAMS;
+        }
+    }
+
+    @PostMapping(value = "/changeyoutrackid/{oldyoutrackid}/{newyoutrackid}", produces = "text/plain;charset=UTF-8")
+    public String changeYoutrackId( HttpServletRequest request, HttpServletResponse response,
+                                   @PathVariable("oldyoutrackid") String oldYoutrackId,
+                                   @PathVariable("newyoutrackid") String newYoutrackId ) {
+
+        log.info( "changeYoutrackId() oldYoutrackId={} newYoutrackId={}", oldYoutrackId, newYoutrackId );
+
+        final String OK = "";
+        final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
+
+        Result<String> changeResult = authenticate(request, response, authService, sidGen, log)
+                .flatMap( token -> caseLinkService.changeYoutrackId( token, oldYoutrackId, newYoutrackId ));
+
+        if (changeResult.isOk()) {
+            log.info( "changeYoutrackId(): OK" );
+            return OK;
+        }
+
+        log.warn( "changeYoutrackId(): Can`t change youtrack id, status: {}", changeResult.getStatus() );
+
+        return INTERNAL_ERROR;
     }
 
     @PostMapping(value = "/comments")
@@ -266,17 +300,60 @@ public class PortalApiController {
         return caseCommentService.getCaseCommentShortViewList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query)).map( SearchResult::getResults );
     }
 
+    @PostMapping(value = "/employees")
+    public Result<List<PersonInfo>> getEmployees(HttpServletRequest request, HttpServletResponse response, @RequestBody EmployeeApiQuery query) {
+        log.info("API | getEmployees(): query={}", query);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> employeeService.employeeList(authToken, makeEmployeeQuery(query)))
+                .map(SearchResult::getResults)
+                .map(employeeShortViews -> employeeShortViews.stream().map(PersonInfo::fromEmployeeShortView).collect(Collectors.toList()))
+                .ifOk(personInfos -> log.info("getEmployees(): OK"))
+                .ifError(result -> log.warn("getEmployees(): Can't find personInfos by query={}. {}", query, result));
+    }
+
+    @PostMapping(value = "/tags/create")
+    public Result<CaseTag> createCaseTag(HttpServletRequest request, HttpServletResponse response, @RequestBody CaseTagInfo caseTagInfo) {
+        log.info("API | createCaseTag(): caseTagInfo={}", caseTagInfo);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return caseTagService.create(authToken, CaseTagInfo.toCaseTag(caseTagInfo))
+                .flatMap(tagId -> caseTagService.getTag(authToken, tagId))
+                .ifOk(caseTagId -> log.info("createCaseTag(): OK"))
+                .ifError(result -> log.warn("createCaseTag(): Can't create tag={}. {}", caseTagInfo, result));
+    }
+
+    @PostMapping(value = "/tags/remove/{caseTagId:[0-9]+}")
+    public Result<Long> removeCaseTag(HttpServletRequest request, HttpServletResponse response, @PathVariable("caseTagId") Long caseTagId) {
+        log.info("API | removeCaseTag(): caseTagId={}", caseTagId);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> caseTagService.removeTag(authToken, caseTagId))
+                .ifOk(id -> log.info("removeCaseTag(): OK"))
+                .ifError(result -> log.warn("removeCaseTag(): Can't remove tag={}. {}", caseTagId, result));
+    }
+
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         // optional
-        query.setStateIds(getCaseStateIdList(apiQuery.getStates()));
+        query.setStateIds(apiQuery.getStateIds());
         query.setManagerIds(apiQuery.getManagerIds());
         query.setCompanyIds(apiQuery.getCompanyIds());
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
-        query.setCreatedFrom(parseDate(apiQuery.getCreatedFrom()));
-        query.setCreatedTo(parseDate(apiQuery.getCreatedTo()));
+        query.setCreatedRange(new DateRange(En_DateIntervalType.FIXED,
+                                            parseDate(apiQuery.getCreatedFrom()),
+                                            parseDate(apiQuery.getCreatedTo()))
+                             );
+        query.setManagerCompanyIds(apiQuery.getManagerCompanyIds());
         return query;
     }
 
@@ -290,15 +367,16 @@ public class PortalApiController {
         return query;
     }
 
-    private List<Integer> getCaseStateIdList(List<String> states) {
-        List<Integer> stateIds = null;
-        if (CollectionUtils.isNotEmpty(states)) {
-            stateIds = Arrays.asList(En_CaseState.values()).stream()
-                    .filter(state -> states.contains(state.name()))
-                    .map(En_CaseState::getId)
-                    .collect(Collectors.toList());
-        }
-        return stateIds;
+    private EmployeeQuery makeEmployeeQuery(EmployeeApiQuery apiQuery) {
+        EmployeeQuery query = new EmployeeQuery();
+        query.setSearchString(apiQuery.getDisplayName());
+        query.setEmail(apiQuery.getEmail());
+        query.setWorkPhone(apiQuery.getWorkPhone());
+        query.setMobilePhone(apiQuery.getMobilePhone());
+        query.setLimit(apiQuery.getLimit());
+        query.setOffset(apiQuery.getOffset());
+
+        return query;
     }
 
     private Date parseDate(String date) {
@@ -320,5 +398,28 @@ public class PortalApiController {
         } catch (Throwable ex) {
             return null;
         }
+    }
+
+    private void removeDuplicates(List<Long> crmNumberList) {
+        Set<Long> uniqueNumbers = new LinkedHashSet<>(crmNumberList);
+        crmNumberList.clear();
+        crmNumberList.addAll(uniqueNumbers);
+    }
+
+    private List<Long> makeCrmNumberList (String crmNumbers) throws NumberFormatException{
+        if (crmNumbers == null) {
+            return new ArrayList<>();
+        }
+        crmNumbers = crmNumbers.replace("\n", "");
+
+        return Arrays.stream(crmNumbers.split(","))
+                .filter(Objects::nonNull)
+                .map(number -> {
+            if (number.startsWith("[")) {
+                return Long.parseLong(number.substring(1, number.indexOf("]")));
+            } else {
+                return Long.parseLong(number);
+            }
+        }).collect(Collectors.toList());
     }
 }

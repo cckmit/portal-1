@@ -25,7 +25,7 @@ public class EducationEntryAttendance implements Serializable {
 
     @JdbcJoinedColumn(mappedColumn = "displayShortName", joinPath = {
             @JdbcJoinPath(localColumn = "worker_entry_id", table = "worker_entry", remoteColumn = "id"),
-            @JdbcJoinPath(localColumn = "personId", table = "Person", remoteColumn = "id")
+            @JdbcJoinPath(localColumn = "personId", table = "person", remoteColumn = "id")
     })
     private String workerName;
 

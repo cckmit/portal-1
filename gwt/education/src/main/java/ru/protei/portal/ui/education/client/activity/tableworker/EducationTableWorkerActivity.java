@@ -8,7 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -32,7 +32,7 @@ public abstract class EducationTableWorkerActivity implements Activity, Abstract
         HasWidgets container = event.parent;
         boolean hasAccess = isWorker() || isAdmin();
         if (!hasAccess) {
-            fireEvent(new ForbiddenEvents.Show(container));
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
         container.clear();

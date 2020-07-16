@@ -6,24 +6,26 @@ import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CachedPersonMapper {
 
     private PersonDAO personDAO;
-    private final RedmineEndpoint endpoint;
+    private Long companyId;
+    private Long defaultUserLocalId;
     private Person defaultEntryPointUser;
     private final Map<String, Person> index;
 
-    public CachedPersonMapper(PersonDAO personDAO, RedmineEndpoint endpoint, Person defUser) {
+    public CachedPersonMapper(PersonDAO personDAO, Long companyId, Long defaultUserLocalId, Person defUser) {
         this.personDAO = personDAO;
-        this.endpoint = endpoint;
+        this.companyId = companyId;
+        this.defaultUserLocalId = defaultUserLocalId;
         this.defaultEntryPointUser = defUser;
         this.index = new HashMap<>();
     }
@@ -31,7 +33,7 @@ public class CachedPersonMapper {
     public Person toProteiPerson(User user) {
         if (user == null) {
             if (defaultEntryPointUser == null) {
-                defaultEntryPointUser = personDAO.get(endpoint.getDefaultUserLocalId());
+                defaultEntryPointUser = personDAO.get(defaultUserLocalId);
             }
             return defaultEntryPointUser;
         }
@@ -39,7 +41,7 @@ public class CachedPersonMapper {
         Person person = index.getOrDefault(emailKey(user), index.get(nameKey(user)));
 
         if (person == null) {
-            person = mapPerson(endpoint, user);
+            person = mapPerson(companyId, user);
             if (HelperFunc.isNotEmpty(user.getMail()))
                 index.put(emailKey(user), person);
 
@@ -50,8 +52,8 @@ public class CachedPersonMapper {
         return person;
     }
 
-    public boolean isTechUser(RedmineEndpoint endpoint, User user) {
-        return user != null && user.getId().equals(endpoint.getDefaultUserId());
+    public static boolean isTechUser(Integer defaultUserID, User user) {
+        return user != null && Objects.equals(defaultUserID, user.getId());
     }
 
     private String emailKey (User user) {
@@ -62,28 +64,27 @@ public class CachedPersonMapper {
         return HelperFunc.isNotEmpty(user.getFullName()) ? "name:" + user.getFullName() : "N";
     }
 
-    private Person mapPerson (RedmineEndpoint endpoint, User user) {
+    private Person mapPerson (Long companyId, User user) {
         Person person = null;
 
         if (HelperFunc.isNotEmpty(user.getMail())) {
-            person = personDAO.findContactByEmail(endpoint.getCompanyId(), user.getMail());
+            person = personDAO.findContactByEmail(companyId, user.getMail());
         }
 
         if (person == null) {
-            person = personDAO.findContactByName(endpoint.getCompanyId(), user.getFullName());
+            person = personDAO.findContactByName(companyId, user.getFullName());
         }
 
         if (person == null) {
-            person = createPersonForRedmineUser(endpoint, user);
+            person = createPersonForRedmineUser(companyId, user);
         }
 
         return person;
     }
 
-    private Person createPersonForRedmineUser(RedmineEndpoint endpoint, User user) {
+    private Person createPersonForRedmineUser(Long companyId, User user) {
 
         Person person = null;
-        Long companyId = endpoint.getCompanyId();
 
         if (HelperFunc.isNotEmpty(user.getMail())) {
             // try find by e-mail

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.server.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -8,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -60,7 +62,7 @@ public abstract class ServerTableActivity implements
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -74,16 +76,13 @@ public abstract class ServerTableActivity implements
         }
 
         platformId = event.platformId;
-        if (platformId != null) {
-            Set<PlatformOption> options = new HashSet<>();
-            PlatformOption option = new PlatformOption();
-            option.setId(platformId);
-            options.add(option);
-            filterView.platforms().setValue(options);
-        }
+        this.preScroll = event.preScroll;
 
-        loadTable();
+        if (platformId != null) {
+            requestPlatformAndLoadTable();
+        }
     }
+
 
     @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
@@ -95,50 +94,14 @@ public abstract class ServerTableActivity implements
             return;
         }
 
+        view.clearSelection();
+
         fireEvent(new SiteFolderServerEvents.Edit());
     }
 
     @Event
     public void onServerChanged(SiteFolderServerEvents.Changed event) {
         view.updateRow(event.server);
-    }
-
-    @Event
-    public void onServerConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (serverIdForRemove == null) {
-            return;
-        }
-
-        siteFolderController.removeServer(serverIdForRemove, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                serverIdForRemove = null;
-                if (result) {
-                    fireEvent(new SiteFolderServerEvents.ChangeModel());
-                    fireEvent(new SiteFolderServerEvents.Show(platformId));
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onServerCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        serverIdForRemove = null;
     }
 
     @Override
@@ -161,11 +124,13 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()));
+        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
     }
 
     @Override
     public void onEditClicked(Server value) {
+        persistScroll();
+
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
             return;
         }
@@ -174,7 +139,7 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderServerEvents.Edit(value.getId()));
+        fireEvent(new SiteFolderServerEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderServerEvents.Show(value.getPlatformId(), true))));
     }
 
     @Override
@@ -187,14 +152,13 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        serverIdForRemove = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderServerConfirmRemove()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderServerConfirmRemove(), removeAction(value.getId())));
     }
 
     @Override
     public void onOpenAppsClicked(Server value) {
         if (value != null) {
-            fireEvent(new SiteFolderAppEvents.Show(value.getId()));
+            fireEvent(new SiteFolderAppEvents.Show(value.getId(), false));
         }
     }
 
@@ -215,6 +179,7 @@ public abstract class ServerTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScroll();
                     }
                 }));
     }
@@ -232,6 +197,41 @@ public abstract class ServerTableActivity implements
     @Override
     public void onFilterChanged() {
         loadTable();
+    }
+
+    private void requestPlatformAndLoadTable() {
+        Set<PlatformOption> options = new HashSet<>();
+        PlatformOption option = new PlatformOption();
+        siteFolderController.getPlatform(platformId, new FluentCallback<Platform>()
+                .withError(throwable -> {
+                    option.setId(platformId);
+                    options.add(option);
+                    filterView.platforms().setValue(options);
+                    loadTable();
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRequestError(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(platform -> {
+                    option.setId(platformId);
+                    option.setDisplayText(platform.getName());
+                    options.add(option);
+                    filterView.platforms().setValue(options);
+                    loadTable();
+                }));
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void loadTable() {
@@ -263,6 +263,26 @@ public abstract class ServerTableActivity implements
         return query;
     }
 
+    private Runnable removeAction(Long serverId) {
+        return () -> siteFolderController.removeServer(serverId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new SiteFolderServerEvents.ChangeModel());
+                    fireEvent(new SiteFolderServerEvents.Show(platformId, false));
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Inject
     PolicyService policyService;
     @Inject
@@ -279,6 +299,8 @@ public abstract class ServerTableActivity implements
     AbstractPagerView pagerView;
 
     private Long platformId = null;
-    private Long serverIdForRemove = null;
     private AppEvents.InitDetails initDetails;
+
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

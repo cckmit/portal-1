@@ -17,6 +17,8 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+
 /**
  * Список чекбоксов с заголовом
  */
@@ -62,17 +64,23 @@ public class OptionList<T>
         this.header.removeClassName("hide");
     }
 
-
-    public void addOption( String name, T value, String styleName ) {
+    public void addOption( String name, String info, String text, T value, String styleName, String title ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
 
         OptionItem itemView = itemFactory.get();
         itemView.setName( name );
+        itemView.setInfo( info );
+        itemView.setText( text );
+
+        if (isNotEmpty(title)) {
+            itemView.setTitle(title);
+        }
+
         itemView.addValueChangeHandler( this );
-        itemView.setValue(selected.contains(value));
-        itemView.setEnabled(isEnabled);
+        itemView.setValue( selected.contains( value ) );
+        itemView.setEnabled( isEnabled );
 
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
@@ -85,12 +93,22 @@ public class OptionList<T>
             itemView.setStyleName( styleName );
         }
         container.add( itemView.asWidget() );
+    }
 
-
+    public void addOption(String name, String info, String text, T value, String styleName) {
+        addOption(name, info, text, value, styleName, null);
     }
 
     public void addOption( String name, T value ) {
         addOption( name, value, null );
+    }
+
+    public void addOption(String name, T value, String styleName, String title) {
+        addOption(name, null, null, value, styleName, title);
+    }
+
+    public void addOption( String name, T value, String styleName ) {
+        addOption( name, null, null, value, styleName );
     }
 
     @Override

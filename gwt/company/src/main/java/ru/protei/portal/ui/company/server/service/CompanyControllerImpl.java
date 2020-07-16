@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
-import ru.protei.portal.core.service.CaseTagService;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
@@ -22,11 +20,10 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -40,10 +37,8 @@ public class CompanyControllerImpl implements CompanyController {
     @Override
     public SearchResult< Company > getCompanies(CompanyQuery companyQuery) throws RequestFailedException {
 
-        List< Long > categoryIds = companyQuery.getCategoryIds();
-
         log.info( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
-                companyQuery.getSearchString(), categoryIds,
+                companyQuery.getSearchString(), companyQuery.getCategoryIds(),
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -151,11 +146,41 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
+    public Company getCompanyUnsafe(long id) throws RequestFailedException {
+        log.info("getCompanyUnsafe(): id={}", id);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<Company> response = companyService.getCompanyUnsafe(token, id);
+
+        log.info("getCompanyUnsafe(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData());
+
+        if (response.isError()) throw new RequestFailedException(response.getStatus());
+
+        return response.getData();
+    }
+
+    @Override
     public List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException {
-        log.info( "getCompanyOptionList()" );
+        log.info( "getCompanyOptionList(): query={}", query  );
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result< List< EntityOption > > result = companyService.companyOptionList(token, query);
+
+        log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
+
+        if ( result.isError() )
+            throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List< EntityOption > getCompanyOptionListIgnorePrivileges(CompanyQuery query) throws RequestFailedException {
+        log.info( "getCompanyOptionListIgnorePrivileges(): query={}", query );
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result< List< EntityOption > > result = companyService.companyOptionListIgnorePrivileges(token, query);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -181,7 +206,7 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List< EntityOption > getCategoryOptionList() throws RequestFailedException {
+    public List< En_CompanyCategory > getCategoryOptionList() throws RequestFailedException {
 
         log.info( "getCategoryOptionList()" );
 
@@ -189,7 +214,7 @@ public class CompanyControllerImpl implements CompanyController {
         Set<UserRole> availableRoles = token.getRoles();
         boolean hasOfficial = policyService.hasPrivilegeFor(En_Privilege.OFFICIAL_VIEW, availableRoles);
 
-        Result< List< EntityOption > > result = companyService.categoryOptionList(hasOfficial);
+        Result< List< En_CompanyCategory > > result = companyService.categoryOptionList(hasOfficial);
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
@@ -212,24 +237,38 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException {
-        log.info( "getCompanyWithParentCompanySubscriptions() companyId={}", companyId );
-        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
-        return ServiceUtils.checkResultAndGetData( companyService.getCompanyWithParentCompanySubscriptions( authToken, companyId ));
+    public List<CompanySubscription> getCompanyWithParentCompanySubscriptions(Set<Long> companyIds) throws RequestFailedException {
+        log.info("getCompanyWithParentCompanySubscriptions() companyIds={}", companyIds);
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(companyService.getCompanyWithParentCompanySubscriptions(authToken, companyIds));
     }
 
     @Override
     public List<CaseState> getCompanyCaseStates(Long companyId) throws RequestFailedException {
-        log.info( "getCompanyCaseStates() companyId={}", companyId );
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        log.info("getCompanyCaseStates() companyId={}", companyId);
         return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
     }
 
     @Override
-    public List<Long> getAllHomeCompanyIds() throws RequestFailedException {
-        log.info("getAllHomeCompanyIds()");
+    public List<EntityOption> getAllHomeCompanies() throws RequestFailedException {
+        log.info("getAllHomeCompanies()");
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(companyService.getAllHomeCompanyIds(authToken));
+        List<Company> companies = checkResultAndGetData(companyService.getAllHomeCompanies(authToken));
+
+        return companies.stream().map(company -> new EntityOption(company.getCname(), company.getId())).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<En_ImportanceLevel> getImportanceLevels(Long companyId) throws RequestFailedException {
+        log.info("getImportanceLevels() companyId={}", companyId);
+        List<CompanyImportanceItem> importanceItems = checkResultAndGetData(companyService.getImportanceLevels(companyId));
+        List<En_ImportanceLevel> importanceLevels = importanceItems.stream()
+                .map(CompanyImportanceItem::getImportanceLevelId)
+                .map(En_ImportanceLevel::getById)
+                .collect(Collectors.toList());
+        log.info("getImportanceLevels() importanceLevels={}", importanceLevels);
+
+        return importanceLevels;
     }
 
     @Autowired
@@ -237,9 +276,6 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Autowired
     private CaseStateService caseStateService;
-
-    @Autowired
-    private CaseTagService caseTagService;
 
     @Autowired
     SessionService sessionService;

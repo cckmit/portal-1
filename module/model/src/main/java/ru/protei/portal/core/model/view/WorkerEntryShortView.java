@@ -25,6 +25,9 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
 
+    @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "is_hidden")
+    private Boolean companyIsHidden;
+
     @JdbcJoinedColumn(mappedColumn = "dep_name", joinPath = {
             @JdbcJoinPath(localColumn = "dep_id", table = "company_dep", remoteColumn = "id"),
             @JdbcJoinPath(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id")
@@ -42,6 +45,9 @@ public class WorkerEntryShortView implements Serializable {
 
     @JdbcColumn(name = "dep_id")
     private Long depId;
+
+    @JdbcColumn(name = "positionId")
+    private Long positionId;
 
     public Long getId() {
         return id;
@@ -107,6 +113,42 @@ public class WorkerEntryShortView implements Serializable {
         this.depId = depId;
     }
 
+    public Boolean getCompanyIsHidden() {
+        return companyIsHidden;
+    }
+
+    public void setCompanyIsHidden(Boolean companyIsHidden) {
+        this.companyIsHidden = companyIsHidden;
+    }
+
+    public Long getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public void setDepartmentParentName(String departmentParentName) {
+        this.departmentParentName = departmentParentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public void setPositionName(String positionName) {
+        this.positionName = positionName;
+    }
+
     @Override
     public String toString() {
         return "WorkerEntryShortView{" +
@@ -120,6 +162,8 @@ public class WorkerEntryShortView implements Serializable {
                 ", positionName='" + positionName + '\'' +
                 ", activeFlag=" + activeFlag +
                 ", depId=" + depId +
+                ", positionId=" + positionId +
+                ", companyIsHidden=" + companyIsHidden +
                 '}';
     }
 }

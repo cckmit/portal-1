@@ -1,12 +1,15 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Асинхронный сервис по работе с компаниями
@@ -64,6 +67,12 @@ public interface CompanyControllerAsync {
     void getCompanyOptionList(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
 
     /**
+     * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии
+     * @param callback
+     */
+    void getCompanyOptionListIgnorePrivileges(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
+
+    /**
      * Получение списка сокращенного представления группы компаний (name,id)
      * @param callback
      */
@@ -73,7 +82,7 @@ public interface CompanyControllerAsync {
      * Получение списка сокращенного представления категории компаний (name,id)
      * @param callback
      */
-    void getCategoryOptionList( AsyncCallback< List< EntityOption > > callback );
+    void getCategoryOptionList( AsyncCallback< List<En_CompanyCategory> > callback );
 
     /**
      * Получение список рассылок по компании
@@ -81,7 +90,7 @@ public interface CompanyControllerAsync {
      * @param companyId
      */
     void getCompanySubscription( Long companyId, AsyncCallback< List< CompanySubscription > > async );
-    void getCompanyWithParentCompanySubscriptions( Long companyId, AsyncCallback<List<CompanySubscription>> async );
+    void getCompanyWithParentCompanySubscriptions(Set<Long> companyIds, AsyncCallback<List<CompanySubscription>> async );
 
     /**
      * Получить список доступных статусов обращения
@@ -90,5 +99,9 @@ public interface CompanyControllerAsync {
 
     void updateState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
 
-    void getAllHomeCompanyIds(AsyncCallback<List<Long>> async);
+    void getImportanceLevels(Long id, AsyncCallback<List<En_ImportanceLevel>> async);
+
+    void getAllHomeCompanies(AsyncCallback<List<EntityOption>> async);
+
+    void getCompanyUnsafe(long id, AsyncCallback<Company> async);
 }

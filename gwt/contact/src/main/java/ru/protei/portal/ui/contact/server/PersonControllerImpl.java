@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.PersonService;
@@ -28,6 +29,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 @Service( "PersonController" )
 public class PersonControllerImpl implements PersonController {
 
+    @Override
     public List<PersonShortView> getPersonViewList( PersonQuery query ) throws RequestFailedException {
 
         log.info( "getPersonViewList(): searchPattern={} | companyId={} | sortField={} | sortDir={}",
@@ -56,6 +58,22 @@ public class PersonControllerImpl implements PersonController {
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public PersonShortView getPersonShortView(Long id) throws RequestFailedException {
+        log.info("getPersonShortView: id={}", id);
+
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<PersonShortView> result = personService.getPersonShortView(authToken, id);
+
+        log.info("result status: {}, data: {}", result.getStatus(), result.getData());
+
+        if (result.isError())
+            throw new RequestFailedException(result.getStatus());
 
         return result.getData();
     }

@@ -13,9 +13,16 @@ public class CompanyQuery extends BaseQuery {
     /**
      * list of company category (a partner, dealer, customer, etc)
      */
-    private List<Long> categoryIds;
+    private List<Integer> categoryIds;
 
-    private boolean onlyHome;
+    /**
+     * true - only home group companies. Attention! With Universum! Use isShowHidden=false to hide it.
+     * false - without home group companies
+     * null - all companies. Attention! With Universum! Use isShowHidden=false to hide it.
+     */
+    private Boolean homeGroupFlag = false;
+
+    private Boolean synchronizeWith1C;
 
     private boolean isOnlyParentCompanies;
 
@@ -29,6 +36,8 @@ public class CompanyQuery extends BaseQuery {
 
     private Boolean isReverseOrder;
 
+    private Boolean isShowHidden;
+
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
     }
@@ -38,9 +47,15 @@ public class CompanyQuery extends BaseQuery {
         this.onlyVisibleFields = true;
         return this;
     }
-    public CompanyQuery(boolean onlyHome) {
+    public CompanyQuery(Boolean homeGroupFlag) {
         super("", En_SortField.comp_name, En_SortDir.ASC);
-        this.onlyHome = onlyHome;
+        this.homeGroupFlag = homeGroupFlag;
+    }
+
+    public CompanyQuery(Boolean homeGroupFlag, boolean isShowHidden) {
+        super("", En_SortField.comp_name, En_SortDir.ASC);
+        this.homeGroupFlag = homeGroupFlag;
+        this.isShowHidden = isShowHidden;
     }
 
     public CompanyQuery(String searchString, En_SortField sortField, En_SortDir sortDir, boolean isShowDeprecated) {
@@ -48,20 +63,36 @@ public class CompanyQuery extends BaseQuery {
         this.isShowDeprecated = isShowDeprecated;
     }
 
-    public List<Long> getCategoryIds() {
+    public Boolean getShowHidden() {
+        return isShowHidden;
+    }
+
+    public void setShowHidden(Boolean showHidden) {
+        isShowHidden = showHidden;
+    }
+
+    public List<Integer> getCategoryIds() {
         return categoryIds;
     }
 
-    public void setCategoryIds(List<Long> categoryIds) {
+    public void setCategoryIds(List<Integer> categoryIds) {
         this.categoryIds = categoryIds;
     };
 
-    public boolean getOnlyHome() {
-        return onlyHome;
+    public Boolean getHomeGroupFlag() {
+        return homeGroupFlag;
     }
 
-    public void setOnlyHome(boolean onlyHome) {
-        this.onlyHome = onlyHome;
+    public Boolean getSynchronizeWith1C() {
+        return synchronizeWith1C;
+    }
+
+    public void setSynchronizeWith1C(Boolean synchronizeWith1C) {
+        this.synchronizeWith1C = synchronizeWith1C;
+    }
+
+    public void setHomeGroupFlag(Boolean homeGroupFlag) {
+        this.homeGroupFlag = homeGroupFlag;
     }
 
     public void setOnlyParentCompanies( boolean parentIdIsNull ) {
@@ -113,15 +144,21 @@ public class CompanyQuery extends BaseQuery {
         return this;
     }
 
+    public CompanyQuery synchronizeWith1C( Boolean synchronizeWith1C ) {
+        this.synchronizeWith1C = synchronizeWith1C;
+        return this;
+    }
+
 
     @Override
     public String toString() {
         return "CompanyQuery{" +
-                ", onlyHome=" + onlyHome +
+                ", onlyHome=" + homeGroupFlag +
                 ", isOnlyParentCompanies=" + isOnlyParentCompanies +
                 ", categoryIds=" + categoryIds +
                 ", companyIds=" + companyIds +
                 ", reverseOrder=" + isReverseOrder +
+                ", synchronizeWith1C=" + synchronizeWith1C +
                 '}';
     }
 }

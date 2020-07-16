@@ -16,12 +16,15 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -34,9 +37,7 @@ import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActiv
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Вид карточки создания/редактирования продукта
@@ -47,31 +48,15 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-//        parents.setRequestByOnLoad(false);
-//        children.setRequestByOnLoad(false);
-
         historyVersion.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         configuration.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         cdrDescription.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
+        info.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
 
-        historyVersion.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
-            @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( HISTORY_VERSION, isDisplay );
-            }
-        } );
-        configuration.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
-            @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay );
-            }
-        } );
-        cdrDescription.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
-            @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay );
-            }
-        } );
+        historyVersion.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( HISTORY_VERSION, isDisplay ));
+        configuration.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay ));
+        cdrDescription.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay ));
+        info.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(INFO, isDisplay));
 
         ensureDebugIds();
     }
@@ -119,11 +104,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasValidable productSubscriptionsValidator() {
-        return subscriptions;
-    }
-
-    @Override
     public HasVisibility directionVisibility() {
         return directionContainer;
     }
@@ -144,43 +124,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void setMutableState(En_DevUnitType type) {
-        parentsContainerLabel.setInnerText(lang.belongsTo());
-        checkName();
-
-        if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
-            nameLabel.setInnerText(lang.complexName());
-            descriptionLabel.setInnerText(lang.complexDescription());
-            childrenContainerLabel.setInnerText(lang.products());
-
-            parentsContainer.addStyleName("hide");
-            childrenContainer.removeStyleName("col-md-6");
-            childrenContainer.addStyleName("col-md-12");
-
-            children.setTypes(En_DevUnitType.PRODUCT);
-        } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
-            nameLabel.setInnerText(lang.productName());
-            descriptionLabel.setInnerText(lang.productDescription());
-            childrenContainerLabel.setInnerText(lang.components());
-
-            parentsContainer.removeStyleName("hide");
-            childrenContainer.removeStyleName("col-md-12");
-            childrenContainer.addStyleName("col-md-6");
-
-            parents.setTypes(En_DevUnitType.COMPLEX);
-            children.setTypes(En_DevUnitType.COMPONENT);
-        } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
-            nameLabel.setInnerText(lang.componentName());
-            descriptionLabel.setInnerText(lang.componentDescription());
-            childrenContainerLabel.setInnerText(lang.components());
-
-            parentsContainer.removeStyleName("hide");
-            childrenContainer.removeStyleName("col-md-12");
-            childrenContainer.addStyleName("col-md-6");
-
-            parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
-            children.setTypes(En_DevUnitType.COMPONENT);
-        }
+    public void setInfoPreviewAllowed(boolean isPreviewAllowed) {
+        info.setDisplayPreview(isPreviewAllowed);
     }
 
     @Override
@@ -217,9 +162,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasEnabled saveEnabled() { return saveBtn; }
-
-    @Override
     public void setNameStatus (NameStatus status)
     {
         verifiableIcon.setClassName(status.getStyle());
@@ -243,6 +185,71 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
+    }
+
+    @Override
+    public HasValue<PersonShortView> commonManager() {
+        return commonManager;
+    }
+
+    @Override
+    public void setCommonManagerCompanyId(Long id) {
+        commonManager.updateCompanies(new HashSet<>(Collections.singleton(id)));
+    }
+
+    @Override
+    public HasVisibility commonManagerContainerVisibility() {
+        return commonManagerContainer;
+    }
+
+    @Override
+    public HasVisibility parentsContainerVisibility() {
+        return parentsContainer;
+    }
+
+    @Override
+    public void makeChildrenContainerShortView() {
+        childrenContainer.getElement().replaceClassName(UiConstants.Styles.FULL_VIEW, UiConstants.Styles.SHORT_VIEW);
+    }
+
+    @Override
+    public void makeChildrenContainerFullView() {
+        childrenContainer.getElement().replaceClassName(UiConstants.Styles.SHORT_VIEW, UiConstants.Styles.FULL_VIEW);
+    }
+
+    @Override
+    public void makeDirectionContainerShortView() {
+        directionContainer.getElement().replaceClassName(UiConstants.Styles.FULL_VIEW, UiConstants.Styles.SHORT_VIEW);
+    }
+
+    @Override
+    public void makeDirectionContainerFullView() {
+        directionContainer.getElement().replaceClassName(UiConstants.Styles.SHORT_VIEW, UiConstants.Styles.FULL_VIEW);
+    }
+
+    @Override
+    public void setParentTypes(En_DevUnitType... types) {
+        parents.setTypes(types);
+    }
+
+    @Override
+    public void setChildrenTypes(En_DevUnitType... types) {
+        children.setTypes(types);
+    }
+
+    @Override
+    public void setNameLabel(String label) {
+        nameLabel.setInnerText(label);
+    }
+
+    @Override
+    public void setDescriptionLabel(String label) {
+        descriptionLabel.setInnerText(label);
+    }
+
+    @Override
+    public void setChildrenContainerLabel(String label) {
+        childrenContainerLabel.setInnerText(label);
     }
 
     @UiHandler("saveBtn")
@@ -292,6 +299,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         parents.ensureDebugId(DebugIds.PRODUCT.PRODUCTS);
         aliases.ensureDebugId(DebugIds.PRODUCT.ALIASES);
 
+        commonManager.ensureDebugId(DebugIds.PRODUCT.COMMON_MANAGER);
+
         tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT.TAB.HISTORY_VERSION);
         historyVersion.getElement().setId(DebugIds.PRODUCT.HISTORY_VERSION);
         tabWidget.setTabNameDebugId(lang.productConfiguration(), DebugIds.PRODUCT.TAB.CONFIGURATION);
@@ -305,17 +314,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         saveBtn.ensureDebugId(DebugIds.PRODUCT.SAVE_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.PRODUCT.CANCEL_BUTTON);
     }
-
-    Timer changeTimer = new Timer() {
-        @Override
-        public void run() {
-            changeTimer.cancel();
-            if ( activity != null ) {
-                activity.onNameChanged();
-            }
-        }
-    };
-
 
     @UiField
     LabelElement nameLabel;
@@ -346,11 +344,16 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     Element verifiableIcon;
     @UiField
-    TextArea info;
+    MarkdownAreaWithPreview info;
     @UiField
     Button saveBtn;
     @UiField
     Button cancelBtn;
+    @Inject
+    @UiField(provided = true)
+    PersonButtonSelector commonManager;
+    @UiField
+    HTMLPanel commonManagerContainer;
 
     @Inject
     @UiField
@@ -369,8 +372,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     TextBox wikiLink;
     @UiField
-    LabelElement parentsContainerLabel;
-    @UiField
     LabelElement childrenContainerLabel;
     @Inject
     @UiField(provided = true)
@@ -382,7 +383,14 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     ImageElement typeImage;
 
-    AbstractProductEditActivity activity;
+    private Timer changeTimer = new Timer() {
+        @Override
+        public void run() {
+            activity.onNameChanged();
+        }
+    };
+
+    private AbstractProductEditActivity activity;
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);
     interface ProductViewUiBinder extends UiBinder<HTMLPanel, ProductEditView > {}

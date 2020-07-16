@@ -7,7 +7,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 
 import static ru.protei.portal.ui.education.client.util.EducationUtils.isAdmin;
 import static ru.protei.portal.ui.education.client.util.EducationUtils.isWorker;
@@ -28,7 +28,7 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
     public void onShow(EducationEvents.Show event) {
         boolean hasAccess = isWorker() || isAdmin();
         if (!hasAccess) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         showView();

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.equipment.client.activity.edit;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -13,7 +12,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -28,6 +27,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Активность карточки редактирования единицы оборудования
@@ -49,7 +49,7 @@ public abstract class EquipmentEditActivity
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Edit event ) {
         if (!hasPrivileges(event.id)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -118,14 +118,14 @@ public abstract class EquipmentEditActivity
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
-                    fireEvent(isNew(this.equipment) ? new EquipmentEvents.Show(true) : new Back());
+                    fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
                 })
         );
     }
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new EquipmentEvents.Show(!isNew(this.equipment)));
     }
 
     @Override
@@ -195,6 +195,11 @@ public abstract class EquipmentEditActivity
 
         view.createDocumentButtonEnabled().setEnabled(!isCreate);
         view.documentsVisibility().setVisible(!isCreate);
+
+        view.setLinkedEquipmentFilter(isCreate ?
+                        (equipmentShortView -> true) :
+                        (equipmentShortView -> !Objects.equals(equipmentShortView.getId(), equipment.getId()))
+        );
 
         fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }

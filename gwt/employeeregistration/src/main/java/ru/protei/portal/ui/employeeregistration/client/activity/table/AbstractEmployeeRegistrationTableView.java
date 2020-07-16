@@ -5,7 +5,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface AbstractEmployeeRegistrationTableView extends IsWidget {
     void setActivity(AbstractEmployeeRegistrationTableActivity activity);
@@ -23,4 +22,6 @@ public interface AbstractEmployeeRegistrationTableView extends IsWidget {
     HTMLPanel getFilterContainer();
 
     void clearSelection();
+
+    void updateRow(EmployeeRegistration employeeRegistration);
 }

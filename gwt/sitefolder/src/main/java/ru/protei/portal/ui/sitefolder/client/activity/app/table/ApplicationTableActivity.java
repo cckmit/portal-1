@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.app.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -28,7 +29,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ApplicationTableActivity implements
@@ -60,7 +60,7 @@ public abstract class ApplicationTableActivity implements
     @Event
     public void onShow(SiteFolderAppEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -104,44 +104,6 @@ public abstract class ApplicationTableActivity implements
         view.updateRow(event.app);
     }
 
-    @Event
-    public void onAppConfirmRemove(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        if (appIdForRemove == null) {
-            return;
-        }
-
-        siteFolderController.removeApplication(appIdForRemove, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                appIdForRemove = null;
-                if (result) {
-                    fireEvent(new SiteFolderAppEvents.ChangeModel());
-                    fireEvent(new SiteFolderAppEvents.Show(serverId));
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
-    @Event
-    public void onAppCancelRemove(ConfirmDialogEvents.Cancel event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-        appIdForRemove = null;
-    }
-
     @Override
     public void onItemClicked(Application value) {
         if (value == null) {
@@ -154,6 +116,8 @@ public abstract class ApplicationTableActivity implements
 
     @Override
     public void onEditClicked(Application value) {
+        persistScroll();
+
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
             return;
         }
@@ -162,7 +126,7 @@ public abstract class ApplicationTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderAppEvents.Edit(value.getId()));
+        fireEvent(new SiteFolderAppEvents.Edit(value.getId()).withBackEvent(() -> fireEvent(new SiteFolderAppEvents.Show(value.getServerId(), true))));
     }
 
     @Override
@@ -175,8 +139,7 @@ public abstract class ApplicationTableActivity implements
             return;
         }
 
-        appIdForRemove = value.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderAppConfirmRemove()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.siteFolderAppConfirmRemove(), removeAction(value.getId())));
     }
 
     @Override
@@ -196,6 +159,7 @@ public abstract class ApplicationTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScroll();
                     }
                 }));
     }
@@ -213,6 +177,21 @@ public abstract class ApplicationTableActivity implements
     @Override
     public void onFilterChanged() {
         loadTable();
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        if (!preScroll) {
+            view.clearSelection();
+            return;
+        }
+
+        Window.scrollTo(0, scrollTo);
+        preScroll = false;
+        scrollTo = 0;
     }
 
     private void loadTable() {
@@ -242,6 +221,26 @@ public abstract class ApplicationTableActivity implements
         return query;
     }
 
+    private Runnable removeAction(Long applicationId) {
+        return () -> siteFolderController.removeApplication(applicationId, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new SiteFolderAppEvents.ChangeModel());
+                    fireEvent(new SiteFolderAppEvents.Show(serverId, false));
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Inject
     PolicyService policyService;
     @Inject
@@ -258,6 +257,8 @@ public abstract class ApplicationTableActivity implements
     AbstractPagerView pagerView;
 
     private Long serverId = null;
-    private Long appIdForRemove = null;
     private AppEvents.InitDetails initDetails;
+
+    private Integer scrollTo = 0;
+    private Boolean preScroll = false;
 }

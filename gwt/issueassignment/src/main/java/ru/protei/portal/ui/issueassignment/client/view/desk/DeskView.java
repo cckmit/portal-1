@@ -2,8 +2,10 @@ package ru.protei.portal.ui.issueassignment.client.view.desk;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVisibility;
@@ -46,6 +48,19 @@ public class DeskView extends Composite implements AbstractDeskView {
     }
 
     @Override
+    public HasVisibility notificationVisibility() {
+        return notification;
+    }
+
+    @Override
+    public TakesValue<String> notificationText() {
+        return new TakesValue<String>() {
+            public void setValue(String value) { notificationMessage.setInnerText(value); }
+            public String getValue() { return notificationMessage.getInnerText(); }
+        };
+    }
+
+    @Override
     public void setFailedViewText(String text) {
         failedViewText.setInnerText(text);
     }
@@ -58,6 +73,10 @@ public class DeskView extends Composite implements AbstractDeskView {
     HTMLPanel failedView;
     @UiField
     HeadingElement failedViewText;
+    @UiField
+    HTMLPanel notification;
+    @UiField
+    SpanElement notificationMessage;
 
     private AbstractDeskActivity activity;
 

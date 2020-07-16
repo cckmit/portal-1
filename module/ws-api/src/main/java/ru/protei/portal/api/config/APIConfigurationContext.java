@@ -12,9 +12,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.config.PortalConfigReloadable;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
+import ru.protei.portal.core.service.YoutrackService;
+import ru.protei.portal.core.service.YoutrackServiceImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
@@ -99,6 +108,31 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public CaseStateDAO getCaseStateDAO() {
+        return new CaseStateDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackService getYoutrackService() {
+        return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public YoutrackApi getYoutrackApi() {
+        return new YoutrackApiImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
+    }
+
+    @Bean
+    public YtDtoFieldsMapper getYtDtoFieldsMapper() {
+        return new YtDtoFieldsMapperImpl();
+    }
+
+    @Bean
     public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
         return new EmployeeRegistrationDAO_Impl();
     }
@@ -110,7 +144,7 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException {
-        return new PortalConfig("portal.properties");
+        return new PortalConfigReloadable("portal.properties");
     }
 
     @Bean

@@ -24,6 +24,11 @@
                                 <span ui:field="btnPreviousText"/>
                             </g:Button>
                         </g:HTMLPanel>
+                        <g:HTMLPanel tag="li" styleName="next" ui:field="btnExtraActionContainer">
+                            <g:Button styleName="btn btn-complete btn-cons pull-right" ui:field="btnExtraAction">
+                                <span ui:field="btnExtraActionText"/>
+                            </g:Button>
+                        </g:HTMLPanel>
                         <g:HTMLPanel tag="li" styleName="next" ui:field="btnNextContainer">
                             <g:Button styleName="btn btn-complete btn-cons pull-right" ui:field="btnNext">
                                 <span ui:field="btnNextText"/>

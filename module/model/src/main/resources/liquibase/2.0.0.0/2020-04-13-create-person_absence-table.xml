@@ -1,0 +1,48 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-person_absence-table" author="turik">
+        <createTable tableName="person_absence">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="person_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reason_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="till_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_comment" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-person_absence_creator_fk" author="turik">
+        <addForeignKeyConstraint constraintName="person_absence_creator_fk"
+                                 baseTableName="person_absence" baseColumnNames="creator_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-person_absence_person_fk" author="turik">
+        <addForeignKeyConstraint constraintName="person_absence_person_fk"
+                                 baseTableName="person_absence" baseColumnNames="person_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -9,7 +9,7 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setActivity(AbstractDocumentPreviewActivity activity);
 
-    void setHeader(String header);
+    void setDocumentNumber(String documentNumber);
 
     void setVersion(String text);
 
@@ -57,5 +57,5 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     HasVisibility documentDocUploadContainerLoading();
 
-    HasVisibility footerVisibility();
+    void showFullScreen(boolean isShowFullScreen);
 }

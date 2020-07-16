@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,18 @@ public class EmployeeQuery extends BaseQuery {
 
     private String departmentParent;
 
+    private String firstName;
+
+    private String lastName;
+
+    private String secondName;
+
+    private Date birthday;
+
+    private Boolean absent;
+
+    private Set<Long> departmentIds;
+
     public EmployeeQuery() {
         fired = false;
     }
@@ -41,14 +54,14 @@ public class EmployeeQuery extends BaseQuery {
     }
 
     public EmployeeQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
-        this(null, null, null, null, searchString, null, null, null, null, null, sortField, sortDir, null);
+        this(null, null, null, null, searchString, null, null, null, null, null, sortField, sortDir, null, null);
     }
 
     public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, En_SortField sortField, En_SortDir sortDir) {
-        this(fired, deleted, onlyPeople, null, null, null, null, null, null, null, sortField, sortDir, null);
+        this(fired, deleted, onlyPeople, null, null, null, null, null, null, null, sortField, sortDir, null, null);
     }
 
-    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir, List<Long> ids) {
+    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir, List<Long> ids, Boolean absent) {
         super(searchString, sortField, sortDir);
         this.fired = fired;
         this.deleted = deleted;
@@ -61,6 +74,7 @@ public class EmployeeQuery extends BaseQuery {
         this.departmentParent = departmentParent;
         this.limit = 1000;
         this.ids = ids;
+        this.absent = absent;
     }
 
     public Boolean getFired() {
@@ -143,10 +157,59 @@ public class EmployeeQuery extends BaseQuery {
         this.ids = ids;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getSecondName() {
+        return secondName;
+    }
+
+    public void setSecondName(String secondName) {
+        this.secondName = secondName;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public Boolean getAbsent() {
+        return absent;
+    }
+
+    public void setAbsent(Boolean absent) {
+        this.absent = absent;
+    }
+
+    public Set<Long> getDepartmentIds() {
+        return departmentIds;
+    }
+
+    public void setDepartmentIds(Set<Long> departmentIds) {
+        this.departmentIds = departmentIds;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
-                "fired=" + fired +
+                "ids=" + ids +
+                ", fired=" + fired +
                 ", deleted=" + deleted +
                 ", onlyPeople=" + onlyPeople +
                 ", homeCompanies=" + homeCompanies +
@@ -155,11 +218,13 @@ public class EmployeeQuery extends BaseQuery {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", email='" + email + '\'' +
                 ", departmentParent='" + departmentParent + '\'' +
-                ", searchString='" + searchString + '\'' +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", birthday=" + birthday +
+                ", absent=" + absent +
+                ", departmentIds=" + departmentIds +
+                ", absent=" + absent +
                 '}';
     }
 }

@@ -9,12 +9,18 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
-import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -23,13 +29,21 @@ import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
 import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
+import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
+import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.service.events.*;
+import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
+import ru.protei.portal.core.service.events.CaseSubscriptionService;
+import ru.protei.portal.core.service.events.CaseSubscriptionServiceImpl;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -40,10 +54,15 @@ import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.mock.PortalScheduleTasksStub;
-import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.mock.ReportControlServiceMock;
+import ru.protei.portal.schedule.PortalScheduleTasks;
+import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
+import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
+import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
+
+import static org.mockito.Mockito.mock;
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -102,6 +121,20 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
+
+    @Bean
+    public LegacySystemDAO getLegacySystemDAO() {
+        return new LegacySystemDAO();
+    }
+    @Bean
+    public SybConnProvider getSybConnProvider(@Autowired PortalConfig config) throws Throwable {
+        return new SybConnWrapperImpl(
+                config.data().legacySysConfig().getJdbcDriver(),
+                config.data().legacySysConfig().getJdbcURL(),
+                "fakeUser",
+                "fakePassword"
+        );
+    }
 
     @Bean
     public CompanyService getCompanyService() {
@@ -166,9 +199,6 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public PolicyService getPolicyService() { return new PolicyServiceImpl(); }
-
-    @Bean
-    public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
 
     @Bean
     public EventAssemblerService getEventAssemblerService() {
@@ -288,6 +318,38 @@ public class ServiceTestsConfiguration {
         return new EducationServiceImpl();
     }
 
+    @Bean
+    public IpReservationService getIpReservationService() { return new IpReservationServiceImpl(); }
+
+    @Bean
+    public PlanService getPlanService() {
+        return new PlanServiceImpl();
+    }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
+
+    @Bean
+    public RoomReservationService getRoomReservationService() {
+        return new RoomReservationServiceImpl();
+    }
+
+    @Bean
+    public AutoOpenCaseService getAutoOpenCaseService() {
+        return mock(AutoOpenCaseService.class);
+    }
+
+    @Bean
+    public PersonCaseFilterService getPersonCaseFilterService() {
+        return new PersonCaseFilterServiceImpl();
+    }
+
+    @Bean
+    public AbsenceService getAbsenceService() {
+        return new AbsenceServiceImpl();
+    }
 
     @Bean
     public ReportCase getReportCase() {
@@ -297,6 +359,16 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportProject getReportProject() {
+        return new ReportProjectImpl();
+    }
+
+    @Bean
+    public ReportAbsence getReportAbsence() {
+        return new ReportAbsenceImpl();
     }
 
     @Bean
@@ -312,6 +384,21 @@ public class ServiceTestsConfiguration {
     @Bean
     public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
         return new JiraWikiMarkupRendererImpl();
+    }
+
+    @Bean
+    public FieldsMapper1C getFieldsMapper1C() {
+        return new FieldsMapper1CImpl();
+    }
+
+    @Bean
+    public HttpClient1C getHttpClient1C() {
+        return new HttpClient1CImpl();
+    }
+
+    @Bean
+    public Api1C getApi1C() {
+        return new Api1CImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

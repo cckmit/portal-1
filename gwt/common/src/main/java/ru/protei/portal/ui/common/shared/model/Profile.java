@@ -134,6 +134,19 @@ public class Profile implements Serializable {
         return privilegeScopes.contains( En_Scope.SYSTEM );
     }
 
+    public boolean hasScopeForPrivilege(En_Privilege privilege, En_Scope scope) {
+        if (privilege == null) {
+            return false;
+        }
+
+        Set<En_Scope> privilegeScopes = privileges2scopes.get(privilege);
+        if (privilegeScopes == null || privilegeScopes.isEmpty()) {
+            return false;
+        }
+
+        return privilegeScopes.contains(scope);
+    }
+
     public En_Gender getGender() {
         return gender;
     }

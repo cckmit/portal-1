@@ -11,9 +11,9 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.stream.Collectors;
@@ -51,7 +51,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     @Event
     public void onShowFullScreen( EquipmentEvents.ShowFullScreen event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -62,23 +62,6 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.isFullScreen(true);
     }
 
-    @Event
-    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
-        if ( !event.identity.equals( getClass().getName() ) ) {
-            return;
-        }
-
-        equipmentService.removeEquipment( equipment.getId(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-                fireEvent( new EquipmentEvents.Show() );
-                fireEvent( new NotifyEvents.Show( lang.equipmentRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
-            }
-        } );
-    }
     @Override
     public void onCopyClicked() {
         fireEvent( new EquipmentEvents.ShowCopyDialog( equipment ) );
@@ -86,7 +69,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
 
     @Override
     public void onRemoveClicked() {
-        fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.equipmentRemoveConfirmMessage() ) );
+        fireEvent( new ConfirmDialogEvents.Show(lang.equipmentRemoveConfirmMessage(), removeAction(equipment.getId())));
     }
 
     @Override
@@ -153,12 +136,17 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         } );
     }
 
+    private Runnable removeAction(Long equipmentId) {
+        return () -> equipmentService.removeEquipment( equipmentId, new FluentCallback<Boolean>().withSuccess(result -> {
+            fireEvent( new EquipmentEvents.Show(true) );
+            fireEvent( new NotifyEvents.Show( lang.equipmentRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
+        }));
+    }
+
     @Inject
     Lang lang;
     @Inject
     AbstractEquipmentPreviewView view;
-    @Inject
-    En_EquipmentTypeLang typeLang;
     @Inject
     PolicyService policyService;
     @Inject

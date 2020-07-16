@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.casestate.client.activity.table.AbstractCaseStateTableActivity;
@@ -19,16 +18,15 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.NONE;
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
-import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.ALL;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.NONE;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.SELECTED;
+import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.ALL;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
 public class CaseStateTableView extends Composite implements AbstractCaseStateTableView {
@@ -36,11 +34,9 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
     private AbstractCaseStateTableActivity activity;
 
     @Inject
-    public void onInit(En_CaseStateLang caseStateLang,
-                       En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang,
+    public void onInit(En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang,
                        EditClickColumn< CaseState > editClickColumn
     ) {
-        this.caseStateLang = caseStateLang;
         this.caseStateUsageInCompaniesLang = caseStateUsageInCompaniesLang;
         this.editClickColumn = editClickColumn;
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -98,7 +94,7 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
             @Override
             public void fillColumnValue(Element cell, CaseState value) {
-                String stateName = caseStateLang.getStateName(En_CaseState.getById(value.getId()));
+                String stateName = value.getState();
                 cell.setInnerText(stateName);
             }
         };
@@ -162,8 +158,6 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
     @Inject
     PolicyService policyService;
-
-    En_CaseStateLang caseStateLang;
 
     private ClickColumnProvider<CaseState> columnProvider = new ClickColumnProvider<>();
     private List<ClickColumn> columns = new ArrayList<>();

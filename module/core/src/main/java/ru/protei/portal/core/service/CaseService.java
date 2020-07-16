@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
@@ -13,10 +12,12 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис управления обращениями
@@ -54,10 +55,6 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result< CaseObjectMetaJira > updateCaseObjectMetaJira( AuthToken token, CaseObjectMetaJira caseMetaJira );
 
-    Result<List<En_CaseState>> stateList(En_CaseType caseType);
-
-    Result<List<CaseState>> stateListWithViewOrder(En_CaseType caseType);
-
     Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 
     @Privileged(forCases = {
@@ -78,11 +75,13 @@ public interface CaseService {
     Result<Long> getAndIncrementEmailLastId( Long caseId );
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber);
+    Result<CaseInfo> getCaseInfo(AuthToken token, Long caseNumber);
 
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 
     Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
 
+    @Privileged(En_Privilege.ISSUE_EDIT)
+    Result<Set<PlanOption>> updateCasePlans(AuthToken token, Set<PlanOption> plans, Long caseId);
 }

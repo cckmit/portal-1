@@ -44,11 +44,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public AbsenceReasonDAO getAbsenceReasonDAO() {
-        return new AbsenceReasonDAO_Impl();
-    }
-
-    @Bean
     public PersonAbsenceDAO getPersonAbsenceDAO() {
         return new PersonAbsenceDAO_Impl();
     }
@@ -64,28 +59,8 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CaseTaskDAO getCaseTaskDAO() {
-        return new CaseTaskDAO_Impl();
-    }
-
-    @Bean
-    public CaseTermDAO getCaseTermDAO() {
-        return new CaseTermDAO_Impl();
-    }
-
-    @Bean
     public DevUnitDAO getDevUnitDAO() {
         return new DevUnitDAO_Impl();
-    }
-
-    @Bean
-    public DevUnitVersionDAO getDevUnitVersionDAO() {
-        return new DevUnitVersionDAO_Impl();
-    }
-
-    @Bean
-    public DevUnitBranchDAO getDevUnitBranchDAO() {
-        return new DevUnitBranchDAO_Impl();
     }
 
     @Bean
@@ -96,11 +71,6 @@ public class DaoTestsConfiguration {
     @Bean
     public CaseCommentShortViewDAO getCaseCommentShortViewDAODAO() {
         return new CaseCommentShortViewDAO_Impl();
-    }
-
-    @Bean
-    public CaseDocumentDAO getCaseDocumentDAO() {
-        return new CaseDocumentDAO_Impl();
     }
 
     @Bean
@@ -186,11 +156,6 @@ public class DaoTestsConfiguration {
     @Bean
     public PersonCompanyEntryDAO getPersonCompanyEntryDAO() {
         return new PersonCompanyEntryDAO_Impl();
-    }
-
-    @Bean
-    public CompanyCategoryDAO getCompanyCategoryDAO() {
-        return new CompanyCategoryDAO_Impl();
     }
 
     @Bean
@@ -322,6 +287,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ProjectSlaDAO getProjectSlaDAO() {
+        return new ProjectSlaDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -376,5 +346,59 @@ public class DaoTestsConfiguration {
         return new EducationEntryAttendanceDAO_Impl();
     }
 
+    @Bean
+    public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
+        return new CompanyImportanceItemDAO_Impl();
+    }
 
+    @Bean
+    public SubnetDAO getSubnetDAO() { return new SubnetDAO_Impl(); }
+
+    @Bean
+    public ReservedIpDAO getReservedIpDAO() { return new ReservedIpDAO_Impl(); }
+
+    @Bean
+    public RoomReservableDAO getRoomReservableDAO() {
+        return new RoomReservableDAO_Impl();
+    }
+
+    @Bean
+    public RoomReservationDAO getRoomReservationDAO() {
+        return new RoomReservationDAO_Impl();
+    }
+
+    @Bean
+    public PersonCaseFilterDAO getPersonToCaseFilterDAO() {
+        return new PersonCaseFilterDAO_Impl();
+    }
+
+    @Bean
+    public PlanDAO getPlanDAO() {
+        return new PlanDAO_Impl();
+    }
+
+    @Bean
+    public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
+        return new PlanToCaseObjectDAO_Impl();
+    }
+
+    @Bean
+    public HistoryDAO getHistoryDAO() {
+        return new HistoryDAO_Impl();
+    }
+
+    @Bean
+    public ContractSpecificationDAO getContractSpecificationDAO() {
+        return new ContractSpecificationDAO_Impl();
+    }
+
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return new ContractorDAO_Impl();
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
+    }
 }

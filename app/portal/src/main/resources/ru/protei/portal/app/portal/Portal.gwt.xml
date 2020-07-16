@@ -14,7 +14,6 @@
     <inherits name="ru.protei.portal.ui.project.Project" />
     <inherits name="ru.protei.portal.ui.account.Account" />
     <inherits name="ru.protei.portal.ui.role.Role" />
-    <inherits name="ru.protei.portal.ui.official.Official"/>
     <inherits name="ru.protei.portal.ui.document.Document"/>
     <inherits name="ru.protei.portal.ui.documenttype.DocumentType"/>
     <inherits name="ru.protei.portal.ui.casestate.CaseState"/>
@@ -23,6 +22,10 @@
     <inherits name="ru.protei.portal.ui.employeeregistration.EmployeeRegistration"/>
     <inherits name="ru.protei.portal.ui.contract.Contract"/>
     <inherits name="ru.protei.portal.ui.education.Education"/>
+    <inherits name="ru.protei.portal.ui.ipreservation.IpReservation"/>
+    <inherits name="ru.protei.portal.ui.roomreservation.RoomReservation"/>
+    <inherits name="ru.protei.portal.ui.plan.Plan"/>
+    <inherits name="ru.protei.portal.ui.absence.Absence"/>
 
     <entry-point class='ru.protei.portal.app.portal.client.Main'/>
 

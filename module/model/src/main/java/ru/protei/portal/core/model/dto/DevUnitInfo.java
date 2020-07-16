@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dto;
 
+import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.struct.AuditableObject;
 
 import java.util.Objects;
@@ -8,13 +10,19 @@ public class DevUnitInfo extends AuditableObject {
 
     private Long id;
 
+    private En_DevUnitType type;
+
+    private String name;
+
+    private String description;
+
+    private String wikiLink;
+
     private String configuration;
 
     private String cdrDescription;
 
     private String historyVersion;
-
-    private String description;
 
     @Override
     public String getAuditType() {
@@ -60,6 +68,78 @@ public class DevUnitInfo extends AuditableObject {
 
     public void setDescription( String description ) {
         this.description = description;
+    }
+
+    public En_DevUnitType getType() {
+        return type;
+    }
+
+    public void setType( En_DevUnitType type) {
+        this.type = type;
+    }
+
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
+    public int getTypeId() {
+        return type!=null?type.getId():0;
+    }
+    /**Используется в API
+     * https://wiki.protei.ru/doku.php?id=protei:om:acs:portalv4_config
+     * */
+    public void setTypeId(int typeId) {
+        type = En_DevUnitType.forId( typeId );
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getWikiLink() {
+        return wikiLink;
+    }
+
+    public void setWikiLink(String wikiLink) {
+        this.wikiLink = wikiLink;
+    }
+
+    public static DevUnitInfo toInfo( DevUnit devUnit ) {
+        if (devUnit == null) {
+            return null;
+        }
+
+        DevUnitInfo info = new DevUnitInfo();
+        info.setId( devUnit.getId() );
+        info.setConfiguration( devUnit.getConfiguration() );
+        info.setCdrDescription( devUnit.getCdrDescription() );
+        info.setHistoryVersion( devUnit.getHistoryVersion() );
+        info.setDescription( devUnit.getInfo() );
+        info.setName( devUnit.getName() );
+        info.setType( devUnit.getType() );
+        info.setWikiLink( devUnit.getWikiLink() );
+        return info;
+    }
+
+    public static DevUnit fromInfo(DevUnitInfo info) {
+        if (info == null) {
+            return null;
+        }
+
+        DevUnit devUnit = new DevUnit();
+        devUnit.setId(info.getId());
+        devUnit.setName(info.getName());
+        devUnit.setInfo(info.getDescription());
+        devUnit.setType( info.getType() );
+        devUnit.setCdrDescription(info.getCdrDescription());
+        devUnit.setConfiguration(info.getConfiguration());
+        devUnit.setHistoryVersion(info.getHistoryVersion());
+        devUnit.setWikiLink(info.getWikiLink());
+
+        return devUnit;
     }
 
     public static final String DEV_UNIT_INFO = "DevUnitInfo";

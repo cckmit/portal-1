@@ -6,7 +6,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class WorkTimeFormatter {
 
-
     public WorkTimeFormatter(Lang lang) {
         day = lang.timeDayLiteral();
         hour = lang.timeHourLiteral();
@@ -21,8 +20,8 @@ public class WorkTimeFormatter {
             return unknown;
         }
 
-        Long days = minutes / MINUTE2DAY;
-        minutes = minutes % MINUTE2DAY;
+        Long days = minutes / (isFullDayTime ? MINUTE2FULLDAY : MINUTE2DAY);
+        minutes = minutes % (isFullDayTime ? MINUTE2FULLDAY : MINUTE2DAY);
         Long hours = minutes / MINUTE2HOUR;
         minutes = minutes % MINUTE2HOUR;
 
@@ -54,7 +53,8 @@ public class WorkTimeFormatter {
 
         MatchResult match = regexp.exec(value);
         int groups = match.getGroupCount();
-        if (groups > 0) {            minutes += parseGroup(match.getGroup(1)) * MINUTE2DAY;
+        if (groups > 0) {
+            minutes += parseGroup(match.getGroup(1)) * (isFullDayTime ? MINUTE2FULLDAY : MINUTE2DAY);
         }
         if (groups > 1) {
             minutes += parseGroup(match.getGroup(2)) * MINUTE2HOUR;
@@ -68,6 +68,10 @@ public class WorkTimeFormatter {
 
     public void setDisplayFomat(String format) {
         this.displayFormat = format;
+    }
+
+    public void setFullDayTime(boolean isFullDayTime) {
+        this.isFullDayTime = isFullDayTime;
     }
 
     public String getPattern() {
@@ -95,10 +99,9 @@ public class WorkTimeFormatter {
     private String pattern = "\\S+";
     private RegExp regexp = null;
     private String displayFormat = null;
+    private boolean isFullDayTime;
 
     private final static Long MINUTE2HOUR = 60L;
     private final static Long MINUTE2DAY = 8L * MINUTE2HOUR; // 8 hours per day
-
-
-
+    private final static Long MINUTE2FULLDAY = 24L * MINUTE2HOUR; // 24 hours per day
 }

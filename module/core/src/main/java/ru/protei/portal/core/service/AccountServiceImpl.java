@@ -125,7 +125,7 @@ public class AccountServiceImpl implements AccountService {
 
         if( userLogin.getId() == null ) {
             userLogin.setCreated( new Date() );
-            userLogin.setAuthTypeId( En_AuthType.LOCAL.getId() );
+            userLogin.setAuthType( En_AuthType.LOCAL );
             userLogin.setAdminStateId( En_AdminState.UNLOCKED.getId() );
         }
 

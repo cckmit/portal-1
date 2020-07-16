@@ -44,17 +44,34 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     }
 
     @Override
-    public List<Long> getAllHomeCompanyIds() {
-        String query = "SELECT companyId FROM company_group_home";
+    public List<Long> getAllHomeCompanyIdsWithoutSync() {
+        String query = "SELECT companyId FROM company_group_home where synchronize_with_1c = false ";
         return jdbcTemplate.queryForList(query, Long.class);
+    }
+
+    @Override
+    public List<Company> getAllHomeCompanies() {
+        String sql = "company.id IN (SELECT companyId FROM company_group_home)";
+        return getListByCondition(sql);
     }
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );
         return new SqlCondition().build((condition, args) -> {
+            condition.append("1=1");
 
-            condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null )");
+            if (query.getHomeGroupFlag() != null) {
+                condition.append(" and company.id").append(query.getHomeGroupFlag() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null ) ");
+            }
+
+            if (query.getSynchronizeWith1C() != null){
+                condition.append(" and company.id").append(" in (select companyId from company_group_home where synchronize_with_1c = ").append(query.getSynchronizeWith1C() ? "true" : "false").append(")");
+            }
+
+            if (query.getShowHidden() != null && !query.getShowHidden()) {
+                condition.append(" and (company.is_hidden = false or company.is_hidden is NULL)");
+            }
 
             if (query.getCompanyIds() != null) {
                 condition.append( " and company.id in " ).append( HelperFunc.makeInArg( query.getCompanyIds()) );
@@ -75,8 +92,14 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and cname like ?");
+                condition.append(" and (cname like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+
+                if (query.getAlternativeSearchString() != null) {
+                    condition.append(" or cname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getAlternativeSearchString(), true));
+                }
+                condition.append(" )");
             }
 
             if (query.getShowDeprecated() != null && !query.getShowDeprecated()) {

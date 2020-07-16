@@ -10,12 +10,16 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
+
+import java.util.Set;
 
 /**
  * Представление фильтра сотрудников
@@ -83,6 +87,16 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue<Set<EntityOption>> organizations() {
+        return organizations;
+    }
+
+    @Override
+    public HasValue<Boolean> showAbsent() {
+        return showAbsent;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
@@ -94,6 +108,8 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         department.setValue( "" );
         showFired.setValue(false);
         showTopBrass.setValue(false);
+        organizations.setValue(null);
+        showAbsent.setValue(false);
     }
 
     @UiHandler( "resetBtn" )
@@ -105,7 +121,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @UiHandler( "showFired" )
-    public void onShowFireClicked( ClickEvent event ) {
+    public void onShowFiredClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -160,6 +176,20 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         }
     }
 
+    @UiHandler("organizations")
+    public void onCompanySelected(ValueChangeEvent<Set<EntityOption>> event) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "showAbsent" )
+    public void onShowAbsentClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
@@ -169,6 +199,10 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;
+
+    @Inject
+    @UiField(provided = true)
+    HomeCompanyMultiSelector organizations;
 
     @UiField
     ToggleButton sortDir;
@@ -200,9 +234,10 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @UiField
     CheckBox showTopBrass;
 
-    @Inject
     @UiField
     Lang lang;
+    @UiField
+    CheckBox showAbsent;
 
     private AbstractEmployeeFilterActivity activity;
 

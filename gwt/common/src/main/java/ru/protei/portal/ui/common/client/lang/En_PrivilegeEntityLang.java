@@ -50,6 +50,16 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeContract();
             case EDUCATION:
                 return lang.education();
+            case SUBNET:
+                return lang.subnet();
+            case RESERVED_IP:
+                return lang.ipReservation();
+            case ROOM_RESERVATION:
+                return lang.roomReservation();
+            case PLAN:
+                return lang.plans();
+            case ABSENCE:
+                return lang.absences();
             default:
                 return lang.unknownField();
         }

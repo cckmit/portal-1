@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * Created by michael on 30.03.16.
  */
-@JdbcEntity(table = "Person")
+@JdbcEntity(table = "person")
 public class Person extends AuditableObject implements PersonShortViewSupport {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -386,9 +386,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
                 ", genderCode='" + genderCode + '\'' +
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
+                ", passportInfo='" + passportInfo + '\'' +
                 ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
+                ", fireDate=" + fireDate +
                 ", contactInfo=" + contactInfo +
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +

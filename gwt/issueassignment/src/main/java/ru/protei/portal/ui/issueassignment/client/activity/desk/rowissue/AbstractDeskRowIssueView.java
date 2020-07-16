@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.issueassignment.client.activity.desk.rowissue;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.UIObject;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.view.CaseShortView;
 
 import java.util.List;
@@ -15,5 +17,6 @@ public interface AbstractDeskRowIssueView extends IsWidget {
     interface Handler {
         void onOpenIssue(CaseShortView issue);
         void onOpenOptions(UIObject relative, CaseShortView issue);
+        void showTags(HasWidgets parent, List<CaseTag> caseTags);
     }
 }

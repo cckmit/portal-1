@@ -97,7 +97,7 @@ default-character-set = utf8mb4
 
 Создание тестовой бд:
 
-`create database portal_test CHARACTER SET utf8 COLLATE utf8_bin;`
+`create database portal_test`
 
 Теперь в файлах winter.properties с тестами, можно подменять проперти на свои. 
 

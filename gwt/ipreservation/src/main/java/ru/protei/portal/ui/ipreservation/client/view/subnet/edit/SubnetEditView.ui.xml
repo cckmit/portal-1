@@ -1,0 +1,44 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:autoresizetextarea='urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-9">
+                    <label>
+                        <ui:text from="{lang.reservedIpIpAddress}"/>
+                    </label>
+                    <div class="verifiable">
+                        <i ui:field="verifiableIcon"/>
+                    </div>
+                    <validablefield:ValidableTextBox ui:field="address" styleName="form-control" notNull="true"/>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>
+                        <ui:text from="{lang.reservedIpSubnetMask}"/>
+                    </label>
+                    <validablefield:ValidableTextBox ui:field="mask" styleName="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <g:CheckBox ui:field="allowForReserve" styleName="checkbox" text="{lang.reservedIpSubnetAllowReserve}"/>
+                </div>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.comment}"/>
+                    </label>
+                    <autoresizetextarea:AutoResizeTextArea ui:field="comment"
+                                                           styleName="form-control" minRows="2" maxRows="10"/>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

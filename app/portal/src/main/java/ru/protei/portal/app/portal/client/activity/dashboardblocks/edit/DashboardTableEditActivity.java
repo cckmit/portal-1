@@ -15,12 +15,11 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
+import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
@@ -158,20 +157,25 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED, En_CaseState.ACTIVE));
+        query.setStateIds(CaseStateUtils.getNewStateIds());
         query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
+        if (policyService.getProfile() != null) {
+            query.setManagerCompanyIds(new ArrayList<>(Collections.singletonList(policyService.getUserCompany().getId())));
+        }
         return query;
     }
 
     private CaseQuery generateQueryActiveIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(issueStates.getActiveStates());
-        List<Long> productIds = null;
+        query.setStateIds(CaseStateUtils.getActiveStateIds());
+        List<Long> managerIds = new ArrayList<>();
+        List<Long> managerCompanyIds = new ArrayList<>();
         if (policyService.getProfile() != null) {
-            productIds = new ArrayList<>();
-            productIds.add(policyService.getProfile().getId());
+            managerIds.add(policyService.getProfile().getId());
+            managerCompanyIds.add(policyService.getUserCompany().getId());
         }
-        query.setManagerIds(productIds);
+        query.setManagerIds(managerIds);
+        query.setManagerCompanyIds(managerCompanyIds);
         return query;
     }
 
@@ -185,8 +189,6 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     UserLoginControllerAsync userLoginController;
     @Inject
     IssueFilterControllerAsync filterController;
-    @Inject
-    IssueStates issueStates;
     @Inject
     PolicyService policyService;
 

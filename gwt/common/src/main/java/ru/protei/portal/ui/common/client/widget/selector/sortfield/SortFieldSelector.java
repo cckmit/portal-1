@@ -43,6 +43,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.name );
                 addOption( En_SortField.equipment_name_sldwrks );
                 addOption( En_SortField.equipment_project );
+                addOption( En_SortField.equipment_decimal_number );
                 break;
             case ACCOUNT:
                 addOption( En_SortField.ulogin );
@@ -81,9 +82,28 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case PROJECT:
                 addOption( En_SortField.project_name );
                 addOption( En_SortField.issue_number );
+                addOption( En_SortField.region_name );
                 break;
             case REGION:
                 addOption( En_SortField.name );
+                break;
+            case SUBNET:
+                addOption( En_SortField.address );
+                break;
+            case RESERVED_IP:
+                addOption( En_SortField.ip_address );
+                addOption( En_SortField.check_date);
+                break;
+            case PLAN:
+                addOption( En_SortField.name );
+                addOption( En_SortField.creation_date );
+                addOption( En_SortField.start_date );
+                addOption( En_SortField.finish_date );
+                break;
+            case ABSENCE:
+                addOption(En_SortField.absence_person);
+                addOption(En_SortField.absence_date);
+                addOption(En_SortField.absence_reason);
                 break;
         }
     }

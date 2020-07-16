@@ -39,12 +39,14 @@ public abstract class DocumentTypeTableActivity
     }
 
     @Event
-    public void onAuthSuccess(AuthEvents.Success event) {}
+    public void onAuthSuccess(AuthEvents.Success event) {
+        filterView.resetFilter();
+    }
 
     @Event
     public void onShow(DocumentTypeEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -124,7 +126,7 @@ public abstract class DocumentTypeTableActivity
         fireEvent(new ConfirmDialogEvents.Show(lang.documentTypeRemoveConfirmMessage(), onConfirmRemoveClicked(value)));
     }
 
-    private ConfirmDialogEvents.Show.Action onConfirmRemoveClicked(DocumentType value) {
+    private Runnable onConfirmRemoveClicked(DocumentType value) {
         return () -> documentTypeService.removeDocumentType(value, new FluentCallback<Long>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR.equals(((RequestFailedException) throwable).status)) {

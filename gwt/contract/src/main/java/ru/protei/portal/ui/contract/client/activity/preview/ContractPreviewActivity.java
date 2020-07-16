@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -10,16 +10,21 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.lang.*;
+import ru.protei.portal.ui.common.client.lang.En_ContractDatesTypeLang;
+import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +57,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     @Event
     public void onShow(ContractEvents.ShowFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.CONTRACT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -72,7 +77,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     @Override
     public void onGoToContractsClicked() {
-        fireEvent(new ContractEvents.Show());
+        fireEvent(new ContractEvents.Show(true));
     }
 
     private void loadDetails(Long id) {
@@ -105,17 +110,18 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
         view.setDescription(StringUtils.emptyIfNull(value.getDescription()));
-        view.setContragent(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseContragentName()) : StringUtils.emptyIfNull(value.getContragentName()));
+        view.setContractor(value.getContractor() == null ? "" : StringUtils.emptyIfNull(value.getContractor().getName()));
         view.setOrganization(StringUtils.emptyIfNull(value.getOrganizationName()));
         view.setManager(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseManagerShortName()) : StringUtils.emptyIfNull(value.getManagerShortName()));
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
         view.setDirection(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseDirectionName()) : StringUtils.emptyIfNull(value.getDirectionName()));
-        view.setDates(getAllDatesAsString(value.getContractDates()));
+        view.setDates(getAllDatesAsStringAsHTML(value.getContractDates()));
+        view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
-        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makeLink(Project.class, value.getProjectId()));
+        view.setProject(StringUtils.emptyIfNull(value.getProjectName()), LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
 
         fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)
@@ -123,11 +129,22 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .withModifyEnabled(true));
     }
 
-    private String getAllDatesAsString(List<ContractDate> dates) {
+    private String getAllDatesAsStringAsHTML(List<ContractDate> dates) {
         if ( dates == null ) return "";
         return dates.stream()
-                .map(p -> datesTypeLang.getName(p.getType()) + " – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : ""))
-                .collect(Collectors.joining(", "));
+                .map(p -> "<div><b>" + datesTypeLang.getName(p.getType()) + "</b> – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "" + "</div>"))
+                .collect(Collectors.joining("\n"));
+    }
+
+    private List<ContractSpecificationPreviewItem> getAllSpecificationsAsWidgets(List<ContractSpecification> specifications) {
+        if (specifications == null) return new ArrayList<>();
+        return specifications.stream()
+                .map(spec -> {
+                    ContractSpecificationPreviewItem item = contractSpecificationPreviewItemProvider.get();
+                    item.setValue(spec);
+                    return item;
+                })
+                .collect(Collectors.toList());
     }
 
     private String formatDate(Date date) {
@@ -147,6 +164,9 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private ContractControllerAsync contractController;
     @Inject
     private PolicyService policyService;
+
+    @Inject
+    private Provider<ContractSpecificationPreviewItem> contractSpecificationPreviewItemProvider;
 
     private Long contractId;
 

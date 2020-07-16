@@ -29,7 +29,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     }
 
     @Event
-    public void onShow(CaseTagEvents.Edit event) {
+    public void onShow(CaseTagEvents.ShowEdit event) {
         if ( event.caseTag == null ) {
             fireEvent(new NotifyEvents.Show(lang.error(), NotifyEvents.NotifyType.ERROR));
             return;
@@ -72,7 +72,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
     @Override
     public void onRemoveClicked() {
-        caseTagController.removeTag(caseTag, new FluentCallback<Void>()
+        caseTagController.removeTag(caseTag.getId(), new FluentCallback<Long>()
                 .withSuccess(v -> {
                     dialogView.hidePopup();
                     fireEvent(new CaseTagEvents.Removed(caseTag));

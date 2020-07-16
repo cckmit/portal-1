@@ -12,6 +12,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
+import java.util.List;
+
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
 
     @Override
@@ -32,8 +34,8 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
-    public Contract getByProjectId(Long projectId) {
-        return getByCondition("contract.project_id = ?", projectId);
+    public List<Contract> getByProjectId(Long projectId) {
+        return getListByCondition("contract.project_id = ?", projectId);
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
@@ -79,11 +81,9 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(query.getDirectionId());
             }
 
-            if (CollectionUtils.isNotEmpty(query.getContragentIds())) {
-                String inArg = HelperFunc.makeInArg(query.getContragentIds(), false);
-                condition.append(" and (CO.initiator_company in ").append(inArg)
-                        .append(" or P.initiator_company in ").append(inArg)
-                        .append(")");
+            if (CollectionUtils.isNotEmpty(query.getContractorIds())) {
+                String inArg = HelperFunc.makeInArg(query.getContractorIds(), false);
+                condition.append(" and contractor_id in ").append(inArg);
             }
 
             if (CollectionUtils.isNotEmpty(query.getOrganizationIds())) {

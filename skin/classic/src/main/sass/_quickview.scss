@@ -1,0 +1,152 @@
+
+.quickview-wrapper {
+  overflow-y: auto;
+
+  &.quickview-wrapper-75-percent {
+    width: 75%;
+    right: -75%;
+
+    &.open {
+      + .quickview-wrapper-substrate {
+        -webkit-transform: translate3d(-75%, 0, 0);
+        -ms-transform: translate(-75%, 0);
+        transform: translate3d(-75%, 0, 0);
+      }
+    }
+  }
+
+  &.quickview-wrapper-below-header {
+    z-index: 799;
+    margin-top: 60px;
+
+    + .quickview-wrapper-substrate {
+      z-index: 799;
+      margin-top: 60px;
+    }
+  }
+
+  + .quickview-wrapper-substrate {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: #0000008c;
+    width: 100%;
+    right: 0;
+    cursor: pointer;
+    overflow: hidden;
+    -webkit-transition: -webkit-transform 400ms cubic-bezier(.05, .74, .27, .99);
+    transition: transform 400ms cubic-bezier(.05, .74, .27, .99);
+    -webkit-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+
+    > .substrate-close {
+      position: relative;
+      display: inline-block;
+      float: right;
+      padding: 1.5em;
+      color: #000;
+      opacity: 0.3;
+    }
+  }
+
+  &.open {
+    + .quickview-wrapper-substrate {
+      -webkit-transform: translate3d(-285px, 0, 0);
+      -ms-transform: translate(-285px, 0);
+      transform: translate3d(-285px, 0, 0);
+    }
+  }
+
+  &:not(.open) {
+    overflow: hidden;
+
+    + .quickview-wrapper-substrate {
+      width: 0;
+    }
+  }
+
+  // RESET NAV TABS SPECIAL STYLES INSIDE QUICKVIEW
+  .nav-tabs {
+    background-color: initial;
+    padding: initial;
+    position: relative;
+
+    > li {
+      > a {
+        border: initial;
+        text-align: initial;
+
+        padding: 13px 20px;
+        font-weight: 500;
+        color: rgba(98, 98, 98, .7);
+        font-size: 10.5px;
+        min-width: 70px;
+        border-color: transparent;
+        line-height: 1.7em;
+
+        span {
+          opacity: initial;
+        }
+      }
+
+      > a:hover > span {
+        color: #cdd0d8;
+        opacity: 1;
+      }
+
+      > a.active:hover,
+      > a.active:focus {
+        background: initial;
+        opacity: initial;
+
+        color: #626262;
+        background-color: transparent;
+        border-color: transparent;
+      }
+    }
+
+    > li.active > a,
+    > li.active > a:hover,
+    > li.active > a:focus {
+      background-color: initial;
+      opacity: initial;
+
+      color: #788195;
+      border: 0;
+    }
+
+    ~ .tab-content {
+      position: initial;
+      left: initial;
+      right: initial;
+      top: initial;
+      bottom: initial;
+      height: initial;
+
+      padding: 15px;
+
+      > div {
+        height: initial;
+      }
+
+      ul {
+        margin: initial;
+        padding: initial;
+
+        &.chats {
+          padding-top: 12px;
+        }
+
+        &.m-b-10 {
+          margin-bottom: 10px;
+        }
+
+        li {
+          list-style: none;
+        }
+      }
+    }
+  }
+}

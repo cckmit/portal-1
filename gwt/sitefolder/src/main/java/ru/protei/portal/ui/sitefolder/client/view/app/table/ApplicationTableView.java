@@ -3,6 +3,7 @@ package ru.protei.portal.ui.sitefolder.client.view.app.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -97,6 +98,11 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
         return pagerContainer;
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
     private void initTable() {
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT) );
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
@@ -135,33 +141,48 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     private ClickColumn<Application> nameColumn = new ClickColumn<Application>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("application-name");
             columnHeader.setInnerText(lang.siteFolderName());
         }
         @Override
         public void fillColumnValue(Element cell, Application value) {
-            cell.setInnerText(value.getName());
+            Element element = DOM.createDiv();
+
+            element.setInnerText(value.getName());
+
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Application> serverColumn = new ClickColumn<Application>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("application-server");
             columnHeader.setInnerText(lang.siteFolderServer());
         }
 
         @Override
         public void fillColumnValue(Element cell, Application value) {
-            cell.setInnerText(value.getServer() == null ? "?" : value.getServer().getName());
+            Element element = DOM.createDiv();
+
+            element.setInnerText(value.getServer() == null ? "?" : value.getServer().getName());
+
+            cell.appendChild(element);
         }
     };
     private ClickColumn<Application> pathsColumn = new ClickColumn<Application>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setClassName("application-paths");
             columnHeader.setInnerText(lang.siteFolderPaths());
         }
 
         @Override
         public void fillColumnValue(Element cell, Application value) {
-            cell.setInnerText((value.getPaths() == null || value.getPaths().getPaths() == null ? "0" : String.valueOf(value.getPaths().getPaths().size())) + " " + lang.amountShort());
+            Element element = DOM.createDiv();
+
+            element.setInnerText((value.getPaths() == null || value.getPaths().getPaths() == null ? "0" : String.valueOf(value.getPaths().getPaths().size())) + " " + lang.amountShort());
+
+            cell.appendChild(element);
         }
     };
     private Collection<ClickColumn<Application>> columns = new LinkedList<>();

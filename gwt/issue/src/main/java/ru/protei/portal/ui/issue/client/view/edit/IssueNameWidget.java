@@ -34,12 +34,6 @@ public class IssueNameWidget extends Composite  {
         nameRO.setInnerHTML( issueName );
     }
 
-    @UiHandler("copyNumberAndName")
-    public void onCopyNumberAndNameClick( ClickEvent event ) {
-        event.preventDefault();
-        activity.onCopyNumberAndName();
-    }
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -47,6 +41,14 @@ public class IssueNameWidget extends Composite  {
 
         nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
         copyNumberAndName.ensureDebugId( DebugIds.ISSUE.COPY_NUMBER_AND_NAME_BUTTON );
+    }
+
+    @UiHandler("copyNumberAndName")
+    public void onCopyNumberAndNameClick( ClickEvent event ) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onCopyNumberAndNameClicked();
+        }
     }
 
     @UiField

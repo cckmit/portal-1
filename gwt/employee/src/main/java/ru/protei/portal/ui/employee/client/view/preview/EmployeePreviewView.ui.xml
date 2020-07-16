@@ -9,7 +9,9 @@
                 <g:Image ui:field="photo" styleName="employee-preview-image"/>
             </div>
 
-            <h4 class="m-b-0 all-caps"><g:Anchor ui:field="employeeName" href="#"/></h4>
+            <h4 class="m-b-0 all-caps">
+                <g:Anchor ui:field="employeeName" href="#"/>
+            </h4>
             <g:HTMLPanel ui:field="birthdayContainer" styleName="small m-b-10" visible="false">
                 <i class="fa fa-birthday-cake"/>
                 <span ui:field="birthday"/>
@@ -33,10 +35,13 @@
                 <b><ui:text from="{lang.employeeID}: "/></b>
                 <span ui:field="id"/>
             </div>
-            <div class="small">
+            <div class="small p-b-10">
                 <b><ui:text from="{lang.employeeIPAddress}:"/></b>
                 <span ui:field="ip"/>
             </div>
+
+            <h5 ui:field="absencesLabel" class="m-b-0 hide"><ui:text from="{lang.absences}"/></h5>
+            <g:HTMLPanel ui:field="absencesContainer"/>
         </div>
 
         <g:HTMLPanel ui:field="backButtonPanel" styleName="card-footer">

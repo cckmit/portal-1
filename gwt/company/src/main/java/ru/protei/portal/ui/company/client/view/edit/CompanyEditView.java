@@ -4,12 +4,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -17,13 +20,12 @@ import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTex
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
-import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
-import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
+import ru.protei.portal.ui.company.client.widget.companysubscription.list.CompanySubscriptionList;
 
 import java.util.List;
 
@@ -81,17 +83,27 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasText companyNameErrorLabel() {
+        return companyNameErrorLabel;
+    }
+
+    @Override
+    public HasVisibility companyNameErrorLabelVisibility() {
+        return companyNameErrorLabel;
+    }
+
+    @Override
     public HasValue<EntityOption> parentCompany() {
         return parentCompany;
     }
 
     @Override
-    public HasValue<EntityOption> companyCategory() {
+    public HasValue<En_CompanyCategory> companyCategory() {
         return companyCategory;
     }
 
     @Override
-    public HasValue<List<Subscription> > companySubscriptions() {
+    public HasValue<List<CompanySubscription> > companySubscriptions() {
         return subscriptions;
     }
 
@@ -130,6 +142,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         parentCompany.setEnabled( isEnabled );
     }
 
+    @Override
+    public void setCompanyIdToSubscriptionsList(Long companyId) {
+        subscriptions.setCompanyId(companyId);
+    }
+
+    @Override
+    public HasValue<Boolean> autoOpenIssues() {
+        return autoOpenIssues;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -161,6 +183,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     ValidableTextBox companyName;
 
     @UiField
+    Label companyNameErrorLabel;
+
+    @UiField
     Element verifiableIcon;
 
     @UiField
@@ -178,6 +203,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField( provided = true )
     CompanySelector parentCompany;
+
+    @UiField
+    CheckBox autoOpenIssues;
 
     @UiField
     HTMLPanel phonesContainer;
@@ -201,7 +229,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Inject
     @UiField( provided = true )
-    SubscriptionList subscriptions;
+    CompanySubscriptionList subscriptions;
 
 
     @Inject

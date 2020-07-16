@@ -1,12 +1,14 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
 @JdbcEntity(table = "case_link")
-public class CaseLink implements Serializable {
+public class CaseLink extends AuditableObject {
+    public static final String AUDIT_TYPE = "CaseLink";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -20,6 +22,9 @@ public class CaseLink implements Serializable {
 
     @JdbcColumn(name="remote_id")
     private String remoteId;
+
+    @JdbcColumn(name="with_crosslink")
+    private Boolean withCrosslink;
 
     @JdbcJoinedObject( sqlTableAlias = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
@@ -83,6 +88,19 @@ public class CaseLink implements Serializable {
         this.youTrackIssueInfo = youTrackIssueInfo;
     }
 
+    public Boolean getWithCrosslink() {
+        return withCrosslink;
+    }
+
+    public void setWithCrosslink(Boolean withCrosslink) {
+        this.withCrosslink = withCrosslink;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -110,11 +128,14 @@ public class CaseLink implements Serializable {
 
     @Override
     public String toString() {
-        return "CaseMember{" +
+        return "CaseLink{" +
                 "id=" + id +
                 ", caseId=" + caseId +
                 ", type=" + type +
-                ", remoteId=" + remoteId +
+                ", remoteId='" + remoteId + '\'' +
+                ", withCrosslink=" + withCrosslink +
+                ", caseInfo=" + caseInfo +
+                ", youTrackIssueInfo=" + youTrackIssueInfo +
                 '}';
     }
 }

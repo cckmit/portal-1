@@ -12,8 +12,8 @@ public class En_ScopeLang {
                 return lang.scopeSystem();
             case COMPANY:
                 return lang.scopeCompany();
-            case ROLE:
-                return lang.scopeRole();
+            case USER:
+                return lang.scopeUser();
 
             default:
                 return lang.unknownField();

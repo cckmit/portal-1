@@ -57,7 +57,32 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<CaseResolutionTimeReportDto> reportCaseResolutionTime(Date from, Date to, List<Integer> terminatedStates,
+    public List<CaseComment> getLastNotNullTextCommentsForReport(List<Long> caseId) {
+        return jdbcTemplate.query( "SELECT ID, CASE_ID, CREATED, COMMENT_TEXT " +
+                        "FROM case_comment " +
+                        "WHERE id in " +
+                            "(SELECT max(cs.id) id " + // "created" field is not unique, select last comment by id
+                                "FROM case_comment cs " +
+                                    "inner join (SELECT CASE_ID, max(CREATED) created " +     // select last created date
+                                                "FROM case_comment " +
+                                                "WHERE CASE_ID in " + makeInArg(caseId) +
+                                                    " AND COMMENT_TEXT is not NULL " +
+                                                "group by CASE_ID) last_created_table " +
+                                            "on cs.CASE_ID = last_created_table.CASE_ID and cs.CREATED = last_created_table.created " +
+                            "WHERE cs.COMMENT_TEXT is not NUll " +
+                            "group by cs.CASE_ID);",
+                (ResultSet rs, int rowNum) -> {
+                    CaseComment caseComment = new CaseComment();
+                    caseComment.setId(rs.getLong("ID"));
+                    caseComment.setCaseId(rs.getLong("CASE_ID"));
+                    caseComment.setCreated(new Date(rs.getLong("CREATED")));
+                    caseComment.setText(rs.getString("COMMENT_TEXT"));
+                    return caseComment;
+                });
+    }
+
+    @Override
+    public List<CaseResolutionTimeReportDto> reportCaseResolutionTime(Date from, Date to, List<Long> terminatedStates,
                                                                       List<Long> companiesIds, Set<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
                                                                       List<Long> tagsIds) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );

@@ -34,6 +34,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 
 /**
  * Контейнер для комментариев
@@ -79,8 +80,8 @@ public class CaseCommentListView
     }
 
     @Override
-    public void enabledNewComment( boolean value ) {
-        newMessage.setVisible(value);
+    public void setNewCommentHidden(boolean isHidden) {
+        newMessage.setVisible(!isHidden);
     }
 
     @Override
@@ -107,6 +108,12 @@ public class CaseCommentListView
         } else {
             timeElapsedInfoContainer.addClassName("hide");
         }
+    }
+
+    @Override
+    public void setNewCommentDisabled(boolean isDisabled) {
+        newCommentContainer.setVisible(!isDisabled);
+        newCommentDisabledContainer.setVisible(isDisabled);
     }
 
     @Override
@@ -208,9 +215,9 @@ public class CaseCommentListView
     @UiHandler("comment")
     public void onBase64Pasted(PasteEvent event) {
         if (event.getJsons() != null && !event.getJsons().isEmpty()) {
-            fileUploader.uploadBase64Files(event.getJsons());
+            fileUploader.uploadBase64Files(event.getJsons(), new PasteInfo(event.getStrPos()));
         } else {
-            fileUploader.uploadBase64File(event.getJson());
+            fileUploader.uploadBase64File(event.getJson(), new PasteInfo(event.getStrPos()));
         }
     }
 
@@ -316,6 +323,10 @@ public class CaseCommentListView
     ToggleButton isDisplayPreview;
     @UiField
     HTMLPanel messageBlock;
+    @UiField
+    HTMLPanel newCommentContainer;
+    @UiField
+    HTMLPanel newCommentDisabledContainer;
     @UiField
     Element timeElapsedInfoContainer;
 

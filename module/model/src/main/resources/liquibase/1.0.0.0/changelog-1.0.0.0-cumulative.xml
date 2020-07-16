@@ -136,4 +136,18 @@
   <include file="2020-02-27-modify-case_tag-table.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-12-create-education-schema.xml" relativeToChangelogFile="true"/>
   <include file="2020-03-31-adjust-education-schema.xml" relativeToChangelogFile="true"/>
+  <include file="2020-02-26-add-audit-types.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-11-add-report-scheduled-type-in-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-12-add-project-technical_support_validity.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-06-add-project_sla-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-11-modify-companysubscription-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-12-drop-unique-constraint-in-companysubscriprion-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-23-add-equipment-decimal-number-sort-view.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-24-drop-project_id-unique-constraint-from-contract-table.xml" relativeToChangelogFile="true"/>
+  <include file="2020-03-24-add-company_importance_item-table.xml" relativeToChangelogFile="true"/>
+  <!-- !!! STOP USAGE !!! -->
+  <include file="2020-03-17-table-refactoring.xml" relativeToChangelogFile="true"/>
+<!-- !!! STOP USAGE !!! -->
+  <!-- Continue 2.0.0.0 -->
+  <!-- Дальше использовать changelog-2.0.0.0-cumulative.xml -->
 </databaseChangeLog>

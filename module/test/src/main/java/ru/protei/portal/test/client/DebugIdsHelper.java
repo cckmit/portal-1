@@ -2,26 +2,6 @@ package ru.protei.portal.test.client;
 
 public class DebugIdsHelper {
 
-    public static final class COMPANY_CATEGORY_BUTTON {
-        public static String byId(Long id) {
-            if (id == 1) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.CUSTOMER;
-            }
-            if (id == 2) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.PARTNER;
-            }
-            if (id == 3) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.SUBCONTRACTOR;
-            }
-            if (id == 4) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.OFFICIAL;
-            }
-            if (id == 5) {
-                return DebugIds.COMPANY_CATEGORY_BUTTON.HOME_COMPANY;
-            }
-            return DebugIds.COMPANY_CATEGORY_BUTTON.DEFAULT + id;
-        }
-    }
 
     public static final class IMPORTANCE_BUTTON {
         public static String byId(int id) {
@@ -37,12 +17,15 @@ public class DebugIdsHelper {
             if (id == 4) {
                 return DebugIds.IMPORTANCE_BUTTON.COSMETIC;
             }
+            if (id == 5) {
+                return DebugIds.IMPORTANCE_BUTTON.MEDIUM;
+            }
             return DebugIds.IMPORTANCE_BUTTON.DEFAULT + id;
         }
     }
 
     public static final class ISSUE_STATE {
-        public static String byId(int id) {
+        public static String byId(long id) {
             if (id == 1) {
                 return DebugIds.ISSUE_STATE.CREATED;
             }
@@ -120,6 +103,9 @@ public class DebugIdsHelper {
             }
             if (id == 36) {
                 return DebugIds.ISSUE_STATE.CUST_REQUEST;
+            }
+            if (id == 37) {
+                return DebugIds.ISSUE_STATE.REQUEST_TO_PARTNER;
             }
             return DebugIds.ISSUE_STATE.DEFAULT + id;
         }

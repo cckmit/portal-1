@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.widget.selector.contacttype;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;

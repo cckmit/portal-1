@@ -7,8 +7,12 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.util.UiResult;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
+
+import java.util.Set;
 
 /**
  * Сервис управления контактами
@@ -30,7 +34,9 @@ public interface IssueController extends RemoteService {
 
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 
-    Long createIssue(CaseObjectCreateRequest p) throws RequestFailedException;
+    UiResult<Long> createIssue(CaseObjectCreateRequest p) throws RequestFailedException;
 
     void updateManagerOfIssue(long issueId, long personId) throws RequestFailedException;
+
+    Set<PlanOption> updatePlans(Set<PlanOption> plans, Long caseId) throws RequestFailedException;
 }

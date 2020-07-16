@@ -40,10 +40,30 @@ public class En_SortFieldLang {
                 return lang.equipmentProject();
             case equipment_name_sldwrks:
                 return lang.equipmentNameBySldWrks();
+            case equipment_decimal_number:
+                return lang.equipmentDecimalNumber();
             case birthday:
                 return lang.birthday();
             case employee_ip:
                 return lang.employeeIPAddress();
+            case address:
+                return lang.reservedIpSubnetAddress();
+            case ip_address:
+                return lang.reservedIpIpAddress();
+            case check_date:
+                return lang.reservedIpCheckDate();
+            case start_date:
+                return lang.planStartDate();
+            case finish_date:
+                return lang.planFinishDate();
+            case author_id:
+                return lang.issueCommentAuthor();
+            case absence_date:
+                return lang.absenceStartDateRange();
+            case absence_person:
+                return lang.contactFullName();
+            case absence_reason:
+                return lang.absenceReason();
 
             default:
                 return lang.unknownField();

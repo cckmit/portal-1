@@ -1,13 +1,15 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @JdbcEntity(table = "platform")
-public class Platform implements Serializable {
+public class Platform extends AuditableObject {
+    public static final String AUDIT_TYPE = "Platform";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -29,7 +31,7 @@ public class Platform implements Serializable {
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "person")
     }, mappedColumn = "displayShortName")
     private String caseManagerShortName;
 
@@ -159,6 +161,11 @@ public class Platform implements Serializable {
     }
 
     @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (id != null) {
             return obj instanceof Platform && id.equals(((Platform) obj).getId());
@@ -180,10 +187,12 @@ public class Platform implements Serializable {
                 ", params='" + params + '\'' +
                 ", comment='" + comment + '\'' +
                 ", manager=" + manager +
+                ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", company=" + company +
-                ", caseId=" + caseId +
-                ", serversCount=" + serversCount +
                 ", projectId=" + projectId +
+                ", caseId=" + caseId +
+                ", attachments=" + attachments +
+                ", serversCount=" + serversCount +
                 '}';
     }
 }

@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.Objects;
 
 public abstract class DashboardActivity implements AbstractDashboardActivity, Activity{
 
@@ -39,7 +38,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Event(Type.FILL_CONTENT)
     public void onShow(DashboardEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DASHBOARD_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         showView();
@@ -71,32 +70,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         fireEvent(new DashboardEvents.EditTable());
     }
 
-    @Event
-    public void onConfirmTableRemove(ConfirmDialogEvents.Confirm event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-        if (dashboardIdToRemove == null) {
-            return;
-        }
-        userLoginController.removeUserDashboard(dashboardIdToRemove, new FluentCallback<Void>()
-                .withSuccess(v -> {
-                    fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    loadDashboard();
-                }));
-    }
-
-    @Event
-    public void onCancelTableRemove(ConfirmDialogEvents.Cancel event) {
-        if (!Objects.equals(event.identity, getClass().getName())) {
-            return;
-        }
-        dashboardIdToRemove = null;
-    }
-
     private void showView() {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        view.showQuickview(false);
     }
 
     private void showActionBarActions() {
@@ -191,11 +168,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         table.setActivity(new AbstractDashboardTableActivity() {
             @Override
             public void onItemClicked(CaseShortView value) {
-                fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
+                showIssuePreview(value.getCaseNumber());
             }
             @Override
             public void onOpenClicked() {
-                fireEvent(new IssueEvents.Show(new CaseQuery(query), true));
+                fireEvent(new IssueEvents.Show(new CaseQuery(query), false));
             }
             @Override
             public void onEditClicked() {
@@ -241,8 +218,22 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if (dashboard == null || dashboard.getId() == null) {
             return;
         }
-        dashboardIdToRemove = dashboard.getId();
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.dashboardTableConfirmRemove()));
+
+        fireEvent(new ConfirmDialogEvents.Show(lang.dashboardTableConfirmRemove(), removeAction(dashboard.getId())));
+    }
+
+    private Runnable removeAction(Long dashboardId) {
+        return () -> userLoginController.removeUserDashboard(dashboardId, new FluentCallback<Void>()
+                .withSuccess(v -> {
+                    fireEvent(new NotifyEvents.Show(lang.dashboardTableRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    loadDashboard();
+                }));
+    }
+
+    private void showIssuePreview(Long caseNumber) {
+        view.showQuickview(false);
+        fireEvent(new IssueEvents.ShowPreview(view.quickview(), caseNumber));
+        view.showQuickview(true);
     }
 
     @Inject
@@ -260,7 +251,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Inject
     PolicyService policyService;
 
-    private Long dashboardIdToRemove = null;
     private AppEvents.InitDetails initDetails;
     private final static int TABLE_LIMIT = 50;
 }

@@ -8,10 +8,9 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -19,6 +18,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.struct.Pair;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
 
 import javax.annotation.PostConstruct;
@@ -137,7 +137,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, long lastYtSynchronization) {
         log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration={}", employeeRegistration);
-        En_CaseState oldState = employeeRegistration.getState();
+        Long oldState = employeeRegistration.getStateId();
 
         CaseLinkQuery linkQuery = new CaseLinkQuery();
         linkQuery.setCaseId(employeeRegistration.getId());
@@ -152,8 +152,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             log.warn("synchronizeEmployeeRegistration(): failed to execute DB merge for employee registration={}", employeeRegistration);
 
 
-        En_CaseState newState = employeeRegistration.getState();
-        if (newState != oldState && newState == En_CaseState.DONE) {
+        Long newState = employeeRegistration.getStateId();
+        if (newState != oldState && newState == CrmConstants.State.DONE) {
             log.debug("synchronizeEmployeeRegistration(): state was changed to DONE, sending notification");
             fireEmployeeRegistrationEvent(employeeRegistration);
         }
@@ -161,7 +161,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private void updateIssues(EmployeeRegistration employeeRegistration, long lastYtSynchronization, Collection<CaseLink> caseLinks) {
 
-        List<En_CaseState> caseStates = new ArrayList<>();
+        List<Long> caseStates = new ArrayList<>();
 
         for (CaseLink caseLink : caseLinks) {
             String ytIssueId = caseLink.getRemoteId();
@@ -170,38 +170,38 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
             log.info("updateIssues(): caseId={}, caseLink={}", employeeRegistration.getId(), caseLink);
 
-            caseStates.add(ytIssue.getCaseState());
+            caseStates.add(ytIssue.getState().getId());
 
             parseStateChanges(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssueStateChanges);
             parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssue.getComments());
             parseAndUpdateAttachments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), ytIssue.getAttachments());
         }
 
-        En_CaseState state = getGeneralState(caseStates);
-        employeeRegistration.setState(state);
+        Long stateId = getGeneralState(caseStates);
+        employeeRegistration.setStateId(stateId);
     }
 
-    private En_CaseState getGeneralState(Collection<En_CaseState> caseStates) {
+    private Long getGeneralState(Collection<Long> caseStates) {
 
-        Predicate<En_CaseState> isDone = cs -> cs == En_CaseState.DONE || cs == En_CaseState.CLOSED;
-        Predicate<En_CaseState> isCanceled = cs -> cs == En_CaseState.IGNORED || cs == En_CaseState.CANCELED;
-        Predicate<En_CaseState> isCreated = cs -> cs == En_CaseState.CREATED;
+        Predicate<Long> isDone = cs -> cs == CrmConstants.State.DONE || cs == CrmConstants.State.CLOSED;
+        Predicate<Long> isCanceled = cs -> cs == CrmConstants.State.IGNORED || cs == CrmConstants.State.CANCELED;
+        Predicate<Long> isCreated = cs -> cs == CrmConstants.State.CREATED;
 
         if (caseStates.stream().allMatch(isDone))
-            return En_CaseState.DONE;
+            return CrmConstants.State.DONE;
         if (caseStates.stream().allMatch(isCanceled))
-            return En_CaseState.CANCELED;
+            return CrmConstants.State.CANCELED;
         if (caseStates.stream().allMatch(isCreated))
-            return En_CaseState.CREATED;
+            return CrmConstants.State.CREATED;
         if (caseStates.stream().allMatch(isDone.or(isCanceled)) &&
                 caseStates.stream().anyMatch(isDone))
-            return En_CaseState.DONE;
-        return En_CaseState.ACTIVE;
+            return CrmConstants.State.DONE;
+        return CrmConstants.State.ACTIVE;
     }
 
     private boolean saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = caseObjectDAO.get(employeeRegistration.getId());
-        caseObject.setState(employeeRegistration.getState());
+        caseObject.setStateId(employeeRegistration.getStateId());
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
     }
 
@@ -227,7 +227,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private CaseComment parseStateChange(Long caseId, Long caseLinkId, YouTrackIssueStateChange issueStateChange) {
 
-        En_CaseState newState = issueStateChange.getAdded();
+        Long newState = issueStateChange.getAddedCaseStateId();
         if (newState == null) {
             return null;
         }
@@ -251,7 +251,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         stateChange.setCreated(new Date(timestamp));
         stateChange.setRemoteLinkId(caseLinkId);
         stateChange.setAuthorId(YOUTRACK_USER_ID);
-        stateChange.setCaseStateId((long) newState.getId());
+        stateChange.setCaseStateId(newState);
         stateChange.setOriginalAuthorName(issueStateChange.getAuthorFullName());
         stateChange.setOriginalAuthorFullName(issueStateChange.getAuthorFullName());
         return stateChange;
@@ -370,7 +370,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     }
 
     private void fireEmployeeRegistrationEvent(EmployeeRegistration employeeRegistration) {
-        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+        publisherService.publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
     }
 
     private List<CaseComment> makeCaseCommentListWithoutDuplicates(List<CaseComment> caseComments) {

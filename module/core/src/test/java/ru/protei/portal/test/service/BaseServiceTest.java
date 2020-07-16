@@ -6,12 +6,16 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,7 +30,7 @@ public class BaseServiceTest {
         userLogin.setUlogin("user" + person.getId());
         userLogin.setCreated(new Date());
         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-        userLogin.setAuthTypeId(En_AuthType.LOCAL.getId());
+        userLogin.setAuthType(En_AuthType.LOCAL);
         userLogin.setPersonId(person.getId());
         return userLogin;
     }
@@ -43,12 +47,13 @@ public class BaseServiceTest {
         DevUnit product = new DevUnit();
         product.setName( productName );
         product.setCreated( new Date() );
-        product.setTypeId( En_DevUnitType.PRODUCT.getId() );
+        product.setType( En_DevUnitType.PRODUCT );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
         product.setInfo( "info" );
         product.setHistoryVersion( "historyVersion" );
         product.setCdrDescription( "cdrDescription" );
         product.setConfiguration( "configuration" );
+        product.setWikiLink( "https://newportal.protei.ru/" );
         return product;
     }
 
@@ -63,13 +68,15 @@ public class BaseServiceTest {
     public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
         CaseObject caseObject = new CaseObject();
         caseObject.setName( "Test_Case_Name" );
-        caseObject.setCaseNumber(caseNo);
-        caseObject.setState( En_CaseState.CREATED );
-        caseObject.setCaseType( caseType );
+        caseObject.setCaseNumber( caseNo );
+        caseObject.setStateId( CrmConstants.State.CREATED );
+        caseObject.setStateName( "created" );
+        caseObject.setManagerCompanyId( person.getCompanyId() );
+        caseObject.setType( caseType );
         caseObject.setCreator( person );
         caseObject.setCreated( new Date() );
         caseObject.setModified( new Date() );
-        caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
+        caseObject.setImpLevel( En_ImportanceLevel.BASIC.getId() );
         return caseObject;
     }
 
@@ -85,14 +92,14 @@ public class BaseServiceTest {
     }
 
     public static Company createNewCustomerCompany() {
-        return createNewCompany(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        return createNewCompany(En_CompanyCategory.CUSTOMER);
     }
 
-    public static Company createNewCompany( CompanyCategory category ) {
+    public static Company createNewCompany( En_CompanyCategory category ) {
         return createNewCompany( "Test_Company", category );
     }
 
-    public static Company createNewCompany( String companyName, CompanyCategory category ) {
+    public static Company createNewCompany( String companyName, En_CompanyCategory category ) {
         Company company = new Company();
         company.setCname( companyName );
         company.setCategory( category );
@@ -120,6 +127,29 @@ public class BaseServiceTest {
         caseTag.setName(name);
         caseTag.setCompanyId(companyId);
         return caseTag;
+    }
+
+    protected Plan createPlan() {
+        return createPlan("");
+    }
+
+    protected Plan createPlan(String name) {
+        Plan plan = new Plan();
+        plan.setName(name + "test" + new Date().getTime());
+        plan.setStartDate(new Date());
+        plan.setFinishDate(new Date());
+        return plan;
+    }
+
+    protected PersonAbsence createAbsence(Long personId) {
+        PersonAbsence absence = new PersonAbsence();
+        absence.setCreated(new Date());
+        absence.setCreatorId(personId);
+        absence.setPersonId(personId);
+        absence.setFromTime(new Date());
+        absence.setTillTime(new Date());
+        absence.setReason(En_AbsenceReason.PERSONAL_AFFAIR);
+        return absence;
     }
 
     public static void checkResult( Result result ) {
@@ -202,16 +232,16 @@ public class BaseServiceTest {
     }
 
     protected Company makeCustomerCompany() {
-        return makeCompany(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+        return makeCompany( En_CompanyCategory.CUSTOMER );
     }
 
-    protected Company makeCompany( CompanyCategory category ) {
+    protected Company makeCompany( En_CompanyCategory category ) {
         Company company = createNewCompany( category );
         company.setId( companyDAO.persist( company ) );
         return company;
     }
 
-    protected Company makeCompany( String companyName,  CompanyCategory category ) {
+    protected Company makeCompany( String companyName,  En_CompanyCategory category ) {
         return makeCompany( createNewCompany( companyName, category ) );
     }
 
@@ -220,8 +250,8 @@ public class BaseServiceTest {
         return company;
     }
 
-    protected CaseTag makeCaseTag( String tag1, En_CaseType type, Long companyId ) {
-        CaseTag caseTag = createCaseTag( tag1, type, companyId );
+    protected CaseTag makeCaseTag( String name, En_CaseType type, Long companyId ) {
+        CaseTag caseTag = createCaseTag( name, type, companyId );
         caseTag.setId( caseTagDAO.persist( caseTag ) );
         return caseTag;
     }
@@ -237,6 +267,12 @@ public class BaseServiceTest {
     public DevUnit makeProduct( DevUnit product ) {
         product.setId( devUnitDAO.persist( product ) );
         return product;
+    }
+
+    protected PersonAbsence makeAbsence(Long personId) {
+        PersonAbsence absence = createAbsence(personId);
+        absence.setId(personAbsenceDAO.persist(absence));
+        return absence;
     }
 
     // Remove
@@ -281,6 +317,12 @@ public class BaseServiceTest {
     @Autowired
     protected CaseObjectDAO caseObjectDAO;
     @Autowired
+    protected CaseLinkDAO caseLinkDAO;
+    @Autowired
+    protected PlatformDAO platformDAO;
+    @Autowired
+    protected ProjectToProductDAO projectToProductDAO;
+    @Autowired
     protected CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
     protected CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
@@ -292,4 +334,8 @@ public class BaseServiceTest {
     protected JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     protected UserRoleDAO userRoleDAO;
+    @Autowired
+    protected ProjectService projectService;
+    @Autowired
+    protected PersonAbsenceDAO personAbsenceDAO;
 }

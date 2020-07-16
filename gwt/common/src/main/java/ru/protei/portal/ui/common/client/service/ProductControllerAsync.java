@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -41,4 +41,6 @@ public interface ProductControllerAsync {
     void getProductDirectionList(ProductDirectionQuery query, AsyncCallback<List<ProductDirectionInfo>> callback);
 
     void isNameUnique(String name, En_DevUnitType type, Long exceptId, AsyncCallback<Boolean> async);
+
+    void getProductsViewListWithChildren(ProductQuery query, AsyncCallback<List<ProductShortView>> async);
 }

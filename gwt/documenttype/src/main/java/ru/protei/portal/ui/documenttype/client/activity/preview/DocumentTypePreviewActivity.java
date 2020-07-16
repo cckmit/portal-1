@@ -6,8 +6,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DocumentTypeEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -53,6 +55,12 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
         documentType.setName(view.name().getValue());
         documentType.setGost(view.gost().getValue());
 
+        String error;
+        if ((error = getValidationError(documentType)) != null) {
+            showValidationError(error);
+            return;
+        }
+
         service.saveDocumentType(documentType, new RequestCallback<DocumentType>() {
             @Override
             public void onError(Throwable throwable) {}
@@ -61,6 +69,7 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
             public void onSuccess(DocumentType type) {
                 fireEvent( new DocumentTypeEvents.Changed(type, isNew));
                 fireEvent(new DocumentTypeEvents.ClosePreview());
+                fireEvent(new DocumentTypeEvents.ChangeModel());
             }
         });
     }
@@ -68,12 +77,29 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
     private void fillView() {
         if (documentType == null) {
             documentType = new DocumentType();
+            view.nameValidation().setValid(false);
+        } else {
+            view.nameValidation().setValid(true);
         }
 
         view.name().setValue(documentType.getName());
         view.shortName().setValue(documentType.getShortName());
         view.category().setValue(documentType.getDocumentCategory());
         view.gost().setValue(documentType.getGost());
+
+        view.shortNameValidation().setValid(true);
+        view.gostValidation().setValid(true);
+    }
+
+    private String getValidationError(DocumentType documentType) {
+        if (StringUtils.isBlank(documentType.getName()))
+            return lang.documentTypeNameValidationError();
+
+        return null;
+    }
+
+    private void showValidationError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     @Inject

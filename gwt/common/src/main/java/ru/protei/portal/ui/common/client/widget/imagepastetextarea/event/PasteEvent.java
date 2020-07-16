@@ -8,10 +8,11 @@ public class PasteEvent extends GwtEvent<PasteHandler> {
     private static Type<PasteHandler> TYPE = new Type<>();
     private String json;
     private List<String> jsons;
+    private Integer strPos;
 
-    public static void fire(HasPasteHandlers source, String json) {
+    public static void fire(HasPasteHandlers source, String json, Integer strPos) {
         if (TYPE != null) {
-            source.fireEvent(new PasteEvent(json));
+            source.fireEvent(new PasteEvent(json, strPos));
         }
     }
 
@@ -27,6 +28,11 @@ public class PasteEvent extends GwtEvent<PasteHandler> {
 
     private PasteEvent(String json) {
         this.json = json;
+    }
+
+    private PasteEvent(String json, Integer strPos) {
+        this.json = json;
+        this.strPos = strPos;
     }
 
     private PasteEvent(List<String> jsons) {
@@ -51,5 +57,13 @@ public class PasteEvent extends GwtEvent<PasteHandler> {
 
     public List<String> getJsons() {
         return jsons;
+    }
+
+    public Integer getStrPos() {
+        return strPos;
+    }
+
+    public void setStrPos(Integer strPos) {
+        this.strPos = strPos;
     }
 }

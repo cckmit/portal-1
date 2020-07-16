@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -52,7 +52,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     @Event
     public void onShow(ProductEvents.ShowFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.PRODUCT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -70,7 +70,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     @Override
     public void onBackButtonClicked() {
-        fireEvent(new ProductEvents.Show());
+        fireEvent(new ProductEvents.Show(true));
     }
 
     private void loadDetails(Long productId) {
@@ -79,14 +79,13 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     private void fillView(DevUnit product) {
         this.productId = product.getId();
-        view.setName(product.getName() + (CollectionUtils.isEmpty(product.getAliases()) ? "" : " (" + product.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
+        view.setName(product.getName() + (CollectionUtils.isEmpty(product.getAliases()) ? "" : " (" + String.join(", ", product.getAliases()) + ")"));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
-        view.setInfo(product.getInfo());
         view.setDirection(product.getProductDirection() == null ? "" : product.getProductDirection().getName());
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 
-        view.setParents(emptyIfNull(product.getParents()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
-        view.setChildren(emptyIfNull(product.getChildren()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makeLink(DevUnit.class, devUnit.getId()))));
+        view.setParents(emptyIfNull(product.getParents()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makePreviewLink(DevUnit.class, devUnit.getId()))));
+        view.setChildren(emptyIfNull(product.getChildren()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makePreviewLink(DevUnit.class, devUnit.getId()))));
 
         view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(product.getType()));
 
@@ -94,19 +93,23 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         list.add(product.getConfiguration());
         list.add(product.getCdrDescription());
         list.add(product.getHistoryVersion());
+        list.add(product.getInfo());
         view.setConfiguration(list.get(0));
         view.setCdrDescription(list.get(1));
         view.setHistoryVersion(list.get(2));
+        view.setInfo(list.get(3));
         textRenderController.render(En_TextMarkup.MARKDOWN, list, new FluentCallback<List<String>>()
                 .withError(throwable -> {
                     view.setConfiguration(list.get(0));
                     view.setCdrDescription(list.get(1));
                     view.setHistoryVersion(list.get(2));
+                    view.setInfo(list.get(3));
                 })
                 .withSuccess(converted -> {
                     view.setConfiguration(converted.get(0));
                     view.setCdrDescription(converted.get(1));
                     view.setHistoryVersion(converted.get(2));
+                    view.setInfo(converted.get(3));
                 })
         );
     }

@@ -12,12 +12,12 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -46,30 +46,30 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     @Event
     public void onShow(DocumentEvents.ShowPreview event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(event.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
         event.parent.clear();
         event.parent.add(view.asWidget());
-        view.footerVisibility().setVisible(false);
+        view.showFullScreen(false);
         loadDocument(event.documentId, this::fillView);
     }
 
     @Event
     public void onShow(DocumentEvents.ShowPreviewFullScreen event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        view.footerVisibility().setVisible(true);
+        view.showFullScreen(true);
         loadDocument(event.documentId, this::fillView);
     }
 
     @Override
     public void onBackClicked() {
-        fireEvent(new DocumentEvents.Show());
+        fireEvent(new DocumentEvents.Show(true));
     }
 
     @Override
@@ -95,6 +95,11 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         );
     }
 
+    @Override
+    public void onFullScreenClicked() {
+        fireEvent(new DocumentEvents.ShowPreviewFullScreen(document.getId()));
+    }
+
     private void loadDocument(Long documentId, Consumer<Document> onSuccess) {
         documentController.getDocument(documentId, new FluentCallback<Document>().withSuccess(onSuccess));
     }
@@ -104,7 +109,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         boolean hasAccessToPdf = hasAccessToPdf();
         boolean hasAccessToDoc = hasAccessToDoc(document);
         boolean hasAccessToDocModification = hasAccessToDocModification(document);
-        view.setHeader(document.getName() + " (#" + document.getId() + ")");
+        view.setDocumentNumber(document.getName() + " (#" + document.getId() + ")");
         view.setVersion(lang.documentVersion() + " " + document.getVersion());
         view.setCreatedBy(lang.createBy("", DateFormatter.formatDateTime(document.getCreated())));
         view.setType(document.getType().getName());
@@ -159,10 +164,10 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private boolean hasAccessToDoc(Document document) {
-        if (policyService.hasSystemScopeForPrivilege(En_Privilege.DOCUMENT_EDIT)) {
+        if (policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
             return true;
         }
-        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.DOCUMENT_VIEW)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
             return false;
         }
         Long currentPersonId = policyService.getProfile().getId();
@@ -177,7 +182,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     }
 
     private boolean hasAccessToPdf() {
-        return policyService.hasSystemScopeForPrivilege(En_Privilege.DOCUMENT_VIEW);
+        return policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW);
     }
 
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";

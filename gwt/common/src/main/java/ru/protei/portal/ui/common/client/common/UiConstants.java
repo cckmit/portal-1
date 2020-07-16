@@ -1,7 +1,5 @@
 package ru.protei.portal.ui.common.client.common;
 
-import com.google.gwt.core.client.GWT;
-
 /**
  * Системные константы приложения
  */
@@ -31,6 +29,9 @@ public class UiConstants {
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
         String CONTRACT = "fa fa-file-signature";
         String EDUCATION = "fas fa-graduation-cap";
+        String IP_RESERVATION = "fa fa-sitemap";
+        String ROOM_RESERVATION = "fas fa-calendar-day";
+        String PLAN = "fa fa-list-ol";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
@@ -69,6 +70,14 @@ public class UiConstants {
         String CONTRACT = "contract";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
         String TOP_BRASS = "top_brass";
+        String EMPLOYEE_CREATE = "employee_create";
+        String SUBNET = "subnet";
+        String SUBNET_CREATE = "subnet_create";
+        String RESERVED_IP = "reserved_ip";
+        String RESERVED_IP_CREATE = "reserved_ip_create";
+        String PLAN_CREATE = "plan_create";
+        String ABSENCE = "absence";
+        String ABSENCE_REPORT = "absence_report";
     }
 
     public interface Styles {
@@ -77,6 +86,8 @@ public class UiConstants {
         String TEXT_CENTER = "text-center";
         String SEARCH_NO_RESULT = "search-no-result";
         String MULTIPLE_ANY = "multiple-any";
+        String SHORT_VIEW = "col-md-6";
+        String FULL_VIEW = "col-md-12";
     }
 
     /**

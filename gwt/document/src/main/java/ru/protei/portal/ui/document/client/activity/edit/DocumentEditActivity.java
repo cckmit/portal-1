@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -32,6 +32,7 @@ import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentMode
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.core.model.helper.DocumentUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -53,19 +54,21 @@ public abstract class DocumentEditActivity
     @Event
     public void onCreateFromWizard(DocumentEvents.CreateFromWizard event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
-            fireEvent(new ForbiddenEvents.Show(event.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new DocumentEvents.Show(false));
         placeView(event.parent);
         view.drawInWizardContainer(true);
-        fillView(new Document());
+        this.document = new Document();
+        fillView(document);
     }
 
     @Event(Type.FILL_CONTENT)
     public void onEquipmentCreate(DocumentEvents.CreateWithEquipment event){
         if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)){
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         if (event.projectId == null || event.equipmentId == null) {
@@ -74,27 +77,45 @@ public abstract class DocumentEditActivity
             return;
         }
 
+        fireBackEvent = () -> fireEvent(new Back());
+
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
         Document document = makeDocumentFromEvent(event);
+        this.document = document;
         requestEquipmentAndFillView(event.equipmentId, document);
     }
 
     @Event(Type.FILL_CONTENT)
     public void onEdit(DocumentEvents.Edit event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && !policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
-            fireEvent(new ForbiddenEvents.Show(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
+        fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
+
         placeView(initDetails.parent);
         view.drawInWizardContainer(false);
-        requestDocumentAndFillView(event.id, this::fillView);
+        requestDocumentAndFillView(event.id,
+                doc -> {
+                    this.document = doc;
+                    fillView(doc);
+                });
     }
 
     @Event
     public void onSave(DocumentEvents.Save event) {
         onSaveClicked();
+    }
+
+    @Event
+    public void onSaveAndContinue(DocumentEvents.SaveAndContinue event) {
+        setButtonsEnabled(false);
+        saveDocument(fillDto(document), true);
     }
 
     @Event
@@ -174,7 +195,7 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onCancelClicked() {
-       fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
@@ -198,8 +219,19 @@ public abstract class DocumentEditActivity
         return document;
     }
 
+    private Document makeDocumentToContinue() {
+        Document document = new Document();
+        document.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
+        document.setProjectName(view.project().getValue() == null? null : view.project().getValue().getDisplayText());
+        document.setName(view.name().getValue());
+        document.setAnnotation(view.annotation().getValue());
+        document.setKeywords(new ArrayList<>(view.keywords().getValue()));
+        return document;
+    }
+
     private void placeView(HasWidgets container) {
         container.clear();
+        Window.scrollTo(0, 0);
         container.add(view.asWidget());
     }
 
@@ -218,25 +250,16 @@ public abstract class DocumentEditActivity
 
         setEquipmentEnabled(isEquipmentEnabled);
         setDocumentTypeEnabled(documentCategory != null);
-        setDecimalNumberEnabled(isDesignationEnabled);
-        setInventoryNumberEnabled(isDesignationEnabled);
-        setInventoryNumberMandatory(needToCheckInventoryNumber(project));
+        view.decimalNumberEnabled(isEnableDecimalNumberByApproved(document) && isDesignationEnabled);
+        view.inventoryNumberEnabled(isEnableInventoryNumberByApproved(document) && isDesignationEnabled);
+        setInventoryNumberMandatory(DocumentUtils.needToCheckInventoryNumber(project,
+                view.isApproved().getValue(), view.documentType().getValue()));
         setUploaderEnabled(isNew || !view.isApproved().getValue() || !document.getApproved());
     }
-    private void setDecimalNumberEnabled(boolean isEnabled) {
-        view.decimalNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.decimalNumber().setValue(null);
-        }
-    }
-    private void setInventoryNumberEnabled(boolean isEnabled) {
-        view.inventoryNumberEnabled(isEnabled);
-        if (!isEnabled) {
-            view.inventoryNumber().setValue(null);
-        }
-    }
+
     private void setInventoryNumberMandatory(boolean isMandatory) {
         view.setInventoryNumberMandatory(isMandatory);
+        view.setDecimalNumberHMandatory(isMandatory);
     }
     private void setEquipmentEnabled(boolean isEnabled) {
         view.equipmentEnabled(isEnabled);
@@ -288,54 +311,28 @@ public abstract class DocumentEditActivity
     }
 
     private boolean checkDocumentValid(Document newDocument) {
-        if (!isValidDocument(newDocument)) {
+        boolean isValid = (document.getId() == null) ?
+                DocumentUtils.isValidNewDocument(
+                        newDocument,
+                        project,
+                        view.documentDocUploader().isFileSet(),
+                        view.documentPdfUploader().isFileSet())
+                : DocumentUtils.isValidDocument(
+                        newDocument,
+                        project);
+
+        if (!isValid) {
             fireErrorMessage(getValidationErrorMessage(newDocument));
-            return false;
         }
-        return true;
-    }
 
-    private boolean isValidDocument(Document document) {
-        boolean isNew = document.getId() == null;
-        boolean isPdfFileSet = view.documentPdfUploader().isFileSet();
-        boolean isDocFileSet = view.documentDocUploader().isFileSet();
-
-        if (isNew && isDocFileSet && !isPdfFileSet) {
-            return StringUtils.isNotEmpty(document.getName()) &&
-                    document.getProjectId() != null;
-        } else {
-            return document.isValid()
-                    && isValidInventoryNumberForMinistryOfDefence(document)
-                    && isValidApproveFields(document);
-        }
-    }
-
-    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        if (needToCheckInventoryNumber(project)) {
-            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
-        }
-        return true;
-    }
-
-    private boolean needToCheckInventoryNumber(ProjectInfo project) {
-        return  view.isApproved().getValue()
-                && project != null
-                && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
-                && view.documentCategory().getValue() != null
-                && view.documentCategory().getValue() != En_DocumentCategory.ABROAD;
-    }
-
-    private boolean isValidApproveFields(Document document) {
-        if (!document.getApproved()) {
-            return true;
-        }
-        return document.getApprovedBy() != null && document.getApprovalDate() != null;
+        return isValid;
     }
 
     private void saveDocument(Document document) {
+        saveDocument(document, false);
+    }
+
+    private void saveDocument(Document document, boolean stayOnPage) {
         if (!checkDocumentValid(document)) {
             setButtonsEnabled(true);
             return;
@@ -351,11 +348,14 @@ public abstract class DocumentEditActivity
             uploadDoc(() ->
                     uploadApprovalSheet(() ->
                         saveDocument(document, doc -> {
-                            fillView(doc);
+                            this.document = doc;
                             setButtonsEnabled(true);
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                            fireEvent(new DocumentEvents.ChangeModel());
-                            fireEvent(new Back());
+                            if (stayOnPage){
+                                fillView(makeDocumentToContinue());
+                            } else {
+                                fireBackEvent.run();
+                            }
                         }
         ))));
     }
@@ -436,16 +436,26 @@ public abstract class DocumentEditActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (needToCheckInventoryNumber(project)) {
+        if (DocumentUtils.needToCheckInventoryNumber(project,
+                view.isApproved().getValue(), view.documentType().getValue())) {
             if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
                 return lang.inventoryNumberIsEmpty();
             } else if (doc.getInventoryNumber() < 0) {
                 return lang.negativeInventoryNumber();
             }
         }
+
+        if (!DocumentUtils.isValidDecimalNumber(doc)) {
+            return lang.decimalNumberIsInvalid();
+        }
+
         if (doc.getApproved()) {
             if (doc.getApprovedBy() == null || doc.getApprovalDate() == null) {
                 return lang.documentApproveFieldsIsEmpty();
+            }
+
+            if (!view.documentPdfUploader().isFileSet()) {
+                return lang.documentPDFFileIsNotSet();
             }
         }
         return null;
@@ -496,9 +506,7 @@ public abstract class DocumentEditActivity
     }
 
     private void fillView(Document document) {
-        this.document = document;
-
-        boolean isNew = document.getId() == null;
+        boolean isNew = isNew(document);
 
         view.setDownloadCloudsVisible(!isNew);
         view.name().setValue(document.getName());
@@ -532,9 +540,13 @@ public abstract class DocumentEditActivity
             PersonShortView currentPerson = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
+            view.inventoryNumberEnabled(true);
+            view.decimalNumberEnabled(true);
         } else {
             view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
+            view.inventoryNumberEnabled(isEnableInventoryNumberByApproved(this.document));
+            view.decimalNumberEnabled(isEnableDecimalNumberByApproved(this.document));
         }
 
         view.project().setValue(document.getProjectId() == null ? null : new EntityOption(document.getProjectName(), document.getProjectId()));
@@ -575,6 +587,17 @@ public abstract class DocumentEditActivity
         fireEvent(new DocumentEvents.SetButtonsEnabled(isEnabled));
     }
 
+    private Boolean isEnableInventoryNumberByApproved(Document doc) {
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getInventoryNumber() == null;
+    }
+    private Boolean isEnableDecimalNumberByApproved(Document doc) {
+        return (doc == null) || (doc.getApproved() == null || !doc.getApproved()) || doc.getDecimalNumber() == null;
+    }
+
+    private boolean isNew(Document document) {
+        return document == null || document.getId() == null;
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -597,4 +620,5 @@ public abstract class DocumentEditActivity
     private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/download/document/";
     private AppEvents.InitDetails initDetails;
     private List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>(Arrays.asList(En_DocumentCategory.values()));
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

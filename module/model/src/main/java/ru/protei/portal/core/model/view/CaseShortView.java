@@ -1,16 +1,18 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Сокращенное представление кейса
  */
 @JdbcEntity(table = "case_object")
-public class CaseShortView implements Serializable {
+public class CaseShortView implements Serializable, Identifiable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -36,6 +38,9 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "STATE")
     private long stateId;
 
+    @JdbcJoinedColumn(mappedColumn = "STATE", table = "case_state", localColumn = "STATE", remoteColumn = "id" )
+    private String stateName;
+
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
 
@@ -45,17 +50,16 @@ public class CaseShortView implements Serializable {
     @JdbcColumn(name = "INITIATOR")
     private Long initiatorId;
 
-    // Вариант 1: mappedColumn + table + localColumn + remoteColumn + опционально sqlTableAlias
-    @JdbcJoinedColumn( mappedColumn = "displayname", table = "Person", localColumn = "INITIATOR", remoteColumn = "ID" )
+    @JdbcJoinedColumn( mappedColumn = "displayname", table = "person", localColumn = "INITIATOR", remoteColumn = "ID" )
     private String initiatorName;
 
-    @JdbcJoinedColumn( table = "Person", localColumn = "INITIATOR", remoteColumn = "ID", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( table = "person", localColumn = "INITIATOR", remoteColumn = "ID", mappedColumn = "displayShortName")
     private String initiatorShortName;
 
     @JdbcColumn(name = "initiator_company")
     private Long initiatorCompanyId;
 
-    @JdbcJoinedColumn( table="Company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "cname")
+    @JdbcJoinedColumn( table="company", localColumn = "initiator_company", remoteColumn = "id", mappedColumn = "cname")
     private String initiatorCompanyName;
 
     @JdbcColumn(name = "product_id")
@@ -70,17 +74,23 @@ public class CaseShortView implements Serializable {
     @JdbcJoinedColumn( table = "person", localColumn = "MANAGER", remoteColumn = "id", mappedColumn = "displayname" )
     private String managerName;
 
-    @JdbcJoinedColumn( table = "Person", localColumn = "MANAGER", remoteColumn = "ID", mappedColumn = "displayShortName")
+    @JdbcJoinedColumn( table = "person", localColumn = "MANAGER", remoteColumn = "ID", mappedColumn = "displayShortName")
     private String managerShortName;
 
     @JdbcColumn(name = "ATTACHMENT_EXISTS")
     private boolean isAttachmentExists;
 
-    @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
-            @JdbcJoinPath( table = "Person", localColumn = "MANAGER", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" )
-    })
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
+
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
+
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String managerCompanyName;
+
+    // ManyToMany via CaseTagService
+    private List<CaseTag> tags;
 
     public CaseShortView() {
 
@@ -137,10 +147,6 @@ public class CaseShortView implements Serializable {
 
     public long getStateId() {
         return stateId;
-    }
-
-    public void setStateId( long stateId ) {
-        this.stateId = stateId;
     }
 
     public Integer getImpLevel() {
@@ -263,6 +269,34 @@ public class CaseShortView implements Serializable {
         isAttachmentExists = attachmentExists;
     }
 
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public List<CaseTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<CaseTag> tags) {
+        this.tags = tags;
+    }
+
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -272,7 +306,7 @@ public class CaseShortView implements Serializable {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CaseShortView{" +
                 "id=" + id +
                 ", typeId=" + typeId +
@@ -282,6 +316,7 @@ public class CaseShortView implements Serializable {
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
+                ", stateName=" + stateName +
                 ", impLevel=" + impLevel +
                 ", privateCase=" + privateCase +
                 ", initiatorId=" + initiatorId +
@@ -295,7 +330,10 @@ public class CaseShortView implements Serializable {
                 ", managerName='" + managerName + '\'' +
                 ", managerShortName='" + managerShortName + '\'' +
                 ", isAttachmentExists=" + isAttachmentExists +
+                ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", tags=" + tags +
                 '}';
     }
 }

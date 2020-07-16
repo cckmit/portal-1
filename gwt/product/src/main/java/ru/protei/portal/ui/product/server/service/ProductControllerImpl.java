@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ProductController;
@@ -132,6 +132,22 @@ public class ProductControllerImpl implements ProductController {
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
+
+        return result.getData();
+    }
+
+    @Override
+    public List<ProductShortView> getProductsViewListWithChildren(ProductQuery query) throws RequestFailedException {
+        log.info("getProductViewListWithChildren(): ProductQuery={}", query);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<List<ProductShortView>> result = productService.productsShortViewListWithChildren(token, query);
+
+        log.info("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
+
+        if (result.isError()) {
+            throw new RequestFailedException(result.getStatus());
+        }
 
         return result.getData();
     }

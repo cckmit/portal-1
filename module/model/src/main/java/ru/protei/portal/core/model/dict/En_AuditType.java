@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  * Тип операции в системе
  */
-public enum En_AuditType {
+public enum En_AuditType implements HasId {
     ISSUE_MODIFY( 1 ),
     ISSUE_CREATE( 2 ),
     ISSUE_REPORT( 3 ),
@@ -77,6 +79,50 @@ public enum En_AuditType {
 
     CONTRACT_MODIFY(49),
     CONTRACT_CREATE(50),
+
+    CONTACT_FIRE(51),
+    CONTACT_DELETE(52),
+
+    LINK_CREATE(53),
+    LINK_REMOVE(54),
+
+    DOCUMENT_CREATE(55),
+
+    DOCUMENT_TYPE_CREATE(56),
+    DOCUMENT_TYPE_REMOVE(57),
+
+    PLATFORM_CREATE(58),
+    PLATFORM_MODIFY(59),
+    PLATFORM_REMOVE(60),
+
+    SERVER_CREATE(61),
+    SERVER_MODIFY(62),
+    SERVER_REMOVE(63),
+
+    APPLICATION_CREATE(64),
+    APPLICATION_MODIFY(65),
+    APPLICATION_REMOVE(66),
+
+    SUBNET_MODIFY(67),
+    SUBNET_CREATE(68),
+    SUBNET_REMOVE(69),
+    RESERVED_IP_MODIFY(70),
+    RESERVED_IP_CREATE(71),
+    RESERVED_IP_REMOVE(72),
+
+    ROOM_RESERVATION_CREATE(73),
+    ROOM_RESERVATION_MODIFY(74),
+    ROOM_RESERVATION_REMOVE(75),
+
+    PLAN_CREATE(76),
+    PLAN_MODIFY(77),
+    PLAN_REMOVE(78),
+
+    ABSENCE_CREATE(79),
+    ABSENCE_MODIFY(80),
+    ABSENCE_REMOVE(81),
+
+    SUBSCRIPTION_MODIFY(82),
     ;
 
     En_AuditType(int id ) {

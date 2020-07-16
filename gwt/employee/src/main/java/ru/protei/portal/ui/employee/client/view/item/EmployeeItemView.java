@@ -2,13 +2,14 @@ package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
@@ -21,6 +22,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
+    @Override
     public void setActivity( AbstractEmployeeItemActivity activity ) {
         this.activity = activity;
     }
@@ -69,6 +71,12 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
+    public void setCompany( String value ) {
+        companyContainer.setVisible( value != null && !value.isEmpty() );
+        company.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
     public void setIP(String value) {
         ipContainer.setVisible( value != null && !value.isEmpty() );
         ip.setInnerText( value == null ? "" : value );
@@ -87,9 +95,31 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         photo.setUrl( url );
     }
 
+    @Override
+    public void setEditIcon (String link) {
+        editIcon.setHref(link);
+        editIcon.setVisible(link != null && !link.isEmpty());
+    }
+
+    public void setAbsenceReason(En_AbsenceReason reason) {
+        if (reason == null) {
+            removeStyleName("absent");
+            absenceReason.addClassName("hide");
+            absenceReason.setTitle("");
+            absenceIcon.setClassName("");
+        } else {
+            addStyleName("absent");
+            absenceReason.removeClassName("hide");
+            absenceReason.setTitle(reasonLang.getName(reason));
+            absenceIcon.addClassName(reasonLang.getIcon(reason));
+        }
+    }
 
     @UiField
     Anchor name;
+
+    @UiField
+    Anchor editIcon;
 
     @UiField
     HTMLPanel birthdayContainer;
@@ -111,6 +141,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     HTMLPanel positionContainer;
+
+    @UiField
+    HTMLPanel companyContainer;
 
     @UiField
     HTMLPanel ipContainer;
@@ -137,6 +170,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     SpanElement position;
 
     @UiField
+    SpanElement company;
+
+    @UiField
     SpanElement ip;
 
     @UiField
@@ -145,6 +181,13 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     @UiField
     SpanElement emails;
 
+    @UiField
+    Element absenceIcon;
+    @UiField
+    DivElement absenceReason;
+
+    @Inject
+    En_AbsenceReasonLang reasonLang;
 
     AbstractEmployeeItemActivity activity;
 

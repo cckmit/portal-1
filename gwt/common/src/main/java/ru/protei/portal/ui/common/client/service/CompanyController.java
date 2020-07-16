@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -9,6 +11,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис по работе с компаниями
@@ -63,10 +66,19 @@ public interface CompanyController extends RemoteService {
     Company getCompany( long id ) throws RequestFailedException;
 
     /**
+     * Получение компании без привилегий
+     * @param id идентификатор компании
+     * @return Company
+     */
+    Company getCompanyUnsafe(long id) throws RequestFailedException;
+
+    /**
      * Получение списка сокращенного представления компании (name,id)
      * @return
      */
     List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException;
+
+    List< EntityOption > getCompanyOptionListIgnorePrivileges(CompanyQuery query) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления группы компаний (name,id)
@@ -78,7 +90,7 @@ public interface CompanyController extends RemoteService {
      * Получение списка сокращенного представления катогирии компаний (name,id)
      * @return
      */
-    List< EntityOption > getCategoryOptionList() throws RequestFailedException;
+    List<En_CompanyCategory> getCategoryOptionList() throws RequestFailedException;
 
     /**
      * Получение список рассылок по компании
@@ -87,12 +99,14 @@ public interface CompanyController extends RemoteService {
      */
     List<CompanySubscription> getCompanySubscription( Long companyId ) throws RequestFailedException;
 
-    List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException;
+    List< CompanySubscription > getCompanyWithParentCompanySubscriptions(Set<Long> companyIds) throws RequestFailedException;
 
     /**
      * Получить список доступных статусов обращения
      */
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
 
-    List<Long> getAllHomeCompanyIds() throws RequestFailedException;
+    List<EntityOption> getAllHomeCompanies() throws RequestFailedException;
+
+    List<En_ImportanceLevel> getImportanceLevels(Long id) throws RequestFailedException;;
 }

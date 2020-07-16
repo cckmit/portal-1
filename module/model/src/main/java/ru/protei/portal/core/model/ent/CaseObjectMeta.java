@@ -1,13 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @JdbcEntity(table = "case_object")
 public class CaseObjectMeta extends AuditableObject {
@@ -22,6 +22,9 @@ public class CaseObjectMeta extends AuditableObject {
 
     @JdbcColumn(name = "STATE")
     private long stateId;
+
+    @JdbcJoinedColumn(localColumn = "STATE", table = "case_state", remoteColumn = "id", mappedColumn = "STATE")
+    private String stateName;
 
     @JdbcColumn(name = "IMPORTANCE")
     private Integer impLevel;
@@ -65,6 +68,17 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcColumn(name = CaseObject.Columns.EXT_APP)
     private String extAppType;
 
+    @JdbcColumn(name = "pause_date")
+    private Long pauseDate;
+
+    @JdbcColumn(name = "manager_company_id")
+    private Long managerCompanyId;
+
+    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    private String managerCompanyName;
+
+//    not db column
+    private List<Plan> plans;
 
     public CaseObjectMeta() {}
 
@@ -73,6 +87,8 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getId() != null) setId(co.getId());
         if (co.getModified() != null) setModified(co.getModified());
         if (co.getStateId() != 0) setStateId(co.getStateId());
+        if (co.getStateName() != null) setStateName(co.getStateName());
+        if (co.getPauseDate() != null) setPauseDate(co.getPauseDate());
         if (co.getImpLevel() != null) setImpLevel(co.getImpLevel());
         if (co.getInitiator() != null) setInitiator(co.getInitiator());
         if (co.getInitiatorId() != null) setInitiatorId(co.getInitiatorId());
@@ -86,6 +102,9 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getPlatformName() != null) setPlatformName(co.getPlatformName());
         if (co.getTimeElapsed() != null) setTimeElapsed(co.getTimeElapsed());
         if (co.getExtAppType() != null) setExtAppType(co.getExtAppType());
+        if (co.getManagerCompanyId() != null) setManagerCompanyId(co.getManagerCompanyId());
+        if (co.getManagerCompanyName() != null) setManagerCompanyName(co.getManagerCompanyName());
+        if (co.getPlans() != null) setPlans(co.getPlans());
         setPrivateCase(co.isPrivateCase());
     }
 
@@ -94,6 +113,8 @@ public class CaseObjectMeta extends AuditableObject {
         if (getId() != null) co.setId(getId());
         if (getModified() != null) co.setModified(getModified());
         if (getStateId() != 0) co.setStateId(getStateId());
+        if (getStateName() != null) co.setStateName(getStateName());
+        if (getPauseDate() != null) co.setPauseDate(getPauseDate());
         if (getImpLevel() != null) co.setImpLevel(getImpLevel());
         if (getInitiator() != null) co.setInitiator(getInitiator());
         if (getInitiatorId() != null) co.setInitiatorId(getInitiatorId());
@@ -106,7 +127,9 @@ public class CaseObjectMeta extends AuditableObject {
         if (getPlatformId() != null) co.setPlatformId(getPlatformId());
         if (getPlatformName() != null) co.setPlatformName(getPlatformName());
         if (getTimeElapsed() != null) co.setTimeElapsed(getTimeElapsed());
-        if (co.getExtAppType() != null) co.setExtAppType(getExtAppType());
+        if (getExtAppType() != null) co.setExtAppType(getExtAppType());
+        if (getManagerCompanyId() != null) co.setManagerCompanyId(getManagerCompanyId());
+        if (getPlans() != null) co.setPlans(getPlans());
         co.setPrivateCase(isPrivateCase());
         return co;
     }
@@ -140,12 +163,12 @@ public class CaseObjectMeta extends AuditableObject {
         this.stateId = stateId;
     }
 
-    public En_CaseState getState() {
-        return En_CaseState.getById(getStateId());
+    public String getStateName() {
+        return stateName;
     }
 
-    public void setState(En_CaseState state) {
-        setStateId(state.getId());
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public Integer getImpLevel() {
@@ -277,12 +300,55 @@ public class CaseObjectMeta extends AuditableObject {
         this.extAppType = extAppType;
     }
 
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
+    }
+
+    public Long getManagerCompanyId() {
+        return managerCompanyId;
+    }
+
+    public void setManagerCompanyId(Long managerCompanyId) {
+        this.managerCompanyId = managerCompanyId;
+    }
+
+    public void setManagerCompany(EntityOption managerCompany) {
+        if (managerCompany == null) {
+            managerCompanyId = null;
+            managerCompanyName = null;
+        } else {
+            managerCompanyId = managerCompany.getId();
+            managerCompanyName = managerCompany.getDisplayText();
+        }
+    }
+
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
+    public List<Plan> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(List<Plan> plans) {
+        this.plans = plans;
+    }
+
     @Override
     public String toString() {
         return "CaseObjectMeta{" +
                 "id=" + id +
                 ", modified=" + modified +
                 ", stateId=" + stateId +
+                ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
                 ", initiatorId=" + initiatorId +
                 ", initiator=" + initiator +
@@ -297,6 +363,10 @@ public class CaseObjectMeta extends AuditableObject {
                 ", timeElapsed=" + timeElapsed +
                 ", privateCase=" + privateCase +
                 ", extAppType='" + extAppType + '\'' +
+                ", pauseDate=" + pauseDate +
+                ", managerCompanyId=" + managerCompanyId +
+                ", managerCompanyName='" + managerCompanyName + '\'' +
+                ", plans=" + plans +
                 '}';
     }
 }

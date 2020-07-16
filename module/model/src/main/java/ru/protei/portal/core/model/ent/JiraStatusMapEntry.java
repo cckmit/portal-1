@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
+import ru.protei.winter.jdbc.annotations.JdbcJoinedColumn;
 
-@JdbcEntity(table = "JIRA_status_map_entry")
-public final class JiraStatusMapEntry {
+import java.io.Serializable;
+
+@JdbcEntity(table = "jira_status_map_entry")
+public final class JiraStatusMapEntry implements Serializable {
 
     @JdbcColumn(name = "id")
     private long id;
@@ -17,10 +19,13 @@ public final class JiraStatusMapEntry {
     private String jiraStatusName;
 
     @JdbcColumn(name = "LOCAL_status_id")
-    private int localStatusId;
+    private Long localStatusId;
 
     @JdbcColumn(name = "LOCAL_status_name")
     private String localStatusName;
+
+    @JdbcJoinedColumn(localColumn = "LOCAL_status_id", remoteColumn = "id", table = "case_state", mappedColumn = "info")
+    private String info;
 
     public long getId() {
         return id;
@@ -42,11 +47,11 @@ public final class JiraStatusMapEntry {
         this.jiraStatusName = jiraStatusName;
     }
 
-    public int getLocalStatusId() {
+    public Long getLocalStatusId() {
         return localStatusId;
     }
 
-    public void setLocalStatusId(int localStatusId) {
+    public void setLocalStatusId(Long localStatusId) {
         this.localStatusId = localStatusId;
     }
 
@@ -57,8 +62,24 @@ public final class JiraStatusMapEntry {
     public void setLocalStatusName(String localStatusName) {
         this.localStatusName = localStatusName;
     }
+    
+    public String getInfo() {
+        return info;
+    }
 
-    public En_CaseState getLocalStatus() {
-        return En_CaseState.getById((long) localStatusId);
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    @Override
+    public String toString() {
+        return "JiraStatusMapEntry{" +
+                "id=" + id +
+                ", mapId=" + mapId +
+                ", jiraStatusName='" + jiraStatusName + '\'' +
+                ", localStatusId=" + localStatusId +
+                ", localStatusName='" + localStatusName + '\'' +
+                ", info='" + info + '\'' +
+                '}';
     }
 }

@@ -41,10 +41,6 @@ public class ProjectButtonSelector
         this.defaultValue = defaultValue;
     }
 
-    public void setContractIndependentProject(Boolean contractIndependentProject) {
-        model.setContractIndependentProject(contractIndependentProject);
-    }
-
     public void setPlatformIndependentProject(Boolean platformIndependentProject) {
         model.setPlatformIndependentProject(platformIndependentProject);
     }

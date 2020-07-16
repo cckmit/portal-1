@@ -10,12 +10,15 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
@@ -81,7 +84,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @Override
     public Long insertCase(CaseObject object) {
 
-        En_CaseType type = object.getCaseType();
+        En_CaseType type = object.getType();
 
         Long caseNumber = caseTypeDAO.generateNextId(type);//HelperFunc.nvlt(getMaxValue("CASENO", Long.class, "case_type=?", type.getId()),0L) + 1;
 
@@ -95,6 +98,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     public List< CaseObject > getCases(CaseQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return getList(parameters);
+    }
+
+    @Override
+    public SearchResult<CaseObject> getSearchResult(CaseQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
     }
 
     @Override
@@ -133,6 +142,20 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return getByCondition("CASE_NAME like ?", "%" + name + "%");
     }
 
+    @Override
+    public List<Long> getCaseIdToAutoOpen() {
+        Query query = query().select( "id" )
+                .from( "case_object" )
+                .where("case_object.state" ).equal(CrmConstants.State.CREATED)
+                .and("case_object.case_type").equal(CRM_SUPPORT.getId())
+                .and(query()
+                        .select( "SELECT company.auto_open_issue" ).from( "FROM company WHERE" )
+                            .whereExpression( "company.id = case_object.initiator_company" ))
+                .asQuery();
+
+        return jdbcTemplate.queryForList(query.buildSql(), query.args(), Long.class);
+    }
+
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition (CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);
@@ -155,7 +178,9 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)) {
+        if (isSearchAtComments(query)
+            || (query.isCheckImportanceHistory()!=null && query.isCheckImportanceHistory())
+        ) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
         }

@@ -18,7 +18,7 @@
                         <a ui:field="wikiLink" href="#" target="_blank"/>
                     </div>
 
-                    <div class="small">
+                    <div class="markdown">
                         <span ui:field="info"/>
                     </div>
 
@@ -31,12 +31,12 @@
 
                     <g:HTMLPanel styleName="small m-t-5" ui:field="parentsContainer">
                         <b><ui:text from="{lang.belongsTo}:"/></b>
-                        <g:HTMLPanel styleName="product-links-formatter" ui:field="parents"/>
+                        <g:HTMLPanel styleName="links-list-formatter" ui:field="parents"/>
                     </g:HTMLPanel>
 
                     <g:HTMLPanel styleName="small m-t-5" ui:field="childrenContainer">
                         <b><ui:text from="{lang.consistOf}:"/></b>
-                        <g:HTMLPanel styleName="product-links-formatter" ui:field="children"/>
+                        <g:HTMLPanel styleName="links-list-formatter" ui:field="children"/>
                     </g:HTMLPanel>
 
                     <tab:TabWidget styleName="" ui:field="tabWidget">

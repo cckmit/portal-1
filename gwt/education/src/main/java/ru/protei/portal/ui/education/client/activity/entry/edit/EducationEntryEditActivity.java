@@ -23,7 +23,7 @@ import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EducationControllerAsync;
@@ -51,7 +51,7 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
         entry = event.entry == null ? new EducationEntry() : event.entry;
 
         if (!isWorkerCanRequest() && !isAdmin()) {
-            fireEvent(new ForbiddenEvents.Show(container));
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
 

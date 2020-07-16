@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RoleControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterActivity;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterView;
@@ -48,7 +49,7 @@ public abstract class RoleTableActivity
     @Event
     public void onShow( RoleEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ROLE_VIEW)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
@@ -82,24 +83,6 @@ public abstract class RoleTableActivity
         this.init = initDetails;
     }
 
-    @Event
-    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
-        if ( !event.identity.equals( getClass().getName() ) ) {
-            return;
-        }
-        roleService.removeRole( roleIdForRemove, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-                fireEvent( new RoleEvents.Show() );
-                fireEvent( new NotifyEvents.Show( lang.roleRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
-                roleIdForRemove = null;
-            }
-        } );
-    }
-
     @Override
     public void onItemClicked (UserRole value ) {
         if ( !isShowTable ) {
@@ -114,9 +97,8 @@ public abstract class RoleTableActivity
 
     @Override
     public void onRemoveClicked( UserRole value ) {
-        if ( value != null ) {
-            roleIdForRemove = value.getId();
-            fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.roleRemoveConfirmMessage() ) );
+        if (value != null) {
+            fireEvent(new ConfirmDialogEvents.Show(lang.roleRemoveConfirmMessage(), removeAction(value.getId())));
         }
     }
 
@@ -161,6 +143,12 @@ public abstract class RoleTableActivity
         return query;
     }
 
+    private Runnable removeAction(Long roleId) {
+        return () -> roleService.removeRole(roleId, new FluentCallback<Boolean>().withSuccess(result -> {
+            fireEvent(new RoleEvents.Show());
+            fireEvent(new NotifyEvents.Show(lang.roleRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+        }));
+    }
 
     @Inject
     Lang lang;
@@ -180,7 +168,6 @@ public abstract class RoleTableActivity
     PolicyService policyService;
 
     private boolean isShowTable = false;
-    private Long roleIdForRemove;
 
     private AppEvents.InitDetails init;
     private UserRoleQuery query;

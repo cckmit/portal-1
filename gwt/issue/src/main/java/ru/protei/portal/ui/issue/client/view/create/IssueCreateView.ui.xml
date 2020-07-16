@@ -37,12 +37,12 @@
 
                     <g:HTMLPanel ui:field="descriptionContainer" styleName="row form-group">
                         <div class="col-md-12">
-                            <div class="form-group-default">
+                            <g:HTMLPanel ui:field="dropPanel" styleName="form-group-default" >
                                 <label class="fade" ui:field="descriptionLabel">
                                     <ui:text from="{lang.description}"/>
                                 </label>
-                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>
-                            </div>
+                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="10" maxRows="20"/>
+                            </g:HTMLPanel>
                         </div>
                     </g:HTMLPanel>
 
@@ -69,14 +69,14 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 order-first order-lg-last">
+                <div class="col-lg-4 order-first order-lg-last issue-create-meta-container">
                     <div class="card card-default">
                         <g:HTMLPanel ui:field="issueMetaViewContainer" styleName="card-body issue-meta-edit"/>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card-footer text-right">
+        <div class="card-footer text-right forcibly-bottom">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
             <g:Button ui:field="cancelButton" styleName="btn btn-default close_button"
                       text="{lang.buttonCancel}"/>

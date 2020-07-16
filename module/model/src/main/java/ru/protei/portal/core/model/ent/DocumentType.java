@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -10,7 +11,8 @@ import java.util.Objects;
  * Вид документа
  */
 @JdbcEntity(table = "document_type")
-public class DocumentType implements Serializable {
+public class DocumentType extends AuditableObject {
+    public static final String AUDIT_TYPE = "DocumentType";
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -69,6 +71,11 @@ public class DocumentType implements Serializable {
 
     public void setGost(String gost) {
         this.gost = gost;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override

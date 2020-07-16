@@ -6,10 +6,18 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.config.PortalConfigTestConfiguration;
 import ru.protei.portal.config.RendererTestConfiguration;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.service.AttachmentService;
+
+import java.util.Date;
+
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
@@ -223,6 +231,28 @@ public class JiraWikiMarkupRendererTest {
         doTest(input, expected);
     }
 
+    @Test
+    public void testImage() {
+        final String EXT_LINK = "path/image.png";
+
+        Attachment attachment = new Attachment();
+        attachment.setId(1L);
+        attachment.setFileName("FileName");
+        attachment.setMimeType("image/png");
+        attachment.setCreatorId(7777L);
+        attachment.setExtLink(EXT_LINK);
+        attachment.setCreated(new Date());
+
+        when(attachmentService.getAttachmentByExtLink(EXT_LINK))
+                .thenReturn(Result.ok(attachment));
+
+        String input = "!path/image.png!";
+        String expected = "<p><span class=\"image-wrap\" style=\"\"><img src=" +
+                "\"" + portalConfig.data().getCommonConfig().getCrmUrlFiles() + "springApi/files/" + attachment.getExtLink() + "\"" +
+                " style=\"border: 0px solid black\" /></span></p>";
+        doTest(input, expected);
+    }
+
     private void doTest(String input, String expected) {
         String actual = htmlRenderer.plain2html(input, En_TextMarkup.JIRA_WIKI_MARKUP).trim();
         Assert.assertEquals("Not matched", expected, actual);
@@ -230,4 +260,8 @@ public class JiraWikiMarkupRendererTest {
 
     @Autowired
     HTMLRenderer htmlRenderer;
+    @Autowired
+    AttachmentService attachmentService;
+    @Autowired
+    PortalConfig portalConfig;
 }

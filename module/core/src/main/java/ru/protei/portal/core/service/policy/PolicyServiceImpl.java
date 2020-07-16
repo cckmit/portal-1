@@ -23,7 +23,7 @@ public class PolicyServiceImpl implements PolicyService {
             }
 
             Collection<Long> companyIds = token.getCompanyAndChildIds();
-            if (!companyIds.contains( caseObject.getInitiatorCompanyId() )) {
+            if (!companyIds.contains( caseObject.getInitiatorCompanyId() ) && !companyIds.contains( caseObject.getManagerCompanyId() )) {
                 return false;
             }
 

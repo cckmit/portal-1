@@ -38,6 +38,18 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    public Result<PersonShortView> getPersonShortView(AuthToken token, Long personId) {
+
+        if (personId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Person person = personDAO.get(personId);
+        if(person==null) return error(En_ResultStatus.NOT_FOUND);
+        return ok(person.toFullNameShortView());
+    }
+
+    @Override
     public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
         query = processQueryByPolicyScope(authToken, query);
         return makeListPersonShortView(personDAO.getPersons( query ));
@@ -58,6 +70,15 @@ public class PersonServiceImpl implements PersonService {
         Map<Long, String> names = new HashMap<>(list.size());
         list.forEach(a -> names.put(a.getId(), a.getDisplayName()));
         return ok(names );
+    }
+
+    @Override
+    public Result<Person> getCommonManagerByProductId(AuthToken authToken, Long productId) {
+        if (productId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return ok(personDAO.getCommonManagerByProductId(productId));
     }
 
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {

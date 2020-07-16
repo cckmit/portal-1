@@ -5,11 +5,9 @@ public class ClipboardUtils {
         var textArea = document.createElement("textarea");
         textArea.style.position = "fixed";
         document.body.appendChild(textArea);
-
-        textArea.value = text;
-        textArea.focus();
-        textArea.select();
-
+        textArea.value = text
+        textArea.focus()
+        textArea.select()
         try {
             return document.execCommand('copy');
         } catch (err) {

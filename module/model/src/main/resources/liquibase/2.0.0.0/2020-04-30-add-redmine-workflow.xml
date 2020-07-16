@@ -1,0 +1,65 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-redmine-workflow-selector-enum" author="porubov">
+        <insert tableName="case_state_workflow">
+            <column name="id" value="2"/>
+            <column name="info" value="REDMINE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-redmine-workflow-selector-link" author="porubov">
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="1"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="1"/>
+            <column name="state_to" value="33"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="20"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="20"/>
+            <column name="state_to" value="5"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="20"/>
+            <column name="state_to" value="16"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="16"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="33"/>
+            <column name="state_to" value="5"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="2"/>
+            <column name="state_from" value="33"/>
+            <column name="state_to" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="correct-redmine-workflow-selector-link" author="porubov">
+        <update tableName="case_state_workflow_link">
+            <column name="state_to" value="16"/>
+            <where>workflow_id=2 and state_from=33 and state_to=2</where>
+        </update>
+    </changeSet>
+
+
+</databaseChangeLog>

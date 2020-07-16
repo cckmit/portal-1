@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-person-contact-view" author="fomin">
+        <createView viewName="person_contact_view">
+            SELECT id, a access, t type, v value FROM person, JSON_TABLE(person.contactInfo, '$.items[*]'
+            COLUMNS (a VARCHAR(32) PATH '$.a', t VARCHAR(64) PATH '$.t', v VARCHAR(128) PATH '$.v')) info
+        </createView>
+    </changeSet>
+</databaseChangeLog>

@@ -4,11 +4,15 @@ import org.commonmark.Extension;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
+import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.AttributeProvider;
 import org.commonmark.renderer.html.HtmlRenderer;
-import ru.protei.portal.core.renderer.MarkdownRenderer;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -30,14 +34,23 @@ public class MarkdownRendererImpl implements MarkdownRenderer {
      */
     private final List<Extension> extensions = new ArrayList<>();
 
-    public MarkdownRendererImpl() {
+    /**
+     * Адрес с файлами
+     */
+    private String DOWNLOAD_PATH;
 
+    public MarkdownRendererImpl() {
         allowedTagsMap.put("quote", "blockquote");
         allowedTagsMap.put("kbd", "kbd");
 
         extensions.add(TablesExtension.create());
         extensions.add(AutolinkExtension.create());
         extensions.add(StrikethroughExtension.create());
+    }
+
+    @Autowired
+    public void onInit(PortalConfig config) {
+        DOWNLOAD_PATH = config.data().getCommonConfig().getCrmUrlFiles() + "springApi/files/";
     }
 
     @Override
@@ -63,6 +76,7 @@ public class MarkdownRendererImpl implements MarkdownRenderer {
                 .extensions(extensions)
                 .build();
         HtmlRenderer renderer = HtmlRenderer.builder()
+                .attributeProviderFactory(context -> new ImageAttributeProvider())
                 .softbreak("<br/>")
                 .escapeHtml(true)
                 .extensions(extensions)
@@ -70,5 +84,14 @@ public class MarkdownRendererImpl implements MarkdownRenderer {
 
         Node document = parser.parse(text);
         return renderer.render(document);
+    }
+
+    class ImageAttributeProvider implements AttributeProvider {
+        @Override
+        public void setAttributes(Node node, String tagName, Map<String, String> attributes) {
+            if (node instanceof Image) {
+                attributes.put("src", DOWNLOAD_PATH + attributes.get("src"));
+            }
+        }
     }
 }

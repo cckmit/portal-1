@@ -78,6 +78,20 @@ public class CollectionUtils {
         return map == null ? Collections.<K, V>emptyMap() : map;
     }
 
+    public static <T> Set<T> nullIfEmpty( Set<T> set) {
+        if(isEmpty( set )) {
+            return null;
+        }
+        return set;
+    }
+
+    public static <T> List<T> nullIfEmpty( List<T> list) {
+        if(isEmpty( list )) {
+            return null;
+        }
+        return list;
+    }
+
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
                                          final Function<? super I, ? extends O> mapper ) {
         if ( iterable == null || mapper == null || output == null ) {
@@ -207,6 +221,11 @@ public class CollectionUtils {
         return new ArrayList<>( elements );
     }
 
+    public static <T> List<T> listOfOrNull(Collection<T> elements){
+        if(elements == null) return null;
+        return new ArrayList<>( elements );
+    }
+
     public static <T> Set<T> setOf(T... elements){
         if(elements == null) return new HashSet<>();
         return new HashSet<>( Arrays.asList( elements ));
@@ -307,5 +326,45 @@ public class CollectionUtils {
 
     public static <T> Predicate<T> not(Predicate<T> predicate) {
         return predicate.negate();
+    }
+
+
+
+    /**
+     * Равенство коллекций, без учета пордяка элементов
+     */
+    public static <T> boolean equals(Collection<T> firstCollection, Collection<T> secondCollection) {
+        if (firstCollection == null || secondCollection == null) {
+            return firstCollection == null && secondCollection == null;
+        }
+
+        if (firstCollection.size() != secondCollection.size()) {
+            return false;
+        }
+
+        if (!firstCollection.containsAll(secondCollection)) {
+            return false;
+        }
+
+        if (!secondCollection.containsAll(firstCollection)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Проход по списку в обратном направлении
+     */
+    public static <T> void forEachReverse(List<T> elements, Consumer<T> elementConsumer) {
+        if (isEmpty(elements) || elementConsumer == null) {
+            return;
+        }
+
+        ListIterator<T> listIterator = elements.listIterator(elements.size());
+
+        while (listIterator.hasPrevious()) {
+            elementConsumer.accept(listIterator.previous());
+        }
     }
 }

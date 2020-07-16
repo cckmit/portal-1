@@ -9,5 +9,4 @@ import ru.protei.portal.core.model.youtrack.dto.customfield.project.YtProjectCus
 public abstract class YtIssueCustomField extends YtDto {
     public YtProjectCustomField projectCustomField;
     public String name;
-    public abstract String getValue();
 }

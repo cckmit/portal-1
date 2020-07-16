@@ -12,31 +12,34 @@ import java.util.Set;
 public class PersonQuery extends BaseQuery {
     private Set<Long> companyIds;
 
-    private Boolean onlyPeople;
+    private Boolean people;
 
     private Boolean fired;
 
     private Boolean deleted;
 
+    private Boolean hasCaseFilter;
+
     public PersonQuery() {
         super( "", En_SortField.person_full_name, En_SortDir.ASC );
     }
 
-    public PersonQuery( Long companyId, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this ( toSet(companyId), onlyPeople, fired, searchString, sortField, sortDir );
+    public PersonQuery(Long companyId, Boolean people, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+        this ( toSet(companyId), people, fired, searchString, sortField, sortDir );
     }
 
-    public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this(companyIds, onlyPeople, fired, null, searchString, sortField, sortDir);
+    public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+        this(companyIds, people, fired, null, searchString, sortField, sortDir, null);
     }
 
-    public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir, Boolean hasCaseFilter) {
         super(searchString, sortField, sortDir);
         this.companyIds = companyIds;
-        this.onlyPeople = onlyPeople;
+        this.people = people;
         this.limit = 1000;
         this.fired = fired;
         this.deleted = deleted;
+        this.hasCaseFilter = hasCaseFilter;
     }
 
     public Set<Long> getCompanyIds() {
@@ -47,12 +50,12 @@ public class PersonQuery extends BaseQuery {
         this.companyIds = companyIds;
     }
 
-    public Boolean getOnlyPeople() {
-        return onlyPeople;
+    public Boolean getPeople() {
+        return people;
     }
 
-    public void setOnlyPeople( Boolean onlyPeople ) {
-        this.onlyPeople = onlyPeople;
+    public void setPeople(Boolean people) {
+        this.people = people;
     }
 
     public Boolean getFired() {
@@ -71,6 +74,14 @@ public class PersonQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
+    public Boolean getHasCaseFilter() {
+        return hasCaseFilter;
+    }
+
+    public void setHasCaseFilter(Boolean hasCaseFilter) {
+        this.hasCaseFilter = hasCaseFilter;
+    }
+
     private static Set<Long> toSet(Long companyId) {
         if (companyId == null) {
             return null;
@@ -80,14 +91,19 @@ public class PersonQuery extends BaseQuery {
         return companyIds;
     }
 
-
     @Override
     public String toString() {
         return "PersonQuery{" +
-                "onlyPeople=" + onlyPeople +
+                "companyIds=" + companyIds +
+                ", people=" + people +
                 ", fired=" + fired +
                 ", deleted=" + deleted +
-                ", companyIds=" + companyIds +
+                ", hasCaseFilter=" + hasCaseFilter +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 '}';
     }
 }

@@ -1,9 +1,10 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by michael on 08.11.16.
@@ -15,6 +16,10 @@ public class EntityOption implements Serializable {
     private String info;
 
     public EntityOption() {
+    }
+
+    public EntityOption(Long id) {
+        this(null, id, null);
     }
 
     public EntityOption(String displayText, Long id) {
@@ -60,7 +65,7 @@ public class EntityOption implements Serializable {
     public boolean equals(Object obj) {
         if (obj instanceof EntityOption) {
             Long oid = ((EntityOption)obj).getId();
-            return this.id == null ? oid == null : oid != null && this.id.equals(oid);
+            return Objects.equals(this.id, oid);
         }
 
         return false;
@@ -70,18 +75,6 @@ public class EntityOption implements Serializable {
         if(company == null)
             return null;
         return new EntityOption(company.getCname(), company.getId());
-    }
-
-    public static EntityOption fromCompanyGroup(CompanyGroup group){
-        if(group == null)
-            return null;
-        return new EntityOption(group.getName(), group.getId());
-    }
-
-    public static EntityOption fromCompanyCategory(CompanyCategory category){
-        if(category == null)
-            return null;
-        return new EntityOption(category.getName(), category.getId());
     }
 
     public static EntityOption fromProductDirectionInfo( ProductDirectionInfo info ) {

@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -14,6 +13,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -271,8 +271,17 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!Objects.equals(platformFromDb.getCompanyId(), platform.getCompanyId()) &&
-            CollectionUtils.isNotEmpty(caseObjectDAO.getCaseNumbersByPlatformId(platform.getId()))) {
+        Long oldCompanyId = platformFromDb.getCompanyId();
+        if (oldCompanyId == null) {
+            oldCompanyId = caseObjectDAO.get(platformFromDb.getProjectId()).getInitiatorCompanyId();
+        }
+
+        Long companyId = platform.getCompanyId();
+        if (companyId == null) {
+            companyId = caseObjectDAO.get(platform.getProjectId()).getInitiatorCompanyId();
+        }
+
+        if (!Objects.equals(oldCompanyId, companyId) && CollectionUtils.isNotEmpty(caseObjectDAO.getCaseNumbersByPlatformId(platform.getId()))) {
             return error(En_ResultStatus.NOT_ALLOWED_CHANGE_PLATFORM_COMPANY);
         }
 
@@ -373,7 +382,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         return ok(result);
     }
 
-
     private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {
         if (serverIdOfAppsToBeCloned == null || serverId == null) {
             return;
@@ -395,11 +403,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
     private CaseObject makePlatformCaseObject(Long platformId, String name) {
         CaseObject caseObject = new CaseObject();
-        caseObject.setCaseType(En_CaseType.SF_PLATFORM);
+        caseObject.setType(En_CaseType.SF_PLATFORM);
         caseObject.setCaseNumber(platformId);
         caseObject.setCreated(new Date());
         caseObject.setName(name);
-        caseObject.setState(En_CaseState.CREATED);
+        caseObject.setStateId(CrmConstants.State.CREATED);
         return caseObject;
     }
 

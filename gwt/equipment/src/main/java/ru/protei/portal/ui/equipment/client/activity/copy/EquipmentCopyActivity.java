@@ -57,8 +57,8 @@ public abstract class EquipmentCopyActivity
             public void onSuccess( Long result ) {
                 dialogView.hidePopup();
                 isSaving = false;
-                fireEvent( new NotifyEvents.Show( lang.equpmentCopySuccess(), NotifyEvents.NotifyType.SUCCESS ) );
-                fireEvent( new EquipmentEvents.Show() );
+                fireEvent( new NotifyEvents.Show( lang.equipmentCopySuccess(), NotifyEvents.NotifyType.SUCCESS ) );
+                fireEvent( new EquipmentEvents.Show(true) );
             }
         } );
     }

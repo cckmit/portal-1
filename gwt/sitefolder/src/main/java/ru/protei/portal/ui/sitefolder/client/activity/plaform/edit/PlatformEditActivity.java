@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -13,7 +14,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -23,6 +24,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -36,7 +38,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         view.setActivity(this);
         view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
             @Override
-            public void onSuccess(Attachment attachment) {
+            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
                 addAttachmentsToCase(Collections.singleton(attachment));
             }
             @Override
@@ -59,12 +61,18 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Edit event) {
         if (!hasPrivileges(event.platformId)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 
         initDetails.parent.clear();
+        Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+
+        this.fireBackEvent =
+                event.backEvent == null ?
+                () -> fireEvent(new Back()) :
+                event.backEvent;
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
@@ -102,7 +110,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
                 .withSuccess(result -> {
                     fireEvent(new SiteFolderPlatformEvents.ChangeModel());
                     fireEvent(new SiteFolderPlatformEvents.Changed(result));
-                    fireEvent(isNew(platform) ? new SiteFolderPlatformEvents.Show(true) : new Back());
+                    fireBackEvent.run();
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformSaved(), NotifyEvents.NotifyType.SUCCESS));
                 })
         );
@@ -110,13 +118,13 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireBackEvent.run();
     }
 
     @Override
     public void onOpenClicked() {
         if (platform != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platform.getId()));
+            fireEvent(new SiteFolderServerEvents.Show(platform.getId(), false));
         }
     }
 
@@ -306,4 +314,5 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private Platform platform;
     private AppEvents.InitDetails initDetails;
+    private Runnable fireBackEvent = () -> fireEvent(new Back());
 }

@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.EducationWallet;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
-import ru.protei.portal.ui.common.client.events.ForbiddenEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.service.EducationControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -34,7 +34,7 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
     @Event
     public void onShow(EducationEvents.ShowWorker event) {
         if (!EducationUtils.isWorker()) {
-            fireEvent(new ForbiddenEvents.Show(event.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
         showView(event.parent);

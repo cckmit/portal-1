@@ -11,17 +11,18 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.*;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.TransliterationUtils;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeFormSelector;
@@ -31,22 +32,21 @@ import ru.protei.portal.ui.common.client.widget.jirasla.JiraSLASelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.plan.selector.PlanMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitFormSelector;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaActivity;
 import ru.protei.portal.ui.issue.client.activity.meta.AbstractIssueMetaView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformFormSelector;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class IssueMetaView extends Composite implements AbstractIssueMetaView {
@@ -66,7 +66,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public HasValue<En_CaseState> state( ) {
+    public HasValue<CaseState> state( ) {
         return state;
     }
 
@@ -76,25 +76,25 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setProduct( DevUnit product ) {
-        this.product.setValue(ProductShortView.fromProduct(product));
+    public void fillImportanceOptions(List<En_ImportanceLevel> options) {
+        importance.fillOptions(options);
     }
 
     @Override
-    public DevUnit getProduct() {
-        return DevUnit.fromProductShortView(product.getValue());
+    public HasValue<ProductShortView> product() {
+        return product;
     }
 
     @Override
     public void setManager( Person manager ) {
-        PersonShortView managerValue = PersonShortView.fromPerson(manager);
+        PersonShortView managerValue = manager == null ? null : manager.toFullNameShortView();
         if (managerValue != null) managerValue.setName(transliteration(managerValue.getName()));
         this.manager.setValue(managerValue);
     }
 
     @Override
     public Person getManager() {
-        return Person.fromPersonShortView( manager.getValue() );
+        return Person.fromPersonFullNameShortView( manager.getValue() );
     }
 
     @Override
@@ -107,6 +107,20 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public Company getCompany() {
         return Company.fromEntityOption(company.getValue());
+    }
+
+    @Override
+    public void setManagerCompany(EntityOption managerCompany) {
+        if (managerCompany != null) {
+            managerCompany.setDisplayText(transliteration(managerCompany.getDisplayText()));
+        }
+
+        this.managerCompany.setValue(managerCompany);
+    }
+
+    @Override
+    public EntityOption getManagerCompany() {
+        return this.managerCompany.getValue();
     }
 
     @Override
@@ -146,11 +160,16 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
     @Override
     public void initiatorUpdateCompany(Company company) {
-        initiator.updateCompanies(InitiatorModel.makeCompanyIds(company));
+        initiator.updateCompanies(PersonModel.makeCompanyIds(company));
     }
 
     @Override
-    public void setStateFilter(Selector.SelectorFilter<En_CaseState> filter) {
+    public void updateManagersCompanyFilter(Long managerCompanyId) {
+        manager.updateCompanies(new HashSet<>(Collections.singletonList(managerCompanyId)));
+    }
+
+    @Override
+    public void setStateFilter(Selector.SelectorFilter<CaseState> filter) {
         state.setFilter(filter);
     }
 
@@ -173,11 +192,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @Override
     public void setTimeElapsedType(En_TimeElapsedType timeElapsedType) {
         this.timeElapsedType.setValue(timeElapsedType);
-    }
-
-    @Override
-    public void setProductTypes(En_DevUnitType... enDevUnitTypes) {
-        product.setTypes(enDevUnitTypes);
     }
 
     @Override
@@ -298,6 +312,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setInitiatorBorderBottomVisible(boolean isVisible) {
+        initiatorContainer.setStyleName("add-border-bottom", isVisible);
+    }
+
+    @Override
     public HasVisibility jiraSlaSelectorVisibility() {
         return jiraSlaSelector;
     }
@@ -307,10 +326,115 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         return timeElapsedType;
     }
 
+    @Override
+    public void setJiraInfoLink(String link) {
+        jiraSlaSelector.setJiraInfoLink(link);
+    }
+
+    @Override
+    public HasTime slaReactionTime() {
+        return slaReactionTime;
+    }
+
+    @Override
+    public HasTime slaTemporarySolutionTime() {
+        return slaTemporarySolutionTime;
+    }
+
+    @Override
+    public HasTime slaFullSolutionTime() {
+        return slaFullSolutionTime;
+    }
+
+    @Override
+    public HasVisibility slaContainerVisibility() {
+        return slaContainer;
+    }
+
+    @Override
+    public void setValuesContainerWarning(boolean isWarning) {
+        slaTimesContainer.setStyleName("b-warning-light", isWarning);
+    }
+
+    @Override
+    public void setSlaTimesContainerTitle(String title) {
+        slaTimesContainer.setTitle(title);
+    }
+
+    @Override
+    public HasVisibility pauseDateContainerVisibility() {
+        return pauseDateContainer;
+    }
+
+    @Override
+    public HasValue<Date> pauseDate() {
+        return pauseDate;
+    }
+
+    @Override
+    public void setPauseDateValid(boolean isValid) {
+        pauseDate.markInputValid(isValid);
+    }
+
+    @Override
+    public HasEnabled managerCompanyEnabled() {
+        return managerCompany;
+    }
+
+    @Override
+    public void updateProductsByPlatformIds(Set<Long> platformIds) {
+        product.setPlatformIds(platformIds);
+    }
+
+    @Override
+    public void setProductModel(ProductModel productModel) {
+        product.setAsyncProductModel(productModel);
+    }
+
+    @Override
+    public void setProductMandatory(boolean isProductMandatory) {
+        product.setMandatory(isProductMandatory);
+    }
+
+    @Override
+    public void setPlanCreatorId(Long creatorId) {
+        plans.setCreatorId(creatorId);
+    }
+
+    @Override
+    public HasValue<Set<PlanOption>> ownerPlans() {
+        return plans;
+    }
+
+    @Override
+    public HasVisibility ownerPlansContainerVisibility() {
+        return ownerPlansContainer;
+    }
+
+    @Override
+    public HasVisibility otherPlansContainerVisibility() {
+        return otherPlansContainer;
+    }
+
+    @Override
+    public void setOtherPlans(String otherPlans) {
+        this.otherPlans.setInnerText(otherPlans);
+    }
+
+    @Override
+    public void setPlansLabelVisible(boolean isVisible) {
+        if (isVisible) {
+            plansLabel.removeClassName(UiConstants.Styles.HIDE);
+        } else {
+            plansLabel.addClassName(UiConstants.Styles.HIDE);
+        }
+    }
+
     private void initView() {
         importance.setDefaultValue(lang.selectIssueImportance());
         platform.setDefaultValue(lang.selectPlatform());
         company.setDefaultValue(lang.selectIssueCompany());
+        managerCompany.setDefaultValue(lang.selectIssueCompany());
         companyModel.showDeprecated(false);
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
@@ -321,9 +445,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) return;
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
+        pauseDate.setEnsureDebugId(DebugIds.ISSUE.PAUSE_DATE_CONTAINER);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
         platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
+        managerCompany.setEnsureDebugId(DebugIds.ISSUE.MANAGER_COMPANY_SELECTOR);
         initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
         product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
         manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
@@ -337,6 +463,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         importance.ensureLabelDebugId(DebugIds.ISSUE.LABEL.IMPORTANCE);
         platform.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PLATFORM);
         company.ensureLabelDebugId(DebugIds.ISSUE.LABEL.COMPANY);
+        managerCompany.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER_COMPANY);
         initiator.ensureLabelDebugId(DebugIds.ISSUE.LABEL.CONTACT);
         product.ensureLabelDebugId(DebugIds.ISSUE.LABEL.PRODUCT);
         manager.ensureLabelDebugId(DebugIds.ISSUE.LABEL.MANAGER);
@@ -346,6 +473,11 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
         timeElapsedType.ensureLabelDebugId(DebugIds.ISSUE.LABEL.TIME_ELAPSED_TYPE);
         notifiers.ensureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR);
+        plans.setAddEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ADD_BUTTON);
+        plans.setClearEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_CLEAR_BUTTON);
+        plans.setItemContainerEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ITEM_CONTAINER);
+        plans.setLabelEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_LABEL);
+        plans.ensureDebugId(DebugIds.ISSUE.PLANS_SELECTOR);
     }
 
     private String transliteration(String input) {
@@ -365,7 +497,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @UiHandler("state")
-    public void onStateChanged(ValueChangeEvent<En_CaseState> event) {
+    public void onStateChanged(ValueChangeEvent<CaseState> event) {
         activity.onStateChange();
     }
 
@@ -420,6 +552,21 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         activity.onCaseMetaJiraChanged();
     }
 
+    @UiHandler("pauseDate")
+    public void onPauseDateChanged(ValueChangeEvent<Date> event) {
+        activity.onPauseDateChanged();
+    }
+
+    @UiHandler("managerCompany")
+    public void onManagerCompanyChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onManagerCompanyChanged();
+    }
+
+    @UiHandler("plans")
+    public void onPlanChanged(ValueChangeEvent<Set<PlanOption>> event) {
+        activity.onPlansChanged();
+    }
+
     @UiField
     @Inject
     Lang lang;
@@ -428,19 +575,38 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     IssueStateFormSelector state;
     @Inject
     @UiField(provided = true)
+    SinglePicker pauseDate;
+    @UiField
+    HTMLPanel pauseDateContainer;
+    @Inject
+    @UiField(provided = true)
     ImportanceFormSelector importance;
     @Inject
     @UiField(provided = true)
     DevUnitFormSelector product;
     @Inject
     @UiField(provided = true)
-    EmployeeFormSelector manager;
+    PlanMultiSelector plans;
+    @UiField
+    HTMLPanel ownerPlansContainer;
+    @UiField
+    LabelElement plansLabel;
+    @UiField
+    HTMLPanel productContainer;
+    @Inject
+    @UiField(provided = true)
+    CompanyFormSelector managerCompany;
+    @Inject
+    @UiField(provided = true)
+    PersonFormSelector manager;
     @Inject
     @UiField(provided = true)
     CompanyFormSelector company;
     @Inject
     @UiField(provided = true)
     PersonFormSelector initiator;
+    @UiField
+    HTMLPanel initiatorContainer;
     @Inject
     @UiField(provided = true)
     PlatformFormSelector platform;
@@ -468,6 +634,23 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     LabelElement subscriptionsLabel;
     @UiField
     Element subscriptions;
+    @UiField
+    Element otherPlans;
+    @UiField
+    HTMLPanel otherPlansContainer;
+    @UiField
+    HTMLPanel slaContainer;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaReactionTime;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaTemporarySolutionTime;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel slaFullSolutionTime;
+    @UiField
+    HTMLPanel slaTimesContainer;
     @UiField
     HTMLPanel caseSubscriptionContainers;
     @UiField

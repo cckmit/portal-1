@@ -1,42 +1,54 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.event.AbsenceReportEvent;
+import ru.protei.portal.core.event.MailReportEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.ReportContent;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.dict.En_ReportStatus.CANCELLED;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
     private final ThreadPoolExecutor reportExecutorService = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     private final Object sync = new Object();
     private final Set<Long> reportsInProcess = new HashSet<>();
+    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     @Autowired
     Lang lang;
@@ -52,7 +64,13 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Autowired
     ReportCase reportCase;
     @Autowired
+    ReportProject reportProject;
+    @Autowired
     ReportCaseTimeElapsed reportCaseTimeElapsed;
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    ReportAbsence reportAbsence;
 
     @PostConstruct
     public void init() {
@@ -96,12 +114,6 @@ public class ReportControlServiceImpl implements ReportControlService {
             if (CollectionUtils.isEmpty(reports)) {
                 return ok(reports);
             }
-            Date now = new Date();
-            for (Report report : reports) {
-                report.setStatus(En_ReportStatus.PROCESS);
-                report.setModified(now);
-            }
-            reportDAO.mergeBatch(reports);
             return ok(reports);
         } catch (Throwable t) {
             log.info("fail get reports to process", t);
@@ -117,9 +129,13 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
         }
         Result storageResult = null;
+        String threadName = Thread.currentThread().getName();
         try {
-            log.debug("start process report : reportId={}", report.getId());
+            Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " reportId=" + report.getId());
+            log.info("start process report : reportId={} {}", report.getId(), report.getReportType());
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            mergeReport(report, En_ReportStatus.PROCESS);
 
             if (!writeReport(report, buffer)) {
                 mergeerroratus(report);
@@ -134,6 +150,16 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return;
             }
 
+            Report currentReportStatus = reportDAO.partialGet( report.getId(), Report.Columns.STATUS );
+            if (currentReportStatus == null) {
+                log.warn( "processReport(): Can't get processed report {}", report.getId() );
+                return;
+            }
+            if (CANCELLED.equals( currentReportStatus.getStatus() )) {
+                log.warn( "processReport(): Report {} is canceled", report.getId() );
+                return;
+            }
+
             mergeReport(report, En_ReportStatus.READY);
         } catch (Throwable th) {
             log.debug("process report : reportId={}, throwable={}", report.getId(), th.getMessage());
@@ -144,6 +170,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             mergeerroratus(report);
         } finally {
             reportsInProcess.remove(report.getId());
+            Thread.currentThread().setName(threadName);
         }
     }
 
@@ -157,7 +184,7 @@ public class ReportControlServiceImpl implements ReportControlService {
     private void mergeerroratus(Report report) {
         report.setStatus(En_ReportStatus.ERROR);
         report.setModified(new Date());
-        reportDAO.partialMerge(report, "status", "modified");
+        reportDAO.partialMerge(report, Report.Columns.STATUS, Report.Columns.MODIFIED);
         log.debug("process report : reportId={}, status={}", report.getId(), En_ReportStatus.ERROR);
     }
 
@@ -185,6 +212,8 @@ public class ReportControlServiceImpl implements ReportControlService {
                 caseCompletionTimeReport.run();
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
+            case PROJECT:
+                return reportProject.writeReport(buffer, report);
         }
         return false;
     }
@@ -197,7 +226,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     public Result processOldReports() {
         List<Report> reports = reportDAO.getReportsByStatuses(
                 Arrays.asList(En_ReportStatus.READY, En_ReportStatus.ERROR),
-                new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime())
+                new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime()),
+                Arrays.asList(En_ReportScheduledType.NONE)
         );
         if (CollectionUtils.isEmpty(reports)) {
             log.debug("old reports to process : 0");
@@ -226,7 +256,8 @@ public class ReportControlServiceImpl implements ReportControlService {
         synchronized (reportsInProcess) {
             List<Report> reports = reportDAO.getReportsByStatuses(
                     Collections.singletonList(En_ReportStatus.PROCESS),
-                    new Date(System.currentTimeMillis() - config.data().reportConfig().getHangInterval())
+                    new Date(System.currentTimeMillis() - config.data().reportConfig().getHangInterval()),
+                    Arrays.asList(En_ReportScheduledType.NONE)
             );
             if (CollectionUtils.isEmpty(reports)) {
                 log.debug("hang reports to process : 0");
@@ -249,4 +280,85 @@ public class ReportControlServiceImpl implements ReportControlService {
             return ok();
         }
     }
+
+    @Override
+    public Result<Void> processScheduledMailReports(En_ReportScheduledType enReportScheduledType) {
+        log.info("processScheduledMailReports start");
+        CompletableFuture<?>[] futures = reportDAO.getScheduledReports(enReportScheduledType).stream()
+                .map(report -> {
+                    log.info("Scheduled Mail Reports = {}", report);
+                    setRange(report, enReportScheduledType);
+                    return createScheduledMailReportsTask(report);
+                })
+                .map(f -> f.thenAccept(mailReportEvent -> publisherService.publishEvent(mailReportEvent)))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
+        log.info("processScheduledMailReports end");
+        return ok();
+    }
+
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public Result<Void> processAbsenceReport(Person initiator, String title, AbsenceQuery query) {
+        try {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            if (reportAbsence.writeReport(buffer, query, dateFormat)) {
+
+                publisherService.publishEvent(new AbsenceReportEvent(
+                        this,
+                        initiator,
+                        title,
+                        new ByteArrayInputStream(buffer.toByteArray())));
+                return ok();
+            }
+        } catch (Exception e) {
+            log.error("processAbsenceReport(): uncaught exception", e);
+        }
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    private CompletableFuture<MailReportEvent> createScheduledMailReportsTask(Report report) {
+        return CompletableFuture.supplyAsync(() -> {
+            processReport(report);
+            Report processedReport = reportDAO.get(report.getId());
+            if (!processedReport.getStatus().equals(En_ReportStatus.READY)) {
+                log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport, processedReport.getStatus());
+                return new MailReportEvent(this, processedReport, null);
+            }
+            Result<ReportContent> reportContentResult = reportStorageService.getContent(processedReport.getId());
+            if (reportContentResult.isOk()) {
+                return new MailReportEvent(this, processedReport, reportContentResult.getData().getContent());
+            } else {
+                log.error("Scheduled Mail Reports failed get content, report = {}, error = {}", processedReport, reportContentResult.getStatus());
+                return new MailReportEvent(this, processedReport, null);
+            }}, reportExecutorService);
+    }
+
+    private void setRange(Report report, En_ReportScheduledType enReportScheduledType) {
+        int days;
+        switch (enReportScheduledType) {
+            case WEEKLY: days = 7; break;
+            case DAILY:
+            default: days = 1;
+        }
+
+        Date now = new Date();
+
+        if (En_ReportType.CASE_TIME_ELAPSED.equals(report.getReportType())) {
+            setCreatedDates(report.getCaseQuery(), new Date(now.getTime() - days * CrmConstants.Time.DAY), now);
+        }
+
+        if (En_ReportType.CASE_OBJECTS.equals(report.getReportType())) {
+            setCreatedDates(report.getCaseQuery(), null, null);
+            setModifiedDates(report.getCaseQuery(), new Date(now.getTime() - days * CrmConstants.Time.DAY), now);
+        }
+    }
+
+    private void setCreatedDates(CaseQuery query, Date from, Date to) {
+        query.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+    }
+
+    private void setModifiedDates(CaseQuery query, Date from, Date to) {
+        query.setModifiedRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+     }
 }

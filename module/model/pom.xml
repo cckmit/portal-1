@@ -38,6 +38,9 @@
 
                     <include>*.xml</include>
                     <include>**/*.xml</include>
+
+                    <include>*.sql</include>
+                    <include>**/*.sql</include>
                 </includes>
             </resource>
         </resources>
@@ -57,6 +60,9 @@
 
                     <include>*.xml</include>
                     <include>**/*.xml</include>
+
+                    <include>*.sql</include>
+                    <include>**/*.sql</include>
                 </includes>
             </testResource>
         </testResources>
@@ -65,10 +71,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.10</version>
-                <configuration>
-                    <!--<skipTests>true</skipTests>-->
-                </configuration>
+                <version>${project.maven-surefire-plugin}</version>
             </plugin>
         </plugins>
     </build>
@@ -276,6 +279,49 @@
             <artifactId>junit</artifactId>
             <version>${project.junit.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.renderer</groupId>
+            <artifactId>atlassian-renderer</artifactId>
+            <version>8.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>radeox</groupId>
+                    <artifactId>radeox</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-collections</artifactId>
+                    <groupId>commons-collections</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils</artifactId>
+                    <groupId>commons-beanutils</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

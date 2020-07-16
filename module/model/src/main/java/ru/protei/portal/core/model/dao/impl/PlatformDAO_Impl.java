@@ -9,8 +9,6 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcHelper;
 
-import java.util.stream.Collectors;
-
 public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements PlatformDAO {
 
     @Override
@@ -22,6 +20,11 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
             if (query.getPlatformId() != null) {
                 condition.append(" and platform.id = ?");
                 args.add(query.getPlatformId());
+            }
+
+            if (query.getServerIp() != null && !query.getServerIp().isEmpty()) {
+                condition.append(" and platform.id in (select server.platform_id from server where server.ip like ? )");
+                args.add(HelperFunc.makeLikeArg(query.getServerIp(), true));
             }
 
             if (query.getCompanyIds() != null && !query.getCompanyIds().isEmpty()) {

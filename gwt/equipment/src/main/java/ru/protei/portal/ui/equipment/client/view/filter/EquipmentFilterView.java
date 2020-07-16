@@ -136,7 +136,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     }
 
     @UiHandler( "organizationCode" )
-    public void onSelectOrganizationCode( ValueChangeEvent<Set<En_OrganizationCode > > event ) {
+    public void onSelectOrganizationCode( ValueChangeEvent<Set<En_OrganizationCode> > event ) {
         fireChangeTimer();
     }
 

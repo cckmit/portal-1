@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -12,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -73,28 +75,14 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    @Transactional
     public Result<Person> saveContact( AuthToken token, Person person ) {
-        if (personDAO.isEmployee(person)) {
-            log.warn("person with id = {} is employee",person.getId());
-            return error(En_ResultStatus.VALIDATION_ERROR);
+        if (person == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (HelperFunc.isEmpty(person.getFirstName()) || HelperFunc.isEmpty(person.getLastName())
-                || person.getCompanyId() == null)
+        if (!validatePerson(person)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
-
-        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
-        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
-        if (person.getId() != null) {
-            Person personOld = personDAO.getContact(person.getId());
-            if (personOld.isFired() != person.isFired()) {
-                log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
-                return error(En_ResultStatus.VALIDATION_ERROR);
-            }
-            if (personOld.isDeleted() != person.isDeleted()) {
-                log.warn("prevented change of person.isDeleted attr, person with id = {}", person.getId());
-                return error(En_ResultStatus.VALIDATION_ERROR);
-            }
         }
 
         if (HelperFunc.isEmpty(person.getDisplayName())) {
@@ -131,6 +119,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> fireContact( AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
@@ -145,12 +134,14 @@ public class ContactServiceImpl implements ContactService {
 
         if (result) {
             removePersonEmailsFromCompany(person);
+            userLoginDAO.removeByPersonId(id);
         }
 
         return ok(result);
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeContact( AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
@@ -165,9 +156,56 @@ public class ContactServiceImpl implements ContactService {
 
         if (result) {
             removePersonEmailsFromCompany(person);
+            userLoginDAO.removeByPersonId(id);
         }
 
         return ok(result);
+    }
+
+    private boolean validatePerson(Person person) {
+        if (person.isFired()) {
+            log.warn("avoid to update fired person with id = {}", person.getId());
+            return false;
+        }
+
+        if (person.isDeleted()) {
+            log.warn("avoid to update deleted person with id = {}", person.getId());
+            return false;
+        }
+
+        if (personDAO.isEmployee(person)) {
+            log.warn("person with id = {} is employee",person.getId());
+            return false;
+        }
+
+        if (StringUtils.isBlank(person.getFirstName())) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(person.getLastName())) {
+            return false;
+        }
+
+        if (person.getCompanyId() == null) {
+            return false;
+        }
+
+        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
+        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
+        if (person.getId() != null) {
+            Person personOld = personDAO.getContact(person.getId());
+            if (personOld.isFired() != person.isFired()) {
+                log.warn("prevented change of person.isFired attr, person with id = {}", person.getId());
+                return false;
+            }
+
+            if (personOld.isDeleted() != person.isDeleted()) {
+                log.warn("prevented change of person.isDeleted attr, person with id = {}", person.getId());
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void removePersonEmailsFromCompany(Person person) {

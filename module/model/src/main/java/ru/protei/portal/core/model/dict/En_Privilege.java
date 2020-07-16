@@ -82,9 +82,12 @@ public enum En_Privilege {
     SITE_FOLDER_REMOVE (SITE_FOLDER, REMOVE),
 
     EMPLOYEE_VIEW (EMPLOYEE, VIEW),
+    EMPLOYEE_CREATE (EMPLOYEE, CREATE),
+    EMPLOYEE_EDIT (EMPLOYEE, EDIT),
 
     EMPLOYEE_REGISTRATION_VIEW(EMPLOYEE_REGISTRATION, VIEW),
     EMPLOYEE_REGISTRATION_CREATE(EMPLOYEE_REGISTRATION, CREATE),
+    EMPLOYEE_REGISTRATION_EDIT(EMPLOYEE_REGISTRATION, EDIT),
 
     CONTRACT_VIEW (CONTRACT, VIEW),
     CONTRACT_EDIT (CONTRACT, EDIT),
@@ -94,8 +97,34 @@ public enum En_Privilege {
     EDUCATION_EDIT (EDUCATION, EDIT),
     EDUCATION_CREATE (EDUCATION, CREATE),
 
+    RESERVED_IP_VIEW (RESERVED_IP, VIEW),
+    RESERVED_IP_EDIT (RESERVED_IP, EDIT),
+    RESERVED_IP_CREATE (RESERVED_IP, CREATE),
+    RESERVED_IP_REMOVE (RESERVED_IP, REMOVE),
+    SUBNET_VIEW (SUBNET, VIEW),
+    SUBNET_EDIT (SUBNET, EDIT),
+    SUBNET_CREATE (SUBNET, CREATE),
+    SUBNET_REMOVE (SUBNET, REMOVE),
+
+    ROOM_RESERVATION_VIEW (ROOM_RESERVATION, VIEW),
+    ROOM_RESERVATION_EDIT (ROOM_RESERVATION, EDIT),
+    ROOM_RESERVATION_CREATE (ROOM_RESERVATION, CREATE),
+    ROOM_RESERVATION_REMOVE (ROOM_RESERVATION, REMOVE),
+
+    PLAN_VIEW (PLAN, VIEW),
+    PLAN_EDIT (PLAN, EDIT),
+    PLAN_CREATE (PLAN, CREATE),
+    PLAN_REMOVE (PLAN, REMOVE),
+
+    ABSENCE_VIEW(ABSENCE, VIEW),
+    ABSENCE_CREATE(ABSENCE, CREATE),
+    ABSENCE_EDIT(ABSENCE, EDIT),
+    ABSENCE_REMOVE(ABSENCE, REMOVE),
+    ABSENCE_REPORT(ABSENCE, REPORT),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
+    ISSUE_PLAN_EDIT (ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
     ISSUE_MANAGER_EDIT(ISSUE, null),
     ISSUE_PLATFORM_EDIT(ISSUE, null),
@@ -106,6 +135,7 @@ public enum En_Privilege {
     ISSUE_FILTER_COMPANY_VIEW(ISSUE, null),
     ISSUE_FILTER_MANAGER_VIEW(ISSUE, null),
     ISSUE_FILTER_PRODUCT_VIEW(ISSUE, null),
+    ISSUE_FILTER_PLAN_VIEW(ISSUE, null),
 
     @Deprecated
     DASHBOARD_ALL_COMPANIES_VIEW(DASHBOARD, VIEW);
@@ -121,13 +151,15 @@ public enum En_Privilege {
             ISSUE_PRIVACY_VIEW,
             ISSUE_WORK_TIME_VIEW,
             ISSUE_PLATFORM_VIEW,
+            ISSUE_PLAN_EDIT,
 
             ISSUE_FILTER_COMPANY_VIEW,
             ISSUE_FILTER_MANAGER_VIEW,
-            ISSUE_FILTER_PRODUCT_VIEW
+            ISSUE_FILTER_PRODUCT_VIEW,
+            ISSUE_FILTER_PLAN_VIEW
     };
 
-    private En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
+    En_Privilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
         this.entity = entity;
         this.action = action;
     }
@@ -138,6 +170,14 @@ public enum En_Privilege {
 
     public En_PrivilegeAction getAction() {
         return action;
+    }
+
+    public String getActionShortName() {
+        return action == null ? "" : action.getShortName();
+    }
+
+    public Integer getOrder() {
+        return entity.getOrder() + (action == null ? 0 : action.getOrder());
     }
 
     public static En_Privilege findPrivilege( En_PrivilegeEntity entity, En_PrivilegeAction action ) {
@@ -153,5 +193,4 @@ public enum En_Privilege {
 
         return null;
     }
-
 }

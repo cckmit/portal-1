@@ -43,7 +43,7 @@ public abstract class IssueReportTableActivity implements
     @Event(Type.FILL_CONTENT)
     public void onShow(IssueReportEvents.Show event) {
         if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
-            fireEvent(new ForbiddenEvents.Show());
+            fireEvent(new ErrorPageEvents.ShowForbidden());
             return;
         }
 

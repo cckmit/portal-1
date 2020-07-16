@@ -4,8 +4,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.stream.Collectors;
 
-public abstract class StateSelectorModel implements Activity, AsyncSelectorModel<En_CaseState> {
+public abstract class StateSelectorModel implements Activity, AsyncSelectorModel<EntityOption> {
 
     public StateSelectorModel() {
         cache.setLoadHandler(makeLoadHandler());
@@ -36,11 +36,11 @@ public abstract class StateSelectorModel implements Activity, AsyncSelectorModel
     }
 
     @Override
-    public En_CaseState get(int elementIndex, LoadingHandler loadingHandler) {
+    public EntityOption get(int elementIndex, LoadingHandler loadingHandler) {
         return cache.get(elementIndex, loadingHandler);
     }
 
-    private SelectorDataCacheLoadHandler<En_CaseState> makeLoadHandler() {
+    private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler() {
         return new SelectorDataCacheLoadHandler() {
             @Override
             public void loadData(int offset, int limit, AsyncCallback handler) {
@@ -51,7 +51,7 @@ public abstract class StateSelectorModel implements Activity, AsyncSelectorModel
                         .withSuccess(options -> {
                             handler.onSuccess(options.getCaseStatesList()
                                     .stream()
-                                    .map(caseState -> En_CaseState.getById(caseState.getId()))
+                                    .map(caseState -> new EntityOption(caseState.getState(), caseState.getId()))
                                     .collect(Collectors.toList()));
                         }));
             }
@@ -67,5 +67,5 @@ public abstract class StateSelectorModel implements Activity, AsyncSelectorModel
     @Inject
     CaseStateWorkflowControllerAsync caseStateWorkflowController;
 
-    private SelectorDataCache<En_CaseState> cache = new SelectorDataCache<>();
+    private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
 }

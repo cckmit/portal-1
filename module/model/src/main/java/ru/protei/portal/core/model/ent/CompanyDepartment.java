@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -22,9 +23,6 @@ public class CompanyDepartment extends AuditableObject {
 
     @JdbcColumn(name = "created")
     private Date created;
-
-    @JdbcColumn(name = "depTypeId")
-    private int typeId;
 
     @JdbcColumn(name = "dep_name")
     private String name;
@@ -85,14 +83,6 @@ public class CompanyDepartment extends AuditableObject {
 
     public void setCreated(Date created) {
         this.created = created;
-    }
-
-    public int getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
     }
 
     public String getName() {
@@ -178,5 +168,9 @@ public class CompanyDepartment extends AuditableObject {
     @Override
     public String getAuditType() {
         return "Department";
+    }
+
+    public static EntityOption toOption(CompanyDepartment department) {
+        return new EntityOption(department.getName(), department.getId());
     }
 }

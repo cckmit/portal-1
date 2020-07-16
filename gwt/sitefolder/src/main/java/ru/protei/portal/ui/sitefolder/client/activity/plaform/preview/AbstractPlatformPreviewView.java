@@ -19,6 +19,8 @@ public interface AbstractPlatformPreviewView extends IsWidget {
 
     void setParameters(String value);
 
+    void setTechnicalSupportValidity(String technicalSupportValidity);
+
     void setProject(String value, String link);
 
     void setComment(String value);

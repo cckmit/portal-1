@@ -2,42 +2,32 @@ package ru.protei.portal.test.jira;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.test.jira.config.JiraTestConfiguration;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith( SpringJUnit4ClassRunner.class )
-@WebAppConfiguration
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, JiraTestConfiguration.class})
 public class FieldMappingTest {
     public static final int FIRST_MAP_ID = 1;
 
-    @Autowired
-    JiraStatusMapEntryDAO statusMapEntryDAO;
+    JiraStatusMapEntryDAO statusMapEntryDAO = new JiraStatusMapEntryDAO_ImplMock();
 
     @Test
     public void testStatusMapping () {
-        Map<String, En_CaseState> expectedMapping = new HashMap<>();
-        expectedMapping.put("Authorized", En_CaseState.CREATED);
-        expectedMapping.put("Studying", En_CaseState.OPENED);
-        expectedMapping.put("Request to customer", En_CaseState.CUST_REQUEST);
-        expectedMapping.put("Postpone", En_CaseState.PAUSED);
-        expectedMapping.put("Soft Close", En_CaseState.DONE);
-        expectedMapping.put("Nothing to change", En_CaseState.VERIFIED);
+        Map<String, Long> expectedMapping = new HashMap<>();
+        expectedMapping.put("Authorized", CrmConstants.State.CREATED);
+        expectedMapping.put("Studying", CrmConstants.State.OPENED);
+        expectedMapping.put("Postpone", CrmConstants.State.PAUSED);
+        expectedMapping.put("Soft Close", CrmConstants.State.DONE);
+        expectedMapping.put("Nothing to change", CrmConstants.State.VERIFIED);
+        expectedMapping.put("Request to customer", CrmConstants.State.CUST_REQUEST);
+        expectedMapping.put("Request to NX", CrmConstants.State.NX_REQUEST);
 
-        expectedMapping.forEach((key,state) -> {
-            Assert.assertEquals(state, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key));
-            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, state));
+        expectedMapping.forEach((key,stateId) -> {
+            Assert.assertEquals(stateId, statusMapEntryDAO.getByJiraStatus(FIRST_MAP_ID, key).getLocalStatusId());
+            Assert.assertEquals(key, statusMapEntryDAO.getJiraStatus(FIRST_MAP_ID, stateId));
         });
     }
 }

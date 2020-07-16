@@ -5,6 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
@@ -12,7 +13,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
 
@@ -36,18 +37,16 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     public void setActivity( AbstractContactTableActivity activity ) {
         this.activity = activity;
 
-        editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
-        editClickColumn.setColumnProvider( columnProvider );
-
-        removeClickColumn.setHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
-        removeClickColumn.setColumnProvider( columnProvider );
 
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
+
+        table.setLoadHandler(activity);
+        table.setPagerListener(activity);
     }
     
     @Override
@@ -87,6 +86,7 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
 
     @Override
     public void clearRecords() {
+        table.clearCache();
         table.clearRows();
     }
 
@@ -95,9 +95,29 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
         columnProvider.setSelectedValue(null);
     }
 
+    @Override
+    public void scrollTo(int page) {
+        table.scrollToPage( page );
+    }
+
+    @Override
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
     private void initTable () {
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT) );
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_REMOVE) && !v.isDeleted() );
+        editClickColumn.setEnabledPredicate(person -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_EDIT) && !person.isFired() );
+        removeClickColumn.setEnabledPredicate(person -> policyService.hasPrivilegeFor(En_Privilege.CONTACT_REMOVE) && !person.isDeleted() );
 
         ClickColumn gender = new DynamicColumn<Person>(null, "column-img", value -> "<img src='" + AvatarUtils.getAvatarUrlByGender(value.getGender()) + "'></img>");
         columns.add(gender);
@@ -111,6 +131,9 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
         ClickColumn<Person> contact = getContactColumn( lang );
         columns.add(contact);
 
+        columns.add(editClickColumn);
+        columns.add(removeClickColumn);
+
         table.addColumn( gender.header, gender.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( company.header, company.values );
@@ -120,7 +143,7 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     @UiField
-    TableWidget<Person> table;
+    InfiniteTableWidget<Person> table;
 
     @UiField
     HTMLPanel tableContainer;

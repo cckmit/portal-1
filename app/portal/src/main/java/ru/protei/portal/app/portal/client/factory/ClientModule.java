@@ -14,12 +14,18 @@ import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.Abstrac
 import ru.protei.portal.app.portal.client.activity.page.DashboardPage;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.app.portal.client.activity.profile.ProfilePageActivity;
+import ru.protei.portal.app.portal.client.activity.profile.general.AbstractProfileGeneralView;
+import ru.protei.portal.app.portal.client.activity.profile.general.ProfileGeneralActivity;
+import ru.protei.portal.app.portal.client.activity.profile.subscription.AbstractProfileSubscriptionView;
+import ru.protei.portal.app.portal.client.activity.profile.subscription.ProfileSubscriptionActivity;
 import ru.protei.portal.app.portal.client.view.app.AppView;
 import ru.protei.portal.app.portal.client.view.auth.AuthView;
 import ru.protei.portal.app.portal.client.view.dashboard.DashboardView;
 import ru.protei.portal.app.portal.client.view.dashboardblocks.edit.DashboardTableEditView;
 import ru.protei.portal.app.portal.client.view.dashboardblocks.table.DashboardTableView;
 import ru.protei.portal.app.portal.client.view.profile.ProfilePageView;
+import ru.protei.portal.app.portal.client.view.profile.general.ProfileGeneralView;
+import ru.protei.portal.app.portal.client.view.profile.subscription.ProfileSubscriptionView;
 
 /**
  * Клиентский модуль
@@ -28,20 +34,26 @@ public class ClientModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
-        bind( DashboardPage.class ).asEagerSingleton();
+        bind(DashboardPage.class).asEagerSingleton();
         bind(AppActivity.class).asEagerSingleton();
-        bind( AbstractAppView.class ).to(AppView.class).in(Singleton.class);
+        bind(AbstractAppView.class).to(AppView.class).in(Singleton.class);
 
         bind(AuthActivity.class).asEagerSingleton();
-        bind( AbstractAuthView.class ).to(AuthView.class).in(Singleton.class);
+        bind(AbstractAuthView.class).to(AuthView.class).in(Singleton.class);
 
         bind(DashboardActivity.class).asEagerSingleton();
-        bind( AbstractDashboardView.class ).to(DashboardView.class).in(Singleton.class);
+        bind(AbstractDashboardView.class).to(DashboardView.class).in(Singleton.class);
         bind(AbstractDashboardTableView.class).to(DashboardTableView.class);
         bind(DashboardTableEditActivity.class).asEagerSingleton();
         bind(AbstractDashboardTableEditView.class).to(DashboardTableEditView.class);
 
-        bind( ProfilePageActivity.class ).asEagerSingleton();
-        bind( AbstractProfilePageView.class ).to( ProfilePageView.class ).in( Singleton.class );
+        bind(ProfilePageActivity.class).asEagerSingleton();
+        bind(AbstractProfilePageView.class).to(ProfilePageView.class).in(Singleton.class);
+
+        bind(ProfileGeneralActivity.class).asEagerSingleton();
+        bind(AbstractProfileGeneralView.class).to(ProfileGeneralView.class).in(Singleton.class);
+
+        bind(ProfileSubscriptionActivity.class).asEagerSingleton();
+        bind(AbstractProfileSubscriptionView.class).to(ProfileSubscriptionView.class).in(Singleton.class);
     }
 }

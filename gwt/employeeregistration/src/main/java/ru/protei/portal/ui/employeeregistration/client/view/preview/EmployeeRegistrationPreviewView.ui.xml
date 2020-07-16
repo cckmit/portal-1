@@ -3,20 +3,24 @@
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
+    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed">
         <div class="preview card-body no-padding">
             <div class="card no-border">
                 <div class="card-body">
-                    <div class="row">
-                        <h4 class="col-md-12 m-t-0 m-b-0" >
+                    <div class="clearfix">
+                        <h4 class="inline m-t-0 m-b-0" >
                             <g:Anchor ui:field="fullName" styleName="full-screen-link" href="#"/>
-                            <div class="inline pull-right">
-                                <small ui:field="createdBy"/>
-                            </div>
                         </h4>
+                        <div class="pull-right m-t-5">
+                            <small ui:field="createdBy"/>
+                        </div>
                     </div>
 
                     <h5 ui:field="name"/>
+
+                    <div class="m-b-5">
+                        <span ui:field="caseState"/>
+                    </div>
 
                     <g:HTMLPanel ui:field="linksContainer"/>
 
@@ -25,9 +29,9 @@
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
                                     <label>
-                                        <ui:text from="{lang.employeeRegistrationState}"/>
+                                        <ui:text from="{lang.company}"/>
                                     </label>
-                                    <span ui:field="caseState"/>
+                                    <span ui:field="company"/>
                                 </div>
                             </div>
 
@@ -39,17 +43,14 @@
                                     <span ui:field="headOfDepartment"/>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group form-group-default">
                                     <label>
-                                        <ui:text from="{lang.employeeRegistrationCurators}"/>
+                                        <ui:text from="{lang.employeeRegistrationDepartment}"/>
                                     </label>
-                                    <span ui:field="curators"/>
+                                    <span ui:field="department"/>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row clearfix">
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
                                     <label>
@@ -57,7 +58,11 @@
                                     </label>
                                     <span ui:field="position"/>
                                 </div>
+
                             </div>
+                        </div>
+
+                        <div class="row clearfix">
                             <div class="col-md-3">
                                 <div class="form-group form-group-default">
                                     <label>
@@ -80,6 +85,14 @@
                                         <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
                                     </label>
                                     <span ui:field="probationPeriod"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.employeeRegistrationCurators}"/>
+                                    </label>
+                                    <span ui:field="curators"/>
                                 </div>
                             </div>
                         </div>

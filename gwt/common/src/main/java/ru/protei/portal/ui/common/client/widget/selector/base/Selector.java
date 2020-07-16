@@ -22,10 +22,13 @@ import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeVal
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
+import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Базовая логика селектора
@@ -43,6 +46,12 @@ public abstract class Selector<T>
 
         boolean isDisplayed( T value );
     }
+
+    @PostConstruct
+    private void onInit() {
+        noSearchResult = lang.errNoMatchesFound();
+    }
+
     public Collection<T> getValues() {
         return itemToDisplayOptionModel.keySet();
     }
@@ -139,6 +148,10 @@ public abstract class Selector<T>
         }
         itemView.setIcon(option.getIcon());
 
+        if (isNotEmpty(option.getTitle())) {
+            itemView.setTitle(option.getTitle());
+        }
+
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
         if (value == null) {
@@ -233,7 +246,7 @@ public abstract class Selector<T>
         }
 
         if (isEmptyResult) {
-            addEmptyListGhostOption(lang.errNoMatchesFound());
+            addEmptyListGhostOption(noSearchResult);
         }
     }
 
@@ -403,4 +416,5 @@ public abstract class Selector<T>
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
     protected SelectorFilter<T> filter = null;
     private final ScrollWatcher scrollWatcher = new ScrollWatcher(this::onScroll);
+    protected String noSearchResult;
 }

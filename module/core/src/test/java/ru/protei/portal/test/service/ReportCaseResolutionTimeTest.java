@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -100,8 +103,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
     @Test
     public void intervalsTest() {
-        int numberOfDays = 12;
-        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( dateRange(), DAY );
         assertEquals( numberOfDays, intervals.size() );
         assertEquals( date9.getTime(), intervals.get( 0 ).from );
         assertEquals( addHours( date9, 1 * H_DAY ).getTime(), intervals.get( 0 ).to );
@@ -130,9 +132,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     @Test
     public void caseInIntervalTest() {
         Person person = new Person( 1L );
-
-        int numberOfDays = 12;
-        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
         List<CaseComment> comments = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
@@ -248,8 +248,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     @Test
     public void makeWorkBook() {
         Person person = new Person( 1L );
-        int numberOfDays = 12;
-        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( dateRange(), DAY );
 
         List<CaseComment> comments = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
@@ -296,7 +295,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private QueryModel initCaseObjectsQueryTestModel( QueryModel model) {
         CaseObjectFactory factory = new CaseObjectFactory( model );
 
-        model.companyCategory = new CompanyCategory( 2L );
+        model.companyCategory = En_CompanyCategory.PARTNER;
         Company company = factory.makeCompany( "some_company" );
         Person person = factory.makePerson( company );
         model.person = person;
@@ -430,8 +429,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private CaseQuery createCaseQuery(  Date from, Date to ) {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setStateIds( activeStatesShort );
-        caseQuery.setCreatedFrom( from );
-        caseQuery.setCreatedTo( to );
+        caseQuery.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, from, to));
         return caseQuery;
     }
 
@@ -463,12 +461,17 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         return addHours( date1, (day_of_month - 1) * H_DAY );
     }
 
+    private DateRange dateRange () {
+        return new DateRange(En_DateIntervalType.FIXED, date9, addHours( date9, numberOfDays * H_DAY ));
+    }
+
 
     private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
     private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
     private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
+    private static int numberOfDays = 12;
 
-    private static List<Integer> activeStatesShort = Arrays.asList( 1, 2, 6, 16, 19, 30 );
+    private static List<Long> activeStatesShort = Arrays.asList( 1L, 2L, 6L, 16L, 19L, 30L );
     private static List<Long> commentsIds = new ArrayList<>();
 
     private static final Long CREATED = 1L;
@@ -516,7 +519,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         public String prefix;
         public int numberOfDays;
-        public CompanyCategory companyCategory;
+        public En_CompanyCategory companyCategory;
         public En_CaseType caseTagType;
 
         List<Long> caseObjectIncludedIds = new ArrayList<>();

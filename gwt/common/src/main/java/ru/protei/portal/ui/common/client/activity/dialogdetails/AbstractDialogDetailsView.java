@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.dialogdetails;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -24,10 +25,26 @@ public interface AbstractDialogDetailsView extends IsWidget {
 
     HasVisibility saveButtonVisibility();
 
+    HasEnabled removeButtonEnabled();
+
+    HasEnabled saveButtonEnabled();
+
     /**
      * Установить заголовок окна детализации
      */
     void setHeader( String value );
 
     void addStyleName( String value );
+
+    void setSaveOnEnterClick( boolean isSaveOnEnterClick );
+
+    void setSaveButtonName( String name );
+
+    void setCancelVisible( boolean isCancelVisible );
+
+    void setCloseVisible( boolean isCloseVisible );
+
+    void setAdditionalVisible( boolean isAdditionalVisible );
+
+    void setAdditionalButtonName( String name );
 }

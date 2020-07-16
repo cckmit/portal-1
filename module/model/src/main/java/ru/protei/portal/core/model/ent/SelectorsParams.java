@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.io.Serializable;
@@ -15,6 +16,8 @@ public class SelectorsParams implements Serializable {
     private List<ProductShortView> productShortViews;
 
     private List<CaseTag> caseTags;
+
+    private PlanOption planOption;
 
     public List<CaseTag> getCaseTags() {
         return caseTags;
@@ -46,5 +49,13 @@ public class SelectorsParams implements Serializable {
 
     public void setProductShortViews(List<ProductShortView> productShortViews) {
         this.productShortViews = productShortViews;
+    }
+
+    public PlanOption getPlanOption() {
+        return planOption;
+    }
+
+    public void setPlanOption(PlanOption planOption) {
+        this.planOption = planOption;
     }
 }

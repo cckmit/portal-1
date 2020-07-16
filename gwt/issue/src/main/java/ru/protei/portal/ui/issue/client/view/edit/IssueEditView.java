@@ -125,14 +125,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         this.createdBy.setInnerHTML( value );
     }
 
-    @UiHandler("copyNumber")
-    public void onCopyNumberClick(ClickEvent event) {
-        event.preventDefault();
-        if (activity != null) {
-            activity.onCopyNumberClicked();
-        }
-    }
-
     @UiHandler("nameAndDescriptionEditButton")
     public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -158,6 +150,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void onAddTagButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onAddTagClicked(addTagButton);
+        }
+    }
+
+    @UiHandler("copyNumber")
+    public void onCopyNumberClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onCopyNumberClicked();
         }
     }
 
@@ -220,7 +220,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel linksContainer;
 
     private AbstractIssueEditActivity activity;
-
 
     interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {}
     private static IssueEditViewUiBinder ourUiBinder = GWT.create(IssueEditViewUiBinder.class);

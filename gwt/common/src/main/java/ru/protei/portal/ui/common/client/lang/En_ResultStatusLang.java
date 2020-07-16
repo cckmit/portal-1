@@ -56,10 +56,26 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_CHANGE_PLATFORM_COMPANY: return lang.errSavePlatformConnectedIssuesExist();
             case NOT_ALLOWED_CHANGE_PROJECT_COMPANY: return lang.errSaveProjectCannotChangeCompany();
             case NOT_ALLOWED_LINK_ISSUE_TO_ITSELF: return lang.errUnableLinkIssueToItself();
-            case SOME_LINKS_NOT_ADDED: return lang.caseLinkSomeNotAdded();
             case THIS_LINK_ALREADY_ADDED: return lang.errCaseLinkAlreadyAdded();
             case NOT_ALLOWED_REMOVE_USED_DOCUMENT_TYPE: return lang.documentTypeUnableToRemoveUsedDocumentType();
             case UPDATE_OR_REMOVE_LINKED_OBJECT_ERROR: return lang.errUpdateOrDeleteLinkedObjectError();
+            case SVN_ERROR: return lang.errSVN();
+            case WORKER_WITH_THIS_DEPARTMENT_ALREADY_EXIST: return lang.errWorkerWithThisDepartmentAlreadyExist();
+            case WORKER_WITH_THIS_POSITION_ALREADY_EXIST: return lang.errWorkerWithThisPositionAlreadyExist();
+            case DEPARTMENT_ALREADY_EXIST: return lang.errDepartmentAlreadyExistInThisCompany();
+            case POSITION_ALREADY_EXIST: return lang.errPositionAlreadyExistInThisCompany();
+            case EMPLOYEE_ALREADY_EXIST: return lang.errEmployeeAlreadyExist();
+            case EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES: return lang.errEmployeeNotFiredFromTheseCompanies();
+            case EMPLOYEE_MIGRATION_FAILED: return lang.errEmployeeMigrationFailed();
+            case SUBNET_DOES_NOT_EXIST: return lang.errSaveReservedIpSubnetDoesNotExist();
+            case SUBNET_NOT_ALLOWED_FOR_RESERVE: return lang.errSaveReservedIpSubnetNotAvailable();
+            case ROOM_RESERVATION_OUTDATED: return lang.errRoomReservationOutdated();
+            case ROOM_RESERVATION_ROOM_NOT_ACCESSIBLE: return lang.errRoomReservationRoomNotAccessible();
+            case ROOM_RESERVATION_HAS_INTERSECTIONS: return lang.errRoomReservationHasIntersections();
+            case ISSUE_FILTER_IS_USED: return lang.errPersonCaseFilterInUse();
+            case REQUEST_1C_FAILED: return lang.errRequest1CFailed();
+            case ABSENCE_HAS_INTERSECTIONS: return lang.errAbsenceHasIntersections();
+            case NOT_CURRENT_ABSENCE: return lang.errNotCurrentAbsence();
             default: return lang.errUnknownResult();
         }
     }

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.input;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -20,6 +21,7 @@ import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ import java.util.function.Supplier;
  * Cелектор c выпадающим списком, множественный выбор
  */
 public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
-        implements HasValue<Set<T>>, HasEnabled, HasVisibility {
+        implements HasValue<Set<T>>, HasEnabled, HasVisibility, HasValidable {
 
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
@@ -57,6 +59,10 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         showValue(selectorValue);
         if (fireEvents) {
             ValueChangeEvent.fire(this, selectorValue);
+        }
+
+        if (isValidable) {
+            setValid(isValid());
         }
     }
 
@@ -87,6 +93,24 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         clearButton.setEnabled( isEnabled );
         itemViews.forEach( ( v ) -> v.setEnabled( isEnabled ) );
     }
+
+    @Override
+    public boolean isValid() {
+        return true;
+    };
+
+    @Override
+    public void setValid(boolean isValid){
+        if(isValid)
+            select2.removeClassName(ERROR_STYLENAME);
+        else
+            select2.addClassName(ERROR_STYLENAME);
+    }
+
+    public void setValidation(boolean isValidable){
+        this.isValidable = isValidable;
+    }
+
 
     @UiHandler({"caretButton"})
     public void onShowPopupClicked( ClickEvent event ) {
@@ -120,7 +144,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         ValueChangeEvent.fire( this, value );
     }
 
-    protected void setNullItem(Supplier<T> selectorNullItem) {
+    public void setNullItem(Supplier<T> selectorNullItem) {
         getSelector().setNullItem(selectorNullItem);
     }
 
@@ -221,6 +245,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     @UiField
+    DivElement select2;
+    @UiField
     Button caretButton;
     @UiField
     HTMLPanel label;
@@ -247,6 +273,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     private boolean isEnabled = true;
     public static final String INACTIVE = "inactive";
     public static final String HIDE = "hide";
+    private static final String ERROR_STYLENAME ="has-error";
+    private boolean isValidable;
 
     interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, InputPopupMultiSelector> {
     }
