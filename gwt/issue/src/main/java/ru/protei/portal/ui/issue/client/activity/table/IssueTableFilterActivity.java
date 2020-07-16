@@ -12,7 +12,9 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
@@ -24,10 +26,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -36,7 +35,9 @@ import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Активность таблицы обращений
@@ -93,6 +94,12 @@ public abstract class IssueTableFilterActivity
         if(!policyService.hasSystemScopeForPrivilege( En_Privilege.COMPANY_VIEW ) ){
             filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
             filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+        } else {
+            homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
+                Set<EntityOption> value = new HashSet<>();
+                value.add(new EntityOption(company.getDisplayText(), company.getId()));
+                filterView.getIssueFilterParams().managerCompanies().setValue(value);
+            });
         }
 
         this.preScroll = event.preScroll;
@@ -372,6 +379,9 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     IssueFilterWidget filterView;
+
+    @Inject
+    HomeCompanyService homeCompanyService;
 
     private CaseQuery query = null;
 
