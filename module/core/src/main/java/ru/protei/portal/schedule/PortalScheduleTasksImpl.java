@@ -3,22 +3,31 @@ package ru.protei.portal.schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.PauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
-    @PostConstruct
-    public void init() {
-        projectService.schedulePauseTimeNotifications();//todo debug
+    @EventListener
+    @Override
+    public void onApplicationStartOrRefreshContext( ContextRefreshedEvent event) {
+        log.info("onApplicationStartOrRefresh() ContextRefreshedEvent counter {} {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
+        if (isPortalStarted.getAndSet( true )) return;
+
+        schedulePauseTimeNotifications();
 
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
@@ -37,7 +46,6 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
 
-        projectService.schedulePauseTimeNotifications();
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -96,8 +104,13 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     }
 
     @Override
-    public void scheduleProjectPauseTimeNotification( Long projectId, Long pauseDate ) {
-        scheduler.schedule( () -> projectService.runPauseTimeNotification( projectId, pauseDate ), new Date(pauseDate));
+    public void scheduleEvent( ApplicationEvent publishEvent, Date date ) {
+        log.info( "scheduleEvent(): date= {} event={}", date, publishEvent );
+        scheduler.schedule( () -> publisherService.publishEvent( publishEvent ), date);
+    }
+
+    private void schedulePauseTimeNotifications() {
+        publisherService.publishEvent( new PauseTimeOnStartupEvent( this ) );
     }
 
     @Autowired
@@ -117,7 +130,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     @Autowired
     PersonCaseFilterService personCaseFilterService;
     @Autowired
-    ProjectService projectService;
+    EventPublisherService publisherService;
+
+    private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
+    private static AtomicInteger contextRefreshedEventCounter;
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasksImpl.class );
 }

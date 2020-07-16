@@ -7,6 +7,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.event.ProjectPauseTimeHasComeEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -61,7 +62,11 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     }
 
     private void schedulePauseTimeNotification(final Long projectId, final Long pauseDate ) {
-        portalScheduleTasks.scheduleProjectPauseTimeNotification(projectId, pauseDate );
+//        portalScheduleTasks.scheduleProjectPauseTimeNotification(projectId, pauseDate );
+        ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent(this);
+        projectPauseTimeEvent.setProjectId(projectId);
+        projectPauseTimeEvent.setPauseDate(pauseDate);
+        scheduledTasksService.scheduleEvent( projectPauseTimeEvent, new Date(pauseDate) );
     }
 
     private Result<AssembledProjectEvent> fillInitiator(AssembledProjectEvent event) {
@@ -132,7 +137,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     @Autowired
     CaseLinkDAO caseLinkDAO;
     @Autowired
-    PortalScheduleTasks portalScheduleTasks;
+    PortalScheduleTasks scheduledTasksService;
 
     @Autowired
     EventPublisherService publisherService;

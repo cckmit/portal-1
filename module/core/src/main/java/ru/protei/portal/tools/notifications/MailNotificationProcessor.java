@@ -458,6 +458,27 @@ public class MailNotificationProcessor {
     }
 
     // -----------------------
+    // Pause time notifications
+    // -----------------------
+
+    @EventListener
+    public void onProjectPauseTimeNotificationEvent( ProjectPauseTimeNotificationEvent event) {
+        log.info( "onProjectPauseTimeNotificationEvent(): {}", event );
+
+        try {
+            String subject = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody(
+                    event.getPerson().getDisplayName()
+            );
+
+            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent development agenda notification: {}", event.getPerson().getDisplayName(), e );
+        }
+    }
+
+    // -----------------------
     // Contract notifications
     // -----------------------
 

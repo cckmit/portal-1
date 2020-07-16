@@ -3,11 +3,11 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.ProjectCreateEvent;
-import ru.protei.portal.core.event.ProjectUpdateEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -24,6 +24,7 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -38,6 +39,7 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -85,6 +87,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     CaseLinkService caseLinkService;
+
+    @Autowired
+    ProjectEntityDAO projectEntityDAO;
+    @Autowired
+    PortalScheduleTasks scheduledTasksService;
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -303,39 +312,49 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(result);
     }
 
-    @Autowired
-    ProjectEntityDAO projectEntityDAO;
-    @Autowired
-    PortalScheduleTasks scheduledTasksService;
 
     private static volatile int cnt = 0;
 
-    @Async(BACKGROUND_TASKS)
-    public Result<Void> schedulePauseTimeNotifications() {
-        Collection<ProjectEntity> projectEntities = projectEntityDAO.selectScheduledPauseTime( System.currentTimeMillis() );
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
-        for (ProjectEntity project : CollectionUtils.emptyIfNull( projectEntities )) {
-            log.info( "schedulePauseTimeNotifications(): projectId={} date={}", project.getId(), simpleDateFormat.format( project.getPauseDate() ) );
-            scheduledTasksService.scheduleProjectPauseTimeNotification( project.getId(), project.getPauseDate() );
-        }
-
-        return ok();
-    }
-
+    @EventListener
     @Async(BACKGROUND_TASKS)
     @Override
-    public Result<Void> runPauseTimeNotification( Long projectId, Long pauseDate ) {
+    public void schedulePauseTimeNotificationsOnPortalStartup( PauseTimeOnStartupEvent event ) {
+        Collection<ProjectEntity> projectEntities = projectEntityDAO.selectScheduledPauseTime( System.currentTimeMillis() );
+
+        if (isEmpty( projectEntities )) {
+            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): No planned pause time notifications found." );
+            return;
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
+        for (ProjectEntity project : projectEntities) {
+            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): projectId={} date={}", project.getId(), simpleDateFormat.format( project.getPauseDate() ) );
+
+            ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent( this );
+            projectPauseTimeEvent.setProjectId( project.getId() );
+            projectPauseTimeEvent.setPauseDate( project.getPauseDate() );
+            scheduledTasksService.scheduleEvent( projectPauseTimeEvent, new Date( project.getPauseDate() ) );
+        }
+
+    }
+
+    @EventListener
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event ) {
+        Long projectId = event.getProjectId();
+        Long pauseDate = event.getPauseDate();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
         log.info( "runPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
 
         CaseObject caseObject = caseObjectDAO.get( projectId );
         if (!Objects.equals( pauseDate, caseObject.getPauseDate() )) {
-            log.info( "runPauseTimeNotification(): Ignore: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
-            return ok();
+            log.info( "runPauseTimeNotification(): Ignore notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
+            return;
         }
 
         log.info( "runPauseTimeNotification(): Do notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
-        return ok();
+        publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this ) );
     }
 
     @Override
