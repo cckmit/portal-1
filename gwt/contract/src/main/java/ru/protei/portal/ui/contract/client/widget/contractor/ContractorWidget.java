@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.contract.client.widget.contractor.create.AbstractContractorCreateView;
 import ru.protei.portal.ui.contract.client.widget.contractor.search.AbstractContractorSearchActivity;
@@ -28,7 +29,7 @@ import java.util.List;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-abstract public class ContractorWidget extends Composite implements HasValue<Contractor>, HasEnabled, Activity {
+abstract public class ContractorWidget extends Composite implements HasValue<Contractor>, HasEnabled, HasValidable, Activity {
 
     @Inject
     public void onInit() {
@@ -54,6 +55,9 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     public void setValue(Contractor value, boolean fireEvents) {
         this.value = value;
         name.setValue(value != null ? value.getName() : null, fireEvents);
+        if (isValidable) {
+            setValid(isValid());
+        }
     }
 
     @Override
@@ -64,6 +68,24 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     @Override
     public void setEnabled(boolean enabled) {
         button.setEnabled(enabled);
+    }
+
+    public void setValidation(boolean isValidable){
+        this.isValidable = isValidable;
+    }
+
+    @Override
+    public boolean isValid(){
+        return getValue() != null;
+    }
+
+    @Override
+    public void setValid(boolean isValid) {
+        if (isValid) {
+            name.removeStyleName(REQUIRED_STYLE_NAME);
+        } else {
+            name.addStyleName(REQUIRED_STYLE_NAME);
+        }
     }
 
     @Override
@@ -225,6 +247,9 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     private Contractor value;
     private String organization;
+    private boolean isValidable;
+
+    private static final String REQUIRED_STYLE_NAME = "required";
 
     interface ContractorWidgetUiBinder extends UiBinder<HTMLPanel, ContractorWidget> {}
     private static ContractorWidgetUiBinder ourUiBinder = GWT.create( ContractorWidgetUiBinder.class );

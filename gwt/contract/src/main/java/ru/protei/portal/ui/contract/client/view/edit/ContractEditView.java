@@ -181,6 +181,46 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         contractorWidget.setOrganization(organization);
     }
 
+    @Override
+    public HasValue<Boolean> secondContractCheckbox() {
+        return secondContractCheckbox;
+    }
+
+    @Override
+    public HasVisibility secondContractCheckboxVisibility() {
+        return secondContractCheckbox;
+    }
+
+    @Override
+    public HasVisibility secondContractVisibility() {
+        return secondContract;
+    }
+
+    @Override
+    public HasValue<String> secondContractNumber() {
+        return secondContractNumber;
+    }
+
+    @Override
+    public HasValue<EntityOption> secondContractOrganization() {
+        return secondContractOrganization;
+    }
+
+    @Override
+    public HasValue<Contractor> secondContractContractor() {
+        return secondContractContractor;
+    }
+
+    @Override
+    public HasEnabled secondContractContractorEnabled() {
+        return secondContractContractor;
+    }
+
+    @Override
+    public void setSecondContractOrganization(String organization) {
+        secondContractContractor.setOrganization(organization);
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -220,6 +260,20 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onContractParentChanged(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
             activity.onContractParentChanged();
+        }
+    }
+
+    @UiHandler("secondContractCheckbox")
+    public void onValueChange(ValueChangeEvent<Boolean> event) {
+        if (activity != null) {
+            activity.onCreateSecondContractToggle(event.getValue());
+        }
+    }
+
+    @UiHandler("secondContractOrganization")
+    public void onSecondContractOrganizationChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onSecondContractOrganizationChanged();
         }
     }
 
@@ -285,8 +339,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
     }
 
-    @UiField
-    Button saveButton;
 
     @Inject
     En_ContractKindLang contractKindLang;
@@ -376,6 +428,22 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     DivElement commonHeader;
     @UiField
     DivElement workGroupHeader;
+
+    @UiField
+    HTMLPanel secondContract;
+    @UiField
+    ValidableTextBox secondContractNumber;
+    @Inject
+    @UiField(provided = true)
+    HomeCompanyButtonSelector secondContractOrganization;
+    @Inject
+    @UiField(provided = true)
+    ContractorWidget secondContractContractor;
+
+    @UiField
+    CheckBox secondContractCheckbox;
+    @UiField
+    Button saveButton;
     @UiField
     Button cancelButton;
 

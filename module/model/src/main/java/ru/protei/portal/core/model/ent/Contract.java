@@ -73,28 +73,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     private String curatorShortName;
 
     /**
-     * Контрагент (компания)
-     */
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "P")
-    private Long contragentId;
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
-    }, mappedColumn = "cname")
-    private String contragentName;
-
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "CO")
-    private Long caseContragentId;
-
-    //    TODO: refactor
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")
-    }, mappedColumn = "cname")
-    private String caseContragentName;
-
-    /**
      * Направление
      */
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "P")
@@ -198,6 +176,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcJoinedObject( localColumn = "contractor_id", remoteColumn = "id", sqlTableAlias = "C")
     private Contractor contractor;
 
+
     @Override
     public String getAuditType() {
         return "Contract";
@@ -258,14 +237,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setCuratorId(Long curatorId) {
         this.curatorId = curatorId;
-    }
-
-    public Long getContragentId() {
-        return contragentId;
-    }
-
-    public void setContragentId(Long contragentId) {
-        this.contragentId = contragentId;
     }
 
     public Long getDirectionId() {
@@ -338,10 +309,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public String getCuratorShortName() {
         return curatorShortName;
-    }
-
-    public String getContragentName() {
-        return contragentName;
     }
 
     public String getDirectionName() {
@@ -436,14 +403,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return caseDirectionName;
     }
 
-    public Long getCaseContragentId() {
-        return caseContragentId;
-    }
-
-    public String getCaseContragentName() {
-        return caseContragentName;
-    }
-
     public Long getCaseManagerId() {
         return caseManagerId;
     }
@@ -454,10 +413,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setCaseManagerId( Long caseManagerId ) {
         this.caseManagerId = caseManagerId;
-    }
-
-    public void setCaseContragentId( Long caseContragentId ) {
-        this.caseContragentId = caseContragentId;
     }
 
     public void setCaseDirectionId( Long caseDirectionId ) {
@@ -506,10 +461,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
                 ", curatorId=" + curatorId +
                 ", curatorShortName='" + curatorShortName + '\'' +
-                ", contragentId=" + contragentId +
-                ", contragentName='" + contragentName + '\'' +
-                ", caseContragentId=" + caseContragentId +
-                ", caseContragentName='" + caseContragentName + '\'' +
                 ", directionId=" + directionId +
                 ", directionName='" + directionName + '\'' +
                 ", caseDirectionId=" + caseDirectionId +
