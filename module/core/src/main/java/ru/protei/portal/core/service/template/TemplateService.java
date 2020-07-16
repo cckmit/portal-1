@@ -83,4 +83,8 @@ public interface TemplateService {
     PreparedTemplate getPersonCaseFilterNotificationSubject();
 
     PreparedTemplate getPersonCaseFilterNotificationBody(List<CaseObject> issues, String urlTemplate);
+
+    String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName );
+
+    String getProjectPauseTimeNotificationBody( String name, Long aLong, String displayName );
 }

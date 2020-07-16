@@ -81,9 +81,6 @@ public interface ProjectService {
     @Auditable(En_AuditType.PROJECT_REMOVE)
     Result<Boolean> removeProject(AuthToken token, Long projectId);
 
-//    Result<Void> runPauseTimeNotification( Long projectId, Long pauseDate );
-//
-//    Result<Void> schedulePauseTimeNotifications();
     @EventListener
     @Async(BACKGROUND_TASKS)
     void schedulePauseTimeNotificationsOnPortalStartup( PauseTimeOnStartupEvent event );

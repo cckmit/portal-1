@@ -257,6 +257,26 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) {
+//        Map<String, Object> model = new HashMap<>();
+//        model.put( "employeeFullName", employeeFullName );
+
+//        return getText(model, "employee.registration.probation.subject.%s.ftl");
+        return "getProjectPauseTimeNotificationSubject"+ projectNumber + projectName;
+    }
+
+    @Override
+    public String getProjectPauseTimeNotificationBody( String name, Long projectNumber, String projectName ) {
+//        Map<String, Object> model = new HashMap<>();
+//        model.put( "employee_registration_name", employeeFullName );
+//        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
+//        model.put( "userName", recipientName);
+//
+//        return getText(model, "employee.registration.probation.curators.body.%s.ftl");
+        return "getProjectPauseTimeNotificationBody"+ projectNumber + projectName;
+    }
+
+    @Override
     public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
         EmployeeRegistration newState = event.getNewState();
@@ -676,6 +696,7 @@ public class TemplateServiceImpl implements TemplateService {
         template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
+
 
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);

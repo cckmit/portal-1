@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +12,8 @@ import java.util.Set;
  */
 public class PersonQuery extends BaseQuery {
     private Set<Long> companyIds;
+
+    private Collection<Long> inIds;
 
     private Boolean people;
 
@@ -48,6 +51,14 @@ public class PersonQuery extends BaseQuery {
 
     public void setCompanyIds(Set<Long> companyIds) {
         this.companyIds = companyIds;
+    }
+
+    public Collection<Long> getInIds() {
+        return inIds;
+    }
+
+    public void setInIds( Collection<Long> inIds ) {
+        this.inIds = inIds;
     }
 
     public Boolean getPeople() {
@@ -94,7 +105,8 @@ public class PersonQuery extends BaseQuery {
     @Override
     public String toString() {
         return "PersonQuery{" +
-                "companyIds=" + companyIds +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 ", people=" + people +
                 ", fired=" + fired +
                 ", deleted=" + deleted +
@@ -102,8 +114,8 @@ public class PersonQuery extends BaseQuery {
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
+                ", companyIds=" + companyIds +
+                ", inIds=" + inIds +
                 '}';
     }
 }

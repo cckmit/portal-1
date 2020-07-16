@@ -205,6 +205,11 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 condition.append(HelperFunc.makeInArg(query.getCompanyIds()));
             }
 
+            if (query.getInIds()!=null) {
+                condition.append(" and person.id in ");
+                condition.append(HelperFunc.makeInArg(query.getInIds()));
+            }
+
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and (person.displayName like ? or person.contactInfo like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);

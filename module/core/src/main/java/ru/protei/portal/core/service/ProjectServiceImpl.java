@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ProjectEntity;
@@ -40,6 +41,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -345,16 +347,39 @@ public class ProjectServiceImpl implements ProjectService {
         Long projectId = event.getProjectId();
         Long pauseDate = event.getPauseDate();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
-        log.info( "runPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
+        log.info( "onPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
 
-        CaseObject caseObject = caseObjectDAO.get( projectId );
-        if (!Objects.equals( pauseDate, caseObject.getPauseDate() )) {
-            log.info( "runPauseTimeNotification(): Ignore notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
+        ProjectEntity project = projectEntityDAO.get( projectId );
+        if (!Objects.equals( pauseDate, project.getPauseDate() )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( project.getPauseDate() ) );
             return;
         }
 
-        log.info( "runPauseTimeNotification(): Do notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( pauseDate ) );
-        publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this ) );
+        jdbcManyRelationsHelper.fill( project, "members" );
+
+        List<Long> subscribersIds = listOf( project.getMembers() ).stream().map( caseMember -> caseMember.getMemberId() ).collect( toList() );
+        if (project.getCreatorId() != null) {
+            subscribersIds.add( project.getCreatorId() );
+        }
+
+        if (isEmpty( subscribersIds )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: No subscribers found for pause notification {}", simpleDateFormat.format( pauseDate ) );
+            return;
+        }
+
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setDeleted( false );
+        personQuery.setFired( false );
+        personQuery.setInIds( subscribersIds );
+        List<Person> persons = personDAO.getPersons( personQuery );
+
+        if (isEmpty( persons )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: No avalable subscribers found for pause notification {}", simpleDateFormat.format( pauseDate ) );
+            return;
+        }
+
+        log.info( "onPauseTimeNotification(): Do notification: pause date {} subscribers: {}", simpleDateFormat.format( pauseDate ), persons);
+        publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, persons ) );
     }
 
     @Override

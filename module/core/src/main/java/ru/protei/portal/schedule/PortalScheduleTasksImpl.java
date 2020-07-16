@@ -133,7 +133,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     EventPublisherService publisherService;
 
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
-    private static AtomicInteger contextRefreshedEventCounter;
+    private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasksImpl.class );
 }

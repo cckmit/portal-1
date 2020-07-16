@@ -466,15 +466,18 @@ public class MailNotificationProcessor {
         log.info( "onProjectPauseTimeNotificationEvent(): {}", event );
 
         try {
-            String subject = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject();
+            for (Person subscriber : event.getSubscribers()) {
 
-            String body = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody(
-                    event.getPerson().getDisplayName()
-            );
+                String subject = templateService.getProjectPauseTimeNotificationSubject( event.projectNumber(), event.projectName() );
 
-            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+                String body = templateService.getProjectPauseTimeNotificationBody(
+                        subscriber.getDisplayName(), event.projectNumber(), event.projectName()
+                );
+
+                sendMail( new PlainContactInfoFacade( subscriber.getContactInfo() ).getEmail(), subject, body );
+            }
         } catch (Exception e) {
-            log.warn( "Failed to sent development agenda notification: {}", event.getPerson().getDisplayName(), e );
+            log.warn( "Failed to sent PauseTime notification: {}", event, e );
         }
     }
 

@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Информация о проекте в регионе
@@ -45,11 +46,17 @@ public class ProjectEntity extends AuditableObject {
     @JdbcColumn(name = "CREATOR")
     private Long creatorId;
 
+//    @JdbcJoinedObject( localColumn = "CREATOR", remoteColumn = "id", updateLocalColumn = false )
+//    private Person creator;
+
     @JdbcColumn(name = Columns.DELETED)
     private boolean deleted;
 
     @JdbcColumn(name = Columns.PAUSE_DATE)
     private Long pauseDate;
+
+    @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
+    private List<CaseMember> members;
 
     public Long getId() {
         return id;
@@ -127,6 +134,14 @@ public class ProjectEntity extends AuditableObject {
 
     public Long getPauseDate() {
         return pauseDate;
+    }
+
+    public List<CaseMember> getMembers() {
+        return members;
+    }
+
+    public void setMembers( List<CaseMember> members ) {
+        this.members = members;
     }
 
     @Override

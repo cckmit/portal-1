@@ -1,15 +1,15 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.core.model.ent.Person;
+
+import java.util.List;
 
 public class ProjectPauseTimeNotificationEvent extends ApplicationEvent {
-    /**
-     * Create a new ApplicationEvent.
-     *
-     * @param source the object on which the event initially occurred (never {@code null})
-     */
-    public ProjectPauseTimeNotificationEvent( Object source ) {
+
+    public ProjectPauseTimeNotificationEvent( Object source, List<Person> subscribers ) {
         super( source );
+        this.subscribers = subscribers;
     }
 
     public void setProjectId( Long id ) {
@@ -31,6 +31,42 @@ public class ProjectPauseTimeNotificationEvent extends ApplicationEvent {
         return id;
     }
 
+    public List<Person> getSubscribers() {
+        return subscribers;
+    }
+
+    public Long projectNumber() {
+        return projectNumber;
+
+    }
+
+    public String projectName() {
+        return projectName;
+    }
+
+    public void setProjectName( String projectName ) {
+        this.projectName = projectName;
+    }
+
+    public void setProjectNumber( Long projectNumber ) {
+        this.projectNumber = projectNumber;
+    }
+
     private Long id;
     private Long pauseDate;
+    private List<Person> subscribers;
+    private String projectName;
+    private Long projectNumber;
+
+
+    @Override
+    public String toString() {
+        return "ProjectPauseTimeNotificationEvent{" +
+                "id=" + id +
+                ", pauseDate=" + pauseDate +
+                ", projectNumber=" + projectNumber +
+                ", projectName='" + projectName +
+                ", subscribers=" + subscribers +
+                '}';
+    }
 }

@@ -90,6 +90,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Override
     public Set<NotificationEntry> subscribers(List<Long> personIds) {
+//        personDAO.getListByKeys( personIds )
         return CollectionUtils.stream(personIds)
                 .map(personDAO::get)
                 .map(Person::getContactInfo)
