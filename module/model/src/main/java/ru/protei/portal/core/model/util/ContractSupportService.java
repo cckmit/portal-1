@@ -6,7 +6,7 @@ public class ContractSupportService {
 
     public static En_ContractKind getContractKind(boolean parentContractExists) {
         return parentContractExists
-                ? En_ContractKind.RECEIPT
-                : En_ContractKind.EXPENDITURE;
+                ? En_ContractKind.EXPENDITURE
+                : En_ContractKind.RECEIPT;
     }
 }
