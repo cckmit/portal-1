@@ -25,5 +25,5 @@ public interface ReportController extends RemoteService {
 
     void recreateReport(Long id) throws RequestFailedException;
 
-    void cancelReport(Long id) throws RequestFailedException;
+    Long cancelReport(Long id) throws RequestFailedException;
 }

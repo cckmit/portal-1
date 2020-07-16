@@ -19,5 +19,5 @@ public interface ReportControllerAsync {
 
     void recreateReport(Long id, AsyncCallback<Void> async);
 
-    void cancelReport(Long id, AsyncCallback<Void> async);
+    void cancelReport(Long id, AsyncCallback<Long> async);
 }

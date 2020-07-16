@@ -115,15 +115,15 @@ public abstract class IssueReportTableActivity implements
 
     @Override
     public void onCancelClicked(Report value) {
-        reportService.cancelReport(value.getId(), new AsyncCallback<Void>() {
+        reportService.cancelReport(value.getId(), new AsyncCallback<Long>() {
             @Override
             public void onFailure(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Void result) {
-                fireEvent(new NotifyEvents.Show(lang.reportCanceled(), NotifyEvents.NotifyType.SUCCESS));
+            public void onSuccess(Long id) {
+                fireEvent(new NotifyEvents.Show(lang.reportCanceled(id), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new IssueReportEvents.Show());
             }
         });

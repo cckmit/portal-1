@@ -91,7 +91,8 @@ public interface ReportService {
      *
      * @param authToken токен авторизации
      * @param id        идентификатор отчета
+     * @return идентификатор отчета
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    Result<?> cancelReport( AuthToken authToken, Long id);
+    Result<Long> cancelReport( AuthToken authToken, Long id);
 }

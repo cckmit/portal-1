@@ -12,12 +12,13 @@ import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.service.ReportService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ReportController;
-import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
+
+import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 
 /**
  * Реализация сервиса по работе с отчетами
@@ -40,37 +41,29 @@ public class ReportControllerImpl implements ReportController {
     public Long createReport(Report report) throws RequestFailedException {
         log.info("createReport(): locale={} | caseQuery={}", report.getLocale(), report.getCaseQuery());
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
         Result<Long> response = reportService.createReport(token, report);
 
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-
-        return response.getData();
+        return checkResultAndGetData(response);
     }
 
     @Override
     public Report getReport(Long id) throws RequestFailedException {
         log.info("getReport(): id={}", id);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
         Result<Report> response = reportService.getReport(token, id);
 
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-
-        return response.getData();
+        return checkResultAndGetData(response);
     }
 
     @Override
     public SearchResult<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException {
         log.info("getReportsByQuery(): query={}", query);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(reportService.getReports(token, query));
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(reportService.getReports(token, query));
     }
 
     @Override
@@ -80,38 +73,31 @@ public class ReportControllerImpl implements ReportController {
                 exclude == null ? "" : CollectionUtils.joinIter(exclude, ",")
         );
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
         Result response = reportService.removeReports(token, include, exclude);
 
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
+        checkResult(response);
     }
 
     @Override
     public void recreateReport(Long id) throws RequestFailedException {
         log.info("createReport(): id={}", id);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
         Result response = reportService.recreateReport(token, id);
 
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
+        checkResult(response);
     }
 
     @Override
-    public void cancelReport(Long id) throws RequestFailedException {
+    public Long cancelReport(Long id) throws RequestFailedException {
         log.info("cancelReport(): id={}", id);
 
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
 
-        Result<?> response = reportService.cancelReport(token, id);
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
+        Result<Long> response = reportService.cancelReport(token, id);
+        return checkResultAndGetData(response);
     }
 }

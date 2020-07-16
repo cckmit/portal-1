@@ -161,7 +161,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Transactional
-    public Result<?> cancelReport(AuthToken authToken, Long id) {
+    public Result<Long> cancelReport(AuthToken authToken, Long id) {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -179,7 +179,7 @@ public class ReportServiceImpl implements ReportService {
             reportDAO.merge(report);
         }
 
-        return ok();
+        return ok(report.getId());
     }
 
     private void removeReports(List<Report> reports) {

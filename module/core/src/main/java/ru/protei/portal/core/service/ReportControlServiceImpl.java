@@ -38,6 +38,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.REPORT_TASKS;
 import static ru.protei.portal.core.model.dict.En_ReportStatus.CANCELLED;
+import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_FOUND;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class ReportControlServiceImpl implements ReportControlService {
 
@@ -139,8 +140,12 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
 
             Report currentReportStatus = reportDAO.partialGet( report.getId(), Report.Columns.STATUS );
-            if (currentReportStatus == null || currentReportStatus.isRemoved()
-                    || CANCELLED.equals( currentReportStatus.getStatus() )) {
+            if (currentReportStatus == null || currentReportStatus.isRemoved()) {
+                log.warn( "processReport(): Can't get processed report {}", report.getId() );
+                return;
+            }
+
+            if (CANCELLED.equals( currentReportStatus.getStatus() )) {
                 log.warn( "processReport(): Report {} is canceled", report.getId() );
                 return;
             }
@@ -237,18 +242,6 @@ public class ReportControlServiceImpl implements ReportControlService {
             removeReports(reports);
         }
 
-        List<Report> processReports = reportDAO.getReportsByStatuses(
-                Arrays.asList(En_ReportStatus.PROCESS),
-                new Date(),
-                Arrays.asList(En_ReportScheduledType.NONE)
-        );
-
-        log.info("old reports in Process to cancel : {}", processReports.size());
-        if (!CollectionUtils.isEmpty(processReports)) {
-            processReports.forEach(report -> report.setStatus(CANCELLED));
-            reportDAO.mergeBatch(processReports);
-        }
-
         return ok();
     }
 
@@ -323,7 +316,8 @@ public class ReportControlServiceImpl implements ReportControlService {
             Report processedReport = reportDAO.get(report.getId());
             if (processedReport == null || processedReport.isRemoved() ||
                     !processedReport.getStatus().equals(En_ReportStatus.READY)) {
-                log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport, processedReport.getStatus());
+                log.error("Scheduled Mail Reports failed process, report = {}, status = {}", processedReport,
+                        processedReport != null ? processedReport.getStatus() : NOT_FOUND);
                 return new MailReportEvent(this, processedReport, null);
             }
             Result<ReportContent> reportContentResult = reportStorageService.getContent(processedReport.getId());
