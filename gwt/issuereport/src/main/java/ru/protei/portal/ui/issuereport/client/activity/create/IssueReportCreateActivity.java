@@ -217,17 +217,17 @@ public abstract class IssueReportCreateActivity implements Activity,
                 }
                 break;
         }
-        if (!isValidLessYear(query.getCreatedRange()) || !isValidLessYear(query.getModifiedRange())) {
-            fireEvent(new NotifyEvents.Show(lang.reportPeriodMoreYear(), NotifyEvents.NotifyType.ERROR));
+        if (!isValidMaxPeriod(query.getCreatedRange()) || !isValidMaxPeriod(query.getModifiedRange())) {
+            fireEvent(new NotifyEvents.Show(lang.reportPeriodMoreMaxError(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
         return true;
     }
 
-    private boolean isValidLessYear(DateRange dateRange) {
+    private boolean isValidMaxPeriod(DateRange dateRange) {
         if (dateRange != null && dateRange.getIntervalType() == En_DateIntervalType.FIXED &&
                 dateRange.getTo() != null && dateRange.getFrom() != null) {
-            Date yearAgo = new Date(dateRange.getTo().getTime() - TimeUnit.DAYS.toMillis(365));
+            Date yearAgo = new Date(dateRange.getTo().getTime() - TimeUnit.DAYS.toMillis(LITTLE_OVER_YEAR_DAYS));
             return yearAgo.before(dateRange.getFrom());
         }
         return true;
@@ -345,4 +345,6 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
+
+    static public int LITTLE_OVER_YEAR_DAYS = 400;
 }

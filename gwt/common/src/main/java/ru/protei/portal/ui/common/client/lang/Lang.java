@@ -2154,7 +2154,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportPeriodNotSelected();
 
-    String reportPeriodMoreYear();
+    String reportPeriodMoreMaxError();
 
     String reportMissingState();
 
