@@ -311,6 +311,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         //Обновляем список ссылок на Youtrack
         if (En_CaseLink.YT.equals(link.getType())) {
             youtrackService.setIssueCrmNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId(), true));
+            youtrackService.setIssueProjectNumbers(link.getRemoteId(), findAllCaseNumbersByYoutrackId(link.getRemoteId(), true));
         }
 
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
@@ -522,6 +523,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
+    //todo: переименовать в CrmNumbers, добавить тип при поиске CRM_SUPPORT,
     private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
         List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
 

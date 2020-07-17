@@ -244,5 +244,10 @@ public enum En_ResultStatus {
      */
     REQUEST_1C_FAILED,
 
+    /**
+     * Поле на youtrack не найдено
+     */
+    YOUTRACK_FIELD_NOT_FOUND,
+
     ;
 }

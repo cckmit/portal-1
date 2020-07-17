@@ -34,5 +34,7 @@ public interface YoutrackService {
 
     Result<YouTrackIssueInfo> setIssueCrmNumbers(String issueId, List<Long> caseNumbers);
 
+    Result<YouTrackIssueInfo> setIssueProjectNumbers(String issueId, List<Long> caseNumbersFromDB);
+
     Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
 }

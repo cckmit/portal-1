@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
@@ -29,10 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 
 public class YoutrackServiceImpl implements YoutrackService {
 
@@ -159,7 +156,28 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .flatMap(issue -> {
                     YtTextIssueCustomField field = (YtTextIssueCustomField) issue.getCrmNumberField();
                     String caseNumbersFromYT = field == null || field.getValue() == null ? null : field.getValue().text;
-                    return setCrmNumbers(issue.idReadable, caseNumbersFromDB, caseNumbersFromYT);
+                    return setNumbers(issue.idReadable, caseNumbersFromDB, caseNumbersFromYT, config.data().getCaseLinkConfig().getCrossCrmLinkYoutrack());
+                });
+    }
+
+    @Override
+    public Result<YouTrackIssueInfo> setIssueProjectNumbers(String issueId, List<Long> projectNumbersFromDB){
+        if (issueId == null || projectNumbersFromDB == null) {
+            log.warn("setIssueProjectNumbers(): Can't set youtrack issue project number. All arguments are mandatory issueId={} projectNumbersFromDB={}", issueId, projectNumbersFromDB);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return api.getIssueWithFieldsCommentsAttachments(issueId)
+                .flatMap(issue -> {
+                    YtIssueCustomField projectNumberField = issue.getProjectNumberField();
+
+                    if (projectNumberField == null) {
+                        return error(En_ResultStatus.YOUTRACK_FIELD_NOT_FOUND);
+                    }
+
+                    YtTextIssueCustomField field = (YtTextIssueCustomField) projectNumberField;
+                    String projectNumbersFromYT = field.getValue() == null ? null : field.getValue().text;
+                    return setNumbers(issue.idReadable, projectNumbersFromDB, projectNumbersFromYT, config.data().getCaseLinkConfig().getCrossProjectLinkYoutrack());
                 });
     }
 
@@ -200,11 +218,11 @@ public class YoutrackServiceImpl implements YoutrackService {
         return projectResult;
     }
 
-    private Result<YouTrackIssueInfo> setCrmNumbers (String issueId, List<Long> caseNumbersFromDB, String caseNumbersFromYT) {
+    private Result<YouTrackIssueInfo> setNumbers(String issueId, List<Long> caseNumbersFromDB, String caseNumbersFromYT, String linkTemplate) {
         log.info("setCrmNumbers(): issueId={}, caseNumbersFromDB={}, caseNumbersFromYT={}", issueId, caseNumbersFromDB, caseNumbersFromYT);
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
-        issue.customFields.add(makeAndFillCrmNumbersCustomField(caseNumbersFromDB, caseNumbersFromYT));
+        issue.customFields.add(makeAndFillNumbersCustomField(caseNumbersFromDB, caseNumbersFromYT, linkTemplate));
         return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
                 .map(this::convertYtIssue);
     }
@@ -287,7 +305,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issue;
     }
 
-    private YtIssueCustomField makeAndFillCrmNumbersCustomField(List<Long> caseNumbersFromDB, String caseNumbersFromYTString) {
+    private YtIssueCustomField makeAndFillNumbersCustomField(List<Long> caseNumbersFromDB, String caseNumbersFromYTString, String linkTemplate) {
         YtTextIssueCustomField cf = new YtTextIssueCustomField();
         YtTextFieldValue textFieldValue = new YtTextFieldValue();
         cf.name = YtIssue.CustomFieldNames.crmNumbers;
@@ -298,12 +316,12 @@ public class YoutrackServiceImpl implements YoutrackService {
             return cf;
         }
 
-        List<Long> caseNumbersFromYT = makeCaseNumberList(caseNumbersFromYTString);
+        List<Long> caseNumbersFromYT = makeNumberList(caseNumbersFromYTString);
 
         List<Long> caseNumbersFromDBWithYTOrder = makeListFromDBWithYTOrder(caseNumbersFromDB, caseNumbersFromYT);
 
         caseNumbersFromDBWithYTOrder.forEach(caseNumber -> {
-            textFieldValue.text += "[" + caseNumber + "]" + "(" + config.data().getCaseLinkConfig().getCrosslinkYoutrack().replace("%id%", caseNumber.toString()) + ")\n";
+            textFieldValue.text += "[" + caseNumber + "]" + "(" + linkTemplate.replace("%id%", caseNumber.toString()) + ")\n";
         });
 
         textFieldValue.text = textFieldValue.text.substring(0, textFieldValue.text.length() - 1);
@@ -321,13 +339,13 @@ public class YoutrackServiceImpl implements YoutrackService {
         return resultList;
     }
 
-    private List<Long> makeCaseNumberList(String crmNumbers){
-        if (crmNumbers == null) {
+    private List<Long> makeNumberList(String numbers){
+        if (numbers == null) {
             return new ArrayList<>();
         }
 
         try {
-            return Arrays.stream(crmNumbers.split("\n"))
+            return Arrays.stream(numbers.split("\n"))
                     .filter(Objects::nonNull)
                     .map(number -> {
                         if (number.startsWith("[")) {
@@ -337,7 +355,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                         }
                     }).collect(Collectors.toList());
         } catch (NumberFormatException e){
-            log.warn("makeCaseNumberList(): Fail to parse YT crmNumbers={}", crmNumbers);
+            log.warn("makeNumberList(): Fail to parse YT numbers={}", numbers);
             return new ArrayList<>();
         }
     }
