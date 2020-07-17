@@ -10,6 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
@@ -124,6 +125,14 @@ public class MainConfiguration {
         if (connectionParam != null)
             maxDbConnectionPoolSize = connectionParam.getMaxPoolSize();
         return new BackgroundTaskThreadPoolTaskExecutor( maxDbConnectionPoolSize );
+    }
+
+    @Bean(name = REPORT_TASKS)
+    public Executor getReportThreadPoolTaskExecutor(@Autowired PortalConfig config) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
+        executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
+        return executor;
     }
 
     @Bean
@@ -980,6 +989,7 @@ public class MainConfiguration {
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";
+    public static final String REPORT_TASKS = "reportTasks";
 
     private static final Logger log = LoggerFactory.getLogger( MainConfiguration.class );
 }

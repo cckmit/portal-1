@@ -1584,6 +1584,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportRequested();
 
+    String reportCanceled(Long id);
+
     String issueReportNew();
 
     String reportTypeCaseObjects();
@@ -2153,6 +2155,10 @@ public interface Lang extends Messages, ContactItemLang {
     String reportMissingProduct();
 
     String reportMissingPeriod();
+
+    String reportPeriodNotSelected();
+
+    String reportPeriodMoreMaxError();
 
     String reportMissingState();
 

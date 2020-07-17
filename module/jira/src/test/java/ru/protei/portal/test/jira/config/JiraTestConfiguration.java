@@ -46,6 +46,7 @@ import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static org.mockito.Mockito.mock;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
 
@@ -414,7 +415,7 @@ public class JiraTestConfiguration {
 
     @Bean
     public AutoOpenCaseService getAutoOpenCaseService() {
-        return new AutoOpenCaseServiceImpl();
+        return mock(AutoOpenCaseService.class);
     }
 
     @Bean

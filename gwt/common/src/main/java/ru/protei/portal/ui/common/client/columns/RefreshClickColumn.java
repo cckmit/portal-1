@@ -9,6 +9,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.*;
 
 public class RefreshClickColumn<T> extends ClickColumn<T> {
 
@@ -23,7 +24,7 @@ public class RefreshClickColumn<T> extends ClickColumn<T> {
 
     @Override
     protected String getColumnClassName() {
-        return "refresh";
+        return ColumnClassName.REFRESH;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class RefreshClickColumn<T> extends ClickColumn<T> {
     public void fillColumnValue(Element cell, T value) {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
-        a.addClassName("fas fa-lg fa-redo");
+        a.addClassName("fas fa-lg " + Icons.REFRESH);
         a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.REFRESH);
         cell.appendChild(a);
     }

@@ -8,7 +8,6 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ReportProjectImpl implements ReportProject {
@@ -45,7 +45,7 @@ public class ReportProjectImpl implements ReportProject {
     ReportDAO reportDAO;
 
     @Override
-    public boolean writeReport(OutputStream buffer, Report report) throws IOException {
+    public boolean writeReport(OutputStream buffer, Report report, Predicate<Long> isCancel) throws IOException {
 
         int count = caseObjectDAO.countByQuery(report.getCaseQuery());
 
@@ -61,29 +61,30 @@ public class ReportProjectImpl implements ReportProject {
 
         log.debug("writeReport : reportId={} has {} case objects to process", report.getId(), count);
 
-        ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang);
-
-        int sheetNumber = writer.createSheet();
-
-        if (writeReport(writer, sheetNumber, report, count)) {
-            writer.collect(buffer);
+        try (ReportWriter<ReportProjectWithLastComment> writer = new ExcelReportWriter(localizedLang)) {
+            int sheetNumber = writer.createSheet();
+            if (writeReport(writer, sheetNumber, report, count, isCancel)) {
+                writer.collect(buffer);
+            }
             return true;
-        } else {
-            writer.close();
+        } catch (Exception ex) {
+            log.warn("writeReport : fail to process reportId={} query: {} ",
+                    report.getId(), report.getCaseQuery(), ex);
             return false;
         }
     }
 
-    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer, int sheetNumber, Report report, int count) {
+    private boolean writeReport(ReportWriter<ReportProjectWithLastComment> writer, int sheetNumber, Report report, int count,
+                                    Predicate<Long> isCancel) {
 
         final int step = config.data().reportConfig().getChunkSize();
         final int limit = count;
         int offset = 0;
 
         while (offset < limit) {
-            if (!isProcessed( report.getId() )) {
-                log.info( "writeReport(): Stop processing of report {}", report.getId() );
-                break;
+            if (isCancel.test(report.getId())) {
+                log.info( "writeReport(): Cancel processing of report {}", report.getId() );
+                return true;
             }
             int amount = offset + step < limit ? step : limit - offset;
             CaseQuery query = report.getCaseQuery();
@@ -99,13 +100,6 @@ public class ReportProjectImpl implements ReportProject {
             offset += step;
         }
 
-        return true;
-    }
-
-    private boolean isProcessed( Long id ) {
-        Report report = reportDAO.partialGet( id, Report.Columns.STATUS );
-        if(report == null) return false;
-        if (!En_ReportStatus.PROCESS.equals( report.getStatus() )) return false;
         return true;
     }
 

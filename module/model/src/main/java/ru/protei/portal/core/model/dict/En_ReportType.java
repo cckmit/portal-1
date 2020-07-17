@@ -31,6 +31,6 @@ public enum En_ReportType {
         if (type == null)
             return false;
         return Objects.equals(type, En_ReportType.CASE_TIME_ELAPSED)
-               || Objects.equals(type, En_ReportType.CASE_RESOLUTION_TIME);
+                || Objects.equals(type, En_ReportType.CASE_RESOLUTION_TIME);
     }
 }

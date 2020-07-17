@@ -719,6 +719,7 @@ public class DebugIds {
             String ARCHIVE = "table-archive-button";
             String ATTACHMENT = "table-attachment-button";
             String COPY = "table-copy-button";
+            String CANCEL = "table-cancel-button";
         }
 
         interface ISSUE {

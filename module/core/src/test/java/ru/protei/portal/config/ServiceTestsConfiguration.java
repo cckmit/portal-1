@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
@@ -62,11 +63,22 @@ import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
+import java.util.concurrent.Executor;
+
 import static org.mockito.Mockito.mock;
+import static ru.protei.portal.config.MainConfiguration.REPORT_TASKS;
 
 @Configuration
 @EnableAspectJAutoProxy
 public class ServiceTestsConfiguration {
+
+    @Bean(name = REPORT_TASKS)
+    public Executor getReportThreadPoolTaskExecutor(@Autowired PortalConfig config) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
+        executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
+        return executor;
+    }
 
     @Bean
     public FileStorage getFileStorage (@Autowired PortalConfig config){

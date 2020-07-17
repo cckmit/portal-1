@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.ui.common.client.columns.CancelClickColumn;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
 import ru.protei.portal.ui.common.client.columns.RefreshClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
@@ -33,6 +34,7 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
         downloadClickColumn.setDownloadHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
         refreshClickColumn.setRefreshHandler(activity);
+        cancelClickColumn.setCancelHandler(activity);
 
         table.setLoadHandler(activity);
         table.setPagerListener(activity);
@@ -80,14 +82,17 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
         numberColumn = new NumberColumn(lang, reportStatusLang);
         infoColumn = new InfoColumn(lang, reportTypeLang, scheduledTypeLang);
         filterColumn = new FilterColumn(lang, sortFieldLang, sortDirLang, caseImportanceLang, regionStateLang, intervalLang);
-        refreshClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.ERROR);
+        refreshClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.ERROR ||
+                                                        v.getStatus() == En_ReportStatus.CANCELLED);
         removeClickColumn.setDisplayPredicate(v -> v.getStatus() != En_ReportStatus.PROCESS);
         downloadClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.READY);
+        cancelClickColumn.setDisplayPredicate(v -> v.getStatus() == En_ReportStatus.PROCESS);
 
         table.addColumn(numberColumn.header, numberColumn.values);
         table.addColumn(infoColumn.header, infoColumn.values);
         table.addColumn(filterColumn.header, filterColumn.values);
 
+        table.addColumn(cancelClickColumn.header, cancelClickColumn.values);
         table.addColumn(refreshClickColumn.header, refreshClickColumn.values);
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
@@ -107,6 +112,8 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     private DownloadClickColumn<Report> downloadClickColumn;
     @Inject
     private RefreshClickColumn<Report> refreshClickColumn;
+    @Inject
+    private CancelClickColumn<Report> cancelClickColumn;
     @Inject
     private En_ReportStatusLang reportStatusLang;
     @Inject

@@ -38,14 +38,12 @@ public class ReportAbsenceImpl implements ReportAbsence {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag("ru"));
 
-        ReportWriter<PersonAbsence> writer = new ExcelReportWriter(localizedLang, dateFormat);
-
-        int sheetNumber = writer.createSheet();
-        writer.setSheetName(sheetNumber, localizedLang.get("ar_absences"));
-
         int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
-        try {
+        try (ReportWriter<PersonAbsence> writer = new ExcelReportWriter(localizedLang, dateFormat)) {
+            int sheetNumber = writer.createSheet();
+            writer.setSheetName(sheetNumber, localizedLang.get("ar_absences"));
+
             while (true) {
                 query.setOffset(offset);
                 query.setLimit(limit);
@@ -54,14 +52,12 @@ public class ReportAbsenceImpl implements ReportAbsence {
                 if (size(absences) < limit) break;
                 offset += limit;
             }
+            writer.collect(buffer);
+            return true;
         } catch (Exception ex) {
             log.warn("writeReport : fail to process chunk [{} - {}] : query: {} ", offset, limit, query, ex);
-            writer.close();
             return false;
         }
-
-        writer.collect(buffer);
-        return true;
     }
 
     public List<PersonAbsence> processChunk(AbsenceQuery query) {
