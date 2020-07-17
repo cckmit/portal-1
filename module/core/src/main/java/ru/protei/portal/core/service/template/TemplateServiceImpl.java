@@ -257,26 +257,6 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) {
-//        Map<String, Object> model = new HashMap<>();
-//        model.put( "employeeFullName", employeeFullName );
-
-//        return getText(model, "employee.registration.probation.subject.%s.ftl");
-        return "getProjectPauseTimeNotificationSubject"+ projectNumber + projectName;
-    }
-
-    @Override
-    public String getProjectPauseTimeNotificationBody( String name, Long projectNumber, String projectName ) {
-//        Map<String, Object> model = new HashMap<>();
-//        model.put( "employee_registration_name", employeeFullName );
-//        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
-//        model.put( "userName", recipientName);
-//
-//        return getText(model, "employee.registration.probation.curators.body.%s.ftl");
-        return "getProjectPauseTimeNotificationBody"+ projectNumber + projectName;
-    }
-
-    @Override
     public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
         EmployeeRegistration newState = event.getNewState();
@@ -485,7 +465,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("isCreated", event.isCreateEvent());
         templateModel.put("recipients", recipients);
 
-        templateModel.put("linkToProject", String.format(crmProjectUrl, event.getProjectId()));
+        templateModel.put("linkToProject", crmProjectUrl);
         templateModel.put("projectNumber", String.valueOf(event.getProjectId()));
         templateModel.put("nameChanged", event.isNameChanged());
         templateModel.put("oldName", getNullOrElse(oldProjectState, Project::getName));
@@ -695,6 +675,27 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
+    }
+
+
+    @Override
+    public String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) {
+//        Map<String, Object> model = new HashMap<>();
+//        model.put( "employeeFullName", employeeFullName );
+
+//        return getText(model, "employee.registration.probation.subject.%s.ftl");
+        return "getProjectPauseTimeNotificationSubject"+ projectNumber + projectName;
+    }
+
+    @Override
+    public String getProjectPauseTimeNotificationBody( String name, Long projectNumber, String projectName, String projectUrl ) {
+//        Map<String, Object> model = new HashMap<>();
+//        model.put( "employee_registration_name", employeeFullName );
+//        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
+//        model.put( "userName", recipientName);
+//
+//        return getText(model, "employee.registration.probation.curators.body.%s.ftl");
+        return "getProjectPauseTimeNotificationBody"+ projectNumber + projectName;
     }
 
 

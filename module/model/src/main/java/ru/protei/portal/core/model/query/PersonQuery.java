@@ -13,7 +13,7 @@ import java.util.Set;
 public class PersonQuery extends BaseQuery {
     private Set<Long> companyIds;
 
-    private Collection<Long> inIds;
+    private Collection<Long> personIds;
 
     private Boolean people;
 
@@ -25,14 +25,6 @@ public class PersonQuery extends BaseQuery {
 
     public PersonQuery() {
         super( "", En_SortField.person_full_name, En_SortDir.ASC );
-    }
-
-    public PersonQuery(Long companyId, Boolean people, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this ( toSet(companyId), people, fired, searchString, sortField, sortDir );
-    }
-
-    public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this(companyIds, people, fired, null, searchString, sortField, sortDir, null);
     }
 
     public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir, Boolean hasCaseFilter) {
@@ -53,12 +45,12 @@ public class PersonQuery extends BaseQuery {
         this.companyIds = companyIds;
     }
 
-    public Collection<Long> getInIds() {
-        return inIds;
+    public Collection<Long> getPersonIds() {
+        return personIds;
     }
 
-    public void setInIds( Collection<Long> inIds ) {
-        this.inIds = inIds;
+    public void setPersonIds( Collection<Long> personIds ) {
+        this.personIds = personIds;
     }
 
     public Boolean getPeople() {
@@ -115,7 +107,7 @@ public class PersonQuery extends BaseQuery {
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +
                 ", companyIds=" + companyIds +
-                ", inIds=" + inIds +
+                ", inIds=" + personIds +
                 '}';
     }
 }

@@ -466,16 +466,14 @@ public class MailNotificationProcessor {
         log.info( "onProjectPauseTimeNotificationEvent(): {}", event );
 
         try {
-            for (Person subscriber : event.getSubscribers()) {
+            String subject = templateService.getProjectPauseTimeNotificationSubject( event.projectNumber(), event.projectName() );
 
-                String subject = templateService.getProjectPauseTimeNotificationSubject( event.projectNumber(), event.projectName() );
+            String body = templateService.getProjectPauseTimeNotificationBody(
+                    event.getSubscriber().getDisplayName(), event.projectNumber(), event.projectName(),
+                    makeCrmProjectUrl( config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId() )
+            );
 
-                String body = templateService.getProjectPauseTimeNotificationBody(
-                        subscriber.getDisplayName(), event.projectNumber(), event.projectName()
-                );
-
-                sendMail( new PlainContactInfoFacade( subscriber.getContactInfo() ).getEmail(), subject, body );
-            }
+            sendMail( new PlainContactInfoFacade( event.getSubscriber().getContactInfo() ).getEmail(), subject, body );
         } catch (Exception e) {
             log.warn( "Failed to sent PauseTime notification: {}", event, e );
         }
@@ -679,7 +677,7 @@ public class MailNotificationProcessor {
                 event,
                 addresses,
                 links,
-                getCrmProjectUrl(),
+                makeCrmProjectUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId())                ,
                 new EnumLangUtil(lang)
         );
 
@@ -1006,8 +1004,9 @@ public class MailNotificationProcessor {
         return false;
     }
 
-    private String getCrmProjectUrl() {
-        return config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmProjectUrl();
+    private String makeCrmProjectUrl( String crmUrl, Long projectId ) {
+        String crmProjectUrl = crmUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
+        return String.format( crmProjectUrl, projectId );
     }
 
     private class MimeMessageHeadersFacade {

@@ -370,7 +370,7 @@ public class ProjectServiceImpl implements ProjectService {
         PersonQuery personQuery = new PersonQuery();
         personQuery.setDeleted( false );
         personQuery.setFired( false );
-        personQuery.setInIds( subscribersIds );
+        personQuery.setPersonIds( subscribersIds );
         List<Person> persons = personDAO.getPersons( personQuery );
 
         if (isEmpty( persons )) {
@@ -379,7 +379,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         log.info( "onPauseTimeNotification(): Do notification: pause date {} subscribers: {}", simpleDateFormat.format( pauseDate ), persons);
-        publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, persons ) );
+        for (Person person : persons) {
+            publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, person ) );
+        }
     }
 
     @Override

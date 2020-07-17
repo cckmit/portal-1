@@ -86,5 +86,5 @@ public interface TemplateService {
 
     String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName );
 
-    String getProjectPauseTimeNotificationBody( String name, Long aLong, String displayName );
+    String getProjectPauseTimeNotificationBody( String name, Long aLong, String displayNam, String projectUrl );
 }

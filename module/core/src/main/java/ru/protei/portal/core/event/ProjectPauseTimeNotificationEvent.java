@@ -7,9 +7,9 @@ import java.util.List;
 
 public class ProjectPauseTimeNotificationEvent extends ApplicationEvent {
 
-    public ProjectPauseTimeNotificationEvent( Object source, List<Person> subscribers ) {
+    public ProjectPauseTimeNotificationEvent( Object source, Person subscriber ) {
         super( source );
-        this.subscribers = subscribers;
+        this.subscriber = subscriber;
     }
 
     public void setProjectId( Long id ) {
@@ -31,8 +31,8 @@ public class ProjectPauseTimeNotificationEvent extends ApplicationEvent {
         return id;
     }
 
-    public List<Person> getSubscribers() {
-        return subscribers;
+    public Person getSubscriber() {
+        return subscriber;
     }
 
     public Long projectNumber() {
@@ -54,7 +54,7 @@ public class ProjectPauseTimeNotificationEvent extends ApplicationEvent {
 
     private Long id;
     private Long pauseDate;
-    private List<Person> subscribers;
+    private Person subscriber;
     private String projectName;
     private Long projectNumber;
 
@@ -66,7 +66,7 @@ public class ProjectPauseTimeNotificationEvent extends ApplicationEvent {
                 ", pauseDate=" + pauseDate +
                 ", projectNumber=" + projectNumber +
                 ", projectName='" + projectName +
-                ", subscribers=" + subscribers +
+                ", subscriber=" + subscriber +
                 '}';
     }
 }
