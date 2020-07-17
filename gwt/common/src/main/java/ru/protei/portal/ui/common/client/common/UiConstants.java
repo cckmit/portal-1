@@ -28,6 +28,7 @@ public class UiConstants {
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
         String CONTRACT = "fa fa-file-signature";
+        String EDUCATION = "fas fa-graduation-cap";
         String IP_RESERVATION = "fa fa-sitemap";
         String ROOM_RESERVATION = "fas fa-calendar-day";
         String PLAN = "fa fa-list-ol";

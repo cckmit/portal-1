@@ -16,6 +16,9 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn
     private Long personId;
 
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "personId", table = "Person", remoteColumn = "id")
+    private String personName;
+
     @JdbcColumn
     private Long companyId;
 
@@ -62,36 +65,24 @@ public class WorkerEntryShortView implements Serializable {
         this.personId = personId;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getPersonName() {
+        return personName;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public String getCompanyName() {
+        return companyName;
     }
 
     public String getDepartmentParentName() {
         return departmentParentName;
     }
 
-    public void setDepartmentParentName(String departmentParentName) {
-        this.departmentParentName = departmentParentName;
-    }
-
     public String getDepartmentName() {
         return departmentName;
     }
 
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
-    }
-
     public String getPositionName() {
         return positionName;
-    }
-
-    public void setPositionName(String positionName) {
-        this.positionName = positionName;
     }
 
     public int getActiveFlag() {
@@ -138,11 +129,32 @@ public class WorkerEntryShortView implements Serializable {
         this.positionId = positionId;
     }
 
+    public void setPersonName(String personName) {
+        this.personName = personName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public void setDepartmentParentName(String departmentParentName) {
+        this.departmentParentName = departmentParentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public void setPositionName(String positionName) {
+        this.positionName = positionName;
+    }
+
     @Override
     public String toString() {
         return "WorkerEntryShortView{" +
                 "id=" + id +
                 ", personId=" + personId +
+                ", personName=" + personName +
                 ", companyId=" + companyId +
                 ", companyName='" + companyName + '\'' +
                 ", departmentParentName='" + departmentParentName + '\'' +

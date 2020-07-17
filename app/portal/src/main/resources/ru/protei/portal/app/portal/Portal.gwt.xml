@@ -21,6 +21,7 @@
     <inherits name="ru.protei.portal.ui.employee.Employee"/>
     <inherits name="ru.protei.portal.ui.employeeregistration.EmployeeRegistration"/>
     <inherits name="ru.protei.portal.ui.contract.Contract"/>
+    <inherits name="ru.protei.portal.ui.education.Education"/>
     <inherits name="ru.protei.portal.ui.ipreservation.IpReservation"/>
     <inherits name="ru.protei.portal.ui.roomreservation.RoomReservation"/>
     <inherits name="ru.protei.portal.ui.plan.Plan"/>

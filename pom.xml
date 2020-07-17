@@ -66,10 +66,12 @@
                 <module>gwt/employee</module>
                 <module>gwt/employeeregistration</module>
                 <module>gwt/contract</module>
+                <module>gwt/education</module>
                 <module>gwt/ipreservation</module>
                 <module>gwt/roomreservation</module>
                 <module>gwt/plan</module>
                 <module>gwt/absence</module>
+
                 <module>app/portal</module>
             </modules>
         </profile>

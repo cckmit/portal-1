@@ -80,6 +80,7 @@ import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
+import ru.protei.portal.ui.common.client.widget.selector.worker.entry.WorkerEntryModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -160,6 +161,7 @@ public class CommonClientModule extends AbstractGinModule {
         // Models
         bind( PrivilegeModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
+        bind( WorkerEntryModel.class ).asEagerSingleton();
 
         bind( ConfigStorage.class ).asEagerSingleton();
 

@@ -332,6 +332,21 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return new EducationWalletDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return new EducationEntryDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return new EducationEntryAttendanceDAO_Impl();
+    }
+
+    @Bean
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return new CompanyImportanceItemDAO_Impl();
     }

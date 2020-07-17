@@ -1,0 +1,25 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:table='urn:import:ru.brainworm.factory.widget.table.client'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <div class="card m-b-0">
+            <div class="card-body">
+                <div class="d-flex">
+                    <h5 class="text-primary no-margin flex-grow-1 align-self-center"><ui:text from="{lang.educationActualEntries}"/></h5>
+                    <g:Button styleName="btn btn-primary align-self-center" ui:field="requestEntry">
+                        <i class="far fa-plus-square"/>
+                        <span class="bold"><ui:text from="{lang.educationRequestEntry}"/></span>
+                    </g:Button>
+                </div>
+            </div>
+        </div>
+        <div class="auto-overflow">
+            <table:TableWidget ui:field="table" styleName="table table-hover education-table"/>
+        </div>
+        <loading:IndeterminateCircleLoading ui:field="loading" styleName="p-t-20 p-b-20 p-l-20 p-r-20" visible="false"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

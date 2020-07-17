@@ -324,6 +324,21 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return  mock(EducationWalletDAO.class);
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return  mock(EducationEntryDAO.class);
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return  mock(EducationEntryAttendanceDAO.class);
+    }
+
+    @Bean
     public CompanyImportanceItemDAO getCompanyImportanceItemDAO() {
         return mock(CompanyImportanceItemDAO.class);
     }

@@ -172,6 +172,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public Result<List<WorkerEntryShortView>> getWorkerEntryList(AuthToken token, int offset, int limit) {
+        SearchResult<WorkerEntryShortView> result = workerEntryShortViewDAO.getAll(offset, limit);
+        if (result == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+        return ok(result.getResults());
+    }
+
+    @Override
     public Result<EmployeeShortView> getEmployeeWithChangedHiddenCompanyNames(AuthToken token, Long employeeId) {
 
         if (employeeId == null) {
