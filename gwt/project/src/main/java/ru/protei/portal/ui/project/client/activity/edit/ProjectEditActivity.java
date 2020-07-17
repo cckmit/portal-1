@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
@@ -241,9 +242,14 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if(PAUSED.equals( view.state().getValue() ) && !Objects.equals(project.getPauseDate(), view.pauseDate().getValue())){
+        if (PAUSED.equals( view.state().getValue() )) {
             Date pauseDate = view.pauseDate().getValue();
-            if (pauseDate == null || pauseDate.getTime() < System.currentTimeMillis()) {
+            if (pauseDate == null) {
+                fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
+
+            if (!Objects.equals(project.getPauseDate(), pauseDate.getTime()) && pauseDate.getTime() < System.currentTimeMillis()) {
                 fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));
                 return false;
             }
@@ -280,4 +286,5 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private static final En_CaseType PROJECT_CASE_TYPE = En_CaseType.PROJECT;
 
     private AppEvents.InitDetails initDetails;
+    private static final Logger log = Logger.getLogger( ProjectEditActivity.class.getName() );
 }

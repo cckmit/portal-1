@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -18,9 +17,6 @@ public class ProjectEntity extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
-
-//    @JdbcColumn(name = "CASENO")
-//    private Long caseNumber;
 
     @JdbcColumn(name = Columns.CASE_TYPE)
     @JdbcEnumerated( EnumType.ID )
@@ -49,9 +45,6 @@ public class ProjectEntity extends AuditableObject {
     @JdbcColumn(name = "CREATOR")
     private Long creatorId;
 
-//    @JdbcJoinedObject( localColumn = "CREATOR", remoteColumn = "id", updateLocalColumn = false )
-//    private Person creator;
-
     @JdbcColumn(name = Columns.DELETED)
     private boolean deleted;
 
@@ -68,14 +61,6 @@ public class ProjectEntity extends AuditableObject {
     public void setId( Long id ) {
         this.id = id;
     }
-
-//    public Long getCaseNumber() {
-//        return caseNumber;
-//    }
-//
-//    public void setCaseNumber( Long caseNumber ) {
-//        this.caseNumber = caseNumber;
-//    }
 
     public String getName() {
         return name;
@@ -136,7 +121,7 @@ public class ProjectEntity extends AuditableObject {
 
     @Override
     public String getAuditType() {
-        return Project.AUDIT_TYPE_PROJECT;
+        return Project.AUDIT_TYPE;
     }
 
     public void setPauseDate( Long pauseDateTimestamp ) {

@@ -11,10 +11,6 @@ import java.util.Date;
  */
 public class PortalScheduleTasksStub extends PortalScheduleTasksImpl {
 
-//    @Override
-//    public void init() {}
-
-
     @Override
     public void onApplicationStartOrRefreshContext( ContextRefreshedEvent event ) {
 
@@ -25,9 +21,6 @@ public class PortalScheduleTasksStub extends PortalScheduleTasksImpl {
 
     @Override
     public void processOldReportsSchedule() {}
-
-//    @Override
-//    public void processHangReportsSchedule() {}
 
     @Override
     public void processScheduledMailReportsWeekly() {}

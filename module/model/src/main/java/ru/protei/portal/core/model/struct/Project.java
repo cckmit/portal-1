@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class Project extends AuditableObject {
 
-    public static final String AUDIT_TYPE_PROJECT = "Project";
+    public static final String AUDIT_TYPE = "Project";
     /**
      * Идентификатор записи о проекте
      */
@@ -365,7 +364,7 @@ public class Project extends AuditableObject {
 
     @Override
     public String getAuditType() {
-        return AUDIT_TYPE_PROJECT;
+        return AUDIT_TYPE;
     }
 
     public void setPauseDate( Long pauseDateTimestamp ) {
@@ -418,6 +417,7 @@ public class Project extends AuditableObject {
                 ", platformId=" + platformId +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", projectSlas=" + projectSlas +
+                ", pauseDate=" + pauseDate +
                 '}';
     }
 }

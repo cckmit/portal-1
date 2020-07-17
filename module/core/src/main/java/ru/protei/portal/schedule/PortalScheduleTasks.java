@@ -7,7 +7,6 @@ import org.springframework.context.event.EventListener;
 import java.util.Date;
 
 public interface PortalScheduleTasks {
-//    void scheduleProjectPauseTimeNotification( Long projectId, Long pauseDate );
 
     @EventListener
     void onApplicationStartOrRefreshContext( ContextRefreshedEvent event );
