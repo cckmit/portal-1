@@ -116,6 +116,8 @@ public class ContractServiceImpl implements ContractService {
             } else {
                 return result;
             }
+        } else {
+            contract.setContractorId(null);
         }
 
         Long contractId = contractDAO.persist(contract);
@@ -154,6 +156,8 @@ public class ContractServiceImpl implements ContractService {
             } else {
                 return result;
             }
+        } else {
+            contract.setContractorId(null);
         }
 
         contractDAO.merge(contract);

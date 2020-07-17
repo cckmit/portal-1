@@ -2026,7 +2026,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectContractContractor();
 
-    String selectContractOrganization();
+    String contractContractorOrganizationHint();
 
     String searchContractorTitle();
 
