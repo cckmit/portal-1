@@ -36,6 +36,7 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.selectContractContractor());
+        root.setTitle(lang.contractContractorOrganizationHint());
         prepareSearchDialog(dialogDetailsSearchView);
         prepareCreateDialog(dialogDetailsCreateView);
         searchView.setActivity(makeSearchViewActivity());
@@ -232,6 +233,9 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     @Inject
     AbstractDialogDetailsView dialogDetailsCreateView;
+
+    @UiField
+    HTMLPanel root;
 
     @UiField
     TextBox name;

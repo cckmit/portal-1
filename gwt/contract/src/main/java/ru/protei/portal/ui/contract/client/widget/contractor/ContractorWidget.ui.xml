@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
+    <g:HTMLPanel ui:field="root">
         <div class="contractor input-group">
             <g:TextBox ui:field="name" styleName="form-control rounded-left-3" enabled="false"/>
             <div class="input-group-append">
