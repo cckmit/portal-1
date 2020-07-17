@@ -21,7 +21,6 @@ import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Consumer;
 
