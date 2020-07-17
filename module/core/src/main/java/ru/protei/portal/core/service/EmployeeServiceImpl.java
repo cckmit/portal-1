@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -22,7 +21,11 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -35,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 
 /**
@@ -336,10 +340,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
 
-            UserLogin userLogin = userLoginDAO.findByPersonId(personFromDb.getId());
-            if(userLogin != null) {
-                userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                updateAccount(userLogin, token);
+            List<UserLogin> userLogins = userLoginDAO.findByPersonId(personFromDb.getId());
+            if(isNotEmpty(userLogins)) {
+                for (UserLogin userLogin : userLogins) {
+                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                    updateAccount(userLogin, token);
+                }
             }
         }
 
