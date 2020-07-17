@@ -16,7 +16,7 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn
     private Long personId;
 
-    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "personId", table = "Person", remoteColumn = "id")
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "personId", table = "person", remoteColumn = "id")
     private String personName;
 
     @JdbcColumn
