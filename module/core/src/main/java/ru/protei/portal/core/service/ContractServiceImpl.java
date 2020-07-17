@@ -21,6 +21,8 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -124,16 +126,16 @@ public class ContractServiceImpl implements ContractService {
         if (contractId == null)
             return error(En_ResultStatus.INTERNAL_ERROR);
 
-        contract.setContractor(contractor);
+        if (contract.getContractor() != null) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isOk()) {
+                contract.setRefKey(result.getData().getRefKey());
+            } else {
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
 
-        Result<Contract1C> result = createContract(contract);
-        if (result.isOk()) {
-            contract.setRefKey(result.getData().getRefKey());
-        } else {
-            return error(En_ResultStatus.INTERNAL_ERROR);
+            contractDAO.merge(contract);
         }
-
-        contractDAO.merge(contract);
 
         jdbcManyRelationsHelper.persist(contract, "contractDates");
         jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
@@ -151,6 +153,13 @@ public class ContractServiceImpl implements ContractService {
         if (contract == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
+        /*
+           не даем сбрасывать связку с 1С, она может существовать только, если задан контрагент
+         */
+        if (StringUtils.isNotBlank(contract.getRefKey()) && contract.getContractor() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         CaseObject caseObject = caseObjectDAO.get(contract.getId());
         if (caseObject == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -166,12 +175,12 @@ public class ContractServiceImpl implements ContractService {
             } else {
                 return result;
             }
+        } else {
+            contract.setContractorId(null);
         }
 
-        if (StringUtils.isEmpty(contract.getRefKey())) {
-            contract.setContractor(contractor);
-
-            Result<Contract1C> result = createContract(contract);
+        if (contract.getContractor() != null) {
+            Result<Contract1C> result = saveContract1C(contract);
             if (result.isOk()) {
                 contract.setRefKey(result.getData().getRefKey());
             } else {
@@ -290,8 +299,8 @@ public class ContractServiceImpl implements ContractService {
         return ok(contractor.getId());
     }
 
-    private Result<Contract1C> createContract(Contract contract) {
-        if (contract == null) {
+    private Result<Contract1C> saveContract1C(Contract contract) {
+        if (contract == null || contract.getOrganizationId() == null || StringUtils.isBlank(contract.getOrganizationName())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -302,10 +311,15 @@ public class ContractServiceImpl implements ContractService {
         Contract1C queryContract1C = to1C(contract);
 
         if (StringUtils.isNotBlank(contract.getRefKey())){
-            return api1CService.getContract(queryContract1C, contract.getOrganizationName());
-        } else {
-            return api1CService.saveContract(queryContract1C, contract.getOrganizationName());
+            Result<Contract1C> result = api1CService.getContract(queryContract1C, contract.getOrganizationName());
+            if (result.isOk()) {
+                if (isSame(queryContract1C, result.getData())) {
+                    return api1CService.getContract(queryContract1C, contract.getOrganizationName());
+                }
+            }
         }
+
+        return api1CService.saveContract(queryContract1C, contract.getOrganizationName());
     }
 
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
@@ -358,11 +372,20 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setNumber(contract.getNumber());
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(contract.getDateSigning());
+        contract1C.setName(contract.getNumber()+ " от " + dateFormat.format(contract.getDateSigning()));
 
         return contract1C;
+    }
+
+    public static boolean isSame(Contract1C c1, Contract1C c2) {
+        return Objects.equals(c1.getNumber(), c2.getNumber())
+                && Objects.equals(c1.getDateSigning(), c2.getDateSigning())
+                && Objects.equals(c1.getContractorKey(), c1.getContractorKey());
     }
 
     private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);
     private final Pattern kppPattern = Pattern.compile(CONTRACTOR_KPP);
     private final Pattern contractNumberPattern = Pattern.compile(CONTRACT_NUMBER);
+
+    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 }

@@ -161,6 +161,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
+        view.organizationEnabled().setEnabled(StringUtils.isBlank(contract.getRefKey()));
 
         if (view.project().getValue() == null) {
             view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
@@ -187,7 +188,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
 
         contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
-        contract.setContractor((view.contractor().getValue()));
+        contract.setContractor(view.contractor().getValue());
 
         if (contract.getProjectId() == null) {
             contract.setCaseManagerId(getPersonIdOrNull(view.manager().getValue()));

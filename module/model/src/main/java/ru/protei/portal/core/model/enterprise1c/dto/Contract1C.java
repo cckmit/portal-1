@@ -25,8 +25,8 @@ public class Contract1C {
     private String number;
 
     //"Зак.-спец.№29 от 06.08.18г. к Дог.№217091/0501  РТК Оренбург"
-/*    @JsonProperty("Description")
-    private String name;*/
+    @JsonProperty("Description")
+    private String name;
 
     //"a191c4b8-67c7-11de-a54e-001f3c01f807"
     @SpecialParam1C(En_1CParamType.ID)
@@ -47,9 +47,9 @@ public class Contract1C {
         this.refKey = refKey;
     }
 
-/*    public String getName() { return name; }
+    public String getName() { return name; }
 
-    public void setName(String name) { this.name = name; }*/
+    public void setName(String name) { this.name = name; }
 
     public String getNumber() {
         return number;

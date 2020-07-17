@@ -177,6 +177,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasEnabled organizationEnabled() { return organization; }
+
+    @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
     }

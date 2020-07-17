@@ -116,7 +116,11 @@ public class Api1CImpl implements Api1C{
         }
 
         try {
-            return client.save(buildSaveContractUrl(homeCompanyName), jsonMapper.writeValueAsString(contract), Contract1C.class)
+            String url = StringUtils.isBlank(contract.getRefKey()) ?
+                    buildCreateContractUrl(homeCompanyName):
+                    buildUpdateContractUrl(contract, homeCompanyName);
+
+            return client.save(url, jsonMapper.writeValueAsString(contract), Contract1C.class)
                     .ifOk(value -> log.info("saveContract(): OK "))
                     .ifError(result -> log.warn("saveContract(): Can`t save contract={}. {}", contract, result));
         } catch (JsonProcessingException e){
@@ -254,9 +258,15 @@ public class Api1CImpl implements Api1C{
         return replaceSpaces(url);
     }
 
-    private String buildSaveContractUrl(String homeCompanyName){
+    private String buildCreateContractUrl(String homeCompanyName){
         String url = buildCommonUrl(Contract1C.class, homeCompanyName);
-        log.debug("buildSaveContractUrl(): url={}", url);
+        log.debug("buildCreateContractUrl(): url={}", url);
+        return url;
+    }
+
+    private String buildUpdateContractUrl(Contract1C contract, String homeCompanyName){
+        String url = buildCommonUrl(contract.getClass(), homeCompanyName, contract.getRefKey());
+        log.debug("buildCreateContractUrl(): url={}", url);
         return url;
     }
 
