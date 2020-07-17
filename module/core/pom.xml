@@ -97,6 +97,8 @@
                         <argument>notification/email/reserved.ip.remaining.subject.ftl</argument>
                         <argument>notification/email/person.case.filter.subject.ftl</argument>
                         <argument>notification/email/person.case.filter.body.ftl</argument>
+                        <argument>notification/email/project.pausetime.subject.ftl</argument>
+                        <argument>notification/email/project.pausetime.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

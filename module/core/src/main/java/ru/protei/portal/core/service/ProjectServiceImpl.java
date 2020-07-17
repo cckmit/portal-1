@@ -40,8 +40,7 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -96,6 +95,72 @@ public class ProjectServiceImpl implements ProjectService {
     PortalScheduleTasks scheduledTasksService;
     @Autowired
     EventPublisherService publisherService;
+
+
+    @EventListener
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void schedulePauseTimeNotificationsOnPortalStartup( SchedulePauseTimeOnStartupEvent event ) {
+        Collection<ProjectEntity> projectEntities = projectEntityDAO.selectScheduledPauseTime( System.currentTimeMillis() );
+
+        if (isEmpty( projectEntities )) {
+            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): No planned pause time notifications found." );
+            return;
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
+        for (ProjectEntity project : projectEntities) {
+            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): projectId={} date={}", project.getId(), simpleDateFormat.format( project.getPauseDate() ) );
+
+            ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent( this, project.getId(), project.getPauseDate() );
+            scheduledTasksService.scheduleEvent( projectPauseTimeEvent, new Date( project.getPauseDate() ) );
+        }
+    }
+
+    @EventListener
+    @Async(BACKGROUND_TASKS)
+    @Override
+    public void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event ) {
+        Long projectId = event.getProjectId();
+        Long pauseDate = event.getPauseDate();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
+        log.info( "onPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
+
+        ProjectEntity project = projectEntityDAO.get( projectId );
+        if (!Objects.equals( pauseDate, project.getPauseDate() )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: pause date was changed: old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( project.getPauseDate() ) );
+            return;
+        }
+
+        jdbcManyRelationsHelper.fill( project, "members" );
+
+        Collection<Long> subscribersIds = toSet( project.getMembers(), caseMember -> caseMember.getMemberId() );
+        if (project.getCreatorId() != null) {
+            subscribersIds.add( project.getCreatorId() );
+        }
+
+        if (isEmpty( subscribersIds )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: No subscribers found for pause time notification {}", simpleDateFormat.format( pauseDate ) );
+            return;
+        }
+
+        PersonQuery personQuery = new PersonQuery();
+        personQuery.setDeleted( false );
+        personQuery.setFired( false );
+        personQuery.setPeople( true );
+        personQuery.setPersonIds( subscribersIds );
+        List<Person> persons = personDAO.getPersons( personQuery );
+
+        if (isEmpty( persons )) {
+            log.info( "onPauseTimeNotification(): Ignore notification: No available subscribers found for pause time notification {}", simpleDateFormat.format( pauseDate ) );
+            return;
+        }
+
+        log.info( "onPauseTimeNotification(): Do notification: pause date {} subscribers: {}", simpleDateFormat.format( pauseDate ), persons);
+        for (Person person : persons) {
+            publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, person, project.getId(), project.getName(), new Date(pauseDate) ) );
+        }
+    }
 
     @Override
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -314,75 +379,6 @@ public class ProjectServiceImpl implements ProjectService {
         return ok(result);
     }
 
-
-    private static volatile int cnt = 0;
-
-    @EventListener
-    @Async(BACKGROUND_TASKS)
-    @Override
-    public void schedulePauseTimeNotificationsOnPortalStartup( PauseTimeOnStartupEvent event ) {
-        Collection<ProjectEntity> projectEntities = projectEntityDAO.selectScheduledPauseTime( System.currentTimeMillis() );
-
-        if (isEmpty( projectEntities )) {
-            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): No planned pause time notifications found." );
-            return;
-        }
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
-        for (ProjectEntity project : projectEntities) {
-            log.info( "schedulePauseTimeNotificationsOnPortalStartup(): projectId={} date={}", project.getId(), simpleDateFormat.format( project.getPauseDate() ) );
-
-            ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent( this );
-            projectPauseTimeEvent.setProjectId( project.getId() );
-            projectPauseTimeEvent.setPauseDate( project.getPauseDate() );
-            scheduledTasksService.scheduleEvent( projectPauseTimeEvent, new Date( project.getPauseDate() ) );
-        }
-
-    }
-
-    @EventListener
-    @Async(BACKGROUND_TASKS)
-    @Override
-    public void onPauseTimeNotification( ProjectPauseTimeHasComeEvent event ) {
-        Long projectId = event.getProjectId();
-        Long pauseDate = event.getPauseDate();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
-        log.info( "onPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
-
-        ProjectEntity project = projectEntityDAO.get( projectId );
-        if (!Objects.equals( pauseDate, project.getPauseDate() )) {
-            log.info( "onPauseTimeNotification(): Ignore notification: pause date changed old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( project.getPauseDate() ) );
-            return;
-        }
-
-        jdbcManyRelationsHelper.fill( project, "members" );
-
-        List<Long> subscribersIds = listOf( project.getMembers() ).stream().map( caseMember -> caseMember.getMemberId() ).collect( toList() );
-        if (project.getCreatorId() != null) {
-            subscribersIds.add( project.getCreatorId() );
-        }
-
-        if (isEmpty( subscribersIds )) {
-            log.info( "onPauseTimeNotification(): Ignore notification: No subscribers found for pause notification {}", simpleDateFormat.format( pauseDate ) );
-            return;
-        }
-
-        PersonQuery personQuery = new PersonQuery();
-        personQuery.setDeleted( false );
-        personQuery.setFired( false );
-        personQuery.setPersonIds( subscribersIds );
-        List<Person> persons = personDAO.getPersons( personQuery );
-
-        if (isEmpty( persons )) {
-            log.info( "onPauseTimeNotification(): Ignore notification: No avalable subscribers found for pause notification {}", simpleDateFormat.format( pauseDate ) );
-            return;
-        }
-
-        log.info( "onPauseTimeNotification(): Do notification: pause date {} subscribers: {}", simpleDateFormat.format( pauseDate ), persons);
-        for (Person person : persons) {
-            publisherService.publishEvent( new ProjectPauseTimeNotificationEvent( this, person ) );
-        }
-    }
 
     @Override
     public Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query) {

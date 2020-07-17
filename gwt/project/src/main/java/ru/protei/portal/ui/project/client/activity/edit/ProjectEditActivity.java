@@ -23,10 +23,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
@@ -244,7 +241,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        if(PAUSED.equals( view.state().getValue() )){
+        if(PAUSED.equals( view.state().getValue() ) && !Objects.equals(project.getPauseDate(), view.pauseDate().getValue())){
             Date pauseDate = view.pauseDate().getValue();
             if (pauseDate == null || pauseDate.getTime() < System.currentTimeMillis()) {
                 fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));

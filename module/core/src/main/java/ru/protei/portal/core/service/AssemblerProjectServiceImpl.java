@@ -44,9 +44,6 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
                 .ifOk(filledEvent -> publisherService.publishEvent(filledEvent));
     }
 
-    @Autowired
-    private TaskScheduler taskScheduler;
-    private ScheduledFuture<?> schedulerFuture;
     private Result<AssembledProjectEvent> schedulePauseTime( AssembledProjectEvent event ) {
         if(event.isCreateEvent() && event.getNewProjectState()!=null && event.getNewProjectState().getPauseDate()!=null){
             schedulePauseTimeNotification(event.getProjectId(), event.getNewProjectState().getPauseDate());
@@ -62,10 +59,7 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     }
 
     private void schedulePauseTimeNotification(final Long projectId, final Long pauseDate ) {
-//        portalScheduleTasks.scheduleProjectPauseTimeNotification(projectId, pauseDate );
-        ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent(this);
-        projectPauseTimeEvent.setProjectId(projectId);
-        projectPauseTimeEvent.setPauseDate(pauseDate);
+        ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent(this, projectId, pauseDate);
         scheduledTasksService.scheduleEvent( projectPauseTimeEvent, new Date(pauseDate) );
     }
 

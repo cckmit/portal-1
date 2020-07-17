@@ -466,11 +466,12 @@ public class MailNotificationProcessor {
         log.info( "onProjectPauseTimeNotificationEvent(): {}", event );
 
         try {
-            String subject = templateService.getProjectPauseTimeNotificationSubject( event.projectNumber(), event.projectName() );
+            String subject = templateService.getProjectPauseTimeNotificationSubject( event.getProjectId(), event.getProjectName() );
 
-            String body = templateService.getProjectPauseTimeNotificationBody(
-                    event.getSubscriber().getDisplayName(), event.projectNumber(), event.projectName(),
-                    makeCrmProjectUrl( config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId() )
+            String body = templateService.getProjectPauseTimeNotificationBody( event.getSubscriber().getDisplayName(),
+                    event.getProjectId(), event.getProjectName(),
+                    makeCrmProjectUrl( config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getProjectId() ),
+                    event.getPauseDate()
             );
 
             sendMail( new PlainContactInfoFacade( event.getSubscriber().getContactInfo() ).getEmail(), subject, body );

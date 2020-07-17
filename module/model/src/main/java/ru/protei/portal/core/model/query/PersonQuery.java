@@ -24,7 +24,7 @@ public class PersonQuery extends BaseQuery {
     private Boolean hasCaseFilter;
 
     public PersonQuery() {
-        super( "", En_SortField.person_full_name, En_SortDir.ASC );
+        super( null, En_SortField.person_full_name, En_SortDir.ASC );
     }
 
     public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir, Boolean hasCaseFilter) {

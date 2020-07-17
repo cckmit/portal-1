@@ -3,70 +3,60 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.Person;
 
-import java.util.List;
+import java.util.Date;
 
 public class ProjectPauseTimeNotificationEvent extends ApplicationEvent {
 
-    public ProjectPauseTimeNotificationEvent( Object source, Person subscriber ) {
+    public ProjectPauseTimeNotificationEvent( Object source, Person subscriber, Long projectId, String projectName, Date pauseDate ) {
         super( source );
         this.subscriber = subscriber;
-    }
-
-    public void setProjectId( Long id ) {
-
-
-        this.id = id;
-    }
-
-    public void setPauseDate( Long pauseDate ) {
-
+        this.projectId = projectId;
+        this.projectName = projectName;
         this.pauseDate = pauseDate;
     }
 
-    public Long getPauseDate() {
-        return pauseDate;
+    public void setProjectId( Long id ) {
+        this.projectId = id;
     }
 
     public Long getProjectId() {
-        return id;
+        return projectId;
+    }
+
+    public void setPauseDate( Date pauseDate ) {
+        this.pauseDate = pauseDate;
+    }
+
+    public Date getPauseDate() {
+        return pauseDate;
     }
 
     public Person getSubscriber() {
         return subscriber;
     }
 
-    public Long projectNumber() {
-        return projectNumber;
-
-    }
-
-    public String projectName() {
-        return projectName;
-    }
-
     public void setProjectName( String projectName ) {
         this.projectName = projectName;
     }
 
-    public void setProjectNumber( Long projectNumber ) {
-        this.projectNumber = projectNumber;
+    public String getProjectName() {
+        return projectName;
     }
 
-    private Long id;
-    private Long pauseDate;
+    private Long projectId;
+    private Date pauseDate;
     private Person subscriber;
     private String projectName;
-    private Long projectNumber;
-
 
     @Override
     public String toString() {
         return "ProjectPauseTimeNotificationEvent{" +
-                "id=" + id +
+                "projectId=" + projectId +
                 ", pauseDate=" + pauseDate +
-                ", projectNumber=" + projectNumber +
+                ", projectNumber=" + projectId +
                 ", projectName='" + projectName +
                 ", subscriber=" + subscriber +
                 '}';
     }
+
 }

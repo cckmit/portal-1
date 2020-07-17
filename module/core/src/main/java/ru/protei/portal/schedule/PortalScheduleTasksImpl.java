@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.PauseTimeOnStartupEvent;
+import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -110,7 +110,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     }
 
     private void schedulePauseTimeNotifications() {
-        publisherService.publishEvent( new PauseTimeOnStartupEvent( this ) );
+        publisherService.publishEvent( new SchedulePauseTimeOnStartupEvent( this ) );
     }
 
     @Autowired

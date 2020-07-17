@@ -679,23 +679,24 @@ public class TemplateServiceImpl implements TemplateService {
 
 
     @Override
-    public String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) {
-//        Map<String, Object> model = new HashMap<>();
-//        model.put( "employeeFullName", employeeFullName );
+    public String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) throws IOException, TemplateException{
+        Map<String, Object> model = new HashMap<>();
+        model.put( "projectNumber", String.valueOf( projectNumber ));
+        model.put( "projectName", projectName );
 
-//        return getText(model, "employee.registration.probation.subject.%s.ftl");
-        return "getProjectPauseTimeNotificationSubject"+ projectNumber + projectName;
+        return getText(model, "project.pausetime.subject.%s.ftl");
     }
 
     @Override
-    public String getProjectPauseTimeNotificationBody( String name, Long projectNumber, String projectName, String projectUrl ) {
-//        Map<String, Object> model = new HashMap<>();
-//        model.put( "employee_registration_name", employeeFullName );
-//        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
-//        model.put( "userName", recipientName);
-//
-//        return getText(model, "employee.registration.probation.curators.body.%s.ftl");
-        return "getProjectPauseTimeNotificationBody"+ projectNumber + projectName;
+    public String getProjectPauseTimeNotificationBody( String subscriberName, Long projectNumber, String projectName, String projectUrl, Date pauseTimeDate) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "projectNumber", projectNumber );
+        model.put( "projectName", projectName );
+        model.put( "projectUrl", projectUrl );
+        model.put( "userName", subscriberName );
+        model.put( "pauseTimeDate",  new SimpleDateFormat("dd.MM.yyyy").format(pauseTimeDate) );
+
+        return getText(model, "project.pausetime.body.%s.ftl");
     }
 
 

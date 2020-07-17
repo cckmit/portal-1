@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.PauseTimeOnStartupEvent;
+import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.event.ProjectPauseTimeHasComeEvent;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -83,7 +83,7 @@ public interface ProjectService {
 
     @EventListener
     @Async(BACKGROUND_TASKS)
-    void schedulePauseTimeNotificationsOnPortalStartup( PauseTimeOnStartupEvent event );
+    void schedulePauseTimeNotificationsOnPortalStartup( SchedulePauseTimeOnStartupEvent event );
 
     @EventListener
     @Async(BACKGROUND_TASKS)

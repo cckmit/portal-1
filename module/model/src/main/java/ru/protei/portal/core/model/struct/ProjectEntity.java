@@ -19,6 +19,9 @@ public class ProjectEntity extends AuditableObject {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
+//    @JdbcColumn(name = "CASENO")
+//    private Long caseNumber;
+
     @JdbcColumn(name = Columns.CASE_TYPE)
     @JdbcEnumerated( EnumType.ID )
     private En_CaseType type;
@@ -65,6 +68,14 @@ public class ProjectEntity extends AuditableObject {
     public void setId( Long id ) {
         this.id = id;
     }
+
+//    public Long getCaseNumber() {
+//        return caseNumber;
+//    }
+//
+//    public void setCaseNumber( Long caseNumber ) {
+//        this.caseNumber = caseNumber;
+//    }
 
     public String getName() {
         return name;
