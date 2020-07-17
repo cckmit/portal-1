@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
+
 /**
  * Сервис управления учетными записями
  */
@@ -17,7 +19,7 @@ public interface AccountController extends RemoteService {
 
     UserLogin getAccount ( long id ) throws RequestFailedException;
 
-    UserLogin getContactAccount (long personId ) throws RequestFailedException;
+    List<UserLogin> getContactAccount (long personId ) throws RequestFailedException;
 
     UserLogin saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException;
 

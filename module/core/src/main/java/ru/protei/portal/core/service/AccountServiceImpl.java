@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Реализация сервиса управления учетными записями
@@ -84,10 +85,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result< UserLogin > getContactAccount( AuthToken authToken, long personId ) {
-        UserLogin userLogin = userLoginDAO.findByPersonId( personId );
+    public Result< List<UserLogin> > getContactAccount( AuthToken authToken, long personId ) {
+        List<UserLogin> userLogin = userLoginDAO.findByPersonId( personId );
 
-        if ( userLogin == null ) {
+        if ( isEmpty(userLogin) ) {
             return  error( En_ResultStatus.NOT_FOUND );
         }
 
