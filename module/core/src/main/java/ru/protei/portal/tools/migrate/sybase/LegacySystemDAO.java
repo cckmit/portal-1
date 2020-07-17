@@ -218,6 +218,14 @@ public class LegacySystemDAO {
         return runAction(transaction -> transaction.dao(ExternalReservedIp.class).list(""));
     }
 
+    public List<ExternalPersonAbsence> getExternalAbsences (String date) throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalPersonAbsence.class).list("dToDate >= ? ", date));
+    }
+
+    public List<ExternalPersonLeave> getExternalLeaves (String date) throws SQLException {
+        return runAction(transaction -> transaction.dao(ExternalPersonLeave.class).list("dToDate >= ? ", date));
+    }
+
     public ExternalPersonInfoCollector personCollector (List<ExternalPerson> personList) {
         return new ExternalPersonInfoCollector().fromPersonSet(personList);
     }
