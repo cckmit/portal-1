@@ -326,6 +326,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public EducationService getEducationService() {
+        return new EducationServiceImpl();
+    }
+
+    @Bean
     public IpReservationService getIpReservationService() { return new IpReservationServiceImpl(); }
 
     @Bean

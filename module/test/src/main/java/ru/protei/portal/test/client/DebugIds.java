@@ -89,6 +89,7 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String EDUCATION = "sidebar-menu-education";
         String SUBNET = "sidebar-menu-subnet";
         String RESERVED_IP = "sidebar-menu-reserved-ip";
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";

@@ -2278,6 +2278,56 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueAssignmentDeskAddRow();
 
+    String education();
+
+    String educationConference();
+
+    String educationCourse();
+
+    String educationLiterature();
+
+    String educationConferences();
+
+    String educationCourses();
+
+    String educationActualEntries();
+
+    String educationEntryAttendance();
+
+    String educationRequestEntry();
+
+    String educationEntryAttendanceRequested();
+
+    String educationEntryTitle();
+
+    String educationEntryType();
+
+    String educationEntryCoins();
+
+    String educationEntryLink();
+
+    String educationEntryLocation();
+
+    String educationEntryDates();
+
+    String educationEntryDescription();
+
+    String educationEntryImage();
+
+    String educationEntryParticipants();
+
+    String educationEntryActionApprove();
+
+    String educationEntryActionDecline();
+
+
+    String educationShowOnlyNotApproved();
+
+    String educationShowOutdated();
+
+    String selectImage();
+
+
     String companyCategoryCustomer();
 
     String companyCategoryPartner();

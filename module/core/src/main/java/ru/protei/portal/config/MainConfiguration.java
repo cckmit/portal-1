@@ -600,6 +600,21 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return new EducationWalletDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return new EducationEntryDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return new EducationEntryAttendanceDAO_Impl();
+    }
+
+    @Bean
     public SubnetDAO getSubnetDAO() {
         return new SubnetDAO_Impl();
     }
@@ -914,6 +929,11 @@ public class MainConfiguration {
     @Bean
     public UserCaseAssignmentService getUserCaseAssignmentService() {
         return new UserCaseAssignmentServiceImpl();
+    }
+
+    @Bean
+    public EducationService getEducationService() {
+        return new EducationServiceImpl();
     }
 
     @Bean

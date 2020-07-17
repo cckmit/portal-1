@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -33,7 +34,8 @@ public interface EmployeeService {
 
     Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId);
 
-    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<List<WorkerEntryShortView>> getWorkerEntryList(AuthToken token, int offset, int limit);
+
     Result<EmployeeShortView> getEmployeeWithChangedHiddenCompanyNames(AuthToken token, Long employee);
 
     @Auditable(En_AuditType.EMPLOYEE_CREATE)

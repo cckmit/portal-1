@@ -8,8 +8,11 @@ import ru.protei.portal.core.model.query.CompanyDepartmentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
 public class CompanyDepartmentDAO_Impl extends PortalBaseJdbcDAO<CompanyDepartment> implements CompanyDepartmentDAO {
@@ -42,6 +45,18 @@ public class CompanyDepartmentDAO_Impl extends PortalBaseJdbcDAO<CompanyDepartme
     }
 
     @Override
+    public Long getParentDepIdByDepId(Long depId) {
+        return partialGetByCondition("company_dep.id = ?", Collections.singletonList(depId), "id", "parent_dep")
+                .getParentId();
+    }
+
+    @Override
+    public List<Long> getDepIdsByParentDepId(Long parentDepId) {
+        return stream(partialGetListByCondition("company_dep.parent_dep = ?", Collections.singletonList(parentDepId), "id", "parent_dep"))
+                .map(CompanyDepartment::getId)
+                .collect(Collectors.toList());
+    }
+
     public List<CompanyDepartment> getListByQuery(CompanyDepartmentQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return getList(parameters);

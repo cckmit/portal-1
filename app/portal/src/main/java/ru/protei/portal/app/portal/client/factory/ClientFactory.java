@@ -1,6 +1,5 @@
 package ru.protei.portal.app.portal.client.factory;
 
-
 import com.google.gwt.inject.client.GinModules;
 import ru.brainworm.factory.generator.injector.client.FactoryInjector;
 import ru.protei.portal.app.portal.client.activity.app.AppActivity;
@@ -13,6 +12,7 @@ import ru.protei.portal.ui.contact.client.factory.ContactClientModule;
 import ru.protei.portal.ui.contract.client.factory.ContractClientModule;
 import ru.protei.portal.ui.document.client.factory.DocumentClientModule;
 import ru.protei.portal.ui.documenttype.client.factory.DocumentTypeClientModule;
+import ru.protei.portal.ui.education.client.factory.EducationClientModule;
 import ru.protei.portal.ui.employee.client.factory.EmployeeClientModule;
 import ru.protei.portal.ui.employeeregistration.client.factory.EmployeeRegistrationClientModule;
 import ru.protei.portal.ui.equipment.client.factory.EquipmentClientModule;
@@ -33,7 +33,7 @@ import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
  */
 @GinModules({
         ClientModule.class, CommonClientModule.class, IssueAssignmentClientModule.class,
-        EmployeeClientModule.class, RoomReservationClientModule.class, CompanyClientModule.class, ContactClientModule.class,
+        EducationClientModule.class, EmployeeClientModule.class, RoomReservationClientModule.class, CompanyClientModule.class, ContactClientModule.class,
         ProductClientModule.class, ProjectClientModule.class, RegionClientModule.class, EmployeeRegistrationClientModule.class,
         IssueClientModule.class, IssueReportClientModule.class, EquipmentClientModule.class, RoleClientModule.class, AccountClientModule.class,
         DocumentClientModule.class, DocumentTypeClientModule.class, CaseStateClientModule.class, SiteFolderClientModule.class,

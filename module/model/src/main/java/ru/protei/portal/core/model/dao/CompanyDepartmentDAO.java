@@ -17,6 +17,9 @@ public interface CompanyDepartmentDAO extends PortalBaseDAO<CompanyDepartment> {
     boolean checkExistsByNameAndDepId(String name, Long companyId, Long departmentId);
     CompanyDepartment getByExternalId(String extId, Long companyId);
 
+    Long getParentDepIdByDepId(Long depId);
+    List<Long> getDepIdsByParentDepId(Long parentDepId);
+
     List<CompanyDepartment> getListByQuery(CompanyDepartmentQuery query);
 
     @SqlConditionBuilder
