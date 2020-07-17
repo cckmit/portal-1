@@ -154,4 +154,19 @@ public class PersonAbsence extends AuditableObject implements Serializable {
         PersonAbsence person = (PersonAbsence) o;
         return Objects.equals(id, person.id);
     }
+
+    @Override
+    public String toString() {
+        return "PersonAbsence{" +
+                "id=" + id +
+                ", created=" + created +
+                ", creatorId=" + creatorId +
+                ", personId=" + personId +
+                ", personDisplayName='" + personDisplayName + '\'' +
+                ", reason=" + reason +
+                ", fromTime=" + fromTime +
+                ", tillTime=" + tillTime +
+                ", userComment='" + userComment + '\'' +
+                '}';
+    }
 }
