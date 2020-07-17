@@ -676,7 +676,10 @@ if(true) return; //TODO remove
                 return;
             }
 
-            List<ExternalPersonAbsence> extAbsences = legacySystemDAO.getExternalAbsences(dateTimeFormatter.format(new Date()));
+            String migrationFromDate = dateTimeFormatter.format(setFirstDayOfMonth(new Date()));
+            log.debug("Migration from date = {}", migrationFromDate);
+
+            List<ExternalPersonAbsence> extAbsences = legacySystemDAO.getExternalAbsences(migrationFromDate);
 
             if (CollectionUtils.isEmpty(extAbsences)) {
                 log.info("Need no to migrate absences data cause source is empty");
@@ -703,7 +706,7 @@ if(true) return; //TODO remove
                 }
             });
 
-            List<ExternalPersonLeave> extLeaves = legacySystemDAO.getExternalLeaves(dateTimeFormatter.format(new Date()));
+            List<ExternalPersonLeave> extLeaves = legacySystemDAO.getExternalLeaves(migrationFromDate);
 
             if (CollectionUtils.isEmpty(extLeaves)) {
                 log.info("Need no to migrate leaves data cause source is empty");
@@ -752,6 +755,13 @@ if(true) return; //TODO remove
         calendar.setTime(date);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
+        return calendar.getTime();
+    }
+
+    private Date setFirstDayOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
     }
 
