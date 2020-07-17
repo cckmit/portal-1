@@ -64,8 +64,8 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     }
 
     @Override
-    public WorkerEntry getPartialWorkerDepartment(Long workerId) {
-        return partialGetByCondition("worker_entry.id = ?", Collections.singletonList(workerId), "id", "dep_id");
+    public Long getDepIdForWorker(Long workerId) {
+        return partialGetByCondition("worker_entry.id = ?", Collections.singletonList(workerId), "id", "dep_id").getDepartmentId();
     }
 
     @SqlConditionBuilder

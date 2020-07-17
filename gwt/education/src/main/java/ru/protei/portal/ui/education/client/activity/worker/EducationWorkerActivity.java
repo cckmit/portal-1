@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.EducationWallet;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -18,11 +19,11 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.education.client.activity.wallet.AbstractEducationWalletActivity;
 import ru.protei.portal.ui.education.client.activity.wallet.AbstractEducationWalletView;
-import ru.protei.portal.ui.education.client.util.EducationUtils;
 
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.ui.education.client.util.AccessUtil.isWorker;
 
 public abstract class EducationWorkerActivity implements Activity, AbstractEducationWorkerActivity {
 
@@ -33,7 +34,7 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
 
     @Event
     public void onShow(EducationEvents.ShowWorker event) {
-        if (!EducationUtils.isWorker()) {
+        if (!isWorker(policyService)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
@@ -102,4 +103,6 @@ public abstract class EducationWorkerActivity implements Activity, AbstractEduca
     AbstractEducationWorkerView view;
     @Inject
     Provider<AbstractEducationWalletView> walletViewProvider;
+    @Inject
+    PolicyService policyService;
 }

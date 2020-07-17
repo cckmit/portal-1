@@ -53,7 +53,7 @@
                             <span class="text-transform-initial"><ui:text from='{lang.selectImage}'/></span>
                         </span>
                     </imagepicker:ImageBase64Picker>
-                    <g:Image ui:field="imagePreview" styleName="m-t-5 border"/>
+                    <g:Image ui:field="imagePreview" styleName="m-t-5 border mw-100"/>
                 </div>
 
                 <workerselector:WorkerEntryMultiSelector ui:field="participants"

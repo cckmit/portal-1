@@ -5,12 +5,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 
-import static ru.protei.portal.ui.education.client.util.EducationUtils.isAdmin;
-import static ru.protei.portal.ui.education.client.util.EducationUtils.isWorker;
+import static ru.protei.portal.ui.education.client.util.AccessUtil.*;
 
 public abstract class EducationActivity implements Activity, AbstractEducationActivity {
 
@@ -26,13 +26,12 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
 
     @Event(Type.FILL_CONTENT)
     public void onShow(EducationEvents.Show event) {
-        boolean hasAccess = isWorker() || isAdmin();
-        if (!hasAccess) {
+        if (!hasAccess(policyService)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
         showView();
-        if (isAdmin()) {
+        if (isAdmin(policyService)) {
             view.toggleButtonVisibility().setVisible(true);
             showAdminView();
         } else {
@@ -76,6 +75,8 @@ public abstract class EducationActivity implements Activity, AbstractEducationAc
 
     @Inject
     AbstractEducationView view;
+    @Inject
+    PolicyService policyService;
 
     private boolean isAdminShowed = false;
     private AppEvents.InitDetails initDetails;

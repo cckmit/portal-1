@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
@@ -17,10 +18,11 @@ import ru.protei.portal.ui.common.client.service.EducationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.education.client.activity.admin.filter.AbstractEducationAdminFilterActivity;
 import ru.protei.portal.ui.education.client.activity.admin.filter.AbstractEducationAdminFilterView;
-import ru.protei.portal.ui.education.client.util.EducationUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+
+import static ru.protei.portal.ui.education.client.util.AccessUtil.isAdmin;
 
 public abstract class EducationAdminActivity implements Activity,
         AbstractEducationAdminActivity, AbstractEducationAdminFilterActivity, AbstractPagerActivity {
@@ -40,7 +42,7 @@ public abstract class EducationAdminActivity implements Activity,
 
     @Event
     public void onShow(EducationEvents.ShowAdmin event) {
-        if (!EducationUtils.isAdmin()) {
+        if (!isAdmin(policyService)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
@@ -110,4 +112,6 @@ public abstract class EducationAdminActivity implements Activity,
     AbstractPagerView pagerView;
     @Inject
     EducationControllerAsync educationController;
+    @Inject
+    PolicyService policyService;
 }

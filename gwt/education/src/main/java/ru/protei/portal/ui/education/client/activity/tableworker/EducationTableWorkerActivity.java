@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -18,7 +19,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-import static ru.protei.portal.ui.education.client.util.EducationUtils.*;
+import static ru.protei.portal.ui.education.client.util.AccessUtil.*;
 
 public abstract class EducationTableWorkerActivity implements Activity, AbstractEducationTableWorkerActivity {
 
@@ -30,21 +31,20 @@ public abstract class EducationTableWorkerActivity implements Activity, Abstract
     @Event
     public void onShow(EducationEvents.ShowWorkerTable event) {
         HasWidgets container = event.parent;
-        boolean hasAccess = isWorker() || isAdmin();
-        if (!hasAccess) {
+        if (!hasAccess(policyService)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
         container.clear();
         container.add(view.asWidget());
-        view.showRequestAttendanceAction(isWorker());
-        view.showRequestEntryAction(isWorkerCanRequest());
+        view.showRequestAttendanceAction(isWorker(policyService));
+        view.showRequestEntryAction(isWorkerCanRequest(policyService));
         loadTable();
     }
 
     @Override
     public void requestEntry() {
-        if (!isWorkerCanRequest()) {
+        if (!isWorkerCanRequest(policyService)) {
             return;
         }
         fireEvent(new EducationEvents.EditEducationEntry());
@@ -52,7 +52,7 @@ public abstract class EducationTableWorkerActivity implements Activity, Abstract
 
     @Override
     public void requestAttendance(EducationEntry entry) {
-        if (!isWorker() || entry == null) {
+        if (!isWorker(policyService) || entry == null) {
             return;
         }
         educationController.requestNewAttendance(entry.getId(), new FluentCallback<EducationEntryAttendance>()
@@ -90,4 +90,6 @@ public abstract class EducationTableWorkerActivity implements Activity, Abstract
     EducationControllerAsync educationController;
     @Inject
     AbstractEducationTableWorkerView view;
+    @Inject
+    PolicyService policyService;
 }

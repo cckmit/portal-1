@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.ent.EducationEntry;
 import ru.protei.portal.core.model.ent.EducationEntryAttendance;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EducationEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
@@ -31,7 +32,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.education.client.model.Approve;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.ui.education.client.util.EducationUtils.*;
+import static ru.protei.portal.ui.education.client.util.AccessUtil.*;
 
 public abstract class EducationEntryEditActivity implements Activity, AbstractEducationEntryEditActivity {
 
@@ -50,14 +51,18 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
         HasWidgets container = event.parent != null ? event.parent : initDetails.parent;
         entry = event.entry == null ? new EducationEntry() : event.entry;
 
-        if (!isWorkerCanRequest() && !isAdmin()) {
+        boolean isCreationMode = isCreationMode();
+        boolean isAdmin = isAdmin(policyService);
+        boolean isWorkerCanRequest = isCreationMode && isWorkerCanRequest(policyService);
+
+        if (!isWorkerCanRequest && !isAdmin) {
             fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
 
         container.clear();
         container.add(view.asWidget());
-        fillView(entry, isAdmin(), isCreationMode());
+        fillView(entry, isAdmin, isCreationMode);
     }
 
     @Override
@@ -67,31 +72,43 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
 
     @Override
     public void onSaveClicked() {
+        boolean isCreationMode = isCreationMode();
+        boolean isAdmin = isAdmin(policyService);
+
+        if (isCreationMode) {
+            createNewEntry();
+        } else if (isAdmin) {
+            saveEntry();
+        }
+    }
+
+    private void createNewEntry() {
         fillDto(entry);
-        if (isCreationMode() && (isAdmin() || isWorkerCanRequest())) {
-            List<Long> workers = stream(view.participants().getValue())
-                    .map(WorkerEntryShortView::getId)
-                    .collect(Collectors.toList());
-            educationController.requestNewEntry(entry, workers, new FluentCallback<EducationEntry>()
-                    .withSuccess(en -> {
-                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        fireEvent(new Back());
-                    }));
-        } else if (isAdmin()) {
-            Map<Long, Boolean> worker2approve = stream(view.attendance().getValue().entrySet())
-                    .filter(entry -> entry.getValue() == Approve.APPROVED
-                                    || entry.getValue() == Approve.DECLINED
-                                    || entry.getValue() == Approve.APPROVED_FINAL_DECLINED)
-                    .collect(Collectors.toMap(
+        List<Long> workers = stream(view.participants().getValue())
+                .map(WorkerEntryShortView::getId)
+                .collect(Collectors.toList());
+        educationController.requestNewEntry(entry, workers, new FluentCallback<EducationEntry>()
+                .withSuccess(en -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
+                }));
+    }
+
+    private void saveEntry() {
+        fillDto(entry);
+        Map<Long, Boolean> worker2approve = stream(view.attendance().getValue().entrySet())
+                .filter(entry -> entry.getValue() == Approve.APPROVED
+                        || entry.getValue() == Approve.DECLINED
+                        || entry.getValue() == Approve.APPROVED_FINAL_DECLINED)
+                .collect(Collectors.toMap(
                         entry -> entry.getKey().getWorkerId(),
                         entry -> entry.getValue() == Approve.APPROVED
-                    ));
-            educationController.adminSaveEntryAndAttendance(entry, worker2approve, new FluentCallback<EducationEntry>()
-                    .withSuccess(en -> {
-                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                        fireEvent(new Back());
-                    }));
-        }
+                ));
+        educationController.adminSaveEntryAndAttendance(entry, worker2approve, new FluentCallback<EducationEntry>()
+                .withSuccess(en -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
+                }));
     }
 
     @Override
@@ -190,6 +207,8 @@ public abstract class EducationEntryEditActivity implements Activity, AbstractEd
     EducationControllerAsync educationController;
     @Inject
     AbstractEducationEntryEditView view;
+    @Inject
+    PolicyService policyService;
 
     private EducationEntry entry;
     private AppEvents.InitDetails initDetails;

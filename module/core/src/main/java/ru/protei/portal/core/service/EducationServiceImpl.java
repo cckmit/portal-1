@@ -7,12 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import ru.protei.portal.api.struct.Result;
@@ -22,14 +17,12 @@ import ru.protei.portal.core.model.dao.EducationEntryAttendanceDAO;
 import ru.protei.portal.core.model.dao.EducationEntryDAO;
 import ru.protei.portal.core.model.dao.EducationWalletDAO;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CompanyDepartment;
-import ru.protei.portal.core.model.ent.EducationEntry;
-import ru.protei.portal.core.model.ent.EducationEntryAttendance;
-import ru.protei.portal.core.model.ent.EducationWallet;
-import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -148,6 +141,11 @@ public class EducationServiceImpl implements EducationService {
     @Override
     public Result<SearchResult<EducationEntry>> adminGetEntries(AuthToken token, int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated) {
 
+        boolean hasAccess = isAdmin(token);
+        if (!hasAccess) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         SearchResult<EducationEntry> entries = educationEntryDAO.getResultForDate(
                 offset,
                 limit,
@@ -163,6 +161,11 @@ public class EducationServiceImpl implements EducationService {
     @Override
     @Transactional
     public Result<EducationEntry> adminSaveEntryAndAttendance(AuthToken token, EducationEntry entry, Map<Long, Boolean> worker2approve) {
+
+        boolean hasAccess = isAdmin(token);
+        if (!hasAccess) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
 
         if (entry.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -240,7 +243,7 @@ public class EducationServiceImpl implements EducationService {
             }
             wallet.setCoins(wallet.getCoins() - coins);
             if (!educationWalletDAO.partialMerge(wallet, "coins")) {
-                log.warn("Failed to reduce wallet coins for attendance : {}", attendance);
+                log.warn("Failed to charge wallet for attendance : {}", attendance);
                 throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
             }
             attendance.setApproved(true);
@@ -276,7 +279,7 @@ public class EducationServiceImpl implements EducationService {
 
     private Result<EducationWallet> selectWalletForWorker(Long workerId) {
 
-        Long depId = workerEntryDAO.getPartialWorkerDepartment(workerId).getDepartmentId();
+        Long depId = workerEntryDAO.getDepIdForWorker(workerId);
 
         List<Long> departmentIdList = getDepartmentGraph(depId);
         if (CollectionUtils.isEmpty(departmentIdList)) {
@@ -314,7 +317,7 @@ public class EducationServiceImpl implements EducationService {
     }
 
     private List<Long> getDepartmentGraph(Long depId) {
-        // Список подразделений по уменьшению (родитель->сын)
+        // Список подразделений по уменьшению (родитель->ребенок)
         List<Long> departments = new ArrayList<>();
         fillParentDepartments(departments, depId);
         departments.add(depId);
@@ -325,16 +328,14 @@ public class EducationServiceImpl implements EducationService {
     private void fillParentDepartments(List<Long> departments, Long depId) {
         Long parentDepId = depId;
         for (;;) {
-            parentDepId = companyDepartmentDAO.getPartialParentDepByDep(parentDepId).getParentId();
+            parentDepId = companyDepartmentDAO.getParentDepIdByDepId(parentDepId);
             if (parentDepId == null) break;
             departments.add(0, parentDepId);
         }
     }
 
     private void fillChildDepartments(List<Long> departments, Long depId) {
-        List<Long> childDepIds = stream(companyDepartmentDAO.getPartialDepByParentDep(depId))
-                .map(CompanyDepartment::getId)
-                .collect(Collectors.toList());
+        List<Long> childDepIds = companyDepartmentDAO.getDepIdsByParentDepId(depId);
         departments.addAll(childDepIds);
         for (Long childDepId : childDepIds) {
             fillChildDepartments(departments, childDepId);
@@ -416,6 +417,11 @@ public class EducationServiceImpl implements EducationService {
         return ok(entry);
     }
 
+    private boolean isAdmin(AuthToken token) {
+        Set<UserRole> roles = token.getRoles();
+        boolean isAdmin = policyService.hasScopeForPrivilege(roles, En_Privilege.EDUCATION_VIEW, En_Scope.SYSTEM);
+        return isAdmin;
+    }
 
     @Autowired
     EducationWalletDAO educationWalletDAO;
@@ -429,6 +435,8 @@ public class EducationServiceImpl implements EducationService {
     CompanyDepartmentDAO companyDepartmentDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PolicyService policyService;
 
     private static Logger log = LoggerFactory.getLogger(EducationServiceImpl.class);
 }

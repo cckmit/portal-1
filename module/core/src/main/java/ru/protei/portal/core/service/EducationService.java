@@ -20,15 +20,15 @@ public interface EducationService {
     @Privileged(En_Privilege.EDUCATION_VIEW)
     Result<List<EducationEntry>> getCurrentEntries(AuthToken token);
 
-    @Privileged(requireAny = { En_Privilege.EDUCATION_EDIT, En_Privilege.EDUCATION_CREATE })
+    @Privileged(En_Privilege.EDUCATION_CREATE)
     Result<EducationEntry> requestNewEntry(AuthToken token, EducationEntry entry, List<Long> workerIds);
 
     @Privileged(En_Privilege.EDUCATION_VIEW)
     Result<EducationEntryAttendance> requestNewAttendance(AuthToken token, Long educationEntryId, Long personId);
 
-    @Privileged(En_Privilege.EDUCATION_CREATE)
+    @Privileged(En_Privilege.EDUCATION_VIEW /* and 'system' scope */)
     Result<SearchResult<EducationEntry>> adminGetEntries(AuthToken token, int offset, int limit, boolean showOnlyNotApproved, boolean showOutdated);
 
-    @Privileged(En_Privilege.EDUCATION_CREATE)
+    @Privileged(En_Privilege.EDUCATION_VIEW /* and 'system' scope */)
     Result<EducationEntry> adminSaveEntryAndAttendance(AuthToken token, EducationEntry entry, Map<Long, Boolean> worker2approve);
 }
