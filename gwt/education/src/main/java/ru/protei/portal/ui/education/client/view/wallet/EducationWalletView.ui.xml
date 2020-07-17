@@ -1,0 +1,35 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel tag="li" styleName="plate-list-entry-wallet">
+        <div class="card card-default m-b-0">
+            <div class="card-header">
+                <div class="card-title text-black hint-text">
+                    <span class="font-montserrat fs-11 all-caps" ui:field="departmentName"/>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <img class="d-inline align-middle m-r-5 protei-coin" src="./images/protei-coin.png"/>
+                        <h4 class="d-inline align-middle m-0 p-0 semi-bold" ui:field="coins"/>
+                    </div>
+                </div>
+                <div class="row m-t-15">
+                    <div class="col-sm-12 d-flex">
+                        <div class="align-items-center small">
+                            <span><ui:text from="{lang.educationConferences}"/></span>
+                            <span class="font-montserrat m-l-5 semi-bold" ui:field="countConference"/>
+                        </div>
+                        <div class="align-items-center small m-l-15">
+                            <span><ui:text from="{lang.educationCourses}"/></span>
+                            <span class="font-montserrat m-l-5 semi-bold" ui:field="countCourse"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
