@@ -245,6 +245,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 return error(addResult.getStatus(), addResult.getMessage());
             }
 
+            addResult.getEvents().forEach(event -> result.publishEvent(event));
             makeAudit(caseId, youtrackId, En_AuditType.LINK_CREATE, token);
         }
 
@@ -256,6 +257,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());
             }
+
+            removeResult.getEvents().forEach(event -> result.publishEvent(event));
         }
 
         return result;
