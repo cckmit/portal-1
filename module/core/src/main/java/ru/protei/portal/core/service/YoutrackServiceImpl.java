@@ -147,6 +147,8 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public Result<YouTrackIssueInfo> setIssueCrmNumbers(String issueId, List<Long> caseNumbersFromDB){
+        log.info("setIssueCrmNumbers(): issueId={} caseNumbersFromDB={}", issueId, caseNumbersFromDB);
+
         if (issueId == null || caseNumbersFromDB == null) {
             log.warn("setIssueCrmNumbers(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumbersFromDB={}", issueId, caseNumbersFromDB);
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -156,12 +158,14 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .flatMap(issue -> {
                     YtTextIssueCustomField field = (YtTextIssueCustomField) issue.getCrmNumberField();
                     String caseNumbersFromYT = field == null || field.getValue() == null ? null : field.getValue().text;
-                    return setNumbers(issue.idReadable, caseNumbersFromDB, caseNumbersFromYT, config.data().getCaseLinkConfig().getCrossCrmLinkYoutrack());
+                    return setNumbers(issue.idReadable, caseNumbersFromDB, caseNumbersFromYT, config.data().getCaseLinkConfig().getCrossCrmLinkYoutrack(), YtIssue.CustomFieldNames.crmNumbers);
                 });
     }
 
     @Override
     public Result<YouTrackIssueInfo> setIssueProjectNumbers(String issueId, List<Long> projectNumbersFromDB){
+        log.info("setIssueProjectNumbers(): issueId={} projectNumbersFromDB={}", issueId, projectNumbersFromDB);
+
         if (issueId == null || projectNumbersFromDB == null) {
             log.warn("setIssueProjectNumbers(): Can't set youtrack issue project number. All arguments are mandatory issueId={} projectNumbersFromDB={}", issueId, projectNumbersFromDB);
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -172,13 +176,27 @@ public class YoutrackServiceImpl implements YoutrackService {
                     YtIssueCustomField projectNumberField = issue.getProjectNumberField();
 
                     if (projectNumberField == null) {
-                        return error(En_ResultStatus.YOUTRACK_FIELD_NOT_FOUND);
+                        log.warn("setIssueProjectNumbers(): Youtrack issue does not contain project numbers field issueId={}", issueId);
+                        return error(En_ResultStatus.YOUTRACK_SYNCHRONIZATION_FAILED);
                     }
 
                     YtTextIssueCustomField field = (YtTextIssueCustomField) projectNumberField;
                     String projectNumbersFromYT = field.getValue() == null ? null : field.getValue().text;
-                    return setNumbers(issue.idReadable, projectNumbersFromDB, projectNumbersFromYT, config.data().getCaseLinkConfig().getCrossProjectLinkYoutrack());
+                    return setNumbers(issue.idReadable, projectNumbersFromDB, projectNumbersFromYT, config.data().getCaseLinkConfig().getCrossProjectLinkYoutrack(), YtIssue.CustomFieldNames.projectNumbers);
                 });
+    }
+
+    @Override
+    public Result<Boolean> checkExistProjectCustomField(String issueId){
+        log.info("checkExistProjectCustomField(): issueId={}", issueId);
+
+        if (issueId == null) {
+            log.warn("checkExistProjectCustomField(): Can't check youtrack project custom field. issueId={}", issueId);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return api.getIssueWithFieldsCommentsAttachments(issueId)
+                .flatMap(issue -> ok(issue.getProjectNumberField() != null));
     }
 
     @Override
@@ -218,11 +236,11 @@ public class YoutrackServiceImpl implements YoutrackService {
         return projectResult;
     }
 
-    private Result<YouTrackIssueInfo> setNumbers(String issueId, List<Long> caseNumbersFromDB, String caseNumbersFromYT, String linkTemplate) {
+    private Result<YouTrackIssueInfo> setNumbers(String issueId, List<Long> caseNumbersFromDB, String caseNumbersFromYT, String linkTemplate, String customFieldName) {
         log.info("setCrmNumbers(): issueId={}, caseNumbersFromDB={}, caseNumbersFromYT={}", issueId, caseNumbersFromDB, caseNumbersFromYT);
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
-        issue.customFields.add(makeAndFillNumbersCustomField(caseNumbersFromDB, caseNumbersFromYT, linkTemplate));
+        issue.customFields.add(makeAndFillNumbersCustomField(caseNumbersFromDB, caseNumbersFromYT, linkTemplate, customFieldName));
         return api.updateIssueAndReturnWithFieldsCommentsAttachments(issueId, issue)
                 .map(this::convertYtIssue);
     }
@@ -305,10 +323,10 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issue;
     }
 
-    private YtIssueCustomField makeAndFillNumbersCustomField(List<Long> caseNumbersFromDB, String caseNumbersFromYTString, String linkTemplate) {
+    private YtIssueCustomField makeAndFillNumbersCustomField(List<Long> caseNumbersFromDB, String caseNumbersFromYTString, String linkTemplate, String customFieldName) {
         YtTextIssueCustomField cf = new YtTextIssueCustomField();
         YtTextFieldValue textFieldValue = new YtTextFieldValue();
-        cf.name = YtIssue.CustomFieldNames.crmNumbers;
+        cf.name = customFieldName;
         cf.value = textFieldValue;
         textFieldValue.text = "";
 

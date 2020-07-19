@@ -111,7 +111,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
     @Override
     public void onAddLinkClicked(IsWidget anchor) {
-        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, PROJECT_CASE_TYPE, false));
+        fireEvent(new CaseLinkEvents.ShowLinkSelector(anchor, PROJECT_CASE_TYPE));
     }
 
     @Override

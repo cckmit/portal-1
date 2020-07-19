@@ -222,7 +222,7 @@ public class CaseServiceImpl implements CaseService {
 
         for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
             caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, true);
+            Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 

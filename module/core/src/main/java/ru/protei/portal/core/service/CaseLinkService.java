@@ -25,11 +25,11 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
-    Result<CaseLink> createLink(AuthToken authToken, CaseLink value, boolean createCrossLinks);
+    Result<CaseLink> createLink(AuthToken authToken, CaseLink value, En_CaseType caseType);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_CREATE)
-    Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink value, En_CaseType caseType, boolean createCrossLinks);
+    Result<CaseLink> createLinkWithPublish(AuthToken authToken, CaseLink value, En_CaseType caseType);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)

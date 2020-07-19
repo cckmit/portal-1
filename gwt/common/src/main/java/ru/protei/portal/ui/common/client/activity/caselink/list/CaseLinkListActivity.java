@@ -82,7 +82,6 @@ public abstract class CaseLinkListActivity
         }
 
         this.caseType = event.caseType;
-        this.createCrossLinks = event.createCrossLinks;
 
         view.showSelector(event.target);
     }
@@ -202,7 +201,7 @@ public abstract class CaseLinkListActivity
             return;
         }
 
-        controller.createLinkWithPublish(value, caseType, createCrossLinks, new FluentCallback<CaseLink>()
+        controller.createLinkWithPublish(value, caseType, new FluentCallback<CaseLink>()
                 .withError(this::showErrorFromServer)
                 .withSuccess(caseLink -> {
                     value.setId(caseLink.getId());
@@ -292,5 +291,4 @@ public abstract class CaseLinkListActivity
     private Set<CaseLink> linksSet = new HashSet<>();
     private CaseLinkEvents.Show show;
     private Long caseId;
-    private boolean createCrossLinks;
 }

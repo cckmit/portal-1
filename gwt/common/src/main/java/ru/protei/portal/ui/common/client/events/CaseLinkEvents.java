@@ -79,17 +79,11 @@ public class CaseLinkEvents {
         }
 
         public ShowLinkSelector(IsWidget target, En_CaseType caseType) {
-            this(target, caseType, true);
-        }
-
-        public ShowLinkSelector(IsWidget target, En_CaseType caseType, boolean createCrossLinks) {
             this.target = target;
             this.caseType = caseType;
-            this.createCrossLinks = createCrossLinks;
         }
 
         public IsWidget target;
         public En_CaseType caseType;
-        public boolean createCrossLinks = true;
     }
 }

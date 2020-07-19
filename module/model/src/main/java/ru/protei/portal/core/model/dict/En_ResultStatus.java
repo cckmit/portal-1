@@ -245,9 +245,9 @@ public enum En_ResultStatus {
     REQUEST_1C_FAILED,
 
     /**
-     * Поле на youtrack не найдено
+     * Ошибка синхронизации с youtrack
      */
-    YOUTRACK_FIELD_NOT_FOUND,
+    YOUTRACK_SYNCHRONIZATION_FAILED,
 
     ;
 }
