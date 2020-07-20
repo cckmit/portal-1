@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -83,6 +84,9 @@ public class Project extends AuditableObject {
      */
     private List<PersonProjectMemberView> team;
 
+    @JdbcJoinedObject(table = "case_location", localColumn = "id", remoteColumn = "CASE_ID" )
+    private CaseLocation location;
+
     private EntityOption region;
 
     private List<CaseLink> links;
@@ -160,6 +164,9 @@ public class Project extends AuditableObject {
     }
 
     public EntityOption getRegion() {
+        if (region == null && location != null) {
+            region = EntityOption.fromLocation( location.getLocation() );
+        }
         return region;
     }
 
@@ -209,8 +216,8 @@ public class Project extends AuditableObject {
     }
 
     public List<PersonProjectMemberView> getTeam() {
-        if (team == null && !isEmpty(members)) {
-            team = members.stream()
+        if (team == null && !isEmpty( members )) {
+            team = CollectionUtils.stream( members )
                     .filter( member -> En_DevUnitPersonRoleType.isProjectRole( member.getRole() ) )
                     .map( member -> PersonProjectMemberView.fromFullNamePerson( member.getMember(), member.getRole() ) )
                     .collect( Collectors.toList() );
@@ -239,13 +246,6 @@ public class Project extends AuditableObject {
     public void setMembers( List<CaseMember> members ) {
         this.members = members;
     }
-
-//    public void addTeamMember(PersonProjectMemberView person) {
-//        if (team == null) {
-//            team = new ArrayList<>();
-//        }
-//        team.add(person);
-//    }
 
     public List<CaseLink> getLinks() {
         return links;
