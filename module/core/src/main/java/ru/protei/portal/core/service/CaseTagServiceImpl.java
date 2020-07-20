@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -35,7 +37,8 @@ public class CaseTagServiceImpl implements CaseTagService {
     private PolicyService policyService;
     @Autowired
     private LockService lockService;
-
+    @Autowired
+    HistoryService historyService;
 
     @Override
     @Transactional
@@ -145,6 +148,8 @@ public class CaseTagServiceImpl implements CaseTagService {
             CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
             caseObjectTagDAO.persist(cot);
 
+            createHistory(authToken, caseId, En_HistoryAction.ADD, caseTag);
+
             return ok();
         });
     }
@@ -161,6 +166,9 @@ public class CaseTagServiceImpl implements CaseTagService {
         }
 
         caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
+
+        createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag);
+
         return ok(tagId);
     }
 
@@ -178,5 +186,15 @@ public class CaseTagServiceImpl implements CaseTagService {
             return false;
         }
         return true;
+    }
+
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, CaseTag caseTag) {
+        return historyService.createHistory(token, id, action,
+                En_HistoryType.TAG,
+                null,
+                null,
+                caseTag.getId(),
+                caseTag.getName()
+        );
     }
 }
