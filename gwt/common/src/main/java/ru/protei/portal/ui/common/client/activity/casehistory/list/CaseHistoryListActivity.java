@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.common.client.activity.casehistory.list;
 
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -7,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.ui.common.client.activity.casehistory.item.AbstractCaseHistoryItemActivity;
@@ -50,16 +53,22 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
     }
 
     private void addHistoryItem(History history) {
-        if (En_HistoryType.PLAN.equals(history.getType()) && policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
-            view.root().add(makePlanHistoryItem(history).asWidget());
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
+            if (En_HistoryType.PLAN.equals(history.getType())) {
+                view.root().add(makeHistoryItem(history, lang.plan(), Plan.class));
+            }
+
+            if (En_HistoryType.TAG.equals(history.getType())) {
+                view.root().add(makeHistoryItem(history, lang.tag(), CaseTag.class));
+            }
         }
     }
 
-    private AbstractCaseHistoryItemView makePlanHistoryItem(History history) {
+    private AbstractCaseHistoryItemView makeHistoryItem(History history, String historyType, Class<?> clazz) {
         AbstractCaseHistoryItemView historyItem = caseHistoryItemProvider.get();
 
         historyItem.setActivity(this);
-        historyItem.setHistoryType(lang.plan());
+        historyItem.setHistoryType(historyType);
 
         historyItem.addedValueContainerVisibility().setVisible(En_HistoryAction.ADD.equals(history.getAction()));
         historyItem.changeContainerVisibility().setVisible(En_HistoryAction.CHANGE.equals(history.getAction()));
@@ -67,25 +76,25 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
         if (En_HistoryAction.ADD.equals(history.getAction())) {
             historyItem.setAddedValue(
-                    makeLink(Plan.class, history.getNewId(), history.getNewValue()),
+                    makeLink(clazz, history.getNewId(), history.getNewValue()),
                     history.getNewValue()
             );
         }
 
         if (En_HistoryAction.REMOVE.equals(history.getAction())) {
             historyItem.setRemovedValue(
-                    makeLink(Plan.class, history.getOldId(), history.getOldValue()),
+                    makeLink(clazz, history.getOldId(), history.getOldValue()),
                     history.getOldValue()
             );
         }
 
         if (En_HistoryAction.CHANGE.equals(history.getAction())) {
             historyItem.setOldValue(
-                    makeLink(Plan.class, history.getOldId(), history.getOldValue()),
+                    makeLink(clazz, history.getOldId(), history.getOldValue()),
                     history.getOldValue()
             );
             historyItem.setNewValue(
-                    makeLink(Plan.class, history.getNewId(), history.getNewValue()),
+                    makeLink(clazz, history.getNewId(), history.getNewValue()),
                     history.getNewValue()
             );
         }
@@ -96,10 +105,13 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
     }
 
     private String makeLink(Class<?> clazz, Long id, String value) {
-        return "<a target='_blank' " +
-                "href='" + LinkUtils.makePreviewLink(clazz, id) + "'>" +
-                "#" + id + " " + value +
-                "</a>";
+        if (LinkUtils.isLinkNeeded(clazz)) {
+            return (new Anchor( "#" + id + " " + value, LinkUtils.makePreviewLink(clazz, id), "_blank"))
+                    .toString();
+        } else {
+            return (new InlineLabel( "#" + id + " " + value)
+                    .toString());
+        }
     }
 
     @Inject

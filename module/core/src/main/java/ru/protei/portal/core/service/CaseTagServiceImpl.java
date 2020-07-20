@@ -148,13 +148,14 @@ public class CaseTagServiceImpl implements CaseTagService {
             CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
             caseObjectTagDAO.persist(cot);
 
-            createHistory(authToken, caseId, En_HistoryAction.ADD, caseTag);
+            createHistory(authToken, caseId, En_HistoryAction.ADD, null, caseTag);
 
             return ok();
         });
     }
 
     @Override
+    @Transactional
     public Result<Long> detachTag( AuthToken authToken, Long caseId, Long tagId) {
         if ( caseId == null || tagId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -167,7 +168,7 @@ public class CaseTagServiceImpl implements CaseTagService {
 
         caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
 
-        createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag);
+        createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag, null);
 
         return ok(tagId);
     }
@@ -188,13 +189,13 @@ public class CaseTagServiceImpl implements CaseTagService {
         return true;
     }
 
-    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, CaseTag caseTag) {
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, CaseTag oldCaseTag, CaseTag newCaseTag) {
         return historyService.createHistory(token, id, action,
                 En_HistoryType.TAG,
-                null,
-                null,
-                caseTag.getId(),
-                caseTag.getName()
+                oldCaseTag == null ? null : oldCaseTag.getId(),
+                oldCaseTag == null ? null : oldCaseTag.getName(),
+                newCaseTag == null ? null : newCaseTag.getId(),
+                newCaseTag == null ? null : newCaseTag.getName()
         );
     }
 }
