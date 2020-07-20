@@ -37,7 +37,7 @@ public class PersonSubscriptionServiceImpl implements PersonSubscriptionService 
         if (persons == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        personNotifierDAO.removeAll();
+        personNotifierDAO.removeByNotifierId(token.getPersonId());
         personNotifierDAO.persistBatch(persons
                 .stream()
                 .map(person -> new PersonNotifier(person.getId(), token.getPersonId()))
