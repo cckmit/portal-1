@@ -34,7 +34,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class CompanyServiceImpl implements CompanyService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
-    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyDAO companyDAO;
@@ -62,11 +61,6 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     PortalConfig portalConfig;
-
-    @PostConstruct
-    public void setYoutrackIntergationEnabled () {
-        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
-    }
 
     @Override
     public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
@@ -149,7 +143,7 @@ public class CompanyServiceImpl implements CompanyService {
         company.setArchived(isDeprecated);
 
         if (companyDAO.updateState(company)) {
-            if (YOUTRACK_INTEGRATION_ENABLED) {
+            if (portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled()) {
                 youtrackService.getCompanyByName(company.getCname())
                         .flatMap(companyIdByName -> youtrackService.updateCompanyArchived(companyIdByName, isDeprecated)
                             .ifOk(youtrackCompanyId -> log.info("updateState(): updated company state in youtrack. YoutrackCompanyId = {}", youtrackCompanyId))
@@ -242,7 +236,7 @@ public class CompanyServiceImpl implements CompanyService {
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
 
-        if(YOUTRACK_INTEGRATION_ENABLED) {
+        if(portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled()) {
             youtrackService.createCompany(company.getCname())
                     .ifOk(newCompanyId ->
                             log.info("createCompany(): added new company to youtrack. CompanyId = {}", newCompanyId))
@@ -262,7 +256,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         String oldName = null;
-        if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname())) {
+        if (portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled() && StringUtils.isNotEmpty(company.getCname())) {
             Company oldCompany = companyDAO.get(company.getId());
             if (oldCompany == null) {
                 return error(En_ResultStatus.NOT_FOUND);
@@ -275,7 +269,7 @@ public class CompanyServiceImpl implements CompanyService {
         if ( !result )
             return error(En_ResultStatus.NOT_UPDATED);
 
-        if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
+        if (portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled() && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
             youtrackService.getCompanyByName(oldName)
                     .flatMap(companyIdByName -> youtrackService.updateCompanyName(companyIdByName, company.getCname())
                             .ifOk(companyId -> log.info("updateCompany(): updated company in youtrack. YoutrackCompanyId = {}", companyId))

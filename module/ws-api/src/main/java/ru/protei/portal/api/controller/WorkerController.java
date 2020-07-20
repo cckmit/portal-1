@@ -53,8 +53,6 @@ import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
-    private String ADMIN_PROJECT_NAME, PORTAL_URL;
-    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     private AuthService authService;
@@ -106,13 +104,6 @@ public class WorkerController {
 
     @Autowired
     YoutrackService youtrackService;
-
-    @PostConstruct
-    public void setYoutrackConst() {
-        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
-        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
-        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
-    }
 
     /**
      * Получить данные о физическом лице
@@ -1527,7 +1518,7 @@ public class WorkerController {
 
                     mergePerson(person);
 
-                    /*if (YOUTRACK_INTEGRATION_ENABLED) {
+                    /*if (portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled()) {
                         createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), personLastName);
                     }*/
 
@@ -1665,12 +1656,12 @@ public class WorkerController {
 
         String summary = "Смена фамилии сотрудника " + employeeOldFullName;
 
-        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + portalConfig.data().getCommonConfig().getCrmUrlInternal() + "#employee_preview:id=" + employeeId + ")" + "\n" +
                              "Старое ФИО: " + employeeOldFullName + "\n" +
                              "Новое ФИО: " + employeeNewFullName + "\n" +
                              "\n" +
                              "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
+        youtrackService.createIssue( portalConfig.data().youtrack().getAdminProject(), summary, description );
     }
 }

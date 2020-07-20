@@ -44,8 +44,6 @@ import static ru.protei.portal.core.model.helper.StringUtils.join;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
-    private static String ADMIN_PROJECT_NAME, PORTAL_URL;
-    private static boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
@@ -91,13 +89,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     AuditObjectDAO auditObjectDAO;
-
-    @PostConstruct
-    public void setYoutrackConst() {
-        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
-        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
-        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
-    }
 
     @Override
     public EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull) {
@@ -303,7 +294,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
+        if (needToChangeAccount && portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled()) {
             createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
@@ -398,7 +389,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        if (YOUTRACK_INTEGRATION_ENABLED) {
+        if (portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled()) {
             createFireEmployeeYoutrackIssue(personFromDb);
         }
 
@@ -572,13 +563,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         String summary = "Смена фамилии сотрудника " + employeeOldFullName;
 
-        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + portalConfig.data().getCommonConfig().getCrmUrlInternal() + "#employee_preview:id=" + employeeId + ")" + "\n" +
                 "Старое ФИО: " + employeeOldFullName + "\n" +
                 "Новое ФИО: " + employeeNewFullName + "\n" +
                 "\n" +
                 "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
+        youtrackService.createIssue( portalConfig.data().youtrack().getAdminProject(), summary, description );
     }
 
     private void createFireEmployeeYoutrackIssue(Person person) {
@@ -587,7 +578,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         String summary = "Увольнение сотрудника " + employeeFullName;
 
-        String description = "Карточка сотрудника: " + "[" + employeeFullName + "](" + PORTAL_URL + "#employee_preview:id=" + person.getId() + ")";
+        String description = "Карточка сотрудника: " + "[" + employeeFullName + "](" + portalConfig.data().getCommonConfig().getCrmUrlInternal() + "#employee_preview:id=" + person.getId() + ")";
 
         youtrackService.createFireWorkerIssue(summary, description );
     }
