@@ -529,7 +529,7 @@ public class MainConfiguration {
     }
 
     @Bean
-    public ProjectEntityDAO getProjectEntityDAO() {
+    public ProjectDAO getProjectEntityDAO() {
         return new ProjectEntityDAO_Impl();
     }
 

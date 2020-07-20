@@ -292,7 +292,7 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public ProjectEntityDAO getProjectEntityDAO() {
+    public ProjectDAO getProjectEntityDAO() {
         return new ProjectEntityDAO_Impl();
     }
 

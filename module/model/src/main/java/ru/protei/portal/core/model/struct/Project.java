@@ -7,39 +7,50 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
 /**
  * Информация о проекте в регионе
  */
+@JdbcEntity(table = "case_object")
 public class Project extends AuditableObject {
 
+    public static final int NOT_DELETED = CaseObject.NOT_DELETED;
     public static final String AUDIT_TYPE = "Project";
     /**
      * Идентификатор записи о проекте
      */
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     /**
      * Название проекта
      */
+    @JdbcColumn(name = Columns.NAME)
     private String name;
 
     /**
      * Описание проекта
      */
+    @JdbcColumn(name = Columns.DESCRIPTION)
     private String description;
 
     /**
      * Текущее состояние проекта
      */
+    @JdbcColumn(name = Columns.STATE)
     private Long stateId;
 
     /**
      * Тип заказчика
      */
+    @JdbcColumn(name = Columns.CUSTOMER_TYPE)
+    @JdbcEnumerated( EnumType.ID )
     private En_CustomerType customerType;
 
     /**
@@ -55,12 +66,17 @@ public class Project extends AuditableObject {
     /**
      * Дата создания
      */
+    @JdbcColumn(name = Columns.CREATED)
     private Date created;
 
     /**
      * Создатель проекта
      */
+    @JdbcColumn(name = Project.Columns.CREATOR)
     private Long creatorId;
+
+    @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
+    private List<CaseMember> members;
 
     /**
      * Команда проекта
@@ -77,6 +93,7 @@ public class Project extends AuditableObject {
 
     private List<EntityOption> contracts;
 
+    @JdbcColumn(name = Project.Columns.DELETED)
     private boolean deleted;
 
     private EntityOption manager;
@@ -91,6 +108,7 @@ public class Project extends AuditableObject {
 
     private List<ProjectSla> projectSlas;
 
+    @JdbcColumn(name = Project.Columns.PAUSE_DATE)
     private Long pauseDate;
 
     public Long getId() {
@@ -191,6 +209,12 @@ public class Project extends AuditableObject {
     }
 
     public List<PersonProjectMemberView> getTeam() {
+        if (team == null && !isEmpty(members)) {
+            team = members.stream()
+                    .filter( member -> En_DevUnitPersonRoleType.isProjectRole( member.getRole() ) )
+                    .map( member -> PersonProjectMemberView.fromFullNamePerson( member.getMember(), member.getRole() ) )
+                    .collect( Collectors.toList() );
+        }
         return team;
     }
 
@@ -208,12 +232,20 @@ public class Project extends AuditableObject {
         this.team = team;
     }
 
-    public void addTeamMember(PersonProjectMemberView person) {
-        if (team == null) {
-            team = new ArrayList<>();
-        }
-        team.add(person);
+    public List<CaseMember> getMembers() {
+        return members;
     }
+
+    public void setMembers( List<CaseMember> members ) {
+        this.members = members;
+    }
+
+//    public void addTeamMember(PersonProjectMemberView person) {
+//        if (team == null) {
+//            team = new ArrayList<>();
+//        }
+//        team.add(person);
+//    }
 
     public List<CaseLink> getLinks() {
         return links;
@@ -315,13 +347,12 @@ public class Project extends AuditableObject {
         project.setCustomerType(En_CustomerType.find(caseObject.getLocal()));
         project.setCustomer(caseObject.getInitiatorCompany());
 
-        project.setTeam(new ArrayList<>());
         if (caseObject.getMembers() != null) {
             List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
-            caseObject.getMembers().stream()
+            project.setTeam( caseObject.getMembers().stream()
                     .filter(member -> projectRoles.contains(member.getRole()))
                     .map(member -> PersonProjectMemberView.fromFullNamePerson(member.getMember(), member.getRole()))
-                    .forEach(project::addTeamMember);
+                    .collect(Collectors.toList()) );
         }
 
         project.setCreated( caseObject.getCreated() );
@@ -419,5 +450,18 @@ public class Project extends AuditableObject {
                 ", projectSlas=" + projectSlas +
                 ", pauseDate=" + pauseDate +
                 '}';
+    }
+
+    public interface Columns {
+        String ID = "id";
+        String PAUSE_DATE = CaseObject.Columns.PAUSE_DATE;
+        String CASE_TYPE = CaseObject.Columns.CASE_TYPE;
+        String DELETED = CaseObject.Columns.DELETED;
+        String DESCRIPTION = CaseObject.Columns.INFO;
+        String CUSTOMER_TYPE = CaseObject.Columns.ISLOCAL;
+        String CREATED = CaseObject.Columns.CREATED;
+        String CREATOR = CaseObject.Columns.CREATOR;
+        String STATE = CaseObject.Columns.STATE;
+        String NAME = CaseObject.Columns.CASE_NAME;
     }
 }

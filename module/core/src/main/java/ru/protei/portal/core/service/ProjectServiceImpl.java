@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.Project;
-import ru.protei.portal.core.model.struct.ProjectEntity;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -90,7 +89,7 @@ public class ProjectServiceImpl implements ProjectService {
     CaseLinkService caseLinkService;
 
     @Autowired
-    ProjectEntityDAO projectEntityDAO;
+    ProjectDAO projectDAO;
     @Autowired
     PortalScheduleTasks scheduledTasksService;
     @Autowired
@@ -101,15 +100,15 @@ public class ProjectServiceImpl implements ProjectService {
     @Async(BACKGROUND_TASKS)
     @Override
     public void schedulePauseTimeNotificationsOnPortalStartup( SchedulePauseTimeOnStartupEvent event ) {
-        Collection<ProjectEntity> projectEntities = projectEntityDAO.selectScheduledPauseTime( System.currentTimeMillis() );
+        Collection<Project> projects = projectDAO.selectScheduledPauseTime( System.currentTimeMillis() );
 
-        if (isEmpty( projectEntities )) {
+        if (isEmpty( projects )) {
             log.info( "schedulePauseTimeNotificationsOnPortalStartup(): No planned pause time notifications found." );
             return;
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
-        for (ProjectEntity project : projectEntities) {
+        for (Project project : projects) {
             log.info( "schedulePauseTimeNotificationsOnPortalStartup(): projectId={} date={}", project.getId(), simpleDateFormat.format( project.getPauseDate() ) );
 
             ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent( this, project.getId(), project.getPauseDate() );
@@ -126,7 +125,7 @@ public class ProjectServiceImpl implements ProjectService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "YYYY.MM.dd HH:mm:ss" );
         log.info( "onPauseTimeNotification(): {} {}", projectId, simpleDateFormat.format( pauseDate ) );
 
-        ProjectEntity project = projectEntityDAO.get( projectId );
+        Project project = projectDAO.get( projectId );
         if (!Objects.equals( pauseDate, project.getPauseDate() )) {
             log.info( "onPauseTimeNotification(): Ignore notification: pause date was changed: old {} new {}", simpleDateFormat.format( pauseDate ), simpleDateFormat.format( project.getPauseDate() ) );
             return;
@@ -242,8 +241,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName( project.getName() );
         caseObject.setInfo( project.getDescription() );
         caseObject.setStateId( project.getState().getId() );
-        caseObject.setManagerId(project.getTeam()
-                .stream()
+        caseObject.setManagerId( CollectionUtils.stream( project.getTeam() )
                 .filter(personProjectMemberView -> personProjectMemberView.getRole().getId() == En_DevUnitPersonRoleType.HEAD_MANAGER.getId())
                 .map(PersonShortView::getId)
                 .findFirst()
@@ -387,7 +385,7 @@ public class ProjectServiceImpl implements ProjectService {
         SearchResult<CaseObject> projects = caseObjectDAO.getSearchResult(caseQuery);
 
         jdbcManyRelationsHelper.fill(projects.getResults(), "members");
-        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
+//        jdbcManyRelationsHelper.fill(projects.getResults(), "products");
         jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
 
         SearchResult<Project> result = new SearchResult<>(
@@ -422,7 +420,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
 
-        List<PersonProjectMemberView> toAdd = new ArrayList<>(team);
+        List<PersonProjectMemberView> toAdd = listOf(team);
         List<Long> toRemove = new ArrayList<>();
         List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
 

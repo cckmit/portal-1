@@ -2,45 +2,53 @@ package ru.protei.portal.core.model.dict;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Роль человека в команде
  */
 public enum En_DevUnitPersonRoleType {
-    HEAD_MANAGER(1, Type.PROJECT_TEAM),
+    HEAD_MANAGER(1),
     DEPLOY_MANAGER(2),
-    DECISION_CENTER(3, Type.AMPLUA),
-    CHIEF_DECISION_MAKER(4, Type.AMPLUA),
-    KEEPER(5, Type.AMPLUA),
-    TECH_SPECIALIST(6, Type.AMPLUA),
-    INFLUENCE_MAKER(7, Type.AMPLUA),
-    CHIEF_INFLUENCE_MAKER(8, Type.AMPLUA),
-    ECONOMIST(9, Type.AMPLUA),
-    WELL_WISHER(10, Type.AMPLUA),
-    RECEPTIVITY_CENTER(11, Type.AMPLUA),
-    HARDWARE_CURATOR(12, Type.PROJECT_TEAM),
-    SOFTWARE_CURATOR(13, Type.PROJECT_TEAM),
-    INTRO_NEW_TECH_SOLUTIONS(14, Type.PROJECT_TEAM),
-    LIABLE_FOR_AUTO_TESTING(15, Type.PROJECT_TEAM),
-    TECH_SUPPORT_CURATOR(16, Type.PROJECT_TEAM),
-    PRODUCT_ASSEMBLER(17, Type.PROJECT_TEAM),
-    SUPPLY_PREPARATION(18, Type.PROJECT_TEAM),
-    ENGINEER_DOC_DEV(19, Type.PROJECT_TEAM),
-    TECH_DOC_DEV(20, Type.PROJECT_TEAM),
-    SOFTWARE_DOC_DEV(21, Type.PROJECT_TEAM),
-    LIABLE_FOR_CERTIFICATION(22, Type.PROJECT_TEAM),
-    OKR_ESCORT(23, Type.PROJECT_TEAM),
-    QUALITY_CONTROL_SMK(24, Type.PROJECT_TEAM),
-    CUSTOMER_INTEGRATION(25, Type.PROJECT_TEAM);
+    DECISION_CENTER(3),
+    CHIEF_DECISION_MAKER(4),
+    KEEPER(5),
+    TECH_SPECIALIST(6),
+    INFLUENCE_MAKER(7),
+    CHIEF_INFLUENCE_MAKER(8),
+    ECONOMIST(9),
+    WELL_WISHER(10),
+    RECEPTIVITY_CENTER(11),
+    HARDWARE_CURATOR(12),
+    SOFTWARE_CURATOR(13),
+    INTRO_NEW_TECH_SOLUTIONS(14),
+    LIABLE_FOR_AUTO_TESTING(15),
+    TECH_SUPPORT_CURATOR(16),
+    PRODUCT_ASSEMBLER(17),
+    SUPPLY_PREPARATION(18),
+    ENGINEER_DOC_DEV(19),
+    TECH_DOC_DEV(20),
+    SOFTWARE_DOC_DEV(21),
+    LIABLE_FOR_CERTIFICATION(22),
+    OKR_ESCORT(23),
+    QUALITY_CONTROL_SMK(24),
+    CUSTOMER_INTEGRATION(25);
 
-    private En_DevUnitPersonRoleType( int typeId, Type... types ) {
+    private En_DevUnitPersonRoleType( int typeId ) {
         this.id = typeId;
-        this.types = Arrays.asList(types);
     }
 
     private final int id;
-    private final List<Type> types;
+    private static final List<En_DevUnitPersonRoleType> projectRoles = Collections.unmodifiableList( Arrays.asList(
+            HEAD_MANAGER, HARDWARE_CURATOR, SOFTWARE_CURATOR, INTRO_NEW_TECH_SOLUTIONS, LIABLE_FOR_AUTO_TESTING,
+            TECH_SUPPORT_CURATOR, PRODUCT_ASSEMBLER, SUPPLY_PREPARATION, ENGINEER_DOC_DEV, TECH_DOC_DEV, SOFTWARE_DOC_DEV,
+            LIABLE_FOR_CERTIFICATION, OKR_ESCORT, QUALITY_CONTROL_SMK, CUSTOMER_INTEGRATION ) );
+
+    private static final List<En_DevUnitPersonRoleType> ampluaRoles = Collections.unmodifiableList( Arrays.asList(
+            DECISION_CENTER, CHIEF_DECISION_MAKER, KEEPER, TECH_SPECIALIST, INFLUENCE_MAKER, CHIEF_INFLUENCE_MAKER,
+            ECONOMIST, WELL_WISHER, RECEPTIVITY_CENTER
+    ) );
 
     public int getId() {
         return id;
@@ -54,28 +62,11 @@ public enum En_DevUnitPersonRoleType {
         return null;
     }
 
-    public static List<En_DevUnitPersonRoleType> getAmpluaRoles() {
-        List<En_DevUnitPersonRoleType> roles = new ArrayList<>();
-        for (En_DevUnitPersonRoleType role : values()) {
-            if (role.types.contains(Type.AMPLUA)) {
-                roles.add(role);
-            }
-        }
-        return roles;
+    public static boolean isProjectRole(En_DevUnitPersonRoleType type) {
+        return projectRoles.contains( type );
     }
 
     public static List<En_DevUnitPersonRoleType> getProjectRoles() {
-        List<En_DevUnitPersonRoleType> roles = new ArrayList<>();
-        for (En_DevUnitPersonRoleType role : values()) {
-            if (role.types.contains(Type.PROJECT_TEAM)) {
-                roles.add(role);
-            }
-        }
-        return roles;
-    }
-
-    private enum Type {
-        AMPLUA,
-        PROJECT_TEAM
+        return projectRoles;
     }
 }

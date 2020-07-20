@@ -665,7 +665,7 @@ public class MailNotificationProcessor {
 
         List<PersonProjectMemberView> team = event.getNewProjectState().getTeam();
 
-        List<Long> recipientsIds = CollectionUtils.emptyIfNull(team).stream().map(PersonShortView::getId).collect(Collectors.toList());
+        List<Long> recipientsIds = CollectionUtils.stream(team).map(PersonShortView::getId).collect(Collectors.toList());
         recipientsIds.add(event.getInitiatorId());
         recipientsIds.add(event.getCreator().getId());
 
