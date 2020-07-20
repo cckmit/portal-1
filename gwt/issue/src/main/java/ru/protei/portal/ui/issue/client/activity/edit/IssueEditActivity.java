@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -154,6 +155,9 @@ public abstract class IssueEditActivity implements
         if (isReadOnly()) return;
         if (view.isAttached()) {
             reloadComments();
+            if (isTerminalState(event.stateId)) {
+                fireEvent(new CaseCommentEvents.DisableNewComment());
+            }
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
     }
@@ -174,6 +178,18 @@ public abstract class IssueEditActivity implements
             reloadComments();
         }
         fireEvent( new IssueEvents.ChangeIssue(event.issueId) );
+    }
+
+    @Event
+    public void onIssueMetaChanged( IssueEvents.IssueMetaChanged event ) {
+        if (issue == null) {
+            return;
+        }
+        if (view.isAttached()) {
+            if (isTerminalState(event.meta.getStateId())) {
+                fireEvent(new CaseCommentEvents.DisableNewComment());
+            }
+        }
     }
 
     @Override
@@ -286,7 +302,6 @@ public abstract class IssueEditActivity implements
         fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                 .withCaseId(issue.getId())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
-                .withPageId(lang.issues())
                 .withReadOnly(readOnly));
     }
 
@@ -313,6 +328,7 @@ public abstract class IssueEditActivity implements
                 .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
                 .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
                 .withPrivateCase( issue.isPrivateCase() )
+                .withNewCommentEnabled( !isTerminalState(issue.getStateId()) )
                 .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
     }
 

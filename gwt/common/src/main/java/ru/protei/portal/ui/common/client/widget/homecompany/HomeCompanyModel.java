@@ -6,9 +6,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public abstract class HomeCompanyModel implements Activity, AsyncSelectorModel<E
     private void refreshOptions( boolean reverseOrder, LoadingHandler handler, Boolean synchronizeWith1C) {
         handler.onLoadingStart();
         list = new ArrayList<>(  );
-        companyService.getCompanyOptionList(new CompanyQuery(true, false).onlyVisibleFields().reverseOrder(reverseOrder).synchronizeWith1C(synchronizeWith1C),
+        companyService.getCompanyOptionListIgnorePrivileges(new CompanyQuery(true, false).onlyVisibleFields().reverseOrder(reverseOrder).synchronizeWith1C(synchronizeWith1C),
                 new FluentCallback<List<EntityOption>>()
                         .withSuccess(companies -> {
                             list.clear();

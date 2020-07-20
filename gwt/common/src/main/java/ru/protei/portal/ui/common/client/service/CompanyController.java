@@ -78,6 +78,8 @@ public interface CompanyController extends RemoteService {
      */
     List< EntityOption > getCompanyOptionList(CompanyQuery query) throws RequestFailedException;
 
+    List< EntityOption > getCompanyOptionListIgnorePrivileges(CompanyQuery query) throws RequestFailedException;
+
     /**
      * Получение списка сокращенного представления группы компаний (name,id)
      * @return

@@ -12,22 +12,25 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.En_ContractState;
-import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
-import ru.protei.portal.core.model.struct.CostWithCurrency;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.ValiableAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
-import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.money.CostCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -35,11 +38,14 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
 import ru.protei.portal.ui.contract.client.widget.contractdates.list.ContractDatesList;
+import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
@@ -47,6 +53,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        dateValid.getElement().setAttribute("placeholder", lang.days());
+        initCuratorSelector();
         ensureDebugIds();
     }
 
@@ -61,7 +69,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<CostWithCurrency> cost() {
+    public HasValue<CostWithCurrencyWithVat> cost() {
         return costWithCurrency;
     }
 
@@ -73,6 +81,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasValue<En_ContractType> type() {
         return type;
+    }
+
+    @Override
+    public void setKind(En_ContractKind value) {
+        kind.setValue(contractKindLang.getName(value));
     }
 
     @Override
@@ -96,7 +109,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<Date> dateValid() {
+    public HasValue<Long> dateValidDays() {
         return dateValid;
     }
 
@@ -141,8 +154,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<EntityOption> contragent() {
-        return contragent;
+    public HasValue<Contractor> contractor() {
+        return contractorWidget;
     }
 
     @Override
@@ -154,12 +167,18 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return manager;
     }
 
-    public HasEnabled contragentEnabled() {
-        return contragent;
-    }
-
     public HasEnabled directionEnabled() {
         return direction;
+    }
+
+    @Override
+    public HasEnabled contractorEnabled() {
+        return contractorWidget;
+    }
+
+    @Override
+    public void setOrganization(String organization) {
+        contractorWidget.setOrganization(organization);
     }
 
     @UiHandler("saveButton")
@@ -190,6 +209,26 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
+    @UiHandler("organization")
+    public void onOrganizationChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onOrganizationChanged();
+        }
+    }
+
+    @UiHandler("contractParent")
+    public void onContractParentChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onContractParentChanged();
+        }
+    }
+
+    private void initCuratorSelector() {
+        EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
+        query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
+        curator.setEmployeeQuery(query);
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -216,7 +255,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateSigning.setEnsureDebugId(DebugIds.CONTRACT.DATE_SIGNING_CONTAINER);
 
         dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_VALID);
-        dateValid.setEnsureDebugId(DebugIds.CONTRACT.DATE_VALID_CONTAINER);
+        dateValid.ensureDebugId(DebugIds.CONTRACT.DATE_VALID_CONTAINER);
 
         costWithCurrencyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COST_WITH_CURRENCY);
         costWithCurrency.setEnsureDebugId(DebugIds.CONTRACT.COST_WITH_CURRENCY_CONTAINER);
@@ -236,8 +275,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.MANAGER);
         manager.setEnsureDebugId(DebugIds.CONTRACT.MANAGER_SELECTOR);
 
-        contragentLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRAGENT);
-        contragent.setEnsureDebugId(DebugIds.CONTRACT.CONTRAGENT_SELECTOR);
+        contractorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.CONTRACTOR);
+        contractorWidget.setEnsureDebugId(DebugIds.CONTRACT.CONTRACTOR_SELECTOR);
 
         dateList.setEnsureDebugId(DebugIds.CONTRACT.ADD_DATES_BUTTON);
         specificationList.setEnsureDebugId(DebugIds.CONTRACT.ADD_SPECIFICATIONS_BUTTON);
@@ -249,30 +288,36 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     Button saveButton;
 
+    @Inject
+    En_ContractKindLang contractKindLang;
+
     @UiField
+    @Inject
     Lang lang;
+
     @Inject
     @UiField(provided = true)
     HomeCompanyButtonSelector organization;
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector curator;
+    EmployeeCustomButtonSelector curator;
     @Inject
     @UiField(provided = true)
     ContractStateSelector state;
     @Inject
     @UiField(provided = true)
     ContractTypeSelector type;
+    @UiField
+    TextBox kind;
     @Inject
     @UiField(provided = true)
-    CostWithCurrencyView costWithCurrency;
+    CostCurrencyVatWidget costWithCurrency;
     @UiField
     ValidableTextBox number;
     @UiField
-    AutoResizeTextArea description;
-    @Inject
-    @UiField(provided = true)
-    SinglePicker dateValid;
+    ValiableAutoResizeTextArea description;
+    @UiField
+    LongBox dateValid;
     @Inject
     @UiField(provided = true)
     SinglePicker dateSigning;
@@ -296,11 +341,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     EmployeeButtonSelector manager;
     @Inject
     @UiField(provided = true)
-    CompanySelector contragent;
+    ContractorWidget contractorWidget;
     @UiField
     LabelElement numberLabel;
     @UiField
     LabelElement typeLabel;
+    @UiField
+    LabelElement kindLabel;
     @UiField
     LabelElement stateLabel;
     @UiField
@@ -324,7 +371,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     LabelElement managerLabel;
     @UiField
-    LabelElement contragentLabel;
+    LabelElement contractorLabel;
     @UiField
     DivElement commonHeader;
     @UiField

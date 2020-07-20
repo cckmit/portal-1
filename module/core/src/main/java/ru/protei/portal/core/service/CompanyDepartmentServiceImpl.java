@@ -7,12 +7,9 @@ import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CompanyDepartmentQuery;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.policy.PolicyService;
 
 import java.util.*;
 import java.util.stream.Collectors;

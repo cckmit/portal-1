@@ -3,12 +3,14 @@ package ru.protei.portal.ui.contract.client.activity.edit;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
-import ru.protei.portal.core.model.struct.CostWithCurrency;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.struct.CostWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -22,11 +24,13 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    HasValue<CostWithCurrency> cost();
+    HasValue<CostWithCurrencyWithVat> cost();
 
     HasValue<String> number();
 
     HasValue<En_ContractType> type();
+
+    void setKind(En_ContractKind kind);
 
     HasValue<En_ContractState> state();
 
@@ -36,7 +40,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<Date> dateSigning();
 
-    HasValue<Date> dateValid();
+    HasValue<Long> dateValidDays();
 
     HasValue<List<ContractDate>> contractDates();
 
@@ -52,7 +56,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<EntityOption> project();
 
-    HasValue<EntityOption> contragent();
+    HasValue<Contractor> contractor();
 
     HasValue<PersonShortView> manager();
 
@@ -60,7 +64,9 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled managerEnabled();
 
-    HasEnabled contragentEnabled();
-
     HasEnabled directionEnabled();
+
+    HasEnabled contractorEnabled();
+
+    void setOrganization(String organization);
 }

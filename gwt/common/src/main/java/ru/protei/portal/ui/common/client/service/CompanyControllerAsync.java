@@ -67,6 +67,12 @@ public interface CompanyControllerAsync {
     void getCompanyOptionList(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
 
     /**
+     * Получение списка сокращенного представления компании (name,id) игнорируя область видимости и привилегии
+     * @param callback
+     */
+    void getCompanyOptionListIgnorePrivileges(CompanyQuery query, AsyncCallback<List<EntityOption>> callback);
+
+    /**
      * Получение списка сокращенного представления группы компаний (name,id)
      * @param callback
      */

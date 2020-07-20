@@ -32,12 +32,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
-    public PersonShortView getEmployee(Long employeeId) throws RequestFailedException {
-        log.info("getEmployee(): employeeId={}", employeeId);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
-    }
-    @Override
     public SearchResult<EmployeeShortView> getEmployees(EmployeeQuery query) throws RequestFailedException {
         log.info("getEmployees(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -67,6 +61,13 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
+    public EmployeeShortView getEmployee(Long employeeId) throws RequestFailedException {
+        log.info("getEmployee(): employeeId={}", employeeId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
+    }
+
+    @Override
     public PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException {
         log.info("getDepartmentHead(): departmentId={}", departmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -74,17 +75,10 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public EmployeeShortView getEmployeeShortView(Long employeeId) throws RequestFailedException {
-        log.info("getEmployeeShortView(): employeeId={}", employeeId);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeShortView(token, employeeId));
-    }
-
-    @Override
-    public EmployeeShortView getEmployeeShortViewWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
+    public EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
         log.info("getEmployeeShortViewWithChangedHiddenCompanyNames(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(token, employeeId));
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeWithChangedHiddenCompanyNames(token, employeeId));
     }
 
 
@@ -192,7 +186,11 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         log.info("fire employee, id: {} -> {} ", person.getId(), response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
 
-        return response.isOk() ? response.getData() : false;
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
     }
 
     @Override

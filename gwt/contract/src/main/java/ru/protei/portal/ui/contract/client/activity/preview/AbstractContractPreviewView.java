@@ -26,7 +26,7 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setDirection(String value);
 
-    void setContragent(String value);
+    void setContractor(String value);
 
     void setCurator(String value);
 

@@ -30,7 +30,9 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     HasAttachments attachmentContainer();
 
-    void enabledNewComment( boolean value );
+    void setNewCommentHidden(boolean isHidden);
+
+    void setNewCommentDisabled(boolean isDisabled);
 
     HasTime timeElapsed();
 

@@ -64,6 +64,16 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         return save;
     }
 
+    @Override
+    public HasEnabled removeButtonEnabled() {
+        return remove;
+    }
+
+    @Override
+    public HasEnabled saveButtonEnabled() {
+        return save;
+    }
+
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
     }
@@ -98,6 +108,16 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         close.setVisible( isCloseVisible );
     }
 
+    @Override
+    public void setAdditionalVisible(boolean isAdditionalVisible) {
+        additional.setVisible(isAdditionalVisible);
+    }
+
+    @Override
+    public void setAdditionalButtonName(String name) {
+        additional.setText(name);
+    }
+
     @UiHandler( "save" )
     public void onSaveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -114,6 +134,12 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
         fireRemoveClicked();
+    }
+
+    @UiHandler( "additional" )
+    public void onAdditionalClicked( ClickEvent event ) {
+        event.preventDefault();
+        fireAdditionalClicked();
     }
 
     @Override
@@ -138,6 +164,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         cancel.ensureDebugId(DebugIds.DIALOG_DETAILS.CANCEL_BUTTON);
         remove.ensureDebugId(DebugIds.DIALOG_DETAILS.REMOVE_BUTTON);
         close.ensureDebugId(DebugIds.DIALOG_DETAILS.CLOSE_BUTTON);
+        additional.ensureDebugId(DebugIds.DIALOG_DETAILS.ADDITIONAL_BUTTON);
     }
 
     private void fireCancelClicked() {
@@ -158,6 +185,12 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         }
     }
 
+    private void fireAdditionalClicked() {
+        if ( activity != null ) {
+            activity.onAdditionalClicked();
+        }
+    }
+
     @UiField
     HTMLPanel bodyContainer;
     @UiField
@@ -166,6 +199,8 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     Anchor cancel;
     @UiField
     Anchor remove;
+    @UiField
+    Anchor additional;
     @UiField
     HeadingElement header;
     @UiField

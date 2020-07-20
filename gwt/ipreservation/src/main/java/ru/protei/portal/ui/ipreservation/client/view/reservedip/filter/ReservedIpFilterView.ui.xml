@@ -12,7 +12,8 @@
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
 
-                <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}" addStyleNames="form-group col-md-12"/>
+                <subnet:SubnetMultiSelector ui:field="subnets" header="{lang.subnet}"
+                                            addStyleNames="form-group col-md-12" showAll="true"/>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.reservedIpOwner}"/></label>

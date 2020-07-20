@@ -55,6 +55,9 @@
                     </b>
                 </g:HTMLPanel>
             </div>
+            <div ui:field="absenceReason" class="absence-reason hide">
+                <i ui:field="absenceIcon"/>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

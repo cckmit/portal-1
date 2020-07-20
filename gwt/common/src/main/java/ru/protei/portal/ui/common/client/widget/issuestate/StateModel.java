@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -21,6 +20,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 /**
  * Модель статусов
@@ -108,7 +109,7 @@ public abstract class StateModel implements Activity {
     private List<CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            if (currentCaseState != null && CrmConstants.State.VERIFIED == currentCaseState.getId()) {
+            if (currentCaseState != null && isTerminalState(currentCaseState.getId())) {
                 return Collections.singletonList(currentCaseState);
             } else {
                 return new ArrayList<>(caseStatesList);

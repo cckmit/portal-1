@@ -15,7 +15,7 @@ public class ContractQuery extends BaseQuery {
 
     private List<Long> managerIds;
 
-    private List<Long> contragentIds;
+    private List<Long> contractorIds;
 
     private List<Long> organizationIds;
 
@@ -43,12 +43,12 @@ public class ContractQuery extends BaseQuery {
         this.managerIds = managerIds;
     }
 
-    public List<Long> getContragentIds() {
-        return contragentIds;
+    public List<Long> getContractorIds() {
+        return contractorIds;
     }
 
-    public void setContragentIds(List<Long> contragentIds) {
-        this.contragentIds = contragentIds;
+    public void setContractorIds(List<Long> contractorIds) {
+        this.contractorIds = contractorIds;
     }
 
     public En_ContractState getState() {

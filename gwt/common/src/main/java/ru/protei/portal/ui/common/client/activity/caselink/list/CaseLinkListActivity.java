@@ -58,7 +58,16 @@ public abstract class CaseLinkListActivity
         linksSet.clear();
         resetLinksContainerStateByLinksCount();
 
-        if (isCaseCreationMode()) return;
+        boolean isCaseLinksDefined = event.links != null;
+
+        if (isCaseLinksDefined) {
+            fillView(CollectionUtils.emptyIfNull(event.links));
+            return;
+        }
+
+        if (isCaseCreationMode()) {
+            return;
+        }
 
         controller.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
                 .withError(this::showErrorFromServer)
@@ -123,7 +132,7 @@ public abstract class CaseLinkListActivity
     }
 
     private void fillView(List<CaseLink> links) {
-        if (links.isEmpty() || !links.iterator().next().getCaseId().equals(caseId)) {
+        if (links.isEmpty() || !Objects.equals(links.iterator().next().getCaseId(), caseId)) {
             return;
         }
         view.getLinksContainer().clear();

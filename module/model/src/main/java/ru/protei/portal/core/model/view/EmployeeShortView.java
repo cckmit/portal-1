@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.view;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -17,6 +18,9 @@ public class EmployeeShortView implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
+
+    @JdbcColumn(name="company_id")
+    private Long companyId;
 
     @JdbcColumn(name="displayname")
     private String displayName;
@@ -51,12 +55,22 @@ public class EmployeeShortView implements Serializable {
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
 
+    private PersonAbsence currentAbsence;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public String getDisplayName() {
@@ -145,6 +159,14 @@ public class EmployeeShortView implements Serializable {
 
     public void setGender (En_Gender gender) {
         this.gender = gender.getCode();
+    }
+
+    public PersonAbsence getCurrentAbsence() {
+        return currentAbsence;
+    }
+
+    public void setCurrentAbsence(PersonAbsence absence) {
+        this.currentAbsence = absence;
     }
 
     @Override

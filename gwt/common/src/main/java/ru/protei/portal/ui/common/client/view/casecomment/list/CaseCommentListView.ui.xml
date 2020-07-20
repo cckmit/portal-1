@@ -21,61 +21,74 @@
 
                     <div class="message">
 
-                        <dndautoresizetextarea:DndAutoResizeTextArea
-                                ui:field="comment"
-                                styleName="form-control form-group message-input resize-vertical"
-                                enablePasteImage="true"
-                                minRows="5" maxRows="20"/>
+                        <g:HTMLPanel ui:field="newCommentContainer" visible="true">
+                            <dndautoresizetextarea:DndAutoResizeTextArea
+                                    ui:field="comment"
+                                    styleName="form-control form-group message-input resize-vertical"
+                                    enablePasteImage="true"
+                                    minRows="5" maxRows="20"/>
 
-                        <div class="card-body p-t-0 p-b-0">
+                            <div class="card-body p-t-0 p-b-0">
 
-                            <div class="row">
-                                <div class="col-md-12 p-0 p-b-5">
-                                    <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="pull-left">
-                                        <div ui:field="filesUpload" class="attach-add-btn">
-                                            <i class="fas fa-paperclip"/>
-                                            <ui:text from='{lang.addAttachmentBtn}'/>
-                                            <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
+                                <div class="row">
+                                    <div class="col-md-12 p-0 p-b-5">
+                                        <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="pull-left">
+                                            <div ui:field="filesUpload" class="attach-add-btn">
+                                                <i class="fas fa-paperclip"/>
+                                                <ui:text from='{lang.addAttachmentBtn}'/>
+                                                <i class="fas fa-circle-notch fa-spin icon-verifiable"/>
+                                            </div>
+                                        </fileuploader:AttachmentUploader>
+                                        <div class="text-muted pull-right">
+                                            <small ui:field="markupLabel"/>
+                                            <g:Anchor styleName="far fa-question-circle" ui:field="markupLink" target="_blank"/>
                                         </div>
-                                    </fileuploader:AttachmentUploader>
-                                    <div class="text-muted pull-right">
-                                        <small ui:field="markupLabel"/>
-                                        <g:Anchor styleName="far fa-question-circle" ui:field="markupLink" target="_blank"/>
+
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <g:Button styleName="btn btn-complete" ui:field="send" text="{lang.commentSendMessage}"/>
+
+                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-3"/>
+
+                                    <div class="col-md-3 p-l-0">
+                                        <timefield:TimeTextBox ui:field="timeElapsed"
+                                                               styleName="form-control time-elapsed" notNull="false"/>
                                     </div>
 
+                                    <div class="col-md-4 p-l-0 m-t-5">
+                                        <g:CheckBox ui:field="privateComment" styleName="checkbox check-danger" text="{lang.commentSetPrivate}"/>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
+                                                               styleName="inline-block attachment-list-simple"/>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <g:Button styleName="btn btn-complete" ui:field="send" text="{lang.commentSendMessage}"/>
+                            <small ui:field="timeElapsedInfoContainer" class="text-muted hide"><ui:text from='{lang.timeElapsedInfo}'/></small>
 
-                                <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-3"/>
-
-                                <div class="col-md-3 p-l-0">
-                                    <timefield:TimeTextBox ui:field="timeElapsed"
-                                                           styleName="form-control time-elapsed" notNull="false"/>
+                            <div ui:field="commentPreviewContainer" class="message-preview hide">
+                                <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/>
+                                    <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn p-t-3"
+                                                    title="{lang.commentPreviewIsDisplay}"/>
                                 </div>
-
-                                <div class="col-md-4 p-l-0 m-t-5">
-                                    <g:CheckBox ui:field="privateComment" styleName="checkbox check-danger" text="{lang.commentSetPrivate}"/>
-                                </div>
+                                <div ui:field="commentPreview" class="message-preview-content markdown"/>
                             </div>
+                        </g:HTMLPanel>
 
-                            <div class="row">
-                                <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
-                                                           styleName="inline-block attachment-list-simple"/>
+                        <g:HTMLPanel ui:field="newCommentDisabledContainer" visible="false">
+                            <span class="fa-stack fa-2x align-middle">
+                                <i class="far fa-circle fa-stack-2x"/>
+                                <i class="fas fa-lock fa-stack-1x"/>
+                            </span>
+                            <div class="d-inline-block align-middle">
+                                <h5 class="m-0"><ui:text from="{lang.commentNewDisabled}"/></h5>
+                                <h6 class="m-0 text-muted"><ui:text from="{lang.commentNewDisabledReasonTerminal}"/></h6>
                             </div>
-                        </div>
-
-                        <small ui:field="timeElapsedInfoContainer" class="text-muted hide"><ui:text from='{lang.timeElapsedInfo}'/></small>
-
-                        <div ui:field="commentPreviewContainer" class="message-preview hide">
-                            <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/>
-                                <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn p-t-3"
-                                                title="{lang.commentPreviewIsDisplay}"/>
-                            </div>
-                            <div ui:field="commentPreview" class="message-preview-content markdown"/>
-                        </div>
+                        </g:HTMLPanel>
                     </div>
                 </g:HTMLPanel>
             </g:HTMLPanel>

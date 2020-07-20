@@ -47,6 +47,7 @@ import static ru.protei.portal.api.struct.Result.*;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
+import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 /**
  * Реализация сервиса управления обращениями
@@ -764,9 +765,9 @@ public class CaseServiceImpl implements CaseService {
 
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObjectMeta oldMeta, CaseObjectMeta newMeta) {
-        return CrmConstants.State.VERIFIED == oldMeta.getStateId() &&
-                CrmConstants.State.VERIFIED != newMeta.getStateId()  &&
-                !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
+        return isTerminalState(oldMeta.getStateId()) &&
+              !isTerminalState(newMeta.getStateId()) &&
+              !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
     }
 
     private boolean isPersonHasGrantAccess(AuthToken token, En_Privilege privilege) {

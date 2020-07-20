@@ -23,7 +23,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterActivity;
 import ru.protei.portal.ui.plan.client.activity.filter.AbstractPlanFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.List;
 

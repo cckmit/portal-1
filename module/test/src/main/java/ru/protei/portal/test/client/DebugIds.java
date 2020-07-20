@@ -51,6 +51,17 @@ public class DebugIds {
             String NEW_PASSWORD = "profile-new-password-label";
             String CONFIRM_PASSWORD = "profile-confirm-password-label";
         }
+
+        interface SUBSCRIPTION {
+
+            String EMPLOYEE_SELECTOR_ADD_BUTTON = "profile-employee-selector-add-button";
+            String EMPLOYEE_SELECTOR_CLEAR_BUTTON = "profile-employee-selector-clear-button";
+            String EMPLOYEE_SELECTOR_ITEM_CONTAINER = "profile-employee-selector-item-container";
+
+            interface LABEL {
+                String EMPLOYEE_SELECTOR = "profile-employee-selector-label";
+            }
+        }
     }
 
     public interface ACTION_BAR {
@@ -117,13 +128,8 @@ public class DebugIds {
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
         String SORT_FIELD_LABEL = "filter-sort-field-label";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
-        String DATE_RANGE_SELECTOR = "filter-date-range-selector";
-        String DATE_CREATED_RANGE_INPUT = "filter-date-created-range-input";
-        String DATE_CREATED_RANGE_LABEL = "filter-date-created-range-label";
-        String DATE_MODIFIED_RANGE_INPUT = "filter-date-modified-range-input";
-        String DATE_MODIFIED_RANGE_LABEL = "filter-date-range-label";
-        String DATE_CREATED_RANGE_BUTTON = "filter-date-created-range-button";
-        String DATE_MODIFIED_RANGE_BUTTON = "filter-date-modified-range-button";
+        String DATE_CREATED_RANGE_CONTAINER = "filter-date-created-range-container";
+        String DATE_MODIFIED_RANGE_CONTAINER = "filter-date-modified-range-container";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
         String COMPANY_SELECTOR_ITEM_CONTAINER = "filter-company-selector-item-container";
@@ -242,7 +248,7 @@ public class DebugIds {
         String CUST_PENDING = "issue-state-cust-pending";
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
-        String CUSTOMER_RESPONSIBILITY = "issue-state-customer-responsibility";
+        String REQUEST_TO_PARTNER = "issue-state-request-to-partner";
     }
 
     public interface ISSUE {
@@ -754,7 +760,7 @@ public class DebugIds {
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
-        String CONTRAGENT_SELECTOR = "contract-contragent-selector";
+        String CONTRACTOR_SELECTOR = "contract-contractor-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";
@@ -778,7 +784,7 @@ public class DebugIds {
             String ORGANIZATION = "contract-organization-label";
             String CURATOR = "contract-curator-label";
             String MANAGER = "contract-manager-label";
-            String CONTRAGENT = "contract-contragent-label";
+            String CONTRACTOR = "contract-contractor-label";
         }
 
         interface DATE_ITEM {
@@ -797,6 +803,11 @@ public class DebugIds {
             String TEXT_INPUT = "contract-specification-item-text-input";
             String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
+
+        interface CONTRACTOR {
+            String NAME = "contract-contractor-name";
+            String SEARCH_BUTTON = "contract-contractor-search-button";
+        }
     }
 
     public interface CLEANABLE_SEARCH_BOX {
@@ -810,6 +821,7 @@ public class DebugIds {
         String REMOVE_BUTTON = "dialog-details-remove-button";
         String SAVE_BUTTON = "dialog-details-save-button";
         String CANCEL_BUTTON = "dialog-details-cancel-button";
+        String ADDITIONAL_BUTTON = "dialog-details-additional-button";
 
         interface TAG {
             String NAME_LABEL = "dialog-details-tag-name-label";
@@ -842,6 +854,7 @@ public class DebugIds {
         String ADDRESS_INPUT = "subnet-address-input";
         String MASK_INPUT = "subnet-mask-input";
         String COMMENT_INPUT = "subnet-comment-input";
+        String ALLOW_RESERVE_CHECKBOX = "subnet-allow-reserve-checkbox";
         String SAVE_BUTTON = "subnet-save-button";
         String CANCEL_BUTTON = "subnet-cancel-button";
     }
@@ -870,5 +883,36 @@ public class DebugIds {
         String DATE_CREATED_LABEL = "plan-preview-date-created-label";
         String NAME_LABEL = "plan-preview-name-label";
         String PERIOD_LABEL = "plan-preview-period-label";
+    }
+
+    public interface ABSENCE {
+        String EMPLOYEE_SELECTOR_LABEL = "absence-employee-selector-label";
+        String EMPLOYEE_SELECTOR = "absence-employee-selector";
+        String DATE_RANGE_LABEL = "absence-date-range-label";
+        String DATE_RANGE_INPUT = "absence-date-range-input";
+        String DATE_RANGE_BUTTON = "absence-date-range-button";
+        String REASON_SELECTOR_LABEL = "absence-reason-selector-label";
+        String REASON_SELECTOR = "absence-reason-selector";
+        String COMMENT_LABEL = "absence-comment-label";
+        String COMMENT_INPUT = "absence-comment-input";
+    }
+
+    public interface ABSENCE_REPORT {
+        String NAME_LABEL = "absence-report-name-label";
+        String NAME_INPUT = "absence-report-name-input";
+        String DATE_RANGE_INPUT = "absence-report-date-range-input";
+        String DATE_RANGE_BUTTON = "absence-report-date-range-button";
+        String DATE_RANGE_LABEL = "absence-report-date-range-label";
+        String EMPLOYEE_SELECTOR_ADD_BUTTON = "absence-report-employee-selector-add-button";
+        String EMPLOYEE_SELECTOR_CLEAR_BUTTON = "absence-report-employee-selector-clear-button";
+        String EMPLOYEE_SELECTOR_ITEM_CONTAINER = "absence-report-employee-selector-item-container";
+        String EMPLOYEE_SELECTOR_LABEL = "absence-report-employee-selector-label";
+        String REASON_SELECTOR_ADD_BUTTON = "absence-report-reason-selector-add-button";
+        String REASON_SELECTOR_CLEAR_BUTTON = "absence-report-reason-selector-clear-button";
+        String REASON_SELECTOR_ITEM_CONTAINER = "absence-report-reason-selector-item-container";
+        String REASON_SELECTOR_LABEL = "absence-report-reason-selector-label";
+        String SORT_FIELD_LABEL = "absence-report-sort-field-selector-label";
+        String SORT_FIELD_SELECTOR = "absence-report-sort-field-selector";
+        String SORT_DIR_BUTTON = "absence-report-sort-dir-button";
     }
 }

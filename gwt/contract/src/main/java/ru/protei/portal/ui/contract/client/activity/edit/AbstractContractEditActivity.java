@@ -8,5 +8,9 @@ public interface AbstractContractEditActivity {
 
     void onTypeChanged();
 
+    void onOrganizationChanged();
+
+    void onContractParentChanged();
+
     void refreshProjectSpecificFields();
 }

@@ -28,6 +28,8 @@ public class ReservedIpQuery extends BaseQuery {
 
     private Date lastActiveTo;
 
+    private Boolean allowForReserve;
+
     public ReservedIpQuery() {
         sortField = En_SortField.ip_address;
         sortDir = En_SortDir.ASC;
@@ -136,6 +138,10 @@ public class ReservedIpQuery extends BaseQuery {
         this.subnetIds.add(subnetId);
     }
 
+    public Boolean isAllowForReserve() { return allowForReserve; }
+
+    public void setAllowForReserve(Boolean allowForReserve) { this.allowForReserve = allowForReserve; }
+
     @Override
     public String toString() {
         return "ReservedIpQuery{" +
@@ -147,6 +153,7 @@ public class ReservedIpQuery extends BaseQuery {
                 ", releasedTo=" + releasedTo +
                 ", lastActiveFrom=" + lastActiveFrom +
                 ", lastActiveTo=" + lastActiveTo +
+                ", allowForReserve=" + allowForReserve +
                 '}';
     }
 }

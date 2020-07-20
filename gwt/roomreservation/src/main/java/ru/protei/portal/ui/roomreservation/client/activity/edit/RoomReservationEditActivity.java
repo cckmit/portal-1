@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.RoomReservationEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.service.RoomReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -284,7 +284,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
     }
 
     private void getPerson(Long personId, Consumer<PersonShortView> onSuccess) {
-        employeeController.getEmployee(personId, new FluentCallback<PersonShortView>().withSuccess(onSuccess));
+        personController.getPersonShortView(personId, new FluentCallback<PersonShortView>().withSuccess(onSuccess));
     }
 
     @Inject
@@ -298,7 +298,7 @@ public abstract class RoomReservationEditActivity implements Activity, AbstractR
     @Inject
     RoomReservationControllerAsync roomReservationController;
     @Inject
-    EmployeeControllerAsync employeeController;
+    PersonControllerAsync personController;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 

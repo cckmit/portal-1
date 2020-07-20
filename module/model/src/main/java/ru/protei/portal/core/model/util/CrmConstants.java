@@ -70,6 +70,10 @@ public class CrmConstants {
         String IP = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
         String COMPANY_NAME_ILLEGAL_CHARS = ".*[<>/]+.*";
         String CONTRACT_SPECIFICATION_CLAUSE = "^\\d{1,3}(\\.\\d{1,3})*$";
+        String CONTRACTOR_INN = "^(\\d{10}|\\d{12})$";
+        String CONTRACTOR_KPP = "^\\d{9}$";
+        String CONTRACTOR_NAME = "^.{1,100}$";
+        String CONTRACTOR_FULL_NAME = "^.{1,250}$";
     }
 
     public interface Time {
@@ -112,6 +116,9 @@ public class CrmConstants {
         long HOME_COMPANY_ID = 1L;
         long MAIN_HOME_COMPANY_ID = 3084L;
         String MAIN_HOME_COMPANY_NAME = "Протей";
+        String PROTEI_ST_HOME_COMPANY_NAME = "Протей СТ";
+        String HOME_COUNTRY_NAME = "Российская Федерация";
+        String HOME_COUNTRY_SHORT_NAME = "Россия";
     }
 
     public interface LocaleTags {
@@ -164,6 +171,13 @@ public class CrmConstants {
         long CUST_PENDING = 34;
         long CLOSED = 3;
         long IGNORED = 10;
-        long CUSTOMER_RESPONSIBILITY = 37;
+        long REQUEST_TO_PARTNER = 37;
+        long SOLVED_NOT_A_PROBLEM = 7;
+        long SOLVED_FIXED = 8;
+        long SOLVED_DUPLICATED = 9;
+    }
+
+    public interface Department {
+        Long CONTRACT = 384L;
     }
 }

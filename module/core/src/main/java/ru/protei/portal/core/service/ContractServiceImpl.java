@@ -4,25 +4,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.dao.ContractDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_INN;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_KPP;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -35,6 +40,8 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
+    ContractorDAO contractorDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PortalConfig portalConfig;
@@ -42,6 +49,8 @@ public class ContractServiceImpl implements ContractService {
     PolicyService policyService;
     @Autowired
     AuthService authService;
+    @Autowired
+    Api1C api1CService;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -98,6 +107,19 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.NOT_CREATED);
 
         contract.setId(id);
+
+        Contractor contractor = contract.getContractor();
+        if (contractor != null) {
+            Result<Long> result = saveContractor(contractor);
+            if (result.isOk()) {
+                contract.setContractorId(result.getData());
+            } else {
+                return result;
+            }
+        } else {
+            contract.setContractorId(null);
+        }
+
         Long contractId = contractDAO.persist(contract);
 
         if (contractId == null)
@@ -125,11 +147,90 @@ public class ContractServiceImpl implements ContractService {
         }
         fillCaseObjectFromContract(caseObject, contract);
         caseObjectDAO.merge(caseObject);
+
+        Contractor contractor = contract.getContractor();
+        if (contractor != null) {
+            Result<Long> result = saveContractor(contractor);
+            if (result.isOk()) {
+                contract.setContractorId(result.getData());
+            } else {
+                return result;
+            }
+        } else {
+            contract.setContractorId(null);
+        }
+
         contractDAO.merge(contract);
         jdbcManyRelationsHelper.persist(contract, "contractDates");
         jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
 
         return ok(contract.getId());
+    }
+
+    @Override
+    public Result<List<ContractorCountry>> getContractorCountryList(AuthToken token, String organization) {
+        if (organization == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        return api1CService.getAllCountries(organization)
+                .map(list -> list.stream()
+                        .map(country1C -> new ContractorCountry(country1C.getRefKey(), country1C.getName()))
+                        .collect(toList()));
+    }
+
+    @Override
+    public Result<List<Contractor>> getContractorList(AuthToken token) {
+        return ok(contractorDAO.getAll());
+    }
+
+    @Override
+    public Result<List<Contractor>> findContractors(AuthToken token,
+                                                    String organization, String contractorInn, String contractorKpp) {
+        if (organization == null || contractorInn == null || contractorKpp == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValidContractor(contractorInn, contractorKpp)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Contractor1C queryContractor1C = new Contractor1C();
+        queryContractor1C.setInn(contractorInn);
+        queryContractor1C.setKpp(contractorKpp);
+
+        Result<List<Contractor1C>> contractors = api1CService.getContractors(queryContractor1C, organization);
+        if (contractors.isError()) {
+            return error(contractors.getStatus());
+        }
+
+        Result<List<ContractorCountry>> contractorCountryListResult = getContractorCountryList(token, organization);
+        if (contractorCountryListResult.isError()) {
+            return error(contractorCountryListResult.getStatus());
+        }
+
+        Map<String, String> mapRefToName = contractorCountryListResult.getData().stream()
+                .collect(toMap(ContractorCountry::getRefKey, ContractorCountry::getName, (n1, n2) -> n1));
+
+        return contractors.map(list -> list.stream().map(contractor1C ->
+                                from1C(contractor1C, mapRefToName.get(contractor1C.getRegistrationCountryKey())))
+                                    .collect(toList())
+                );
+    }
+
+    @Override
+    public Result<Contractor> createContractor(AuthToken token, Contractor contractor) {
+        if (contractor == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValidContractor(contractor)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Contractor1C queryContractor1C = to1C(contractor);
+
+        return api1CService.saveContractor(queryContractor1C, contractor.getOrganization())
+            .map(contractor1C -> from1C(contractor1C, contractor1C.getRegistrationCountryKey()));
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
@@ -153,8 +254,59 @@ public class ContractServiceImpl implements ContractService {
         return caseObject;
     }
 
+    private Result<Long> saveContractor(Contractor contractor) {
+        if (contractor.getRefKey() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        Contractor contractorByRefKey = contractorDAO.getContractorByRefKey(contractor.getRefKey());
+
+        if (contractorByRefKey == null) {
+            contractorDAO.persist(contractor);
+        } else {
+            contractor.setId(contractorByRefKey.getId());
+            contractorDAO.merge(contractor);
+        }
+
+        return ok(contractor.getId());
+    }
+
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
         Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
     }
+
+    private boolean isValidContractor(String contractorInn, String contractorKpp) {
+        return innPattern.matcher(contractorInn).matches() && ContractorUtils.checkInn(contractorInn) &&
+                kppPattern.matcher(contractorKpp).matches();
+    }
+
+    private boolean isValidContractor(Contractor contractor) {
+        return isValidContractor(contractor.getInn(), contractor.getKpp());
+    }
+
+    public static Contractor from1C(Contractor1C contractor1C, String country) {
+        Contractor contractor = new Contractor();
+        contractor.setRefKey(contractor1C.getRefKey());
+        contractor.setName(contractor1C.getName());
+        contractor.setFullName(contractor1C.getFullName());
+        contractor.setCountry(country);
+        contractor.setInn(contractor1C.getInn());
+        contractor.setKpp(contractor1C.getKpp());
+
+        return contractor;
+    }
+
+    public static Contractor1C to1C(Contractor contractor) {
+        Contractor1C contractor1C = new Contractor1C();
+        contractor1C.setName(contractor.getName());
+        contractor1C.setFullName(contractor.getFullName());
+        contractor1C.setInn(contractor.getInn());
+        contractor1C.setKpp(contractor.getKpp());
+        contractor1C.setRegistrationCountryKey(contractor.getCountryRef());
+
+        return contractor1C;
+    }
+
+    private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);
+    private final Pattern kppPattern = Pattern.compile(CONTRACTOR_KPP);
 }

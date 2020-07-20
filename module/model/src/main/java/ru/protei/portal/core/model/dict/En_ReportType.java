@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dict;
 
+import java.util.Objects;
+
 /**
  * Типы отчетов
  */
@@ -23,5 +25,12 @@ public enum En_ReportType {
     /**
      * Фильтр проектам
      */
-    PROJECT
+    PROJECT;
+
+    public static boolean isTimeLimitMandatory(En_ReportType type) {
+        if (type == null)
+            return false;
+        return Objects.equals(type, En_ReportType.CASE_TIME_ELAPSED)
+               || Objects.equals(type, En_ReportType.CASE_RESOLUTION_TIME);
+    }
 }

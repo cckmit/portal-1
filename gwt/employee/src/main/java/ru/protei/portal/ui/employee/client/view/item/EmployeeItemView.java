@@ -2,13 +2,14 @@ package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
@@ -100,6 +101,20 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         editIcon.setVisible(link != null && !link.isEmpty());
     }
 
+    public void setAbsenceReason(En_AbsenceReason reason) {
+        if (reason == null) {
+            removeStyleName("absent");
+            absenceReason.addClassName("hide");
+            absenceReason.setTitle("");
+            absenceIcon.setClassName("");
+        } else {
+            addStyleName("absent");
+            absenceReason.removeClassName("hide");
+            absenceReason.setTitle(reasonLang.getName(reason));
+            absenceIcon.addClassName(reasonLang.getIcon(reason));
+        }
+    }
+
     @UiField
     Anchor name;
 
@@ -166,10 +181,15 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     @UiField
     SpanElement emails;
 
+    @UiField
+    Element absenceIcon;
+    @UiField
+    DivElement absenceReason;
+
+    @Inject
+    En_AbsenceReasonLang reasonLang;
 
     AbstractEmployeeItemActivity activity;
-
-    private Long employeeId;
 
     private static EmployeeItemViewUiBinder ourUiBinder = GWT.create( EmployeeItemViewUiBinder.class );
     interface EmployeeItemViewUiBinder extends UiBinder< HTMLPanel, EmployeeItemView > {}

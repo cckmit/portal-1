@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.SubnetOption;
@@ -20,7 +21,7 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedRangePicker;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedToggleRangePicker;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.ipreservation.client.activity.reservedip.create.AbstractReservedIpCreateActivity;
@@ -42,6 +43,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         ipAddress.setRegexp( CrmConstants.IpReservation.IP_ADDRESS );
         macAddress.setRegexp( CrmConstants.IpReservation.MAC_ADDRESS );
         number.setRegexp( CrmConstants.IpReservation.NUMBER );
+        fillUseRangeButtons();
         ensureDebugIds();
     }
 
@@ -89,6 +91,9 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     public HasValue<Set<SubnetOption>> subnets() { return subnets; }
 
     @Override
+    public HasValidable subnetValidator() { return subnets; }
+
+    @Override
     public HasValue<DateIntervalWithType> useRange() { return useRange; }
 
     @Override
@@ -121,7 +126,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     }
 
     @Override
-    public void setEnableUnlimited(boolean value) { useRange.setEnableUnlimited(value); }
+    public void setEnableUnlimited(boolean value) { useRange.setEnableBtn(En_DateIntervalType.UNLIMITED, value); }
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
@@ -160,7 +165,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
     @UiHandler("subnets")
     public void onSubnetSelected(ValueChangeEvent<Set<SubnetOption>> event)  {
         if ( activity != null ) {
-            activity.checkCreateAvailable();
+            activity.onSubnetsChanged();
         }
     }
 
@@ -169,6 +174,11 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
         if ( activity != null ) {
             activity.onOwnerChanged();
         }
+    }
+
+    private void fillUseRangeButtons() {
+        En_DateIntervalType.reservedIpTypes().forEach(type -> useRange.addBtn(type,"btn btn-default col-md-4"));
+        useRange.getValue().setIntervalType(En_DateIntervalType.MONTH);
     }
 
     private void ensureDebugIds() {
@@ -233,7 +243,7 @@ public class ReservedIpCreateView extends Composite implements AbstractReservedI
 
     @Inject
     @UiField(provided = true)
-    TypedRangePicker useRange;
+    TypedToggleRangePicker useRange;
 
     @UiField
     HTMLPanel exactIpContainer;

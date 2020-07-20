@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root">
+        <div class="contractor input-group">
+            <g:TextBox ui:field="name" styleName="form-control rounded-left-3" enabled="false"/>
+            <div class="input-group-append">
+                <g:Button ui:field="button" styleName="btn btn-complete rounded-right-3">
+                    <i class="fa fa-search"/>
+                </g:Button>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

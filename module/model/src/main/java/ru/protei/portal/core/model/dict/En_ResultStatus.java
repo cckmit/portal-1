@@ -205,9 +205,19 @@ public enum En_ResultStatus {
     EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES,
 
     /**
+     * Ошибка миграции сотрудника на старый портал
+     */
+    EMPLOYEE_MIGRATION_FAILED,
+
+    /**
      * Подсеть не существует
      */
     SUBNET_DOES_NOT_EXIST,
+
+    /**
+     * Подсеть недоступна для резервирования
+     */
+    SUBNET_NOT_ALLOWED_FOR_RESERVE,
 
     /**
      * Резервирование комнат: событие уже началось/закончилось
@@ -229,5 +239,19 @@ public enum En_ResultStatus {
      */
     ISSUE_FILTER_IS_USED,
 
+    /**
+     * Ошибка при запросе в 1С
+     */
+    REQUEST_1C_FAILED,
+
+    /**
+     * Найдено пересечение с другими отсутствиями
+     */
+    ABSENCE_HAS_INTERSECTIONS,
+
+    /**
+     * Отсутствие ещё не началось либо уже закончилось
+     */
+    NOT_CURRENT_ABSENCE
     ;
 }

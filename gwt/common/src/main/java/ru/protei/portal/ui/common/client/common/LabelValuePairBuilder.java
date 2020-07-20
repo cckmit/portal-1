@@ -12,6 +12,16 @@ public class LabelValuePairBuilder {
         return new LabelValuePairBuilder();
     }
 
+    public LabelValuePairBuilder addIconPair(String icon, String className ) {
+        if ( icon != null ) {
+            root.addClassName( className );
+            Element i = DOM.createElement("i");
+            i.setClassName( icon );
+            root.appendChild( i );
+        }
+        return this;
+    }
+
     public LabelValuePairBuilder addIconValuePair(String icon, String value, String className ) {
         if ( value != null ) {
             root.addClassName( className );

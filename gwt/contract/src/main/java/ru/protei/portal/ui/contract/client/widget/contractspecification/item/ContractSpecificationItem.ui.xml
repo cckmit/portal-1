@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -12,8 +13,16 @@
                 <validablefield:ValidableTextBox ui:field="clause" styleName="form-control"/>
             </div>
 
-            <div class="col-md-9">
+            <div class="col-md-4">
                 <autoresizetextarea:ValiableAutoResizeTextArea ui:field="text" styleName="form-control" minRows="2"/>
+            </div>
+
+            <div class="col-md-2">
+                <g:LongBox ui:field="quantity" styleName="form-control"/>
+            </div>
+
+            <div class="col-md-3">
+                <money:CostCurrencyWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
             </div>
 
             <div class="col-md-1">

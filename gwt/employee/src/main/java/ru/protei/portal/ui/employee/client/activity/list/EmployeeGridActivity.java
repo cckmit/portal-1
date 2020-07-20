@@ -8,20 +8,24 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.ui.common.client.util.TopBrassPersonUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.TopBrassPersonUtils;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 
+import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
+
 public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivity, AbstractEmployeeFilterActivity, Activity {
+
     @PostConstruct
     public void onInit() {
         filterView.setActivity(this);
+        filterView.resetFilter();
         query = makeQuery();
         currentViewType = ViewType.valueOf(localStorageService.getOrDefault(EMPLOYEE_CURRENT_VIEW_TYPE, ViewType.LIST.toString()));
     }
@@ -54,6 +58,14 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         }
 
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(lang.absenceButtonCreate(), "", UiConstants.ActionBarIdentity.ABSENCE));
+        }
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
+            fireEvent(new ActionBarEvents.Add(lang.absenceButtonReport(), "", UiConstants.ActionBarIdentity.ABSENCE_REPORT));
+        }
     }
 
     @Event
@@ -98,6 +110,42 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         fireEvent(new EmployeeEvents.Edit());
     }
 
+    @Event
+    public void onAbsenceCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.ABSENCE.equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        fireEvent(new AbsenceEvents.Edit());
+    }
+
+    @Event
+    public void onAbsenceReportClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.ABSENCE_REPORT.equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        fireEvent(new AbsenceEvents.CreateReport());
+    }
+
+    @Event
+    public void onUpdate(EmployeeEvents.Update event) {
+        if(event.id == null || !policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
+            return;
+
+        fireEvent(new EmployeeEvents.UpdateDefinite(currentViewType, event.id));
+    }
+
     @Override
     public void onFilterChanged() {
         query = makeQuery();
@@ -108,14 +156,15 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         return new EmployeeQuery(filterView.showFired().getValue() ? null : false, false, true,
                 filterView.organizations().getValue(),
                 filterView.searchPattern().getValue(),
-                filterView.workPhone().getValue(),
-                filterView.mobilePhone().getValue(),
+                normalizePhoneNumber(filterView.workPhone().getValue()),
+                normalizePhoneNumber(filterView.mobilePhone().getValue()),
                 filterView.ipAddress().getValue(),
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC,
-                filterView.showTopBrass().getValue() ? TopBrassPersonUtils.getPersonIds() : null);
+                filterView.showTopBrass().getValue() ? TopBrassPersonUtils.getPersonIds() : null,
+                filterView.showAbsent().getValue());
     }
 
 

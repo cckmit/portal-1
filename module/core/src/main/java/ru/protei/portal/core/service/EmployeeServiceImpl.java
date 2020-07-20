@@ -7,13 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_AdminState;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
@@ -25,7 +28,6 @@ import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.annotation.PostConstruct;
 import java.net.Inet4Address;
@@ -35,8 +37,6 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 
 /**
@@ -76,6 +76,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     UserLoginDAO userLoginDAO;
 
     @Autowired
+    PersonAbsenceDAO personAbsenceDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -98,36 +101,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull) {
-
-        Person p = personDAO.getEmployee( id );
-        if (p == null) {
-            return null;
-        }
-
-        List<PersonAbsence> personAbsences = absenceDAO.getForRange(id, new Date(tFrom), new Date(tTill));
-        if(isFull){
-            fillAbsencesOfCreators(personAbsences);
-        }
-
-        return new EmployeeDetailView().fill(personAbsences, isFull);
-    }
-
-    public EmployeeDetailView getEmployeeProfile(Long id){
-
-        Person p = personDAO.getEmployee( id );
-        if (p == null) {
-            return null;
-        }
-
-        EmployeeDetailView view = new EmployeeDetailView().fill(p);
-
-        view.fill(absenceDAO.getForRange(p.getId(), null, null), false);
-
-        return view;
-    }
-
-    @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
         List<Person> list = personDAO.getEmployees(query);
 
@@ -141,25 +114,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<PersonShortView> getEmployee(AuthToken token, Long employeeId) {
-
-        if (employeeId == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        Person person = personDAO.get(employeeId);
-        if(person==null) return error(En_ResultStatus.NOT_FOUND);
-        return ok(person.toFullNameShortView());
-    }
-
-    @Override
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
-            List<Long> employeeIds = results.stream().map(e -> e.getId()).collect(Collectors.toList());
+            Set<Long> employeeIds = results.stream().map(e -> e.getId()).collect(Collectors.toSet());
             List<WorkerEntryShortView> workerEntries = workerEntryShortViewDAO.listByPersonIds(employeeIds);
             results.forEach(employee ->
                 employee.setWorkerEntries(workerEntries.stream().filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId())).collect(Collectors.toList()))
@@ -177,20 +138,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeShortView> results = sr.getResults();
 
         if (CollectionUtils.isNotEmpty(results)) {
-            List<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toList());
+
+            Set<Long> employeeIds = results.stream().map(EmployeeShortView::getId).collect(Collectors.toSet());
             List<WorkerEntryShortView> workerEntries = changeCompanyNameIfHidden(workerEntryShortViewDAO.listByPersonIds(employeeIds));
 
-            results.forEach(employee ->
-                    employee.setWorkerEntries(workerEntries.stream()
-                            .filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId()))
-                            .collect(Collectors.toList()))
-            );
+            AbsenceQuery absenceQuery = makeAbsenceQuery(employeeIds);
+            List<PersonAbsence> personAbsences = personAbsenceDAO.listByQuery(absenceQuery);
+
+            results.forEach(employee -> {
+                employee.setWorkerEntries(workerEntries.stream()
+                        .filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId()))
+                        .collect(Collectors.toList()));
+                employee.setCurrentAbsence(personAbsences.stream()
+                        .filter(absence -> absence.getPersonId().equals(employee.getId()))
+                        .findFirst().orElse(null));
+            });
         }
         return ok(sr);
     }
 
     @Override
-    public Result<EmployeeShortView> getEmployeeShortView(AuthToken token, Long employeeId) {
+    public Result<EmployeeShortView> getEmployee(AuthToken token, Long employeeId) {
 
         if (employeeId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -203,7 +171,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<EmployeeShortView> getEmployeeShortViewWithChangedHiddenCompanyNames(AuthToken token, Long employeeId) {
+    public Result<EmployeeShortView> getEmployeeWithChangedHiddenCompanyNames(AuthToken token, Long employeeId) {
 
         if (employeeId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -213,24 +181,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         jdbcManyRelationsHelper.fill(employeeShortView, "workerEntries");
 
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
+        employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
 
         return ok(employeeShortView);
-    }
-
-    @Override
-    public Result<List<WorkerView>> list(String param) {
-
-        Company our_comp = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
-
-        param = HelperFunc.makeLikeArg(param, true);
-
-        JdbcSort sort = new JdbcSort(JdbcSort.Direction.ASC, "displayName");
-
-        List<WorkerView> result = personDAO.getListByCondition("company_id=? and isdeleted=? and displayName like ?", sort, our_comp.getId(), 0, param)
-                .stream().map(p -> new WorkerView(p, our_comp))
-                .collect(Collectors.toList());
-
-        return ok(result);
     }
 
     @Override
@@ -364,6 +317,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         personFromDb.setFired(new Date());
+        personFromDb.setIpAddress(personFromDb.getIpAddress() == null ? null : personFromDb.getIpAddress().replace(".", "_"));
+        PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(personFromDb.getContactInfo());
+        contactInfoFacade.setEmail(null);
 
         boolean result = personDAO.merge(personFromDb);
 
@@ -373,13 +329,18 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (!isRemoved){
                 return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
-            
-            userLoginDAO.removeByPersonId(personFromDb.getId());
+
+            UserLogin userLogin = userLoginDAO.findByPersonId(personFromDb.getId());
+            if(userLogin != null) {
+                userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                updateAccount(userLogin, token);
+            }
         }
 
         if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
-            if (!migrateToOldPortal(person.getId())) {
-                return error(En_ResultStatus.INTERNAL_ERROR);
+            if (!fireEmployeeInOldPortal(personFromDb)) {
+                log.warn("fireEmployee(): fail to migrate employee to old portal. Person={}", personFromDb);
+                return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
             }
         }
 
@@ -431,12 +392,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (portalConfig.data().legacySysConfig().isImportEmployeesEnabled()) {
-            if (!migrateToOldPortal(personId)) {
-                return error(En_ResultStatus.INTERNAL_ERROR);
+            if (!updateEmployeeInOldPortal(personId)) {
+                log.warn("updateEmployeeWorkers(): fail to migrate employee to old portal. personId={}", personId);
+                return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
             }
         }
 
        return ok(true);
+    }
+
+    private void updateAccount(UserLogin userLogin, AuthToken token) {
+        if (userLoginDAO.saveOrUpdate(userLogin)) {
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
+            makeAudit(userLogin, En_AuditType.ACCOUNT_MODIFY, token);
+        }
     }
 
     private void fillMapWorkersToRemove(Map<WorkerEntry, Integer> finalWorkersMap, List<WorkerEntry> newWorkerEntries, List<WorkerEntry> oldWorkerEntries, int TO_REMOVE) {
@@ -507,7 +476,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    private boolean migrateToOldPortal(Long personId) {
+    private boolean updateEmployeeInOldPortal(Long personId) {
         List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
 
         WorkerEntry activeWorker = workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
@@ -515,10 +484,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         Person person = personDAO.get(personId);
 
         if (activeWorker == null || person == null){
+            log.warn("updateEmployeeInOldPortal(): activeWorker={}, person={}", activeWorker, person);
             return false;
         }
 
         return migrationManager.saveExternalEmployee(person, activeWorker.getDepartmentName(), activeWorker.getPositionName()).equals(En_ResultStatus.OK);
+    }
+
+    private boolean fireEmployeeInOldPortal(Person person) {
+        if (person == null){
+            return false;
+        }
+
+        return migrationManager.saveExternalEmployee(person, "", "").equals(En_ResultStatus.OK);
     }
 
     private void checkActiveFlag(List<WorkerEntry> newWorkerEntries) {
@@ -636,25 +614,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return homeCompanies;
     }
 
-    private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
-        if(personAbsences.size()==0)
-            return;
-
-        List<Long> ids = personAbsences.stream()
-                .map(p -> p.getCreatorId())
-                .distinct()
-                .collect(Collectors.toList());
-
-        HashMap<Long,String> creators = new HashMap<>();
-
-        for (Person p : personDAO.partialGetListByKeys(ids, "displayShortName")){
-            creators.put(p.getId(), p.getDisplayShortName());
-        }
-
-        for(PersonAbsence p:personAbsences)
-            p.setCreator(creators.get(p.getCreatorId()));
-    }
-
     private boolean validatePerson(Person person) {
         if (person.isFired()) {
             log.warn("avoid to update fired person with id = {}", person.getId());
@@ -692,5 +651,16 @@ public class EmployeeServiceImpl implements EmployeeService {
                         : workerEntry.getCompanyName())
                 );
         return list;
+    }
+
+    AbsenceQuery makeAbsenceQuery(Set<Long> employeeIds) {
+        return new AbsenceQuery(
+                DateUtils.resetSeconds(new Date()),
+                DateUtils.resetSeconds(new Date()),
+                employeeIds,
+                Arrays.asList(En_AbsenceReason.values()).stream()
+                        .filter(En_AbsenceReason::isActual)
+                        .map(En_AbsenceReason::getId)
+                        .collect(Collectors.toSet()));
     }
 }

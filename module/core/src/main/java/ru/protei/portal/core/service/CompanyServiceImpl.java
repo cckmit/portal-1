@@ -82,19 +82,21 @@ public class CompanyServiceImpl implements CompanyService {
     public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
         List<Company> list = getCompanyList(token, query);
 
-
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<EntityOption> result = list.stream()
-                .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
-                .map(Company::toEntityOption).collect(Collectors.toList());
+        return ok(companyListToEntityOption(list, query));
+    }
 
-        if(query.isReverseOrder()!=null&&query.isReverseOrder()){
-            Collections.reverse(result);
+    @Override
+    public Result<List<EntityOption>> companyOptionListIgnorePrivileges( AuthToken token, CompanyQuery query) {
+        List<Company> list = companyDAO.listByQuery(query);
+
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return ok(result);
+        return ok(companyListToEntityOption(list, query));
     }
 
     @Override
@@ -436,5 +438,17 @@ public class CompanyServiceImpl implements CompanyService {
         ArrayList allowedCompanies = new ArrayList( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
         return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
+    }
+
+    private List<EntityOption> companyListToEntityOption(List<Company> list, CompanyQuery query) {
+        List<EntityOption> result = list.stream()
+                .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
+                .map(Company::toEntityOption).collect(Collectors.toList());
+
+        if(query.isReverseOrder() != null && query.isReverseOrder()){
+            Collections.reverse(result);
+        }
+
+        return result;
     }
 }

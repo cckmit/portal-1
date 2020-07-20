@@ -15,6 +15,12 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
+import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApiImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
@@ -31,6 +37,8 @@ import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.report.absence.ReportAbsence;
+import ru.protei.portal.core.report.absence.ReportAbsenceImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
@@ -563,6 +571,21 @@ public class MainConfiguration {
     }
 
     @Bean
+    public FieldsMapper1C getFieldsMapper1C() {
+        return new FieldsMapper1CImpl();
+    }
+
+    @Bean
+    public HttpClient1C getHttpClient1C() {
+        return new HttpClient1CImpl();
+    }
+
+    @Bean
+    public Api1C getApi1C() {
+        return new Api1CImpl();
+    }
+
+    @Bean
     public JiraCompanyGroupDAO getJiraCompanyGroupDAO() {
         return new JiraCompanyGroupDAO_Impl();
     }
@@ -595,6 +618,16 @@ public class MainConfiguration {
     @Bean
     public ContractSpecificationDAO getContractSpecificationDAO() {
         return new ContractSpecificationDAO_Impl();
+    }
+
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return new ContractorDAO_Impl();
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
     }
 
     /* SERVICES */
@@ -890,6 +923,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public AbsenceService getAbsenceService() {
+        return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public PersonSubscriptionService getPersonSubscriptionService() {
+        return new PersonSubscriptionServiceImpl();
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
@@ -902,6 +945,11 @@ public class MainConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public ReportAbsence getReportAbsence() {
+        return new ReportAbsenceImpl();
     }
 
     @Bean

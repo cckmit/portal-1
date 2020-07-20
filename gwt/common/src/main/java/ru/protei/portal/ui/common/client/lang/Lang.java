@@ -250,6 +250,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeNotFiredFromTheseCompanies();
 
+    String errEmployeeMigrationFailed();
+
     String errDepartmentAlreadyExistInThisCompany();
 
     String companyInfoHeader();
@@ -542,6 +544,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectIssueManager();
 
+    String selectIssuePeriod();
+
     String selectDate();
 
     String issueAttachments();
@@ -781,60 +785,6 @@ public interface Lang extends Messages, ContactItemLang {
     String appNavHeader();
 
     String issueCopiedToClipboard();
-
-    String createdCaseState();
-
-    String openedCaseState();
-
-    String closedCaseState();
-
-    String pausedCaseState();
-
-    String verifiedCaseState();
-
-    String reopenedCaseState();
-
-    String ignoredCaseState();
-
-    String assignedCaseState();
-
-    String estimatedCaseState();
-
-    String discussCaseState();
-
-    String plannedCaseState();
-
-    String activeCaseState();
-
-    String doneCaseState();
-
-    String testCaseState();
-
-    String testLocalCaseState();
-
-    String testCustCaseState();
-
-    String designCaseState();
-
-    String solvedNoapCaseState();
-
-    String solvedFixCaseState();
-
-    String solvedDupCaseState();
-
-    String workaroundCaseState();
-
-    String requestInfoCaseState();
-
-    String custPendingCaseState();
-
-    String canceledCaseState();
-
-    String requestNXCaseState();
-
-    String requestCustomerCaseState();
-
-    String customerResponsibilityState();
 
     String criticalImportance();
 
@@ -1190,7 +1140,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountFor();
 
-    String accountSubscribeCaseFilter();
+    String profileSubscriptionCaseFilter();
 
     String accountRolesNotFound();
 
@@ -2068,7 +2018,43 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDescription();
 
-    String contractContragent();
+    String contractContractor();
+
+    String contractContractorDropped();
+
+    String contractContractorDescription();
+
+    String selectContractContractor();
+
+    String contractContractorOrganizationHint();
+
+    String searchContractorTitle();
+
+    String createContractorTitle();
+
+    String contractContractorName();
+
+    String contractContractorFullName();
+
+    String contractContractorInn();
+
+    String contractContractorKpp();
+
+    String contractContractorCountry();
+
+    String contractContractorValidationError();
+
+    String contractContractorSaveError();
+
+    String contractContractorFindError();
+
+    String contractContractorNotFound();
+
+    String contractContractorFindNotChosenError();
+
+    String contractContractorSelectorPlaceholder();
+
+    String contractContractorCountryPlaceholder();
 
     String contractProject();
 
@@ -2085,6 +2071,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractState();
 
     String contractType();
+
+    String contractKind();
 
     String contractNumber();
 
@@ -2111,6 +2099,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractSpecificationClausePlaceholder();
 
     String contractSpecificationTextPlaceholder();
+
+    String contractSpecificationQuantityPlaceholder();
 
     String contractPaymentCommentPlaceholder();
 
@@ -2512,11 +2502,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveReservedIpNeedSelectOwner();
 
+    String errSaveReservedIpNeedSelectSubnet();
+
     String reservedIpWrongNumber(int minCount, int maxCount);
 
     String reservedIpCreateBy();
 
     String errSaveReservedIpSubnetDoesNotExist();
+
+    String errSaveReservedIpSubnetNotAvailable();
 
     String january();
 
@@ -2729,4 +2723,136 @@ public interface Lang extends Messages, ContactItemLang {
     String caseHistory();
 
     String errPlanNotFound();
+
+    String commentNewDisabled();
+
+    String commentNewDisabledReasonTerminal();
+
+    String todayInterval();
+
+    String yesterdayInterval();
+
+    String thisWeekInterval();
+
+    String lastWeekInterval();
+
+    String thisMonthInterval();
+
+    String lastMonthInterval();
+
+    String thisYearInterval();
+
+    String lastYearInterval();
+
+    String reservedIpSubnetAllowReserve();
+
+    String errRequest1CFailed();
+
+    String absenceEmployee();
+
+    String selectAbsenceEmployee();
+
+    String absenceDateRange();
+
+    String absenceReason();
+
+    String absenceComment();
+
+    String absenceReasonPersonAffair();
+
+    String absenceReasonBusinessTrip();
+
+    String absenceReasonLocalBusinessTrip();
+
+    String absenceReasonStudy();
+
+    String absenceReasonDisease();
+
+    String absenceReasonSickLeave();
+
+    String absenceReasonGuestPass();
+
+    String absenceReasonNightWork();
+
+    String absenceReasonLeaveWithoutPay();
+
+    String absenceReasonDuty();
+
+    String absenceReasonRemoteWork();
+
+    String selectAbsenceReason();
+
+    String absenceUpdated();
+
+    String absenceValidationEmployee();
+
+    String absenceValidationDateRange();
+
+    String absenceValidationReason();
+
+    String absenceCreation();
+
+    String absenceEditing();
+
+    String absenceButtonCreate();
+
+    String absenceCreated();
+
+    String absences();
+
+    String absenceFromTime();
+
+    String absenceTillTime();
+
+    String absenceRemoveConfirmMessage();
+
+    String absenceRemovedSuccessfully();
+
+    String absenceReasonLeave();
+
+    String errAbsenceHasIntersections();
+
+    String profileGeneral();
+
+    String profileSubscriptions();
+
+    String profileSubscriptionEmployees();
+
+    String absenceCompletedSuccessfully();
+
+    String absenceComplete();
+
+    String employeeShowAbsent();
+
+    String absenceReport();
+
+    String absenceReportEmployees();
+
+    String absenceReportReasons();
+
+    String absenceReportDateRange();
+
+    String absenceStartDateRange();
+
+    String absenceReportTitle();
+
+    String absenceButtonReport();
+
+    String absenceReportHint();
+
+    String buttonSend();
+
+    String absenceReportValidationDateRange();
+
+    String errNotCurrentAbsence();
+
+    String contractKindReceipt();
+
+    String contractKindExpenditure();
+
+    String days();
+
+    String withoutVat();
+
+    String vat(long percent);
 }

@@ -94,4 +94,23 @@ public class EmployeeEvents {
         public Edit() { this.id = null; }
         public Edit(Long id) { this.id = id; }
     }
+
+    public static class Update {
+
+        public Long id;
+
+        public Update(Long id) { this.id = id; }
+    }
+
+    public static class UpdateDefinite {
+
+        public ViewType viewType;
+        public Long id;
+
+        public UpdateDefinite(ViewType type, Long id) {
+            this.viewType = type;
+            this.id = id;
+        }
+    }
+
 }

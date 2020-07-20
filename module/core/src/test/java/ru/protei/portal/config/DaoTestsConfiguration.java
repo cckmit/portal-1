@@ -376,4 +376,14 @@ public class DaoTestsConfiguration {
     public ContractSpecificationDAO getContractSpecificationDAO() {
         return new ContractSpecificationDAO_Impl();
     }
+
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return new ContractorDAO_Impl();
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return new PersonNotifierDAO_Impl();
+    }
 }

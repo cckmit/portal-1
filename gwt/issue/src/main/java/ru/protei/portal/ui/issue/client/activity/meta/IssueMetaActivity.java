@@ -110,13 +110,19 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setPauseDateValid(true);
 
-        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        });
     }
 
     @Override
     public void onImportanceChanged() {
         meta.setImpLevel(metaView.importance().getValue().getId());
-        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId())));
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.IssueImportanceChanged(meta.getId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        });
 
         if (!isJiraIssue()) {
             fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel()));
@@ -126,42 +132,58 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onProductChanged() {
         meta.setProduct(DevUnit.fromProductShortView(metaView.product().getValue()));
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() )));
+        onCaseMetaChanged( meta, () -> {
+            fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        });
     }
 
     @Override
     public void onManagerChanged() {
         meta.setManager(metaView.getManager());
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.IssueManagerChanged( meta.getId() ) ) );
+        onCaseMetaChanged( meta, () -> {
+            fireEvent(new IssueEvents.IssueManagerChanged(meta.getId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        } );
     }
 
     @Override
     public void onInitiatorChanged() {
         meta.setInitiator(metaView.getInitiator());
-        onCaseMetaChanged( meta, () -> fireEvent( new IssueEvents.ChangeIssue( meta.getId() ) ) );
+        onCaseMetaChanged( meta, () -> {
+            fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        } );
     }
 
     @Override
     public void onPlatformChanged() {
         meta.setPlatform(metaView.platform().getValue());
 
-        Runnable onResetProduct = null;
+        Runnable onChanged = () -> {
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        };
 
         if (isCompanyWithAutoOpenIssues(currentCompany)) {
             resetProduct(meta, metaView);
             updateProductsFilter(metaView, meta.getInitiatorCompanyId(), meta.getPlatformId());
 
-            onResetProduct = () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+            onChanged = () -> {
+                fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+                fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            };
         }
 
-        onCaseMetaChanged(meta, onResetProduct);
+        onCaseMetaChanged(meta, onChanged);
         requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, meta.getImpLevel())));
     }
 
     @Override
     public void onTimeElapsedChanged() {
         meta.setTimeElapsed(metaView.getTimeElapsed());
-        onCaseMetaChanged( meta );
+        onCaseMetaChanged( meta, () -> {
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        } );
     }
 
     @Override
@@ -174,7 +196,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setPauseDate(metaView.pauseDate().getValue().getTime());
         metaView.setPauseDateValid(true);
 
-        onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.IssueStateChanged(meta.getId())));
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        });
     }
 
     @Override
@@ -265,6 +290,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                     fillPlatformValueAndUpdateProductsFilter(resultCompany);
                 })
         );
+
+        fireEvent(new IssueEvents.IssueMetaChanged(meta));
     }
 
     @Override
@@ -286,7 +313,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         updateSubscriptions(meta.getInitiatorCompanyId(), meta.getManagerCompanyId());
 
-        onCaseMetaChanged(meta);
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+        });
     }
 
     @Override
@@ -492,9 +521,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, final CaseObjectMeta caseObjectMeta, boolean isReadOnly) {
-        issueMetaView.managerEnabled().setEnabled(!isReadOnly && policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT));
-        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
-
         if (caseObjectMeta.getManagerCompanyId() != null) {
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
             issueMetaView.updateManagersCompanyFilter(caseObjectMeta.getManagerCompanyId());
@@ -507,6 +533,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         issueMetaView.setManager(caseObjectMeta.getManager());
+
+        setManagerCompanyEnabled(issueMetaView, caseObjectMeta.getStateId());
+        issueMetaView.managerEnabled().setEnabled(!isReadOnly && (policyService.hasPrivilegeFor(En_Privilege.ISSUE_MANAGER_EDIT) ||
+                Objects.equals(issueMetaView.getManagerCompany().getId(), policyService.getProfile().getCompany().getId())));
     }
 
     private void requestSla(Long platformId, Consumer<List<ProjectSla>> slaConsumer) {
@@ -683,7 +713,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private void setManagerCompanyEnabled(AbstractIssueMetaView issueMetaView, Long stateId) {
-        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.CUSTOMER_RESPONSIBILITY);
+        issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) && stateId == CrmConstants.State.REQUEST_TO_PARTNER);
     }
 
     private void fillPlatformValueAndUpdateProductsFilter(final Company company) {
@@ -698,7 +728,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
             updateProductModelAndMandatory(metaView, isCompanyWithAutoOpenIssues(company));
 
-            if (isCompanyWithAutoOpenIssues(company)) {
+            if (!isCompanyWithAutoOpenIssues(company)) {
+                metaView.updateProductsByPlatformIds(new HashSet<>());
+            } else {
                 resetProduct(meta, metaView);
                 updateProductsFilter(
                         metaView,

@@ -8,10 +8,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -108,6 +105,8 @@ public abstract class IssueTableFilterActivity
         }
 
         validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());
+        validateCreatedRange(filterView.getIssueFilterParams().isCreatedRangeValid());
+        validateModifiedRange(filterView.getIssueFilterParams().isModifiedRangeValid());
     }
 
     @Event
@@ -167,10 +166,15 @@ public abstract class IssueTableFilterActivity
         }
 
         boolean searchFieldCorrect = filterView.getIssueFilterParams().isSearchFieldCorrect();
-        if(searchFieldCorrect) {
+        boolean createdRangeValid = filterView.getIssueFilterParams().isCreatedRangeValid();
+        boolean modifiedRangeValid = filterView.getIssueFilterParams().isModifiedRangeValid();
+
+        if(searchFieldCorrect && createdRangeValid && modifiedRangeValid) {
             loadTable();
         }
         validateSearchField(searchFieldCorrect);
+        validateCreatedRange(createdRangeValid);
+        validateModifiedRange(modifiedRangeValid);
     }
 
     @Override
@@ -231,6 +235,16 @@ public abstract class IssueTableFilterActivity
     private void validateSearchField(boolean isCorrect){
         filterView.getIssueFilterParams().searchByCommentsWarningVisibility().setVisible(!isCorrect);
         filterView.createEnabled().setEnabled(isCorrect);
+    }
+
+    private void validateCreatedRange(boolean isValid){
+        filterView.getIssueFilterParams().setCreatedRangeValid(true, isValid);
+        filterView.createEnabled().setEnabled(isValid);
+    }
+
+    private void validateModifiedRange(boolean isValid){
+        filterView.getIssueFilterParams().setModifiedRangeValid(true, isValid);
+        filterView.createEnabled().setEnabled(isValid);
     }
 
     private void loadTable() {

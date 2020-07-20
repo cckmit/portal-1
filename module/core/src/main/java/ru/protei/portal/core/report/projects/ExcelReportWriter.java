@@ -1,9 +1,9 @@
 package ru.protei.portal.core.report.projects;
 
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.Project;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;

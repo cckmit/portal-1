@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 
-import static ru.protei.portal.ui.roomreservation.client.util.DateUtils.makeAvailableMonths;
+import static ru.protei.portal.ui.common.client.util.DateUtils.makeAvailableMonths;
 
 public abstract class MonthModel extends BaseSelectorModel<Integer> implements Activity {
 

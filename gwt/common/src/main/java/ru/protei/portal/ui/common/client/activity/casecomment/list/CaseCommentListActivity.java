@@ -25,7 +25,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
@@ -92,6 +92,7 @@ public abstract class CaseCommentListActivity
         this.isModifyEnabled = event.isModifyEnabled;
         this.isPrivateVisible = event.isPrivateVisible;
         this.isPrivateCase = event.isPrivateCase;
+        this.isNewCommentEnabled = event.isNewCommentEnabled;
 
         comment = null;
         lastCommentView = null;
@@ -104,7 +105,8 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         view.setTimeElapsedVisibility(isElapsedTimeEnabled);
         view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
-        view.enabledNewComment(isModifyEnabled);
+        view.setNewCommentHidden(!isModifyEnabled);
+        view.setNewCommentDisabled(!isNewCommentEnabled);
         if (textMarkup == En_TextMarkup.MARKDOWN) {
             view.setMarkupLabel(lang.textMarkdownSupport(), configStorage.getConfigData().markupHelpLinkMarkdown);
         } else {
@@ -120,6 +122,12 @@ public abstract class CaseCommentListActivity
     @Event
     public void onReload(CaseCommentEvents.Reload event) {
         reloadComments();
+    }
+
+    @Event
+    public void onDisableNewComment(CaseCommentEvents.DisableNewComment event) {
+        this.isNewCommentEnabled = false;
+        view.setNewCommentDisabled(true);
     }
 
     @Override
@@ -211,6 +219,9 @@ public abstract class CaseCommentListActivity
 
     @Override
     public void onSendClicked() {
+        if (!isNewCommentEnabled) {
+            return;
+        }
         send();
     }
 
@@ -315,7 +326,8 @@ public abstract class CaseCommentListActivity
     private void fillView(List<CaseComment> comments){
         itemViewToModel.clear();
         view.clearCommentsContainer();
-        view.enabledNewComment(isModifyEnabled);
+        view.setNewCommentHidden(!isModifyEnabled);
+        view.setNewCommentDisabled(!isNewCommentEnabled);
 
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
         List<String> textList = new ArrayList<>();
@@ -713,6 +725,7 @@ public abstract class CaseCommentListActivity
     private Long caseId;
     private boolean isPrivateVisible = false;
     private boolean isPrivateCase = false;
+    private boolean isNewCommentEnabled = true;
 
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();

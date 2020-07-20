@@ -30,6 +30,8 @@ import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableV
 import java.util.LinkedList;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.StringUtils.trim;
+
 public class ContractTableView extends Composite implements AbstractContractTableView {
 
     @Inject
@@ -139,13 +141,22 @@ public class ContractTableView extends Composite implements AbstractContractTabl
                 contract -> "<b>" + lang.contractOrganization() + ":</b> " + StringUtils.emptyIfNull(contract.getOrganizationName()) + "</b><br/>"
                         +  "<b>" + lang.contractManager() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseManagerShortName()) : StringUtils.emptyIfNull(contract.getManagerShortName())) + "</b><br/>"
                         +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
-                        +  "<b>" + lang.contractContragent() + ":</b> " + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseContragentName()) : StringUtils.emptyIfNull(contract.getContragentName())) + "</b>");
+                        +  "<b>" + lang.contractContractor() + ":</b> " + (contract.getContractor() == null ? "" : StringUtils.emptyIfNull(contract.getContractor().getName())) + "</b>");
         clickColumns.add(workGroupColumn);
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
-                contract -> contract.getCost() == null ?
-                        lang.contractCostNotDefined() :
-                        contract.getCost().toString() + " " + contract.getCurrency().getCode()
+                contract -> {
+                    String cost = contract.getCost() != null
+                            ? contract.getCost().toString()
+                            : "";
+                    String currency = contract.getCurrency() != null
+                            ? contract.getCurrency().getCode()
+                            : "";
+                    String vat = contract.getVat() != null
+                            ? lang.vat(contract.getVat())
+                            : lang.withoutVat();
+                    return trim(cost + " " + currency + " " + vat);
+                }
         );
         clickColumns.add(costColumn);
 

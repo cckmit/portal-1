@@ -1,9 +1,10 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -291,8 +292,7 @@ public class ProjectQuery extends BaseQuery {
             caseQuery.setLocal(this.getCustomerType().getId());
         }
 
-        caseQuery.setCreatedFrom(this.getCreatedFrom());
-        caseQuery.setCreatedTo(this.getCreatedTo());
+        caseQuery.setCreatedRange(new DateRange(En_DateIntervalType.FIXED, this.getCreatedFrom(), this.getCreatedTo()));
         caseQuery.setSearchString(this.getSearchString());
         caseQuery.setSortDir(this.getSortDir());
         caseQuery.setSortField(this.getSortField());

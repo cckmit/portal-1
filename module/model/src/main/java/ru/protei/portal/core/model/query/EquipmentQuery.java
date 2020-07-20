@@ -86,7 +86,7 @@ public class EquipmentQuery extends BaseQuery {
         this.types = types;
     }
 
-    public EquipmentQuery( String searchString, En_SortField sortField, En_SortDir sortDir, Set< En_OrganizationCode > organizationCodes,
+    public EquipmentQuery( String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes,
                            Set< En_EquipmentType > types, String classifierCode, String registerNumber, Long managerId, Long equipmentId  ) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;

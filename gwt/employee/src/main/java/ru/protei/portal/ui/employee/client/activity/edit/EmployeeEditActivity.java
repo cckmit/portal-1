@@ -15,6 +15,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
@@ -29,9 +30,11 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.util.AvatarUtils;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemView;
@@ -68,7 +71,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         Window.scrollTo(0,0);
         initDetails.parent.add(view.asWidget());
 
-        companyService.getCompanyOptionList(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
+        companyService.getCompanyOptionListIgnorePrivileges(new CompanyQuery(true, false).onlyVisibleFields().synchronizeWith1C(false),
                 new FluentCallback<List<EntityOption>>()
                         .withSuccess(companies -> {
                             companiesWithoutSync.clear();
@@ -407,12 +410,14 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeShortViewWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
+        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>().withSuccess(this::fillView));
     }
 
     private void fillView(EmployeeShortView employee){
 
         this.employee.setFired(employee.isFired());
+        this.employee.setCompanyId(employee.getCompanyId());
+
         view.gender().setValue(employee.getGender());
         checkGenderValid();
         view.firstName().setValue(employee.getFirstName());
@@ -437,6 +442,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.company().setValue(null);
         view.companyDepartment().setValue(null);
         view.workerPosition().setValue(null);
+        onCompanySelected();
 
         view.firstNameErrorLabel().setText(lang.contactFieldLengthExceed(view.firstNameLabel(), FIRST_NAME_SIZE));
         view.secondNameErrorLabel().setText(lang.contactFieldLengthExceed(view.secondNameLabel(), SECOND_NAME_SIZE));
@@ -523,6 +529,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     private void updateEmployeeWorkers (List<WorkerEntry> workers){
         employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
+                .withError(throwable -> {
+                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.EMPLOYEE_MIGRATION_FAILED.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new Back());
+                    }
+                    errorHandler.accept(throwable);
+                })
                 .withSuccess(workerEntryList -> {
                     fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Show(!isNew(personId)));
@@ -576,6 +588,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     private Runnable removeAction() {
         return () -> employeeService.fireEmployee(applyChangesEmployee(), new FluentCallback<Boolean>()
+                .withError(throwable -> {
+                    if ((throwable instanceof RequestFailedException) && En_ResultStatus.EMPLOYEE_MIGRATION_FAILED.equals(((RequestFailedException) throwable).status)) {
+                        fireEvent(new Back());
+                    }
+                    errorHandler.accept(throwable);
+                })
                 .withSuccess(result -> {
                     if (result) {
                         fireEvent(new NotifyEvents.Show(lang.employeeFired(), NotifyEvents.NotifyType.SUCCESS));
@@ -628,6 +646,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     PolicyService policyService;
     @Inject
     Provider<AbstractPositionEditItemView> positionEditProvider;
+    @Inject
+    DefaultErrorHandler errorHandler;
 
     private HandlerRegistration changeAvatarHandlerRegistration;
     private HandlerRegistration submitAvatarHandlerRegistration;

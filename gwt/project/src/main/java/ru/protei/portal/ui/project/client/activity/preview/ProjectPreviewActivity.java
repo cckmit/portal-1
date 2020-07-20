@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -145,7 +145,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             fireEvent(new CaseLinkEvents.Show(view.getLinksContainer())
                     .withCaseId(project.getId())
                     .withCaseType(En_CaseType.PROJECT)
-                    .withPageId(lang.projects())
                     .readOnly());
         }
         else {

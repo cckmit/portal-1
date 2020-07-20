@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyDepartmentDAO;
 import ru.protei.portal.core.model.ent.CompanyDepartment;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CompanyDepartmentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;

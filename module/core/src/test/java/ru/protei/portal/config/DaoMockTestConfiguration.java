@@ -368,4 +368,14 @@ public class DaoMockTestConfiguration {
     public ContractSpecificationDAO getContractSpecificationDAO() {
         return mock(ContractSpecificationDAO.class);
     }
+
+    @Bean
+    public ContractorDAO getContractorDAO() {
+        return mock(ContractorDAO.class);
+    }
+
+    @Bean
+    public PersonNotifierDAO getPersonNotifierDAO() {
+        return mock(PersonNotifierDAO.class);
+    }
 }

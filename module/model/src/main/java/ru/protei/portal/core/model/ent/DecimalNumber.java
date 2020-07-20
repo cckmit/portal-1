@@ -46,7 +46,7 @@ public class DecimalNumber implements Serializable {
     @JdbcColumn( name = "is_reserve")
     private boolean isReserve;
 
-    public DecimalNumber( En_OrganizationCode organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {
+    public DecimalNumber(En_OrganizationCode organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {
         this.organizationCode = organizationCode;
         this.classifierCode = classifierCode;
         this.registerNumber = registerNumber;

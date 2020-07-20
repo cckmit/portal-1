@@ -586,8 +586,11 @@ label.bordered:after {
     color: black;
     vertical-align: bottom;
   }
-  .edit, .remove, .copy, .refresh {
+  .edit, .remove, .copy, .refresh, .download, .complete {
     width: 45px;
+    max-width: 45px;
+    min-width: 45px;
+    text-align: center;
   }
 }
 
@@ -806,8 +809,9 @@ label.bordered:after {
     tbody {
       tr {
         td {
-          height: 92px;
+          height: 75px;
           > div {
+            position: relative;
             height: 75px;
             max-height: 75px;
             white-space: pre-line;
@@ -821,9 +825,20 @@ label.bordered:after {
     i {
       padding-right: 5px;
     }
+
     b {
       padding-right: 5px;
     }
+
+    .absence-reason {
+      position: relative;
+      right: 0;
+      top: 0;
+      > i {
+        padding: 0;
+      }
+    }
+
     .employee-info {
       width: 25%
     }
@@ -1379,7 +1394,7 @@ td.info {
 
 .state-canceled,
 .state-paused,
-.state-customer_responsibility {
+.state-request_to_partner {
   color: #868686 !important;
 }
 
@@ -1507,16 +1522,16 @@ td.info {
 
 .label-canceled,
 .label-paused,
-.label-customer_responsibility,
+.label-request_to_partner,
 .option-canceled .option-name,
 .option-paused .option-name,
-.option-customer_responsibility .option-name {
+.option-request_to_partner .option-name {
   background-color: #868686;
 }
 
 .case-canceled,
 .case-paused,
-.case-customer_responsibility {
+.case-request_to_partner {
   color: #868686;
   font-weight: bold;
 }
@@ -3407,12 +3422,16 @@ label {
 
     .address {
       width: 15%;
-      text-align: center;
 
       .address-size {
         font-size: 16px;
         padding: 7px 0;
       }
+    }
+
+    .allow-reserve {
+      text-align: center;
+      width: 5%;
     }
 
     .creator {
@@ -3467,7 +3486,6 @@ label {
 
     .ip-address {
       width: 15%;
-      text-align: center;
 
       .address-size {
         font-size: 16px;
@@ -4713,5 +4731,65 @@ table {
     margin-left: 5px;
     margin-right: 5px;
     margin-top: 5px;
+  }
+}
+
+
+.fired {
+  opacity: 0.5;
+}
+
+.person-subscribers {
+  div.select2-container {
+    border: 0 !important;
+    background: transparent;
+    ul.select2-choices {
+      padding-left: 0;
+      margin-bottom: 5px;
+      li.select2-search-choice {
+        display: inline !important;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .select2-container {
+    .select2-button {
+      .select2-add-button {
+        flex-grow: 0;
+      }
+    }
+  }
+}
+
+.absent {
+  border-top: 2px solid #00808085 !important;
+}
+
+.absence-reason {
+  position: absolute;
+  top: -25px;
+  right: 15px;
+  height: 50px;
+  width: 50px;
+  background-color: teal;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  > i {
+    align-items: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 24px !important;
   }
 }

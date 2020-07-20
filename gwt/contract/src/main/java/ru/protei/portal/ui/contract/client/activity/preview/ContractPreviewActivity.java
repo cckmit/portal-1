@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Project;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ContractDatesTypeLang;
@@ -110,7 +110,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
         view.setDescription(StringUtils.emptyIfNull(value.getDescription()));
-        view.setContragent(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseContragentName()) : StringUtils.emptyIfNull(value.getContragentName()));
+        view.setContractor(value.getContractor() == null ? "" : StringUtils.emptyIfNull(value.getContractor().getName()));
         view.setOrganization(StringUtils.emptyIfNull(value.getOrganizationName()));
         view.setManager(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseManagerShortName()) : StringUtils.emptyIfNull(value.getManagerShortName()));
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));

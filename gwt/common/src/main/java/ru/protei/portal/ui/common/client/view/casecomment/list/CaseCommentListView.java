@@ -80,8 +80,8 @@ public class CaseCommentListView
     }
 
     @Override
-    public void enabledNewComment( boolean value ) {
-        newMessage.setVisible(value);
+    public void setNewCommentHidden(boolean isHidden) {
+        newMessage.setVisible(!isHidden);
     }
 
     @Override
@@ -108,6 +108,12 @@ public class CaseCommentListView
         } else {
             timeElapsedInfoContainer.addClassName("hide");
         }
+    }
+
+    @Override
+    public void setNewCommentDisabled(boolean isDisabled) {
+        newCommentContainer.setVisible(!isDisabled);
+        newCommentDisabledContainer.setVisible(isDisabled);
     }
 
     @Override
@@ -317,6 +323,10 @@ public class CaseCommentListView
     ToggleButton isDisplayPreview;
     @UiField
     HTMLPanel messageBlock;
+    @UiField
+    HTMLPanel newCommentContainer;
+    @UiField
+    HTMLPanel newCommentDisabledContainer;
     @UiField
     Element timeElapsedInfoContainer;
 

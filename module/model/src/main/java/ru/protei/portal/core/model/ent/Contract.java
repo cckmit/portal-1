@@ -147,6 +147,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     private En_Currency currency;
 
     /**
+     * НДС
+     */
+    @JdbcColumn(name = "cost_vat")
+    private Long vat;
+
+    /**
      * Тип
      */
     @JdbcColumn(name = "contract_type")
@@ -185,6 +191,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
     private String projectName;
+
+    @JdbcColumn(name = "contractor_id")
+    private Long contractorId;
+
+    @JdbcJoinedObject( localColumn = "contractor_id", remoteColumn = "id", sqlTableAlias = "C")
+    private Contractor contractor;
 
     @Override
     public String getAuditType() {
@@ -294,6 +306,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setCurrency(En_Currency currency) {
         this.currency = currency;
+    }
+
+    public Long getVat() {
+        return vat;
+    }
+
+    public void setVat(Long vat) {
+        this.vat = vat;
     }
 
     public String getNumber() {
@@ -444,6 +464,22 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.caseDirectionId = caseDirectionId;
     }
 
+    public Long getContractorId() {
+        return contractorId;
+    }
+
+    public void setContractorId(Long contractorId) {
+        this.contractorId = contractorId;
+    }
+
+    public Contractor getContractor() {
+        return contractor;
+    }
+
+    public void setContractor(Contractor contractor) {
+        this.contractor = contractor;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -483,6 +519,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", number='" + number + '\'' +
                 ", cost=" + cost +
                 ", currency=" + currency +
+                ", vat=" + vat +
                 ", contractType=" + contractType +
                 ", dateSigning=" + dateSigning +
                 ", dateValid=" + dateValid +
@@ -495,6 +532,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", childContracts=" + childContracts +
                 ", projectId=" + projectId +
                 ", projectName='" + projectName + '\'' +
+                ", contractorId=" + contractorId +
+                ", contractor=" + contractor +
                 '}';
     }
 
