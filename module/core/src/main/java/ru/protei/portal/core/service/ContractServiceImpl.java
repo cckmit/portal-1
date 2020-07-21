@@ -22,6 +22,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -371,21 +372,29 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setRefKey(contract.getRefKey());
         contract1C.setNumber(contract.getNumber());
         contract1C.setContractorKey(contract.getContractor().getRefKey());
-        contract1C.setDateSigning(contract.getDateSigning());
-        contract1C.setName(contract.getNumber().trim()+ " от " + dateFormat.format(contract.getDateSigning()));
+        contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
+        contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
 
         return contract1C;
     }
 
     public static boolean isSame(Contract1C c1, Contract1C c2) {
+        try {
+            Date d1 = saveDateFormat.parse(c1.getDateSigning());
+            Date d2 = saveDateFormat.parse(c2.getDateSigning());
+
+            if (!Objects.equals(d1,d2)) return false;
+
+        } catch (ParseException e) { return false; }
+
         return Objects.equals(c1.getNumber(), c2.getNumber())
-                && Objects.equals(c1.getDateSigning(), c2.getDateSigning())
-                && Objects.equals(c1.getContractorKey(), c2.getContractorKey());
+               && Objects.equals(c1.getContractorKey(), c2.getContractorKey());
     }
 
     private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);
     private final Pattern kppPattern = Pattern.compile(CONTRACTOR_KPP);
     private final Pattern contractNumberPattern = Pattern.compile(CONTRACT_NUMBER);
 
-    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private final static DateFormat showDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private final static DateFormat saveDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 }

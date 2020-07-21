@@ -16,55 +16,38 @@ import java.util.Date;
 @UrlName1C("Catalog_ДоговорыКонтрагентов")
 public class Contract1C {
 
-    //"97d8882b-bb3a-11e8-80cb-ac1f6b010113"
     @SpecialParam1C(En_1CParamType.ID)
     @JsonProperty("Ref_Key")
     private String refKey;
 
-    //"Зак.-спец.№29 от 06.08.18г. к Дог.№217091/0501 "
     @JsonProperty("Номер")
     private String number;
 
-    //"Зак.-спец.№29 от 06.08.18г. к Дог.№217091/0501  РТК Оренбург"
     @JsonProperty("Description")
     private String name;
 
-    //"a191c4b8-67c7-11de-a54e-001f3c01f807"
     @SpecialParam1C(En_1CParamType.ID)
     @JsonProperty("Owner_Key")
     private String contractorKey;
 
-    //"Дата": "2018-08-06T00:00:00",
-    @SpecialParam1C(En_1CParamType.DATE)
     @JsonProperty("Дата")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "UTC")
-    private Date dateSigning;
+    private String dateSigning;
 
-    public String getRefKey() {
-        return refKey;
-    }
+    public String getRefKey() { return refKey; }
 
-    public void setRefKey(String refKey) {
-        this.refKey = refKey;
-    }
+    public void setRefKey(String refKey) { this.refKey = refKey; }
 
     public String getName() { return name; }
 
     public void setName(String name) { this.name = name; }
 
-    public String getNumber() {
-        return number;
-    }
+    public String getNumber() { return number; }
 
-    public void setNumber(String number) {
-        this.number = number;
-    }
+    public void setNumber(String number) { this.number = number; }
 
-    public Date getDateSigning() {
-        return dateSigning;
-    }
+    public String getDateSigning() { return dateSigning;}
 
-    public void setDateSigning(Date dateSigning) { this.dateSigning = dateSigning; }
+    public void setDateSigning(String dateSigning) { this.dateSigning = dateSigning; }
 
     public String getContractorKey() { return contractorKey; }
 
@@ -77,7 +60,7 @@ public class Contract1C {
                 ", number='" + number + '\'' +
                 ", name='" + name + '\'' +
                 ", contractorKey='" + contractorKey + '\'' +
-                ", dateSigning=" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dateSigning) +
+                ", dateSigning='" + dateSigning + '\'' +
                 '}';
     }
 }

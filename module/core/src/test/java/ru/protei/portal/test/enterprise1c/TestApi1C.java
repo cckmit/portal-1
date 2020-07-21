@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -130,7 +131,7 @@ public class TestApi1C extends BaseServiceTest {
         Contract1C contract1C = new Contract1C();
         contract1C.setNumber(number);
         contract1C.setContractorKey(contractorKey);
-        contract1C.setDateSigning(new Date());
+        contract1C.setDateSigning(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         return contract1C;
     }
 }

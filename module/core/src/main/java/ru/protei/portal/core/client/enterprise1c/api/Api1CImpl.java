@@ -115,9 +115,6 @@ public class Api1CImpl implements Api1C{
             return Result.error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-/*        jsonMapper.setTimeZone(TimeZone.getTimeZone("UTC"));
-        jsonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));*/
-
         try {
             if (StringUtils.isBlank(contract.getRefKey())) {
                 return client.save(buildCreateContractUrl(homeCompanyName),
@@ -143,9 +140,6 @@ public class Api1CImpl implements Api1C{
         if (contract == null || homeCompanyName == null || StringUtils.isBlank(contract.getRefKey())){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-
-/*        jsonMapper.setTimeZone(TimeZone.getTimeZone("UTC"));
-        jsonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));*/
 
         return client.read(buildGetContractByKeyUrl(contract, homeCompanyName), Contract1C.class)
                 .ifOk( value -> log.info( "getContract(): OK " ) )
@@ -229,7 +223,7 @@ public class Api1CImpl implements Api1C{
             return false;
         }
 
-        if (contract.getDateSigning() == null){
+        if (StringUtils.isBlank(contract.getDateSigning())){
             log.warn("validateContract(): signing date is mandatory");
             return false;
         }
