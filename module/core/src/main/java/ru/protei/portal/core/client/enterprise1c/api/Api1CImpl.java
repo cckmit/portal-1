@@ -115,14 +115,21 @@ public class Api1CImpl implements Api1C{
             return Result.error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        try {
-            String url = StringUtils.isBlank(contract.getRefKey()) ?
-                    buildCreateContractUrl(homeCompanyName):
-                    buildUpdateContractUrl(contract, homeCompanyName);
+/*        jsonMapper.setTimeZone(TimeZone.getTimeZone("UTC"));
+        jsonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));*/
 
-            return client.save(url, jsonMapper.writeValueAsString(contract), Contract1C.class)
-                    .ifOk(value -> log.info("saveContract(): OK "))
-                    .ifError(result -> log.warn("saveContract(): Can`t save contract={}. {}", contract, result));
+        try {
+            if (StringUtils.isBlank(contract.getRefKey())) {
+                return client.save(buildCreateContractUrl(homeCompanyName),
+                        jsonMapper.writeValueAsString(contract), Contract1C.class)
+                        .ifOk(value -> log.info("saveContract(): OK "))
+                        .ifError(result -> log.warn("saveContract(): Can`t save contract={}. {}", contract, result));
+            } else {
+                return client.update(buildUpdateContractUrl(contract, homeCompanyName),
+                        jsonMapper.writeValueAsString(contract), Contract1C.class)
+                        .ifOk(value -> log.info("saveContract(): OK "))
+                        .ifError(result -> log.warn("saveContract(): Can`t save contract={}. {}", contract, result));
+            }
         } catch (JsonProcessingException e){
             log.error("saveContract(): failed to serialize contract", e);
             return Result.error(En_ResultStatus.INTERNAL_ERROR);
@@ -136,6 +143,9 @@ public class Api1CImpl implements Api1C{
         if (contract == null || homeCompanyName == null || StringUtils.isBlank(contract.getRefKey())){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+/*        jsonMapper.setTimeZone(TimeZone.getTimeZone("UTC"));
+        jsonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));*/
 
         return client.read(buildGetContractByKeyUrl(contract, homeCompanyName), Contract1C.class)
                 .ifOk( value -> log.info( "getContract(): OK " ) )

@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.lang.En_1CParamType;
 import ru.protei.portal.core.model.enterprise1c.annotation.SpecialParam1C;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -36,7 +37,7 @@ public class Contract1C {
     //"Дата": "2018-08-06T00:00:00",
     @SpecialParam1C(En_1CParamType.DATE)
     @JsonProperty("Дата")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "UTC")
     private Date dateSigning;
 
     public String getRefKey() {
@@ -76,7 +77,7 @@ public class Contract1C {
                 ", number='" + number + '\'' +
                 ", name='" + name + '\'' +
                 ", contractorKey='" + contractorKey + '\'' +
-                ", dateSigning=" + dateSigning +
+                ", dateSigning=" + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dateSigning) +
                 '}';
     }
 }

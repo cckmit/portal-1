@@ -1,9 +1,12 @@
 package ru.protei.portal.core.client.enterprise1c.http;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -84,6 +87,10 @@ public class HttpClient1CImpl implements HttpClient1C{
                 new AllEncompassingFormHttpMessageConverter(),
                 new MappingJackson2HttpMessageConverter()
         ));
+
+        HttpClient client = HttpClients.createDefault();
+        template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+
         ((DefaultUriTemplateHandler) template.getUriTemplateHandler()).setStrictEncoding(true);
         return template;
     }
