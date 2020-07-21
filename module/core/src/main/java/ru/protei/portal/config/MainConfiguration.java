@@ -654,6 +654,11 @@ public class MainConfiguration {
         return new PersonNotifierDAO_Impl();
     }
 
+    @Bean
+    public AbsenceFilterDAO getAbsenceFilterDAO() {
+        return new AbsenceFilterDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -954,6 +959,11 @@ public class MainConfiguration {
     @Bean
     public AbsenceService getAbsenceService() {
         return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public AbsenceFilterService getAbsenceFilterService() {
+        return new AbsenceFilterServiceImpl();
     }
 
     @Bean
