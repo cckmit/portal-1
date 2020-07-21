@@ -207,7 +207,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                         .or( "person.contactInfo" ).like( query.getSearchString() ) )
                 .and( "person.isfired" ).equal( booleanAsNumber( query.getFired() ) )
                 .and( "person.isdeleted" ).equal( booleanAsNumber( query.getDeleted() ) )
-                .and( "person.sex" ).not( query.getPeople() ).equal( En_Gender.UNDEFINED.getCode() );
+                .and( "person.sex" ).not( query.getPeople() ).equal( query.getPeople() == null ? null : En_Gender.UNDEFINED.getCode() );
 
         if (query.getHasCaseFilter() != null) {
             cnd.and( "person.id" ).in( query()
