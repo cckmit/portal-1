@@ -25,4 +25,6 @@ public interface CaseTagService {
     Result attachTag(AuthToken authToken, Long caseId, Long tagId);
 
     Result<Long> detachTag( AuthToken authToken, Long caseId, Long tagId);
+
+    void addItemsToHistory(AuthToken authToken, Long caseId, List<CaseTag> tagIds);
 }

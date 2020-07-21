@@ -173,6 +173,11 @@ public class CaseTagServiceImpl implements CaseTagService {
         return ok(tagId);
     }
 
+    @Override
+    public void addItemsToHistory(AuthToken authToken, Long caseId, List<CaseTag> tags) {
+        tags.forEach(tag -> createHistory(authToken, caseId, En_HistoryAction.ADD, null, tag));
+    }
+
     private boolean isCaseTagValid(CaseTag caseTag) {
         if (caseTag == null) {
             return false;
