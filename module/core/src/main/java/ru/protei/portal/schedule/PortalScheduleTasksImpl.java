@@ -24,10 +24,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     @EventListener
     @Override
     public void onApplicationStartOrRefreshContext( ContextRefreshedEvent event) {
-        log.info("onApplicationStartOrRefresh() ContextRefreshedEvent counter {} {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
+        log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
         if (isPortalStarted.getAndSet( true )) return;
-
-        schedulePauseTimeNotifications();
 
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
@@ -46,6 +44,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
 
+        scheduleNotificationsAboutPauseTime();
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -68,13 +67,6 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
     }
-
-//    @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
-//    public void processHangReportsSchedule() {
-//        reportControlService.processHangReports().ifError(response ->
-//                log.warn("fail to process reports : status={}", response.getStatus() )
-//         );
-//    }
 
     public void processScheduledMailReportsDaily() {
         reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
@@ -109,7 +101,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule( () -> publisherService.publishEvent( publishEvent ), date);
     }
 
-    private void schedulePauseTimeNotifications() {
+    private void scheduleNotificationsAboutPauseTime() {
+        log.info( "scheduleNotificationsAboutPauseTime(): ." );
         publisherService.publishEvent( new SchedulePauseTimeOnStartupEvent( this ) );
     }
 
