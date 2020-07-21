@@ -16,10 +16,7 @@ import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
-import ru.protei.portal.core.model.struct.AuditObject;
-import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.ContactItem;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -701,9 +698,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     AbsenceQuery makeAbsenceQuery(Set<Long> employeeIds) {
+        Date startOfToday = DateUtils.resetSeconds(new Date());
         return new AbsenceQuery(
-                DateUtils.resetSeconds(new Date()),
-                DateUtils.resetSeconds(new Date()),
+                new DateRange(En_DateIntervalType.FIXED, startOfToday, startOfToday),
                 employeeIds,
                 Arrays.asList(En_AbsenceReason.values()).stream()
                         .filter(En_AbsenceReason::isActual)

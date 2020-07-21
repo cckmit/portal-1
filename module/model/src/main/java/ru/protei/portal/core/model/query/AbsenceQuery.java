@@ -1,16 +1,14 @@
 package ru.protei.portal.core.model.query;
 
-
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.struct.DateRange;
 
-import java.util.Date;
 import java.util.Set;
 
 public class AbsenceQuery extends BaseQuery {
 
-    private Date fromTime;
-    private Date tillTime;
+    private DateRange dateRange;
     private Set<Long> employeeIds;
     private Set<Integer> reasonIds;
 
@@ -23,42 +21,31 @@ public class AbsenceQuery extends BaseQuery {
         this.employeeIds = employeeIds;
     }
 
-    public AbsenceQuery(Date fromTime, Date tillTime) {
+    public AbsenceQuery(DateRange dateRange) {
         super (null, En_SortField.absence_date, En_SortDir.ASC);
-        this.fromTime = fromTime;
-        this.tillTime = tillTime;
+        this.dateRange = dateRange;
     }
 
-    public AbsenceQuery(Date fromTime, Date tillTime, Set<Long> employeeIds, Set<Integer> reasonIds) {
+    public AbsenceQuery(DateRange dateRange, Set<Long> employeeIds, Set<Integer> reasonIds) {
         super (null, En_SortField.absence_date, En_SortDir.ASC);
-        this.fromTime = fromTime;
-        this.tillTime = tillTime;
+        this.dateRange = dateRange;
         this.employeeIds = employeeIds;
         this.reasonIds = reasonIds;
     }
 
-    public AbsenceQuery(Date fromTime, Date tillTime, Set<Long> employeeIds, Set<Integer> reasonIds, En_SortField sortField, En_SortDir sortDir) {
+    public AbsenceQuery(DateRange dateRange, Set<Long> employeeIds, Set<Integer> reasonIds, En_SortField sortField, En_SortDir sortDir) {
         super (null, sortField, sortDir);
-        this.fromTime = fromTime;
-        this.tillTime = tillTime;
+        this.dateRange = dateRange;
         this.employeeIds = employeeIds;
         this.reasonIds = reasonIds;
     }
 
-    public Date getFromTime() {
-        return fromTime;
+    public DateRange getDateRange() {
+        return dateRange;
     }
 
-    public void setFromTime(Date fromTime) {
-        this.fromTime = fromTime;
-    }
-
-    public Date getTillTime() {
-        return tillTime;
-    }
-
-    public void setTillTime(Date tillTime) {
-        this.tillTime = tillTime;
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
     }
 
     public Set<Long> getEmployeeIds() {
@@ -81,8 +68,7 @@ public class AbsenceQuery extends BaseQuery {
     public String toString() {
         return "AbsenceQuery{" +
                 "employeeIds=" + employeeIds +
-                ", fromTime=" + fromTime +
-                ", tillTime=" + tillTime +
+                ", dateRange=" + dateRange +
                 ", reasons=" + reasonIds +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +

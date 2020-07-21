@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
@@ -65,7 +67,7 @@ public abstract class AbsenceTableActivity implements AbstractAbsenceTableActivi
 
     private AbsenceQuery makeQuery(Long employeeId) {
         AbsenceQuery query = new AbsenceQuery(setOf(employeeId));
-        query.setFromTime(setBeginOfDay(new Date()));
+        query.setDateRange(new DateRange(En_DateIntervalType.FIXED, setBeginOfDay(new Date()), null));
         return query;
     }
 

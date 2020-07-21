@@ -9,9 +9,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -21,7 +20,10 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class AbsenceReportCreateView extends Composite implements AbstractAbsenceReportCreateView {
@@ -29,7 +31,7 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        dateRange.setPlaceholder(lang.selectDate());
+        fillDateRanges(dateRange);
         ensureDebugIds();
     }
 
@@ -44,8 +46,13 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     }
 
     @Override
-    public HasValue<DateInterval> dateRange() {
+    public HasValue<DateIntervalWithType> dateRange() {
         return dateRange;
+    }
+
+    @Override
+    public boolean isValidDateRange() {
+        return isDataRangeTypeValid(dateRange) && isDataRangeValid(dateRange.getValue());
     }
 
     @Override
@@ -70,11 +77,11 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
 
     @Override
     public void setDateRangeValid(boolean isValid) {
-        dateRange.markInputValid(isValid);
+        dateRange.setValid(true, isValid);
     }
 
     @UiHandler("dateRange")
-    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+    public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
         activity.onDateRangeChanged();
     }
 
@@ -84,9 +91,7 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
         }
         absenceReportTitleLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.NAME_LABEL);
         name.ensureDebugId(DebugIds.ABSENCE_REPORT.NAME_INPUT);
-        absenceReportDateRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.DATE_RANGE_LABEL);
         dateRange.setEnsureDebugId(DebugIds.ABSENCE_REPORT.DATE_RANGE_INPUT);
-        dateRange.getRelative().ensureDebugId(DebugIds.ABSENCE_REPORT.DATE_RANGE_BUTTON);
         employees.setAddEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ADD_BUTTON);
         employees.setClearEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_CLEAR_BUTTON);
         employees.setItemContainerEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ITEM_CONTAINER);
@@ -100,15 +105,32 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
         sortDir.ensureDebugId(DebugIds.ABSENCE_REPORT.SORT_DIR_BUTTON);
     }
 
+    private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
+        rangePicker.fillSelector(En_DateIntervalType.reportTypes());
+    }
+
+    private boolean isDataRangeTypeValid(TypedSelectorRangePicker rangePicker) {
+        return !rangePicker.isTypeMandatory()
+                || (rangePicker.getValue() != null
+                && rangePicker.getValue().getIntervalType() != null);
+    }
+
+    private boolean isDataRangeValid(DateIntervalWithType dateRange) {
+        if (dateRange == null || dateRange.getIntervalType() == null) {
+            return true;
+        }
+
+        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
+                || dateRange.getInterval().isValid();
+    }
+
     @UiField
     LabelElement absenceReportTitleLabel;
     @UiField
     TextBox name;
-    @UiField
-    LabelElement absenceReportDateRangeLabel;
     @Inject
     @UiField(provided = true)
-    RangePicker dateRange;
+    TypedSelectorRangePicker dateRange;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector employees;
