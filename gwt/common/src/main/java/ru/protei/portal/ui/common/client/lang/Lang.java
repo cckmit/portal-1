@@ -624,6 +624,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String linkAdd();
 
+    String tag();
+
     String tags();
 
     String tagAdd();

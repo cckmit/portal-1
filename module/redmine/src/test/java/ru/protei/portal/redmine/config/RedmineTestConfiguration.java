@@ -192,4 +192,9 @@ public class RedmineTestConfiguration {
     public PlanService getPlanService() {
         return mock(PlanService.class);
     }
+
+    @Bean
+    public HistoryService getHistoryService() {
+        return new HistoryServiceImpl();
+    }
 }

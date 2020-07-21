@@ -204,6 +204,7 @@ public class CaseServiceImpl implements CaseService {
                             .map(tag -> new CaseObjectTag(caseId, tag.getId()))
                             .collect(Collectors.toList())
             );
+            caseTagService.addItemsToHistory(token, caseId, caseObjectCreateRequest.getTags());
         }
 
         Set<PlanOption> plans = caseObjectCreateRequest.getPlans();
