@@ -312,7 +312,7 @@ public class ContractServiceImpl implements ContractService {
 
         if (StringUtils.isNotBlank(contract.getRefKey())){
             Result<Contract1C> result = api1CService.getContract(queryContract1C, contract.getOrganizationName());
-            if (result.isOk()) {
+            if (result.isOk() && result.getData() != null) {
                 if (isSame(queryContract1C, result.getData())) {
                     return api1CService.getContract(queryContract1C, contract.getOrganizationName());
                 }
@@ -372,7 +372,7 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setNumber(contract.getNumber());
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(contract.getDateSigning());
-        contract1C.setName(contract.getNumber()+ " от " + dateFormat.format(contract.getDateSigning()));
+        contract1C.setName(contract.getNumber().trim()+ " от " + dateFormat.format(contract.getDateSigning()));
 
         return contract1C;
     }
@@ -380,7 +380,7 @@ public class ContractServiceImpl implements ContractService {
     public static boolean isSame(Contract1C c1, Contract1C c2) {
         return Objects.equals(c1.getNumber(), c2.getNumber())
                 && Objects.equals(c1.getDateSigning(), c2.getDateSigning())
-                && Objects.equals(c1.getContractorKey(), c1.getContractorKey());
+                && Objects.equals(c1.getContractorKey(), c2.getContractorKey());
     }
 
     private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);

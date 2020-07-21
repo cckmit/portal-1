@@ -47,6 +47,12 @@ public class HttpClient1CImpl implements HttpClient1C{
                 .map(ResponseEntity::getBody);
     }
 
+    @Override
+    public <T> Result<T> update(String url, String body, Class<T> clazz) {
+        return execute((client, headers) -> client.exchange(url, HttpMethod.PATCH, new HttpEntity<>(body, headers), clazz))
+                .map(ResponseEntity::getBody);
+    }
+
     private <RES> Result<ResponseEntity<RES>> execute(BiFunction<RestTemplate, HttpHeaders, ResponseEntity<RES>> handler) {
         RestTemplate client1C = makeClient();
         ResponseEntity<RES> response;

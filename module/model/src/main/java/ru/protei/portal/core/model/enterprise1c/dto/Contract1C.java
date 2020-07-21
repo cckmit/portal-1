@@ -68,4 +68,15 @@ public class Contract1C {
     public String getContractorKey() { return contractorKey; }
 
     public void setContractorKey(String contractorKey) { this.contractorKey = contractorKey; }
+
+    @Override
+    public String toString() {
+        return "Contract1C{" +
+                "refKey='" + refKey + '\'' +
+                ", number='" + number + '\'' +
+                ", name='" + name + '\'' +
+                ", contractorKey='" + contractorKey + '\'' +
+                ", dateSigning=" + dateSigning +
+                '}';
+    }
 }

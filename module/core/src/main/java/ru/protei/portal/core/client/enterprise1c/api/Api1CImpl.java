@@ -137,10 +137,10 @@ public class Api1CImpl implements Api1C{
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return client.read(buildGetContractByKeyUrl(contract, homeCompanyName), Response1C.class)
+        return client.read(buildGetContractByKeyUrl(contract, homeCompanyName), Contract1C.class)
                 .ifOk( value -> log.info( "getContract(): OK " ) )
                 .ifError( result -> log.warn( "getContract(): Can`t get contract={}. {}", contract, result ))
-                .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<List<Contract1C>>() {}));
+                .map(response -> jsonMapper.convertValue(response, new TypeReference<Contract1C>() {}));
     }
 
     @Override
@@ -266,7 +266,7 @@ public class Api1CImpl implements Api1C{
 
     private String buildUpdateContractUrl(Contract1C contract, String homeCompanyName){
         String url = buildCommonUrl(contract.getClass(), homeCompanyName, contract.getRefKey());
-        log.debug("buildCreateContractUrl(): url={}", url);
+        log.debug("buildUpdateContractUrl(): url={}", url);
         return url;
     }
 

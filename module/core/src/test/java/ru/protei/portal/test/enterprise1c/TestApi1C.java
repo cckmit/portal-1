@@ -1,6 +1,7 @@
 package ru.protei.portal.test.enterprise1c;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class TestApi1C extends BaseServiceTest {
     static final String homeCompanyName = CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME;
 
 
+    @Ignore
     @Test
     public void testContractor1C(){
         /**
@@ -63,6 +65,7 @@ public class TestApi1C extends BaseServiceTest {
         assertEquals(contractor1C.getRefKey(), createdContractor1C.getRefKey());
     }
 
+    @Ignore
     @Test
     public void testContract1C() {
         Result<List<Contractor1C>> contractorsResult = api1C.getContractors(makeContractor1C(), mainHomeCompanyName);
@@ -70,6 +73,7 @@ public class TestApi1C extends BaseServiceTest {
         assertNotNull(contractorsResult);
         assertTrue(contractorsResult.isOk());
         assertNotNull(contractorsResult.getData());
+        assertNotNull(contractorsResult.getData().get(0));
 
         List<Contractor1C> contractors = contractorsResult.getData();
         Contractor1C contractor1C = contractors.get(0);
