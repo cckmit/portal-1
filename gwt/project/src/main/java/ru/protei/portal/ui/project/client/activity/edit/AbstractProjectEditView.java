@@ -65,4 +65,8 @@ public interface AbstractProjectEditView extends IsWidget {
 
     void showComments(boolean isShow);
     void showDocuments(boolean isShow);
+
+    HasVisibility pauseDateContainerVisibility();
+
+    HasValue<Date> pauseDate();
 }

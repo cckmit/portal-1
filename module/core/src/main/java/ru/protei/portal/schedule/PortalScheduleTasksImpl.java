@@ -3,19 +3,30 @@ package ru.protei.portal.schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.events.EventPublisherService;
 
-import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PortalScheduleTasksImpl implements PortalScheduleTasks {
 
-    @PostConstruct
-    public void init() {
+    @EventListener
+    @Override
+    public void onApplicationStartOrRefreshContext( ContextRefreshedEvent event) {
+        log.info("onApplicationStartOrRefresh() Context refresh counter={} refresh source: {}",  contextRefreshedEventCounter.getAndIncrement(), event.getSource());
+        if (isPortalStarted.getAndSet( true )) return;
+
         if (!config.data().isTaskSchedulerEnabled()) {
             log.info("portal task's scheduler is not started because disabled in configuration");
             return;
@@ -32,6 +43,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
+
+        scheduleNotificationsAboutPauseTime();
     }
 
     public void remindAboutEmployeeProbationPeriod() {
@@ -54,13 +67,6 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
                 log.warn("fail to process reports : status={}", response.getStatus() )
         );
     }
-
-//    @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
-//    public void processHangReportsSchedule() {
-//        reportControlService.processHangReports().ifError(response ->
-//                log.warn("fail to process reports : status={}", response.getStatus() )
-//         );
-//    }
 
     public void processScheduledMailReportsDaily() {
         reportControlService.processScheduledMailReports(En_ReportScheduledType.DAILY).ifError(response ->
@@ -89,6 +95,17 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         personCaseFilterService.processMailNotification();
     }
 
+    @Override
+    public void scheduleEvent( ApplicationEvent publishEvent, Date date ) {
+        log.info( "scheduleEvent(): date= {} event={}", date, publishEvent );
+        scheduler.schedule( () -> publisherService.publishEvent( publishEvent ), date);
+    }
+
+    private void scheduleNotificationsAboutPauseTime() {
+        log.info( "scheduleNotificationsAboutPauseTime(): ." );
+        publisherService.publishEvent( new SchedulePauseTimeOnStartupEvent( this ) );
+    }
+
     @Autowired
     PortalConfig config;
 
@@ -105,6 +122,11 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     IpReservationService ipReservationService;
     @Autowired
     PersonCaseFilterService personCaseFilterService;
+    @Autowired
+    EventPublisherService publisherService;
+
+    private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
+    private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasksImpl.class );
 }

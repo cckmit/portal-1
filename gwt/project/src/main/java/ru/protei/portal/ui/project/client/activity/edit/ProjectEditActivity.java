@@ -22,11 +22,11 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.dict.En_RegionState.PAUSED;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
@@ -53,15 +53,15 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
-        initDetails.parent.add(view.asWidget());
 
         if (event.id == null) {
             project = new Project();
-            resetView();
+            fillView( project );
         } else {
-            resetView();
             requestProject(event.id, this::fillView);
         }
+
+        initDetails.parent.add(view.asWidget());
     }
 
     @Override
@@ -120,6 +120,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.product().setValue(null);
     }
 
+    @Override
+    public void onStateChanged() {
+        view.pauseDateContainerVisibility().setVisible( PAUSED == view.state().getValue() );
+    }
+
     private boolean isNew(Project project) {
         return project.getId() == null;
     }
@@ -137,75 +142,56 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         });
     }
 
-    private void resetView () {
-        view.setNumber(null);
-        view.name().setValue("");
-        view.description().setText("");
-        view.state().setValue(En_RegionState.UNKNOWN);
-        view.region().setValue(null);
-        view.direction().setValue(null);
-        view.customerType().setValue(null);
-        view.company().setValue(null);
-        view.companyEnabled().setEnabled(true);
-        view.team().setValue(null);
-        view.product().setValue(null);
-        view.setHideNullValue(true);
-        view.updateProductDirection(null);
-
-        view.getDocumentsContainer().clear();
-        view.getCommentsContainer().clear();
-        view.showComments(false);
-        view.showDocuments(false);
-
-        view.technicalSupportValidity().setValue(null);
-        view.setDateValid(true);
-
-        view.numberVisibility().setVisible(false);
-
-        view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
-        view.saveEnabled().setEnabled(true);
-        view.slaInput().setValue(null);
-
-        if (project == null || project.getId() == null) fillCaseLinks(null);
-    }
-
     private void fillView(Project project) {
-        view.setNumber( project.getId().intValue() );
-        view.name().setValue(project.getName());
-        view.state().setValue( project.getState() );
+        view.setNumber( isNew( project ) ? null : project.getId().intValue() );
+        view.name().setValue( isNew( project ) ? "" : project.getName());
+        view.state().setValue( isNew( project ) ? En_RegionState.UNKNOWN : project.getState() );
         view.direction().setValue( project.getProductDirection() == null ? null : new ProductDirectionInfo( project.getProductDirection() ) );
-        view.team().setValue( new HashSet<>( project.getTeam() ) );
+        view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
         view.region().setValue( project.getRegion() );
         Company customer = project.getCustomer();
         view.company().setValue(customer == null ? null : customer.toEntityOption());
-        view.companyEnabled().setEnabled(project.getId() == null);
+        view.companyEnabled().setEnabled(isNew( project ));
         view.description().setText(project.getDescription());
         view.product().setValue(project.getSingleProduct());
+        if (isNew( project )) view.setHideNullValue(true);
         view.customerType().setValue(project.getCustomerType());
         view.updateProductDirection(project.getProductDirection() == null ? null : project.getProductDirection().getId());
+        view.pauseDateContainerVisibility().setVisible( PAUSED == project.getState() );
+        view.pauseDate().setValue( project.getPauseDate() == null ? null : new Date( project.getPauseDate() ) );
 
         view.slaInput().setValue(project.getProjectSlas());
-        view.numberVisibility().setVisible( true );
+        view.numberVisibility().setVisible( !isNew( project ) );
 
-        view.showComments(true);
-        view.showDocuments(true);
+        view.getCommentsContainer().clear();
+        view.showComments(!isNew( project ));
+        view.getDocumentsContainer().clear();
+        view.showDocuments(!isNew( project ));
 
         view.technicalSupportValidity().setValue(project.getTechnicalSupportValidity());
+        if (isNew( project )) view.setDateValid( true );
+
 
         fillCaseLinks(project.getId());
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.PROJECT)
-                .withCaseId(project.getId())
-                .withModifyEnabled(hasPrivileges(project.getId())));
+        if(!isNew( project )) {
+            fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer() )
+                    .withCaseType( En_CaseType.PROJECT )
+                    .withCaseId( project.getId() )
+                    .withModifyEnabled( hasPrivileges( project.getId() ) ) );
+        }
 
         fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), this.project.getId()));
+
+        view.saveVisibility().setVisible( hasPrivileges(project == null ? null : project.getId()) );
+        view.saveEnabled().setEnabled(true);
     }
 
     private Project fillProject(Project project) {
         project.setName(view.name().getValue());
         project.setDescription(view.description().getText());
         project.setState(view.state().getValue());
+        project.setPauseDate( (PAUSED != view.state().getValue()) ? null : view.pauseDate().getValue().getTime() );
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setProducts(new HashSet<>(view.product().getValue() == null ? Collections.emptyList() : Collections.singleton(view.product().getValue())));
@@ -255,6 +241,19 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
+        if (PAUSED.equals( view.state().getValue() )) {
+            Date pauseDate = view.pauseDate().getValue();
+            if (pauseDate == null) {
+                fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
+
+            if (!Objects.equals(project.getPauseDate(), pauseDate.getTime()) && pauseDate.getTime() < System.currentTimeMillis()) {
+                fireEvent(new NotifyEvents.Show(lang.errSaveProjectPauseDate(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -286,4 +285,5 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private static final En_CaseType PROJECT_CASE_TYPE = En_CaseType.PROJECT;
 
     private AppEvents.InitDetails initDetails;
+    private static final Logger log = Logger.getLogger( ProjectEditActivity.class.getName() );
 }

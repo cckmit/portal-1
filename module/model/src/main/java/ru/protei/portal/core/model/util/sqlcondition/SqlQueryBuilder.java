@@ -486,6 +486,13 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
     }
 
     @Override
+    public Operator not(Object addNotIfTrue) {
+        if (addNotIfTrue == null) return this;
+        if ((addNotIfTrue instanceof Boolean) && !((Boolean) addNotIfTrue)) return this;
+        return not();
+    }
+
+    @Override
     public SqlQueryBuilder equal( Object attr ) {
         if (columnName == null || attr == null) return done();
         operator().column().append( " " ).not( "!" ).append( "= ?" ).attribute( attr );

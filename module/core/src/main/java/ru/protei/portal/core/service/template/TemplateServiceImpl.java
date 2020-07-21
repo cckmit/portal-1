@@ -466,7 +466,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("isCreated", event.isCreateEvent());
         templateModel.put("recipients", recipients);
 
-        templateModel.put("linkToProject", String.format(crmProjectUrl, event.getProjectId()));
+        templateModel.put("linkToProject", crmProjectUrl);
         templateModel.put("projectNumber", String.valueOf(event.getProjectId()));
         templateModel.put("nameChanged", event.isNameChanged());
         templateModel.put("oldName", getNullOrElse(oldProjectState, Project::getName));
@@ -734,6 +734,29 @@ public class TemplateServiceImpl implements TemplateService {
         template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
+
+
+    @Override
+    public String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) throws IOException, TemplateException{
+        Map<String, Object> model = new HashMap<>();
+        model.put( "projectNumber", String.valueOf( projectNumber ));
+        model.put( "projectName", projectName );
+
+        return getText(model, "project.pausetime.subject.%s.ftl");
+    }
+
+    @Override
+    public String getProjectPauseTimeNotificationBody( String subscriberName, Long projectNumber, String projectName, String projectUrl, Date pauseTimeDate) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "projectNumber", projectNumber );
+        model.put( "projectName", projectName );
+        model.put( "projectUrl", projectUrl );
+        model.put( "userName", subscriberName );
+        model.put( "pauseTimeDate",  new SimpleDateFormat("dd.MM.yyyy").format(pauseTimeDate) );
+
+        return getText(model, "project.pausetime.body.%s.ftl");
+    }
+
 
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);

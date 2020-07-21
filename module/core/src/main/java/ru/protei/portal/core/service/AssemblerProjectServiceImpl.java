@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledProjectEvent;
+import ru.protei.portal.core.event.ProjectPauseTimeHasComeEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Calendar;
@@ -36,7 +38,27 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
                 .flatMap(this::fillProject)
                 .flatMap(this::fillComments)
                 .flatMap(this::fillLinks)
+                .flatMap(this::schedulePauseTime)
                 .ifOk(filledEvent -> publisherService.publishEvent(filledEvent));
+    }
+
+    private Result<AssembledProjectEvent> schedulePauseTime( AssembledProjectEvent event ) {
+        if(event.isCreateEvent() && event.getNewProjectState()!=null && event.getNewProjectState().getPauseDate()!=null){
+            schedulePauseTimeNotification(event.getProjectId(), event.getNewProjectState().getPauseDate());
+            return ok(event);
+        }
+
+        if(event.isEditEvent() && event.isPauseDateChanged()){
+            schedulePauseTimeNotification(event.getProjectId(), event.getNewProjectState().getPauseDate());
+            return ok(event);
+        }
+
+        return ok(event);
+    }
+
+    private void schedulePauseTimeNotification(final Long projectId, final Long pauseDate ) {
+        ProjectPauseTimeHasComeEvent projectPauseTimeEvent = new ProjectPauseTimeHasComeEvent(this, projectId, pauseDate);
+        scheduledTasksService.scheduleEvent( projectPauseTimeEvent, new Date(pauseDate) );
     }
 
     private Result<AssembledProjectEvent> fillInitiator(AssembledProjectEvent event) {
@@ -106,6 +128,8 @@ public class AssemblerProjectServiceImpl implements AssemblerProjectService {
     CaseCommentDAO caseCommentDAO;
     @Autowired
     CaseLinkDAO caseLinkDAO;
+    @Autowired
+    PortalScheduleTasks scheduledTasksService;
 
     @Autowired
     EventPublisherService publisherService;

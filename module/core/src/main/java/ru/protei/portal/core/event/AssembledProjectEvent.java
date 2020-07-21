@@ -80,6 +80,10 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return isEditEvent() && !Objects.equals(oldProjectState.getName(), newProjectState.getName());
     }
 
+    public boolean isPauseDateChanged() {
+        return isEditEvent() && !Objects.equals(oldProjectState.getPauseDate(), newProjectState.getPauseDate());
+    }
+
     public boolean isDescriptionChanged() {
         return isEditEvent() && !Objects.equals(oldProjectState.getDescription(), newProjectState.getDescription());
     }

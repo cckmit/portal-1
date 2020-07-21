@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
  * Created by michael on 04.04.16.
@@ -173,12 +174,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     @SqlConditionBuilder
     public SqlCondition createContactSqlCondition(ContactQuery query) {
-        Condition cnd = SqlQueryBuilder.condition()
+        Condition cnd = condition()
                 .condition( buildHomeCompanyFilter( true ) )
                 .and( "person.company_id" ).equal( query.getCompanyId() )
                 .and( "person.isfired" ).equal( booleanAsNumber( query.getFired() ) )
                 .and( "person.isdeleted" ).equal( booleanAsNumber( query.getDeleted() ) )
-                .and( SqlQueryBuilder.condition()
+                .and( condition()
                         .or("person.displayName").like( query.getSearchString() )
                         .or("person.displayName").like( query.getAlternativeSearchString() )
                         .or("person.contactInfo").like( query.getSearchString() )
@@ -197,48 +198,22 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     @SqlConditionBuilder
     public SqlCondition createPersonSqlCondition(PersonQuery query) {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1");
+        Condition cnd = condition()
+                .and( "person.id" ).in( query.getPersonIds() )
+                .and( "person.company_id" ).in( query.getCompanyIds() )
+                .and( condition()
+                        .or( "person.displayName" ).like( query.getSearchString() )
+                        .or( "person.contactInfo" ).like( query.getSearchString() ) )
+                .and( "person.isfired" ).equal( booleanAsNumber( query.getFired() ) )
+                .and( "person.isdeleted" ).equal( booleanAsNumber( query.getDeleted() ) )
+                .and( "person.sex" ).not( query.getPeople() ).equal( query.getPeople() == null ? null : En_Gender.UNDEFINED.getCode() );
 
-            if (!isEmpty(query.getCompanyIds() )) {
-                condition.append(" and person.company_id in ");
-                condition.append(HelperFunc.makeInArg(query.getCompanyIds()));
-            }
+        if (query.getHasCaseFilter() != null) {
+            cnd.and( "person.id" ).in( query()
+                    .select( "distinct(person_id)" ).from( "person_to_case_filter" ) );
+        }
 
-            if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (person.displayName like ? or person.contactInfo like ?)");
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                args.add(likeArg);
-                args.add(likeArg);
-            }
-
-            if (query.getFired() != null) {
-                condition.append(" and person.isfired=?");
-                args.add(query.getFired() ? 1 : 0);
-            }
-
-            if (query.getDeleted() != null) {
-                condition.append(" and person.isdeleted=?");
-                args.add(query.getDeleted() ? 1 : 0);
-            }
-
-            if (query.getPeople() != null) {
-                String eqSign = query.getPeople() ? "!=" : "=";
-
-                condition
-                        .append(" and person.sex ")
-                        .append(eqSign)
-                        .append(" ?");
-
-                args.add(En_Gender.UNDEFINED.getCode());
-            }
-
-            if (query.getHasCaseFilter() != null) {
-
-                condition.append(" and person.id in ");
-                condition.append(" (select distinct(person_id) from person_to_case_filter)" );
-            }
-        });
+        return new SqlCondition( cnd.getSqlCondition(), cnd.getSqlParameters() );
     }
 
     private JdbcQueryParameters buildEmployeeJdbcQueryParameters(EmployeeQuery query) {

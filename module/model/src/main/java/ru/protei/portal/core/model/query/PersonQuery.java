@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +12,8 @@ import java.util.Set;
  */
 public class PersonQuery extends BaseQuery {
     private Set<Long> companyIds;
+
+    private Collection<Long> personIds;
 
     private Boolean people;
 
@@ -21,15 +24,7 @@ public class PersonQuery extends BaseQuery {
     private Boolean hasCaseFilter;
 
     public PersonQuery() {
-        super( "", En_SortField.person_full_name, En_SortDir.ASC );
-    }
-
-    public PersonQuery(Long companyId, Boolean people, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this ( toSet(companyId), people, fired, searchString, sortField, sortDir );
-    }
-
-    public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this(companyIds, people, fired, null, searchString, sortField, sortDir, null);
+        super( null, En_SortField.person_full_name, En_SortDir.ASC );
     }
 
     public PersonQuery(Set<Long> companyIds, Boolean people, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir, Boolean hasCaseFilter) {
@@ -48,6 +43,14 @@ public class PersonQuery extends BaseQuery {
 
     public void setCompanyIds(Set<Long> companyIds) {
         this.companyIds = companyIds;
+    }
+
+    public Collection<Long> getPersonIds() {
+        return personIds;
+    }
+
+    public void setPersonIds( Collection<Long> personIds ) {
+        this.personIds = personIds;
     }
 
     public Boolean getPeople() {
@@ -94,7 +97,8 @@ public class PersonQuery extends BaseQuery {
     @Override
     public String toString() {
         return "PersonQuery{" +
-                "companyIds=" + companyIds +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 ", people=" + people +
                 ", fired=" + fired +
                 ", deleted=" + deleted +
@@ -102,8 +106,8 @@ public class PersonQuery extends BaseQuery {
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
+                ", companyIds=" + companyIds +
+                ", inIds=" + personIds +
                 '}';
     }
 }

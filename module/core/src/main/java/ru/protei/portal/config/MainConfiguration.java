@@ -540,6 +540,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectEntityDAO() {
+        return new ProjectEntityDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }

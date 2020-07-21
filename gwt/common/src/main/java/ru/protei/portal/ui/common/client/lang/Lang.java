@@ -882,6 +882,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regionNotSpecified();
 
+    String regionStatePaused();
+
     String projects();
 
     String projectDirection();
@@ -971,6 +973,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveProjectNeedSelectCompany();
 
     String errSaveProjectCannotChangeCompany();
+
+    String errSaveProjectPauseDate();
 
     String classifier();
 

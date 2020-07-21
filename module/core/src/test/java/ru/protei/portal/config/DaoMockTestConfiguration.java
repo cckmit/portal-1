@@ -284,6 +284,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectEntityDAO() {
+        return mock( ProjectDAO.class);
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return  mock(ContractDateDAO.class);
     }

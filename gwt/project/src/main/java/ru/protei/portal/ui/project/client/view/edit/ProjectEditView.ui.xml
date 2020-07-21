@@ -90,6 +90,14 @@
                                                                    mandatory="false"/>
                                 </div>
                             </div>
+                            <g:HTMLPanel ui:field="pauseDateContainer" styleName="row">
+                                <div class="col-md-12">
+                                    <div class="form-group form-group-default pause-date" >
+                                        <label class="fade" ><ui:text from="{lang.issuePauseDateValidity}"/></label>
+                                        <datepicker:SinglePicker ui:field="pauseDate" type="DATE" formatValue="dd-MM-yyyy" mandatory="true"/>
+                                    </div>
+                                </div>
+                            </g:HTMLPanel>
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
                                     <region:RegionFormSelector ui:field="projectRegion"
