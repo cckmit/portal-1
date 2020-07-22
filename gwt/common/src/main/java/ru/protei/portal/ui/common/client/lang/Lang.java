@@ -2902,6 +2902,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errNotCurrentAbsence();
 
+    String absenceFilterNotDefined();
+
     String contractKindReceipt();
 
     String contractKindExpenditure();

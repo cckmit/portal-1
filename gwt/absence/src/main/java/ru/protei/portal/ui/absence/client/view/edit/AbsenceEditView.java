@@ -17,9 +17,9 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditActivity;
 import ru.protei.portal.ui.absence.client.activity.edit.AbstractAbsenceEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
+import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 

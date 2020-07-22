@@ -3,41 +3,27 @@ package ru.protei.portal.ui.absence.client.view.report;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_AbsenceReason;
-import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportCreateActivity;
 import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportCreateView;
+import ru.protei.portal.ui.absence.client.view.report.paramview.AbsenceFilterParamView;
+import ru.protei.portal.ui.absence.client.widget.AbsenceFilterWidget;
+import ru.protei.portal.ui.absence.client.widget.AbsenceFilterWidgetModel;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
-
-import java.util.Objects;
-import java.util.Set;
 
 public class AbsenceReportCreateView extends Composite implements AbstractAbsenceReportCreateView {
 
     @Inject
-    public void onInit() {
+    public void onInit(AbsenceFilterWidgetModel model) {
+        filterWidget.onInit(model);
         initWidget(ourUiBinder.createAndBindUi(this));
-        fillDateRanges(dateRange);
         ensureDebugIds();
-    }
-
-    @Override
-    public void setActivity(AbstractAbsenceReportCreateActivity activity) {
-        this.activity = activity;
     }
 
     @Override
@@ -46,43 +32,14 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
     }
 
     @Override
-    public HasValue<DateIntervalWithType> dateRange() {
-        return dateRange;
+    public AbsenceFilterParamView getFilterParams() {
+        return filterWidget.getFilterParamView();
     }
 
     @Override
-    public boolean isValidDateRange() {
-        return isDataRangeTypeValid(dateRange) && isDataRangeValid(dateRange.getValue());
-    }
-
-    @Override
-    public HasValue<Set<PersonShortView>> employees() {
-        return employees;
-    }
-
-    @Override
-    public HasValue<Set<En_AbsenceReason>> reasons() {
-        return reasons;
-    }
-
-    @Override
-    public HasValue<En_SortField> sortField() {
-        return sortField;
-    }
-
-    @Override
-    public HasValue<Boolean> sortDir() {
-        return sortDir;
-    }
-
-    @Override
-    public void setDateRangeValid(boolean isValid) {
-        dateRange.setValid(true, isValid);
-    }
-
-    @UiHandler("dateRange")
-    public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
-        activity.onDateRangeChanged();
+    public void resetFilter() {
+        name.setValue(null);
+        filterWidget.resetFilter();
     }
 
     private void ensureDebugIds() {
@@ -91,64 +48,21 @@ public class AbsenceReportCreateView extends Composite implements AbstractAbsenc
         }
         absenceReportTitleLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.NAME_LABEL);
         name.ensureDebugId(DebugIds.ABSENCE_REPORT.NAME_INPUT);
-        dateRange.setEnsureDebugId(DebugIds.ABSENCE_REPORT.DATE_RANGE_INPUT);
-        employees.setAddEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ADD_BUTTON);
-        employees.setClearEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_CLEAR_BUTTON);
-        employees.setItemContainerEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_ITEM_CONTAINER);
-        employees.setLabelEnsureDebugId(DebugIds.ABSENCE_REPORT.EMPLOYEE_SELECTOR_LABEL);
-        reasons.setAddEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_ADD_BUTTON);
-        reasons.setClearEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_CLEAR_BUTTON);
-        reasons.setItemContainerEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_ITEM_CONTAINER);
-        reasons.setLabelEnsureDebugId(DebugIds.ABSENCE_REPORT.REASON_SELECTOR_LABEL);
-        absenceReportSortByLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ABSENCE_REPORT.SORT_FIELD_LABEL);
-        sortField.setEnsureDebugId(DebugIds.ABSENCE_REPORT.SORT_FIELD_SELECTOR);
-        sortDir.ensureDebugId(DebugIds.ABSENCE_REPORT.SORT_DIR_BUTTON);
-    }
-
-    private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
-        rangePicker.fillSelector(En_DateIntervalType.reportTypes());
-    }
-
-    private boolean isDataRangeTypeValid(TypedSelectorRangePicker rangePicker) {
-        return !rangePicker.isTypeMandatory()
-                || (rangePicker.getValue() != null
-                && rangePicker.getValue().getIntervalType() != null);
-    }
-
-    private boolean isDataRangeValid(DateIntervalWithType dateRange) {
-        if (dateRange == null || dateRange.getIntervalType() == null) {
-            return true;
-        }
-
-        return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED)
-                || dateRange.getInterval().isValid();
     }
 
     @UiField
     LabelElement absenceReportTitleLabel;
+
+    @Inject
+    @UiField(provided = true)
+    AbsenceFilterWidget filterWidget;
+
     @UiField
     TextBox name;
-    @Inject
-    @UiField(provided = true)
-    TypedSelectorRangePicker dateRange;
-    @Inject
-    @UiField(provided = true)
-    EmployeeMultiSelector employees;
-    @Inject
-    @UiField(provided = true)
-    AbsenceReasonMultiSelector reasons;
-    @UiField
-    LabelElement absenceReportSortByLabel;
-    @Inject
-    @UiField(provided = true)
-    SortFieldSelector sortField;
-    @UiField
-    ToggleButton sortDir;
+
     @Inject
     @UiField
     Lang lang;
-
-    private AbstractAbsenceReportCreateActivity activity;
 
     private static AbsenceReportCreateViewUiBinder ourUiBinder = GWT.create(AbsenceReportCreateViewUiBinder.class);
     interface AbsenceReportCreateViewUiBinder extends UiBinder<HTMLPanel, AbsenceReportCreateView> {}

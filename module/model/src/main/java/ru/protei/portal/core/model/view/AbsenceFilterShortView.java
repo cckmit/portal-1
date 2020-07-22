@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.view;
 
+import ru.protei.portal.core.model.view.filterwidget.FilterShortView;
+
 import java.io.Serializable;
 
-public class AbsenceFilterShortView implements Serializable {
+public class AbsenceFilterShortView implements FilterShortView, Serializable {
 
     private Long id;
     private String name;

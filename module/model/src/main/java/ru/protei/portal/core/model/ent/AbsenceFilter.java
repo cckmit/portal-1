@@ -2,12 +2,13 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.view.AbsenceFilterShortView;
+import ru.protei.portal.core.model.view.filterwidget.Filter;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 
 @JdbcEntity( table = "absence_filter" )
-public class AbsenceFilter implements Serializable {
+public class AbsenceFilter implements Filter<AbsenceFilterShortView, AbsenceQuery>, Serializable {
 
     @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
     private Long id;
@@ -39,6 +40,7 @@ public class AbsenceFilter implements Serializable {
         this.name = name;
     }
 
+    @Override
     public AbsenceQuery getQuery() {
         return query;
     }
@@ -55,6 +57,7 @@ public class AbsenceFilter implements Serializable {
         this.loginId = loginId;
     }
 
+    @Override
     public SelectorsParams getSelectorsParams() {
         return selectorsParams;
     }
@@ -63,6 +66,7 @@ public class AbsenceFilter implements Serializable {
         this.selectorsParams = selectorsParams;
     }
 
+    @Override
     public AbsenceFilterShortView toShortView() {
         return new AbsenceFilterShortView( this.id, this.name );
     }

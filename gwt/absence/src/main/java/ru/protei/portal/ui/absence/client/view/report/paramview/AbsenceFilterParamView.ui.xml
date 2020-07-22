@@ -1,0 +1,37 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:range='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:absencereason='urn:import:ru.protei.portal.ui.common.client.widget.selector.absencereason'
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <g:HTMLPanel ui:field="content" styleName="card-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <range:TypedSelectorRangePicker ui:field="dateRange" formatValue="dd.MM.yyyy HH:mm"
+                                                    rangeMandatory="true" typeMandatory="true" header="{lang.absenceReportDateRange}"/>
+
+                </div>
+                <person:EmployeeMultiSelector ui:field="employees"
+                                              header="{lang.absenceReportEmployees}"
+                                              addStyleNames="form-group col-md-12"
+                                              firedEmployeesVisible="true"/>
+                <absencereason:AbsenceReasonMultiSelector ui:field="reasons"
+                                                          header="{lang.absenceReportReasons}"
+                                                          addStyleNames="form-group col-md-12"/>
+                <div class="form-group col-md-12">
+                    <label ui:field="absenceReportSortByLabel"><ui:text from="{lang.sortBy}"/></label>
+                    <div class="control-group">
+                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="ABSENCE" />
+                        <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
+                    </div>
+                </div>
+
+            </div>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

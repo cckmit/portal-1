@@ -3,10 +3,11 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
 
 import java.util.Set;
 
-public class AbsenceQuery extends BaseQuery {
+public class AbsenceQuery extends BaseQuery implements FilterQuery {
 
     private DateRange dateRange;
     private Set<Long> employeeIds;
