@@ -237,7 +237,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     private Result<YouTrackIssueInfo> setNumbers(String issueId, List<Long> caseNumbersFromDB, String caseNumbersFromYT, String linkTemplate, String customFieldName) {
-        log.info("setCrmNumbers(): issueId={}, caseNumbersFromDB={}, caseNumbersFromYT={}", issueId, caseNumbersFromDB, caseNumbersFromYT);
+        log.info("setNumbers(): issueId={}, caseNumbersFromDB={}, caseNumbersFromYT={}", issueId, caseNumbersFromDB, caseNumbersFromYT);
         YtIssue issue = new YtIssue();
         issue.customFields = new ArrayList<>();
         issue.customFields.add(makeAndFillNumbersCustomField(caseNumbersFromDB, caseNumbersFromYT, linkTemplate, customFieldName));

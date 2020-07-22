@@ -11,6 +11,7 @@ import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
@@ -375,6 +376,66 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         return ok( commentId);
+    }
+
+    @Override
+    public Result<List<CaseComment>> getCaseCommentListIgnorePrivileges(AuthToken token, En_CaseType caseType, long caseObjectId) {
+        return getCaseCommentList(token, caseType, caseObjectId);
+    }
+
+    @Override
+    public Result<CaseComment> addCaseCommentIgnorePrivileges(AuthToken token, En_CaseType caseType, CaseComment comment) {
+        return addCaseComment(token, caseType, comment);
+    }
+
+    @Transactional
+    @Override
+    public Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, En_CaseType caseType, CaseComment comment) {
+        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+        caseCommentQuery.setRemoteId(comment.getRemoteId());
+
+        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
+        log.warn("updateProjectCommentFromYoutrack(): Comments to update={}", caseComments);
+
+        if (caseComments == null){
+            log.warn("updateProjectCommentFromYoutrack(): Failed to get project comments. Comment={}", comment);
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        caseComments.forEach(caseComment -> caseComment.setText(comment.getText()));
+        //attachments
+
+        int updatedCount = caseCommentDAO.mergeBatch(caseComments);
+
+        if (caseComments.size() != updatedCount){
+            throw new RollbackTransactionException("caseComments size = " + caseComments.size() + " but updatedCount = " + updatedCount);
+        }
+
+        return ok();
+    }
+
+    @Transactional
+    @Override
+    public Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, En_CaseType caseType, String commentRemoteId) {
+        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+        caseCommentQuery.setRemoteId(commentRemoteId);
+
+        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
+        log.warn("deleteProjectCommentFromYoutrack(): Comments to delete={}", caseComments);
+
+        if (CollectionUtils.isEmpty(caseComments)){
+            log.warn("deleteProjectCommentFromYoutrack(): Failed to find project comments. commentRemoteId={}", commentRemoteId);
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        int removedCount = caseCommentDAO.removeByKeys(caseComments.stream().map(CaseComment::getId).collect(Collectors.toList()));
+        //remove attachments
+
+        if (caseComments.size() == removedCount){
+            return ok();
+        }
+
+        throw new RollbackTransactionException("caseComments size = " + caseComments.size() + " but removedCount = " + removedCount);
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {

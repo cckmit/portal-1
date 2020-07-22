@@ -63,6 +63,11 @@ public class CaseCommentSqlBuilder {
                 condition.append( " and case_comment.private_flag=?" );
                 args.add( query.isViewPrivate() ? 1 : 0 );
             }
+
+            if (HelperFunc.isNotEmpty(query.getRemoteId())) {
+                condition.append( " and case_comment.remote_id=?" );
+                args.add( query.getRemoteId() );
+            }
         });
     }
 }

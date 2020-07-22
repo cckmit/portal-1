@@ -1,5 +1,6 @@
 package ru.protei.portal.test.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -14,7 +15,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
+import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -24,6 +28,10 @@ import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
+import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
+import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.mock.AuthServiceMock;
@@ -41,6 +49,8 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,9 +60,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestPortalApiController extends BaseServiceTest {
     @Autowired
     PortalApiController portalApiController;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private YtDtoFieldsMapper fieldsMapper;
+    @Autowired
+    private CaseCommentService caseCommentService;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private void authService(AuthService authService) {
+        this.authService = (AuthServiceMock) authService;
+    }
 
     private static final long FAKE_ID = 10000L;
     private Person person;
@@ -382,7 +400,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -436,7 +454,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of case numbers", compareLists(caseNumbersFromDB, caseNumbersCreated));
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -463,7 +481,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case link must be removed!", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -489,7 +507,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("List must contain only unique numbers", compareLists(caseNumbersCreated, caseNumbersFromDB));
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
 
@@ -519,7 +537,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case numbers list must be empty", caseNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -573,7 +591,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Invalid list of project numbers", compareLists(projectNumbersFromDB, projectNumbersCreated));
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -600,7 +618,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("Case link must be removed!", projectNumbersFromDB.isEmpty());
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -625,7 +643,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertTrue("List must contain only unique numbers", compareLists(projectNumbersCreated, projectNumbersFromDB));
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
 
@@ -633,8 +651,6 @@ public class TestPortalApiController extends BaseServiceTest {
     @Transactional
     public void setYoutrackIdToProjectAndCrm() throws Exception {
         final String YOUTRACK_ID = "PROJECT_AND_CRM_TEST";
-
-        removeAllCaseObjectsAndCaseLinks();
 
         List<Long> projectIdsCreated = fillAndCreateProjects(3);
         List<Long> crmNumbersCreated = fillAndCreateCaseObjects(3);
@@ -693,7 +709,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertTrue("DB List must contain crm numbers. crmNumbersCreatedAfterRemove = " + crmNumbersCreatedAfterRemove + " and crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, crmAndProjectNumbersFromDB.containsAll(crmNumbersCreatedAfterRemove));
         Assert.assertEquals("DB List must contain 4 numbers. crmAndProjectNumbersFromDB = " + crmAndProjectNumbersFromDB, 4, crmAndProjectIdsFromDB.size());
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -725,7 +741,7 @@ public class TestPortalApiController extends BaseServiceTest {
         caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with new link", CASE_COUNT, caseNumbersFromDB.size());
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -750,7 +766,105 @@ public class TestPortalApiController extends BaseServiceTest {
         caseNumbersFromDB = findAllCaseNumbersByYoutrackId(NEW_YOUTRACK_ID);
         Assert.assertEquals("Wrong quantity of numbers with old link", 0, caseNumbersFromDB.size());
 
-        removeAllCaseObjectsAndCaseLinks();
+        removeAllCaseObjectsAndLinksAndComments();
+    }
+
+    @Test
+    @Transactional
+    public void createProjectCommentFromYoutrack() throws Exception {
+        final String YOUTRACK_ID = "COMMENT-TEST";
+
+        List<Long> projectIdsCreated = fillAndCreateProjects(3);
+
+        String projectIds = projectIdsCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, projectIds).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        YtIssueComment ytIssueComment = createYtIssueComment();
+        ytIssueComment.text = " @crm  test text";
+
+        accept = createPostResultActionWithStringBody("/api/saveYoutrackCommentToProjects/" + YOUTRACK_ID, serializeDto(ytIssueComment).getData()).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        for (Long projectId : projectIdsCreated) {
+            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentListIgnorePrivileges(getAuthToken(), En_CaseType.PROJECT, projectId);
+            Assert.assertTrue("Project must contain new comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
+        }
+
+        removeAllCaseObjectsAndLinksAndComments();
+    }
+
+    @Test
+    @Transactional
+    public void updateProjectCommentFromYoutrack() throws Exception {
+        authService.resetThreadAuthToken();
+        person = personDAO.get(1L);
+        userLogin = userLoginDAO.findByPersonId(1L);
+        setThreadUserLogin(userLogin);
+
+        final String YOUTRACK_ID = "COMMENT-TEST";
+
+        List<Long> projectIdsCreated = fillAndCreateProjects(3);
+
+        String projectIds = projectIdsCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, projectIds).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        YtIssueComment ytIssueComment = createYtIssueComment();
+        ytIssueComment.text = " @crm  test text";
+
+        accept = createPostResultActionWithStringBody("/api/saveYoutrackCommentToProjects/" + YOUTRACK_ID, serializeDto(ytIssueComment).getData()).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        ytIssueComment.text = " @crm  test text 2";
+        String updatedTextWithoutTag = "test text 2";
+
+        accept = createPostResultActionWithStringBody("/api/saveYoutrackCommentToProjects/" + YOUTRACK_ID, serializeDto(ytIssueComment).getData()).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        for (Long projectId : projectIdsCreated) {
+            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentListIgnorePrivileges(getAuthToken(), En_CaseType.PROJECT, projectId);
+            Assert.assertTrue("Project must contain new comment", updatedTextWithoutTag.equals(findCaseCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id).getText()));
+        }
+
+        removeAllCaseObjectsAndLinksAndComments();
+    }
+
+    @Test
+    @Transactional
+    public void removeProjectCommentFromYoutrack() throws Exception {
+        final String YOUTRACK_ID = "COMMENT-TEST";
+
+        List<Long> projectIdsCreated = fillAndCreateProjects(3);
+
+        String projectIds = projectIdsCreated.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",\n"));
+
+        ResultActions accept = createPostResultActionWithStringBody("/api/updateYoutrackProjectNumbers/" + YOUTRACK_ID, projectIds).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        YtIssueComment ytIssueComment = createYtIssueComment();
+        ytIssueComment.text = " @crm  test text";
+
+        accept = createPostResultActionWithStringBody("/api/saveYoutrackCommentToProjects/" + YOUTRACK_ID, serializeDto(ytIssueComment).getData()).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        accept = createPostResultActionWithStringBody("/api/deleteYoutrackCommentFromProjects/" + YOUTRACK_ID, serializeDto(ytIssueComment).getData()).andExpect(status().isOk());
+        Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
+
+        for (Long projectId : projectIdsCreated) {
+            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentListIgnorePrivileges(getAuthToken(), En_CaseType.PROJECT, projectId);
+            Assert.assertFalse("Project must not contain comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
+        }
+
+        removeAllCaseObjectsAndLinksAndComments();
     }
 
     @Test
@@ -968,15 +1082,15 @@ public class TestPortalApiController extends BaseServiceTest {
                 .collect(Collectors.toList());
     }
 
-    private void removeAllCaseObjectsAndCaseLinks() {
+    private void removeAllCaseObjectsAndLinksAndComments() {
         List<Long> caseIds = caseObjectDAO.getAll().stream().map(CaseObject::getId).collect(Collectors.toList());
 
         caseIds.forEach(caseId -> {
             CaseLinkQuery query = new CaseLinkQuery(caseId, false);
-            caseLinkDAO.getListByQuery(query)
-                    .forEach(caseLink -> caseLinkDAO.remove(caseLink));
             caseCommentDAO.getCaseComments(new CaseCommentQuery(caseId))
                     .forEach(caseComment -> caseCommentDAO.remove(caseComment));
+            caseLinkDAO.getListByQuery(query)
+                    .forEach(caseLink -> caseLinkDAO.remove(caseLink));
             caseObjectDAO.removeByKey(caseId);
         });
     }
@@ -1059,9 +1173,63 @@ public class TestPortalApiController extends BaseServiceTest {
         return projectNumberList;
     }
 
+    private CaseComment convertYtIssueComment(YtIssueComment issueComment) {
+        CaseComment caseComment = new CaseComment();
+        caseComment.setAuthorId(999L);
+        caseComment.setCreated(issueComment.created == null ? null : new Date(issueComment.created));
+        caseComment.setUpdated(issueComment.updated == null ? null : new Date(issueComment.updated));
+        caseComment.setRemoteId(issueComment.id);
+        caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
+        caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
+        caseComment.setText(issueComment.text);
+        caseComment.setDeleted(issueComment.deleted);
+        return caseComment;
+    }
 
-    @Autowired
-    private void authService(AuthService authService) {
-        this.authService = (AuthServiceMock) authService;
+    private boolean isListContainCommentByRemoteId(List<CaseComment> list, String remoteId) {
+        for (CaseComment caseComment : list) {
+            if (Objects.equals(caseComment.getRemoteId(), remoteId)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private CaseComment findCaseCommentByRemoteId(List<CaseComment> list, String remoteId) {
+        for (CaseComment caseComment : list) {
+            if (Objects.equals(caseComment.getRemoteId(), remoteId)){
+                return caseComment;
+            }
+        }
+        return null;
+    }
+
+    private <T> Result<String> serializeDto(T dto, YtFieldDescriptor...forceIncludeFields) {
+        try {
+            List<YtFieldDescriptor> includeFields = forceIncludeFields == null
+                    ? Collections.emptyList()
+                    : Arrays.asList(forceIncludeFields);
+            String body = YtDtoObjectMapperProvider.getMapper(fieldsMapper)
+                    .writer(YtDtoObjectMapperProvider.getFilterProvider(includeFields))
+                    .writeValueAsString(dto);
+            return ok(body);
+        } catch (JsonProcessingException e) {
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+    }
+
+    private YtUser createYtUser(){
+        YtUser ytUser = new YtUser();
+        ytUser.fullName = "test fullname";
+        ytUser.id = "1";
+        return ytUser;
+    }
+
+    private YtIssueComment createYtIssueComment() {
+        YtIssueComment ytIssueComment = new YtIssueComment();
+        ytIssueComment.author = createYtUser();
+        ytIssueComment.id = "2";
+        ytIssueComment.deleted = false;
+        return ytIssueComment;
     }
 }

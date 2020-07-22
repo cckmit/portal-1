@@ -297,6 +297,31 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok();
     }
 
+    @Override
+    @Transactional
+    public Result<List<Long>> getLinkedProjectIdsByYoutrackId(AuthToken token, String youtrackId) {
+        log.debug("getProjectIdsByYoutrackId(): youtrackId={}", youtrackId);
+
+        if (StringUtils.isEmpty(youtrackId)) {
+            return error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+        return ok(findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, youtrackId));
+    }
+
+    @Override
+    @Transactional
+    public Result<CaseLink> getYtLink(AuthToken token, String youtrackId, Long caseId) {
+        log.debug("getYtLink(): youtrackId={}, caseId={}", youtrackId, caseId);
+
+        if (StringUtils.isEmpty(youtrackId) || caseId == null) {
+            return error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+        return getYoutrackLinks(caseId)
+                .flatMap(caseLinks -> findCaseLinkByRemoteId(caseLinks, youtrackId))
+                .ifError(result -> log.warn("getYtLink(): failed to get link. youtrackId={}, caseId={}, result={}", youtrackId, caseId, result))
+                .ifOk(caseLink -> log.debug("getYtLink(): OK. caseLink={}", caseLink));
+    }
+
     private Result removeLink (CaseLink link){
         Set<Long> toRemoveIds = new HashSet<>();
         toRemoveIds.add(link.getId());
@@ -589,15 +614,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .map(CaseLink::getCaseId)
                 .collect(Collectors.toList());
     }
-
-    /*//todo: переименовать в CrmNumbers, добавить тип при поиске CRM_SUPPORT,
-    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
-        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
-
-        return caseObjects.stream()
-                .map(CaseObject::getCaseNumber)
-                .collect(Collectors.toList());
-    }*/
 
     private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseId, String youtrackId ) {
         log.debug("addCaseLinkOnToYoutrack(): caseId={}, youtrackId={}", caseId, youtrackId);
