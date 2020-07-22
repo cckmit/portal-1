@@ -800,11 +800,6 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void updateProjectCommentFromYoutrack() throws Exception {
-        authService.resetThreadAuthToken();
-        person = personDAO.get(1L);
-        userLogin = userLoginDAO.findByPersonId(1L);
-        setThreadUserLogin(userLogin);
-
         final String YOUTRACK_ID = "COMMENT-TEST";
 
         List<Long> projectIdsCreated = fillAndCreateProjects(3);

@@ -4,6 +4,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
@@ -402,16 +403,23 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        caseComments.forEach(caseComment -> caseComment.setText(comment.getText()));
-        //attachments
+        List<CaseComment> updatedCaseComments = new ArrayList<>(caseComments);
+        updatedCaseComments.forEach(updatedCaseComment -> updatedCaseComment.setText(comment.getText()));
+        //todo: update attachments
 
-        int updatedCount = caseCommentDAO.mergeBatch(caseComments);
+        int updatedCount = caseCommentDAO.mergeBatch(updatedCaseComments);
 
-        if (caseComments.size() != updatedCount){
-            throw new RollbackTransactionException("caseComments size = " + caseComments.size() + " but updatedCount = " + updatedCount);
+        if (updatedCaseComments.size() != updatedCount){
+            throw new RollbackTransactionException("updatedCaseComments size = " + updatedCaseComments.size() + " but updatedCount = " + updatedCount);
         }
 
-        return ok();
+        List<ApplicationEvent> events = new ArrayList<>();
+        for (int i = 0; i < caseComments.size(); i++) {
+            events.add(new ProjectCommentEvent(this,
+                    caseComments.get(i), updatedCaseComments.get(i), null, token.getPersonId(), comment.getCaseId()));
+        }
+
+        return ok(true).publishEvents(events);
     }
 
     @Transactional
@@ -429,13 +437,18 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         int removedCount = caseCommentDAO.removeByKeys(caseComments.stream().map(CaseComment::getId).collect(Collectors.toList()));
-        //remove attachments
+        //todo: remove attachments
 
-        if (caseComments.size() == removedCount){
-            return ok();
+        if (caseComments.size() != removedCount){
+            throw new RollbackTransactionException("caseComments size = " + caseComments.size() + " but removedCount = " + removedCount);
         }
 
-        throw new RollbackTransactionException("caseComments size = " + caseComments.size() + " but removedCount = " + removedCount);
+        List<ApplicationEvent> events = new ArrayList<>();
+        for (CaseComment caseComment : caseComments) {
+            events.add(new ProjectCommentEvent(this,
+                    null, null, caseComment, token.getPersonId(), caseComment.getCaseId()));
+        }
+        return ok(true).publishEvents(events);
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
