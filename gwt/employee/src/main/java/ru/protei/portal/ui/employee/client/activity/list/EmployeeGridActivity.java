@@ -37,35 +37,17 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event(Type.FILL_CONTENT)
     public void onShow(EmployeeEvents.Show event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
-            return;
-        }
-
-        fireEvent(new ActionBarEvents.Clear());
-
-        fireEvent(new ActionBarEvents.Add(lang.employeeTopBrassBtn(), "", UiConstants.ActionBarIdentity.TOP_BRASS));
-
-        boolean isListCurrent = currentViewType == ViewType.LIST;
-        fireEvent(new ActionBarEvents.Add(
-                isListCurrent ? lang.table() : lang.list(),
-                isListCurrent ? UiConstants.ActionBarIcons.TABLE : UiConstants.ActionBarIcons.LIST,
-                UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
-        ));
-
-        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
-        }
-
+        show();
         fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, event.preScroll));
+    }
 
-        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.absenceButtonCreate(), "", UiConstants.ActionBarIdentity.ABSENCE));
-        }
+    @Event(Type.FILL_CONTENT)
+    public void onShow(EmployeeEvents.ShowAbsent event) {
+        show();
+        query.setAbsent(true);
+        filterView.showAbsent().setValue(true);
 
-        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
-            fireEvent(new ActionBarEvents.Add(lang.absenceButtonReport(), "", UiConstants.ActionBarIdentity.ABSENCE_REPORT));
-        }
+        fireEvent(new EmployeeEvents.ShowDefinite(currentViewType, filterView.asWidget(), query, false));
     }
 
     @Event
@@ -150,6 +132,36 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     public void onFilterChanged() {
         query = makeQuery();
         fireEvent(new EmployeeEvents.UpdateData(currentViewType, query));
+    }
+
+    private void show() {
+        if (!policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        fireEvent(new ActionBarEvents.Clear());
+
+        fireEvent(new ActionBarEvents.Add(lang.employeeTopBrassBtn(), "", UiConstants.ActionBarIdentity.TOP_BRASS));
+
+        boolean isListCurrent = currentViewType == ViewType.LIST;
+        fireEvent(new ActionBarEvents.Add(
+                isListCurrent ? lang.table() : lang.list(),
+                isListCurrent ? UiConstants.ActionBarIcons.TABLE : UiConstants.ActionBarIcons.LIST,
+                UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW
+        ));
+
+        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), "", UiConstants.ActionBarIdentity.EMPLOYEE_CREATE));
+        }
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(lang.absenceButtonCreate(), "", UiConstants.ActionBarIdentity.ABSENCE));
+        }
+
+        if (policyService.hasPrivilegeFor(En_Privilege.ABSENCE_REPORT)) {
+            fireEvent(new ActionBarEvents.Add(lang.absenceButtonReport(), "", UiConstants.ActionBarIdentity.ABSENCE_REPORT));
+        }
     }
 
     private EmployeeQuery makeQuery() {
