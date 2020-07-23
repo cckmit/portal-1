@@ -311,12 +311,13 @@ public class PortalApiController {
 
         final String OK = "";
         final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
+        final String COMMENT_NOT_CORRECT = "Формат комментария, полученного на портале, не корректен. Обратитесь в поддержку портала или Youtrack";
 
         YtIssueComment ytIssueComment = deserializeComment(issueCommentJson);
 
         if (ytIssueComment == null) {
             log.warn("saveYoutrackCommentToProjects(): ytIssueComment is null!");
-            return INTERNAL_ERROR;
+            return COMMENT_NOT_CORRECT;
         }
 
         Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
@@ -350,12 +351,13 @@ public class PortalApiController {
         final String OK = "";
         final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
         final String PROJECT_NOT_UPDATED = "Ошибка добавления комментария для поектов: ";
+        final String COMMENT_NOT_CORRECT = "Формат комментария, полученного на портале, не корректен. Обратитесь в поддержку портала или Youtrack";
 
         YtIssueComment ytIssueComment = deserializeComment(issueCommentJson);
 
         if (ytIssueComment == null) {
             log.warn("saveYoutrackCommentToProjects(): ytIssueComment is null!");
-            return INTERNAL_ERROR;
+            return COMMENT_NOT_CORRECT;
         }
 
         Result<String> saveResult = authenticate(request, response, authService, sidGen, log)
@@ -617,22 +619,6 @@ public class PortalApiController {
         CaseComment caseComment = new CaseComment();
         caseComment.setAuthorId(config.data().youtrack().getYoutrackUserId());
         caseComment.setCreated(issueComment.created == null ? null : new Date(issueComment.created));
-        caseComment.setUpdated(issueComment.updated == null ? null : new Date(issueComment.updated));
-        caseComment.setRemoteId(issueComment.id);
-        caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setText(removeTag(issueComment.text));
-        caseComment.setDeleted(issueComment.deleted);
-        //Заглушка
-        caseComment.setCaseAttachments(new ArrayList<>());
-        return caseComment;
-    }
-
-    private CaseComment updateFromYtIssueComment(YtIssueComment issueComment, CaseComment oldCaseComment) {
-        CaseComment caseComment = new CaseComment();
-        caseComment.setId(oldCaseComment.getId());
-        caseComment.setAuthorId(config.data().youtrack().getYoutrackUserId());
-        caseComment.setCreated(oldCaseComment.getCreated());
         caseComment.setUpdated(issueComment.updated == null ? null : new Date(issueComment.updated));
         caseComment.setRemoteId(issueComment.id);
         caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
