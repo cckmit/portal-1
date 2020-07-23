@@ -112,20 +112,20 @@ public class Api1CImpl implements Api1C{
 
         if (!validateContract(contract)){
             log.warn("saveContract(): contract is not valid");
-            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+            return Result.error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         try {
             if (StringUtils.isBlank(contract.getRefKey())) {
                 return client.save(buildCreateContractUrl(homeCompanyName),
                         jsonMapper.writeValueAsString(contract), Contract1C.class)
-                        .ifOk(value -> log.info("saveContract(): OK "))
-                        .ifError(result -> log.warn("saveContract(): Can`t save contract={}. {}", contract, result));
+                        .ifOk(value -> log.info("saveContract(): create OK "))
+                        .ifError(result -> log.warn("saveContract(): Can`t create contract={}. {}", contract, result));
             } else {
                 return client.update(buildUpdateContractUrl(contract, homeCompanyName),
                         jsonMapper.writeValueAsString(contract), Contract1C.class)
-                        .ifOk(value -> log.info("saveContract(): OK "))
-                        .ifError(result -> log.warn("saveContract(): Can`t save contract={}. {}", contract, result));
+                        .ifOk(value -> log.info("saveContract(): update OK "))
+                        .ifError(result -> log.warn("saveContract(): Can`t update contract={}. {}", contract, result));
             }
         } catch (JsonProcessingException e){
             log.error("saveContract(): failed to serialize contract", e);

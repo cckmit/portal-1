@@ -370,7 +370,7 @@ public class ContractServiceImpl implements ContractService {
 
     public static Contract1C to1C(Contract contract) {
         Contract1C contract1C = new Contract1C();
-        contract1C.setRefKey(contract.getRefKey());
+        contract1C.setRefKey(StringUtils.isBlank(contract.getRefKey()) ? null : contract.getRefKey().trim());
         contract1C.setNumber(contract.getNumber());
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));

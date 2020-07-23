@@ -6,7 +6,9 @@
 
     <changeSet id="add-ref_key-field-to-contract" author="frost">
         <addColumn tableName="contract">
-            <column name="ref_key" type="VARCHAR(128)" defaultValue=""/>
+            <column name="ref_key" type="VARCHAR(128)">
+                <constraints nullable="true"/>
+            </column>
         </addColumn>
     </changeSet>
 
