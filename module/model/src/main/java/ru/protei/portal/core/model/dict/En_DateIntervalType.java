@@ -18,6 +18,7 @@ public enum En_DateIntervalType {
 
     private static List<En_DateIntervalType> reservedIpRangeTypes;
     private static List<En_DateIntervalType> issueRangeTypes;
+    private static List<En_DateIntervalType> reportRangeTypes;
 
     static {
         reservedIpRangeTypes = new ArrayList<>(3);
@@ -35,9 +36,13 @@ public enum En_DateIntervalType {
         issueRangeTypes.add(LAST_MONTH);
         issueRangeTypes.add(THIS_YEAR);
         issueRangeTypes.add(LAST_YEAR);
+
+        reportRangeTypes = new ArrayList<>(issueRangeTypes);
     }
 
     public static List<En_DateIntervalType> reservedIpTypes() { return reservedIpRangeTypes; }
 
     public static List<En_DateIntervalType> issueTypes() { return issueRangeTypes; }
+
+    public static List<En_DateIntervalType> reportTypes() { return reportRangeTypes; }
 }

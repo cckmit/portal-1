@@ -55,6 +55,7 @@ import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextServ
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.*;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterParamView {
 
@@ -298,8 +299,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setValue(caseQuery.isViewPrivate());
         sortDir.setValue(caseQuery.getSortDir() == null ? null : caseQuery.getSortDir().equals(En_SortDir.ASC));
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
-        dateCreatedRange.setValue(createDateIntervalWithType(caseQuery.getCreatedRange(), false));
-        dateModifiedRange.setValue(createDateIntervalWithType(caseQuery.getModifiedRange(), false));
+        dateCreatedRange.setValue(fromDateRange(caseQuery.getCreatedRange(), false));
+        dateModifiedRange.setValue(fromDateRange(caseQuery.getModifiedRange(), false));
         importance.setValue(caseQuery.getImportances());
         state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
@@ -363,15 +364,15 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setManagerCompanyIds(getCompaniesIdList(managerCompanies.getValue()));
                 query.setPlanId(plan.getValue() == null ? null : plan.getValue().getId());
 
-                query.setCreatedRange(createDateRange(dateCreatedRange.getValue()));
-                query.setModifiedRange(createDateRange(dateModifiedRange.getValue()));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
+                query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));
                 break;
             }
             case CASE_TIME_ELAPSED: {
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCreatedRange(createDateRange(dateCreatedRange.getValue()));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
             }
             case CASE_RESOLUTION_TIME:
@@ -380,7 +381,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 query.setImportances(nullIfEmpty(importance.getValue()));
                 query.setStateIds(nullIfEmpty(toList(state.getValue(), state -> state.getId())));
-                query.setCreatedRange(createDateRange(dateCreatedRange.getValue()));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
         }
         return query;
@@ -398,34 +399,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
         rangePicker.fillSelector(En_DateIntervalType.issueTypes());
-    }
-
-    public static DateRange createDateRange(DateIntervalWithType dateInterval) {
-        En_DateIntervalType intervalType = dateInterval.getIntervalType();
-
-        if (intervalType != null) {
-
-            if (Objects.equals(intervalType, En_DateIntervalType.FIXED)) {
-                DateInterval interval = dateInterval.getInterval();
-                return new DateRange(intervalType, interval.from, interval.to);
-            }
-
-            return new DateRange(intervalType, null, null);
-        }
-
-        return null;
-    }
-
-    public DateIntervalWithType createDateIntervalWithType(DateRange range, boolean isMandatory) {
-        if(range != null) {
-            if(range.getFrom() != null || range.getTo() != null) {
-                return new DateIntervalWithType(new DateInterval(range.getFrom(), range.getTo()), En_DateIntervalType.FIXED);
-            } else {
-                return new DateIntervalWithType(isMandatory ? new DateInterval() : null, range.getIntervalType());
-            }
-        } else {
-            return null;
-        }
     }
 
     @UiHandler("search")

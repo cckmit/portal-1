@@ -9,9 +9,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -56,7 +58,7 @@ public class ReportAbsenceTest extends BaseServiceTest {
         Date till = new Date();
         Date from = new Date(till.getTime() - 600000L);
 
-        return new AbsenceQuery(from, till);
+        return new AbsenceQuery(new DateRange(En_DateIntervalType.FIXED, from, till));
     }
 
     @Autowired

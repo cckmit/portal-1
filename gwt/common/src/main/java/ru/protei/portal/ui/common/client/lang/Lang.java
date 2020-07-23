@@ -2923,4 +2923,14 @@ public interface Lang extends Messages, ContactItemLang {
     String contractSecondExpenditureHint();
 
     String contractSecondExpenditureToggle();
+
+    String savedFilter();
+
+    String filterName();
+
+    String filterRemoveConfirmMessage();
+
+    String filterRemoveSuccessed();
+
+    String filterNotDefined();
 }

@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.utils.DateUtils;
 
 import java.util.Arrays;
@@ -15,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 
 /**
  * Created by michael on 05.07.16.
@@ -54,16 +57,18 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                 condition.append(" and person_absence.person_id in " + HelperFunc.makeInArg(query.getEmployeeIds(), false));
             }
 
-            if (query.getFromTime() != null) {
-                condition.append(" and (person_absence.from_time >= ? or person_absence.till_time >= ?)");
-                args.add(query.getFromTime());
-                args.add(query.getFromTime());
-            }
-
-            if (query.getTillTime() != null) {
-                condition.append(" and (person_absence.till_time <= ? or person_absence.from_time <= ?)");
-                args.add(query.getTillTime());
-                args.add(query.getTillTime());
+            Interval dateRange = makeInterval(query.getDateRange());
+            if ( dateRange != null ) {
+                if (dateRange.from != null) {
+                    condition.append(" and (person_absence.from_time >= ? or person_absence.till_time >= ?)");
+                    args.add(dateRange.from);
+                    args.add(dateRange.from);
+                }
+                if (dateRange.to != null) {
+                    condition.append(" and (person_absence.till_time <= ? or person_absence.from_time <= ?)");
+                    args.add(dateRange.to);
+                    args.add(dateRange.to);
+                }
             }
 
             if (CollectionUtils.isNotEmpty(query.getReasonIds())) {
@@ -73,8 +78,7 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
     }
 
     private Set<Integer> actualReasons() {
-        return Arrays.asList(En_AbsenceReason.values())
-                .stream()
+        return Arrays.stream(En_AbsenceReason.values())
                 .filter(En_AbsenceReason::isActual)
                 .map(En_AbsenceReason::getId)
                 .collect(Collectors.toSet());
