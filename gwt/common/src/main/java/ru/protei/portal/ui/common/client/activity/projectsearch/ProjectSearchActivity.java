@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.activity.search;
+package ru.protei.portal.ui.common.client.activity.projectsearch;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -33,11 +33,6 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         event.parent.clear();
         event.parent.add(view.asWidget());
     }
-
-//    @Event
-//    public void onProductListChanged(ProductEvents.ProductListChanged event) {
-//        view.refreshProducts();
-//    }
 
     @Override
     public void onSearchClicked() {

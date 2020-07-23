@@ -13,8 +13,8 @@ import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocu
 import ru.protei.portal.ui.project.client.activity.page.ProjectPage;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 import ru.protei.portal.ui.project.client.activity.preview.ProjectPreviewActivity;
-import ru.protei.portal.ui.project.client.activity.search.AbstractProjectSearchView;
-import ru.protei.portal.ui.project.client.activity.search.ProjectSearchActivity;
+import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
+import ru.protei.portal.ui.common.client.activity.projectsearch.ProjectSearchActivity;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
 import ru.protei.portal.ui.project.client.activity.table.ProjectTableActivity;
 import ru.protei.portal.ui.project.client.view.quickcreate.ProjectCreateView;
@@ -23,7 +23,7 @@ import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterView;
 import ru.protei.portal.ui.project.client.view.list.ProjectDocumentsListView;
 import ru.protei.portal.ui.project.client.view.list.item.ProjectDocumentsListItemView;
 import ru.protei.portal.ui.project.client.view.preview.ProjectPreviewView;
-import ru.protei.portal.ui.project.client.view.search.ProjectSearchView;
+import ru.protei.portal.ui.common.client.view.projectsearch.ProjectSearchView;
 import ru.protei.portal.ui.project.client.view.table.ProjectTableView;
 import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
@@ -57,7 +57,7 @@ public class ProjectClientModule extends AbstractGinModule {
         bind( AbstractProjectCreateView.class ).to( ProjectCreateView.class );
 
         bind( ProjectSearchActivity.class ).asEagerSingleton();
-        bind( AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );
+        bind( AbstractProjectSearchView.class ).to( ProjectSearchView.class )/*.in( Singleton.class )*/;
 
         bind( ProjectEditActivity.class ).asEagerSingleton();
         bind( AbstractProjectEditView.class ).to( ProjectEditView.class );

@@ -757,7 +757,6 @@ public class DebugIds {
         String DATE_SIGNING_CONTAINER = "contract-date-signing-container";
         String DATE_VALID_CONTAINER = "contract-date-valid-container";
         String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";
-        String PROJECT_SELECTOR = "contract-project-selector";
         String DIRECTION_SELECTOR = "contract-direction-selector";
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
@@ -809,6 +808,11 @@ public class DebugIds {
         interface CONTRACTOR {
             String NAME = "contract-contractor-name";
             String SEARCH_BUTTON = "contract-contractor-search-button";
+        }
+
+        interface PROJECT {
+            String NAME = "contract-project-name";
+            String SEARCH_BUTTON = "contract-project-search-button";
         }
     }
 

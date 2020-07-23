@@ -2923,4 +2923,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractSecondExpenditureHint();
 
     String contractSecondExpenditureToggle();
+
+    String searchProjectTitle();
+
+    String selectContractProject();
+
+    String contractProjectFindNotChosenError();
 }
