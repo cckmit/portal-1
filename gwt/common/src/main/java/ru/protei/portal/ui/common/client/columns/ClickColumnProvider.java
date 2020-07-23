@@ -13,6 +13,13 @@ public class ClickColumnProvider<T> {
     }
 
     public void setSelectedValue( T selected ) {
+        if (selected == null) {
+            removeSelection(this.selected);
+            this.selected = null;
+
+            return;
+        }
+
         this.selected = selected;
         selectRowHandler.setRowSelected( selected, true );
     }

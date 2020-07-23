@@ -200,13 +200,14 @@ public abstract class IssueTableFilterActivity
                         loadData(offset, limit, asyncCallback);
                     }
                     else {
-                        asyncCallback.onSuccess(sr.getResults());
                         if (isFirstChunk) {
                             view.setTotalRecords(sr.getTotalCount());
                             pagerView.setTotalPages(view.getPageCount());
                             pagerView.setTotalCount(sr.getTotalCount());
                             restoreScroll();
                         }
+
+                        asyncCallback.onSuccess(sr.getResults());
                     }
                 }));
     }
