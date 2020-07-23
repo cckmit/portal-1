@@ -2,7 +2,6 @@ package ru.protei.portal.ui.absence.client.widget;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.AbsenceFilter;
-import ru.protei.portal.core.model.view.AbsenceFilterShortView;
 import ru.protei.portal.ui.common.client.events.AbsenceFilterEvents;
 import ru.protei.portal.ui.common.client.service.AbsenceFilterControllerAsync;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterWidgetModel;
@@ -10,7 +9,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.function.Consumer;
 
-public abstract class AbsenceFilterWidgetModel extends FilterWidgetModel<AbsenceFilter, AbsenceFilterShortView> {
+public abstract class AbsenceFilterWidgetModel extends FilterWidgetModel<AbsenceFilter> {
 
     @Override
     protected void saveFilter(AbsenceFilter filter, Consumer<Throwable> onError, Consumer<AbsenceFilter> onSuccess) {

@@ -11,6 +11,6 @@ public class AbsenceFilterSelector extends ButtonPopupSingleSelector<AbsenceFilt
         setAsyncModel( model );
         setItemRenderer( option -> option == null ? defaultValue : option.getName() );
         setSearchEnabled(false);
-        setDefaultValue(lang.absenceFilterNotDefined());
+        setDefaultValue(lang.filterNotDefined());
     }
 }

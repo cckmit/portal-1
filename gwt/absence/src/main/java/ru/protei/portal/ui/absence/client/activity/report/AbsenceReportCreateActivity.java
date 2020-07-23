@@ -19,7 +19,6 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
 
     @PostConstruct
     public void onInit() {
-        view.getFilterParams().setActivity(this);
         dialogView.setActivity(this);
         dialogView.setHeader(lang.absenceReport());
         dialogView.removeButtonVisibility().setVisible(false);
@@ -55,11 +54,6 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     @Override
     public void onCancelClicked() {
         dialogView.hidePopup();
-    }
-
-    @Override
-    public void onDateRangeChanged() {
-        view.getFilterParams().setDateRangeValid(view.getFilterParams().isValidDateRange());
     }
 
     private void resetView() {

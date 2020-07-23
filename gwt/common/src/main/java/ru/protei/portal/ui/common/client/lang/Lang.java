@@ -2902,8 +2902,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errNotCurrentAbsence();
 
-    String absenceFilterNotDefined();
-
     String contractKindReceipt();
 
     String contractKindExpenditure();
@@ -2919,4 +2917,14 @@ public interface Lang extends Messages, ContactItemLang {
     String contractSecondExpenditureHint();
 
     String contractSecondExpenditureToggle();
+
+    String savedFilter();
+
+    String filterName();
+
+    String filterRemoveConfirmMessage();
+
+    String filterRemoveSuccessed();
+
+    String filterNotDefined();
 }

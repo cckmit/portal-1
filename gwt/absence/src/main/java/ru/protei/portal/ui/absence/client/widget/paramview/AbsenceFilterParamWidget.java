@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.absence.client.view.report.paramview;
+package ru.protei.portal.ui.absence.client.widget.paramview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
@@ -7,7 +7,10 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
@@ -18,8 +21,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.absence.client.activity.report.AbstractAbsenceReportCreateActivity;
-import ru.protei.portal.ui.absence.client.activity.report.paramview.AbstractAbsenceFilterParamView;
+import ru.protei.portal.ui.absence.client.activity.report.paramview.AbstractAbsenceFilterParamWidget;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
@@ -27,13 +29,17 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
-public class AbsenceFilterParamView extends Composite implements AbstractAbsenceFilterParamView {
+public class AbsenceFilterParamWidget extends Composite implements AbstractAbsenceFilterParamWidget {
 
     @Inject
     public void onInit() {
@@ -43,18 +49,19 @@ public class AbsenceFilterParamView extends Composite implements AbstractAbsence
     }
 
     @Override
-    public void setActivity(AbstractAbsenceReportCreateActivity activity) {
-        this.activity = activity;
-    }
-
-    @Override
     public boolean isValidDateRange() {
-        return isDataRangeTypeValid(dateRange) && isDataRangeValid(dateRange.getValue());
+        return validate();
     }
 
-    @Override
-    public void setDateRangeValid(boolean isValid) {
-        dateRange.setValid(isValid, isValid);
+    private boolean validate() {
+        boolean dataRangeTypeValid = isDataRangeTypeValid(dateRange);
+        boolean dataRangeValid = isDataRangeValid(dateRange.getValue());
+        dateRange.setValid(dataRangeTypeValid, dataRangeValid);
+        boolean isValid = dataRangeTypeValid && dataRangeValid;
+        if (validateCallback != null) {
+            validateCallback.accept(isValid);
+        }
+        return isValid;
     }
 
     @Override
@@ -74,7 +81,7 @@ public class AbsenceFilterParamView extends Composite implements AbstractAbsence
         reasons.setValue(null);
         sortField.setValue(En_SortField.absence_person);
         sortDir.setValue(true);
-        setDateRangeValid(isValidDateRange());
+        validate();
     }
 
     @Override
@@ -96,6 +103,12 @@ public class AbsenceFilterParamView extends Composite implements AbstractAbsence
         reasons.setValue(applyReason(query.getReasonIds()));
         sortField.setValue(query.getSortField());
         sortDir.setValue(query.getSortDir() == En_SortDir.ASC);
+        validate();
+    }
+
+    @Override
+    public void setValidateCallback(Consumer<Boolean> callback) {
+        validateCallback = callback;
     }
 
     private Set<PersonShortView> applyPersons(SelectorsParams filter, Set<Long> personIds) {
@@ -113,7 +126,7 @@ public class AbsenceFilterParamView extends Composite implements AbstractAbsence
 
     @UiHandler("dateRange")
     public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
-        activity.onDateRangeChanged();
+        validate();
     }
 
     private void ensureDebugIds() {
@@ -173,8 +186,8 @@ public class AbsenceFilterParamView extends Composite implements AbstractAbsence
     @UiField
     Lang lang;
 
-    private AbstractAbsenceReportCreateActivity activity;
+    private Consumer<Boolean> validateCallback;
 
     private static AbsenceFilterParamViewUiBinder ourUiBinder = GWT.create(AbsenceFilterParamViewUiBinder.class);
-    interface AbsenceFilterParamViewUiBinder extends UiBinder<HTMLPanel, AbsenceFilterParamView> {}
+    interface AbsenceFilterParamViewUiBinder extends UiBinder<HTMLPanel, AbsenceFilterParamWidget> {}
 }

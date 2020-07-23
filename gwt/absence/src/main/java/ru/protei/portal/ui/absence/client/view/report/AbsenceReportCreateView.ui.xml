@@ -10,10 +10,14 @@
                 <div class="form-group col-md-12 small hint-text">
                     <ui:text from="{lang.absenceReportHint}"/>
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-12">
                     <label ui:field="absenceReportTitleLabel"><ui:text from="{lang.absenceReportTitle}"/></label>
                     <g:TextBox ui:field="name" styleName="form-control" maxLength="64"/>
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-12">
                     <widget:AbsenceFilterWidget ui:field="filterWidget"/>
                 </div>

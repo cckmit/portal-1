@@ -22,11 +22,12 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIR
 
 public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQuery, FSV extends FilterShortView> extends Composite {
 
-    public void onInit(FilterWidgetModel<F, FSV> model) {
+    public void onInit(FilterWidgetModel<F> model) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
         filterSelector.addValueChangeHandler(event -> onUserFilterChanged(event.getValue()));
+        filterParamView.setValidateCallback(isValid -> createEnabled().setEnabled(isValid));
     }
 
     @Override
@@ -56,10 +57,6 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
     }
 
     abstract protected FilterParamView<Q> getFilterParamView();
-
-    public void clearFooterStyle() {
-        footer.removeClassName("card-footer");
-    }
 
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
@@ -243,7 +240,7 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
     @UiField
     DivElement footer;
 
-    FilterWidgetModel<F, FSV> model;
+    FilterWidgetModel<F> model;
 
     private boolean isCreateFilterAction = true;
     private static FilterWidgetViewUiBinder ourUiBinder = GWT.create( FilterWidgetViewUiBinder.class );

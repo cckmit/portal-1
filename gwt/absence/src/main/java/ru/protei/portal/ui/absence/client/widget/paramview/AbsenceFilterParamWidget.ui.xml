@@ -8,7 +8,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card card-transparent no-margin">
+    <g:HTMLPanel styleName="card no-margin">
         <g:HTMLPanel ui:field="content" styleName="card-body">
             <div class="row">
                 <div class="form-group col-md-12">
@@ -16,13 +16,19 @@
                                                     rangeMandatory="true" typeMandatory="true" header="{lang.absenceReportDateRange}"/>
 
                 </div>
+            </div>
+            <div class="row">
                 <person:EmployeeMultiSelector ui:field="employees"
                                               header="{lang.absenceReportEmployees}"
                                               addStyleNames="form-group col-md-12"
                                               firedEmployeesVisible="true"/>
+            </div>
+            <div class="row">
                 <absencereason:AbsenceReasonMultiSelector ui:field="reasons"
                                                           header="{lang.absenceReportReasons}"
                                                           addStyleNames="form-group col-md-12"/>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-12">
                     <label ui:field="absenceReportSortByLabel"><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
@@ -30,7 +36,6 @@
                         <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                     </div>
                 </div>
-
             </div>
         </g:HTMLPanel>
     </g:HTMLPanel>

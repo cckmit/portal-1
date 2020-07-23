@@ -35,7 +35,7 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
 
     @Override
     public Result<List<AbsenceFilterShortView>> getShortViewList(Long loginId) {
-        log.debug( "getShortViewList(): accountId={}", loginId );
+        log.debug( "getShortViewList(): loginId={}", loginId );
 
         List<AbsenceFilter> list = absenceFilterDAO.getListByLoginId( loginId );
 
@@ -70,7 +70,7 @@ public class AbsenceFilterServiceImpl implements AbsenceFilterService {
 
     @Override
     public Result<SelectorsParams> getSelectorsParams(AuthToken token, AbsenceQuery query) {
-        log.debug( "getSelectorsParams(): caseQuery={} ", query );
+        log.debug( "getSelectorsParams(): query={} ", query );
         SelectorsParams selectorsParams = new SelectorsParams();
 
         List<Long> employeeIds = collectEmployeeIds( query );

@@ -3,8 +3,6 @@ package ru.protei.portal.ui.common.client.widget.filterwidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.view.filterwidget.Filter;
-import ru.protei.portal.core.model.view.filterwidget.FilterQuery;
-import ru.protei.portal.core.model.view.filterwidget.FilterShortView;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -14,12 +12,12 @@ import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
-public abstract class FilterWidgetModel<F extends Filter<FSV, ?>, FSV extends FilterShortView>
-        implements Activity, AbstractFilterWidgetModel<F, FSV> {
+public abstract class FilterWidgetModel<F extends Filter<?, ?>>
+        implements Activity, AbstractFilterWidgetModel<F> {
 
     @Override
     public void onRemoveClicked(Long id, Runnable afterRemove) {
-        fireEvent(new ConfirmDialogEvents.Show(lang.issueFilterRemoveConfirmMessage(), removeAction(id, afterRemove)));
+        fireEvent(new ConfirmDialogEvents.Show(lang.filterRemoveConfirmMessage(), removeAction(id, afterRemove)));
     }
 
     @Override
@@ -49,7 +47,7 @@ public abstract class FilterWidgetModel<F extends Filter<FSV, ?>, FSV extends Fi
         return () -> removeFilter(filterId,
                 throwable -> defaultErrorHandler.accept(throwable),
                 aBoolean -> {
-                    fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.filterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                     afterRemove.run();
                 }
         );
