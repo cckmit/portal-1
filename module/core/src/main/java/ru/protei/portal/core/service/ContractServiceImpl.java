@@ -151,7 +151,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (contract == null)
+        if (contract == null || contract.getId() == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
         /*
@@ -301,7 +301,8 @@ public class ContractServiceImpl implements ContractService {
     }
 
     private Result<Contract1C> saveContract1C(Contract contract) {
-        if (contract == null || contract.getOrganizationId() == null || StringUtils.isBlank(contract.getOrganizationName())) {
+        if (contract == null || contract.getId() == null
+            || contract.getOrganizationId() == null || StringUtils.isBlank(contract.getOrganizationName())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
