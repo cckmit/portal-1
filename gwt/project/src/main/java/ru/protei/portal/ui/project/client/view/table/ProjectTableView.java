@@ -68,7 +68,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

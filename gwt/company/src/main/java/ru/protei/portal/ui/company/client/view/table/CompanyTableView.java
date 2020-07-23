@@ -112,7 +112,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable () {

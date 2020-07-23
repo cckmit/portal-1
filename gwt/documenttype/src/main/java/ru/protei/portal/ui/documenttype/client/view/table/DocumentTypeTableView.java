@@ -55,7 +55,7 @@ public class DocumentTypeTableView extends Composite implements AbstractDocument
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

@@ -90,7 +90,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable () {
