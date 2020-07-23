@@ -95,6 +95,7 @@ public class UiConstants {
         String SHORT_VIEW = "col-md-6";
         String FULL_VIEW = "col-md-12";
         String LINK_DISABLE = "link-disabled";
+        String WIDE_MODAL = "modal-lg";
     }
 
     public interface ColumnClassName {

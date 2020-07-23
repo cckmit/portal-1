@@ -15,11 +15,14 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.WIDE_MODAL;
+
 public abstract class AbsenceReportCreateActivity implements AbstractAbsenceReportCreateActivity, AbstractDialogDetailsActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         dialogView.setActivity(this);
+        dialogView.addStyleName(WIDE_MODAL);
         dialogView.setHeader(lang.absenceReport());
         dialogView.removeButtonVisibility().setVisible(false);
         dialogView.setSaveOnEnterClick(false);
@@ -58,7 +61,7 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
 
     private void resetView() {
         view.name().setValue(null);
-        view.getFilterParams().resetFilter();
+        view.resetFilter();
     }
 
     private boolean validateView() {

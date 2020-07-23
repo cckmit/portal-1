@@ -27,7 +27,10 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         this.model = model;
         ensureDebugIds();
         filterSelector.addValueChangeHandler(event -> onUserFilterChanged(event.getValue()));
-        filterParamView.setValidateCallback(isValid -> createEnabled().setEnabled(isValid));
+        filterParamView.setValidateCallback(isValid -> {
+            createBtn.setEnabled(isValid);
+            saveBtn.setEnabled(isValid);
+        });
     }
 
     @Override
@@ -45,15 +48,12 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
     public void resetFilter() {
         filterParamView.resetFilter();
         filterSelector.setValue(null);
+        showUserFilterControls();
         removeBtn.setVisible(false);
         saveBtn.setVisible(false);
         createBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
-    }
-
-    public HasEnabled createEnabled() {
-        return createBtn;
     }
 
     abstract protected FilterParamView<Q> getFilterParamView();
@@ -72,6 +72,7 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
     @UiHandler( "createBtn" )
     public void onCreateClicked ( ClickEvent event ) {
         isCreateFilterAction = true;
+        filterName.setValue(null);
         showUserFilterName();
     }
 
@@ -89,7 +90,7 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
 
         model.onOkSavingFilterClicked(filterName.getValue(), filledUserFilter,
                 filter -> {
-                    editBtnVisibility().setVisible(true);
+                    saveBtn.setVisible(true);
                     removeFilterBtnVisibility().setVisible(true);
                     this.filterSelector.setValue(filter.toShortView());
 
@@ -135,11 +136,9 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
             fillFilterAfter();
             filterName.setValue( filterAfter.getName() );
             removeFilterBtnVisibility().setVisible( true );
-            editBtnVisibility().setVisible( true );
+            saveBtn.setVisible( true );
         });
     }
-
-    protected void fillFilterAfter() {};
 
     private void showUserFilterName(){
         setUserFilterControlsVisibility(false);
@@ -150,8 +149,6 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         setUserFilterControlsVisibility(true);
         setUserFilterNameVisibility(false);
     }
-
-    abstract protected F fillUserFilter();
 
     private void ensureDebugIds() {
         filterSelector.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
@@ -205,9 +202,8 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         }
     }
 
-    private HasVisibility editBtnVisibility() {
-        return saveBtn;
-    }
+    protected void fillFilterAfter() {};
+    abstract protected F fillUserFilter();
 
     @Inject
     @UiField
