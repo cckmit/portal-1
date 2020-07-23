@@ -328,7 +328,7 @@ public class PortalApiController {
         }
 
         AuthToken token = authTokenAPIResult.getData();
-        Result<Boolean> deleteResult = caseCommentService.deleteProjectCommentsFromYoutrack(token, En_CaseType.PROJECT, ytIssueComment.id);
+        Result<Boolean> deleteResult = caseCommentService.deleteProjectCommentsFromYoutrack(token, ytIssueComment.id);
 
 
         if (deleteResult.isOk()) {
@@ -352,6 +352,7 @@ public class PortalApiController {
         final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
         final String PROJECT_NOT_UPDATED = "Ошибка добавления комментария для поектов: ";
         final String COMMENT_NOT_CORRECT = "Формат комментария, полученного на портале, не корректен. Обратитесь в поддержку портала или Youtrack";
+        final String EMPTY_TEXT = "Текст комментария не должен быть пустым";
 
         YtIssueComment ytIssueComment = deserializeComment(issueCommentJson);
 
@@ -360,9 +361,15 @@ public class PortalApiController {
             return COMMENT_NOT_CORRECT;
         }
 
+        if (removeTag(ytIssueComment.text).trim().isEmpty()){
+            log.warn("saveYoutrackCommentToProjects(): ytIssueComment text is empty");
+            return EMPTY_TEXT;
+        }
+
         Result<String> saveResult = authenticate(request, response, authService, sidGen, log)
                 .flatMap(token ->  caseLinkService.getLinkedProjectIdsByYoutrackId(token, youtrackId)
                 .flatMap(projectIds -> {
+                    log.info( "saveYoutrackCommentToProjects(): linkedProjectIds={}", projectIds );
 
                     Result<List<CaseComment>> listResult = makeCommentsToCreate(token, projectIds, ytIssueComment, youtrackId);
 
@@ -371,10 +378,11 @@ public class PortalApiController {
                     }
 
                     List<CaseComment> commentToCreate = listResult.getData();
+                    log.info( "saveYoutrackCommentToProjects(): commentToCreate={}", commentToCreate );
 
                     List<Long> errorResultProjectIds = new ArrayList<>();
 
-                    Result<Boolean> caseCommentResultUpdate = caseCommentService.updateProjectCommentsFromYoutrack(token, En_CaseType.PROJECT, convertYtIssueComment(ytIssueComment));
+                    Result<Boolean> caseCommentResultUpdate = caseCommentService.updateProjectCommentsFromYoutrack(token, convertYtIssueComment(ytIssueComment));
                     if (caseCommentResultUpdate.isError()){
                         log.warn( "saveYoutrackCommentToProjects(): update comment error, caseComment={}, remoteId={}", convertYtIssueComment(ytIssueComment), ytIssueComment.id );
                         return error(caseCommentResultUpdate.getStatus());

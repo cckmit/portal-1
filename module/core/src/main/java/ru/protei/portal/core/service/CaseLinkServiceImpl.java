@@ -282,7 +282,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             int batchSize = caseLinkDAO.mergeBatch(crmCaseLinkList);
 
             if (batchSize != crmCaseLinkList.size()) {
-                log.warn("changeYoutrackId(): size caseLinkList={}, batchSize={}", crmCaseLinkList.size(), batchSize);
+                log.warn("changeYoutrackId(): size crmCaseLinkList={}, batchSize={}", crmCaseLinkList.size(), batchSize);
             }
         }
 
@@ -290,7 +290,23 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         log.debug("changeYoutrackId(): size projectCaseLinkList={}", projectCaseLinkList.size());
 
         Result<Boolean> booleanResult = youtrackService.checkExistProjectCustomField(newYoutrackId);
-// работка линков с проектами в зависимости от наличия поля проектов CRM у прошлого и нынешнего YT проекта
+        log.debug("changeYoutrackId(): is field existed result={}", booleanResult);
+        boolean isProjectFieldExisted = booleanResult.isOk() && booleanResult.getData().equals(true);
+
+        projectCaseLinkList.forEach(caseLink -> {
+            caseLink.setRemoteId(newYoutrackId);
+            caseLink.setWithCrosslink(isProjectFieldExisted);
+        });
+
+        int batchSize = caseLinkDAO.mergeBatch(projectCaseLinkList);
+
+        if (batchSize != projectCaseLinkList.size()) {
+            log.warn("changeYoutrackId(): size projectCaseLinkList={}, batchSize={}", projectCaseLinkList.size(), batchSize);
+        }
+
+        if (isProjectFieldExisted){
+            youtrackService.setIssueProjectNumbers(newYoutrackId, findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, newYoutrackId));
+        }
 
         return ok();
     }

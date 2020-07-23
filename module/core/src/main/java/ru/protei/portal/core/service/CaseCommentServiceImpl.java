@@ -391,12 +391,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Transactional
     @Override
-    public Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, En_CaseType caseType, CaseComment comment) {
+    public Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, CaseComment comment) {
+        log.info("updateProjectCommentsFromYoutrack(): Comment to update={}", comment);
         CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
         caseCommentQuery.setRemoteId(comment.getRemoteId());
 
         List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
-        log.warn("updateProjectCommentFromYoutrack(): Comments to update={}", caseComments);
+        log.info("updateProjectCommentFromYoutrack(): Comments to update={}", caseComments);
 
         if (caseComments == null){
             log.warn("updateProjectCommentFromYoutrack(): Failed to get project comments. Comment={}", comment);
@@ -424,12 +425,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Transactional
     @Override
-    public Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, En_CaseType caseType, String commentRemoteId) {
+    public Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, String commentRemoteId) {
+        log.info("deleteProjectCommentFromYoutrack(): commentRemoteId={}", commentRemoteId);
         CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
         caseCommentQuery.setRemoteId(commentRemoteId);
 
         List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
-        log.warn("deleteProjectCommentFromYoutrack(): Comments to delete={}", caseComments);
+        log.info("deleteProjectCommentFromYoutrack(): Comments to delete={}", caseComments);
 
         if (CollectionUtils.isEmpty(caseComments)){
             log.warn("deleteProjectCommentFromYoutrack(): Failed to find project comments. commentRemoteId={}", commentRemoteId);

@@ -115,7 +115,7 @@ public interface CaseCommentService {
 
     Result<CaseComment> addCaseCommentIgnorePrivileges( AuthToken token, En_CaseType caseType, CaseComment comment );
 
-    Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, En_CaseType caseType, CaseComment comment );
+    Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, CaseComment comment );
 
-    Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, En_CaseType caseType, String commentRemoteId);
+    Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, String commentRemoteId);
 }
