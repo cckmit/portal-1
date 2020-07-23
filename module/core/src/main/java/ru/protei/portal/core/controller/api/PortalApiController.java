@@ -624,7 +624,7 @@ public class PortalApiController {
         caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
         caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
         caseComment.setText(removeTag(issueComment.text));
-        caseComment.setDeleted(issueComment.deleted);
+        caseComment.setDeleted(issueComment.deleted == null ? false : issueComment.deleted);
         //Заглушка
         caseComment.setCaseAttachments(new ArrayList<>());
         return caseComment;

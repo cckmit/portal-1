@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -273,26 +274,23 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        CaseLinkQuery query = new CaseLinkQuery();
-        query.setType(En_CaseLink.YT);
-        query.setRemoteId(oldYoutrackId);
+        List<CaseLink> crmCaseLinkList = findCaseLinkByTypeAndYoutrackId(En_CaseType.CRM_SUPPORT, oldYoutrackId, null);
+        log.debug("changeYoutrackId(): size crmCaseLinkList={}", crmCaseLinkList.size());
 
-        try {
-            List<CaseLink> caseLinkList = caseLinkDAO.getListByQuery(query);
+        if (CollectionUtils.isNotEmpty(crmCaseLinkList)){
+            crmCaseLinkList.forEach(caseLink -> caseLink.setRemoteId(newYoutrackId));
+            int batchSize = caseLinkDAO.mergeBatch(crmCaseLinkList);
 
-            log.debug("changeYoutrackId(): size caseLinkList={}", caseLinkList.size());
-
-            caseLinkList.forEach(caseLink -> caseLink.setRemoteId(newYoutrackId));
-
-            int batchSize = caseLinkDAO.mergeBatch(caseLinkList);
-
-            if (batchSize != caseLinkList.size()) {
-                log.warn("changeYoutrackId(): size caseLinkList={}, batchSize={}", caseLinkList.size(), batchSize);
+            if (batchSize != crmCaseLinkList.size()) {
+                log.warn("changeYoutrackId(): size caseLinkList={}, batchSize={}", crmCaseLinkList.size(), batchSize);
             }
-        } catch (Exception e){
-            log.error("changeYoutrackId(): change failed", e);
-            return error(En_ResultStatus.INTERNAL_ERROR);
         }
+
+        List<CaseLink> projectCaseLinkList = findCaseLinkByTypeAndYoutrackId(En_CaseType.PROJECT, oldYoutrackId, null);
+        log.debug("changeYoutrackId(): size projectCaseLinkList={}", projectCaseLinkList.size());
+
+        Result<Boolean> booleanResult = youtrackService.checkExistProjectCustomField(newYoutrackId);
+// работка линков с проектами в зависимости от наличия поля проектов CRM у прошлого и нынешнего YT проекта
 
         return ok();
     }
@@ -555,33 +553,40 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private List<Long> findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId){
-        List<Long> linkedCaseIds = findAllCaseIdsByYoutrackId(youtrackId, true);
+        List<CaseObject> cases = findCaseObjectsByTypeAndYoutrackId(caseType, youtrackId, true);
 
-        if (linkedCaseIds != null && linkedCaseIds.isEmpty()){
+        if (CollectionUtils.isEmpty(cases)){
             return new ArrayList<>();
         }
 
-        CaseQuery query = new CaseQuery();
-        query.setCaseIds(linkedCaseIds);
-        query.setType(caseType);
-        List<CaseObject> cases = caseObjectDAO.getCases(query);
-
-        return cases.stream().map(caseObject -> caseObject.getId()).collect(Collectors.toList());
+        return cases.stream()
+                .map(caseObject -> caseObject.getId())
+                .collect(Collectors.toList());
     }
 
     private List<Long> findLinkedCaseNumbersByTypeAndYoutrackId(En_CaseType caseType, String youtrackId){
-        List<Long> linkedCaseIds = findAllCaseIdsByYoutrackId(youtrackId, true);
+        List<CaseObject> cases = findCaseObjectsByTypeAndYoutrackId(caseType, youtrackId, true);
 
-        if (linkedCaseIds != null && linkedCaseIds.isEmpty()){
+        if (CollectionUtils.isEmpty(cases)){
+            return new ArrayList<>();
+        }
+
+        return cases.stream()
+                .map(caseObject -> caseObject.getCaseNumber())
+                .collect(Collectors.toList());
+    }
+
+    private List<CaseObject> findCaseObjectsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
+        List<Long> linkedCaseIds = findAllCaseIdsByYoutrackId(youtrackId, withCrosslink);
+
+        if (CollectionUtils.isEmpty(linkedCaseIds)){
             return new ArrayList<>();
         }
 
         CaseQuery query = new CaseQuery();
         query.setCaseIds(linkedCaseIds);
         query.setType(caseType);
-        List<CaseObject> cases = caseObjectDAO.getCases(query);
-
-        return cases.stream().map(caseObject -> caseObject.getCaseNumber()).collect(Collectors.toList());
+        return caseObjectDAO.getCases(query);
     }
 
     private Result<String> findUnexistedProjects (List<Long> projectNumberList){
@@ -604,14 +609,41 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
+        return findAllCaseLinksByYoutrackId(youtrackId, withCrosslink).stream()
+                .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
+    }
+
+    private List<CaseLink> findAllCaseLinksByYoutrackId(String youtrackId, Boolean withCrosslink){
         CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
         caseLinkQuery.setRemoteId( youtrackId );
         caseLinkQuery.setType( En_CaseLink.YT );
         caseLinkQuery.setWithCrosslink(withCrosslink);
-        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
+       return caseLinkDAO.getListByQuery(caseLinkQuery);
+    }
 
-        return listByQuery.stream()
-                .map(CaseLink::getCaseId)
+    private List<CaseLink> findCaseLinkByTypeAndYoutrackId(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
+        List<CaseLink> allCaseLinks = findAllCaseLinksByYoutrackId(youtrackId, withCrosslink);
+
+        if (CollectionUtils.isEmpty(allCaseLinks)){
+            return new ArrayList<>();
+        }
+
+        CaseQuery query = new CaseQuery();
+        query.setCaseIds(allCaseLinks.stream().map(CaseLink::getCaseId).collect(Collectors.toList()));
+        query.setType(caseType);
+        List<CaseObject> cases = caseObjectDAO.getCases(query);
+
+        if (CollectionUtils.isEmpty(cases)){
+            return new ArrayList<>();
+        }
+
+        List<Long> caseIds = cases.stream()
+                .map(CaseObject::getId)
+                .collect(Collectors.toList());
+
+        return allCaseLinks.stream()
+                .filter(caseLink -> caseIds.contains(caseLink.getCaseId()))
                 .collect(Collectors.toList());
     }
 
