@@ -1,6 +1,11 @@
 package ru.protei.portal.ui.contract.client.activity.preview;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -115,7 +120,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setManager(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseManagerShortName()) : StringUtils.emptyIfNull(value.getManagerShortName()));
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
         view.setDirection(value.getProjectId() == null ? StringUtils.emptyIfNull(value.getCaseDirectionName()) : StringUtils.emptyIfNull(value.getDirectionName()));
-        view.setDates(getAllDatesAsStringAsHTML(value.getContractDates()));
+        view.setDates(getAllDatesAsWidget(value.getContractDates()));
         view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
@@ -129,11 +134,18 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .withModifyEnabled(true));
     }
 
-    private String getAllDatesAsStringAsHTML(List<ContractDate> dates) {
-        if ( dates == null ) return "";
+    private List<Widget> getAllDatesAsWidget(List<ContractDate> dates) {
+        if ( dates == null ) return null;
         return dates.stream()
-                .map(p -> "<div><b>" + datesTypeLang.getName(p.getType()) + "</b> – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "" + "</div>"))
-                .collect(Collectors.joining("\n"));
+                .map(p -> {
+                    HTMLPanel root = new HTMLPanel("span", "");
+                    Element b = DOM.createElement("b");
+                    b.setInnerText( datesTypeLang.getName(p.getType()));
+                    root.getElement().appendChild(b);
+                    root.add(new InlineLabel(" - " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")));
+                    return root;
+                })
+                .collect(Collectors.toList());
     }
 
     private List<ContractSpecificationPreviewItem> getAllSpecificationsAsWidgets(List<ContractSpecification> specifications) {

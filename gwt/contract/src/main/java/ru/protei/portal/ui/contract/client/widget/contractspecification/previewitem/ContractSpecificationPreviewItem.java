@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
+import static com.google.gwt.safehtml.shared.SimpleHtmlSanitizer.sanitizeHtml;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -30,7 +31,7 @@ public class ContractSpecificationPreviewItem
         }
         root.addStyleName("nest" + value.getClauseNesting());
         clause.setInnerText(value.getClause());
-        text.setInnerHTML(value.getText() == null ? value.getText() : value.getText().replaceAll("\n", "<br>"));
+        text.setInnerSafeHtml(value.getText() == null ? sanitizeHtml("") : sanitizeHtml(value.getText().replaceAll("\n", "<br>")));
         quantityAndCost.setInnerText(makeCostInfo(value));
     }
 

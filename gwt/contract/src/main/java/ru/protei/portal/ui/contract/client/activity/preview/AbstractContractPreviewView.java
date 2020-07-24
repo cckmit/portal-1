@@ -3,6 +3,7 @@ package ru.protei.portal.ui.contract.client.activity.preview;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setManager(String value);
 
-    void setDates(String value);
+    void setDates(List<Widget> value);
 
     void setSpecifications(List<ContractSpecificationPreviewItem> value);
 

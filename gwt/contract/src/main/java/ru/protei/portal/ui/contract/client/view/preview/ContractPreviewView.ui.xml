@@ -76,7 +76,7 @@
                     <tab:TabWidget styleName="">
                         <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
                             <g:HTMLPanel>
-                                <label ui:field="dates" class="small"/>
+                                <g:HTMLPanel ui:field="dates" styleName="small"/>
                             </g:HTMLPanel>
                         </tab:pane.TabWidgetPane>
 
