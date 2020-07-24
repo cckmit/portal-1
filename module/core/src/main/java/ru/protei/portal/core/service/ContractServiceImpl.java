@@ -55,6 +55,8 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
     @Autowired
     Api1C api1CService;
+    @Autowired
+    PortalConfig config;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -127,7 +129,7 @@ public class ContractServiceImpl implements ContractService {
         if (contractId == null)
             return error(En_ResultStatus.INTERNAL_ERROR);
 
-        if (contract.getContractor() != null) {
+        if (contract.getContractor() != null && config.data().enterprise1C().isContractSyncEnabled()) {
             Result<Contract1C> result = saveContract1C(contract);
             if (result.isOk()) {
                 contract.setRefKey(result.getData().getRefKey());
@@ -180,7 +182,7 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(null);
         }
 
-        if (contract.getContractor() != null) {
+        if (contract.getContractor() != null && config.data().enterprise1C().isContractSyncEnabled()) {
             Result<Contract1C> result = saveContract1C(contract);
             if (result.isOk()) {
                 contract.setRefKey(result.getData().getRefKey());
