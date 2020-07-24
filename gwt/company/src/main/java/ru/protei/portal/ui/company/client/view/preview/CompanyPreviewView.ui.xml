@@ -32,7 +32,7 @@
             </div>
             <div class="small">
                 <b><ui:text from="{lang.email}: "/></b>
-                <span ui:field="email"/>
+                <g:HTMLPanel ui:field="email" tag="span"/>
             </div>
             <div class="small">
                 <b><ui:text from="{lang.companyActualAddress}: "/></b>
