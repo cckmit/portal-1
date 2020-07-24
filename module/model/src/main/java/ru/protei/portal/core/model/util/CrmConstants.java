@@ -9,6 +9,7 @@ public class CrmConstants {
     public static final int DEFAULT_SELECTOR_CHUNK_SIZE = 100;
     public static final int DEFAULT_SELECTOR_SAVED_CHUNKS = 100;
     public static final int EMAIL_MAX_SIZE = 254;
+    public static final int NAME_MAX_SIZE = 1024;
 
     public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
     public static final String SOME_PLANS_NOT_UPDATED = "some plans not updated";
