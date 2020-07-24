@@ -85,6 +85,11 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
         table.clearRows();
     }
 
+    @Override
+    public void clearSelection() {
+        columnProvider.removeSelection();
+    }
+
     private void initTable() {
         ClickColumn<CaseState> name = new ClickColumn<CaseState>() {
             @Override
