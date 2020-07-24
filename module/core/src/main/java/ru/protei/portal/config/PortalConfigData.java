@@ -637,6 +637,7 @@ public class PortalConfigData {
         private final String parentKeyST;
         private final String parentKeyResident;
         private final String parentKeyNotResident;
+        private final boolean contractSyncEnabled;
 
         public Enterprise1CConfig(PropertiesWrapper properties) {
             apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
@@ -646,6 +647,7 @@ public class PortalConfigData {
             parentKeyST = properties.getProperty("enterprise1c.api.parent_key_st");
             parentKeyResident = properties.getProperty("enterprise1c.api.parent_key_resident");
             parentKeyNotResident = properties.getProperty("enterprise1c.api.parent_key_not_resident");
+            contractSyncEnabled = properties.getProperty("enterprise1c.api.contract.sync.enabled", Boolean.class, false);
         }
 
         public String getApiBaseProteiUrl() {
@@ -675,6 +677,8 @@ public class PortalConfigData {
         public String getParentKeyNotResident() {
             return parentKeyNotResident;
         }
+
+        public boolean isContractSyncEnabled() { return contractSyncEnabled; }
     }
 
     public static class JiraConfig {

@@ -67,6 +67,8 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled directionEnabled();
 
+    HasEnabled organizationEnabled();
+
     HasEnabled contractorEnabled();
 
     void setOrganization(String organization);
