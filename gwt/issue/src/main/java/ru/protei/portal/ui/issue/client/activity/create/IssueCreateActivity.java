@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
@@ -91,8 +93,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             return;
         }
 
-        init.parent.clear();
-        init.parent.add(view.asWidget());
+        placeView(init.parent, view);
 
         subscriptionsList = null;
         subscriptionsListEmptyMessage = null;
@@ -306,6 +307,12 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onPlansChanged() {
         createRequest.setPlans(issueMetaView.ownerPlans().getValue());
+    }
+
+    private void placeView(HasWidgets parent, AbstractIssueCreateView view) {
+        parent.clear();
+        parent.add(view.asWidget());
+        Window.scrollTo(0, 0);
     }
 
     private void updateSubscriptions(Long... companyIds) {

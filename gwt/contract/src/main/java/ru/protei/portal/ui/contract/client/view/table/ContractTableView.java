@@ -100,7 +100,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

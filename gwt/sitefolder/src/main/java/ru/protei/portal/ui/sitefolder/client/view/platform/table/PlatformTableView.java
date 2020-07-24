@@ -102,7 +102,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

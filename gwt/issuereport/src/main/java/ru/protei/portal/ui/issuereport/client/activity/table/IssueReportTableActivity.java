@@ -141,12 +141,13 @@ public abstract class IssueReportTableActivity implements
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    asyncCallback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
                     }
+
+                    asyncCallback.onSuccess(sr.getResults());
                 }));
     }
 

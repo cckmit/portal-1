@@ -65,7 +65,7 @@ public class PlanTableView extends Composite implements AbstractPlanTableView {
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

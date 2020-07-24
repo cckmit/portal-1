@@ -108,11 +108,12 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    asyncCallback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         restoreScroll();
                     }
+
+                    asyncCallback.onSuccess(sr.getResults());
                 }));
     }
 

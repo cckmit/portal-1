@@ -158,13 +158,13 @@ public abstract class DocumentTableActivity
                     callback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    callback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
                         restoreScroll();
                     }
+                    callback.onSuccess(sr.getResults());
                 }));
     }
 
