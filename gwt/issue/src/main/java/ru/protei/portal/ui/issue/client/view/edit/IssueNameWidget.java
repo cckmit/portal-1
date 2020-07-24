@@ -5,6 +5,7 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -31,7 +32,7 @@ public class IssueNameWidget extends Composite  {
     }
 
     public void setName( String issueName ) {
-        nameRO.setInnerHTML( issueName );
+        nameRO.setInnerSafeHtml(SimpleHtmlSanitizer.sanitizeHtml(issueName));
     }
 
     private void ensureDebugIds() {
