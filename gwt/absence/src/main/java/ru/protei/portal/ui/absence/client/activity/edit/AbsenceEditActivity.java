@@ -46,7 +46,7 @@ public abstract class AbsenceEditActivity implements AbstractAbsenceEditActivity
         dialogView.showPopup();
 
         if (event.id == null) {
-            showForm(new PersonAbsence());
+            showForm(new PersonAbsence(event.employee.getId(), event.employee.getDisplayName()));
         } else {
             loadAbsence(event.id, this::showForm);
         }
