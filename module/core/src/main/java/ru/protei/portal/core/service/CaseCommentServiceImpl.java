@@ -396,15 +396,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
         caseCommentQuery.setRemoteId(comment.getRemoteId());
 
-        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
-        log.info("updateProjectCommentFromYoutrack(): Comments to update={}", caseComments);
+        List<CaseComment> existedCaseComments = caseCommentDAO.getCaseComments(caseCommentQuery);
+        log.info("updateProjectCommentFromYoutrack(): Comments to update={}", existedCaseComments);
 
-        if (caseComments == null){
+        if (existedCaseComments == null){
             log.warn("updateProjectCommentFromYoutrack(): Failed to get project comments. Comment={}", comment);
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        List<CaseComment> updatedCaseComments = new ArrayList<>(caseComments);
+        List<CaseComment> updatedCaseComments = new ArrayList<>(existedCaseComments);
         updatedCaseComments.forEach(updatedCaseComment -> updatedCaseComment.setText(comment.getText()));
         //todo: update attachments
 
@@ -415,9 +415,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         List<ApplicationEvent> events = new ArrayList<>();
-        for (int i = 0; i < caseComments.size(); i++) {
+        for (int i = 0; i < existedCaseComments.size(); i++) {
             events.add(new ProjectCommentEvent(this,
-                    caseComments.get(i), updatedCaseComments.get(i), null, token.getPersonId(), comment.getCaseId()));
+                    existedCaseComments.get(i), updatedCaseComments.get(i), null, token.getPersonId(), updatedCaseComments.get(i).getCaseId()));
         }
 
         return ok(true).publishEvents(events);
@@ -450,6 +450,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             events.add(new ProjectCommentEvent(this,
                     null, null, caseComment, token.getPersonId(), caseComment.getCaseId()));
         }
+
         return ok(true).publishEvents(events);
     }
 

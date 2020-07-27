@@ -111,15 +111,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         Result<CaseLink> completeResult = ok(createdLink);
 
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            completeResult.publishEvent(new CaseLinkEvent(this, ServiceModule.GENERAL, authToken.getPersonId(), link.getCaseId(), link, null));
-        }
-
-        if (En_CaseType.PROJECT.equals(caseType)) {
-            completeResult.publishEvent(new ProjectLinkEvent(this, link.getCaseId(), authToken.getPersonId(), link, null));
-        }
-
-        return completeResult;
+        return sendNotificationLinkAdded(authToken, link.getCaseId(), link, caseType);
     }
 
     @Override
@@ -147,15 +139,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(result.getStatus());
         }
 
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            result.publishEvent(new CaseLinkEvent(this, ServiceModule.GENERAL, authToken.getPersonId(), existedLink.getCaseId(), null, existedLink));
-        }
-
-        if (En_CaseType.PROJECT.equals(caseType)) {
-            result.publishEvent(new ProjectLinkEvent(this, existedLink.getCaseId(), authToken.getPersonId(), null, existedLink));
-        }
-
-        return result;
+        return sendNotificationLinkRemoved(authToken, existedLink.getCaseId(), existedLink, caseType);
     }
 
 
@@ -187,8 +171,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Result<String> result = ok("");
 
         for (Long caseId : listCaseIdsToAdd) {
-            Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, status={}", caseId, addResult.getStatus());
+            Result<CaseLink> addResult = addYoutrackLinkWithPublishing(token, caseId, youtrackId, En_CaseType.CRM_SUPPORT);
+            log.debug("setYoutrackIdToCaseNumbers(): adding caseId={}, addResult={}", caseId, addResult);
 
             if (addResult.isError()){
                 return error(addResult.getStatus(), addResult.getMessage());
@@ -200,8 +184,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         for (Long caseId : listCaseIdsToRemove) {
             makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
-            Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, status={}", caseId, removeResult.getStatus());
+            Result<CaseLink> removeResult = removeYoutrackLinkWithPublishing(token, caseId, youtrackId, En_CaseType.CRM_SUPPORT);
+            log.debug("setYoutrackIdToCaseNumbers(): removing caseId={}, removeResult={}", caseId, removeResult);
 
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());
@@ -239,8 +223,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Result<String> result = ok("");
 
         for (Long caseId : listCaseIdsToAdd) {
-            Result<Long> addResult = addYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToProjectNumbers(): adding caseId={}, status={}", caseId, addResult.getStatus());
+            Result<CaseLink> addResult = addYoutrackLinkWithPublishing(token, caseId, youtrackId, En_CaseType.PROJECT);
+            log.debug("setYoutrackIdToProjectNumbers(): adding caseId={}, addResult={}", caseId, addResult);
 
             if (addResult.isError()){
                 return error(addResult.getStatus(), addResult.getMessage());
@@ -252,8 +236,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         for (Long caseId : listCaseIdsToRemove) {
             makeAudit(caseId, youtrackId, En_AuditType.LINK_REMOVE, token);
-            Result<Long> removeResult = removeYoutrackLink(token, caseId, youtrackId);
-            log.debug("setYoutrackIdToProjectNumbers(): removing caseId={}, status={}", caseId, removeResult.getStatus());
+            Result<CaseLink> removeResult = removeYoutrackLinkWithPublishing(token, caseId, youtrackId, En_CaseType.PROJECT);
+            log.debug("setYoutrackIdToProjectNumbers(): removing caseId={}, removeResult={}", caseId, removeResult);
 
             if (removeResult.isError()){
                 return error(removeResult.getStatus(), removeResult.getMessage());
@@ -482,6 +466,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(caseLinks);
     }
 
+    private List<CaseLink> findAllCaseLinksByYoutrackId(String youtrackId, Boolean withCrosslink){
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        caseLinkQuery.setWithCrosslink(withCrosslink);
+        return caseLinkDAO.getListByQuery(caseLinkQuery);
+    }
+
     private Result<CaseLink> findCaseLinkByRemoteId(Collection<CaseLink> caseLinks, String youtrackId ) {
         log.debug("findCaseLinkByRemoteId(): caseLinks={}, youtrackId={}", caseLinks, youtrackId);
         return find( caseLinks, caseLink -> youtrackId.equalsIgnoreCase(caseLink.getRemoteId()) )
@@ -490,13 +482,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private void makeAudit(Long caseId, String youtrackId, En_AuditType type, AuthToken token){
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setCaseId( caseId );
-        caseLinkQuery.setRemoteId(youtrackId);
-        caseLinkQuery.setType( En_CaseLink.YT );
-        List<CaseLink> linksList = caseLinkDAO.getListByQuery(caseLinkQuery);
+        List<CaseLink> linksList = getYoutrackLinks(caseId).getData();
 
-        if (linksList.size() != 1){
+        if (linksList == null || linksList.size() != 1){
             log.warn("makeAudit(): fail to find link with caseId={} and youtrackId={}", caseId, youtrackId);
             return;
         }
@@ -513,26 +501,18 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         auditObjectDAO.insertAudit(auditObject);
     }
 
-    private Result<Long> addYoutrackLink( AuthToken authToken, Long caseId, String youtrackId ) {
+    private Result<CaseLink> addYoutrackLinkWithPublishing(AuthToken authToken, Long caseId, String youtrackId, En_CaseType caseType ) {
 
-        return  getYoutrackLinks(caseId)
-                .flatMap( caseLinks -> findCaseLinkByRemoteId( caseLinks, youtrackId ) )
-                .map( CaseLink::getCaseId )
-                .orElseGet( ignore ->
-                        addCaseLinkOnToYoutrack( caseId, youtrackId )
-                                .flatMap( addedLink ->
-                                        sendNotificationLinkAdded( authToken, caseId, addedLink )
-                                )
-                );
+        return  addYoutrackCaseLink( caseId, youtrackId )
+                .flatMap( addedLink -> sendNotificationLinkAdded( authToken, caseId, addedLink, caseType ));
     }
 
-    private Result<Long> removeYoutrackLink( AuthToken authToken, Long caseId, String youtrackId ) {
+    private Result<CaseLink> removeYoutrackLinkWithPublishing(AuthToken authToken, Long caseId, String youtrackId, En_CaseType caseType ) {
 
         return getYoutrackLinks(caseId)
                 .flatMap( caseLinks -> findCaseLinkByRemoteId( caseLinks, youtrackId ) )
-                .flatMap(caseLink -> removeCaseLinkOnToYoutrack( caseLink )
-                        .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink )
-                )
+                .flatMap(caseLink -> removeYoutrackCaseLink( caseLink )
+                        .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink, caseType ))
         );
     }
 
@@ -630,14 +610,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
-    private List<CaseLink> findAllCaseLinksByYoutrackId(String youtrackId, Boolean withCrosslink){
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setRemoteId( youtrackId );
-        caseLinkQuery.setType( En_CaseLink.YT );
-        caseLinkQuery.setWithCrosslink(withCrosslink);
-       return caseLinkDAO.getListByQuery(caseLinkQuery);
-    }
-
     private List<CaseLink> findCaseLinkByTypeAndYoutrackId(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
         List<CaseLink> allCaseLinks = findAllCaseLinksByYoutrackId(youtrackId, withCrosslink);
 
@@ -663,8 +635,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
-    private Result<CaseLink> addCaseLinkOnToYoutrack( Long caseId, String youtrackId ) {
-        log.debug("addCaseLinkOnToYoutrack(): caseId={}, youtrackId={}", caseId, youtrackId);
+    private Result<CaseLink> addYoutrackCaseLink(Long caseId, String youtrackId ) {
+        log.debug("addYoutrackCaseLink(): caseId={}, youtrackId={}", caseId, youtrackId);
         CaseLink newLink = new CaseLink();
         newLink.setCaseId( caseId );
         newLink.setType( En_CaseLink.YT );
@@ -672,14 +644,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         newLink.setWithCrosslink(true);
         Long id = caseLinkDAO.persist( newLink );
         if (id == null) {
-            log.error( "addCaseLinkOnToYoutrack(): Can`t add link on to youtrack into case, persistence error" );
-            throw new RollbackTransactionException( "addCaseLinkOnToYoutrack(): rollback transaction" );
+            log.error( "addYoutrackCaseLink(): Can`t add link on to youtrack into case, persistence error" );
+            throw new RollbackTransactionException( "addYoutrackCaseLink(): rollback transaction" );
         }
         newLink.setId( id );
         return ok( newLink );
     }
 
-    private Result<CaseLink> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
+    private Result<CaseLink> removeYoutrackCaseLink(CaseLink caseLink ) {
         log.debug("removeCaseLinkOnToYoutrack(): caseLink={}", caseLink);
         if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
             log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
@@ -689,14 +661,30 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return ok(caseLink);
     }
 
-    private Result<Long> sendNotificationLinkAdded(AuthToken token, Long caseId, CaseLink added ) {
-        return ok(added.getId())
-                .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, added, null ));
+    private Result<CaseLink> sendNotificationLinkAdded(AuthToken token, Long caseId, CaseLink added, En_CaseType caseType ) {
+        switch (caseType) {
+            case PROJECT:
+                return ok(added)
+                        .publishEvent(new ProjectLinkEvent(this, added.getCaseId(), token.getPersonId(), added, null));
+            case CRM_SUPPORT:
+                return ok(added)
+                        .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, added, null ));
+            default:
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
     }
 
-    private Result<Long> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed ) {
-        return ok(removed.getId())
-                .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removed ) );
+    private Result<CaseLink> sendNotificationLinkRemoved(AuthToken token, Long caseId, CaseLink removed, En_CaseType caseType ) {
+        switch (caseType) {
+            case PROJECT:
+                return ok(removed)
+                        .publishEvent(new ProjectLinkEvent(this, removed.getCaseId(), token.getPersonId(), null, removed));
+            case CRM_SUPPORT:
+                return ok(removed)
+                        .publishEvent( new CaseLinkEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removed ) );
+            default:
+                return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
     }
 
     private boolean isValidLink(CaseLink value) {

@@ -47,6 +47,5 @@ public interface CaseLinkService {
 
     Result<List<Long>> getLinkedProjectIdsByYoutrackId(AuthToken token, String youtrackId);
 
-    @Transactional
     Result<CaseLink> getYtLink(AuthToken token, String youtrackId, Long caseId);
 }
