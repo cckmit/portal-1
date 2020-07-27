@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AbsenceControllerAsync;
@@ -29,6 +30,7 @@ public abstract class AbsenceReportCreateActivity implements AbstractAbsenceRepo
     public void onInit() {
         view.setActivity(this);
         dialogView.setActivity(this);
+        dialogView.addStyleName(UiConstants.Styles.WIDE_MODAL);
         dialogView.setHeader(lang.absenceReport());
         dialogView.removeButtonVisibility().setVisible(false);
         dialogView.setSaveOnEnterClick(false);

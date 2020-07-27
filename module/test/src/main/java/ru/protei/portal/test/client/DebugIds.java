@@ -664,6 +664,9 @@ public class DebugIds {
             String CUSTOMER_TYPE_SELECTOR = "document-project-search-customer-type-selector";
             String PRODUCT_LABEL = "document-project-search-product-label";
             String PRODUCT_SELECTOR = "document-project-search-product-selector";
+            String PRODUCTS_CONTAINER = "document-project-search-product-container";
+            String MANAGER_SELECTOR = "document-project-search-manager-selector";
+            String MANAGERS_CONTAINER = "document-project-search-manager-container";
             String FIND_BUTTON = "document-project-search-find-button";
             String RESET_BUTTON = "document-project-search-reset-button";
             String SHOW_FIRST_RECORDS_LABEL = "document-project-search-show-first-records-label";
@@ -762,6 +765,7 @@ public class DebugIds {
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
         String CONTRACTOR_SELECTOR = "contract-contractor-selector";
+        String PROJECT_SELECTOR = "contract-project-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";

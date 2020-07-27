@@ -25,8 +25,8 @@ public interface AbstractProjectSearchView extends IsWidget {
     HasValue<DateInterval> dateCreatedRange();
     HasValue<ProjectInfo> project();
 
-    HasVisibility productsVisibility();
-    HasVisibility managersVisibility();
+    void setVisibleProducts(boolean value);
+    void setVisibleManagers(boolean value);
 
     void clearProjectList();
     void fillProjectList(List<ProjectInfo> list);

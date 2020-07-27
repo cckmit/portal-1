@@ -82,13 +82,13 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
-    public HasVisibility productsVisibility() {
-        return products;
+    public void setVisibleProducts(boolean value) {
+        productsContainer.setVisible(value);
     }
 
     @Override
-    public HasVisibility managersVisibility() {
-        return managers;
+    public void setVisibleManagers(boolean value) {
+        managersContainer.setVisible(value);
     }
 
     @Override
@@ -108,6 +108,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         name.setValue(null);
         customerType.setValue(null);
         products.setValue(null);
+        managers.setValue(null);
         dateCreatedRange.setValue(null);
         searchInfo.addClassName("hide");
         projectsContainer.addClassName("hide");
@@ -143,6 +144,9 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         dateCreatedRange.getRelative().ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_BUTTON);
         customerType.setEnsureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CUSTOMER_TYPE_SELECTOR);
         products.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.PRODUCT_SELECTOR);
+        productsContainer.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.PRODUCTS_CONTAINER);
+        managers.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.MANAGER_SELECTOR);
+        managersContainer.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.MANAGERS_CONTAINER);
         search.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.FIND_BUTTON);
         reset.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.RESET_BUTTON);
 
@@ -164,9 +168,15 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @UiField(provided = true)
     DevUnitMultiSelector products;
 
+    @UiField
+    HTMLPanel productsContainer;
+
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector managers;
+
+    @UiField
+    HTMLPanel managersContainer;
 
     @Inject
     @UiField(provided = true)

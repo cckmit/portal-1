@@ -32,7 +32,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.selectContractProject());
-        //root.setTitle(lang.selectContractProject());
+        root.setTitle(lang.selectContractProject());
         prepareSearchDialog(dialogDetailsSearchView);
         searchView.setActivity(makeSearchViewActivity());
     }
@@ -111,8 +111,9 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         dialog.removeButtonVisibility().setVisible(false);
         dialog.setHeader(lang.searchProjectTitle());
         dialog.setSaveButtonName(lang.buttonApply());
-        dialog.setAdditionalButtonName(lang.buttonCreate());
-        dialog.setAdditionalVisible(true);
+        dialog.setAdditionalVisible(false);
+        searchView.setVisibleProducts(false);
+        searchView.setVisibleManagers(true);
     }
 
     private AbstractDialogDetailsActivity makeSearchDialogActivity() {

@@ -134,18 +134,27 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void refreshProjectSpecificFields() {
-        if (view.project().getValue() == null) {
-            clearProjectSpecificFields();
-            return;
+        if (contract.getProjectId() != null) {
+
+            regionService.getProjectInfo(contract.getProjectId(), new FluentCallback<ProjectInfo>()
+                    .withSuccess(project -> {
+                        view.project().setValue(project);
+
+                        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+                        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+                        view.directionEnabled().setEnabled(false);
+                        view.managerEnabled().setEnabled(false);
+                        return;
+                    })
+            );
         }
-        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<ProjectInfo>()
-                .withSuccess(project -> {
-                    view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
-                    view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
-                    view.directionEnabled().setEnabled(false);
-                    view.managerEnabled().setEnabled(false);
-                })
-        );
+
+        view.project().setValue(null);
+
+        clearProjectSpecificFields();
+
+        view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
+        view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
     }
 
     private void clearProjectSpecificFields() {
@@ -187,17 +196,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         boolean contractParentExists = contract.getParentContractId() != null;
         view.setKind(getContractKind(contractParentExists));
 
-        view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
         refreshProjectSpecificFields();
 
         view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
-
-        if (view.project().getValue() == null) {
-            view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
-            view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
-        }
 
         syncSecondContractView(isNew, false);
     }
