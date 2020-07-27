@@ -186,15 +186,7 @@ public class RegionControllerImpl implements RegionController {
         log.info("getProjectLeader(): projectId={}", projectId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result<PersonProjectMemberView> response = projectService.getProjectLeader(token, projectId);
-        log.info("getProjectLeader(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
-
-        if (response.isOk()) {
-            return response.getData();
-        }
-
-        throw new RequestFailedException(response.getStatus());
+        return ServiceUtils.checkResultAndGetData(projectService.getProjectLeader(token, projectId));
     }
 
     @Autowired

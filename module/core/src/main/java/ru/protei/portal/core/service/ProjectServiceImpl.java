@@ -229,7 +229,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public Result<Project> saveProject(AuthToken token, Project project ) {
         if (!validateFields(project)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
@@ -297,7 +297,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public Result<Project> createProject(AuthToken token, Project project) {
         if (!validateFields(project)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
@@ -403,9 +403,7 @@ public class ProjectServiceImpl implements ProjectService {
             return error(projectResult.getStatus());
         }
 
-        Project project = projectResult.getData();
-
-        return ok(project.getLeader());
+        return projectResult.map(Project::getLeader);
     }
 
     private boolean validateFields(Project project) {
