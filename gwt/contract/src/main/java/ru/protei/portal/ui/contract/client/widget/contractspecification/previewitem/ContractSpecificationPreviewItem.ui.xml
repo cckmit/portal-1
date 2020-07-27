@@ -5,6 +5,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="contract-specification-preview-item">
-        <span class="item-clause" ui:field="clause"/><span ui:field="text"/> <span ui:field="quantityAndCost"/>
+        <span class="item-clause" ui:field="clause"/><g:HTMLPanel ui:field="text" tag="span"/> <span ui:field="quantityAndCost"/>
     </g:HTMLPanel>
 </ui:UiBinder>
