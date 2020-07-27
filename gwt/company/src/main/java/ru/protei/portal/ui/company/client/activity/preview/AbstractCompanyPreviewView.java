@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.List;
+
 /**
  * Абстракция представления превью компании
  */
@@ -18,7 +20,7 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setSite( String value );
 
-    void setEmail( String value );
+    void setEmail( List<Widget> value );
 
     void setAddressDejure( String value );
 

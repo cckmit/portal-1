@@ -53,7 +53,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setHomeAddress(String value) { this.homeAddress.setInnerText( value ); }
 
     @Override
-    public void setInfo(String value) { this.info.setInnerHTML( value ); }
+    public void setInfo(String value) { this.info.setInnerText(value); }
 
     @Override
     public HasVisibility firedMsgVisibility() {

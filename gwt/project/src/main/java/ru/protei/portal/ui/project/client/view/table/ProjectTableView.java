@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -146,7 +147,8 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         columns.add(customerColumn);
 
         DynamicColumn<Project> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
-                value -> "<b>" + value.getName() + "</b>" + (value.getDescription() == null ? "" : "<br/><small>" + value.getDescription() + "</small>"));
+                value -> "<b>" + SimpleHtmlSanitizer.sanitizeHtml(value.getName()).asString() + "</b>" +
+                                    (value.getDescription() == null ? "" : "<br/><small>" + SimpleHtmlSanitizer.sanitizeHtml(value.getDescription()).asString() + "</small>"));
         columns.add(infoColumn);
 
         DynamicColumn<Project> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",
