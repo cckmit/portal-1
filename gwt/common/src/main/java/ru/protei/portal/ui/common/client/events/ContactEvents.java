@@ -30,10 +30,14 @@ public class ContactEvents {
      * Показать таблицу котактов
      */
     public static class ShowConciseTable {
-
-        public ShowConciseTable(HasWidgets parent, Long companyId) {
+        public ShowConciseTable(HasWidgets parent, Long companyId, Boolean embedded) {
             this.parent = parent;
             this.companyId = companyId;
+            this.embedded = embedded;
+        }
+
+        public ShowConciseTable(HasWidgets parent, Long companyId) {
+            this(parent, companyId, false);
         }
 
         public ShowConciseTable readOnly() {
@@ -44,6 +48,7 @@ public class ContactEvents {
         public HasWidgets parent;
         public Long companyId;
         public boolean editable = true;
+        public boolean embedded;
     }
 
     /**
