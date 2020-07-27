@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -46,6 +48,9 @@ public class ReportProjectTest extends BaseServiceTest {
         Person person2 = createNewPerson(company2);
         personDAO.persist(person2);
 
+        PersonProjectMemberView personProjectMemberView =
+                new PersonProjectMemberView(person1.getDisplayShortName(), person1.getId(), person1.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+
         Project project1 = new Project();
 
         project1.setName(REPORT_PROJECT_TEST + " : Test_Project 1");
@@ -53,7 +58,7 @@ public class ReportProjectTest extends BaseServiceTest {
         project1.setState(En_RegionState.PRESALE);
         project1.setCustomerType(En_CustomerType.STATE_BUDGET);
         project1.setCustomer(company1);
-        project1.setTeam(new ArrayList<>());
+        project1.setTeam(Collections.singletonList(personProjectMemberView));
 
         project1.setId(projectService.createProject(getAuthToken(), project1).getData().getId());
 
@@ -68,7 +73,7 @@ public class ReportProjectTest extends BaseServiceTest {
         project2.setState(En_RegionState.FINISHED);
         project2.setCustomerType(En_CustomerType.STATE_BUDGET);
         project2.setCustomer(company1);
-        project2.setTeam(new ArrayList<>());
+        project2.setTeam(Collections.singletonList(personProjectMemberView));
 
         project2.setId(projectService.createProject(getAuthToken(), project2).getData().getId());
 
@@ -83,7 +88,7 @@ public class ReportProjectTest extends BaseServiceTest {
         project3.setState(En_RegionState.PRESALE);
         project3.setCustomerType(En_CustomerType.STATE_BUDGET);
         project3.setCustomer(company2);
-        project3.setTeam(new ArrayList<>());
+        project3.setTeam(Collections.singletonList(personProjectMemberView));
 
         project3.setId(projectService.createProject(getAuthToken(), project3).getData().getId());
         // no comments in project
