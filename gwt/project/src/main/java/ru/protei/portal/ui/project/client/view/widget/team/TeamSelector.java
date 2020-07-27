@@ -68,7 +68,10 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         } else {
             root.addStyleName("disabled");
         }
-        modelToView.values().forEach(itemView -> itemView.setEnabled(enabled));
+        modelToView.values().forEach(itemView -> {
+            itemView.roleEnabled().setEnabled(enabled && !En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemView.role().getValue()));
+            itemView.membersEnabled().setEnabled(enabled);
+        });
     }
 
     @Override
@@ -76,7 +79,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         if (itemModel == null) {
             return;
         }
-        if (!itemModel.allowEmptyMembers && itemModel.members.size() == 0) {
+        if (!itemModel.allowEmptyMembers && itemModel.members.size() == 0 && !En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemModel.role)) {
             removeItem(itemModel);
             onRoleChanged(itemModel, itemModel.role, null);
         }
@@ -127,7 +130,9 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         AbstractTeamSelectorItem itemView = createItemView();
         itemView.setAvailableRoles(availableRoles);
         itemView.setModel(itemModel);
-        itemView.setEnabled(isEnabled);
+        itemView.membersEnabled().setEnabled(isEnabled);
+        itemView.roleEnabled().setEnabled(isEnabled && !En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemModel.role));
+        itemView.setRoleMandatory(En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemModel.role));
         model.add(itemModel);
         modelToView.put(itemModel, itemView);
         root.add(itemView.asWidget());

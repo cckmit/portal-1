@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.LocationService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -172,6 +173,22 @@ public class RegionControllerImpl implements RegionController {
 
         Result<Boolean> response = projectService.removeProject(token, projectId);
         log.info("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public PersonProjectMemberView getProjectLeader(Long projectId) throws RequestFailedException {
+        log.info("getProjectLeader(): projectId={}", projectId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<PersonProjectMemberView> response = projectService.getProjectLeader(token, projectId);
+        log.info("getProjectLeader(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
             return response.getData();
