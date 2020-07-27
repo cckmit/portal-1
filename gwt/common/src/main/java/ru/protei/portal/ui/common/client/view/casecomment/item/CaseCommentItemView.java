@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
@@ -220,6 +221,16 @@ public class CaseCommentItemView
         timeElapsedTypePopup.setTimeElapsedType(type);
     }
 
+    @Override
+    public void setComment( CaseComment comment ) {
+        this.comment = comment;
+    }
+
+    @Override
+    public CaseComment getComment() {
+        return comment;
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -317,6 +328,7 @@ public class CaseCommentItemView
 
     private boolean isTimeElapsedTypeEditEnabled;
     private AbstractCaseCommentItemActivity activity;
+    private CaseComment comment;
 
     interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}
     private static CaseCommentUiBinder ourUiBinder = GWT.create( CaseCommentUiBinder.class );

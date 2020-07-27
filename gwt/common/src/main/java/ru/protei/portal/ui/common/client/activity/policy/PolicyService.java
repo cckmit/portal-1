@@ -74,6 +74,10 @@ public abstract class PolicyService implements Activity {
         return profile;
     }
 
+    public Long getProfileId() {
+        return profile == null ? null : profile.getId();
+    }
+
     public Company getUserCompany() {
         if ( profile == null ) {
             return null;

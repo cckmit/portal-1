@@ -171,6 +171,13 @@ public class CaseCommentListView
     }
 
     @Override
+    public void replaceCommentView( IsWidget removed, IsWidget inserted ) {
+        int widgetIndex = commentsContainer.getWidgetIndex( removed );
+        commentsContainer.insert( inserted, widgetIndex);
+        commentsContainer.remove( widgetIndex+1 );
+    }
+
+    @Override
     public void removeComment(IsWidget comment) {
         commentsContainer.remove( comment.asWidget() );
     }

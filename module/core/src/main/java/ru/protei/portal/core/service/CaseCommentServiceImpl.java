@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.model.event.CaseCommentClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.event.CaseCommentClientStEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
@@ -25,9 +27,11 @@ import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,6 +62,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
 
+    @Inject
+    private ClientEventService clientEventService;
+
     @Override
     @Transactional
     public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
@@ -78,14 +85,19 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     resultData.getAddedAttachments(), null
             ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            okResult.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
-                    null, resultData.getCaseComment(), null ) );
+            CaseCommentEvent caseCommentEvent = new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
+                    null, resultData.getCaseComment(), null);
+
+            okResult.publishEvent( caseCommentEvent );
+
+            if(resultData.getCaseComment()!=null) {
+                clientEventService.fireEvent( new CaseCommentClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId()) );
+            }
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
         }
-
 
 
         return okResult;
@@ -377,6 +389,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         return ok( commentId);
+    }
+
+    @Override
+    public Result<CaseComment> getCaseComment( AuthToken token, Long commentId ) {
+        if (commentId == null) {
+            return error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return ok(caseCommentDAO.get(commentId));
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {

@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.event.CaseCommentClientEvent;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -125,6 +127,27 @@ public abstract class CaseCommentListActivity
     }
 
     @Event
+    public void onCaseCommentClientEvent( CaseCommentClientEvent event ) {
+        if (!view.isAttached()) return;
+        if (!Objects.equals( caseId, event.getCaseObjectId() )) return;
+//TODO uncomment         if (Objects.equals( policyService.getProfileId(), event.getPersonId() )) return;
+
+        caseCommentController.getCaseComment( event.getCaseCommentID(), new FluentCallback<CaseComment>()
+//                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess( comment -> {
+                    if (!view.isAttached()) return;
+                    AbstractCaseCommentItemView itemView = makeCommentView( comment );
+                    for (Map.Entry<AbstractCaseCommentItemView, CaseComment> entry : itemViewToModel.entrySet()) {
+                        if (!Objects.equals( entry.getValue(), comment )) continue;
+                        view.replaceCommentView( entry.getKey(), itemView );
+                        return;
+                    }
+                    view.addCommentToFront( itemView );
+
+                } ) );
+    }
+
+    @Event
     public void onDisableNewComment(CaseCommentEvents.DisableNewComment event) {
         this.isNewCommentEnabled = false;
         view.setNewCommentDisabled(true);
@@ -133,6 +156,7 @@ public abstract class CaseCommentListActivity
     @Override
     public void onRemoveClicked(final AbstractCaseCommentItemView itemView ) {
         CaseComment caseComment = itemViewToModel.get( itemView );
+//        CaseComment caseComment = itemView.getComment();
 
         if(caseComment == comment) {
             //deleting while editing
@@ -710,6 +734,8 @@ public abstract class CaseCommentListActivity
 
     @Inject
     ConfigStorage configStorage;
+    @Inject
+    PolicyService policyService;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;
