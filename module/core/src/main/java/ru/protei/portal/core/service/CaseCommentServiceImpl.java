@@ -86,6 +86,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
         }
 
+
+
         return okResult;
     }
 

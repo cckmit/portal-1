@@ -116,12 +116,12 @@ public abstract class CaseCommentListActivity
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
-        reloadComments();
+        reloadComments(caseType, caseId);
     }
 
     @Event
     public void onReload(CaseCommentEvents.Reload event) {
-        reloadComments();
+        reloadComments(caseType, caseId);
     }
 
     @Event
@@ -671,7 +671,7 @@ public abstract class CaseCommentListActivity
                 .withSuccess(consumer));
     }
 
-    private void reloadComments() {
+    private void reloadComments(En_CaseType caseType, Long caseId) {
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(this::fillView)
