@@ -379,16 +379,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok( commentId);
     }
 
-    @Override
-    public Result<List<CaseComment>> getCaseCommentListIgnorePrivileges(AuthToken token, En_CaseType caseType, long caseObjectId) {
-        return getCaseCommentList(token, caseType, caseObjectId);
-    }
-
-    @Override
-    public Result<CaseComment> addCaseCommentIgnorePrivileges(AuthToken token, En_CaseType caseType, CaseComment comment) {
-        return addCaseComment(token, caseType, comment);
-    }
-
     @Transactional
     @Override
     public Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, CaseComment comment) {

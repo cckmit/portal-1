@@ -389,7 +389,7 @@ public class PortalApiController {
                     }
 
                     for (CaseComment caseComment : commentToCreate) {
-                        Result<CaseComment> caseCommentResult = caseCommentService.addCaseCommentIgnorePrivileges(token, En_CaseType.PROJECT, caseComment);
+                        Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.PROJECT, caseComment);
 
                         if (caseCommentResult.isError()){
                             log.warn( "saveYoutrackCommentToProjects(): create comment error, projectId={}, caseComment={}", caseComment.getCaseId(), caseComment );
@@ -423,7 +423,7 @@ public class PortalApiController {
 
         for (Long projectId : projectIds) {
 
-            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentListIgnorePrivileges(token, En_CaseType.PROJECT, projectId);
+            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentList(token, En_CaseType.PROJECT, projectId);
 
             if (caseCommentList.isError()) {
                 log.warn( "makeCommentsToCreate(): getCaseCommentList error, projectId={}, caseCommentList result={}", projectId, caseCommentList );

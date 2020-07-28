@@ -790,7 +790,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
         for (Long projectId : projectIdsCreated) {
-            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentListIgnorePrivileges(getAuthToken(), En_CaseType.PROJECT, projectId);
+            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentList(getAuthToken(), En_CaseType.PROJECT, projectId);
             Assert.assertTrue("Project must contain new comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
         }
 
@@ -824,7 +824,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
         for (Long projectId : projectIdsCreated) {
-            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentListIgnorePrivileges(getAuthToken(), En_CaseType.PROJECT, projectId);
+            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentList(getAuthToken(), En_CaseType.PROJECT, projectId);
             Assert.assertTrue("Project must contain new comment", updatedTextWithoutTag.equals(findCaseCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id).getText()));
         }
 
@@ -855,7 +855,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Assert.assertEquals("Received error message", "", accept.andReturn().getResponse().getContentAsString());
 
         for (Long projectId : projectIdsCreated) {
-            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentListIgnorePrivileges(getAuthToken(), En_CaseType.PROJECT, projectId);
+            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentList(getAuthToken(), En_CaseType.PROJECT, projectId);
             Assert.assertFalse("Project must not contain comment", isListContainCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id));
         }
 

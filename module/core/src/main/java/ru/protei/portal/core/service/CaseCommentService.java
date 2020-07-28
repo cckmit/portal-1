@@ -111,10 +111,6 @@ public interface CaseCommentService {
 
     Result<Long> addCommentOnSentReminder(CaseComment comment );
 
-    Result<List<CaseComment>> getCaseCommentListIgnorePrivileges( AuthToken token, En_CaseType caseType, long caseObjectId);
-
-    Result<CaseComment> addCaseCommentIgnorePrivileges( AuthToken token, En_CaseType caseType, CaseComment comment );
-
     Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, CaseComment comment );
 
     Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, String commentRemoteId);
