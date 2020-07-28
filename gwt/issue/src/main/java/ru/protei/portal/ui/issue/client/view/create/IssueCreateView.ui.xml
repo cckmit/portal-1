@@ -3,6 +3,7 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -31,7 +32,7 @@
                             <label ui:field="nameLabel" class="fade">
                                 <ui:text from="{lang.issueName}"/>
                             </label>
-                            <g:TextBox ui:field="name" styleName="form-control"/>
+                            <text:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                         </div>
                     </g:HTMLPanel>
 
