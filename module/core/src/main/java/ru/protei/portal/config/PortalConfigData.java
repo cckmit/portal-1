@@ -403,6 +403,7 @@ public class PortalConfigData {
         private final boolean youtrackCompanySyncEnabled;
         private final boolean youtrackEmployeeSyncEnabled;
         private final boolean youtrackLinksMigrationEnabled;
+        private final boolean youtrackProjectLinksMigrationEnabled;
         private final boolean jiraEnabled;
         private final boolean jiraBackchannelEnabled;
 
@@ -415,6 +416,7 @@ public class PortalConfigData {
             youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
             youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
             youtrackLinksMigrationEnabled = properties.getProperty("migration.youtrack.links", Boolean.class, false);
+            youtrackProjectLinksMigrationEnabled = properties.getProperty("project.migration.youtrack.links", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
             jiraBackchannelEnabled = properties.getProperty("integration.jira.backchannel", Boolean.class, false);
 
@@ -441,6 +443,10 @@ public class PortalConfigData {
         }
         public boolean isYoutrackLinksMigrationEnabled() {
             return youtrackLinksMigrationEnabled;
+        }
+
+        public boolean isYoutrackProjectLinksMigrationEnabled() {
+            return youtrackProjectLinksMigrationEnabled;
         }
 
         public boolean isJiraEnabled() {

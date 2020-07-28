@@ -284,7 +284,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     @Transactional
-    public Result<List<Long>> getLinkedProjectIdsByYoutrackId(AuthToken token, String youtrackId) {
+    public Result<List<Long>> getProjectIdsByYoutrackId(AuthToken token, String youtrackId) {
         log.debug("getProjectIdsByYoutrackId(): youtrackId={}", youtrackId);
 
         if (StringUtils.isEmpty(youtrackId)) {
@@ -570,31 +570,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
         return findAllCaseLinksByYoutrackId(youtrackId, withCrosslink).stream()
                 .map(CaseLink::getCaseId)
-                .collect(Collectors.toList());
-    }
-
-    private List<CaseLink> findCaseLinkByTypeAndYoutrackId(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
-        List<CaseLink> allCaseLinks = findAllCaseLinksByYoutrackId(youtrackId, withCrosslink);
-
-        if (CollectionUtils.isEmpty(allCaseLinks)){
-            return new ArrayList<>();
-        }
-
-        CaseQuery query = new CaseQuery();
-        query.setCaseIds(allCaseLinks.stream().map(CaseLink::getCaseId).collect(Collectors.toList()));
-        query.setType(caseType);
-        List<CaseObject> cases = caseObjectDAO.getCases(query);
-
-        if (CollectionUtils.isEmpty(cases)){
-            return new ArrayList<>();
-        }
-
-        List<Long> caseIds = cases.stream()
-                .map(CaseObject::getId)
-                .collect(Collectors.toList());
-
-        return allCaseLinks.stream()
-                .filter(caseLink -> caseIds.contains(caseLink.getCaseId()))
                 .collect(Collectors.toList());
     }
 

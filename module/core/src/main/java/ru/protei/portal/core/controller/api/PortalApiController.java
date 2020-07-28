@@ -367,9 +367,9 @@ public class PortalApiController {
         }
 
         Result<String> saveResult = authenticate(request, response, authService, sidGen, log)
-                .flatMap(token ->  caseLinkService.getLinkedProjectIdsByYoutrackId(token, youtrackId)
+                .flatMap(token ->  caseLinkService.getProjectIdsByYoutrackId(token, youtrackId)
                 .flatMap(projectIds -> {
-                    log.info( "saveYoutrackCommentToProjects(): linkedProjectIds={}", projectIds );
+                    log.info( "saveYoutrackCommentToProjects(): projectIds={}", projectIds );
 
                     Result<List<CaseComment>> listResult = makeCommentsToCreate(token, projectIds, ytIssueComment, youtrackId);
 

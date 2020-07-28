@@ -396,7 +396,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         List<CaseComment> updatedCaseComments = new ArrayList<>(existedCaseComments);
         updatedCaseComments.forEach(updatedCaseComment -> updatedCaseComment.setText(comment.getText()));
-        //todo: update attachments
 
         int updatedCount = caseCommentDAO.mergeBatch(updatedCaseComments);
 
@@ -429,7 +428,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         int removedCount = caseCommentDAO.removeByKeys(caseComments.stream().map(CaseComment::getId).collect(Collectors.toList()));
-        //todo: remove attachments
 
         if (caseComments.size() != removedCount){
             throw new RollbackTransactionException("caseComments size = " + caseComments.size() + " but removedCount = " + removedCount);

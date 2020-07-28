@@ -70,11 +70,63 @@ public class BootstrapService {
         migrateIpReservation();
         updateManagerFiltersWithoutManagerCompany();
         //fillWithCrossLinkColumn();
-        transferYoutrackLinks();
+        //transferYoutrackLinks();
         addCommonManager();
         updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
+        updateWithCrossLinkColumnAndTranfserNewCrosslink();
+    }
+
+    private void updateWithCrossLinkColumnAndTranfserNewCrosslink() {
+        if (!config.data().integrationConfig().isYoutrackProjectLinksMigrationEnabled() || !config.data().getCommonConfig().isProductionServer()){
+            return;
+        }
+
+        log.debug("updateWithCrossLinkColumn(): start");
+
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setType(En_CaseLink.YT);
+        query.setWithCrosslink(false);
+        List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
+
+        log.debug("updateWithCrossLinkColumn(): ytLinks={}", ytLinks);
+
+        Set<String> youtrackIssueIds = new HashSet<>();
+
+        //Для YT ссылок проверяем тим caseObject. Если PROJECT, то ставим флаг true. Иначе - false
+        for (CaseLink caseLink : ytLinks) {
+            try {
+                CaseObject caseObject = caseObjectDAO.get(caseLink.getCaseId());
+
+                if (caseObject == null) {
+                    log.warn("updateWithCrossLinkColumn(): CaseObject is NULL from caseLink={}", caseLink);
+                    continue;
+                }
+
+                if(En_CaseType.PROJECT.equals(caseObject.getType())) {
+                    caseLink.setWithCrosslink(true);
+                    //caseLinkDAO.merge(caseLink);
+                    youtrackIssueIds.add(caseLink.getRemoteId());
+                }
+                log.debug("updateWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
+            } catch (Exception e){
+                log.error("updateWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
+            }
+        }
+
+        //Для всех проектов, в которых есть ссылки на YT, заполняем поле на YT
+        log.debug("updateWithCrossLinkColumn(): youtrackIssueIds={}", youtrackIssueIds);
+        youtrackIssueIds.forEach(youtrackIssueId -> {
+            try {
+                youtrackService.setIssueProjectNumbers(youtrackIssueId, findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, youtrackIssueId));
+                log.debug("transferYoutrackLinks(): SUCCESS transfer case links to youtrack id={}", youtrackIssueId);
+            } catch (Exception e){
+                log.error("transferYoutrackLinks(): ERROR transfer case links to youtrack id={}, error message={}", youtrackIssueId, e.getMessage());
+            }
+        });
+
+        log.debug("updateWithCrossLinkColumn(): finish");
     }
 
     private void fillWithCrossLinkColumn() {
@@ -163,25 +215,6 @@ public class BootstrapService {
         });
     }
 
-    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setRemoteId( youtrackId );
-        caseLinkQuery.setType( En_CaseLink.YT );
-        caseLinkQuery.setWithCrosslink(withCrosslink);
-        List<CaseLink> listByQuery = caseLinkDAO.getListByQuery(caseLinkQuery);
-
-        return listByQuery.stream()
-                .map(CaseLink::getCaseId)
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
-        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
-
-        return caseObjects.stream()
-                .map(CaseObject::getCaseNumber)
-                .collect(Collectors.toList());
-    }
 
     private void fillImportanceLevels() {
         if(importanceLevelDAO.getAll().size() == 4){
@@ -658,6 +691,53 @@ if(true) return; //TODO remove
 
     private DateRange createDateRange(Date from, Date to) {
         return new DateRange(En_DateIntervalType.FIXED, from, to);
+    }
+
+    private List<CaseObject> findCaseObjectsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
+        List<Long> linkedCaseIds = findAllCaseIdsByYoutrackId(youtrackId, withCrosslink);
+
+        if (CollectionUtils.isEmpty(linkedCaseIds)){
+            return new ArrayList<>();
+        }
+
+        CaseQuery query = new CaseQuery();
+        query.setCaseIds(linkedCaseIds);
+        query.setType(caseType);
+        return caseObjectDAO.getCases(query);
+    }
+
+    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
+        return findAllCaseLinksByYoutrackId(youtrackId, withCrosslink).stream()
+                .map(CaseLink::getCaseId)
+                .collect(Collectors.toList());
+    }
+
+    private List<CaseLink> findAllCaseLinksByYoutrackId(String youtrackId, Boolean withCrosslink){
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setRemoteId( youtrackId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        caseLinkQuery.setWithCrosslink(withCrosslink);
+        return caseLinkDAO.getListByQuery(caseLinkQuery);
+    }
+
+    private List<Long> findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId){
+        List<CaseObject> cases = findCaseObjectsByTypeAndYoutrackId(caseType, youtrackId, true);
+
+        if (CollectionUtils.isEmpty(cases)){
+            return new ArrayList<>();
+        }
+
+        return cases.stream()
+                .map(caseObject -> caseObject.getId())
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> findAllCaseNumbersByYoutrackId(String youtrackId, Boolean withCrosslink){
+        List<CaseObject> caseObjects = caseObjectDAO.getListByKeys(findAllCaseIdsByYoutrackId(youtrackId, withCrosslink));
+
+        return caseObjects.stream()
+                .map(CaseObject::getCaseNumber)
+                .collect(Collectors.toList());
     }
 
     @Inject
