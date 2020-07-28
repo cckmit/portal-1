@@ -272,12 +272,9 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private void applyIssueFilterVisibilityByPrivileges() {
         AbstractIssueFilterParamView issueFilterParams = issueFilterWidget.getIssueFilterParams();
-        if (issueFilterParams.productsVisibility().isVisible()) {
-            issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-        }
-        if (issueFilterParams.searchPrivateVisibility().isVisible()) {
-            issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-        }
+        issueFilterParams.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+        issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        issueFilterParams.creatorsVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW));
     }
 
     private List<En_ReportType> makeReportTypeList() {

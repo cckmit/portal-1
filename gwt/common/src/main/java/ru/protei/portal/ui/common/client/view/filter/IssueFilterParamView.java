@@ -215,6 +215,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility creatorsVisibility() {
+        return creators;
+    }
+
+
+    @Override
     public HasVisibility managersVisibility() {
         return managers;
     }
