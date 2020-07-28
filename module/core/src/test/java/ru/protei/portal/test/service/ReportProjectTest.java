@@ -25,7 +25,7 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -108,7 +108,7 @@ public class ReportProjectTest extends BaseServiceTest {
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, id -> false);
+            result = reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), id -> false);
         } catch (Exception exception) {
             Assert.fail();
         }
@@ -131,7 +131,7 @@ public class ReportProjectTest extends BaseServiceTest {
         boolean result = false;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-            result = reportProject.writeReport(buffer, report, id -> false);
+            result = reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), id -> false);
         } catch (Exception exception) {
             Assert.fail();
         }
