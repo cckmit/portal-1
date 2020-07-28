@@ -17,6 +17,8 @@ public interface AbstractCaseHistoryItemView extends IsWidget {
 
     void setHistoryType(String historyType);
 
+    void setInitiator(String initiator);
+
     void setAddedValue(String addedValue, String title);
 
     void setRemovedValue(String removedValue, String title);

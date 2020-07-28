@@ -369,6 +369,7 @@ public class DebugIds {
             String OLD_VALUE = "issue-case-history-item-old-value";
             String NEW_VALUE = "issue-case-history-item-new-value";
             String HISTORY_TYPE = "issue-case-history-item-history-type";
+            String INITIATOR = "issue-case-history-item-initiator";
         }
     }
 
