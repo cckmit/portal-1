@@ -553,10 +553,14 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
     public Condition in( Collection attr ) {
         if (columnName == null || attr == null) return done();
         StringBuilder sb = new StringBuilder();
-        for (Object o : attr) {
-            if (o == null) continue;
-            if (sb.length() > 0) sb.append( "," );
-            sb.append( inString( o ) );
+        if (attr.isEmpty()) {
+            sb.append(" NULL");
+        } else {
+            for (Object o : attr) {
+                if (o == null) continue;
+                if (sb.length() > 0) sb.append(",");
+                sb.append(inString(o));
+            }
         }
 
         operator().column().not( " NOT" ).append( " IN (" + sb + ")" );

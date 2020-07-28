@@ -10,6 +10,7 @@ import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -271,6 +272,18 @@ public class SqlQueryBuilderTest {
 
         Condition condition = condition();
         condition.and( "person.age" ).in( args );
+
+        assertEquals( expectedSql, condition.getSqlCondition() );
+        assertNotNull( condition.getSqlParameters() );
+        assertEquals( 0, condition.getSqlParameters().size() );
+    }
+
+    @Test
+    public void inNullTest2() throws Exception {
+        String expectedSql = "person.age IN ( NULL)";
+
+        Condition condition = condition();
+        condition.and( "person.age" ).in(Collections.EMPTY_LIST );
 
         assertEquals( expectedSql, condition.getSqlCondition() );
         assertNotNull( condition.getSqlParameters() );
