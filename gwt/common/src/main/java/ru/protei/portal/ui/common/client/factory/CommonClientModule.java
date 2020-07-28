@@ -45,6 +45,7 @@ import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItem
 import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
+import ru.protei.portal.ui.common.client.activity.projectsearch.ProjectSearchActivity;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPositionEditActivity;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
@@ -181,6 +182,7 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind(AbstractCaseHistoryItemView.class).to(CaseHistoryItemView.class);
 
+        bind( ProjectSearchActivity.class ).asEagerSingleton();
         bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class );
     }
 }

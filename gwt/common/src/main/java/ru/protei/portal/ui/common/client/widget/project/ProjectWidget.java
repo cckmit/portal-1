@@ -19,22 +19,22 @@ import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectS
 import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
-abstract public class ProjectWidget extends Composite implements HasValue<ProjectInfo>, HasEnabled, HasValidable, Activity {
+abstract public class ProjectWidget extends Composite implements HasValue<ProjectInfo>, HasEnabled, HasValidable,
+        Activity {
 
     @Inject
-    public void onInit() {
+    public void onInit(AbstractProjectSearchActivity activity) {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.selectContractProject());
         root.setTitle(lang.selectContractProject());
+        searchView.setActivity(activity);
         prepareSearchDialog(dialogDetailsSearchView);
-        searchView.setActivity(makeSearchViewActivity());
     }
 
     @Override
@@ -131,80 +131,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
             public void onCancelClicked() {
                 dialogDetailsSearchView.hidePopup();
             }
-
-/*            @Override
-            public void onAdditionalClicked() {
-                    createView.reset();
-                    createView.setOrganization(organization);
-                    dialogDetailsSearchView.hidePopup();
-                    dialogDetailsCreateView.showPopup();
-            }*/
         };
-    }
-
-/*    private AbstractDialogDetailsActivity makeCreateDialogActivity() {
-        return new AbstractDialogDetailsActivity(){
-            @Override
-            public void onSaveClicked() {
-                if (!createView.isValid()) {
-                    fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
-                    return;
-                }
-
-                Contractor contractor = makeContractor();
-
-                controller.createContractor(contractor, new FluentCallback<Contractor>()
-                        .withError(t -> {
-                            fireEvent(new NotifyEvents.Show(lang.contractContractorSaveError(), NotifyEvents.NotifyType.ERROR));
-                        })
-                        .withSuccess(value -> {
-                            setValue(value);
-                            dialogDetailsCreateView.hidePopup();
-                        }));
-            }
-
-            @Override
-            public void onCancelClicked() {
-                dialogDetailsCreateView.hidePopup();
-            }
-        };
-    }*/
-
-/*    private Contractor makeContractor() {
-        Contractor contractor = new Contractor();
-        contractor.setOrganization(organization);
-        contractor.setInn(createView.contractorInn().getValue());
-        contractor.setKpp(createView.contractorKpp().getValue());
-        contractor.setName(createView.contractorName().getValue());
-        contractor.setFullName(createView.contractorFullName().getValue());
-        contractor.setCountryRef(createView.contractorCountry().getValue() == null ?
-                null : createView.contractorCountry().getValue().getRefKey() );
-        return contractor;
-    }*/
-
-    private AbstractProjectSearchActivity makeSearchViewActivity() {
-/*        return () -> {
-            if (!searchView.isValid()) {
-                fireEvent(new NotifyEvents.Show(lang.contractContractorValidationError(), NotifyEvents.NotifyType.ERROR));
-                return;
-            }
-            controller.findContractors(
-                    organization,
-                    searchView.contractorInn().getValue(),
-                    searchView.contractorKpp().getValue(),
-                    new FluentCallback<List<Contractor>>()
-                    .withError(t -> {
-                        fireEvent(new NotifyEvents.Show(lang.contractContractorFindError(), NotifyEvents.NotifyType.ERROR));
-                    })
-                    .withSuccess(value -> {
-                        if (isEmpty(value)) {
-                            fireEvent(new NotifyEvents.Show(lang.contractContractorNotFound(), NotifyEvents.NotifyType.INFO));
-                            return;
-                        }
-                        searchView.setSearchResult(value);
-                    }));
-        };*/
-        return null;
     }
 
     @Inject
@@ -224,9 +151,6 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
 
     @UiField
     Lang lang;
-
-    @Inject
-    RegionControllerAsync controller;
 
     private ProjectInfo value;
     private boolean isValidable;
