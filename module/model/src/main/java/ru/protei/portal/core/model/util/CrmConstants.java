@@ -182,4 +182,10 @@ public class CrmConstants {
     public interface Department {
         Long CONTRACT = 384L;
     }
+
+    public interface Style {
+        String ADDED = "added";
+        String UPDATED = "updated";
+        String HIDE = "hide";
+    }
 }

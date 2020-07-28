@@ -36,6 +36,9 @@ import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 
+import java.util.Iterator;
+import java.util.logging.Logger;
+
 /**
  * Контейнер для комментариев
  */
@@ -170,11 +173,19 @@ public class CaseCommentListView
         commentsContainer.insert( comment.asWidget(), 1 );
     }
 
+    private static final Logger log = Logger.getLogger( CaseCommentListView.class.getName() );
     @Override
     public void replaceCommentView( IsWidget removed, IsWidget inserted ) {
+        log.info( "replaceCommentView(): removed="+removed + " inserted"+inserted  );
+        Iterator<Widget> it = commentsContainer.iterator();
+        for (; it.hasNext(); ) {
+            Widget next = it.next();
+            log.info( " --" + next );
+        }
         int widgetIndex = commentsContainer.getWidgetIndex( removed );
-        commentsContainer.insert( inserted, widgetIndex);
-        commentsContainer.remove( widgetIndex+1 );
+        log.info( "replaceCommentView(): widgetIndex="+widgetIndex   );
+        commentsContainer.insert( inserted.asWidget(), widgetIndex);
+        commentsContainer.remove( widgetIndex + 1 );
     }
 
     @Override

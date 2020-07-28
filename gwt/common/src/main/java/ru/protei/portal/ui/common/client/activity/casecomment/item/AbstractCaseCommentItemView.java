@@ -58,6 +58,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setTimeElapsedType(En_TimeElapsedType type);
 
-     void setComment(CaseComment comment);
-    CaseComment getComment();
+    void displayUpdatedAnimation();
+
+    void displayAddedAnimation();
 }

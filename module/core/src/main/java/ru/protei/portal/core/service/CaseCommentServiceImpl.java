@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.event.CaseCommentClientStEvent;
+import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
@@ -85,20 +85,19 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     resultData.getAddedAttachments(), null
             ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
-            CaseCommentEvent caseCommentEvent = new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
-                    null, resultData.getCaseComment(), null);
 
-            okResult.publishEvent( caseCommentEvent );
+            okResult.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
+                    null, resultData.getCaseComment(), null) );
 
-            if(resultData.getCaseComment()!=null) {
-                clientEventService.fireEvent( new CaseCommentClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId()) );
-            }
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
         }
 
+        if (resultData.getCaseComment() != null) {
+            clientEventService.fireEvent( new CaseCommentClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
+        }
 
         return okResult;
     }
@@ -187,6 +186,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     resultData.getOldCaseComment(), resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId())
             );
+        }
+
+        if (resultData.getCaseComment() != null) {
+            clientEventService.fireEvent( new CaseCommentClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
 
         return okResult;
@@ -321,6 +324,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     null, null, removedComment, token.getPersonId(), caseId)
             );
+        }
+
+        if(isRemoved) {
+            clientEventService.fireEvent( new CaseCommentRemovedClientEvent( token.getPersonId(), caseId, removedComment.getId() ));
         }
 
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
