@@ -1,11 +1,10 @@
 package ru.protei.portal.core.service.template;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
+import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.HtmlUtils;
 import ru.protei.portal.core.event.AssembledProjectEvent;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.event.*;
@@ -95,8 +94,8 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put( "nameChanged", event.getName().hasDifferences() );
         templateModel.put( "infoChanged", event.getInfo().hasDifferences() );
-        templateModel.put( "caseName", event.getName().getNewState() );
-        templateModel.put( "oldCaseName", event.getName().getInitialState());
+        templateModel.put( "caseName", HtmlUtils.htmlEscape(event.getName().getNewState() ));
+        templateModel.put( "oldCaseName", HtmlUtils.htmlEscape(event.getName().getInitialState()));
         templateModel.put( "caseInfo", escapeTextAndRenderHTML( event.getInfo().getNewState(), textMarkup ) );
         templateModel.put( "oldCaseInfo", event.getInfo().getInitialState() == null ? null : escapeTextAndRenderHTML( event.getInfo().getInitialState(), textMarkup ) );
 
@@ -266,24 +265,24 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("TransliterationUtils", new TransliterationUtils());
 
         templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
-        templateModel.put("employeeFullName", newState.getEmployeeFullName());
+        templateModel.put("employeeFullName", HtmlUtils.htmlEscape(newState.getEmployeeFullName()));
         templateModel.put("headOfDepartmentShortName", newState.getHeadOfDepartmentShortName());
         templateModel.put("employmentType", newState.getEmploymentType().name());
         templateModel.put("withRegistration", newState.isWithRegistration());
-        templateModel.put("position", newState.getPosition());
+        templateModel.put("position", HtmlUtils.htmlEscape(newState.getPosition()));
         templateModel.put("state", newState.getStateName());
         templateModel.put("employmentDateChanged", event.isEmploymentDateChanged());
         templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
         templateModel.put("newEmploymentDate", newState.getEmploymentDate());
         templateModel.put("created", newState.getCreated());
-        templateModel.put("workplace", newState.getWorkplace());
+        templateModel.put("workplace", HtmlUtils.htmlEscape(newState.getWorkplace()));
         templateModel.put("equipmentList", newState.getEquipmentList());
-        templateModel.put("operatingSystem", newState.getOperatingSystem());
-        templateModel.put("additionalSoft", newState.getAdditionalSoft());
+        templateModel.put("operatingSystem", HtmlUtils.htmlEscape(newState.getOperatingSystem()));
+        templateModel.put("additionalSoft", HtmlUtils.htmlEscape(newState.getAdditionalSoft()));
         templateModel.put("resourceList", newState.getResourceList());
-        templateModel.put("resourceComment", newState.getResourceComment());
+        templateModel.put("resourceComment", HtmlUtils.htmlEscape(newState.getResourceComment()));
         templateModel.put("phoneOfficeTypeList", newState.getPhoneOfficeTypeList());
-        templateModel.put("comment", newState.getComment());
+        templateModel.put("comment", HtmlUtils.htmlEscape(newState.getComment()));
         templateModel.put("recipients", recipients);
         templateModel.put("curatorsDiff", event.getCuratorsDiff());
 
@@ -469,12 +468,12 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("linkToProject", crmProjectUrl);
         templateModel.put("projectNumber", String.valueOf(event.getProjectId()));
         templateModel.put("nameChanged", event.isNameChanged());
-        templateModel.put("oldName", getNullOrElse(oldProjectState, Project::getName));
-        templateModel.put("newName", newProjectState.getName());
+        templateModel.put("oldName", HtmlUtils.htmlEscape(getNullOrElse(oldProjectState, Project::getName)));
+        templateModel.put("newName", HtmlUtils.htmlEscape(newProjectState.getName()));
 
         templateModel.put("descriptionChanged", event.isDescriptionChanged());
-        templateModel.put("oldDescription", getNullOrElse(oldProjectState, Project::getDescription));
-        templateModel.put("newDescription", newProjectState.getDescription());
+        templateModel.put("oldDescription", HtmlUtils.htmlEscape(getNullOrElse(oldProjectState, Project::getDescription)));
+        templateModel.put("newDescription", HtmlUtils.htmlEscape(newProjectState.getDescription()));
 
         templateModel.put("stateChanged", event.isStateChanged());
         templateModel.put("oldState", getNullOrElse(oldProjectState, Project::getState));
@@ -652,7 +651,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("is_updated", action == SubnetNotificationEvent.Action.UPDATED);
         templateModel.put("is_removed", action == SubnetNotificationEvent.Action.REMOVED);
         templateModel.put("ipAddress", subnet.getAddress() + "." + subnet.getMask());
-        templateModel.put("comment", subnet.getComment());
+        templateModel.put("comment", HtmlUtils.htmlEscape(subnet.getComment()));
         templateModel.put("recipients", recipients);
 
         PreparedTemplate template = new PreparedTemplate("notification/email/subnet.body.%s.ftl");
@@ -681,6 +680,16 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("reservedIps", reservedIps);
         templateModel.put("recipients", recipients);
+
+        BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
+        TemplateHashModel staticModels = wrapper.getStaticModels();
+        try {
+            TemplateHashModel htmlUtils =
+                    (TemplateHashModel) staticModels.get("org.springframework.web.util.HtmlUtils");
+            templateModel.put("HtmlUtils", htmlUtils);
+        } catch (Exception ex) {
+            log.error("getReservedIpNotificationBody: error at 'staticModels.get(org.springframework.web.util.HtmlUtils)'");
+        }
 
         PreparedTemplate template = new PreparedTemplate("notification/email/reserved.ip.body.%s.ftl");
         template.setModel(templateModel);

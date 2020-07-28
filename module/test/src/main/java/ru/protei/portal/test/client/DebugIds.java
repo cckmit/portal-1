@@ -760,12 +760,12 @@ public class DebugIds {
         String DATE_SIGNING_CONTAINER = "contract-date-signing-container";
         String DATE_VALID_CONTAINER = "contract-date-valid-container";
         String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";
+        String PROJECT_SELECTOR = "contract-project-selector";
         String DIRECTION_SELECTOR = "contract-direction-selector";
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
         String CONTRACTOR_SELECTOR = "contract-contractor-selector";
-        String PROJECT_SELECTOR = "contract-project-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
         String SAVE_BUTTON = "contract-save-button";

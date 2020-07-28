@@ -3,7 +3,6 @@ package ru.protei.portal.ui.contract.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -86,8 +85,9 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
-    public void setDates(String value) {
-        this.dates.setInnerHTML(value);
+    public void setDates(List<Widget> value) {
+        this.dates.clear();
+        value.forEach(widget -> this.dates.add(widget));
     }
 
     @Override
@@ -172,7 +172,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     Anchor header;
     @UiField
-    LabelElement dates;
+    HTMLPanel dates;
     @UiField
     HTMLPanel specifications;
     @UiField

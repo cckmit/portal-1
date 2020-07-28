@@ -2,7 +2,10 @@ package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
@@ -10,6 +13,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
+
+import java.util.List;
 
 
 /**
@@ -49,8 +54,9 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
-    public void setEmail( String value ) {
-        this.email.setInnerHTML( value );
+    public void setEmail( List<Widget> value ) {
+        this.email.clear();
+        value.forEach(email::add);
     }
 
     @Override
@@ -129,7 +135,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     AnchorElement site;
     @UiField
-    SpanElement email;
+    HTMLPanel email;
     @UiField
     InlineLabel companyLinksMessage;
     @UiField

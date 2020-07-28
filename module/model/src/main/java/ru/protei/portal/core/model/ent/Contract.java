@@ -21,8 +21,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
 
+    @JdbcColumn(name = "ref_key")
+    private String refKey;
+
     /**
-     * Создатель анкеты
+     * Создатель договора
      */
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CREATOR", table = "case_object", sqlTableAlias = "CO")
     private Long creatorId;
@@ -189,6 +192,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getRefKey() {
+        return refKey;
+    }
+
+    public void setRefKey(String refKey) {
+        this.refKey = refKey;
     }
 
     public En_ContractState getState () {
@@ -359,6 +370,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return organizationName;
     }
 
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
     public Long getParentContractId() {
         return parentContractId;
     }
@@ -452,6 +467,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     public String toString() {
         return "Contract{" +
                 "id=" + id +
+                ", refKey='" + refKey + '\'' +
                 ", creatorId=" + creatorId +
                 ", created=" + created +
                 ", modified=" + modified +

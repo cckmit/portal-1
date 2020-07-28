@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -39,4 +40,6 @@ public interface RegionControllerAsync {
     void getRegionList(AsyncCallback<List<EntityOption>> callback);
 
     void removeProject(Long projectId, AsyncCallback<Boolean> async);
+
+    void getProjectLeader(Long projectId, AsyncCallback<PersonProjectMemberView> async);
 }

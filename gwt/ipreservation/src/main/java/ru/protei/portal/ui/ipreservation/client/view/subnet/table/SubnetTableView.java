@@ -59,7 +59,7 @@ public class SubnetTableView extends Composite implements AbstractSubnetTableVie
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

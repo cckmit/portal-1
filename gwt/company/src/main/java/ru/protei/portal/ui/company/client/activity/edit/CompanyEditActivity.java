@@ -198,7 +198,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            fireEvent(new ContactEvents.ShowConciseTable(view.tableContainer(), company.getId()));
+            fireEvent(new ContactEvents.ShowConciseTable(view.tableContainer(), company.getId(), true));
         }
 
         view.siteFolderContainer().clear();

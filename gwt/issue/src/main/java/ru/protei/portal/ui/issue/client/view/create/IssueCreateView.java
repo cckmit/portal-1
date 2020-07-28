@@ -18,8 +18,11 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateActivity;
 import ru.protei.portal.ui.issue.client.activity.create.AbstractIssueCreateView;
+
+import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
 /**
  * Вид создания обращения
@@ -33,6 +36,8 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
         description.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay));
         description.setFileUploader(fileUploader);
         description.setDropZonePanel(dropPanel);
+
+        name.setMaxLength(NAME_MAX_SIZE);
     }
 
     @Override
@@ -172,7 +177,7 @@ public class IssueCreateView extends Composite implements AbstractIssueCreateVie
     HTMLPanel root;
 
     @UiField
-    TextBox name;
+    ValidableTextBox name;
     @UiField
     HTMLPanel dropPanel;
     @UiField

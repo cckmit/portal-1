@@ -2,8 +2,11 @@ package ru.protei.portal.ui.common.client.common;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Widget;
 import ru.protei.portal.core.model.struct.ContactItem;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,4 +58,21 @@ public class EmailRender {
         ).collect(Collectors.joining("<span>, </span>"));
     }
 
+    public static List<Widget> renderToHtmlWidget(Stream <ContactItem> stream){
+        return renderToHtmlWidget(stream, true);
+    }
+
+    public static List<Widget> renderToHtmlWidget(Stream <ContactItem> stream, boolean showComments){
+        if (stream == null)
+            return null;
+
+        return stream.map(item -> createMailLinkWithComments(item, showComments)).collect(Collectors.toList());
+    }
+
+    public static Widget createMailLinkWithComments(ContactItem item, boolean isComments) {
+        Anchor a = new Anchor();
+        a.setHref("mailto:" + item.value());
+        a.setText(item.value() + (isComments ? ((isNotEmpty(item.comment()) ? " (" + item.comment() + ")" : "")) : ""));
+        return a;
+    }
 }

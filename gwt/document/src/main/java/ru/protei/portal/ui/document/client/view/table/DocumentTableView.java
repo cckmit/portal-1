@@ -111,7 +111,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

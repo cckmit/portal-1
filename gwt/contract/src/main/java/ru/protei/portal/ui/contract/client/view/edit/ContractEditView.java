@@ -178,6 +178,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasEnabled organizationEnabled() { return organization; }
+
+    @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
     }
@@ -242,13 +245,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
             activity.onTypeChanged();
         }
     }
-/*
-    @UiHandler("project")
-    public void onValueChanged(ValueChangeEvent<EntityOption> event) {
-        if (activity != null) {
-            activity.refreshProjectSpecificFields();
-        }
-    }*/
 
     @UiHandler("organization")
     public void onOrganizationChanged(ValueChangeEvent<EntityOption> event) {

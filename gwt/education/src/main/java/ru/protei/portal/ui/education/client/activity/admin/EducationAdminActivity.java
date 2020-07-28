@@ -73,12 +73,13 @@ public abstract class EducationAdminActivity implements Activity,
                     handler.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    handler.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
                     }
+
+                    handler.onSuccess(sr.getResults());
                 }));
     }
 
