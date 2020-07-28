@@ -65,7 +65,7 @@ public class IssueInfoWidget extends Composite {
     }
 
     public void setDescription( String issueDescription, En_TextMarkup textMarkup ) {
-        renderMarkupText(issueDescription, textMarkup, descriptionReadOnly.getElement()::setInnerHTML);
+        renderMarkupText(issueDescription, textMarkup, html -> descriptionReadOnly.getElement().setInnerHTML(html));
     }
 
     public HasVisibility attachmentUploaderVisibility() {
