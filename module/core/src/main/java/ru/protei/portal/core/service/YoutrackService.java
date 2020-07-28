@@ -36,7 +36,5 @@ public interface YoutrackService {
 
     Result<YouTrackIssueInfo> setIssueProjectNumbers(String issueId, List<Long> caseNumbersFromDB);
 
-    Result<Boolean> checkExistProjectCustomField(String issueId);
-
     Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
 }

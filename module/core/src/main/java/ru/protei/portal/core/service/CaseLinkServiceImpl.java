@@ -258,38 +258,25 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        List<CaseLink> crmCaseLinkList = findCaseLinkByTypeAndYoutrackId(En_CaseType.CRM_SUPPORT, oldYoutrackId, null);
-        log.debug("changeYoutrackId(): size crmCaseLinkList={}", crmCaseLinkList.size());
+        CaseLinkQuery query = new CaseLinkQuery();
+        query.setType(En_CaseLink.YT);
+        query.setRemoteId(oldYoutrackId);
 
-        if (CollectionUtils.isNotEmpty(crmCaseLinkList)){
-            crmCaseLinkList.forEach(caseLink -> caseLink.setRemoteId(newYoutrackId));
-            int batchSize = caseLinkDAO.mergeBatch(crmCaseLinkList);
+        try {
+            List<CaseLink> caseLinkList = caseLinkDAO.getListByQuery(query);
 
-            if (batchSize != crmCaseLinkList.size()) {
-                log.warn("changeYoutrackId(): size crmCaseLinkList={}, batchSize={}", crmCaseLinkList.size(), batchSize);
+            log.debug("changeYoutrackId(): size caseLinkList={}", caseLinkList.size());
+
+            caseLinkList.forEach(caseLink -> caseLink.setRemoteId(newYoutrackId));
+
+            int batchSize = caseLinkDAO.mergeBatch(caseLinkList);
+
+            if (batchSize != caseLinkList.size()) {
+                log.warn("changeYoutrackId(): size caseLinkList={}, batchSize={}", caseLinkList.size(), batchSize);
             }
-        }
-
-        List<CaseLink> projectCaseLinkList = findCaseLinkByTypeAndYoutrackId(En_CaseType.PROJECT, oldYoutrackId, null);
-        log.debug("changeYoutrackId(): size projectCaseLinkList={}", projectCaseLinkList.size());
-
-        Result<Boolean> booleanResult = youtrackService.checkExistProjectCustomField(newYoutrackId);
-        log.debug("changeYoutrackId(): is field existed result={}", booleanResult);
-        boolean isProjectFieldExisted = booleanResult.isOk() && booleanResult.getData().equals(true);
-
-        projectCaseLinkList.forEach(caseLink -> {
-            caseLink.setRemoteId(newYoutrackId);
-            caseLink.setWithCrosslink(isProjectFieldExisted);
-        });
-
-        int batchSize = caseLinkDAO.mergeBatch(projectCaseLinkList);
-
-        if (batchSize != projectCaseLinkList.size()) {
-            log.warn("changeYoutrackId(): size projectCaseLinkList={}, batchSize={}", projectCaseLinkList.size(), batchSize);
-        }
-
-        if (isProjectFieldExisted){
-            youtrackService.setIssueProjectNumbers(newYoutrackId, findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, newYoutrackId));
+        } catch (Exception e){
+            log.error("changeYoutrackId(): change failed", e);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return ok();
@@ -410,41 +397,17 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
                 case PROJECT:
 
-                    if (En_CaseLink.CRM.equals(link.getType())) {
-                        link.setWithCrosslink(false);
-                        createdLinkId = caseLinkDAO.persist(link);
-                        link.setId(createdLinkId);
-
-                        return ok(createdLinkId);
-                    }
+                    link.setWithCrosslink(En_CaseLink.YT.equals(link.getType()));
+                    createdLinkId = caseLinkDAO.persist(link);
+                    link.setId(createdLinkId);
 
                     if (En_CaseLink.YT.equals(link.getType())) {
-                        Result<Boolean> isNeedCrosslink = youtrackService.checkExistProjectCustomField(link.getRemoteId());
-
-                        if (isNeedCrosslink.isError()){
-                            return error(En_ResultStatus.YOUTRACK_SYNCHRONIZATION_FAILED);
-                        }
-
-                        if (isNeedCrosslink.getData() == true){
-                            link.setWithCrosslink(true);
-                            createdLinkId = caseLinkDAO.persist(link);
-                            link.setId(createdLinkId);
-
-                            youtrackService.setIssueProjectNumbers(link.getRemoteId(), findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, link.getRemoteId()));
-
-                            return ok(createdLinkId);
-                        }
-                        else {
-                            link.setWithCrosslink(false);
-                            createdLinkId = caseLinkDAO.persist(link);
-                            link.setId(createdLinkId);
-
-                            return ok(createdLinkId);
-                        }
+                        youtrackService.setIssueProjectNumbers(link.getRemoteId(), findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, link.getRemoteId()));
                     }
 
-                default:
+                    return ok(createdLinkId);
 
+                default:
                     link.setWithCrosslink(false);
                     createdLinkId = caseLinkDAO.persist(link);
                     link.setId(createdLinkId);

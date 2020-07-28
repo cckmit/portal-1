@@ -187,19 +187,6 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public Result<Boolean> checkExistProjectCustomField(String issueId){
-        log.info("checkExistProjectCustomField(): issueId={}", issueId);
-
-        if (issueId == null) {
-            log.warn("checkExistProjectCustomField(): Can't check youtrack project custom field. issueId={}", issueId);
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        return api.getIssueWithFieldsCommentsAttachments(issueId)
-                .flatMap(issue -> ok(issue.getProjectNumberField() != null));
-    }
-
-    @Override
     public Result<YouTrackIssueInfo> addIssueSystemComment(String issueId, String text) {
         if (issueId == null || text == null) {
             log.warn("addIssueSystemComment(): Can't add system comment. All arguments are mandatory issueId={} text={}", issueId, text);
