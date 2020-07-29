@@ -719,6 +719,11 @@ public class TemplateServiceImpl implements TemplateService {
 
                     Map<String, Object> mailComment = new HashMap<>();
                     mailComment.put("created", comment.getCreated());
+                    if (StringUtils.isNotBlank(comment.getRemoteId())){
+                        comment.getAuthor().setDisplayName(StringUtils.isNotBlank(comment.getOriginalAuthorFullName())
+                                        ? comment.getOriginalAuthorFullName()
+                                        : comment.getOriginalAuthorName());
+                    }
                     mailComment.put("author", comment.getAuthor());
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
                     mailComment.put("added", isNew);
