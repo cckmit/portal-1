@@ -32,13 +32,14 @@ public class AssembledProjectEvent extends ApplicationEvent {
     private boolean isCreateEvent;
     private DiffCollectionResult<CaseComment> comments = new DiffCollectionResult<>();
     private DiffCollectionResult<CaseLink> links = new DiffCollectionResult<>();
-    private Long lastUpdated;
+    private long lastUpdated;
 
     public AssembledProjectEvent(AbstractProjectEvent event) {
         super(event.getSource());
         this.initiatorId = event.getPersonId();
         this.projectId = event.getProjectId();
         this.isCreateEvent = event.isCreateEvent();
+        this.lastUpdated = currentTimeMillis();
     }
 
     public void attachUpdateEvent(ProjectUpdateEvent event) {
@@ -46,6 +47,7 @@ public class AssembledProjectEvent extends ApplicationEvent {
         this.newProjectState = event.getNewProjectState();
         this.projectId = event.getProjectId();
         this.initiatorId = event.getPersonId();
+        this.lastUpdated = currentTimeMillis();
     }
 
     public void attachCommentEvent(ProjectCommentEvent event) {
