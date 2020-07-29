@@ -54,6 +54,11 @@ public class CaseHistoryItemView
     }
 
     @Override
+    public void setInitiator(String initiator) {
+        this.initiator.setInnerText(initiator);
+    }
+
+    @Override
     public void setAddedValue(String addedValue, String title) {
         this.addedValue.setInnerHTML(addedValue);
         this.addedValue.setTitle(title);
@@ -89,6 +94,7 @@ public class CaseHistoryItemView
         newValue.setAttribute(DEBUG_ID_ATTRIBUTE, NEW_VALUE);
         date.setAttribute(DEBUG_ID_ATTRIBUTE, CREATE_DATE);
         historyType.setAttribute(DEBUG_ID_ATTRIBUTE, HISTORY_TYPE);
+        initiator.setAttribute(DEBUG_ID_ATTRIBUTE, INITIATOR);
     }
 
     @UiField
@@ -102,6 +108,9 @@ public class CaseHistoryItemView
 
     @UiField
     SpanElement date;
+
+    @UiField
+    SpanElement initiator;
 
     @UiField
     SpanElement historyType;

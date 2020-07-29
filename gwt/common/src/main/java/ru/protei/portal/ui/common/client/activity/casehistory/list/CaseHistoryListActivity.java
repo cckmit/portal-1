@@ -69,6 +69,7 @@ public abstract class CaseHistoryListActivity implements AbstractCaseHistoryList
 
         historyItem.setActivity(this);
         historyItem.setHistoryType(historyType);
+        historyItem.setInitiator(history.getInitiator());
 
         historyItem.addedValueContainerVisibility().setVisible(En_HistoryAction.ADD.equals(history.getAction()));
         historyItem.changeContainerVisibility().setVisible(En_HistoryAction.CHANGE.equals(history.getAction()));
