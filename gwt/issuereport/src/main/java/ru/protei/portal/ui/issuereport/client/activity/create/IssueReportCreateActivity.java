@@ -278,6 +278,9 @@ public abstract class IssueReportCreateActivity implements Activity,
         if (issueFilterParams.searchPrivateVisibility().isVisible()) {
             issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
         }
+        if (issueFilterParams.creatorsVisibility().isVisible()) {
+            issueFilterParams.creatorsVisibility().setVisible(policyService.personBelongsToHomeCompany());
+        }
     }
 
     private List<En_ReportType> makeReportTypeList() {
