@@ -223,7 +223,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
             case PROJECT:
-                return reportProject.writeReport(buffer, report, this::isCancel);
+                return reportProject.writeReport(buffer, report, new SimpleDateFormat("dd.MM.yyyy HH:mm"), this::isCancel);
         }
         return false;
     }
