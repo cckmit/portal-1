@@ -65,6 +65,8 @@ public class PortalApiController {
     @Autowired
     private YtDtoFieldsMapper fieldsMapper;
     @Autowired
+    private YoutrackService youtrackService;
+    @Autowired
     PortalConfig config;
 
 
@@ -382,9 +384,9 @@ public class PortalApiController {
 
                     List<Long> errorResultProjectIds = new ArrayList<>();
 
-                    Result<Boolean> caseCommentResultUpdate = caseCommentService.updateProjectCommentsFromYoutrack(token, convertYtIssueComment(ytIssueComment));
+                    Result<Boolean> caseCommentResultUpdate = caseCommentService.updateProjectCommentsFromYoutrack(token, youtrackService.convertYtIssueComment(ytIssueComment));
                     if (caseCommentResultUpdate.isError()){
-                        log.warn( "saveYoutrackCommentToProjects(): update comment error, caseComment={}, remoteId={}", convertYtIssueComment(ytIssueComment), ytIssueComment.id );
+                        log.warn( "saveYoutrackCommentToProjects(): update comment error, caseComment={}, remoteId={}", youtrackService.convertYtIssueComment(ytIssueComment), ytIssueComment.id );
                         return error(caseCommentResultUpdate.getStatus());
                     }
 
@@ -433,7 +435,7 @@ public class PortalApiController {
             CaseComment existedCaseComment = findCaseCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id);
 
             if(existedCaseComment == null) {
-                CaseComment caseComment = convertYtIssueComment(ytIssueComment);
+                CaseComment caseComment = youtrackService.convertYtIssueComment(ytIssueComment);
                 caseComment.setCaseId(projectId);
                 Result<CaseLink> ytLink = caseLinkService.getYtLink(token, youtrackId, projectId);
 
@@ -621,21 +623,6 @@ public class PortalApiController {
             log.error("makeNumberList(): failed to parse numbers", e);
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-    }
-
-    private CaseComment convertYtIssueComment(YtIssueComment issueComment) {
-        CaseComment caseComment = new CaseComment();
-        caseComment.setAuthorId(config.data().youtrack().getYoutrackUserId());
-        caseComment.setCreated(issueComment.created == null ? null : new Date(issueComment.created));
-        caseComment.setUpdated(issueComment.updated == null ? null : new Date(issueComment.updated));
-        caseComment.setRemoteId(issueComment.id);
-        caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setText(removeTag(issueComment.text));
-        caseComment.setDeleted(issueComment.deleted == null ? false : issueComment.deleted);
-        //Заглушка
-        caseComment.setCaseAttachments(new ArrayList<>());
-        return caseComment;
     }
 
     private String removeTag (String text){

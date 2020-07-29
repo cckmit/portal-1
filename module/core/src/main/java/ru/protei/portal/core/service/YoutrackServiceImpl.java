@@ -208,6 +208,20 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .map(this::convertYtIssue);
     }
 
+    @Override
+    public CaseComment convertYtIssueComment(YtIssueComment issueComment) {
+        CaseComment caseComment = new CaseComment();
+        caseComment.setAuthorId(config.data().youtrack().getYoutrackUserId());
+        caseComment.setCreated(issueComment.created == null ? null : new Date(issueComment.created));
+        caseComment.setUpdated(issueComment.updated == null ? null : new Date(issueComment.updated));
+        caseComment.setRemoteId(issueComment.id);
+        caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
+        caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
+        caseComment.setText(issueComment.text);
+        caseComment.setDeleted(issueComment.deleted != null && issueComment.deleted);
+        return caseComment;
+    }
+
     private Result<String> getProjectIdByName (String projectName){
         Result<String> projectResult = api.getProjectIdByName(projectName)
                 .flatMap(projects -> {
@@ -250,19 +264,6 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .collect(Collectors.toList())
         );
         return issueInfo;
-    }
-
-    private CaseComment convertYtIssueComment(YtIssueComment issueComment) {
-        CaseComment caseComment = new CaseComment();
-        caseComment.setAuthorId(config.data().youtrack().getYoutrackUserId());
-        caseComment.setCreated(issueComment.created == null ? null : new Date(issueComment.created));
-        caseComment.setUpdated(issueComment.updated == null ? null : new Date(issueComment.updated));
-        caseComment.setRemoteId(issueComment.id);
-        caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setText(issueComment.text);
-        caseComment.setDeleted(issueComment.deleted);
-        return caseComment;
     }
 
     private Pair<Attachment, CaseAttachment> convertYtIssueAttachment(YtIssueAttachment issueAttachment) {

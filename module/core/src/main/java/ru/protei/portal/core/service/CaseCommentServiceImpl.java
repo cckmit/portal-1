@@ -137,10 +137,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         // attachments won't read now from DAO
         result.setCaseAttachments(comment.getCaseAttachments());
 
-        List<Long> addedAttachmentsIds = result.getCaseAttachments()
-                .stream()
-                .map(CaseAttachment::getAttachmentId)
-                .collect(Collectors.toList());
+        List<Long> addedAttachmentsIds;
+
+        if (result.getCaseAttachments() == null) {
+            addedAttachmentsIds = new ArrayList<>();
+        } else {
+            addedAttachmentsIds = result.getCaseAttachments()
+                    .stream()
+                    .map(CaseAttachment::getAttachmentId)
+                    .collect(Collectors.toList());
+        }
 
         Collection<Attachment> addedAttachments = attachmentService.getAttachments(
                 token,
