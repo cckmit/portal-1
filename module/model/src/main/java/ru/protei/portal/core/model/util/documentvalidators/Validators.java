@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.util.documentvalidators;
 
 import ru.protei.portal.core.model.util.ValidationResult;
+import ru.protei.portal.core.model.util.Validator;
 
 import java.util.*;
 import java.util.function.Function;

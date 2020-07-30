@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.util.documentvalidators;
 
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.util.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
