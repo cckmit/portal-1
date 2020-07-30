@@ -24,6 +24,8 @@ import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
+import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.redmine.aspect.RedmineServiceLayerInterceptor;
 import ru.protei.portal.redmine.handlers.BackchannelEventHandler;
@@ -121,6 +123,11 @@ public class RedmineTestConfiguration {
     @Bean
     public CaseLinkService getCaseLinkService() {
         return new CaseLinkServiceImpl();
+    }
+
+    @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
     }
 
     @Bean

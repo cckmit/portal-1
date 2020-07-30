@@ -31,6 +31,8 @@ import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
+import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.jira.aspect.JiraServiceLayerInterceptorLogging;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
@@ -301,6 +303,11 @@ public class JiraTestConfiguration {
     @Bean
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
+    }
+
+    @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
     }
 
     @Bean
