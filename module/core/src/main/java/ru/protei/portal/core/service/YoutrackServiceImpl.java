@@ -209,7 +209,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public CaseComment convertYtIssueComment(YtIssueComment issueComment) {
+    public Result<CaseComment> convertYtIssueComment(YtIssueComment issueComment) {
         CaseComment caseComment = new CaseComment();
         caseComment.setAuthorId(config.data().youtrack().getYoutrackUserId());
         caseComment.setCreated(issueComment.created == null ? null : new Date(issueComment.created));
@@ -219,7 +219,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
         caseComment.setText(issueComment.text);
         caseComment.setDeleted(issueComment.deleted != null && issueComment.deleted);
-        return caseComment;
+        return ok(caseComment);
     }
 
     private Result<String> getProjectIdByName (String projectName){
@@ -257,6 +257,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         issueInfo.setImportance(YoutrackConstansMapping.toCaseImportance(getIssuePriority(issue)));
         issueInfo.setComments(CollectionUtils.stream(issue.comments)
                 .map(this::convertYtIssueComment)
+                .map(Result::getData)
                 .collect(Collectors.toList())
         );
         issueInfo.setAttachments(CollectionUtils.stream(issue.attachments)

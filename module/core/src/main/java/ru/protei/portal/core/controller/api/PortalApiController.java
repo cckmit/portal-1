@@ -384,7 +384,12 @@ public class PortalApiController {
 
                     List<Long> errorResultProjectIds = new ArrayList<>();
 
-                    Result<Boolean> caseCommentResultUpdate = caseCommentService.updateProjectCommentsFromYoutrack(token, youtrackService.convertYtIssueComment(ytIssueComment));
+                    Result<Boolean> caseCommentResultUpdate = youtrackService.convertYtIssueComment(ytIssueComment)
+                            .flatMap(caseComment -> {
+                                caseComment.setText(removeTag(caseComment.getText()));
+                                return caseCommentService.updateProjectCommentsFromYoutrack(token, caseComment);
+                            });
+
                     if (caseCommentResultUpdate.isError()){
                         log.warn( "saveYoutrackCommentToProjects(): update comment error, caseComment={}, remoteId={}", youtrackService.convertYtIssueComment(ytIssueComment), ytIssueComment.id );
                         return error(caseCommentResultUpdate.getStatus());
@@ -435,7 +440,16 @@ public class PortalApiController {
             CaseComment existedCaseComment = findCaseCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id);
 
             if(existedCaseComment == null) {
-                CaseComment caseComment = youtrackService.convertYtIssueComment(ytIssueComment);
+                Result<CaseComment> caseCommentResult = youtrackService.convertYtIssueComment(ytIssueComment);
+
+                if (caseCommentResult.isError() || caseCommentResult.getData() == null){
+                    log.warn( "makeCommentsToCreate(): failed to convert comment. ytIssueComment={}, caseCommentResult={}", ytIssueComment, caseCommentResult );
+                    return error(En_ResultStatus.INTERNAL_ERROR);
+                }
+
+                CaseComment caseComment = caseCommentResult.getData();
+                caseComment.setText(removeTag(caseComment.getText()));
+
                 caseComment.setCaseId(projectId);
                 Result<CaseLink> ytLink = caseLinkService.getYtLink(token, youtrackId, projectId);
 

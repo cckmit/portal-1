@@ -158,7 +158,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         log.debug("setYoutrackIdToCaseNumbers(): newCaseIds={}", newCaseIdsResult.getData());
 
-        List<Long> currentCaseIds =  findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.CRM_SUPPORT, youtrackId);
+        List<Long> currentCaseIds =  getCaseIdsCrosslinkedWithYoutrack(En_CaseType.CRM_SUPPORT, youtrackId);
         List<Long> newCaseIds = newCaseIdsResult.getData();
 
         log.debug("setYoutrackIdToCaseNumbers(): current case ids={}, new case ids={}", currentCaseIds, newCaseIds);
@@ -204,13 +204,13 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         if (youtrackId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
 
-        Result<String> unexistedProjects = findUnexistedProjects(projectNumberList);
+        Result<String> unexistedProjects = getUnexistedProjects(projectNumberList);
 
         if (unexistedProjects.isError()){
             return error(unexistedProjects.getStatus(), unexistedProjects.getMessage());
         }
 
-        List<Long> currentProjectIds = findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, youtrackId);
+        List<Long> currentProjectIds = getCaseIdsCrosslinkedWithYoutrack(En_CaseType.PROJECT, youtrackId);
         List<Long> newProjectIds = projectNumberList;
 
         log.debug("setYoutrackIdToProjectNumbers(): current case ids={}, new case ids={}", currentProjectIds, newProjectIds);
@@ -290,7 +290,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         if (StringUtils.isEmpty(youtrackId)) {
             return error( En_ResultStatus.INCORRECT_PARAMS );
         }
-        return ok(findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, youtrackId));
+        return ok(getCaseIdsCrosslinkedWithYoutrack(En_CaseType.PROJECT, youtrackId));
     }
 
     @Override
@@ -301,7 +301,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         if (StringUtils.isEmpty(youtrackId) || caseId == null) {
             return error( En_ResultStatus.INCORRECT_PARAMS );
         }
-        return getYoutrackLinks(caseId)
+        return getYoutrackLinks(caseId, null, null)
                 .flatMap(caseLinks -> findCaseLinkByRemoteId(caseLinks, youtrackId))
                 .ifError(result -> log.warn("getYtLink(): failed to get link. youtrackId={}, caseId={}, result={}", youtrackId, caseId, result))
                 .ifOk(caseLink -> log.debug("getYtLink(): OK. caseLink={}", caseLink));
@@ -323,8 +323,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         //Обновляем список ссылок на Youtrack
         if (En_CaseLink.YT.equals(link.getType())) {
-            youtrackService.setIssueCrmNumbers(link.getRemoteId(), findLinkedCaseNumbersByTypeAndYoutrackId(En_CaseType.CRM_SUPPORT, link.getRemoteId()));
-            youtrackService.setIssueProjectNumbers(link.getRemoteId(), findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, link.getRemoteId()));
+            youtrackService.setIssueCrmNumbers(link.getRemoteId(), getCaseNumbersCrosslinkedWithYoutrack(En_CaseType.CRM_SUPPORT, link.getRemoteId()));
+            youtrackService.setIssueProjectNumbers(link.getRemoteId(), getCaseIdsCrosslinkedWithYoutrack(En_CaseType.PROJECT, link.getRemoteId()));
         }
 
         return removedCount == toRemoveIds.size() ? ok() : error(En_ResultStatus.INTERNAL_ERROR);
@@ -391,7 +391,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     }
                     //Обновляем список ссылок на Youtrack
                     if (En_CaseLink.YT.equals(link.getType())) {
-                        youtrackService.setIssueCrmNumbers(link.getRemoteId(), findLinkedCaseNumbersByTypeAndYoutrackId(En_CaseType.CRM_SUPPORT, link.getRemoteId()));
+                        youtrackService.setIssueCrmNumbers(link.getRemoteId(), getCaseNumbersCrosslinkedWithYoutrack(En_CaseType.CRM_SUPPORT, link.getRemoteId()));
                     }
                     return ok(createdLinkId);
 
@@ -402,7 +402,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     link.setId(createdLinkId);
 
                     if (En_CaseLink.YT.equals(link.getType())) {
-                        youtrackService.setIssueProjectNumbers(link.getRemoteId(), findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, link.getRemoteId()));
+                        youtrackService.setIssueProjectNumbers(link.getRemoteId(), getCaseIdsCrosslinkedWithYoutrack(En_CaseType.PROJECT, link.getRemoteId()));
                     }
 
                     return ok(createdLinkId);
@@ -417,24 +417,16 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         });
     }
 
-    private Result<List<CaseLink>> getYoutrackLinks( Long caseId ) {
-        if (caseId == null) return error( En_ResultStatus.INCORRECT_PARAMS );
-        log.debug("getYoutrackLinks(): caseId={}", caseId);
+    private Result<List<CaseLink>> getYoutrackLinks( Long caseId, String youtrackId, Boolean withCrosslink) {
+        log.debug("getYoutrackLinks(): caseId={}, youtrackId={}, withCrosslink={}", caseId, youtrackId, withCrosslink);
         CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
         caseLinkQuery.setCaseId( caseId );
         caseLinkQuery.setType( En_CaseLink.YT );
+        caseLinkQuery.setRemoteId( youtrackId );
         log.debug("getYoutrackLinks(): caseLinkQuery={}", caseLinkQuery);
         List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(caseLinkQuery);
         log.debug("getYoutrackLinks(): find caseLinks={}", caseLinks);
-        return ok(caseLinks);
-    }
-
-    private List<CaseLink> findAllCaseLinksByYoutrackId(String youtrackId, Boolean withCrosslink){
-        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
-        caseLinkQuery.setRemoteId( youtrackId );
-        caseLinkQuery.setType( En_CaseLink.YT );
-        caseLinkQuery.setWithCrosslink(withCrosslink);
-        return caseLinkDAO.getListByQuery(caseLinkQuery);
+        return ok(CollectionUtils.listOf(caseLinks));
     }
 
     private Result<CaseLink> findCaseLinkByRemoteId(Collection<CaseLink> caseLinks, String youtrackId ) {
@@ -445,7 +437,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private void makeAudit(Long caseId, String youtrackId, En_AuditType type, AuthToken token){
-        List<CaseLink> linksList = getYoutrackLinks(caseId).getData();
+        List<CaseLink> linksList = getYoutrackLinks(caseId, null, null).getData();
 
         if (linksList == null || linksList.size() != 1){
             log.warn("makeAudit(): fail to find link with caseId={} and youtrackId={}", caseId, youtrackId);
@@ -472,7 +464,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     private Result<CaseLink> removeYoutrackLinkWithPublishing(AuthToken authToken, Long caseId, String youtrackId, En_CaseType caseType ) {
 
-        return getYoutrackLinks(caseId)
+        return getYoutrackLinks(caseId, null, null)
                 .flatMap( caseLinks -> findCaseLinkByRemoteId( caseLinks, youtrackId ) )
                 .flatMap(caseLink -> removeYoutrackCaseLink( caseLink )
                         .flatMap( removedLink -> sendNotificationLinkRemoved( authToken, caseId, removedLink, caseType ))
@@ -511,8 +503,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                         .collect(Collectors.joining(",")));
     }
 
-    private List<Long> findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId){
-        List<CaseObject> cases = findCaseObjectsByTypeAndYoutrackId(caseType, youtrackId, true);
+    private List<Long> getCaseIdsCrosslinkedWithYoutrack(En_CaseType caseType, String youtrackId){
+        List<CaseObject> cases = getCaseObjectsLinkedWithYoutrack(caseType, youtrackId, true);
 
         if (CollectionUtils.isEmpty(cases)){
             return new ArrayList<>();
@@ -523,8 +515,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
-    private List<Long> findLinkedCaseNumbersByTypeAndYoutrackId(En_CaseType caseType, String youtrackId){
-        List<CaseObject> cases = findCaseObjectsByTypeAndYoutrackId(caseType, youtrackId, true);
+    private List<Long> getCaseNumbersCrosslinkedWithYoutrack(En_CaseType caseType, String youtrackId){
+        List<CaseObject> cases = getCaseObjectsLinkedWithYoutrack(caseType, youtrackId, true);
 
         if (CollectionUtils.isEmpty(cases)){
             return new ArrayList<>();
@@ -535,8 +527,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 .collect(Collectors.toList());
     }
 
-    private List<CaseObject> findCaseObjectsByTypeAndYoutrackId(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
-        List<Long> linkedCaseIds = findAllCaseIdsByYoutrackId(youtrackId, withCrosslink);
+    private List<CaseObject> getCaseObjectsLinkedWithYoutrack(En_CaseType caseType, String youtrackId, Boolean withCrosslink){
+        List<Long> linkedCaseIds = getAllCaseIdsByYoutrackId(youtrackId, withCrosslink);
 
         if (CollectionUtils.isEmpty(linkedCaseIds)){
             return new ArrayList<>();
@@ -548,7 +540,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return caseObjectDAO.getCases(query);
     }
 
-    private Result<String> findUnexistedProjects (List<Long> projectNumberList){
+    private Result<String> getUnexistedProjects(List<Long> projectNumberList){
         if (projectNumberList == null) {
             return ok();
         }
@@ -567,8 +559,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                         .collect(Collectors.joining(",")));
     }
 
-    private List<Long> findAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
-        return findAllCaseLinksByYoutrackId(youtrackId, withCrosslink).stream()
+    private List<Long> getAllCaseIdsByYoutrackId(String youtrackId, Boolean withCrosslink) {
+        return getYoutrackLinks(null, youtrackId, withCrosslink).getData().stream()
                 .map(CaseLink::getCaseId)
                 .collect(Collectors.toList());
     }

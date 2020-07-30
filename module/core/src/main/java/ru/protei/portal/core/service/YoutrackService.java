@@ -36,5 +36,5 @@ public interface YoutrackService {
 
     Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
 
-    CaseComment convertYtIssueComment(YtIssueComment issueComment);
+    Result<CaseComment> convertYtIssueComment(YtIssueComment issueComment);
 }
