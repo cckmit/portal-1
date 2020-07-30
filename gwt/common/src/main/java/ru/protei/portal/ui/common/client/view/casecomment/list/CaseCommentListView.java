@@ -36,6 +36,8 @@ import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.PasteInfo;
 
+import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
+
 /**
  * Контейнер для комментариев
  */
@@ -104,9 +106,9 @@ public class CaseCommentListView
         timeElapsed.setVisible(visible);
         timeElapsedType.setVisible(visible);
         if (visible) {
-            timeElapsedInfoContainer.removeClassName("hide");
+            timeElapsedInfoContainer.removeClassName( HIDE );
         } else {
-            timeElapsedInfoContainer.addClassName("hide");
+            timeElapsedInfoContainer.addClassName( HIDE );
         }
     }
 
@@ -134,23 +136,23 @@ public class CaseCommentListView
     @Override
     public void setPreviewVisible(boolean isVisible) {
         if (isVisible) {
-            commentPreviewContainer.removeClassName("hide");
+            commentPreviewContainer.removeClassName( HIDE );
         } else {
-            commentPreviewContainer.addClassName("hide");
+            commentPreviewContainer.addClassName( HIDE );
         }
     }
 
     @Override
     public void setMarkupLabel(String label, String link) {
         if (label == null) {
-            markupLabel.addClassName("hide");
-            markupLink.addStyleName("hide");
+            markupLabel.addClassName( HIDE );
+            markupLink.addStyleName( HIDE );
         } else {
             markupLabel.setInnerText(label);
-            markupLabel.removeClassName("hide");
+            markupLabel.removeClassName( HIDE );
 
             markupLink.setHref(link);
-            markupLink.removeStyleName("hide");
+            markupLink.removeStyleName( HIDE );
         }
     }
 
@@ -168,6 +170,13 @@ public class CaseCommentListView
     @Override
     public void addCommentToFront(IsWidget comment) {
         commentsContainer.insert( comment.asWidget(), 1 );
+    }
+
+    @Override
+    public void replaceCommentView( IsWidget removed, IsWidget inserted ) {
+        int widgetIndex = commentsContainer.getWidgetIndex( removed );
+        commentsContainer.insert( inserted.asWidget(), widgetIndex);
+        commentsContainer.remove( widgetIndex + 1 );
     }
 
     @Override

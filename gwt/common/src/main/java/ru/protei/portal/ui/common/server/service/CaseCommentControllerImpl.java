@@ -18,6 +18,8 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+
 @Service("CaseCommentController")
 public class CaseCommentControllerImpl implements CaseCommentController {
 
@@ -32,6 +34,14 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         }
 
         return response.getData();
+    }
+
+    @Override
+    public CaseComment getCaseComment( Long commentId ) throws RequestFailedException {
+        log.info("getCaseComment(): commentId={}", commentId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData( caseCommentService.getCaseComment(token, commentId) );
     }
 
     @Override

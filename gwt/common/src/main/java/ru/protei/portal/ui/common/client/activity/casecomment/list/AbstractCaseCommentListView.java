@@ -20,6 +20,8 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     void addCommentToFront( IsWidget comment );
 
+    void replaceCommentView( IsWidget removed, IsWidget inserted );
+
     void removeComment( IsWidget comment );
 
     HasValue<String> message();
@@ -57,4 +59,6 @@ public interface AbstractCaseCommentListView extends IsWidget {
     boolean isDisplayPreview();
 
     void setTimeElapsedVisibility(boolean visible);
+
+    boolean isAttached();
 }

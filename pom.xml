@@ -24,6 +24,7 @@
         <project.lucene.version>7.3.1</project.lucene.version>
         <project.mockito.version>3.1.0</project.mockito.version>
         <project.maven-surefire-plugin>2.18.1</project.maven-surefire-plugin>
+        <gwteventserviceVersion>1.2.1</gwteventserviceVersion>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

@@ -27,6 +27,17 @@
         <servlet-class>ru.protei.portal.ui.issuereport.server.servlet.ReportDownloadServlet</servlet-class>
     </servlet>
 
+    <!-- Сервлет для работы шины сообщений между клиентом и сервером -->
+    <servlet>
+        <servlet-name>EventService</servlet-name>
+        <servlet-class>de.novanic.eventservice.service.EventServiceImpl</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>EventService</servlet-name>
+        <url-pattern>/Portal/gwteventservice</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>springGwtRemoteServiceServlet</servlet-name>
         <url-pattern>/Portal/springGwtServices/*</url-pattern>

@@ -323,6 +323,18 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--   Push уведомления на клиент     -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${project.gwt.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>de.novanic.gwteventservice</groupId>
+            <artifactId>gwteventservice</artifactId>
+            <version>${gwteventserviceVersion}</version>
+        </dependency>
     </dependencies>
 
 </project>

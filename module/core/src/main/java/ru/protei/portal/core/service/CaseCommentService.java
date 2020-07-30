@@ -110,4 +110,6 @@ public interface CaseCommentService {
     Result<Boolean> updateCaseTimeElapsed( AuthToken token, Long caseId, long timeElapsed);
 
     Result<Long> addCommentOnSentReminder(CaseComment comment );
+
+    Result<CaseComment> getCaseComment( AuthToken token, Long commentId );
 }

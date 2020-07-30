@@ -144,10 +144,10 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
                 .withCaseId(value.getId())
                 .readOnly());
 
-        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer())
-                .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
-                .withCaseId(value.getId())
-                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)));
+        fireEvent(new CaseCommentEvents.Show(view.getCommentsContainer(),
+                value.getId(),
+                En_CaseType.EMPLOYEE_REGISTRATION,
+                policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)));
     }
 
     private HasWidgets fullScreenContainer;

@@ -16,6 +16,7 @@ public interface CaseCommentController extends RemoteService {
      * Получение списка комментариев
      */
     List<CaseComment> getCaseComments(En_CaseType caseType, Long caseId) throws RequestFailedException;
+    CaseComment getCaseComment(Long commentId) throws RequestFailedException;
 
     /**
      * Редактирование комментария
