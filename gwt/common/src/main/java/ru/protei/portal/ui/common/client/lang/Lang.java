@@ -844,7 +844,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentChangeManagerTo();
 
-    String errEditIssueCommentEmpty();
+    String errorCommentEmpty();
 
     String commentEmpty();
 
@@ -2933,4 +2933,6 @@ public interface Lang extends Messages, ContactItemLang {
     String filterRemoveSuccessed();
 
     String filterNotDefined();
+
+    String errorNeedFeelTimeElapsed();
 }

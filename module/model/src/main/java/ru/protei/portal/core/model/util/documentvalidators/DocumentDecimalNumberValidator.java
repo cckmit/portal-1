@@ -55,7 +55,7 @@ public class DocumentDecimalNumberValidator {
     }
 
     static boolean processValidationIsValid(String value, List<Validator> validateProcessList) {
-        return processValidation(value, validateProcessList).isValid;
+        return processValidation(value, validateProcessList).isValid();
     }
 
     static public boolean isValid(String value, En_DocumentCategory enDocumentCategory) {

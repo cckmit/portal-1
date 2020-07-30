@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.model.util.ValidationResult;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
@@ -495,19 +496,14 @@ public abstract class CaseCommentListActivity
         }
         lockSave();
 
-        if (!isValid()) {
+        ValidationResult validationResult = validate();
+        if (!validationResult.isValid()) {
             unlockSave();
-            fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new NotifyEvents.Show(validationResult.getMessage(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         comment = buildCaseComment();
-
-        if (isBlank(comment.getText())) {
-            unlockSave();
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
 
         boolean isEdit = comment.getId() != null;
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
@@ -522,17 +518,17 @@ public abstract class CaseCommentListActivity
         );
     }
 
-    private boolean isValid() {
-        if (StringUtils.isNotBlank(view.message().getValue())) {
-            return true;
+    private ValidationResult validate() {
+        if (StringUtils.isBlank(view.message().getValue())) {
+            return ValidationResult.error().withMessage(lang.commentEmpty());
         }
-        if (view.timeElapsed().getTime() != null) {
-            return false;
+
+        // PORTAL-1138
+        if (view.timeElapsedType().getValue() != null && view.timeElapsed().getTime() == null) {
+            return ValidationResult.error().withMessage(lang.errorNeedFeelTimeElapsed());
         }
-        if (!tempAttachments.isEmpty()) {
-            return false;
-        }
-        return true;
+
+        return ValidationResult.ok();
     }
 
     private CaseComment buildCaseComment() {
