@@ -79,6 +79,4 @@ public class AppEvents {
         public Object event;
     }
 
-    public static class ServerEventBridgeConnected {
-    }
 }

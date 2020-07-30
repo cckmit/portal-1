@@ -3,16 +3,16 @@ package ru.protei.portal.core.model.event;
 /**
  *
  */
-public class CaseCommentClientEvent implements de.novanic.eventservice.client.event.Event {
+public class CaseCommentSavedClientEvent implements de.novanic.eventservice.client.event.Event {
 
     private Long caseObjectId;
     private Long commentId;
     private Long personId;
 
-    public CaseCommentClientEvent() {
+    public CaseCommentSavedClientEvent() {
     }
 
-    public CaseCommentClientEvent( Long personId, Long caseObjectId, Long commentId ) {
+    public CaseCommentSavedClientEvent( Long personId, Long caseObjectId, Long commentId ) {
         this.personId = personId;
         this.caseObjectId = caseObjectId;
         this.commentId = commentId;
@@ -32,9 +32,9 @@ public class CaseCommentClientEvent implements de.novanic.eventservice.client.ev
 
     @Override
     public String toString() {
-        return "CaseCommentClientEvent{" +
-                "caseObjectId=" + caseObjectId +
-                ", commentId=" + commentId +
+        return "CaseCommentSavedClientEvent{" +
+                "commentId=" + commentId +
+                ", caseObjectId=" + caseObjectId +
                 ", personId=" + personId +
                 '}';
     }

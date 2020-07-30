@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.event.CaseCommentClientEvent;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -134,36 +134,37 @@ public abstract class CaseCommentListActivity
         if (!Objects.equals( caseId, event.getCaseObjectId() )) return;
         if (Objects.equals( policyService.getProfileId(), event.getPersonId() )) return;
 
-        for (Map.Entry<AbstractCaseCommentItemView, CaseComment> entry : itemViewToModel.entrySet()) {
-            if (!Objects.equals( entry.getValue().getId(), event.getCaseCommentID() )) continue;
-            view.removeComment( entry.getKey() );
-            itemViewToModel.remove( entry.getKey() );
-            return;
+        AbstractCaseCommentItemView oldView = findItemViewByCommentId( event.getCaseCommentID() );
+        if (oldView != null) {
+            view.removeComment( oldView );
+            itemViewToModel.remove( oldView );
         }
     }
 
     @Event
-    public void onCaseCommentClientEvent( CaseCommentClientEvent event ) {
+    public void onCaseCommentSavedClientEvent( CaseCommentSavedClientEvent event ) {
         if (!view.isAttached()) return;
         if (!Objects.equals( caseId, event.getCaseObjectId() )) return;
         if (Objects.equals( policyService.getProfileId(), event.getPersonId() )) return;
 
         caseCommentController.getCaseComment( event.getCaseCommentID(), new FluentCallback<CaseComment>()
                 .withSuccess( comment -> {
+                    if (comment == null) return;
                     if (!view.isAttached()) return;
-                    log.info( "onCaseCommentClientEvent(): updated" + comment );
-                    AbstractCaseCommentItemView itemView = makeCommentView( comment );
-                    for (Map.Entry<AbstractCaseCommentItemView, CaseComment> entry : itemViewToModel.entrySet()) {
-                        if (!Objects.equals( entry.getValue(), comment )) continue;
-                        view.replaceCommentView( entry.getKey(), itemView );
-                        itemView.displayUpdatedAnimation();
-                        itemViewToModel.remove( entry.getKey() );
-                        itemViewToModel.put( itemView, comment );
+
+                    AbstractCaseCommentItemView newView = makeCommentView( comment );
+                    AbstractCaseCommentItemView oldView = findItemViewByCommentId( comment.getId() );
+                    if (oldView != null) {
+                        view.replaceCommentView( oldView, newView );
+                        newView.displayUpdatedAnimation();
+                        itemViewToModel.remove( oldView );
+                        itemViewToModel.put( newView, comment );
                         return;
                     }
-                    itemViewToModel.put( itemView, comment );
-                    view.addCommentToFront( itemView );
-                    itemView.displayAddedAnimation();
+
+                    itemViewToModel.put( newView, comment );
+                    view.addCommentToFront( newView );
+                    newView.displayAddedAnimation();
 
                 } ) );
     }
@@ -725,6 +726,17 @@ public abstract class CaseCommentListActivity
 
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
+    private AbstractCaseCommentItemView findItemViewByCommentId( Long commentId ) {
+        if (commentId == null) return null;
+        for (Map.Entry<AbstractCaseCommentItemView, CaseComment> entry : itemViewToModel.entrySet()) {
+            if (entry.getValue() == null) continue;
+            if (!Objects.equals( entry.getValue().getId(), commentId )) continue;
+            return entry.getKey();
+        }
+
+        return null;
     }
 
     private final Timer changedPreviewTimer = new Timer() {

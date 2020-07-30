@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.throttler;
 
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 
 /**
  * Фабрика ограничителей количества выполняемых действий
@@ -36,6 +35,7 @@ public class ThrottlerFactory {
 
     /**
      * Действие будет запущено однократно по истечению времени задержки
+     * вызовы до истечения задержки игнорируются
      *
      * @param delay  задержка в миллисекундах
      * @param action действие которое нужно выполнить
@@ -108,7 +108,8 @@ public class ThrottlerFactory {
         }
 
         /**
-         * Запусить однократно после истечения времени игнорирования
+         * Запусить однократно после истечения времени задержки
+         * вызовы до истечения задержки игнорируются
          */
         public DelayedBuilder runOnceAfterDelay() {
             throttler = new DelayedThrottler(delay, null);
@@ -155,7 +156,7 @@ public class ThrottlerFactory {
         }
 
         /**
-         * Запустить по истечению времени игнорирования
+         * Запустить еще раз после истечения времени игнорирования
          * если были попытки вызова во время времени игнорирования
          */
         ImmediateBuilder runAfterDelayIfRunningDuringDelay() {

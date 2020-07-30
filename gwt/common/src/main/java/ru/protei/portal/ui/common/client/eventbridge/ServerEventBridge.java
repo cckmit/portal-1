@@ -75,14 +75,17 @@ public abstract class ServerEventBridge
         @Override
         public void onFailure( Throwable caught ) {
             //do nothing
+            log.info( "StartListenCallback onFailure(): " + caught );
         }
 
         @Override
         public void onSuccess( Void result ) {
             if (!isStarted) {
                 isStarted = true;
-                fireEvent( new AppEvents.ServerEventBridgeConnected() );
+                log.info( "StartListenCallback onSuccess(): Started." );
+                return;
             }
+            log.warning( "StartListenCallback onSuccess(): Already started. Expected one start." );
         }
     }
 

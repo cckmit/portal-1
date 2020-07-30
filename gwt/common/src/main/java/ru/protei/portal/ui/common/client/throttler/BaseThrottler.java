@@ -6,15 +6,15 @@ public abstract class BaseThrottler implements Throttler {
         this.action = action;
     }
 
+    @Override
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
     protected void doAction() {
         if (action != null) {
             action.run();
         }
-    }
-
-    @Override
-    public void setAction(Action action) {
-        this.action = action;
     }
 
     protected Action action;

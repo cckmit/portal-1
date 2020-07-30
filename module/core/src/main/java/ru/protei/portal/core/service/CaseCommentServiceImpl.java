@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.model.event.CaseCommentClientEvent;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -62,9 +62,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return ok(caseCommentShortViewDAO.getSearchResult(query));
     }
 
-    @Inject
-    private ClientEventService clientEventService;
-
     @Override
     @Transactional
     public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
@@ -96,7 +93,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         if (resultData.getCaseComment() != null) {
-            clientEventService.fireEvent( new CaseCommentClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
+            clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
 
         return okResult;
@@ -189,7 +186,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         if (resultData.getCaseComment() != null) {
-            clientEventService.fireEvent( new CaseCommentClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
+            clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
 
         return okResult;
@@ -507,6 +504,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseCommentShortViewDAO caseCommentShortViewDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    private ClientEventService clientEventService;
+
 
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
     private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);
