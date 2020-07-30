@@ -110,8 +110,13 @@ public class ProjectEvents {
      * Показать форму поиска
      */
     public static class Search {
+        public boolean showProducts;
+        public boolean showManagers;
+
         public Search(HasWidgets parent) {
             this.parent = parent;
+            this.showProducts = true;
+            this.showManagers = false;
         }
         public HasWidgets parent;
     }

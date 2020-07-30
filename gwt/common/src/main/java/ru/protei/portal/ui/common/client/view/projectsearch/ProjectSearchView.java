@@ -114,6 +114,30 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         project.clearItems();
     }
 
+    @Override
+    public void setDialogViewStyles() {
+/*        name.removeStyleName("col-md-4");
+        name.addStyleName("col-md-6");
+
+        dateCreatedRange.removeStyleName("col-md-4");
+        dateCreatedRange.addStyleName("col-md-6");
+
+        customerType.removeStyleName("col-md-4");
+        customerType.addStyleName("col-md-6");*/
+    }
+
+    @Override
+    public void setWideFormStyles() {
+/*        name.removeStyleName("col-md-6");
+        name.addStyleName("col-md-4");
+
+        dateCreatedRange.removeStyleName("col-md-6");
+        dateCreatedRange.addStyleName("col-md-4");
+
+        customerType.removeStyleName("col-md-6");
+        customerType.addStyleName("col-md-4");*/
+    }
+
     @UiHandler("search")
     public void onSearchClicked(ClickEvent event) {
         event.preventDefault();

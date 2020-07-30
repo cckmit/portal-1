@@ -274,6 +274,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
+    @UiHandler("projectWidget")
+    public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
+        if (activity != null) {
+            activity.refreshProjectSpecificFields();
+        }
+    }
+
     private void initCuratorSelector() {
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
         query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));

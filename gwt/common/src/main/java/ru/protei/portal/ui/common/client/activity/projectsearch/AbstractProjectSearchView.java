@@ -29,4 +29,7 @@ public interface AbstractProjectSearchView extends IsWidget {
     void clearProjectList();
     void fillProjectList(List<ProjectInfo> list);
     void resetFilter();
+
+    void setDialogViewStyles();
+    void setWideFormStyles();
 }

@@ -134,34 +134,30 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void refreshProjectSpecificFields() {
-        if (contract.getProjectId() != null) {
-
-            regionService.getProjectInfo(contract.getProjectId(), new FluentCallback<ProjectInfo>()
-                    .withSuccess(project -> {
-                        view.project().setValue(project);
-
-                        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
-                        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
-                        view.directionEnabled().setEnabled(false);
-                        view.managerEnabled().setEnabled(false);
-                        return;
-                    })
-            );
+        if (view.project().getValue() == null) {
+            clearProjectSpecificFields();
+            return;
         }
 
-        view.project().setValue(null);
+        fillProjectSpecificFieldsOnRefresh(view.project().getValue());
+    }
 
-        clearProjectSpecificFields();
+    private void fillProject(ProjectInfo project) {
+        view.project().setValue(project);
+    }
 
-        view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
-        view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
+    private void fillProjectSpecificFieldsOnRefresh(ProjectInfo project) {
+        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
+    }
+
+    private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
+       regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
     }
 
     private void clearProjectSpecificFields() {
         view.direction().setValue(null);
         view.manager().setValue(null);
-        view.directionEnabled().setEnabled(true);
-        view.managerEnabled().setEnabled(true);
     }
 
     private void requestData(Long id){
@@ -196,7 +192,16 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         boolean contractParentExists = contract.getParentContractId() != null;
         view.setKind(getContractKind(contractParentExists));
 
-        refreshProjectSpecificFields();
+        if (contract.getProjectId() == null) {
+            view.project().setValue(null);
+            clearProjectSpecificFields();
+        } else {
+            projectRequest(contract.getProjectId(), this::fillProject);
+            fillProjectSpecificFieldsOnRefresh(view.project().getValue());
+        }
+
+        view.directionEnabled().setEnabled(false);
+        view.managerEnabled().setEnabled(false);
 
         view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
         view.setOrganization(contract.getOrganizationName());
@@ -263,8 +268,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (contract.getDateSigning() == null)
             return lang.contractValidationEmptyDateSigning();
 
-        if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
-            return lang.contractValidationEmptyDirection();
+        if (contract.getProjectId() == null)
+            return lang.contractValidationEmptyProject();
 
         if (!view.validateContractSpecifications().isValid())
             return lang.contractValidationContractSpecification();

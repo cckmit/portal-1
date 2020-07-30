@@ -118,7 +118,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-6">
                                 <label ui:field="projectLabel"><ui:text from="{lang.contractProject}"/></label>
                                 <project:ProjectWidget ui:field="projectWidget" validation="true"/>
                             </div>

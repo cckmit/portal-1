@@ -2132,7 +2132,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyType();
 
-    String contractValidationEmptyDirection();
+    String contractValidationEmptyProject();
 
     String contractValidationEmptyState();
 

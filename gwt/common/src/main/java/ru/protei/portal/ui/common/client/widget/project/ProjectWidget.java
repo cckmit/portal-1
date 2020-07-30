@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.WIDE_MODAL;
 
 abstract public class ProjectWidget extends Composite implements HasValue<ProjectInfo>, HasEnabled, HasValidable,
         Activity {
@@ -107,6 +108,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
 
     private void prepareSearchDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(makeSearchDialogActivity());
+        dialog.addStyleName(WIDE_MODAL);
         dialog.getBodyContainer().add(searchView.asWidget());
         dialog.removeButtonVisibility().setVisible(false);
         dialog.setHeader(lang.searchProjectTitle());
@@ -114,6 +116,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         dialog.setAdditionalVisible(false);
         searchView.setVisibleProducts(false);
         searchView.setVisibleManagers(true);
+        searchView.setDialogViewStyles();
     }
 
     private AbstractDialogDetailsActivity makeSearchDialogActivity() {

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public abstract class ProjectSearchActivity implements Activity, AbstractProjectSearchActivity {
 
-    @PostConstruct
+    @Inject
     public void onInit() {
         view.setActivity(this);
     }
@@ -32,6 +32,9 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     public void onShow(ProjectEvents.Search event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+        view.setVisibleProducts(event.showProducts);
+        view.setVisibleManagers(event.showManagers);
+        view.setWideFormStyles();
     }
 
     @Override
