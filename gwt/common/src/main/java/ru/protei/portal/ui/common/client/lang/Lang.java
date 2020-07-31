@@ -612,6 +612,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkYouTrackShort();
 
+    String errYoutrackSynchronizationFailed();
+
     String caseLinkSuccessfulCreated();
 
     String caseLinkSuccessfulRemoved();

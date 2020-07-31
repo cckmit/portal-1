@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -95,6 +96,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
                 .map(Person::getContactInfo)
                 .map(PlainContactInfoFacade::new)
                 .map(PlainContactInfoFacade::getEmail)
+                .filter(StringUtils::isNotEmpty)
                 .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
                 .collect(Collectors.toSet());
     }

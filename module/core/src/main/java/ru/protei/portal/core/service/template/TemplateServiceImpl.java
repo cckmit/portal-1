@@ -809,7 +809,7 @@ public class TemplateServiceImpl implements TemplateService {
 
                     Map<String, Object> mailComment = new HashMap<>();
                     mailComment.put("created", comment.getCreated());
-                    mailComment.put("author", comment.getAuthor());
+                    mailComment.put("author", renameAuthorIfRemoteComment(comment).getAuthor());
                     mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
                     mailComment.put("added", isNew);
                     if (isChanged) {
@@ -828,6 +828,16 @@ public class TemplateServiceImpl implements TemplateService {
         }
         text = htmlRenderer.plain2html(text, textMarkup, false);
         return text;
+    }
+
+    private CaseComment renameAuthorIfRemoteComment (CaseComment comment){
+        if (StringUtils.isNotBlank(comment.getRemoteId())){
+            comment.getAuthor().setDisplayName(StringUtils.isNotBlank(comment.getOriginalAuthorFullName())
+                    ? comment.getOriginalAuthorFullName()
+                    : comment.getOriginalAuthorName());
+        }
+
+        return comment;
     }
 
     private String escapeTextAndReplaceLineBreaks(String text) {

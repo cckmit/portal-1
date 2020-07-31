@@ -79,7 +79,7 @@ public interface CaseService {
 
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 
-    Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber );
+    Result<Long> getCaseId(AuthToken token, Long caseNumber, En_CaseType type );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
 
     @Privileged(En_Privilege.ISSUE_EDIT)

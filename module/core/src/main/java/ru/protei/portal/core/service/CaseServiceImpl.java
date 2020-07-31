@@ -223,7 +223,7 @@ public class CaseServiceImpl implements CaseService {
 
         for (CaseLink caseLink : CollectionUtils.emptyIfNull(caseObjectCreateRequest.getLinks())) {
             caseLink.setCaseId(caseObject.getId());
-            Result currentResult = caseLinkService.createLink(token, caseLink, true);
+            Result currentResult = caseLinkService.createLink(token, caseLink, caseObject.getType());
             if (currentResult.isError()) addLinksResult = currentResult;
         }
 
@@ -599,8 +599,8 @@ public class CaseServiceImpl implements CaseService {
 
 
     @Override
-    public Result<Long> getCaseIdByNumber( AuthToken token, Long caseNumber ) {
-        Long caseId = caseObjectDAO.getCaseIdByNumber( caseNumber );
+    public Result<Long> getCaseId(AuthToken token, Long caseNumber, En_CaseType type ) {
+        Long caseId = caseObjectDAO.getCaseId( type, caseNumber );
         if(caseId==null) error( En_ResultStatus.NOT_FOUND );
         return ok(caseId);
     }

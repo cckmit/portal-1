@@ -112,4 +112,8 @@ public interface CaseCommentService {
     Result<Long> addCommentOnSentReminder(CaseComment comment );
 
     Result<CaseComment> getCaseComment( AuthToken token, Long commentId );
+
+    Result<Boolean> updateProjectCommentsFromYoutrack(AuthToken token, CaseComment comment );
+
+    Result<Boolean> deleteProjectCommentsFromYoutrack(AuthToken token, String commentRemoteId);
 }
