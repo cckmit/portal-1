@@ -1518,7 +1518,8 @@ public class WorkerController {
 
                     mergePerson(person);
 
-                    /*if (portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled()) {
+                    /* final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+                    if (YOUTRACK_INTEGRATION_ENABLED) {
                         createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), personLastName);
                     }*/
 
@@ -1650,18 +1651,20 @@ public class WorkerController {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }
+        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
 
         String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
         String employeeNewFullName = lastName + " " + firstName + " " + (secondName != null ? secondName : "");
 
         String summary = "Смена фамилии сотрудника " + employeeOldFullName;
 
-        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + portalConfig.data().getCommonConfig().getCrmUrlInternal() + "#employee_preview:id=" + employeeId + ")" + "\n" +
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
                              "Старое ФИО: " + employeeOldFullName + "\n" +
                              "Новое ФИО: " + employeeNewFullName + "\n" +
                              "\n" +
                              "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( portalConfig.data().youtrack().getAdminProject(), summary, description );
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
 }

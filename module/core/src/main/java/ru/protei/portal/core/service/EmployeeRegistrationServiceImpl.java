@@ -90,7 +90,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         employeeRegistration.setCurators(personDAO.partialGetListByKeys(employeeRegistration.getCuratorsIds(), "id", "displayname"));
 
-        if (portalConfig.data().integrationConfig().isYoutrackEnabled()) {
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
+
+        if (YOUTRACK_INTEGRATION_ENABLED) {
             String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
             createPhoneYoutrackIssueIfNeeded(employeeRegistration, youTrackIssueId);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
@@ -122,7 +124,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate(), newEmployeeRegistration.getEmploymentDate());
 
-        if (portalConfig.data().integrationConfig().isYoutrackEnabled() && isEmploymentDateChanged) {
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
+
+        if (YOUTRACK_INTEGRATION_ENABLED && isEmploymentDateChanged) {
             updateYouTrackEmploymentDate(oldEmployeeRegistration.getId(), oldEmployeeRegistration.getEmploymentDate());
         }
 
@@ -192,7 +196,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
-        return youtrackService.createIssue( portalConfig.data().youtrack().getAdminProject(), summary, description ).ifOk( issueId ->
+        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+
+        return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
         ).getData();
     }
@@ -237,7 +243,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
 
-        youtrackService.createIssue( portalConfig.data().youtrack().getPhoneProject(), summary, description ).ifOk( issueId ->
+        final String PHONE_PROJECT_NAME = portalConfig.data().youtrack().getPhoneProject();
+
+        youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
         );
     }
@@ -264,7 +272,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
         ).toString();
 
-        youtrackService.createIssue( portalConfig.data().youtrack().getEquipmentProject(), summary, description ).ifOk( issueId ->
+        final String EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
+
+        youtrackService.createIssue( EQUIPMENT_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
         );
     }
@@ -301,7 +311,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     private CharSequence makeYtLinkToCrmRegistration( Long employeeRegistrationId, String employeeFullName ) {
-        return join( "[", employeeFullName, "](", portalConfig.data().getCommonConfig().getCrmUrlInternal(), "#employee_registration_preview:id=" + employeeRegistrationId, ")");
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+        return join( "[", employeeFullName, "](", PORTAL_URL, "#employee_registration_preview:id=" + employeeRegistrationId, ")");
     }
 
     private void saveCaseLink(Long employeeRegistrationId, String issueId) {

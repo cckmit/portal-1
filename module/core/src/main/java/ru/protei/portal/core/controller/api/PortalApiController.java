@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
@@ -238,31 +239,27 @@ public class PortalApiController {
 
         log.info( "updateYoutrackCrmNumbers() crmNumbers={} youtrackId={}", crmNumbers, youtrackId );
 
-        Result<List<Long>> makeNumberListResult = makeNumberList(crmNumbers)
-                .flatMap(this::removeDuplicates);
-
-        if (makeNumberListResult.isError()){
-            log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers, status={}", makeNumberListResult.getStatus());
-            return INCORRECT_PARAMS;
-        }
-
         Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
-                .flatMap( token -> caseLinkService.setYoutrackIdToCaseNumbers( token, youtrackId, makeNumberListResult.getData() ));
+                .flatMap( token -> updateCrmNumbers(token, crmNumbers, youtrackId));
 
-        if (updateResult.isOk()) {
-            log.info( "updateYoutrackCrmNumbers(): OK" );
-            return OK;
+        if (updateResult.isError()) {
+            log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
+                    youtrackId, crmNumbers, updateResult.getStatus() );
+
+            if (En_ResultStatus.INCORRECT_PARAMS.equals(updateResult.getStatus())) {
+                log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers, updateResult={}", updateResult);
+                return INCORRECT_PARAMS;
+            }
+
+            if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
+                return CRM_NUMBERS_NOT_FOUND + updateResult.getMessage();
+            }
+
+            return INTERNAL_ERROR;
         }
 
-        log.warn( "updateYoutrackCrmNumbers(): Can`t change youtrack id {} in cases with numbers {}. status: {}",
-                youtrackId, crmNumbers, updateResult.getStatus() );
-
-        if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
-            return CRM_NUMBERS_NOT_FOUND + updateResult.getMessage();
-        }
-
-        return INTERNAL_ERROR;
-
+        log.info( "updateYoutrackCrmNumbers(): OK" );
+        return OK;
     }
 
     @PostMapping(value = "/updateYoutrackProjectNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")
@@ -277,31 +274,27 @@ public class PortalApiController {
 
         log.info( "updateYoutrackProjectNumbers() projectNumbers={} youtrackId={}", projectNumbers, youtrackId );
 
-        Result<List<Long>> makeNumberListResult = makeNumberList(projectNumbers)
-                .flatMap(this::removeDuplicates);
-
-        if (makeNumberListResult.isError()){
-            log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers, status={}", makeNumberListResult.getStatus());
-            return INCORRECT_PARAMS;
-        }
-
         Result<String> updateResult = authenticate(request, response, authService, sidGen, log)
-                .flatMap( token -> caseLinkService.setYoutrackIdToProjectNumbers( token, youtrackId, makeNumberListResult.getData() ));
+                .flatMap( token -> updateProjectNumbers( token, projectNumbers, youtrackId));
 
-        if (updateResult.isOk()) {
-            log.info( "updateYoutrackProjectNumbers(): OK" );
-            return OK;
+        if (updateResult.isError()) {
+            log.warn( "updateYoutrackProjectNumbers(): Can`t change youtrack id {} in projects with numbers {}. status: {}",
+                    youtrackId, projectNumbers, updateResult.getStatus() );
+
+            if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
+                return PROJECT_NUMBERS_NOT_FOUND + updateResult.getMessage();
+            }
+
+            if (En_ResultStatus.INCORRECT_PARAMS.equals(updateResult.getStatus())) {
+                log.error("updateYoutrackCrmNumbers(): failed to parse crm numbers, updateResult={}", updateResult);
+                return INCORRECT_PARAMS;
+            }
+
+            return INTERNAL_ERROR;
         }
 
-        log.warn( "updateYoutrackProjectNumbers(): Can`t change youtrack id {} in projects with numbers {}. status: {}",
-                youtrackId, projectNumbers, updateResult.getStatus() );
-
-        if (En_ResultStatus.NOT_FOUND.equals(updateResult.getStatus())){
-            return PROJECT_NUMBERS_NOT_FOUND + updateResult.getMessage();
-        }
-
-        return INTERNAL_ERROR;
-
+        log.info( "updateYoutrackProjectNumbers(): OK" );
+        return OK;
     }
 
     @PostMapping(value = "/deleteYoutrackCommentFromProjects/{youtrackId}", produces = "text/plain;charset=UTF-8")
@@ -315,13 +308,6 @@ public class PortalApiController {
         final String INTERNAL_ERROR = "Внутренняя ошибка на портале";
         final String COMMENT_NOT_CORRECT = "Формат комментария, полученного на портале, не корректен. Обратитесь в поддержку портала или Youtrack";
 
-        YtIssueComment ytIssueComment = deserializeComment(issueCommentJson);
-
-        if (ytIssueComment == null) {
-            log.warn("saveYoutrackCommentToProjects(): ytIssueComment is null!");
-            return COMMENT_NOT_CORRECT;
-        }
-
         Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
 
         if (authTokenAPIResult.isError()) {
@@ -329,18 +315,24 @@ public class PortalApiController {
             return INTERNAL_ERROR;
         }
 
+        YtIssueComment ytIssueComment = deserializeComment(issueCommentJson);
+
+        if (ytIssueComment == null) {
+            log.warn("saveYoutrackCommentToProjects(): ytIssueComment is null!");
+            return COMMENT_NOT_CORRECT;
+        }
+
         AuthToken token = authTokenAPIResult.getData();
         Result<Boolean> deleteResult = caseCommentService.deleteProjectCommentsFromYoutrack(token, ytIssueComment.id);
 
 
-        if (deleteResult.isOk()) {
-            log.info( "deleteYoutrackCommentFromProjects(): OK" );
-            return OK;
+        if (deleteResult.isError()) {
+            log.warn( "deleteYoutrackCommentFromProjects(): Can`t delete comment, status: {}", deleteResult.getStatus() );
+            return INTERNAL_ERROR;
         }
 
-        log.warn( "deleteYoutrackCommentFromProjects(): Can`t delete comment, status: {}", deleteResult.getStatus() );
-
-        return INTERNAL_ERROR;
+        log.info( "deleteYoutrackCommentFromProjects(): OK" );
+        return OK;
     }
 
     @PostMapping(value = "/saveYoutrackCommentToProjects/{youtrackId}", produces = "text/plain;charset=UTF-8")
@@ -356,114 +348,44 @@ public class PortalApiController {
         final String COMMENT_NOT_CORRECT = "Формат комментария, полученного на портале, не корректен. Обратитесь в поддержку портала или Youtrack";
         final String EMPTY_TEXT = "Текст комментария не должен быть пустым";
 
-        YtIssueComment ytIssueComment = deserializeComment(issueCommentJson);
-
-        if (ytIssueComment == null) {
-            log.warn("saveYoutrackCommentToProjects(): ytIssueComment is null!");
-            return COMMENT_NOT_CORRECT;
-        }
-
-        if (removeTag(ytIssueComment.text).trim().isEmpty()){
-            log.warn("saveYoutrackCommentToProjects(): ytIssueComment text is empty");
-            return EMPTY_TEXT;
-        }
-
-        Result<String> saveResult = authenticate(request, response, authService, sidGen, log)
+        Result<Boolean> saveResult = authenticate(request, response, authService, sidGen, log)
                 .flatMap(token ->  caseLinkService.getProjectIdsByYoutrackId(token, youtrackId)
                 .flatMap(projectIds -> {
                     log.info( "saveYoutrackCommentToProjects(): projectIds={}", projectIds );
 
-                    Result<List<CaseComment>> listResult = makeCommentsToCreate(token, projectIds, ytIssueComment, youtrackId);
+                    YtIssueComment ytIssueComment = deserializeComment(issueCommentJson);
 
-                    if (listResult.isError()){
-                        return error(listResult.getStatus());
+                    if (ytIssueComment == null) {
+                        log.warn("saveYoutrackCommentToProjects(): ytIssueComment is null!");
+                        return error(En_ResultStatus.INCORRECT_PARAMS, COMMENT_NOT_CORRECT);
                     }
 
-                    List<CaseComment> commentToCreate = listResult.getData();
-                    log.info( "saveYoutrackCommentToProjects(): commentToCreate={}", commentToCreate );
-
-                    List<Long> errorResultProjectIds = new ArrayList<>();
-
-                    Result<Boolean> caseCommentResultUpdate = youtrackService.convertYtIssueComment(ytIssueComment)
-                            .flatMap(caseComment -> {
-                                caseComment.setText(removeTag(caseComment.getText()));
-                                return caseCommentService.updateProjectCommentsFromYoutrack(token, caseComment);
-                            });
-
-                    if (caseCommentResultUpdate.isError()){
-                        log.warn( "saveYoutrackCommentToProjects(): update comment error, caseComment={}, remoteId={}", youtrackService.convertYtIssueComment(ytIssueComment), ytIssueComment.id );
-                        return error(caseCommentResultUpdate.getStatus());
+                    if (removeTag(ytIssueComment.text).trim().isEmpty()){
+                        log.warn("saveYoutrackCommentToProjects(): ytIssueComment text is empty");
+                        return error(En_ResultStatus.INCORRECT_PARAMS, EMPTY_TEXT);
                     }
 
-                    for (CaseComment caseComment : commentToCreate) {
-                        Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.PROJECT, caseComment);
-
-                        if (caseCommentResult.isError()){
-                            log.warn( "saveYoutrackCommentToProjects(): create comment error, projectId={}, caseComment={}", caseComment.getCaseId(), caseComment );
-                            errorResultProjectIds.add(caseComment.getCaseId());
-                        }
-                    }
-
-                    if (errorResultProjectIds.isEmpty()){
-                        return ok();
-                    } else {
-                        return error(En_ResultStatus.NOT_UPDATED, errorResultProjectIds.stream().map(Objects::toString).collect(Collectors.joining(", ")));
-                    }
+                    return updateComments(token, ytIssueComment)
+                            .flatMap(ignore -> makeCommentListToCreate(token, projectIds, ytIssueComment, youtrackId))
+                            .flatMap(commentListToCreate -> createComments(token, commentListToCreate));
                 }));
 
-        if (saveResult.isOk()) {
-            log.info( "saveYoutrackCommentToProjects(): OK" );
-            return OK;
-        }
+        if (saveResult.isError()) {
+            log.warn( "saveYoutrackCommentToProjects(): Can`t save comment, status: {}", saveResult.getStatus() );
 
-        if (En_ResultStatus.NOT_UPDATED.equals(saveResult.getStatus())){
-            return PROJECT_NOT_UPDATED + saveResult.getMessage();
-        }
-
-        log.warn( "saveYoutrackCommentToProjects(): Can`t save comment, status: {}", saveResult.getStatus() );
-
-        return INTERNAL_ERROR;
-    }
-
-    private Result<List<CaseComment>> makeCommentsToCreate (AuthToken token, List<Long> projectIds, YtIssueComment ytIssueComment, String youtrackId){
-        List<CaseComment> commentToCreate = new ArrayList<>();
-
-        for (Long projectId : projectIds) {
-
-            Result<List<CaseComment>> caseCommentList = caseCommentService.getCaseCommentList(token, En_CaseType.PROJECT, projectId);
-
-            if (caseCommentList.isError()) {
-                log.warn( "makeCommentsToCreate(): getCaseCommentList error, projectId={}, caseCommentList result={}", projectId, caseCommentList );
-                return error(En_ResultStatus.INTERNAL_ERROR);
+            if (En_ResultStatus.INCORRECT_PARAMS.equals(saveResult.getStatus())){
+                return StringUtils.isEmpty(saveResult.getMessage()) ? INTERNAL_ERROR : saveResult.getMessage();
             }
 
-            CaseComment existedCaseComment = findCaseCommentByRemoteId(caseCommentList.getData(), ytIssueComment.id);
-
-            if(existedCaseComment == null) {
-                Result<CaseComment> caseCommentResult = youtrackService.convertYtIssueComment(ytIssueComment);
-
-                if (caseCommentResult.isError() || caseCommentResult.getData() == null){
-                    log.warn( "makeCommentsToCreate(): failed to convert comment. ytIssueComment={}, caseCommentResult={}", ytIssueComment, caseCommentResult );
-                    return error(En_ResultStatus.INTERNAL_ERROR);
-                }
-
-                CaseComment caseComment = caseCommentResult.getData();
-                caseComment.setText(removeTag(caseComment.getText()));
-
-                caseComment.setCaseId(projectId);
-                Result<CaseLink> ytLink = caseLinkService.getYtLink(token, youtrackId, projectId);
-
-                if (ytLink.isError()) {
-                    log.warn( "makeCommentsToCreate(): getYtLink error, projectId={}, ytLink result={}", projectId, ytLink );
-                    return error(En_ResultStatus.INTERNAL_ERROR);
-                }
-
-                caseComment.setRemoteLinkId(ytLink.getData().getId());
-                commentToCreate.add(caseComment);
+            if (En_ResultStatus.NOT_UPDATED.equals(saveResult.getStatus())){
+                return PROJECT_NOT_UPDATED + saveResult.getMessage();
             }
+
+            return INTERNAL_ERROR;
         }
 
-        return ok(commentToCreate);
+        log.info( "saveYoutrackCommentToProjects(): OK" );
+        return OK;
     }
 
     @PostMapping(value = "/changeyoutrackid/{oldyoutrackid}/{newyoutrackid}", produces = "text/plain;charset=UTF-8")
@@ -610,10 +532,10 @@ public class PortalApiController {
     }
 
     private Result<List<Long>> removeDuplicates(List<Long> crmNumberList) {
-        Set<Long> uniqueNumbers = new LinkedHashSet<>(crmNumberList);
-        crmNumberList.clear();
-        crmNumberList.addAll(uniqueNumbers);
-        return ok(crmNumberList);
+        return ok(crmNumberList
+                .stream()
+                .distinct()
+                .collect(Collectors.toList()));
     }
 
     private Result<List<Long>> makeNumberList(String crmNumbers) throws NumberFormatException{
@@ -649,13 +571,13 @@ public class PortalApiController {
         return text;
     }
 
-    private CaseComment findCaseCommentByRemoteId(List<CaseComment> list, String remoteId) {
+    private Result<Boolean> checkCommentExisted(List<CaseComment> list, String remoteId) {
         for (CaseComment caseComment : list) {
             if (Objects.equals(caseComment.getRemoteId(), remoteId)){
-                return caseComment;
+                return ok(true);
             }
         }
-        return null;
+        return ok(false);
     }
 
     private YtIssueComment deserializeComment (String json){
@@ -668,5 +590,99 @@ public class PortalApiController {
             log.error("deserializeComment(): failed to deserialize ytIssueComment", e);
             return null;
         }
+    }
+
+    private Result<String> updateCrmNumbers(AuthToken token, String crmNumbers, String youtrackId) {
+        return makeNumberList(crmNumbers)
+                .flatMap(this::removeDuplicates)
+                .flatMap(crmNumberListDistinct -> caseLinkService.setYoutrackIdToCaseNumbers(token, youtrackId, crmNumberListDistinct));
+    }
+
+    private Result<String> updateProjectNumbers(AuthToken token, String projectNumbers, String youtrackId) {
+        return makeNumberList(projectNumbers)
+                .flatMap(this::removeDuplicates)
+                .flatMap(projectNumberListDistinct -> caseLinkService.setYoutrackIdToProjectNumbers(token, youtrackId, projectNumberListDistinct));
+    }
+
+    private Result<Boolean> updateComments(AuthToken token, YtIssueComment ytIssueComment){
+
+        return youtrackService.convertYtIssueComment(ytIssueComment)
+                .flatMap(caseComment -> {
+                    caseComment.setText(removeTag(caseComment.getText()));
+                    return caseCommentService.updateProjectCommentsFromYoutrack(token, caseComment);
+                })
+                .ifError(updateResult -> log.warn( "saveYoutrackCommentToProjects(): update comment error, caseComment={}, remoteId={}, result={}", youtrackService.convertYtIssueComment(ytIssueComment), ytIssueComment.id, updateResult));
+    }
+
+    private Result<Boolean> createComments(AuthToken token, List<CaseComment> commentListToCreate){
+
+        log.info( "saveYoutrackCommentToProjects(): commentListToCreate={}", commentListToCreate );
+        List<Long> errorResultProjectIds = new ArrayList<>();
+
+        for (CaseComment caseComment : commentListToCreate) {
+            Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.PROJECT, caseComment);
+
+            if (caseCommentResult.isError()){
+                log.warn( "saveYoutrackCommentToProjects(): create comment error, projectId={}, caseComment={}", caseComment.getCaseId(), caseComment );
+                errorResultProjectIds.add(caseComment.getCaseId());
+            }
+        }
+
+        if (errorResultProjectIds.isEmpty()){
+            return ok();
+        } else {
+            return error(En_ResultStatus.NOT_UPDATED, errorResultProjectIds.stream().map(Objects::toString).collect(Collectors.joining(", ")));
+        }
+    }
+
+    private Result<List<CaseComment>> makeCommentListToCreate(AuthToken token, List<Long> projectIds, YtIssueComment ytIssueComment, String youtrackId){
+        log.info( "makeCommentListToCreate(): projectIds={}, ytIssueComment={}, youtrackId={}", projectIds, ytIssueComment, youtrackId );
+
+        List<CaseComment> commentListToCreate = new ArrayList<>();
+
+        for (Long projectId : projectIds) {
+
+            Result<CaseComment> caseCommentResult = caseCommentService.getCaseCommentList(token, En_CaseType.PROJECT, projectId)
+                    .ifError(getCommentResult ->  log.warn( "makeCommentListToCreate(): getCaseCommentList error, projectId={}, caseCommentList result={}", projectId, getCommentResult ))
+                    .flatMap(caseComments -> checkCommentExisted(caseComments, ytIssueComment.id))
+                    .flatMap(isExisted -> isExisted ? ok() : makeCommentToCreate(token, ytIssueComment, projectId, youtrackId));
+
+            if (caseCommentResult.isError()) {
+                log.warn( "makeCommentListToCreate(): failed to make comment to create, projectId={}, caseCommentResult={}", projectId, caseCommentResult );
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+
+            if (caseCommentResult.getData() != null){
+                commentListToCreate.add(caseCommentResult.getData());
+            }
+        }
+
+        log.info( "makeCommentListToCreate(): commentListToCreate={}", commentListToCreate );
+        return ok(commentListToCreate);
+    }
+
+    public Result<CaseComment> makeCommentToCreate(AuthToken token, YtIssueComment ytIssueComment, Long projectId, String youtrackId){
+
+        Result<CaseComment> caseCommentResult = youtrackService.convertYtIssueComment(ytIssueComment);
+
+        if (caseCommentResult.isError() || caseCommentResult.getData() == null){
+            log.warn( "makeCommentsToCreate(): failed to convert comment. ytIssueComment={}, caseCommentResult={}", ytIssueComment, caseCommentResult );
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        CaseComment caseComment = caseCommentResult.getData();
+        caseComment.setText(removeTag(caseComment.getText()));
+
+        caseComment.setCaseId(projectId);
+        Result<CaseLink> ytLink = caseLinkService.getYtLink(token, youtrackId, projectId);
+
+        if (ytLink.isError()) {
+            log.warn( "makeCommentsToCreate(): getYtLink error, projectId={}, ytLink result={}", projectId, ytLink );
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        caseComment.setRemoteLinkId(ytLink.getData().getId());
+
+        return  ok(caseComment);
     }
 }

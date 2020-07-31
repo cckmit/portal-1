@@ -1168,19 +1168,6 @@ public class TestPortalApiController extends BaseServiceTest {
         return projectNumberList;
     }
 
-    private CaseComment convertYtIssueComment(YtIssueComment issueComment) {
-        CaseComment caseComment = new CaseComment();
-        caseComment.setAuthorId(999L);
-        caseComment.setCreated(issueComment.created == null ? null : new Date(issueComment.created));
-        caseComment.setUpdated(issueComment.updated == null ? null : new Date(issueComment.updated));
-        caseComment.setRemoteId(issueComment.id);
-        caseComment.setOriginalAuthorName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setOriginalAuthorFullName(issueComment.author != null ? issueComment.author.fullName : null);
-        caseComment.setText(issueComment.text);
-        caseComment.setDeleted(issueComment.deleted);
-        return caseComment;
-    }
-
     private boolean isListContainCommentByRemoteId(List<CaseComment> list, String remoteId) {
         for (CaseComment caseComment : list) {
             if (Objects.equals(caseComment.getRemoteId(), remoteId)){

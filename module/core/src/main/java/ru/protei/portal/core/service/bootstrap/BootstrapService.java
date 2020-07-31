@@ -75,58 +75,87 @@ public class BootstrapService {
         updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
-        updateWithCrossLinkColumnAndTranfserNewCrosslink();
+        updateWithCrossLinkColumn();
+        transferProjectCrosslinkToYoutrack();
     }
 
-    private void updateWithCrossLinkColumnAndTranfserNewCrosslink() {
+    private void updateWithCrossLinkColumn() {
+
+        log.debug("updateWithCrossLinkColumn(): start");
+
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+        List<CaseObject> projects = caseObjectDAO.getCases(caseQuery);
+
+        log.debug("updateWithCrossLinkColumn(): projects size={}", projects.size());
+
+        for (CaseObject project : projects) {
+            try {
+                CaseLinkQuery query = new CaseLinkQuery();
+                query.setType(En_CaseLink.YT);
+                query.setCaseId(project.getId());
+                List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
+
+                log.debug("updateWithCrossLinkColumn(): ytLinks={}", ytLinks);
+
+                for (CaseLink caseLink : ytLinks) {
+                    caseLink.setWithCrosslink(true);
+                    caseLinkDAO.merge(caseLink);
+                }
+
+                log.debug("updateWithCrossLinkColumn(): successfully updated project ytLinks={}", ytLinks);
+            } catch (Exception e){
+                log.error("updateWithCrossLinkColumn(): failed to updated project={}, errorMessage={}", project, e.getMessage(), e);
+            }
+        }
+
+        log.debug("updateWithCrossLinkColumn(): finish");
+    }
+
+    private void transferProjectCrosslinkToYoutrack() {
         if (!config.data().integrationConfig().isYoutrackProjectLinksMigrationEnabled() || !config.data().getCommonConfig().isProductionServer()){
             return;
         }
 
-        log.debug("updateWithCrossLinkColumn(): start");
+        log.debug("transferProjectCrosslinkToYoutrack(): start");
 
-        CaseLinkQuery query = new CaseLinkQuery();
-        query.setType(En_CaseLink.YT);
-        query.setWithCrosslink(false);
-        List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+        List<CaseObject> projects = caseObjectDAO.getCases(caseQuery);
 
-        log.debug("updateWithCrossLinkColumn(): ytLinks={}", ytLinks);
+        log.debug("transferProjectCrosslinkToYoutrack(): projects size={}", projects.size());
 
         Set<String> youtrackIssueIds = new HashSet<>();
 
-        //Для YT ссылок проверяем тим caseObject. Если PROJECT, то ставим флаг true. Иначе - false
-        for (CaseLink caseLink : ytLinks) {
+        for (CaseObject project : projects) {
             try {
-                CaseObject caseObject = caseObjectDAO.get(caseLink.getCaseId());
+                CaseLinkQuery query = new CaseLinkQuery();
+                query.setType(En_CaseLink.YT);
+                query.setCaseId(project.getId());
+                List<CaseLink> ytLinks = caseLinkDAO.getListByQuery(query);
 
-                if (caseObject == null) {
-                    log.warn("updateWithCrossLinkColumn(): CaseObject is NULL from caseLink={}", caseLink);
-                    continue;
-                }
+                log.debug("transferProjectCrosslinkToYoutrack(): ytLinks={}", ytLinks);
 
-                if(En_CaseType.PROJECT.equals(caseObject.getType())) {
-                    caseLink.setWithCrosslink(true);
-                    //caseLinkDAO.merge(caseLink);
+                for (CaseLink caseLink : ytLinks) {
                     youtrackIssueIds.add(caseLink.getRemoteId());
                 }
-                log.debug("updateWithCrossLinkColumn(): successfully updated caseLink={}", caseLink);
+
             } catch (Exception e){
-                log.error("updateWithCrossLinkColumn(): failed to update caseLink={}, errorMessage={}", caseLink, e.getMessage(), e);
+                log.error("transferProjectCrosslinkToYoutrack(): project={}, errorMessage={}", project, e.getMessage(), e);
             }
         }
 
-        //Для всех проектов, в которых есть ссылки на YT, заполняем поле на YT
-        log.debug("updateWithCrossLinkColumn(): youtrackIssueIds={}", youtrackIssueIds);
+        log.debug("transferProjectCrosslinkToYoutrack(): youtrackIssueIds size={}", youtrackIssueIds.size());
         youtrackIssueIds.forEach(youtrackIssueId -> {
             try {
                 youtrackService.setIssueProjectNumbers(youtrackIssueId, findLinkedCaseIdsByTypeAndYoutrackId(En_CaseType.PROJECT, youtrackIssueId));
-                log.debug("transferYoutrackLinks(): SUCCESS transfer case links to youtrack id={}", youtrackIssueId);
+                log.debug("transferProjectCrosslinkToYoutrack(): SUCCESS transfer case links to youtrack id={}", youtrackIssueId);
             } catch (Exception e){
-                log.error("transferYoutrackLinks(): ERROR transfer case links to youtrack id={}, error message={}", youtrackIssueId, e.getMessage());
+                log.error("transferProjectCrosslinkToYoutrack(): ERROR transfer case links to youtrack id={}, error message={}", youtrackIssueId, e.getMessage());
             }
         });
 
-        log.debug("updateWithCrossLinkColumn(): finish");
+        log.debug("transferProjectCrosslinkToYoutrack(): finish");
     }
 
     private void fillWithCrossLinkColumn() {

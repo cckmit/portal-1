@@ -294,7 +294,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (needToChangeAccount && portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled()) {
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+
+        if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
             createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
@@ -389,7 +391,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        if (portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled()) {
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+
+        if (YOUTRACK_INTEGRATION_ENABLED) {
             createFireEmployeeYoutrackIssue(personFromDb);
         }
 
@@ -563,13 +567,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         String summary = "Смена фамилии сотрудника " + employeeOldFullName;
 
-        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + portalConfig.data().getCommonConfig().getCrmUrlInternal() + "#employee_preview:id=" + employeeId + ")" + "\n" +
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+
+        String description = "Карточка сотрудника: " + "[" + employeeNewFullName + "](" + PORTAL_URL + "#employee_preview:id=" + employeeId + ")" + "\n" +
                 "Старое ФИО: " + employeeOldFullName + "\n" +
                 "Новое ФИО: " + employeeNewFullName + "\n" +
                 "\n" +
                 "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( portalConfig.data().youtrack().getAdminProject(), summary, description );
+        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+
+        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
     }
 
     private void createFireEmployeeYoutrackIssue(Person person) {
@@ -578,7 +586,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         String summary = "Увольнение сотрудника " + employeeFullName;
 
-        String description = "Карточка сотрудника: " + "[" + employeeFullName + "](" + portalConfig.data().getCommonConfig().getCrmUrlInternal() + "#employee_preview:id=" + person.getId() + ")";
+        final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
+
+        String description = "Карточка сотрудника: " + "[" + employeeFullName + "](" + PORTAL_URL + "#employee_preview:id=" + person.getId() + ")";
 
         youtrackService.createFireWorkerIssue(summary, description );
     }

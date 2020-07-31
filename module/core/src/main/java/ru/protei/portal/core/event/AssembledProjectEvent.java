@@ -36,18 +36,18 @@ public class AssembledProjectEvent extends ApplicationEvent {
 
     public AssembledProjectEvent(AbstractProjectEvent event) {
         super(event.getSource());
+        this.lastUpdated = currentTimeMillis();
         this.initiatorId = event.getPersonId();
         this.projectId = event.getProjectId();
         this.isCreateEvent = event.isCreateEvent();
-        this.lastUpdated = currentTimeMillis();
     }
 
     public void attachUpdateEvent(ProjectUpdateEvent event) {
+        this.lastUpdated = currentTimeMillis();
         this.oldProjectState = event.getOldProjectState();
         this.newProjectState = event.getNewProjectState();
         this.projectId = event.getProjectId();
         this.initiatorId = event.getPersonId();
-        this.lastUpdated = currentTimeMillis();
     }
 
     public void attachCommentEvent(ProjectCommentEvent event) {
