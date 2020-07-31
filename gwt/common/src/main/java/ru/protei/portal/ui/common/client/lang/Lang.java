@@ -844,8 +844,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentChangeManagerTo();
 
-    String errEditIssueCommentEmpty();
-
     String commentEmpty();
 
     String textMarkdownSupport();
@@ -2933,6 +2931,8 @@ public interface Lang extends Messages, ContactItemLang {
     String filterRemoveSuccessed();
 
     String filterNotDefined();
+
+    String errorNeedFeelTimeElapsed();
 
     String errSaveProjectHeadManager();
 }
