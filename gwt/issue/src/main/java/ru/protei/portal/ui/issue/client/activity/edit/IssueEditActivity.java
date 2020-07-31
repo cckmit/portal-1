@@ -321,15 +321,15 @@ public abstract class IssueEditActivity implements
     }
 
     private void showComments(CaseObject issue) {
-        fireEvent( new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer() )
-                .withCaseType( En_CaseType.CRM_SUPPORT )
-                .withCaseId( issue.getId() )
-                .withModifyEnabled( hasAccess() && !isReadOnly() )
-                .withElapsedTimeEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW ) )
-                .withPrivateVisible( !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) )
-                .withPrivateCase( issue.isPrivateCase() )
-                .withNewCommentEnabled( !isTerminalState(issue.getStateId()) )
-                .withTextMarkup( CaseTextMarkupUtil.recognizeTextMarkup( issue ) ) );
+        CaseCommentEvents.Show show = new CaseCommentEvents.Show( issueInfoWidget.getCommentsContainer(),
+                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly() );
+        show.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
+        show.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
+        show.isPrivateCase = issue.isPrivateCase();
+        show.isNewCommentEnabled = !isTerminalState(issue.getStateId());
+        show.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        fireEvent( show );
+
     }
 
     private void showPlansHistory(CaseObject issue) {

@@ -199,8 +199,8 @@ public class PortalApiController {
 
         return authenticate(request, response, authService, sidGen, log)
                 .flatMap(authToken -> productService.createProductByInfo(authToken, product))
-                .ifOk(devUnit -> log.info("createProduct(): OK"))
-                .ifError(devUnitResult -> log.warn("createProduct(): Can't create product={}. {}", product, devUnitResult));
+                .ifError(devUnitResult -> log.warn("createProduct(): Can't create product={}. {}", product, devUnitResult))
+                .ifOk(devUnit -> log.info("createProduct(): OK"));
     }
 
     @PostMapping(value = "/products/update")

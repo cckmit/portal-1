@@ -14,11 +14,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.throttler.Throttler;
+import ru.protei.portal.ui.common.client.throttler.ThrottlerFactory;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -72,13 +75,13 @@ public class CaseCommentItemView
     public void setMessage( String html ) {
         if ( html == null ) {
             this.message.getElement().setInnerText("");
-            this.messageBlock.addClassName( "hide" );
+            this.messageBlock.addClassName(  CrmConstants.Style.HIDE );
             this.hideOptions();
             return;
         }
 
         this.message.getElement().setInnerHTML(html);
-        this.messageBlock.removeClassName( "hide" );
+        this.messageBlock.removeClassName(  CrmConstants.Style.HIDE );
     }
 
     @Override
@@ -157,9 +160,9 @@ public class CaseCommentItemView
     @Override
     public void showAttachments( boolean isShow ){
         if( isShow )
-            attachBlock.removeClassName( "hide" );
+            attachBlock.removeClassName( CrmConstants.Style.HIDE );
         else
-            attachBlock.addClassName( "hide" );
+            attachBlock.addClassName(  CrmConstants.Style.HIDE );
     }
 
     @Override
@@ -218,6 +221,18 @@ public class CaseCommentItemView
     @Override
     public void setTimeElapsedType(En_TimeElapsedType type) {
         timeElapsedTypePopup.setTimeElapsedType(type);
+    }
+
+    @Override
+    public void displayUpdatedAnimation() {
+        root.getElement().addClassName(CrmConstants.Style.UPDATED);
+        removeUpdatedTimer.run();
+    }
+
+    @Override
+    public void displayAddedAnimation() {
+        root.getElement().addClassName(CrmConstants.Style.ADDED);
+        removeAddedTimer.run();
     }
 
     @UiHandler( "remove" )
@@ -314,9 +329,13 @@ public class CaseCommentItemView
     DivElement messageContainer;
     @Inject
     En_CaseImportanceLang importanceLang;
+    Throttler removeUpdatedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND, ()-> root.getElement().removeClassName( CrmConstants.Style.UPDATED ) );
+    Throttler removeAddedTimer = ThrottlerFactory.makeDelayedAntiRapidThrottler( 1 * SECOND,  () -> root.getElement().removeClassName( CrmConstants.Style.ADDED ) );
 
     private boolean isTimeElapsedTypeEditEnabled;
     private AbstractCaseCommentItemActivity activity;
+
+    private static int SECOND = (int) CrmConstants.Time.SEC;
 
     interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}
     private static CaseCommentUiBinder ourUiBinder = GWT.create( CaseCommentUiBinder.class );

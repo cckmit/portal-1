@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.dao.CaseCommentShortViewDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
@@ -25,9 +27,11 @@ import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,12 +82,18 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     resultData.getAddedAttachments(), null
             ));
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( comment.getCaseId() ) );
+
             okResult.publishEvent( new CaseCommentEvent( this, ServiceModule.GENERAL, token.getPersonId(), comment.getCaseId(), isEagerEvent,
-                    null, resultData.getCaseComment(), null ) );
+                    null, resultData.getCaseComment(), null) );
+
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
+        }
+
+        if (resultData.getCaseComment() != null) {
+            clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
 
         return okResult;
@@ -173,6 +183,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     resultData.getOldCaseComment(), resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId())
             );
+        }
+
+        if (resultData.getCaseComment() != null) {
+            clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
         }
 
         return okResult;
@@ -309,6 +323,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
+        if(isRemoved) {
+            clientEventService.fireEvent( new CaseCommentRemovedClientEvent( token.getPersonId(), caseId, removedComment.getId() ));
+        }
+
         boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals( caseObjectDAO.getExternalAppName( caseId ) );
         return okResult
                 .publishEvent( new CaseAttachmentEvent( this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments ) )
@@ -375,6 +393,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         return ok( commentId);
+    }
+
+    @Override
+    public Result<CaseComment> getCaseComment( AuthToken token, Long commentId ) {
+        if (commentId == null) {
+            return error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return ok(caseCommentDAO.get(commentId));
     }
 
     private Result<List<CaseComment>> getList(CaseCommentQuery query) {
@@ -477,6 +504,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CaseCommentShortViewDAO caseCommentShortViewDAO;
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    private ClientEventService clientEventService;
+
 
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
     private static Logger log = LoggerFactory.getLogger(CaseCommentServiceImpl.class);

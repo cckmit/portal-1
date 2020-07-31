@@ -19,4 +19,6 @@ public interface CaseCommentControllerAsync {
     void removeCaseComment(En_CaseType caseType, CaseComment comment, AsyncCallback<Void> async);
 
     void updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type, AsyncCallback<Boolean> async);
+
+    void getCaseComment( Long commentId, AsyncCallback<CaseComment> async );
 }

@@ -47,6 +47,8 @@ import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.service.policy.PolicyServiceImpl;
+import ru.protei.portal.core.service.pushevent.ClientEventService;
+import ru.protei.portal.core.service.pushevent.ClientEventServiceImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
@@ -78,6 +80,11 @@ public class ServiceTestsConfiguration {
         executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
         executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
         return executor;
+    }
+
+    @Bean
+    public ClientEventService getClientEventService() {
+        return new ClientEventServiceImpl();
     }
 
     @Bean

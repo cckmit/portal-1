@@ -11,6 +11,8 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
+import ru.protei.portal.core.model.event.CaseCommentRemovedClientEvent;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -19,6 +21,7 @@ import ru.protei.portal.core.model.util.ValidationResult;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -39,6 +42,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -117,12 +121,53 @@ public abstract class CaseCommentListActivity
         view.privateComment().setValue(false);
         view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
-        reloadComments();
+        reloadComments(caseType, caseId);
     }
 
     @Event
     public void onReload(CaseCommentEvents.Reload event) {
-        reloadComments();
+        reloadComments(caseType, caseId);
+    }
+
+    @Event
+    public void onCaseCommentRemovedClientEvent( CaseCommentRemovedClientEvent event ) {
+        if (!view.isAttached()) return;
+        if (!Objects.equals( caseId, event.getCaseObjectId() )) return;
+        if (Objects.equals( policyService.getProfileId(), event.getPersonId() )) return;
+
+        AbstractCaseCommentItemView oldView = findItemViewByCommentId( event.getCaseCommentID() );
+        if (oldView != null) {
+            view.removeComment( oldView );
+            itemViewToModel.remove( oldView );
+        }
+    }
+
+    @Event
+    public void onCaseCommentSavedClientEvent( CaseCommentSavedClientEvent event ) {
+        if (!view.isAttached()) return;
+        if (!Objects.equals( caseId, event.getCaseObjectId() )) return;
+        if (Objects.equals( policyService.getProfileId(), event.getPersonId() )) return;
+
+        caseCommentController.getCaseComment( event.getCaseCommentID(), new FluentCallback<CaseComment>()
+                .withSuccess( comment -> {
+                    if (comment == null) return;
+                    if (!view.isAttached()) return;
+
+                    AbstractCaseCommentItemView newView = makeCommentView( comment );
+                    AbstractCaseCommentItemView oldView = findItemViewByCommentId( comment.getId() );
+                    if (oldView != null) {
+                        view.replaceCommentView( oldView, newView );
+                        newView.displayUpdatedAnimation();
+                        itemViewToModel.remove( oldView );
+                        itemViewToModel.put( newView, comment );
+                        return;
+                    }
+
+                    itemViewToModel.put( newView, comment );
+                    view.addCommentToFront( newView );
+                    newView.displayAddedAnimation();
+
+                } ) );
     }
 
     @Event
@@ -339,6 +384,7 @@ public abstract class CaseCommentListActivity
                 views.add(itemView);
                 textList.add(comment.getText());
             }
+            itemViewToModel.put( itemView, comment );
             view.addCommentToFront( itemView.asWidget() );
         }
 
@@ -409,7 +455,6 @@ public abstract class CaseCommentListActivity
         itemView.enabledEdit( isModifyEnabled && isEnableEdit( value, profile.getId() ) );
         itemView.enableReply(isModifyEnabled);
         itemView.enableUpdateTimeElapsedType(Objects.equals(value.getAuthorId(), profile.getId()));
-        itemViewToModel.put( itemView, value );
 
         return itemView;
     }
@@ -580,6 +625,7 @@ public abstract class CaseCommentListActivity
             fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
             AbstractCaseCommentItemView itemView = makeCommentView(caseComment);
             lastCommentView = itemView;
+            itemViewToModel.put( itemView, caseComment );
             view.addCommentToFront(itemView.asWidget());
             renderTextAsync(caseComment.getText(), textMarkup, itemView::setMessage);
         }
@@ -667,7 +713,7 @@ public abstract class CaseCommentListActivity
                 .withSuccess(consumer));
     }
 
-    private void reloadComments() {
+    private void reloadComments(En_CaseType caseType, Long caseId) {
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(this::fillView)
@@ -676,6 +722,17 @@ public abstract class CaseCommentListActivity
 
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
+    private AbstractCaseCommentItemView findItemViewByCommentId( Long commentId ) {
+        if (commentId == null) return null;
+        for (Map.Entry<AbstractCaseCommentItemView, CaseComment> entry : itemViewToModel.entrySet()) {
+            if (entry.getValue() == null) continue;
+            if (!Objects.equals( entry.getValue().getId(), commentId )) continue;
+            return entry.getKey();
+        }
+
+        return null;
     }
 
     private final Timer changedPreviewTimer = new Timer() {
@@ -706,6 +763,8 @@ public abstract class CaseCommentListActivity
 
     @Inject
     ConfigStorage configStorage;
+    @Inject
+    PolicyService policyService;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;
@@ -730,4 +789,6 @@ public abstract class CaseCommentListActivity
 
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
     private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
+
+    private static final Logger log = Logger.getLogger( CaseCommentListActivity.class.getName() );
 }

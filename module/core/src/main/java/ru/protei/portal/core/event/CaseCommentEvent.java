@@ -1,6 +1,7 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
+import org.w3c.dom.events.Event;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -11,7 +12,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 /**
  * Created by michael on 04.05.17.
  */
-public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
+public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent, de.novanic.eventservice.client.event.Event {
 
     private Long caseObjectId;
     private CaseComment newCaseComment;
