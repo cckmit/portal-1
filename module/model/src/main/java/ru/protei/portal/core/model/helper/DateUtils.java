@@ -5,7 +5,6 @@ import java.util.Date;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.DAY;
 
 public class DateUtils {
-
     public static Long getDaysBetween(Date from, Date until) {
         if (from == null || until == null) {
             return null;

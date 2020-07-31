@@ -47,8 +47,14 @@ public interface Query {
 
     boolean isEmpty();
 
+    /**
+     * Аргументы SQL выражениея для  подстановки в ?
+     */
     Object[] args();
 
+    /**
+     * SQL выражение с ? вместо аргументов
+     */
     String buildSql();
 
     JdbcQueryParameters build();

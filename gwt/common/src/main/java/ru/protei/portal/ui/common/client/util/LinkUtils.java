@@ -46,4 +46,20 @@ public class LinkUtils {
 
         return href.substring(0, href.indexOf("#") + 1) + CrmConstants.Jira.INFO_LINK;
     }
+
+    public static boolean isLinkNeeded(Class<?> clazz) {
+        if (clazz == null) return false;
+
+        switch (clazz.getSimpleName()) {
+            case ("Contract"):
+            case ("Project"):
+            case ("Platform"):
+            case ("DevUnit"):
+            case ("EmployeeShortView"):
+            case ("Plan"):
+                return true;
+            default:
+                return false;
+        }
+    }
 }

@@ -10,7 +10,6 @@ import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 import ru.protei.portal.ui.common.client.widget.tab.navitem.TabWidgetNavItem;
 import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
-import ru.protei.portal.ui.common.client.widget.wizard.pane.WizardWidgetPane;
 
 import java.util.*;
 

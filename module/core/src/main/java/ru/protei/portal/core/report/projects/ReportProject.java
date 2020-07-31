@@ -7,8 +7,10 @@ import ru.protei.portal.core.model.struct.ReportProjectWithLastComment;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface ReportProject {
-    boolean writeReport(OutputStream buffer, Report report) throws IOException;
+    boolean writeReport(OutputStream buffer, Report report,
+                        Predicate<Long> isCancel) throws IOException;
     List<ReportProjectWithLastComment> createData(CaseQuery query);
 }

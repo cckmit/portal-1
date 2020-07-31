@@ -101,7 +101,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

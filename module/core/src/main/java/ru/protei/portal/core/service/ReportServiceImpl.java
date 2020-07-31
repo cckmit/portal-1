@@ -2,6 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.ReportDAO;
@@ -91,7 +92,8 @@ public class ReportServiceImpl implements ReportService {
 
         Report report = reportDAO.getReport(token.getPersonId(), id);
 
-        if (report == null || report.getStatus() != En_ReportStatus.ERROR) {
+        if (report == null ||
+                !(report.getStatus() == En_ReportStatus.ERROR || report.getStatus() == En_ReportStatus.CANCELLED)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -157,13 +159,42 @@ public class ReportServiceImpl implements ReportService {
         return ok();
     }
 
+    @Override
+    @Transactional
+    public Result<Long> cancelReport(AuthToken authToken, Long id) {
+        if (id == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Report report = reportDAO.getReport(authToken.getPersonId(), id);
+
+        if (report == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (report.getStatus() == En_ReportStatus.PROCESS) {
+            report.setStatus(En_ReportStatus.CANCELLED);
+            report.setModified(new Date());
+
+            reportDAO.merge(report);
+        }
+
+        return ok(report.getId());
+    }
+
     private void removeReports(List<Report> reports) {
         List<Long> idsToRemove = new ArrayList<>();
         for (Report report : reports) {
             idsToRemove.add(report.getId());
         }
         reportStorageService.removeContent(idsToRemove);
-        reportDAO.removeByKeys(idsToRemove);
+
+        Date now = new Date();
+        reports.forEach(report -> {
+            report.setRemoved(true);
+            report.setModified(now);
+        });
+        reportDAO.mergeBatch(reports);
     }
 
     private Lang getLang() {

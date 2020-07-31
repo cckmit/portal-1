@@ -7,8 +7,6 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.util.documentvalidators.DocumentDecimalNumberValidator;
 
-import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-
 public class DocumentUtils {
 
     static public boolean isValidNewDocument(Document document,  ProjectInfo project, boolean isDocFileSet, boolean isPdfFileSet) {

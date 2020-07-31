@@ -190,7 +190,7 @@ public class AbsenceServiceImpl implements AbsenceService {
     @Override
     public Result createReport(AuthToken token, String name, AbsenceQuery query) {
 
-        if (query == null || query.getFromTime() == null || query.getTillTime() == null) {
+        if (query == null || query.getDateRange() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 

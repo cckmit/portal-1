@@ -67,7 +67,7 @@ public class BootstrapService {
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
         //patchNormalizeWorkersPhoneNumbers(); // remove once executed
-        uniteSeveralProductsInProjectToComplex();
+//        uniteSeveralProductsInProjectToComplex();
         //createProjectsForContracts();
         documentBuildFullIndex();
         //fillImportanceLevels();
@@ -79,7 +79,7 @@ public class BootstrapService {
         updateHistoryTable();
         updateIssueFiltersDateRanges();
         updateIssueReportDateRanges();
-        migratePersonAbsences();
+        //migratePersonAbsences();
     }
 
     private void fillWithCrossLinkColumn() {

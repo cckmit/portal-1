@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -19,7 +20,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 /**
  * Синхронная модель Person
  */
@@ -31,7 +32,7 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
     }
 
     void updateCompanies(Refreshable selector, Boolean people, Set<Long> companyIds, Boolean fired) {
-        PersonQuery query = new PersonQuery(companyIds, people, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
+        PersonQuery query = new PersonQuery(nullIfEmpty( companyIds ), people, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC, null);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
 
             @Override
@@ -81,8 +82,7 @@ public abstract class PersonModel implements Activity, SelectorModel<PersonShort
 
     @Override
     public PersonShortView get( int elementIndex ) {
-        if(size( options ) <= elementIndex) return null;
-        return options.get( elementIndex );
+        return CollectionUtils.get( options, elementIndex );
     }
 
     @Inject

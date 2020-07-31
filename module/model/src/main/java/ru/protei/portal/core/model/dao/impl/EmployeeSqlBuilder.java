@@ -49,7 +49,7 @@ public class EmployeeSqlBuilder {
                 condition.append(" and person.secondname=?");
                 args.add(query.getSecondName());
             }
-            
+
             if (query.getOnlyPeople() != null) {
                 condition.append(" and person.sex != ?");
                 args.add(En_Gender.UNDEFINED.getCode());
@@ -128,6 +128,13 @@ public class EmployeeSqlBuilder {
                         .append("(select personId from worker_entry where worker_entry.dep_id in ")
                         .append(HelperFunc.makeInArg(query.getDepartmentIds(), String::valueOf))
                         .append(")");
+            }
+
+            if (query.getAbsent() != null && query.getAbsent()) {
+                condition.append(" and person.id in ")
+                        .append("(select person_id from person_absence where from_time <= ? and till_time >= ?)");
+                args.add(DateUtils.resetSeconds(new Date()));
+                args.add(DateUtils.resetSeconds(new Date()));
             }
         });
     }

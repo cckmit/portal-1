@@ -24,8 +24,10 @@ import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
@@ -162,9 +164,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     // валидация виджетов выбора временных периодов в зависимости от типа отчета
     private void validateDateRanges(En_ReportType reportType) {
-        boolean isTimeLimitMandatory = reportType == null ?
-                false :
-                En_ReportType.isTimeLimitMandatory(reportType);
+        boolean isTimeLimitMandatory = En_ReportType.isTimeLimitMandatory(reportType);
 
         issueFilterWidget.getIssueFilterParams().setCreatedRangeMandatory(isTimeLimitMandatory);
         validateCreatedRange(
@@ -202,6 +202,10 @@ public abstract class IssueReportCreateActivity implements Activity,
                 }
                 break;
             case CASE_OBJECTS:
+                if (query.getCreatedRange() == null && query.getModifiedRange() == null) {
+                    fireEvent(new NotifyEvents.Show(lang.reportPeriodNotSelected(), NotifyEvents.NotifyType.ERROR));
+                    return false;
+                }
                 boolean createdRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
                 boolean modifiedRangeValid = validateModifiedRange(query.getModifiedRange(), rangeTypeMandatory);
 
@@ -210,6 +214,19 @@ public abstract class IssueReportCreateActivity implements Activity,
                     return false;
                 }
                 break;
+        }
+        if (!isValidMaxPeriod(query.getCreatedRange()) || !isValidMaxPeriod(query.getModifiedRange())) {
+            fireEvent(new NotifyEvents.Show(lang.reportPeriodMoreMaxError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidMaxPeriod(DateRange dateRange) {
+        if (dateRange != null && dateRange.getIntervalType() == En_DateIntervalType.FIXED &&
+                dateRange.getTo() != null && dateRange.getFrom() != null) {
+            Date yearAgo = new Date(dateRange.getTo().getTime() - TimeUnit.DAYS.toMillis(LITTLE_OVER_YEAR_DAYS));
+            return yearAgo.before(dateRange.getFrom());
         }
         return true;
     }
@@ -260,6 +277,9 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
         if (issueFilterParams.searchPrivateVisibility().isVisible()) {
             issueFilterParams.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        }
+        if (issueFilterParams.creatorsVisibility().isVisible()) {
+            issueFilterParams.creatorsVisibility().setVisible(policyService.personBelongsToHomeCompany());
         }
     }
 
@@ -326,4 +346,6 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;
+
+    static public int LITTLE_OVER_YEAR_DAYS = 370;
 }

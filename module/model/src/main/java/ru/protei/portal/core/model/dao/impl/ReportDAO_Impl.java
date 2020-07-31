@@ -9,18 +9,29 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
 public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportDAO {
 
     @Override
     public Report getReport(Long creatorId, Long reportId) {
-        return getByCondition("report.creator = ? and report.id = ?", creatorId, reportId);
+        Condition condition = condition()
+                .and(getTableName() + ".is_removed").equal(false)
+                .and(getTableName() + ".creator").equal(creatorId)
+                .and(getTableName() + ".id").equal(reportId);
+
+        return getByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 
     @Override
@@ -150,6 +161,11 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
 
             if (CollectionUtils.isNotEmpty(query.getScheduledTypes())) {
                 condition.append(" and report.scheduled_type in ").append(JdbcHelper.makeSqlStringCollection(query.getScheduledTypes(), args, null));
+            }
+
+            if (query.isRemoved() != null) {
+                condition.append(" and report.is_removed = ?");
+                args.add(query.isRemoved());
             }
         });
     }

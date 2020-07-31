@@ -28,6 +28,7 @@ public class UiConstants {
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
         String CONTRACT = "fa fa-file-signature";
+        String EDUCATION = "fas fa-graduation-cap";
         String IP_RESERVATION = "fa fa-sitemap";
         String ROOM_RESERVATION = "fas fa-calendar-day";
         String PLAN = "fa fa-list-ol";
@@ -35,6 +36,12 @@ public class UiConstants {
     public interface Icons {
         String APPROVED = "fa-clipboard-check";
         String NOT_APPROVED = "fa-clipboard";
+
+        String REMOVE = "fa-trash-alt";
+        String DOWNLOAD = "fa-cloud-download-alt";
+        String REFRESH = "fa-redo";
+        String CANCEL = "fa-window-close";
+
     }
 
     public interface ActionBarIcons {
@@ -87,6 +94,15 @@ public class UiConstants {
         String MULTIPLE_ANY = "multiple-any";
         String SHORT_VIEW = "col-md-6";
         String FULL_VIEW = "col-md-12";
+        String LINK_DISABLE = "link-disabled";
+        String WIDE_MODAL = "modal-lg";
+    }
+
+    public interface ColumnClassName {
+        String REMOVE = "remove";
+        String DOWNLOAD = "download";
+        String REFRESH = "refresh";
+        String CANCEL = "cancel";
     }
 
     /**

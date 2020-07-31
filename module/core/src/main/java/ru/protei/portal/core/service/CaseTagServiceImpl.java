@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -35,7 +37,8 @@ public class CaseTagServiceImpl implements CaseTagService {
     private PolicyService policyService;
     @Autowired
     private LockService lockService;
-
+    @Autowired
+    HistoryService historyService;
 
     @Override
     @Transactional
@@ -145,11 +148,14 @@ public class CaseTagServiceImpl implements CaseTagService {
             CaseObjectTag cot = new CaseObjectTag(caseId, tagId);
             caseObjectTagDAO.persist(cot);
 
+            createHistory(authToken, caseId, En_HistoryAction.ADD, null, caseTag);
+
             return ok();
         });
     }
 
     @Override
+    @Transactional
     public Result<Long> detachTag( AuthToken authToken, Long caseId, Long tagId) {
         if ( caseId == null || tagId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -161,7 +167,15 @@ public class CaseTagServiceImpl implements CaseTagService {
         }
 
         caseObjectTagDAO.removeByCaseIdAndTagId(caseId, tagId);
+
+        createHistory(authToken, caseId, En_HistoryAction.REMOVE, caseTag, null);
+
         return ok(tagId);
+    }
+
+    @Override
+    public void addItemsToHistory(AuthToken authToken, Long caseId, List<CaseTag> tags) {
+        tags.forEach(tag -> createHistory(authToken, caseId, En_HistoryAction.ADD, null, tag));
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {
@@ -178,5 +192,15 @@ public class CaseTagServiceImpl implements CaseTagService {
             return false;
         }
         return true;
+    }
+
+    private Result<Long> createHistory(AuthToken token, Long id, En_HistoryAction action, CaseTag oldCaseTag, CaseTag newCaseTag) {
+        return historyService.createHistory(token, id, action,
+                En_HistoryType.TAG,
+                oldCaseTag == null ? null : oldCaseTag.getId(),
+                oldCaseTag == null ? null : oldCaseTag.getName(),
+                newCaseTag == null ? null : newCaseTag.getId(),
+                newCaseTag == null ? null : newCaseTag.getName()
+        );
     }
 }

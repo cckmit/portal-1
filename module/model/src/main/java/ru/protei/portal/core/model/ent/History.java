@@ -16,6 +16,9 @@ public class History implements Serializable {
     @JdbcColumn(name = "initiator_id")
     private Long initiatorId;
 
+    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "PersonInitiator" )
+    private String initiator;
+
     @JdbcColumn(name = "date")
     private Date date;
 
@@ -55,6 +58,14 @@ public class History implements Serializable {
 
     public Long getInitiatorId() {
         return initiatorId;
+    }
+
+    public String getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(String initiator) {
+        this.initiator = initiator;
     }
 
     public void setInitiatorId(Long initiatorId) {
@@ -130,6 +141,7 @@ public class History implements Serializable {
         return "History{" +
                 "id=" + id +
                 ", initiatorId=" + initiatorId +
+                ", initiator=" + initiator +
                 ", date=" + date +
                 ", caseObjectId=" + caseObjectId +
                 ", action=" + action +

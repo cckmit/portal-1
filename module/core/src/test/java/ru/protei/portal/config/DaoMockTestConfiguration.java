@@ -284,6 +284,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectEntityDAO() {
+        return mock( ProjectDAO.class);
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return  mock(ContractDateDAO.class);
     }
@@ -321,6 +326,21 @@ public class DaoMockTestConfiguration {
     @Bean
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
         return  mock(JiraSLAMapEntryDAO.class);
+    }
+
+    @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return  mock(EducationWalletDAO.class);
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return  mock(EducationEntryDAO.class);
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return  mock(EducationEntryAttendanceDAO.class);
     }
 
     @Bean

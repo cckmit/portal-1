@@ -10,6 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
@@ -124,6 +125,14 @@ public class MainConfiguration {
         if (connectionParam != null)
             maxDbConnectionPoolSize = connectionParam.getMaxPoolSize();
         return new BackgroundTaskThreadPoolTaskExecutor( maxDbConnectionPoolSize );
+    }
+
+    @Bean(name = REPORT_TASKS)
+    public Executor getReportThreadPoolTaskExecutor(@Autowired PortalConfig config) {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(config.data().reportConfig().getThreadsNumber());
+        executor.setMaxPoolSize(config.data().reportConfig().getThreadsNumber());
+        return executor;
     }
 
     @Bean
@@ -531,6 +540,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectEntityDAO() {
+        return new ProjectEntityDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -591,6 +605,21 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return new EducationWalletDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return new EducationEntryDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return new EducationEntryAttendanceDAO_Impl();
+    }
+
+    @Bean
     public SubnetDAO getSubnetDAO() {
         return new SubnetDAO_Impl();
     }
@@ -628,6 +657,11 @@ public class MainConfiguration {
     @Bean
     public PersonNotifierDAO getPersonNotifierDAO() {
         return new PersonNotifierDAO_Impl();
+    }
+
+    @Bean
+    public AbsenceFilterDAO getAbsenceFilterDAO() {
+        return new AbsenceFilterDAO_Impl();
     }
 
     /* SERVICES */
@@ -908,6 +942,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EducationService getEducationService() {
+        return new EducationServiceImpl();
+    }
+
+    @Bean
     public RoomReservationService getRoomReservationService() {
         return new RoomReservationServiceImpl();
     }
@@ -925,6 +964,11 @@ public class MainConfiguration {
     @Bean
     public AbsenceService getAbsenceService() {
         return new AbsenceServiceImpl();
+    }
+
+    @Bean
+    public AbsenceFilterService getAbsenceFilterService() {
+        return new AbsenceFilterServiceImpl();
     }
 
     @Bean
@@ -980,6 +1024,7 @@ public class MainConfiguration {
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";
+    public static final String REPORT_TASKS = "reportTasks";
 
     private static final Logger log = LoggerFactory.getLogger( MainConfiguration.class );
 }

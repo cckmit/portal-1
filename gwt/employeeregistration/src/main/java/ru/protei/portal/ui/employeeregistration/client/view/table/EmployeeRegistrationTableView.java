@@ -80,7 +80,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

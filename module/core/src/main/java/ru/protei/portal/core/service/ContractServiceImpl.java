@@ -10,8 +10,10 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -19,6 +21,9 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -26,8 +31,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_INN;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.CONTRACTOR_KPP;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -51,6 +55,8 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
     @Autowired
     Api1C api1CService;
+    @Autowired
+    PortalConfig config;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -125,6 +131,17 @@ public class ContractServiceImpl implements ContractService {
         if (contractId == null)
             return error(En_ResultStatus.INTERNAL_ERROR);
 
+        if (config.data().enterprise1C().isContractSyncEnabled() && contract.getContractor() != null) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isOk()) {
+                contract.setRefKey(result.getData().getRefKey());
+            } else {
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
+
+            contractDAO.merge(contract);
+        }
+
         jdbcManyRelationsHelper.persist(contract, "contractDates");
         jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
 
@@ -138,8 +155,16 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (contract == null)
+        if (contract == null || contract.getId() == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
+
+        /*
+         *  не даем сбрасывать связку договора с договором1С,
+         *  она может существовать только, если задан контрагент
+         */
+        if (config.data().enterprise1C().isContractSyncEnabled() && StringUtils.isNotBlank(contract.getRefKey()) && contract.getContractor() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         CaseObject caseObject = caseObjectDAO.get(contract.getId());
         if (caseObject == null) {
@@ -158,6 +183,15 @@ public class ContractServiceImpl implements ContractService {
             }
         } else {
             contract.setContractorId(null);
+        }
+
+        if (config.data().enterprise1C().isContractSyncEnabled() && contract.getContractor() != null) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isOk()) {
+                contract.setRefKey(result.getData().getRefKey());
+            } else {
+                return error(En_ResultStatus.INTERNAL_ERROR);
+            }
         }
 
         contractDAO.merge(contract);
@@ -248,7 +282,6 @@ public class ContractServiceImpl implements ContractService {
         caseObject.setStateId(contract.getState().getId());
         caseObject.setManagerId(contract.getCaseManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
-        caseObject.setInitiatorCompanyId(contract.getCaseContragentId());
         caseObject.setProductId(contract.getCaseDirectionId());
 
         return caseObject;
@@ -270,6 +303,30 @@ public class ContractServiceImpl implements ContractService {
         return ok(contractor.getId());
     }
 
+    private Result<Contract1C> saveContract1C(Contract contract) {
+        if (contract == null || contract.getId() == null
+            || contract.getOrganizationId() == null || StringUtils.isBlank(contract.getOrganizationName())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValidContract(contract)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Contract1C queryContract1C = to1C(contract);
+
+        if (StringUtils.isNotBlank(contract.getRefKey())){
+            Result<Contract1C> result = api1CService.getContract(queryContract1C, contract.getOrganizationName());
+            if (result.isOk() && result.getData() != null) {
+                if (isSame(queryContract1C, result.getData())) {
+                    return api1CService.getContract(queryContract1C, contract.getOrganizationName());
+                }
+            }
+        }
+
+        return api1CService.saveContract(queryContract1C, contract.getOrganizationName());
+    }
+
     private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
         Set<UserRole> roles = token.getRoles();
         return policyService.hasGrantAccessFor(roles, privilege);
@@ -282,6 +339,13 @@ public class ContractServiceImpl implements ContractService {
 
     private boolean isValidContractor(Contractor contractor) {
         return isValidContractor(contractor.getInn(), contractor.getKpp());
+    }
+
+    private boolean isValidContract(Contract contract) {
+        return contractNumberPattern.matcher(contract.getNumber()).matches()
+               && contract.getContractor() != null
+               && StringUtils.isNotBlank(contract.getContractor().getRefKey())
+               && contract.getDateSigning() != null;
     }
 
     public static Contractor from1C(Contractor1C contractor1C, String country) {
@@ -307,6 +371,34 @@ public class ContractServiceImpl implements ContractService {
         return contractor1C;
     }
 
+    public static Contract1C to1C(Contract contract) {
+        Contract1C contract1C = new Contract1C();
+        contract1C.setRefKey(StringUtils.isBlank(contract.getRefKey()) ? null : contract.getRefKey().trim());
+        contract1C.setNumber(contract.getNumber());
+        contract1C.setContractorKey(contract.getContractor().getRefKey());
+        contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
+        contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
+
+        return contract1C;
+    }
+
+    public static boolean isSame(Contract1C c1, Contract1C c2) {
+        try {
+            Date d1 = saveDateFormat.parse(c1.getDateSigning());
+            Date d2 = saveDateFormat.parse(c2.getDateSigning());
+
+            if (!Objects.equals(d1,d2)) return false;
+
+        } catch (ParseException e) { return false; }
+
+        return Objects.equals(c1.getNumber(), c2.getNumber())
+               && Objects.equals(c1.getContractorKey(), c2.getContractorKey());
+    }
+
     private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);
     private final Pattern kppPattern = Pattern.compile(CONTRACTOR_KPP);
+    private final Pattern contractNumberPattern = Pattern.compile(CONTRACT_NUMBER);
+
+    private final static DateFormat showDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private final static DateFormat saveDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 }

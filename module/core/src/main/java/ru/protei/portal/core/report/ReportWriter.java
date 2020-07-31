@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public interface ReportWriter<T> {
+public interface ReportWriter<T> extends AutoCloseable {
 
     int createSheet();
 
@@ -13,6 +13,4 @@ public interface ReportWriter<T> {
     void write(int sheetNumber, List<T> objects);
 
     void collect(OutputStream outputStream) throws IOException;
-
-    void close() throws IOException;
 }

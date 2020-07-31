@@ -85,4 +85,14 @@ public interface ReportService {
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
     Result removeReports( AuthToken authToken, ReportQuery query, Set<Long> exclude);
+
+    /**
+     * Отмена отчета в процессе
+     *
+     * @param authToken токен авторизации
+     * @param id        идентификатор отчета
+     * @return идентификатор отчета
+     */
+    @Privileged({ En_Privilege.ISSUE_REPORT })
+    Result<Long> cancelReport( AuthToken authToken, Long id);
 }

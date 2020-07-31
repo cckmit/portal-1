@@ -89,6 +89,7 @@ public class DebugIds {
         String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         String EMPLOYEE = "sidebar-menu-employee";
         String CONTRACT = "sidebar-menu-contract";
+        String EDUCATION = "sidebar-menu-education";
         String SUBNET = "sidebar-menu-subnet";
         String RESERVED_IP = "sidebar-menu-reserved-ip";
         String ROOM_RESERVATION = "sidebar-menu-room-reservation";
@@ -368,6 +369,7 @@ public class DebugIds {
             String OLD_VALUE = "issue-case-history-item-old-value";
             String NEW_VALUE = "issue-case-history-item-new-value";
             String HISTORY_TYPE = "issue-case-history-item-history-type";
+            String INITIATOR = "issue-case-history-item-initiator";
         }
     }
 
@@ -719,6 +721,7 @@ public class DebugIds {
             String ARCHIVE = "table-archive-button";
             String ATTACHMENT = "table-attachment-button";
             String COPY = "table-copy-button";
+            String CANCEL = "table-cancel-button";
         }
 
         interface ISSUE {

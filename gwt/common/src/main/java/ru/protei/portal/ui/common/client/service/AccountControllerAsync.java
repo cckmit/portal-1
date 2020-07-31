@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
+
 /**
  * Асинхронный сервис управления учетными записями
  */
@@ -14,7 +16,7 @@ public interface AccountControllerAsync {
 
     void getAccount ( long id, AsyncCallback< UserLogin > callback );
 
-    void getContactAccount (long personId, AsyncCallback< UserLogin > async );
+    void getContactAccount (long personId, AsyncCallback<List<UserLogin>> async );
 
     void saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< UserLogin > callback );
 

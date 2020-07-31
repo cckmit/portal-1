@@ -7,24 +7,22 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_AdminState;
-import ru.protei.portal.core.model.dict.En_AbsenceReason;
-import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.utils.DateUtils;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
-import ru.protei.portal.core.model.struct.AuditObject;
-import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -37,6 +35,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 
 /**
@@ -74,6 +73,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     UserLoginDAO userLoginDAO;
+
+    @Autowired
+    private UserRoleDAO userRoleDAO;
 
     @Autowired
     PersonAbsenceDAO personAbsenceDAO;
@@ -171,6 +173,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public Result<List<WorkerEntryShortView>> getWorkerEntryList(AuthToken token, int offset, int limit) {
+        SearchResult<WorkerEntryShortView> result = workerEntryShortViewDAO.getAll(offset, limit);
+        if (result == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+        return ok(result.getResults());
+    }
+
+    @Override
     public Result<EmployeeShortView> getEmployeeWithChangedHiddenCompanyNames(AuthToken token, Long employeeId) {
 
         if (employeeId == null) {
@@ -227,7 +238,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (personId != null) {
             person.setId(personId);
-            return ok(person);
+            return createLDAPAccount(person)
+                    .flatMap(userLogin -> {
+                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                        saveAccount(userLogin, token);
+                        return ok();
+                    }).map(ignore -> person);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR);
@@ -330,10 +346,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 return error(En_ResultStatus.EMPLOYEE_NOT_FIRED_FROM_THESE_COMPANIES);
             }
 
-            UserLogin userLogin = userLoginDAO.findByPersonId(personFromDb.getId());
-            if(userLogin != null) {
-                userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                updateAccount(userLogin, token);
+            List<UserLogin> userLogins = userLoginDAO.findByPersonId(personFromDb.getId());
+            if(isNotEmpty(userLogins)) {
+                for (UserLogin userLogin : userLogins) {
+                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                    updateAccount(userLogin, token);
+                }
             }
         }
 
@@ -653,10 +671,36 @@ public class EmployeeServiceImpl implements EmployeeService {
         return list;
     }
 
+    private Result<UserLogin> createLDAPAccount(Person person) {
+
+        ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+        if (!email.isEmpty() && HelperFunc.isNotEmpty(email.value())) {
+            String login = email.value().substring(0, email.value().indexOf("@"));
+            if (!userLoginDAO.isUnique(login.trim())) {
+                log.debug("error: Login already exist.");
+                return error(En_ResultStatus.ALREADY_EXIST);
+            }
+
+            UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
+            userLogin.setUlogin(login.trim());
+            userLogin.setAuthType(En_AuthType.LDAP);
+            userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
+            return ok(userLogin);
+        }
+        return error(En_ResultStatus.INCORRECT_PARAMS);
+    }
+
+    private void saveAccount(UserLogin userLogin, AuthToken authToken) {
+        if (userLoginDAO.saveOrUpdate(userLogin)) {
+            jdbcManyRelationsHelper.persist( userLogin, "roles" );
+            makeAudit(userLogin, En_AuditType.ACCOUNT_CREATE, authToken);
+        }
+    }
+
     AbsenceQuery makeAbsenceQuery(Set<Long> employeeIds) {
+        Date startOfToday = DateUtils.resetSeconds(new Date());
         return new AbsenceQuery(
-                DateUtils.resetSeconds(new Date()),
-                DateUtils.resetSeconds(new Date()),
+                new DateRange(En_DateIntervalType.FIXED, startOfToday, startOfToday),
                 employeeIds,
                 Arrays.asList(En_AbsenceReason.values()).stream()
                         .filter(En_AbsenceReason::isActual)

@@ -5,6 +5,11 @@ import java.util.Collection;
 public interface Operator {
     Operator not();
 
+    /**
+     * Expected Any not null object or true
+     */
+    Operator not(Object isNotIfTrue);
+
     Condition equal( Object attr );
 
     Condition lt( Object attr );

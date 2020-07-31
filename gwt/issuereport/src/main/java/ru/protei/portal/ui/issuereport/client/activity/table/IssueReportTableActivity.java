@@ -114,6 +114,22 @@ public abstract class IssueReportTableActivity implements
     }
 
     @Override
+    public void onCancelClicked(Report value) {
+        reportService.cancelReport(value.getId(), new AsyncCallback<Long>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Long id) {
+                fireEvent(new NotifyEvents.Show(lang.reportCanceled(id), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueReportEvents.Show());
+            }
+        });
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Report>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
         ReportQuery query = getQuery();
@@ -125,12 +141,13 @@ public abstract class IssueReportTableActivity implements
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    asyncCallback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
                     }
+
+                    asyncCallback.onSuccess(sr.getResults());
                 }));
     }
 

@@ -9,6 +9,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.*;
 
 public class RemoveClickColumn< T > extends ClickColumn< T > {
 
@@ -23,7 +24,7 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
 
     @Override
     protected String getColumnClassName() {
-        return "remove";
+        return ColumnClassName.REMOVE;
     }
 
     @Override
@@ -33,13 +34,13 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
     public void fillColumnValue( Element cell, T value ) {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
-        a.addClassName( "far fa-trash-alt fa-lg" );
+        a.addClassName( "far fa-lg " + Icons.REMOVE );
         a.setTitle( lang.remove() );
         a.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.REMOVE );
         if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {
-            a.removeClassName( "link-disabled" );
+            a.removeClassName( Styles.LINK_DISABLE );
         } else {
-            a.addClassName( "link-disabled" );
+            a.addClassName( Styles.LINK_DISABLE );
         }
         cell.appendChild( a );
     }

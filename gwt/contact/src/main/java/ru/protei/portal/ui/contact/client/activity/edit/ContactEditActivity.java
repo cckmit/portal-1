@@ -22,8 +22,10 @@ import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.List;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
@@ -66,8 +68,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             initialView(newPerson, new UserLogin());
         } else {
             contactService.getContact(event.id, new FluentCallback<Person>()
-                    .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<UserLogin>()
-                            .withSuccess(userLogin -> initialView(person, userLogin == null ? new UserLogin() : userLogin)))));
+                    .withSuccess(person -> accountService.getContactAccount(person.getId(), new FluentCallback<List<UserLogin>>()
+                            .withSuccess(userLogins -> initialView(person, isEmpty(userLogins) ? new UserLogin() : userLogins.get(0))))));
         }
     }
 

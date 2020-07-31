@@ -10,6 +10,8 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
+
 /**
  * Сервис управления учетными записями
  */
@@ -22,7 +24,7 @@ public interface AccountService {
     Result< UserLogin > getAccount( AuthToken authToken, long id );
 
     @Privileged({ En_Privilege.CONTACT_VIEW })
-    Result< UserLogin > getContactAccount( AuthToken authToken, long personId );
+    Result<List<UserLogin>> getContactAccount(AuthToken authToken, long personId );
 
     @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )

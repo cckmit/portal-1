@@ -28,7 +28,8 @@ public enum En_PrivilegeEntity {
     RESERVED_IP(23),
     ROOM_RESERVATION(5),
     PLAN(24),
-    ABSENCE(25)
+    ABSENCE(25),
+    EDUCATION(26),
     ;
 
     private final Integer order;

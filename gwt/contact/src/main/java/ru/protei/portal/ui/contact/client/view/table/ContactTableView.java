@@ -92,7 +92,7 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

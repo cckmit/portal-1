@@ -46,6 +46,8 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
 @RestController
@@ -307,11 +309,18 @@ public class WorkerController {
                         mergePerson(person);
                     }
 
-                    UserLogin userLogin = operationData.account();
-                    if (userLogin == null) userLogin = createLDAPAccount(person);
-                    if (userLogin != null) {
-                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveAccount(userLogin);
+                    List<UserLogin> userLogins = operationData.account();
+                    if (isEmpty(userLogins)) {
+                        UserLogin userLogin = createLDAPAccount(person);
+                        if (userLogin != null) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
+                    } else {
+                        for (UserLogin userLogin : userLogins) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
                     }
 
                     EmployeeRegistration employeeRegistration = operationData.registration();
@@ -499,7 +508,7 @@ public class WorkerController {
 
                     WorkerEntry worker = operationData.worker();
                     Long personId = worker.getPersonId();
-                    UserLogin userLogin = userLoginDAO.findLDAPByPersonId(personId);
+                    List<UserLogin> userLogins = userLoginDAO.findLDAPByPersonId(personId);
 
                     removeWorker(worker);
 
@@ -510,8 +519,10 @@ public class WorkerController {
 
                         mergePerson(person);
 
-                        if(userLogin != null) {
-                            removeAccount(userLogin);
+                        if(isNotEmpty(userLogins)) {
+                            for (UserLogin userLogin : userLogins) {
+                                removeAccount(userLogin);
+                            }
                         }
 
                         if (WSConfig.getInstance().isEnableMigration()) {
@@ -1082,7 +1093,7 @@ public class WorkerController {
         WorkerEntry worker;
         Person person;
         WorkerPosition position;
-        UserLogin account;
+        List<UserLogin> account;
         EmployeeRegistration registration;
 
         Record record;
@@ -1163,7 +1174,7 @@ public class WorkerController {
             return this;
         }
 
-        public OperationData requireAccount(Supplier<UserLogin> optional) {
+        public OperationData requireAccount(Supplier<List<UserLogin>> optional) {
             if (isValid() && record.getPersonId() != null) {
                 this.account = handle(userLoginDAO.findLDAPByPersonId(record.getPersonId()), optional, null, true);
                 jdbcManyRelationsHelper.fill(account, "roles");
@@ -1298,7 +1309,7 @@ public class WorkerController {
             return position;
         }
 
-        public UserLogin account() {
+        public List<UserLogin> account() {
             return account;
         }
 
@@ -1488,7 +1499,7 @@ public class WorkerController {
                     Person person = operationData.person();
                     String personLastName = person.getLastName();
                     WorkerEntry worker = operationData.worker();
-                    UserLogin userLogin = operationData.account();
+                    List<UserLogin> userLogins = operationData.account();
                     EmployeeRegistration employeeRegistration = operationData.registration();
 
                     convert(rec, person);
@@ -1502,12 +1513,16 @@ public class WorkerController {
                             person.setDeleted(rec.isDeleted());
                             person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
 
-                            if(userLogin != null) {
+                            if(isNotEmpty(userLogins)) {
                                 if (person.isDeleted()) {
-                                    removeAccount(userLogin);
+                                    for (UserLogin userLogin : userLogins) {
+                                        removeAccount(userLogin);
+                                    }
                                 } else {
-                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                    saveAccount(userLogin);
+                                    for (UserLogin userLogin : userLogins) {
+                                        userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                        saveAccount(userLogin);
+                                    }
                                 }
                             }
                         }
@@ -1531,10 +1546,17 @@ public class WorkerController {
                         createAdminYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), personLastName);
                     }*/
 
-                    if (userLogin == null) userLogin = createLDAPAccount(person);
-                    if (userLogin != null) {
-                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        saveAccount(userLogin);
+                    if (isEmpty(userLogins)) {
+                        UserLogin userLogin = createLDAPAccount(person);
+                        if (userLogin != null) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
+                    } else {
+                        for (UserLogin userLogin : userLogins) {
+                            userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                            saveAccount(userLogin);
+                        }
                     }
 
                     if (employeeRegistration != null) {

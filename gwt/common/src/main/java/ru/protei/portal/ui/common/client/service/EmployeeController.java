@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -45,6 +46,8 @@ public interface EmployeeController extends RemoteService {
      * @return сокращенное представление руководителя
      */
     PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException;
+
+    List<WorkerEntryShortView> getWorkerEntryList(int offset, int limit) throws RequestFailedException;
 
     EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException;
 

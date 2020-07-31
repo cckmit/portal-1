@@ -292,6 +292,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ProjectDAO getProjectEntityDAO() {
+        return new ProjectEntityDAO_Impl();
+    }
+
+    @Bean
     public ContractDateDAO getContractDateDAO() {
         return new ContractDateDAO_Impl();
     }
@@ -329,6 +334,21 @@ public class DaoTestsConfiguration {
     @Bean
     public JiraSLAMapEntryDAO getJiraSLAMapEntryDAO() {
         return new JiraSLAMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public EducationWalletDAO getEducationWalletDAO() {
+        return new EducationWalletDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryDAO getEducationEntryDAO() {
+        return new EducationEntryDAO_Impl();
+    }
+
+    @Bean
+    public EducationEntryAttendanceDAO getEducationEntryAttendanceDAO() {
+        return new EducationEntryAttendanceDAO_Impl();
     }
 
     @Bean

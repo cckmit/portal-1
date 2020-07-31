@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.item.AbstractCaseTagItemView;
+import ru.protei.portal.ui.common.client.events.CaseHistoryEvents;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -140,6 +141,7 @@ public abstract class CaseTagListActivity implements Activity, AbstractCaseTagLi
                 .withSuccess(removedId -> {
                     if (!Objects.equals(removedId, caseTag.getId())) return;
                     onRemoveConfirmed.run();
+                    fireEvent(new CaseHistoryEvents.Reload(caseId));
                 }));
     }
 
@@ -162,6 +164,7 @@ public abstract class CaseTagListActivity implements Activity, AbstractCaseTagLi
                 .withSuccess(id -> {
                     tags.add(caseTag);
                     fillView(tags);
+                    fireEvent(new CaseHistoryEvents.Reload(caseId));
                 }));
     }
 

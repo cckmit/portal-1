@@ -66,6 +66,7 @@
                 <module>gwt/employee</module>
                 <module>gwt/employeeregistration</module>
                 <module>gwt/contract</module>
+                <module>gwt/education</module>
                 <module>gwt/ipreservation</module>
                 <module>gwt/roomreservation</module>
                 <module>gwt/plan</module>

@@ -211,10 +211,26 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
             documents.addClassName(UiConstants.Styles.HIDE);
     }
 
+    @Override
+    public HasVisibility pauseDateContainerVisibility() {
+        return pauseDateContainer;
+    }
+    @Override
+    public HasValue<Date> pauseDate() {
+        return pauseDate;
+    }
+
     @UiHandler("addLinkButton")
     public void onAddLinkButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onAddLinkClicked(addLinkButton);
+        }
+    }
+
+    @UiHandler("projectState")
+    public void onProjectStateChanged(ValueChangeEvent<En_RegionState> event) {
+        if (activity != null) {
+            activity.onStateChanged();
         }
     }
 
@@ -288,6 +304,12 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField(provided = true)
     SinglePicker technicalSupportValidity;
+
+    @UiField
+    HTMLPanel pauseDateContainer;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker pauseDate;
 
     @UiField
     DivElement comments;

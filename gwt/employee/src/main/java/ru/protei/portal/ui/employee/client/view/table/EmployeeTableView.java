@@ -97,7 +97,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

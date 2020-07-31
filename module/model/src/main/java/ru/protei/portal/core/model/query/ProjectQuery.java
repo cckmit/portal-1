@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -16,6 +15,8 @@ import static java.util.stream.Collectors.toList;
  * Запрос по регионам
  */
 public class ProjectQuery extends BaseQuery {
+    private En_CaseType type = En_CaseType.PROJECT;
+
     private List<Long> caseIds;
 
     private Set<En_RegionState> states;
@@ -39,6 +40,8 @@ public class ProjectQuery extends BaseQuery {
     private Date createdFrom;
 
     private Date createdTo;
+
+    private Long pauseDate;
 
     private Boolean platformIndependentProject;
 
@@ -170,6 +173,14 @@ public class ProjectQuery extends BaseQuery {
 
     public void setCaseMembers(Set<PersonShortView> caseMembers) {
         this.caseMembers = caseMembers;
+    }
+
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public void setPauseDate( Long pauseDate ) {
+        this.pauseDate = pauseDate;
     }
 
     @Override

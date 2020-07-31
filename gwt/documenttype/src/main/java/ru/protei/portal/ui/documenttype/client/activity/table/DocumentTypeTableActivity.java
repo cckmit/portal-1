@@ -52,6 +52,7 @@ public abstract class DocumentTypeTableActivity
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        view.clearSelection();
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_CREATE) ?
                 new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.DOCUMENT_TYPE) :

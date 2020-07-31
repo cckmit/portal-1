@@ -19,6 +19,8 @@ import ru.protei.portal.ui.project.client.view.widget.team.item.TeamSelectorItem
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+
 public class TeamSelector extends Composite implements AbstractTeamSelector, HasEnabled, HasValue<Set<PersonProjectMemberView>> {
 
     @Inject
@@ -145,7 +147,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
     }
 
     private List<En_DevUnitPersonRoleType> getAvailableRoles() {
-        List<En_DevUnitPersonRoleType> roles = En_DevUnitPersonRoleType.getProjectRoles();
+        List<En_DevUnitPersonRoleType> roles = listOf(En_DevUnitPersonRoleType.getProjectRoles());
         model.forEach(itemModel -> roles.remove(itemModel.role));
         return roles;
     }

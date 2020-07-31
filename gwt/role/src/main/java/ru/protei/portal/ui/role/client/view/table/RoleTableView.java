@@ -72,7 +72,7 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     @Override

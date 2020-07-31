@@ -20,4 +20,6 @@ public interface AbstractCaseStateTableView extends IsWidget {
     void updateRow(CaseState changedCaseState);
 
     void clearRecords();
+
+    void clearSelection();
 }

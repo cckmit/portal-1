@@ -105,7 +105,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
     @Override
     public void clearSelection() {
-        columnProvider.setSelectedValue(null);
+        columnProvider.removeSelection();
     }
 
     private void initTable () {
