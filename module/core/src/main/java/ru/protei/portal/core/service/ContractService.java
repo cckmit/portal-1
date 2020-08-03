@@ -38,4 +38,7 @@ public interface ContractService {
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
     Result<Contractor> createContractor(AuthToken token, Contractor contractor);
+
+    @Privileged(En_Privilege.CONTRACT_VIEW)
+    Result<List<Contract>> getContractsByRefKeys(AuthToken token, List<String> refKeys);
 }

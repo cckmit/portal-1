@@ -3,6 +3,8 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
@@ -172,6 +174,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
     private String projectName;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = Project.Columns.CUSTOMER_TYPE, sqlTableAlias = "case_object")
+    @JdbcEnumerated(EnumType.ID)
+    private En_CustomerType projectCustomerType;
 
     @JdbcColumn(name = "contractor_id")
     private Long contractorId;
@@ -410,6 +416,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.projectName = projectName;
     }
 
+    public En_CustomerType getProjectCustomerType() {
+        return projectCustomerType;
+    }
+
+    public void setProjectCustomerType(En_CustomerType projectCustomerType) {
+        this.projectCustomerType = projectCustomerType;
+    }
+
     public Long getCaseDirectionId() {
         return caseDirectionId;
     }
@@ -499,6 +513,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", childContracts=" + childContracts +
                 ", projectId=" + projectId +
                 ", projectName='" + projectName + '\'' +
+                ", projectCustomerType=" + projectCustomerType +
                 ", contractorId=" + contractorId +
                 ", contractor=" + contractor +
                 '}';
