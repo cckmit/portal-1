@@ -10,6 +10,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
+import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
@@ -17,7 +18,10 @@ import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
@@ -67,6 +71,8 @@ public class PortalApiController {
     private YtDtoFieldsMapper fieldsMapper;
     @Autowired
     private YoutrackService youtrackService;
+    @Autowired
+    private ContractService contractService;
     @Autowired
     PortalConfig config;
 
@@ -469,6 +475,17 @@ public class PortalApiController {
                 .flatMap(authToken -> caseTagService.removeTag(authToken, caseTagId))
                 .ifOk(id -> log.info("removeCaseTag(): OK"))
                 .ifError(result -> log.warn("removeCaseTag(): Can't remove tag={}. {}", caseTagId, result));
+    }
+
+    @GetMapping(value = "/contracts/byrefs")
+    public Result<List<ApiContract>> getContractsByRefIds(HttpServletRequest request, HttpServletResponse response,
+                                                          @RequestParam("refkey") List<String> refKeys) {
+        log.info("API | getContractsByRefIds(): refKeys={}", refKeys);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> contractService.getApiContractsByRefKeys(authToken, refKeys))
+                .ifOk(id -> log.info("getContractsByRefIds(): OK"))
+                .ifError(result -> log.warn("getContractsByRefIds(): Can't get contracts by ref keys={}. {}", refKeys, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

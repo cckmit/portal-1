@@ -7,12 +7,15 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
+
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
 
@@ -36,6 +39,14 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     @Override
     public List<Contract> getByProjectId(Long projectId) {
         return getListByCondition("contract.project_id = ?", projectId);
+    }
+
+    @Override
+    public List<Contract> getByRefKeys(List<String> refKeys) {
+        Query query = query().asCondition()
+                .and("contract.ref_key").in(refKeys)
+                .asQuery();
+        return getListByCondition(query.buildSql(), query.args());
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
