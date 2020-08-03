@@ -36,7 +36,7 @@ public class EnumLangUtil {
             case INFLUENCE_MAKER:
                 return localizedLang.get("personInfluenceMaker");
             case CHIEF_INFLUENCE_MAKER:
-                return localizedLang.get("personChielInfluenceMaker");
+                return localizedLang.get("personChiefInfluenceMaker");
             case ECONOMIST:
                 return localizedLang.get("personEconomist");
             case WELL_WISHER:
@@ -72,7 +72,8 @@ public class EnumLangUtil {
             case CUSTOMER_INTEGRATION:
                 return localizedLang.get("personCustomerIntegration");
         }
-        return null;
+
+        return localizedLang.get("personRoleUnknown");
     }
 
     public String getRegionState(En_RegionState state, String langCode) {
@@ -101,9 +102,11 @@ public class EnumLangUtil {
                 return localizedLang.get("regionStateTesting");
             case CANCELED:
                 return localizedLang.get("regionStateCanceled");
+            case PAUSED:
+                return localizedLang.get("regionStatePaused");
         }
 
-        return null;
+        return localizedLang.get("regionStateUnknown");
     }
 
     public String getCustomerType(En_CustomerType type, String langCode) {
@@ -127,6 +130,6 @@ public class EnumLangUtil {
 
         }
 
-        return null;
+        return localizedLang.get("customerTypeUnknown");
     }
 }
