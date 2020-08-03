@@ -28,6 +28,7 @@ import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
+import ru.protei.portal.mapper.ContractToApiMapper;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.util.AuthUtils.authenticate;
 
 /**
@@ -483,7 +485,10 @@ public class PortalApiController {
         log.info("API | getContractsByRefIds(): refKeys={}", refKeys);
 
         return authenticate(request, response, authService, sidGen, log)
-                .flatMap(authToken -> contractService.getApiContractsByRefKeys(authToken, refKeys))
+                .flatMap(authToken -> contractService.getContractsByRefKeys(authToken, refKeys))
+                .map(contracts -> stream(contracts)
+                        .map(ContractToApiMapper::contractToApi)
+                        .collect(Collectors.toList()))
                 .ifOk(id -> log.info("getContractsByRefIds(): OK"))
                 .ifError(result -> log.warn("getContractsByRefIds(): Can't get contracts by ref keys={}. {}", refKeys, result));
     }

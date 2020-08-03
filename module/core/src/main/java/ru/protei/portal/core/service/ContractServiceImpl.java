@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
-import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -19,7 +18,6 @@ import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.util.ContractorUtils;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.mapper.ContractToApiMapper;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -28,14 +26,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
 
 public class ContractServiceImpl implements ContractService {
@@ -273,16 +269,13 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public Result<List<ApiContract>> getApiContractsByRefKeys(AuthToken token, List<String> refKeys) {
+    public Result<List<Contract>> getContractsByRefKeys(AuthToken token, List<String> refKeys) {
         if (isEmpty(refKeys)) {
             return ok(Collections.emptyList());
         }
         List<Contract> contracts = contractDAO.getByRefKeys(refKeys);
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
-        List<ApiContract> apiContracts = stream(contracts)
-                .map(ContractToApiMapper::contractToApi)
-                .collect(Collectors.toList());
-        return ok(apiContracts);
+        return ok(contracts);
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
