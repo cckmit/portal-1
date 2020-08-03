@@ -61,6 +61,13 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         requestData(event.id);
     }
 
+    @Event
+    public void onProjectSet(ProjectEvents.SetProjectInfo event) {
+        if (event.project != null) {
+            refreshProjectSpecificFields(event.project);
+        }
+    }
+
     @Override
     public void onSaveClicked() {
         fillDto();
@@ -132,27 +139,14 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
     }
 
-    @Override
-    public void refreshProjectSpecificFields() {
-        if (view.project().getValue() == null) {
-            clearProjectSpecificFields();
-            return;
-        }
-
-        fillProjectSpecificFieldsOnRefresh(view.project().getValue());
-    }
-
-    private void fillProject(ProjectInfo project) {
+    private void refreshProjectSpecificFields(ProjectInfo project) {
         view.project().setValue(project);
-    }
-
-    private void fillProjectSpecificFieldsOnRefresh(ProjectInfo project) {
         view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
         view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
     }
 
     private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
-       regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
+        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
     }
 
     private void clearProjectSpecificFields() {
@@ -196,8 +190,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.project().setValue(null);
             clearProjectSpecificFields();
         } else {
-            projectRequest(contract.getProjectId(), this::fillProject);
-            fillProjectSpecificFieldsOnRefresh(view.project().getValue());
+            projectRequest(contract.getProjectId(), this::refreshProjectSpecificFields);
         }
 
         view.directionEnabled().setEnabled(false);

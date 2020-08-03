@@ -252,6 +252,11 @@ public enum En_ResultStatus {
     /**
      * Отсутствие ещё не началось либо уже закончилось
      */
-    NOT_CURRENT_ABSENCE
+    NOT_CURRENT_ABSENCE,
+
+    /**
+     * Проект не выбран
+     */
+    PROJECT_NOT_SELECTED
     ;
 }

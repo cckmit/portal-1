@@ -6,5 +6,5 @@ package ru.protei.portal.ui.common.client.activity.projectsearch;
 public interface AbstractProjectSearchActivity {
     void onSearchClicked();
     void onResetClicked();
-    void onProjectChanged();
+    void onProjectSelected();
 }

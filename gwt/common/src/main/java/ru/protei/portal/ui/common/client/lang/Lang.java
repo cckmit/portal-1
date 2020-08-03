@@ -2941,4 +2941,6 @@ public interface Lang extends Messages, ContactItemLang {
     String selectContractProject();
 
     String contractProjectFindNotChosenError();
+
+    String errContractProjectRequired();
 }

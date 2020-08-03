@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -32,6 +31,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     public void onShow(ProjectEvents.Search event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+        view.resetFilter();
         view.setVisibleProducts(event.showProducts);
         view.setVisibleManagers(event.showManagers);
         view.setWideFormStyles();
@@ -48,7 +48,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     }
 
     @Override
-    public void onProjectChanged() {
+    public void onProjectSelected() {
         ProjectInfo projectInfo = view.project().getValue();
         if (projectInfo != null) {
             fireEvent(new ProjectEvents.Set(new EntityOption(projectInfo.getName(), projectInfo.getId())));

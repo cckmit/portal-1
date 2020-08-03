@@ -10,18 +10,18 @@
 
     <g:HTMLPanel styleName="card-body">
         <div class="row">
-            <div class="form-group col-md-4">
+            <g:HTMLPanel tag="div" ui:field="nameContainer" addStyleNames="form-group col-md-4">
                 <label ui:field="nameLabel"><ui:text from="{lang.projectName}"/></label>
                 <g:TextBox ui:field="name" styleName="form-control"/>
-            </div>
-            <div class="form-group col-md-4">
+            </g:HTMLPanel>
+            <g:HTMLPanel tag="div" ui:field="dateContainer" addStyleNames="form-group col-md-4">
                 <label ui:field="dateCreatedRangeLabel"><ui:text from="{lang.created}"/></label>
                 <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
-            <div class="form-group col-md-4">
+            </g:HTMLPanel>
+            <g:HTMLPanel tag="div" ui:field="customerTypeContainer" addStyleNames="form-group col-md-4">
                 <label ui:field="customerTypeLabel"><ui:text from="{lang.projectCustomerType}"/></label>
                 <cutomertype:CustomerTypeSelector ui:field="customerType"/>
-            </div>
+            </g:HTMLPanel>
             <g:HTMLPanel tag="div" ui:field="productsContainer" addStyleNames="form-group col-md-12">
                 <label ui:field="productsLabel"><ui:text from="{lang.projectProducts}"/></label>
                 <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>

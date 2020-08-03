@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchActivity;
 import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -92,6 +93,8 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
 
     @UiHandler( "button" )
     public void onButtonClicked ( ClickEvent event ) {
+        fireEvent(new ProjectEvents.Search(dialogDetailsSearchView.getBodyContainer(), false, true));
+        searchView.setDialogViewStyles();
         searchView.resetFilter();
         searchView.clearProjectList();
         dialogDetailsSearchView.showPopup();
@@ -114,9 +117,6 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         dialog.setHeader(lang.searchProjectTitle());
         dialog.setSaveButtonName(lang.buttonApply());
         dialog.setAdditionalVisible(false);
-        searchView.setVisibleProducts(false);
-        searchView.setVisibleManagers(true);
-        searchView.setDialogViewStyles();
     }
 
     private AbstractDialogDetailsActivity makeSearchDialogActivity() {
@@ -128,6 +128,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
                     return;
                 }
                 setValue(searchView.project().getValue());
+                fireEvent(new ProjectEvents.SetProjectInfo(searchView.project().getValue()));
                 dialogDetailsSearchView.hidePopup();
             }
             @Override

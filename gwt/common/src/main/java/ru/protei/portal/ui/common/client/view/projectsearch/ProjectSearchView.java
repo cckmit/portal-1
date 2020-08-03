@@ -116,26 +116,26 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
 
     @Override
     public void setDialogViewStyles() {
-/*        name.removeStyleName("col-md-4");
-        name.addStyleName("col-md-6");
+        nameContainer.removeStyleName("col-md-4");
+        nameContainer.addStyleName("col-md-12");
 
-        dateCreatedRange.removeStyleName("col-md-4");
-        dateCreatedRange.addStyleName("col-md-6");
+        dateContainer.removeStyleName("col-md-4");
+        dateContainer.addStyleName("col-md-12");
 
-        customerType.removeStyleName("col-md-4");
-        customerType.addStyleName("col-md-6");*/
+        customerTypeContainer.removeStyleName("col-md-4");
+        customerTypeContainer.addStyleName("col-md-12");
     }
 
     @Override
     public void setWideFormStyles() {
-/*        name.removeStyleName("col-md-6");
-        name.addStyleName("col-md-4");
+        nameContainer.removeStyleName("col-md-12");
+        nameContainer.addStyleName("col-md-4");
 
-        dateCreatedRange.removeStyleName("col-md-6");
-        dateCreatedRange.addStyleName("col-md-4");
+        dateContainer.removeStyleName("col-md-12");
+        dateContainer.addStyleName("col-md-4");
 
-        customerType.removeStyleName("col-md-6");
-        customerType.addStyleName("col-md-4");*/
+        customerTypeContainer.removeStyleName("col-md-12");
+        customerTypeContainer.addStyleName("col-md-4");
     }
 
     @UiHandler("search")
@@ -155,9 +155,9 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @UiHandler("project")
-    public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
+    public void onProjectSelected(ValueChangeEvent<ProjectInfo> event) {
         if (activity != null) {
-            activity.onProjectChanged();
+            activity.onProjectSelected();
         }
     }
 
@@ -183,9 +183,15 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @UiField
     TextBox name;
 
+    @UiField
+    HTMLPanel nameContainer;
+
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+
+    @UiField
+    HTMLPanel customerTypeContainer;
 
     @Inject
     @UiField(provided = true)
@@ -204,6 +210,9 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;
+
+    @UiField
+    HTMLPanel dateContainer;
 
     @UiField
     Anchor search;

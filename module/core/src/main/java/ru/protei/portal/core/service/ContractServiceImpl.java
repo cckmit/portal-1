@@ -106,6 +106,9 @@ public class ContractServiceImpl implements ContractService {
         if (contract == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
+        if (contract.getProjectId() == null) {
+            return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
 
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
         Long id = caseObjectDAO.persist(caseObject);
@@ -157,6 +160,10 @@ public class ContractServiceImpl implements ContractService {
 
         if (contract == null || contract.getId() == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
+
+        if (contract.getProjectId() == null) {
+            return error(En_ResultStatus.PROJECT_NOT_SELECTED);
+        }
 
         /*
          *  не даем сбрасывать связку договора с договором1С,
