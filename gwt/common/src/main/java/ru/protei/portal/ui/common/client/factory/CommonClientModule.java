@@ -183,7 +183,7 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind(AbstractCaseHistoryItemView.class).to(CaseHistoryItemView.class);
 
-        bind( AbstractProjectSearchActivity.class ).to( ProjectSearchActivity.class );
+        bind( ProjectSearchActivity.class ).asEagerSingleton();
         bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );
     }
 }

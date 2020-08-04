@@ -118,11 +118,11 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-8">
                                 <label ui:field="projectLabel"><ui:text from="{lang.contractProject}"/></label>
                                 <project:ProjectWidget ui:field="projectWidget" validation="true"/>
                             </div>
-                            <div class="form-group col-md-3">
+                            <div class="form-group col-md-4">
                                 <label ui:field="directionLabel"><ui:text from="{lang.contractDirection}"/></label>
                                 <productdirection:ProductDirectionButtonSelector ui:field="direction" hideNullValue="true" enabled="false" defaultValue="{lang.contractSelectDirection}"/>
                             </div>

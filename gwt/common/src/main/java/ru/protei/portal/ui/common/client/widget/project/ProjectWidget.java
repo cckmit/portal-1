@@ -15,28 +15,26 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
-import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchActivity;
 import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
-
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.WIDE_MODAL;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
 
 abstract public class ProjectWidget extends Composite implements HasValue<ProjectInfo>, HasEnabled, HasValidable,
         Activity {
 
     @Inject
-    public void onInit(AbstractProjectSearchActivity activity) {
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.selectContractProject());
         root.setTitle(lang.selectContractProject());
-        searchView.setActivity(activity);
-        prepareSearchDialog(dialogDetailsSearchView);
+        prepareDialog(dialogView);
     }
 
     @Override
@@ -55,6 +53,9 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         name.setValue(value != null ? value.getName() : null, fireEvents);
         if (isValidable) {
             setValid(isValid());
+        }
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, value);
         }
     }
 
@@ -80,9 +81,9 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
     @Override
     public void setValid(boolean isValid) {
         if (isValid) {
-            name.removeStyleName(REQUIRED_STYLE_NAME);
+            name.removeStyleName(REQUIRED);
         } else {
-            name.addStyleName(REQUIRED_STYLE_NAME);
+            name.addStyleName(REQUIRED);
         }
     }
 
@@ -93,11 +94,12 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
 
     @UiHandler( "button" )
     public void onButtonClicked ( ClickEvent event ) {
-        fireEvent(new ProjectEvents.Search(dialogDetailsSearchView.getBodyContainer(), false, true));
-        searchView.setDialogViewStyles();
-        searchView.resetFilter();
-        searchView.clearProjectList();
-        dialogDetailsSearchView.showPopup();
+        fireEvent(new ProjectEvents.Search(dialogView.getBodyContainer(), false, true));
+        dialogView.showPopup();
+    }
+
+    public void setEnsureDebugId( String debugId ) {
+        button.ensureDebugId(debugId);
     }
 
     private void ensureDebugIds() {
@@ -105,14 +107,9 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.SEARCH_BUTTON);
     }
 
-    public void setEnsureDebugId( String debugId ) {
-        button.ensureDebugId(debugId);
-    }
-
-    private void prepareSearchDialog(AbstractDialogDetailsView dialog) {
+    private void prepareDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(makeSearchDialogActivity());
-        dialog.addStyleName(WIDE_MODAL);
-        dialog.getBodyContainer().add(searchView.asWidget());
+        dialog.addStyleName(XL_MODAL);
         dialog.removeButtonVisibility().setVisible(false);
         dialog.setHeader(lang.searchProjectTitle());
         dialog.setSaveButtonName(lang.buttonApply());
@@ -127,13 +124,12 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
                     fireEvent(new NotifyEvents.Show(lang.contractProjectFindNotChosenError(), NotifyEvents.NotifyType.INFO));
                     return;
                 }
-                setValue(searchView.project().getValue());
-                fireEvent(new ProjectEvents.SetProjectInfo(searchView.project().getValue()));
-                dialogDetailsSearchView.hidePopup();
+                setValue(searchView.project().getValue(), true);
+                onCancelClicked();
             }
             @Override
             public void onCancelClicked() {
-                dialogDetailsSearchView.hidePopup();
+                dialogView.hidePopup();
             }
         };
     }
@@ -142,7 +138,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
     AbstractProjectSearchView searchView;
 
     @Inject
-    AbstractDialogDetailsView dialogDetailsSearchView;
+    AbstractDialogDetailsView dialogView;
 
     @UiField
     HTMLPanel root;
@@ -158,8 +154,6 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
 
     private ProjectInfo value;
     private boolean isValidable;
-
-    private static final String REQUIRED_STYLE_NAME = "required";
 
     interface ProjectWidgetUiBinder extends UiBinder<HTMLPanel, ProjectWidget> {}
     private static ProjectWidgetUiBinder ourUiBinder = GWT.create( ProjectWidgetUiBinder.class );

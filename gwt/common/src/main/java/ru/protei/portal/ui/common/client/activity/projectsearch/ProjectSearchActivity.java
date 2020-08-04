@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public abstract class ProjectSearchActivity implements Activity, AbstractProjectSearchActivity {
 
-    @Inject
+    @PostConstruct
     public void onInit() {
         view.setActivity(this);
     }
@@ -32,9 +33,9 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         event.parent.clear();
         event.parent.add(view.asWidget());
         view.resetFilter();
+        view.clearProjectList();
         view.setVisibleProducts(event.showProducts);
         view.setVisibleManagers(event.showManagers);
-        view.setWideFormStyles();
     }
 
     @Override

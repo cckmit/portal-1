@@ -114,30 +114,6 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         project.clearItems();
     }
 
-    @Override
-    public void setDialogViewStyles() {
-        nameContainer.removeStyleName("col-md-4");
-        nameContainer.addStyleName("col-md-12");
-
-        dateContainer.removeStyleName("col-md-4");
-        dateContainer.addStyleName("col-md-12");
-
-        customerTypeContainer.removeStyleName("col-md-4");
-        customerTypeContainer.addStyleName("col-md-12");
-    }
-
-    @Override
-    public void setWideFormStyles() {
-        nameContainer.removeStyleName("col-md-12");
-        nameContainer.addStyleName("col-md-4");
-
-        dateContainer.removeStyleName("col-md-12");
-        dateContainer.addStyleName("col-md-4");
-
-        customerTypeContainer.removeStyleName("col-md-12");
-        customerTypeContainer.addStyleName("col-md-4");
-    }
-
     @UiHandler("search")
     public void onSearchClicked(ClickEvent event) {
         event.preventDefault();
@@ -183,15 +159,9 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @UiField
     TextBox name;
 
-    @UiField
-    HTMLPanel nameContainer;
-
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
-
-    @UiField
-    HTMLPanel customerTypeContainer;
 
     @Inject
     @UiField(provided = true)
@@ -210,9 +180,6 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;
-
-    @UiField
-    HTMLPanel dateContainer;
 
     @UiField
     Anchor search;

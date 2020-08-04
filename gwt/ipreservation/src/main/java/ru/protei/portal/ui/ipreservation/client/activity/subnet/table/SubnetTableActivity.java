@@ -209,7 +209,7 @@ public abstract class SubnetTableActivity
                     fireEvent(new IpReservationEvents.ShowSubnet());
                 }));*/
 /*        fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));*/
-        Window.alert("Refresh subnet " + subnet.getAddress());
+        Window.alert("Refresh subnet " + subnet.getAddress() + " under construction :(");
     }
 
     private void showErrorFromServer(Throwable throwable) {

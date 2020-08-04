@@ -134,8 +134,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(numTypeColumn);
 
         DynamicColumn<Contract> descriptionColumn = new DynamicColumn<>(lang.contractDescription(), "description-column",
-                contract -> "<b>" + (contract.getProjectId() == null ? StringUtils.emptyIfNull(contract.getCaseDirectionName()) : StringUtils.emptyIfNull(contract.getDirectionName())) + "</b><br/>"
-                        + SimpleHtmlSanitizer.sanitizeHtml(StringUtils.emptyIfNull(contract.getDescription())).asString());
+                contract -> "<b>" + (contract.getDirectionId() == null ?  "" : StringUtils.emptyIfNull(contract.getDirectionName() ) + "</b><br/>"
+                            + (contract.getProjectId() == null ? "" : StringUtils.emptyIfNull(contract.getProjectName() + "<br/>"))
+                            + SimpleHtmlSanitizer.sanitizeHtml(StringUtils.emptyIfNull(contract.getDescription())).asString()));
         clickColumns.add(descriptionColumn);
 
         DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",

@@ -164,14 +164,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return direction;
     }
 
-    public HasEnabled managerEnabled() {
-        return manager;
-    }
-
-    public HasEnabled directionEnabled() {
-        return direction;
-    }
-
     @Override
     public HasEnabled contractorEnabled() {
         return contractorWidget;
@@ -243,6 +235,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onTypeChanged(ValueChangeEvent<En_ContractType> event) {
         if ( activity != null ) {
             activity.onTypeChanged();
+        }
+    }
+
+    @UiHandler("projectWidget")
+    public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
+        if (activity != null) {
+            activity.onProjectChanged();
         }
     }
 

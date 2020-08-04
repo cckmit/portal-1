@@ -146,15 +146,6 @@ public class ProjectEvents {
         public EntityOption project;
     }
 
-    public static class SetProjectInfo {
-
-        public SetProjectInfo(ProjectInfo project) {
-            this.project = project;
-        }
-
-        public ProjectInfo project;
-    }
-
     /**
      * Показать таблицу проектов
      */

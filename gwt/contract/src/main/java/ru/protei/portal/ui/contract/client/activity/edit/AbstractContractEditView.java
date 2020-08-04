@@ -64,10 +64,6 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<ProductDirectionInfo> direction();
 
-    HasEnabled managerEnabled();
-
-    HasEnabled directionEnabled();
-
     HasEnabled organizationEnabled();
 
     HasEnabled contractorEnabled();
