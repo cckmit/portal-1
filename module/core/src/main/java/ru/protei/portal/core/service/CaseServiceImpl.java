@@ -611,24 +611,36 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<List<Long>> getPersonFavoriteIssueIds(AuthToken token, Long personId) {
+        if (personId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return ok(getPersonFavoriteIssueIds(personId));
     }
 
     @Override
     @Transactional
     public Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
+        if (personId == null || issueId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         return ok(personFavoriteIssuesDAO.removeState(personId, issueId));
     }
 
     @Override
     @Transactional
     public Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId) {
+        if (personId == null || issueId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Long personFavoriteIssuesId = personFavoriteIssuesDAO.persist(new PersonFavoriteIssues(personId, issueId));
         return ok(personFavoriteIssuesId);
     }
 
     private List<Long> getPersonFavoriteIssueIds(Long personId) {
-        return toList(personFavoriteIssuesDAO.getListByPersonId(personId), PersonFavoriteIssues::getIssueId);
+        return personFavoriteIssuesDAO.getIssueIdListByPersonId(personId);
     }
 
     private En_ResultStatus updatePlans(AuthToken token, Long caseId, Set<PlanOption> oldPlans, Set<PlanOption> plans) {

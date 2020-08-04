@@ -168,15 +168,6 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public List<Long> getPersonFavoritesIssueIds(Long personId) throws RequestFailedException {
-        log.info("getPersonFavoritesIssueIds(): personId={}", personId);
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        return ServiceUtils.checkResultAndGetData(caseService.getPersonFavoriteIssueIds(token, personId));
-    }
-
-    @Override
     public Boolean removeFavoriteState(Long personId, Long issueId) throws RequestFailedException {
         log.info("removeFavoriteState(): personId={}, issueId={}", personId, issueId);
 

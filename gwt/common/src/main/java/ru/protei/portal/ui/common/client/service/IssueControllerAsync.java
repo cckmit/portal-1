@@ -38,8 +38,6 @@ public interface IssueControllerAsync {
 
     void updatePlans(Set<PlanOption> plans, Long caseId, AsyncCallback<Set<PlanOption>> async);
 
-    void getPersonFavoritesIssueIds(Long personId, AsyncCallback<List<Long>> async);
-
     void removeFavoriteState(Long personId, Long issueId, AsyncCallback<Boolean> async);
 
     void addFavoriteState(Long personId, Long issueId, AsyncCallback<Long> async);

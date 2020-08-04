@@ -41,8 +41,6 @@ public interface IssueController extends RemoteService {
 
     Set<PlanOption> updatePlans(Set<PlanOption> plans, Long caseId) throws RequestFailedException;
 
-    List<Long> getPersonFavoritesIssueIds(Long personId) throws RequestFailedException;
-
     Boolean removeFavoriteState(Long personId, Long issueId) throws RequestFailedException;
 
     Long addFavoriteState(Long personId, Long issueId) throws RequestFailedException;
