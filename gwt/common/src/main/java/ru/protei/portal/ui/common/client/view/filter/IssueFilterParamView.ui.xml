@@ -95,7 +95,7 @@
             </g:HTMLPanel>
 
             <g:HTMLPanel ui:field="searchFavoriteContainer" styleName="form-group col-md-4 resize-md-12">
-                <label ui:field="labelSearchFavorite"><ui:text from="{lang.issueFavorites}"/></label>
+                <label><ui:text from="{lang.issueFavorites}"/></label>
                 <threestate:ThreeStateButton ui:field="searchFavorite"/>
             </g:HTMLPanel>
 
@@ -111,7 +111,6 @@
                 <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified justify-content-between importance-btn-group"/>
             </div>
         </div>
-
 
     </g:HTMLPanel>
 </ui:UiBinder>

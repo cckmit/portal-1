@@ -515,7 +515,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
 
         search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        searchFavorite.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        searchFavoriteContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
             dateCreatedRange.setHeader(lang.created());
@@ -842,8 +842,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     LabelElement labelSortBy;
     @UiField
     LabelElement labelSearchPrivate;
-    @UiField
-    LabelElement labelSearchFavorite;
     @UiField
     LabelElement labelIssueImportance;
     @UiField

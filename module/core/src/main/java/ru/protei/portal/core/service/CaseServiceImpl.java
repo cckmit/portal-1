@@ -615,11 +615,13 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
+    @Transactional
     public Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
         return ok(personFavoriteIssuesDAO.removeState(personId, issueId));
     }
 
     @Override
+    @Transactional
     public Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId) {
         Long personFavoriteIssuesId = personFavoriteIssuesDAO.persist(new PersonFavoriteIssues(personId, issueId));
         return ok(personFavoriteIssuesId);
