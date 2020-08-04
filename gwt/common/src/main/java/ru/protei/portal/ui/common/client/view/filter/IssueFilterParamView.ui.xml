@@ -94,6 +94,11 @@
                 <threestate:ThreeStateButton ui:field="searchPrivate"/>
             </g:HTMLPanel>
 
+            <g:HTMLPanel ui:field="searchFavoriteContainer" styleName="form-group col-md-4 resize-md-12">
+                <label ui:field="labelSearchFavorite"><ui:text from="{lang.issueFavorites}"/></label>
+                <threestate:ThreeStateButton ui:field="searchFavorite"/>
+            </g:HTMLPanel>
+
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>

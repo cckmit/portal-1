@@ -158,6 +158,9 @@ public class DebugIds {
         String PRIVACY_YES_BUTTON = "filter-privacy-yes-button";
         String PRIVACY_NO_BUTTON = "filter-privacy-no-button";
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
+        String FAVORITE_YES_BUTTON = "filter-favorite-yes-button";
+        String FAVORITE_NO_BUTTON = "filter-favorite-no-button";
+        String FAVORITE_NOT_DEFINED_BUTTON = "filter-favorite-not-defined-button";
         String PRIVACY_LABEL = "filter-privacy-label";
         String ISSUE_IMPORTANCE_LABEL = "filter-issue-importance-label";
         String ISSUE_STATE_LABEL = "filter-issue-state-label";
@@ -257,6 +260,7 @@ public class DebugIds {
         String SHOW_EDIT_BUTTON = "issue-show-edit-button";
         String LINKS_BUTTON = "issue-links-button";
         String TAGS_BUTTON = "issue-tags-button";
+        String FAVORITES_BUTTON = "issue-favorites-button";
         String EDIT_NAME_AND_DESC_BUTTON = "issue-edit-name-and-desc-button";
         String PRIVACY_BUTTON = "issue-privacy-button";
         String PRIVACY_ICON = "issue-privacy-icon";

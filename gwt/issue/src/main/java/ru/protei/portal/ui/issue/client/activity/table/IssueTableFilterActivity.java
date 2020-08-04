@@ -101,18 +101,12 @@ public abstract class IssueTableFilterActivity
 
         this.preScroll = event.preScroll;
 
-        issueService.getPersonFavoritesIssueIds(policyService.getProfileId(), new FluentCallback<List<Long>>()
-                .withSuccess(result -> {
-                    favoriteIssues = new ArrayList<>(result);
-
-                    if (event.query != null) {
-                        fillFilterFieldsByCaseQuery(event.query);
-                        event.query = null;
-                    } else {
-                        loadTable();
-                    }
-                })
-        );
+        if (event.query != null) {
+            fillFilterFieldsByCaseQuery(event.query);
+            event.query = null;
+        } else {
+            loadTable();
+        }
 
         validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());
         validateCreatedRange(filterView.getIssueFilterParams().isCreatedRangeValid());
@@ -244,7 +238,7 @@ public abstract class IssueTableFilterActivity
     }
 
     @Override
-    public boolean isFavoriteActive(CaseShortView value) {
+    public boolean isFavoriteItem(CaseShortView value) {
         if (value == null) {
             return false;
         }
@@ -253,27 +247,29 @@ public abstract class IssueTableFilterActivity
     }
 
     @Override
-    public void changeFavoriteState(CaseShortView value) {
+    public void onFavoriteStateChanged(final CaseShortView value) {
         if (value == null) {
             return;
         }
 
-        value.setFavorite(!value.isFavorite());
-
         if (value.isFavorite()) {
-            issueService.addFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Long>()
-                    .withSuccess(result -> onSuccessChangeFavoriteState(value))
+            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Boolean>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(value, view))
             );
         } else {
-            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Boolean>()
-                    .withSuccess(result -> onSuccessChangeFavoriteState(value))
+            issueService.addFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Long>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(value, view))
             );
         }
     }
 
-    private void onSuccessChangeFavoriteState(CaseShortView value) {
-        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+    private void onSuccessChangeFavoriteState(CaseShortView value, AbstractIssueTableView view) {
+        value.setFavorite(!value.isFavorite());
+
         view.updateRow(value);
+
+        fireEvent(new IssueEvents.IssueFavoriteStateChanged(value.getId(), value.isFavorite()));
+        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
     }
 
     private void validateSearchField(boolean isCorrect){
@@ -427,5 +423,4 @@ public abstract class IssueTableFilterActivity
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
-    private List<Long> favoriteIssues = new ArrayList<>();
 }

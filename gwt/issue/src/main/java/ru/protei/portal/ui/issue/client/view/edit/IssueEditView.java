@@ -11,11 +11,14 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORITE_ACTIVE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORITE_NOT_ACTIVE;
 
 /**
  * Вид создания и редактирования обращения
@@ -125,6 +128,15 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         this.createdBy.setInnerHTML( value );
     }
 
+    @Override
+    public void setFavoriteButtonActive(boolean isActive) {
+        if (isActive) {
+            favoriteButtonIcon.replaceClassName(FAVORITE_NOT_ACTIVE, FAVORITE_ACTIVE);
+        } else {
+            favoriteButtonIcon.replaceClassName(FAVORITE_ACTIVE, FAVORITE_NOT_ACTIVE);
+        }
+    }
+
     @UiHandler("nameAndDescriptionEditButton")
     public void onEditNameAndDescriptionButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -168,10 +180,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("favoritesButton")
+    public void onFavoriteStateChanged(ClickEvent event) {
+        activity.onFavoriteStateChanged();
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+
         privacyIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.PRIVACY_ICON);
         copyNumber.ensureDebugId(DebugIds.ISSUE.COPY_NUMBER_BUTTON);
         backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
@@ -179,6 +197,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         addTagButton.ensureDebugId(DebugIds.ISSUE.TAGS_BUTTON);
         addLinkButton.ensureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_BUTTON);
+        favoritesButton.ensureDebugId(DebugIds.ISSUE.FAVORITES_BUTTON);
     }
 
     @UiField
@@ -209,6 +228,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     Button showEditViewButton;
     @UiField
     Button nameAndDescriptionEditButton;
+    @UiField
+    Button favoritesButton;
+    @UiField
+    Element favoriteButtonIcon;
     @UiField
     Button addTagButton;
     @UiField

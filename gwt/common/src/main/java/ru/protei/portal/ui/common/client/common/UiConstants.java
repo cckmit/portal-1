@@ -41,7 +41,10 @@ public class UiConstants {
         String DOWNLOAD = "fa-cloud-download-alt";
         String REFRESH = "fa-redo";
         String CANCEL = "fa-window-close";
+        String FAVORITE_ACTIVE = "fas fa-star";
+        String FAVORITE_NOT_ACTIVE = "far fa-star";
 
+        String BIG_ICON = "fa-lg";
     }
 
     public interface ActionBarIcons {

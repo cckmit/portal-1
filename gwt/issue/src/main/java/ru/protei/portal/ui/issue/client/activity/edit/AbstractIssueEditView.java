@@ -44,4 +44,6 @@ public interface AbstractIssueEditView extends IsWidget {
     boolean isAttached();
 
     String DESCRIPTION = "description";
+
+    void setFavoriteButtonActive(boolean isActive);
 }

@@ -8,11 +8,12 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.*;
 
 public class FavoritesClickColumn<T> extends ClickColumn<T> {
     public interface FavoritesStateManager<T> {
-        boolean isFavoriteActive(T value);
-        void changeFavoriteState(T value);
+        boolean isFavoriteItem(T value);
+        void onFavoriteStateChanged(T value);
     }
 
     public FavoritesClickColumn(Lang lang) {
@@ -28,17 +29,18 @@ public class FavoritesClickColumn<T> extends ClickColumn<T> {
     protected void fillColumnValue(Element cell, T value) {
         AnchorElement favoriteElement = DOM.createAnchor().cast();
         favoriteElement.setHref("#");
-        favoriteElement.addClassName(favoritesStateManager.isFavoriteActive(value) ? ACTIVE_STAR : NOT_ACTIVE_STAR);
-        favoriteElement.setTitle(!favoritesStateManager.isFavoriteActive(value) ? lang.issueAddToFavorites() : lang.issueRemoveFromFavorites());
+        favoriteElement.addClassName((isFavoriteItem(value) ? FAVORITE_ACTIVE : FAVORITE_NOT_ACTIVE));
+        favoriteElement.addClassName(BIG_ICON);
+        favoriteElement.setTitle(isFavoriteItem(value) ? lang.issueRemoveFromFavorites() : lang.issueAddToFavorites());
         favoriteElement.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.FAVORITES);
         cell.appendChild(favoriteElement);
         cell.addClassName("favorites");
 
         DOM.sinkEvents(favoriteElement, Event.ONCLICK);
-        DOM.setEventListener( favoriteElement, event -> {
+        DOM.setEventListener(favoriteElement, event -> {
             event.preventDefault();
-            if ( favoritesStateManager != null ) {
-                favoritesStateManager.changeFavoriteState(value);
+            if (favoritesStateManager != null) {
+                favoritesStateManager.onFavoriteStateChanged(value);
             }
         });
     }
@@ -47,9 +49,10 @@ public class FavoritesClickColumn<T> extends ClickColumn<T> {
         this.favoritesStateManager = favoritesStateManager;
     }
 
+    private boolean isFavoriteItem(T value) {
+        return favoritesStateManager != null && favoritesStateManager.isFavoriteItem(value);
+    }
+
     private FavoritesStateManager<T> favoritesStateManager;
     private Lang lang;
-
-    private static final String ACTIVE_STAR = "fas fa-star fa-lg";
-    private static final String NOT_ACTIVE_STAR = "far fa-star fa-lg";
 }

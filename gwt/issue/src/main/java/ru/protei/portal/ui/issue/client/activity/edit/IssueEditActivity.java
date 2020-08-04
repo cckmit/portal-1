@@ -192,6 +192,20 @@ public abstract class IssueEditActivity implements
         }
     }
 
+    @Event
+    public void onFavoriteStateChanged(IssueEvents.IssueFavoriteStateChanged event) {
+        if (issue == null) {
+            return;
+        }
+
+        if (!Objects.equals(issue.getId(), event.issueId)) {
+            return;
+        }
+
+        issue.setFavorite(event.isFavorite);
+        view.setFavoriteButtonActive(event.isFavorite);
+    }
+
     @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
@@ -264,11 +278,37 @@ public abstract class IssueEditActivity implements
         copyToClipboardNotify(ClipboardUtils.copyToClipboard( lang.crmPrefix() + issue.getCaseNumber() + " " + issue.getName() ));
     }
 
-    public void fireSuccessCopyNotify() {
+    @Override
+    public void onFavoriteStateChanged() {
+        if (issue == null) {
+            return;
+        }
+
+        if (issue.isFavorite()) {
+            issueController.removeFavoriteState(policyService.getProfileId(), issue.getId(), new FluentCallback<Boolean>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
+            );
+        } else {
+            issueController.addFavoriteState(policyService.getProfileId(), issue.getId(), new FluentCallback<Long>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(issue, view))
+            );
+        }
+    }
+
+    private void onSuccessChangeFavoriteState(CaseObject issue, AbstractIssueEditView view) {
+        issue.setFavorite(!issue.isFavorite());
+
+        view.setFavoriteButtonActive(issue.isFavorite());
+
+        fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
+        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+    }
+
+    private void fireSuccessCopyNotify() {
         fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
     }
 
-    public void fireErrorCopyNotify() {
+    private void fireErrorCopyNotify() {
         fireEvent( new NotifyEvents.Show( lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR ) );
     }
 
@@ -380,7 +420,7 @@ public abstract class IssueEditActivity implements
         view.getInfoContainer().add(issueInfoWidget);
 
         view.nameAndDescriptionEditButtonVisibility().setVisible(!readOnly && selfIssue);
-
+        view.setFavoriteButtonActive(issue.isFavorite());
     }
 
     private void viewModeIsPreview( boolean isPreviewMode){
