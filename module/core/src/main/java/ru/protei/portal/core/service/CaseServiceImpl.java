@@ -816,9 +816,13 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
-        if (!validateFields( caseObject )) return false;
+        if (!validateFields( caseObject )) {
+            return false;
+        }
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
-        if (!validateMetaFields(token, caseObjectMeta)) return false;
+        if (!validateMetaFields(token, caseObjectMeta)) {
+            return false;
+        }
         return true;
     }
 

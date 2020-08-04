@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
@@ -26,6 +27,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
@@ -51,6 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -80,12 +83,28 @@ public class TestPortalApiController extends BaseServiceTest {
     private AuthServiceMock authService;
 
     @PostConstruct
-    public void postConstruct(  ) {
+    public void postConstruct() {
         mockMvc = MockMvcBuilders.standaloneSetup(portalApiController).build();
 
         company = makeCustomerCompany();
-        person = makePerson(company);
-        userLogin = makeUserLogin(createUserLogin(person));
+
+//        В бд уже должен быть person с id из тестовых пропертей
+        Long youtrackUserId = config.data().youtrack().getYoutrackUserId();
+        person = personDAO.get(youtrackUserId);
+
+        if (person == null) {
+            person = makePerson(company, youtrackUserId);
+        } else {
+            company = person.getCompany();
+        }
+
+        List<UserLogin> userLogins = userLoginDAO.findByPersonId(person.getId());
+
+        userLogin = emptyIfNull(userLogins).stream().findAny().orElse(null);
+
+        if (userLogin == null) {
+            userLogin = makeUserLogin(person);
+        }
     }
 
     @Before
