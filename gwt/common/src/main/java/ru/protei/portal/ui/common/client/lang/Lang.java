@@ -2937,4 +2937,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errorNeedFeelTimeElapsed();
 
     String errSaveProjectHeadManager();
+
+    String issueAddToFavorites();
+
+    String issueRemoveFromFavorites();
 }

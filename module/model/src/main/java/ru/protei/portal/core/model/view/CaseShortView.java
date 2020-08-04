@@ -93,6 +93,9 @@ public class CaseShortView implements Serializable, Identifiable {
     // ManyToMany via CaseTagService
     private List<CaseTag> tags;
 
+//    Проставляется относительно авторизованного пользователя
+    private boolean isFavorite;
+
     public CaseShortView() {
 
     }
@@ -298,6 +301,14 @@ public class CaseShortView implements Serializable, Identifiable {
         this.managerCompanyId = managerCompanyId;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -317,7 +328,7 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", name='" + name + '\'' +
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
-                ", stateName=" + stateName +
+                ", stateName='" + stateName + '\'' +
                 ", impLevel=" + impLevel +
                 ", privateCase=" + privateCase +
                 ", initiatorId=" + initiatorId +
@@ -335,6 +346,7 @@ public class CaseShortView implements Serializable, Identifiable {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", tags=" + tags +
+                ", isFavorite=" + isFavorite +
                 '}';
     }
 }

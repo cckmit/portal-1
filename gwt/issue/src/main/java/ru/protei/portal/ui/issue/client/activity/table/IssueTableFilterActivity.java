@@ -34,10 +34,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Активность таблицы обращений
@@ -104,12 +101,18 @@ public abstract class IssueTableFilterActivity
 
         this.preScroll = event.preScroll;
 
-        if (event.query != null) {
-            fillFilterFieldsByCaseQuery(event.query);
-            event.query = null;
-        } else {
-            loadTable();
-        }
+        issueService.getPersonFavoritesIssueIds(policyService.getProfileId(), new FluentCallback<List<Long>>()
+                .withSuccess(result -> {
+                    favoriteIssues = new ArrayList<>(result);
+
+                    if (event.query != null) {
+                        fillFilterFieldsByCaseQuery(event.query);
+                        event.query = null;
+                    } else {
+                        loadTable();
+                    }
+                })
+        );
 
         validateSearchField(filterView.getIssueFilterParams().isSearchFieldCorrect());
         validateCreatedRange(filterView.getIssueFilterParams().isCreatedRangeValid());
@@ -141,7 +144,7 @@ public abstract class IssueTableFilterActivity
     }
 
     @Override
-    public void onItemClicked( CaseShortView value ) {
+    public void onItemClicked(CaseShortView value ) {
         persistScroll();
         showPreview( value );
     }
@@ -238,6 +241,39 @@ public abstract class IssueTableFilterActivity
                 }
             }
         });
+    }
+
+    @Override
+    public boolean isFavoriteActive(CaseShortView value) {
+        if (value == null) {
+            return false;
+        }
+
+        return value.isFavorite();
+    }
+
+    @Override
+    public void changeFavoriteState(CaseShortView value) {
+        if (value == null) {
+            return;
+        }
+
+        value.setFavorite(!value.isFavorite());
+
+        if (value.isFavorite()) {
+            issueService.addFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Long>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(value))
+            );
+        } else {
+            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Boolean>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(value))
+            );
+        }
+    }
+
+    private void onSuccessChangeFavoriteState(CaseShortView value) {
+        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+        view.updateRow(value);
     }
 
     private void validateSearchField(boolean isCorrect){
@@ -391,4 +427,5 @@ public abstract class IssueTableFilterActivity
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
+    private List<Long> favoriteIssues = new ArrayList<>();
 }

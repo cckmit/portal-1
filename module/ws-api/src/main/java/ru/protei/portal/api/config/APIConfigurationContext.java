@@ -160,6 +160,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Bean
     public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
 
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
 /*
     @Bean
     public WorkerService createWorkerWebService () {

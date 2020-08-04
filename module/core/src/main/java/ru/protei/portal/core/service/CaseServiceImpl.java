@@ -26,10 +26,7 @@ import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
-import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.PlatformOption;
-import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.core.model.view.PlanOption;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -60,6 +57,10 @@ public class CaseServiceImpl implements CaseService {
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
 
+        List<Long> personFavoriteIssueIds = getPersonFavoriteIssueIds(token.getPersonId());
+
+        sr.getResults().forEach(caseShortView -> caseShortView.setFavorite(personFavoriteIssueIds.contains(caseShortView.getId())));
+
         return ok(sr);
     }
 
@@ -76,38 +77,6 @@ public class CaseServiceImpl implements CaseService {
         CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
 
         return fillCaseObject( token, caseObject );
-    }
-
-    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        if(caseObject == null)
-            return error(En_ResultStatus.NOT_FOUND);
-
-        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
-        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
-        jdbcManyRelationsHelper.fill(caseObject, "plans");
-
-        withJiraSLAInformation(caseObject);
-
-        // RESET PRIVACY INFO
-        if ( caseObject.getInitiator() != null ) {
-            caseObject.getInitiator().resetPrivacyInfo();
-        }
-        if ( caseObject.getCreator() != null ) {
-            caseObject.getCreator().resetPrivacyInfo();
-        }
-        if ( caseObject.getManager() != null ) {
-            caseObject.getManager().resetPrivacyInfo();
-        }
-        if ( isNotEmpty(caseObject.getNotifiers())) {
-            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
-        }
-
-        return ok(caseObject);
     }
 
     @Override
@@ -640,8 +609,28 @@ public class CaseServiceImpl implements CaseService {
         return ok(plans);
     }
 
+    @Override
+    public Result<List<Long>> getPersonFavoriteIssueIds(AuthToken token, Long personId) {
+        return ok(getPersonFavoriteIssueIds(personId));
+    }
+
+    @Override
+    public Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
+        return ok(personFavoriteIssuesDAO.removeState(personId, issueId));
+    }
+
+    @Override
+    public Result<Long> addFavoriteState(AuthToken token, Long personId, Long issueId) {
+        Long personFavoriteIssuesId = personFavoriteIssuesDAO.persist(new PersonFavoriteIssues(personId, issueId));
+        return ok(personFavoriteIssuesId);
+    }
+
+    private List<Long> getPersonFavoriteIssueIds(Long personId) {
+        return toList(personFavoriteIssuesDAO.getListByPersonId(personId), PersonFavoriteIssues::getIssueId);
+    }
+
     private En_ResultStatus updatePlans(AuthToken token, Long caseId, Set<PlanOption> oldPlans, Set<PlanOption> plans) {
-        DiffCollectionResult<PlanOption> planDiffs = CollectionUtils.diffCollection(oldPlans, plans);
+        DiffCollectionResult<PlanOption> planDiffs = diffCollection(oldPlans, plans);
 
         for (PlanOption planOption : emptyIfNull(planDiffs.getAddedEntries())) {
             Result<Plan> planResult = planService.addIssueToPlan(token, planOption.getId(), caseId);
@@ -970,11 +959,38 @@ public class CaseServiceImpl implements CaseService {
         return caseObject;
     }
 
-    private Set<PlanOption> toPlanOptionSet(List<Plan> plans) {
-        return toSet(
-                emptyIfNull(plans),
-                plan -> new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId())
-        );
+    private Result<CaseObject> fillCaseObject( AuthToken token, CaseObject caseObject ) {
+        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        if(caseObject == null)
+            return error(En_ResultStatus.NOT_FOUND);
+
+        jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
+        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+        jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+        jdbcManyRelationsHelper.fill(caseObject, "plans");
+
+        withJiraSLAInformation(caseObject);
+
+        caseObject.setFavorite(getPersonFavoriteIssueIds(token.getPersonId()).contains(caseObject.getId()));
+
+        // RESET PRIVACY INFO
+        if ( caseObject.getInitiator() != null ) {
+            caseObject.getInitiator().resetPrivacyInfo();
+        }
+        if ( caseObject.getCreator() != null ) {
+            caseObject.getCreator().resetPrivacyInfo();
+        }
+        if ( caseObject.getManager() != null ) {
+            caseObject.getManager().resetPrivacyInfo();
+        }
+        if ( isNotEmpty(caseObject.getNotifiers())) {
+            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
+        }
+
+        return ok(caseObject);
     }
 
     @Autowired
@@ -1069,6 +1085,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     PlanService planService;
+
+    @Autowired
+    PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
 
     private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }

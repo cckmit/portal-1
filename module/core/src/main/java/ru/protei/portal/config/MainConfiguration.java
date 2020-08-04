@@ -1018,6 +1018,11 @@ public class MainConfiguration {
         return new JiraWikiMarkupRendererImpl();
     }
 
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

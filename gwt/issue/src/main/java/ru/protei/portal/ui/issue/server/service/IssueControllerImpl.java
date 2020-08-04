@@ -24,6 +24,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.List;
 import java.util.Set;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
@@ -164,6 +165,33 @@ public class IssueControllerImpl implements IssueController {
         }
 
         return updatedPlansResult.getData();
+    }
+
+    @Override
+    public List<Long> getPersonFavoritesIssueIds(Long personId) throws RequestFailedException {
+        log.info("getPersonFavoritesIssueIds(): personId={}", personId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        return ServiceUtils.checkResultAndGetData(caseService.getPersonFavoriteIssueIds(token, personId));
+    }
+
+    @Override
+    public Boolean removeFavoriteState(Long personId, Long issueId) throws RequestFailedException {
+        log.info("removeFavoriteState(): personId={}, issueId={}", personId, issueId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        return ServiceUtils.checkResultAndGetData(caseService.removeFavoriteState(token, personId, issueId));
+    }
+
+    @Override
+    public Long addFavoriteState(Long personId, Long issueId) throws RequestFailedException {
+        log.info("addFavoriteState(): personId={}, issueId={}", personId, issueId);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        return ServiceUtils.checkResultAndGetData(caseService.addFavoriteState(token, personId, issueId));
     }
 
     @Autowired

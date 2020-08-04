@@ -714,6 +714,7 @@ public class DebugIds {
     public interface TABLE {
 
         interface BUTTON {
+            String FAVORITES = "table-favorites-button";
             String EDIT = "table-edit-button";
             String DOWNLOAD = "table-download-button";
             String REMOVE = "table-remove-button";
