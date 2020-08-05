@@ -2,12 +2,14 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.PersonFavoriteIssuesDAO;
 import ru.protei.portal.core.model.ent.PersonFavoriteIssues;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class PersonFavoriteIssuesDAO_Impl extends PortalBaseJdbcDAO<PersonFavoriteIssues> implements PersonFavoriteIssuesDAO {
@@ -24,8 +26,11 @@ public class PersonFavoriteIssuesDAO_Impl extends PortalBaseJdbcDAO<PersonFavori
     }
 
     @Override
-    public boolean removeState(Long personId, Long caseObjectId) {
-        return removeByCondition(getTableName() + ".person_id = ? AND " + getTableName() + ".case_object_id = ?",
-                Arrays.asList(personId, caseObjectId)) > 0;
+    public void removeState(Long personId, Long caseObjectId) {
+        Condition condition = condition()
+                .and("person_id").equal(personId)
+                .and("case_object_id").equal(caseObjectId);
+
+        removeByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 }

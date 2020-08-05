@@ -9,6 +9,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.*;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.FAVORITES;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.FAVORITE_ICON;
 
 public class FavoritesClickColumn<T> extends ClickColumn<T> {
     public interface FavoritesStateManager<T> {
@@ -22,19 +24,20 @@ public class FavoritesClickColumn<T> extends ClickColumn<T> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
-        columnHeader.addClassName("favorites");
+        columnHeader.addClassName(FAVORITES);
     }
 
     @Override
     protected void fillColumnValue(Element cell, T value) {
         AnchorElement favoriteElement = DOM.createAnchor().cast();
         favoriteElement.setHref("#");
+        favoriteElement.addClassName(FAVORITE_ICON);
         favoriteElement.addClassName((isFavoriteItem(value) ? FAVORITE_ACTIVE : FAVORITE_NOT_ACTIVE));
         favoriteElement.addClassName(BIG_ICON);
         favoriteElement.setTitle(isFavoriteItem(value) ? lang.issueRemoveFromFavorites() : lang.issueAddToFavorites());
         favoriteElement.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.FAVORITES);
         cell.appendChild(favoriteElement);
-        cell.addClassName("favorites");
+        cell.addClassName(FAVORITES);
 
         DOM.sinkEvents(favoriteElement, Event.ONCLICK);
         DOM.setEventListener(favoriteElement, event -> {

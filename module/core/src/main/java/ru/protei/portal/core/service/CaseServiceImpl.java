@@ -610,22 +610,15 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Result<List<Long>> getPersonFavoriteIssueIds(AuthToken token, Long personId) {
-        if (personId == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        return ok(getPersonFavoriteIssueIds(personId));
-    }
-
-    @Override
     @Transactional
     public Result<Boolean> removeFavoriteState(AuthToken token, Long personId, Long issueId) {
         if (personId == null || issueId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return ok(personFavoriteIssuesDAO.removeState(personId, issueId));
+        personFavoriteIssuesDAO.removeState(personId, issueId);
+
+        return ok(true);
     }
 
     @Override

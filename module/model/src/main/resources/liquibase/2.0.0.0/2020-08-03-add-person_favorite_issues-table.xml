@@ -14,7 +14,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="add-person_favorite_issues-table-person_id_to_person_fk-constraint" author="fomin">
+    <changeSet id="add-person_favorite_issues-table-person_id-to-person-fk-constraint" author="fomin">
         <addForeignKeyConstraint baseTableName="person_favorite_issues"
                                  baseColumnNames="person_id"
                                  constraintName="person_id_to_person_fk"
@@ -22,7 +22,7 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="add-person_favorite_issues-table-p_id_to_person_fk-constraint" author="fomin">
+    <changeSet id="add-person_favorite_issues-table-case_object_id-to-case_object-fk-constraint" author="fomin">
         <addForeignKeyConstraint baseTableName="person_favorite_issues"
                                  baseColumnNames="case_object_id"
                                  constraintName="case_object_id_to_case_object_fk"

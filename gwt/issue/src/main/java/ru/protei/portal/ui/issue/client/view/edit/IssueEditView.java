@@ -132,8 +132,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void setFavoriteButtonActive(boolean isActive) {
         if (isActive) {
             favoriteButtonIcon.replaceClassName(FAVORITE_NOT_ACTIVE, FAVORITE_ACTIVE);
+            favoritesButton.setTitle(lang.issueRemoveFromFavorites());
         } else {
             favoriteButtonIcon.replaceClassName(FAVORITE_ACTIVE, FAVORITE_NOT_ACTIVE);
+            favoritesButton.setTitle(lang.issueAddToFavorites());
         }
     }
 
@@ -182,7 +184,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @UiHandler("favoritesButton")
     public void onFavoriteStateChanged(ClickEvent event) {
-        activity.onFavoriteStateChanged();
+        if (activity != null) {
+            activity.onFavoriteStateChanged();
+        }
     }
 
     private void ensureDebugIds() {

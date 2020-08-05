@@ -99,6 +99,8 @@ public class UiConstants {
         String FULL_VIEW = "col-md-12";
         String LINK_DISABLE = "link-disabled";
         String WIDE_MODAL = "modal-lg";
+        String FAVORITES = "favorites";
+        String FAVORITE_ICON = "favorite-icon";
     }
 
     public interface ColumnClassName {

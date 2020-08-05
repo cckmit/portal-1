@@ -26,9 +26,6 @@ import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 
-import java.util.function.Predicate;
-import java.util.logging.Logger;
-
 
 /**
  * Представление таблицы обращений

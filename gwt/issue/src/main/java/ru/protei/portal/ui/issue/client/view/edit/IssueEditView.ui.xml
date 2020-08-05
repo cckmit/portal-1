@@ -15,7 +15,7 @@
                                 <i class="fa fa-arrow-left"/>
                             </g:Button>
                             <g:Button ui:field="favoritesButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
-                                <i ui:field="favoriteButtonIcon" class="text-gold"/>
+                                <i ui:field="favoriteButtonIcon" class="favorite-icon"/>
                             </g:Button>
                             <g:Button ui:field="showEditViewButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.openFullScreen}">
                                 <i class="fas fa-expand-arrows-alt"/>

@@ -761,10 +761,6 @@ label.bordered:after {
       }
     }
     .favorites {
-      .far, .fas {
-        color: gold;
-      }
-
       text-align: right;
 
       .far.fa-star {
@@ -4830,5 +4826,11 @@ table {
     height: 100%;
     color: white;
     font-size: 24px !important;
+  }
+}
+
+.favorite-icon {
+  &.fas {
+    color: gold;
   }
 }
