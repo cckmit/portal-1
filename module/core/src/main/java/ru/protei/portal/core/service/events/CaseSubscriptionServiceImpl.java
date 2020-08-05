@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
@@ -51,6 +52,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     @Autowired
     PortalConfig portalConfig;
 
+    @Autowired
+    PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
+
     private Set<NotificationEntry> employeeRegistrationEventSubscribers = new HashSet<>();
 
     @PostConstruct
@@ -83,6 +87,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         appendCompanySubscriptions(caseMeta, result);
         appendProductSubscriptions(caseMeta.getProductId(), result);
         appendNotifiers(caseMeta.getId(), result);
+        appendNotifiersByFavoriteIssues(caseMeta.getId(), result);
         //HomeCompany persons don't need to get notifications
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
         log.info( "subscribers: AssembledCaseEvent: {}", join( result, NotificationEntry::getAddress, ",") );
@@ -149,7 +154,25 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         for (Person notifier : CollectionUtils.emptyIfNull(caseMetaNotifiers.getNotifiers())) {
             ContactItem email = notifier.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
             if (email == null) continue;
-            result.add(NotificationEntry.email(email.value(), "ru"));
+            result.add(NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU));
+        }
+    }
+
+    private void appendNotifiersByFavoriteIssues(Long caseId, Set<NotificationEntry> result) {
+        List<Long> personIdsByFavoriteIssueId = personFavoriteIssuesDAO.getPersonIdsByIssueId(caseId);
+
+        if (CollectionUtils.isEmpty(personIdsByFavoriteIssueId)) {
+            return;
+        }
+
+        for (Person person : personDAO.getListByKeys(personIdsByFavoriteIssueId)) {
+            ContactItem email = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
+
+            if (email == null) {
+                continue;
+            }
+
+            result.add(NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU));
         }
     }
 

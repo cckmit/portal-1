@@ -14,6 +14,9 @@
                 <div class="col-lg-8 order-last order-lg-first">
                     <div class="btn-toolbar flex-wrap">
                         <div class="btn-group form-group">
+                            <g:Button ui:field="favoritesButton" styleName="btn btn-default btn-xs btn-cons-toolbar">
+                                <i ui:field="favoriteButtonIcon" class="favorite-icon"/>
+                            </g:Button>
                             <g:Button ui:field="addTagButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.tagAdd}">
                                 <i class="fas fa-tag"/>
                             </g:Button>

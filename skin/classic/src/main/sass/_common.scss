@@ -722,6 +722,13 @@ label.bordered:after {
   table {
     tbody {
       tr {
+        &:hover {
+          .favorites {
+            .far.fa-star {
+              opacity: 1;
+            }
+          }
+        }
         td {
           height: 70px;
 
@@ -753,8 +760,17 @@ label.bordered:after {
         }
       }
     }
+    .favorites {
+      text-align: right;
+
+      .far.fa-star {
+        opacity: 0;
+      }
+
+      width: 4%;
+    }
     .number {
-      width: 14%;
+      width: 10%;
       text-align: center;
       .number-size {
         font-size: 22px;
@@ -2295,6 +2311,10 @@ a {
 
 .text-purple {
   color: $purple_color;
+}
+
+.text-gold {
+  color: gold;
 }
 
 .dn {
@@ -4842,5 +4862,11 @@ table {
         max-width: 50% !important;
       }
     }
+  }
+}
+
+.favorite-icon {
+  &.fas {
+    color: gold;
   }
 }

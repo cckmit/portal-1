@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,4 +40,8 @@ public interface IssueController extends RemoteService {
     void updateManagerOfIssue(long issueId, long personId) throws RequestFailedException;
 
     Set<PlanOption> updatePlans(Set<PlanOption> plans, Long caseId) throws RequestFailedException;
+
+    Boolean removeFavoriteState(Long personId, Long issueId) throws RequestFailedException;
+
+    Long addFavoriteState(Long personId, Long issueId) throws RequestFailedException;
 }

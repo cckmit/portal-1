@@ -2945,4 +2945,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contractProjectFindNotChosenError();
 
     String errContractProjectRequired();
+
+    String issueAddToFavorites();
+
+    String issueRemoveFromFavorites();
+
+    String issueFavorites();
 }

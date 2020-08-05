@@ -34,10 +34,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Активность таблицы обращений
@@ -141,7 +138,7 @@ public abstract class IssueTableFilterActivity
     }
 
     @Override
-    public void onItemClicked( CaseShortView value ) {
+    public void onItemClicked(CaseShortView value ) {
         persistScroll();
         showPreview( value );
     }
@@ -238,6 +235,41 @@ public abstract class IssueTableFilterActivity
                 }
             }
         });
+    }
+
+    @Override
+    public boolean isFavoriteItem(CaseShortView value) {
+        if (value == null) {
+            return false;
+        }
+
+        return value.isFavorite();
+    }
+
+    @Override
+    public void onFavoriteStateChanged(final CaseShortView value) {
+        if (value == null) {
+            return;
+        }
+
+        if (value.isFavorite()) {
+            issueService.removeFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Boolean>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(value, view))
+            );
+        } else {
+            issueService.addFavoriteState(policyService.getProfileId(), value.getId(), new FluentCallback<Long>()
+                    .withSuccess(result -> onSuccessChangeFavoriteState(value, view))
+            );
+        }
+    }
+
+    private void onSuccessChangeFavoriteState(CaseShortView value, AbstractIssueTableView view) {
+        value.setFavorite(!value.isFavorite());
+
+        view.updateRow(value);
+
+        fireEvent(new IssueEvents.IssueFavoriteStateChanged(value.getId(), value.isFavorite()));
+        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
     }
 
     private void validateSearchField(boolean isCorrect){

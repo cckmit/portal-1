@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.Identifiable;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Collections;
@@ -171,6 +172,9 @@ public class CaseObject extends AuditableObject {
 
     // not db column
     private String jiraUrl;
+
+//    Проставляется относительно авторизованного пользователя
+    private boolean isFavorite;
 
     public CaseObject() {
 
@@ -596,6 +600,14 @@ public class CaseObject extends AuditableObject {
         this.plans = plans;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -668,6 +680,7 @@ public class CaseObject extends AuditableObject {
                 ", timeElapsedType=" + timeElapsedType +
                 ", caseObjectMetaJira=" + caseObjectMetaJira +
                 ", jiraUrl='" + jiraUrl + '\'' +
+                ", isFavorite=" + isFavorite +
                 '}';
     }
 }

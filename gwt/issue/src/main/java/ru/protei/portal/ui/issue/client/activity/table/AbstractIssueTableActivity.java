@@ -6,13 +6,15 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.AttachClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.FavoritesClickColumn;
 
 /**
  * Активность таблицы контактов
  */
 public interface AbstractIssueTableActivity
         extends ClickColumn.Handler< CaseShortView >, EditClickColumn.EditHandler< CaseShortView >,
-        InfiniteLoadHandler<CaseShortView>, InfiniteTableWidget.PagerListener, AttachClickColumn.AttachHandler<CaseShortView>
+        InfiniteLoadHandler<CaseShortView>, InfiniteTableWidget.PagerListener,
+        AttachClickColumn.AttachHandler<CaseShortView>, FavoritesClickColumn.FavoritesStateManager<CaseShortView>
 {
     void onEditClicked( CaseShortView value );
 }

@@ -671,6 +671,11 @@ public class MainConfiguration {
         return new AbsenceFilterDAO_Impl();
     }
 
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

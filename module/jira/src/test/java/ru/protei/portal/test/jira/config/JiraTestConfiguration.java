@@ -453,4 +453,9 @@ public class JiraTestConfiguration {
     public PlanToCaseObjectDAO getPlanToCaseObjectDAO() {
         return new PlanToCaseObjectDAO_Impl();
     }
+
+    @Bean
+    public PersonFavoriteIssuesDAO getPersonFavoritesIssuesDAO() {
+        return new PersonFavoriteIssuesDAO_Impl();
+    }
 }
