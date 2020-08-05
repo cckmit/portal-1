@@ -2,18 +2,24 @@ package ru.protei.portal.core.utils;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.streaming.SXSSFFormulaEvaluator;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static ru.protei.portal.core.utils.JXLSHelper.TimeFormatWrapper.getTimeFormula;
 
 public final class JXLSHelper {
+    public interface ExcelFormat {
+        String DATE_TIME = "DD.MM.YY HH:MM";
+        String INFINITE_HOURS_MINUTES = "[HH]:MM";
+    }
 
     // -----------
     // Report book
@@ -64,7 +70,7 @@ public final class JXLSHelper {
                 Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
                 Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
                 row.setRowStyle(style);
-                fillRow(row, writer.getColumnValues(object));
+                fillRow(row, writer.getColumnValues(object), workbook, style);
                 sheetRowIndexMap.put(sheetNumber, rowNumber);
             }
         }
@@ -140,26 +146,90 @@ public final class JXLSHelper {
         }
     }
 
-    private static void fillRow(Row row, Object[] values) {
-        fillRow(row, values, null);
-    }
-
-    private static void fillRow(Row row, Object[] values, CellStyle style) {
+    private static void fillRow(Row row, Object[] values, SXSSFWorkbook workbook, CellStyle style) {
         int columnIndex = 0;
         for (Object value : values) {
             Cell cell = row.createCell(columnIndex++);
-            if (style != null) {
-                cell.setCellStyle(style);
-            }
+            cell.setCellStyle(style);
+
             if (value instanceof Number) {
                 cell.setCellValue(((Number) value).doubleValue());
             } else if (value instanceof Date) {
-                cell.setCellValue((Date) value);
+                setDateFormattedCellValue(cell, workbook, (Date) value);
             } else if (value instanceof Boolean) {
                 cell.setCellValue((Boolean) value);
+            } else if (value instanceof TimeFormatWrapper) {
+                setFormattedCellValue(cell, workbook, (TimeFormatWrapper) value);
             } else {
                 cell.setCellValue(value.toString());
             }
+        }
+    }
+
+    private static void setDateFormattedCellValue(Cell cell, SXSSFWorkbook workbook, Date date) {
+        CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
+        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(ExcelFormat.DATE_TIME));
+
+        cell.setCellStyle(cellStyle);
+        cell.setCellType(CellType.NUMERIC);
+
+        cell.setCellValue(date);
+    }
+
+    private static void setFormattedCellValue(Cell cell, SXSSFWorkbook workbook, TimeFormatWrapper value) {
+        CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
+        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(value.format));
+
+        cell.setCellStyle(cellStyle);
+        cell.setCellType(CellType.FORMULA);
+        cell.setCellFormula(getTimeFormula(value));
+
+        new SXSSFFormulaEvaluator(workbook).evaluateFormulaCellEnum(cell);
+    }
+
+    public static class TimeFormatWrapper {
+        private long hours;
+        private long minutes;
+        private long seconds;
+        private String format;
+
+        private static final long MINUTES_IN_HOUR = 60;
+        private static final long SECONDS_IN_MINUTE = 60;
+
+        public TimeFormatWrapper(String format) {
+            this.format = format;
+        }
+
+        public TimeFormatWrapper addHours(long hoursToAdd) {
+            this.hours += hoursToAdd;
+
+            return this;
+        }
+
+        public TimeFormatWrapper addMinutes(long minutesToAdd) {
+            long resultMinutes = this.minutes += minutesToAdd;
+            addHours(resultMinutes / MINUTES_IN_HOUR);
+            this.minutes = resultMinutes % MINUTES_IN_HOUR;
+
+            return this;
+        }
+
+        public TimeFormatWrapper addSeconds(long secondsToAdd) {
+            this.seconds += secondsToAdd;
+            addMinutes(this.seconds / SECONDS_IN_MINUTE);
+            this.seconds = this.seconds % SECONDS_IN_MINUTE;
+
+            return this;
+        }
+
+        static String getTimeFormula(TimeFormatWrapper timeFormatWrapper) {
+            return "TIME(" +
+                    timeFormatWrapper.hours +
+                    "," +
+                    timeFormatWrapper.minutes +
+                    "," +
+                    timeFormatWrapper.seconds +
+                    ")";
         }
     }
 }

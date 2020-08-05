@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
+import ru.protei.portal.core.utils.JXLSHelper.TimeFormatWrapper;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.text.DateFormat;
 import java.util.List;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.core.utils.JXLSHelper.ExcelFormat.INFINITE_HOURS_MINUTES;
 
 public class ExcelReportWriter implements
         ReportWriter<CaseCommentTimeElapsedSum>,
@@ -91,7 +93,7 @@ public class ExcelReportWriter implements
                     "", "", "",
                     "", "", "",
                     "", "", "",
-                    "", "", lang.get("summary") + ":", timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+                    "", "", lang.get("summary") + ":", new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedSum())
             };
         }
         return new Object[] {
@@ -104,20 +106,20 @@ public class ExcelReportWriter implements
                 HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "",
                 object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "",
                 HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
-                object.getCaseCreated() != null ? dateFormat.format(object.getCaseCreated()) : "",
-                timeFormatter.formatHourMinutes(object.getTimeElapsedNone()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedWatch()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedNightWork()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftInstall()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftUpdate()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftConfig()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeTesting()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeConsultation()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeMeeting()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeDiscussionOfImprovements()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeLogAnalysis()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSolveProblems()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+                object.getCaseCreated() != null ? object.getCaseCreated() : "",
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedNone()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedWatch()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedNightWork()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSoftInstall()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSoftUpdate()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSoftConfig()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeTesting()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeConsultation()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeMeeting()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeDiscussionOfImprovements()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeLogAnalysis()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSolveProblems()),
+                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedSum()),
         };
     }
 }
