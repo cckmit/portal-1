@@ -5,8 +5,6 @@ import ru.protei.portal.core.model.ent.PersonFavoriteIssues;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
@@ -20,6 +18,18 @@ public class PersonFavoriteIssuesDAO_Impl extends PortalBaseJdbcDAO<PersonFavori
                 .from(getTableName())
                 .where("person_id")
                 .equal(personId)
+                .asQuery();
+
+        return jdbcTemplate.queryForList(query.buildSql(), Long.class, query.args());
+    }
+
+    @Override
+    public List<Long> getPersonIdsByIssueId(Long issueId) {
+        Query query = query()
+                .select("person_id")
+                .from(getTableName())
+                .where("case_object_id")
+                .equal(issueId)
                 .asQuery();
 
         return jdbcTemplate.queryForList(query.buildSql(), Long.class, query.args());

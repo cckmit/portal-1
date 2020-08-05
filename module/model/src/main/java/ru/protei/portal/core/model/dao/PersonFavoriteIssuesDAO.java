@@ -7,5 +7,7 @@ import java.util.List;
 public interface PersonFavoriteIssuesDAO extends PortalBaseDAO<PersonFavoriteIssues> {
     List<Long> getIssueIdListByPersonId(Long personId);
 
+    List<Long> getPersonIdsByIssueId(Long issueId);
+
     void removeState(Long personId, Long caseObjectId);
 }

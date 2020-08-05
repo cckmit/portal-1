@@ -16,17 +16,18 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.query.PlatformQuery;
-import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.query.PlanQuery;
-import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.JiraExtAppData;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
-import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PlanOption;
+import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -40,11 +41,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.Result.*;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
 /**
  * Реализация сервиса управления обращениями
@@ -174,6 +176,10 @@ public class CaseServiceImpl implements CaseService {
                             .collect(Collectors.toList())
             );
             caseTagService.addItemsToHistory(token, caseId, caseObjectCreateRequest.getTags());
+        }
+
+        if (Boolean.TRUE.equals(caseObject.isFavorite())) {
+            addFavoriteState(token, token.getPersonId(), caseId);
         }
 
         Set<PlanOption> plans = caseObjectCreateRequest.getPlans();
