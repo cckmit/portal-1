@@ -98,7 +98,7 @@ public abstract class IssueTableFilterActivity
             homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
                 Set<EntityOption> value = new HashSet<>();
                 value.add(new EntityOption(company.getDisplayText(), company.getId()));
-                filterView.getIssueFilterParams().managerCompanies().setValue(value);
+                filterView.getIssueFilterParams().managerCompanies().setValue(value, true);
             });
         }
 
