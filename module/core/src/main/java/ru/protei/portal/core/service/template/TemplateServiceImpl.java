@@ -88,7 +88,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "recipients", recipients );
 
         templateModel.put( "createdByMe", false );
-        templateModel.put( "creator", newState.getCreator().getDisplayShortName() );
+        templateModel.put( "creator", newState.getCreator() == null ? null : newState.getCreator().getDisplayShortName() );
         templateModel.put( "created", newState.getCreated() );
         templateModel.put( "caseNumber", newState.getCaseNumber() );
 
