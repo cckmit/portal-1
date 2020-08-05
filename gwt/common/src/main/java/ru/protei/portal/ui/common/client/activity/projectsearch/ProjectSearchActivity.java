@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.activity.search;
+package ru.protei.portal.ui.common.client.activity.projectsearch;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -32,12 +32,11 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     public void onShow(ProjectEvents.Search event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+        view.resetFilter();
+        view.clearProjectList();
+        view.setVisibleProducts(event.showProducts);
+        view.setVisibleManagers(event.showManagers);
     }
-
-//    @Event
-//    public void onProductListChanged(ProductEvents.ProductListChanged event) {
-//        view.refreshProducts();
-//    }
 
     @Override
     public void onSearchClicked() {
@@ -50,7 +49,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     }
 
     @Override
-    public void onProjectChanged() {
+    public void onProjectSelected() {
         ProjectInfo projectInfo = view.project().getValue();
         if (projectInfo != null) {
             fireEvent(new ProjectEvents.Set(new EntityOption(projectInfo.getName(), projectInfo.getId())));
@@ -76,6 +75,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         }
         query.setCustomerType(view.customerType().getValue());
         query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect(Collectors.toSet()));
+        query.setHeadManagers(view.managers().getValue());
         query.setLimit(100);
         return query;
     }

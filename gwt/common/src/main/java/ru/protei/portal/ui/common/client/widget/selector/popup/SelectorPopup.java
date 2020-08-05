@@ -23,6 +23,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 /**
  * Вид попапа
  */
@@ -100,19 +102,19 @@ public class SelectorPopup
         this.searchVisible = searchVisible;
         if ( searchVisible ) {
             search.getElement().setPropertyString("placeholder", lang.search());
-            search.removeStyleName( "hide" );
+            search.removeStyleName(HIDE);
             return;
         }
 
-        search.addStyleName( "hide" );
+        search.addStyleName(HIDE);
     }
 
     public void setAddButton(boolean addVisible) {
         this.addVisible = addVisible;
         if (addVisible) {
-            addContainer.removeClassName("hide");
+            addContainer.removeClassName(HIDE);
         } else {
-            addContainer.addClassName("hide");
+            addContainer.addClassName(HIDE);
         }
     }
 

@@ -133,26 +133,30 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     @Override
-    public void refreshProjectSpecificFields() {
-        if (view.project().getValue() == null) {
+    public void onProjectChanged() {
+        refreshProjectSpecificFields(view.project().getValue());
+    }
+
+    private void projectRequest(Long projectId, Consumer<ProjectInfo> consumer) {
+        regionService.getProjectInfo(projectId, new FluentCallback<ProjectInfo>().withSuccess(consumer));
+    }
+
+    private void fillProject(ProjectInfo project) {
+        view.project().setValue(project, true);
+    }
+
+    private void refreshProjectSpecificFields(ProjectInfo project) {
+        if (project == null) {
             clearProjectSpecificFields();
             return;
         }
-        regionService.getProjectInfo(view.project().getValue().getId(), new FluentCallback<ProjectInfo>()
-                .withSuccess(project -> {
-                    view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
-                    view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
-                    view.directionEnabled().setEnabled(false);
-                    view.managerEnabled().setEnabled(false);
-                })
-        );
+        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+        view.manager().setValue(project.getManager() == null ? null : new PersonShortView(project.getManager()));
     }
 
     private void clearProjectSpecificFields() {
         view.direction().setValue(null);
         view.manager().setValue(null);
-        view.directionEnabled().setEnabled(true);
-        view.managerEnabled().setEnabled(true);
     }
 
     private void requestData(Long id){
@@ -187,18 +191,17 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         boolean contractParentExists = contract.getParentContractId() != null;
         view.setKind(getContractKind(contractParentExists));
 
-        view.project().setValue(createOptionOrNull(contract.getProjectId(), contract.getProjectName()));
-        refreshProjectSpecificFields();
+        if (contract.getProjectId() == null) {
+            view.project().setValue(null);
+            clearProjectSpecificFields();
+        } else {
+            projectRequest(contract.getProjectId(), this::fillProject);
+        }
 
         view.contractorEnabled().setEnabled(contract.getOrganizationId() != null);
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
         view.organizationEnabled().setEnabled(StringUtils.isBlank(contract.getRefKey()));
-
-        if (view.project().getValue() == null) {
-            view.manager().setValue(createPersonOrNull(contract.getCaseManagerId(), contract.getCaseManagerShortName()));
-            view.direction().setValue(createProductOrNull(contract.getCaseDirectionId(), contract.getCaseDirectionName()));
-        }
 
         syncSecondContractView(isNew, false);
     }
@@ -260,8 +263,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (contract.getDateSigning() == null)
             return lang.contractValidationEmptyDateSigning();
 
-        if ((contract.getProjectId() == null && contract.getCaseDirectionId() == null))
-            return lang.contractValidationEmptyDirection();
+        if (contract.getProjectId() == null)
+            return lang.contractValidationEmptyProject();
 
         if (!view.validateContractSpecifications().isValid())
             return lang.contractValidationContractSpecification();

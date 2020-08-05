@@ -235,7 +235,7 @@ public abstract class ReservedIpTableActivity
                     fireEvent(new IpReservationEvents.Show());
                 }));*/
         //fireEvent(new NotifyEvents.Show(lang.refresh(), NotifyEvents.NotifyType.SUCCESS));
-        Window.alert("Refresh IP " + reservedIp.getIpAddress());
+        Window.alert("Refresh IP " + reservedIp.getIpAddress() + " under construction :(");
     }
 
     private void persistScrollTopPosition() {

@@ -24,7 +24,6 @@ import ru.protei.portal.mock.AuthServiceMock;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)

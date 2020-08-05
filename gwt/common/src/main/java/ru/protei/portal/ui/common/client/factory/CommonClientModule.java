@@ -44,6 +44,8 @@ import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
 import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
 import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
+import ru.protei.portal.ui.common.client.activity.projectsearch.ProjectSearchActivity;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPositionEditActivity;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
@@ -73,6 +75,7 @@ import ru.protei.portal.ui.common.client.view.notify.NotifyView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
+import ru.protei.portal.ui.common.client.view.projectsearch.ProjectSearchView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
 import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
@@ -181,6 +184,9 @@ public class CommonClientModule extends AbstractGinModule {
         bind(AbstractCaseHistoryListView.class).to(CaseHistoryListView.class).in(Singleton.class);
 
         bind(AbstractCaseHistoryItemView.class).to(CaseHistoryItemView.class);
+
+        bind( ProjectSearchActivity.class ).asEagerSingleton();
+        bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );
     }
 }
 

@@ -258,5 +258,9 @@ public enum En_ResultStatus {
      */
     YOUTRACK_SYNCHRONIZATION_FAILED,
 
+    /**
+     * Проект не выбран
+     */
+    PROJECT_NOT_SELECTED
     ;
 }

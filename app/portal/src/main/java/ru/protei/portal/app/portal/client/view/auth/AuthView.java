@@ -24,6 +24,8 @@ import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 /**
  * Вид формы авторизации
  */
@@ -74,13 +76,13 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
 
     @Override
     public void showError(String msg){
-        errorMessage.removeClassName("hide");
+        errorMessage.removeClassName(HIDE);
         errorText.setInnerText(msg);
     }
 
     @Override
     public void hideError(){
-        errorMessage.addClassName("hide");
+        errorMessage.addClassName(HIDE);
     }
 
     @Override

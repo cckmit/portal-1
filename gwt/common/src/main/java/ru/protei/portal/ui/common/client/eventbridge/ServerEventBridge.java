@@ -10,7 +10,6 @@ import de.novanic.eventservice.client.event.listener.RemoteEventListener;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.service.pushevent.ClientEventService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 
 import java.util.logging.Logger;

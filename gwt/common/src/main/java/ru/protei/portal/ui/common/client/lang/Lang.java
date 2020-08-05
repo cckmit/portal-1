@@ -1986,7 +1986,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractTypeExportOfServiceContract();
 
-    String contractTypeGovermentContract();
+    String contractTypeGovernmentContract();
 
     String contractTypeLeaseContract();
 
@@ -2132,7 +2132,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationEmptyType();
 
-    String contractValidationEmptyDirection();
+    String contractValidationEmptyProject();
 
     String contractValidationEmptyState();
 
@@ -2937,4 +2937,12 @@ public interface Lang extends Messages, ContactItemLang {
     String errorNeedFeelTimeElapsed();
 
     String errSaveProjectHeadManager();
+
+    String searchProjectTitle();
+
+    String selectContractProject();
+
+    String contractProjectFindNotChosenError();
+
+    String errContractProjectRequired();
 }

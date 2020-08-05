@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterS
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 
-import java.util.HashSet;
 import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;

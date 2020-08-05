@@ -665,6 +665,9 @@ public class DebugIds {
             String CUSTOMER_TYPE_SELECTOR = "document-project-search-customer-type-selector";
             String PRODUCT_LABEL = "document-project-search-product-label";
             String PRODUCT_SELECTOR = "document-project-search-product-selector";
+            String PRODUCTS_CONTAINER = "document-project-search-product-container";
+            String MANAGER_SELECTOR = "document-project-search-manager-selector";
+            String MANAGERS_CONTAINER = "document-project-search-manager-container";
             String FIND_BUTTON = "document-project-search-find-button";
             String RESET_BUTTON = "document-project-search-reset-button";
             String SHOW_FIRST_RECORDS_LABEL = "document-project-search-show-first-records-label";
@@ -810,6 +813,11 @@ public class DebugIds {
         interface CONTRACTOR {
             String NAME = "contract-contractor-name";
             String SEARCH_BUTTON = "contract-contractor-search-button";
+        }
+
+        interface PROJECT {
+            String NAME = "contract-project-name";
+            String SEARCH_BUTTON = "contract-project-search-button";
         }
     }
 

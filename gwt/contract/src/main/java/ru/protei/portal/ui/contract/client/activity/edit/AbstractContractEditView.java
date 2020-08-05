@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
@@ -55,17 +56,13 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled costEnabled();
 
-    HasValue<EntityOption> project();
+    HasValue<ProjectInfo> project();
 
     HasValue<Contractor> contractor();
 
     HasValue<PersonShortView> manager();
 
     HasValue<ProductDirectionInfo> direction();
-
-    HasEnabled managerEnabled();
-
-    HasEnabled directionEnabled();
 
     HasEnabled organizationEnabled();
 

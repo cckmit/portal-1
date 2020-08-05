@@ -24,7 +24,6 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
-import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.events.AsyncEventPublisherService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventAssemblerServiceImpl;

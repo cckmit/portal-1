@@ -1,7 +1,6 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
-import org.w3c.dom.events.Event;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;

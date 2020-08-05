@@ -15,6 +15,8 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemView;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 public class ServerDetailedListItemView extends Composite implements AbstractServerDetailedListItemView {
 
     @Inject
@@ -32,7 +34,7 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
         if (HelperFunc.isNotEmpty(name)) {
             this.name.setInnerHTML("<b>" + name + "</b>");
         } else {
-            this.name.addClassName("hide");
+            this.name.addClassName(HIDE);
         }
     }
 
@@ -41,7 +43,7 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
         if (HelperFunc.isNotEmpty(parameters)) {
             this.param.setInnerText(parameters);
         } else {
-            this.param.addClassName("hide");
+            this.param.addClassName(HIDE);
         }
     }
 
@@ -49,9 +51,9 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
     public void setApps(String apps) {
         if (HelperFunc.isNotEmpty(apps)) {
             this.apps.setInnerText(apps);
-            this.apps.removeClassName("hide");
+            this.apps.removeClassName(HIDE);
         } else {
-            this.apps.addClassName("hide");
+            this.apps.addClassName(HIDE);
         }
     }
 
@@ -59,9 +61,9 @@ public class ServerDetailedListItemView extends Composite implements AbstractSer
     public void setComment(String comment) {
         if (HelperFunc.isNotEmpty(comment)) {
             this.comment.setInnerText(comment);
-            this.comment.removeClassName("hide");
+            this.comment.removeClassName(HIDE);
         } else {
-            this.comment.addClassName("hide");
+            this.comment.addClassName(HIDE);
         }
     }
 

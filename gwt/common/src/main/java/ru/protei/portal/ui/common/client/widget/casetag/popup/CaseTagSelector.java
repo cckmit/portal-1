@@ -28,6 +28,8 @@ import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSear
 import java.util.List;
 import java.util.Objects;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+
 public class CaseTagSelector extends BasePopupView implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
 
     @Inject
@@ -78,9 +80,9 @@ public class CaseTagSelector extends BasePopupView implements HasValueChangeHand
 
     public void setAddTagsEnabled(boolean enabled) {
         if (enabled) {
-            addButton.getElement().removeClassName("hide");
+            addButton.getElement().removeClassName(HIDE);
         } else {
-            addButton.getElement().addClassName("hide");
+            addButton.getElement().addClassName(HIDE);
         }
     }
 
