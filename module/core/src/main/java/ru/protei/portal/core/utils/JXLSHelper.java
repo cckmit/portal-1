@@ -9,18 +9,13 @@ import ru.protei.portal.core.Lang;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Duration;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 
 public final class JXLSHelper {
     public interface ExcelFormat {
+        String STANDARD = "Standard";
         String DATE_TIME = "DD.MM.YY HH:MM";
         String INFINITE_HOURS_MINUTES = "[H]:MM";
     }
@@ -42,6 +37,14 @@ public final class JXLSHelper {
             int[] getColumnsWidth();
             String[] getColumnNames();
             Object[] getColumnValues(T object);
+
+            default String[] getFormats() {
+                String[] formats = new String[getColumnNames().length];
+
+                Arrays.fill(formats, ExcelFormat.STANDARD);
+
+                return formats;
+            }
         }
 
         public ReportBook(Lang.LocalizedLang lang, Writer<T> writer) {
@@ -70,11 +73,12 @@ public final class JXLSHelper {
 
         public void write(int sheetNumber, List<T> objects) {
             CellStyle style = getDefaultStyle(workbook, getDefaultFont(workbook));
+            String[] formats = writer.getFormats();
             for (T object : objects) {
                 Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
                 Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
                 row.setRowStyle(style);
-                fillRow(row, writer.getColumnValues(object), workbook, style);
+                fillRow(row, writer.getColumnValues(object), workbook, formats);
                 sheetRowIndexMap.put(sheetNumber, rowNumber);
             }
         }
@@ -150,39 +154,36 @@ public final class JXLSHelper {
         }
     }
 
-    private static void fillRow(Row row, Object[] values, SXSSFWorkbook workbook, CellStyle style) {
+    private static void fillRow(Row row, Object[] values, SXSSFWorkbook workbook, String[] formats) {
         int columnIndex = 0;
-        for (Object value : values) {
+        for (int i = 0; i < values.length; i++) {
+            Object value = values[i];
+            String format = formats[i];
+
             Cell cell = row.createCell(columnIndex++);
-            cell.setCellStyle(style);
+
+            CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
+            cellStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
+
+            cell.setCellStyle(cellStyle);
 
             if (value instanceof Number) {
                 cell.setCellValue(((Number) value).doubleValue());
             } else if (value instanceof Date) {
-                setDateFormattedCellValue(cell, workbook, (Date) value);
+                setDateFormattedCellValue(cell, format, workbook, (Date) value);
             } else if (value instanceof Boolean) {
                 cell.setCellValue((Boolean) value);
-            } else if (value instanceof Duration) {
-                setTimeFormattedCellValue(cell, workbook, (Duration) value);
             } else {
                 cell.setCellValue(value.toString());
             }
         }
     }
 
-    private static void setDateFormattedCellValue(Cell cell, SXSSFWorkbook workbook, Date date) {
+    private static void setDateFormattedCellValue(Cell cell, String format, SXSSFWorkbook workbook, Date date) {
         CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
-        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(ExcelFormat.DATE_TIME));
+        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
 
         cell.setCellStyle(cellStyle);
         cell.setCellValue(date);
-    }
-
-    private static void setTimeFormattedCellValue(Cell cell, SXSSFWorkbook workbook, Duration value) {
-        CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
-        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(ExcelFormat.INFINITE_HOURS_MINUTES));
-
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue((double) value.getSeconds() / SECONDS_PER_DAY);
     }
 }

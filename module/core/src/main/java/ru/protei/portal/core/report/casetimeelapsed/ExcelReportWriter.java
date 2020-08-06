@@ -15,7 +15,11 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
+import static java.time.Duration.ofMinutes;
+import static java.util.Optional.ofNullable;
+import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.core.utils.JXLSHelper.ExcelFormat.*;
 
 public class ExcelReportWriter implements
         ReportWriter<CaseCommentTimeElapsedSum>,
@@ -94,7 +98,7 @@ public class ExcelReportWriter implements
                     "", "", "",
                     "", "", "",
                     "", "", "",
-                    "", "", lang.get("summary") + ":", Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedSum()).orElse(0L))
+                    "", "", lang.get("summary") + ":", ofMinutes( ofNullable(object.getTimeElapsedSum()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY
             };
         }
         return new Object[] {
@@ -109,19 +113,32 @@ public class ExcelReportWriter implements
                 HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
                 StringUtils.emptyIfNull(object.getTags()),
                 object.getCaseCreated() != null ? object.getCaseCreated() : "",
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedNone()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedWatch()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedNightWork()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSoftInstall()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSoftUpdate()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSoftConfig()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeTesting()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeConsultation()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeMeeting()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeDiscussionOfImprovements()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeLogAnalysis()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSolveProblems()).orElse(0L)),
-                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedSum()).orElse(0L)),
+                ofMinutes( ofNullable(object.getTimeElapsedNone()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedWatch()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedNightWork()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeSoftInstall()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeSoftUpdate()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeSoftConfig()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeTesting()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeConsultation()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeMeeting()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeDiscussionOfImprovements()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeLogAnalysis()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedTypeSolveProblems()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                ofMinutes( ofNullable(object.getTimeElapsedSum()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+        };
+    }
+
+    @Override
+    public String[] getFormats() {
+        return new String[]{
+                STANDARD, STANDARD, STANDARD,
+                STANDARD, STANDARD, STANDARD, STANDARD,
+                STANDARD, STANDARD, STANDARD, DATE_TIME,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES
         };
     }
 }
