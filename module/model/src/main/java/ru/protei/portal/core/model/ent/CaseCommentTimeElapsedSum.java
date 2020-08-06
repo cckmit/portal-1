@@ -222,10 +222,6 @@ public class CaseCommentTimeElapsedSum implements Serializable {
         return tags;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
     @Override
     public String toString() {
         return "CaseCommentTimeElapsedSum{" +
