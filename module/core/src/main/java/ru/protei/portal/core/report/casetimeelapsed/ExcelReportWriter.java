@@ -30,7 +30,7 @@ public class ExcelReportWriter implements
     private final String locale;
 
     public interface ExcelFormat {
-        String STANDARD = "Standard";
+        String STANDARD = "@";
         String DATE_TIME = "DD.MM.YY HH:MM";
         String INFINITE_HOURS_MINUTES = "[H]:MM";
     }
