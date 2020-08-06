@@ -202,7 +202,7 @@ public final class JXLSHelper {
         }
 
         public TimeFormatWrapper addMinutes(long minutesToAdd) {
-            long resultMinutes = this.minutes += minutesToAdd;
+            long resultMinutes = this.minutes + minutesToAdd;
             addHours(resultMinutes / MINUTES_IN_HOUR);
             this.minutes = resultMinutes % MINUTES_IN_HOUR;
 
@@ -210,15 +210,15 @@ public final class JXLSHelper {
         }
 
         public TimeFormatWrapper addSeconds(long secondsToAdd) {
-            this.seconds += secondsToAdd;
-            addMinutes(this.seconds / SECONDS_IN_MINUTE);
-            this.seconds = this.seconds % SECONDS_IN_MINUTE;
+            long resultSeconds = this.seconds + secondsToAdd;
+            addMinutes(resultSeconds / SECONDS_IN_MINUTE);
+            this.seconds = resultSeconds % SECONDS_IN_MINUTE;
 
             return this;
         }
 
         static double convertTime(long hours, long minutes, long seconds) {
-            double totalSeconds = seconds + (minutes + (hours) * 60) * 60;
+            double totalSeconds = seconds + (minutes + (hours) * MINUTES_IN_HOUR) * SECONDS_IN_MINUTE;
             return totalSeconds / SECONDS_IN_DAY;
         }
     }
