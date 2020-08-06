@@ -411,7 +411,7 @@ public abstract class IssueEditActivity implements
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
-        view.setIntegration(fetchIntegrationName(issue));
+        view.setIntegration(makeIntegrationName(issue));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
@@ -487,7 +487,7 @@ public abstract class IssueEditActivity implements
         }
     }
 
-    private String fetchIntegrationName(CaseObject issue) {
+    private String makeIntegrationName(CaseObject issue) {
         En_ExtAppType extAppType = En_ExtAppType.forCode(issue.getExtAppType());
         if (extAppType == null) {
             return null;

@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORITE_ACTIVE;
@@ -64,12 +65,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setIntegration(String name) {
-        if (isBlank(name)) {
-            integrationLabel.setVisible(false);
-            return;
-        }
-        integrationLabelName.setInnerText(name);
-        integrationLabel.setVisible(true);
+        integrationLabelName.setInnerText(emptyIfNull(name));
+        integrationLabel.setVisible(!isBlank(name));
     }
 
     @Override
