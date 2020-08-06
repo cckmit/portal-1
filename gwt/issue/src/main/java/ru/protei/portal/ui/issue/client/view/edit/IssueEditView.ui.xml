@@ -42,9 +42,15 @@
                             <span ui:field="number"/>
                         </h5>
 
-                        <div class="inline pull-right">
-                            <small ui:field="createdBy"/>
-                            <i ui:field="privacyIcon"/>
+                        <div class="inline pull-right text-right">
+                            <div>
+                                <small ui:field="createdBy"/>
+                                <i ui:field="privacyIcon"/>
+                            </div>
+                            <g:HTMLPanel ui:field="integrationLabel" visible="false">
+                                <small><ui:text from="{lang.issueSyncedWith}"/> <b ui:field="integrationLabelName"></b></small>
+                                <i class="fa-fw fas fa-sync-alt"/>
+                            </g:HTMLPanel>
                         </div>
                     </g:HTMLPanel>
 
