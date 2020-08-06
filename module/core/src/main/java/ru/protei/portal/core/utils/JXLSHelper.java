@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
-import static ru.protei.portal.core.report.casetimeelapsed.ExcelReportWriter.ExcelFormat.STANDARD;
+import static ru.protei.portal.core.report.caseobjects.ExcelReportWriter.ExcelFormat.STANDARD;
 
 public final class JXLSHelper {
     // -----------

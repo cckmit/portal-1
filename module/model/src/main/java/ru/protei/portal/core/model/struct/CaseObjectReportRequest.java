@@ -2,19 +2,22 @@ package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseTag;
 
 import java.util.List;
 
-public class CaseObjectComments {
+public class CaseObjectReportRequest {
 
     private CaseObject caseObject;
     private List<CaseComment> caseComments;
+    private List<CaseTag> caseTags;
 
-    public CaseObjectComments() {}
+    public CaseObjectReportRequest() {}
 
-    public CaseObjectComments(CaseObject caseObject, List<CaseComment> caseComments) {
+    public CaseObjectReportRequest(CaseObject caseObject, List<CaseComment> caseComments, List<CaseTag> caseTags) {
         this.caseObject = caseObject;
         this.caseComments = caseComments;
+        this.caseTags = caseTags;
     }
 
     public CaseObject getCaseObject() {
@@ -33,11 +36,20 @@ public class CaseObjectComments {
         this.caseComments = caseComments;
     }
 
+    public List<CaseTag> getCaseTags() {
+        return caseTags;
+    }
+
+    public void setCaseTags(List<CaseTag> caseTags) {
+        this.caseTags = caseTags;
+    }
+
     @Override
     public String toString() {
-        return "CaseObjectComments{" +
+        return "CaseObjectReportRequest{" +
                 "caseObject=" + caseObject +
                 ", caseComments=" + caseComments +
+                ", caseTags=" + caseTags +
                 '}';
     }
 }
