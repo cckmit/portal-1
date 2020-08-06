@@ -8,18 +8,11 @@ import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.Duration;
 import java.util.*;
 
-import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
+import static ru.protei.portal.core.report.casetimeelapsed.ExcelReportWriter.ExcelFormat.STANDARD;
 
 public final class JXLSHelper {
-    public interface ExcelFormat {
-        String STANDARD = "Standard";
-        String DATE_TIME = "DD.MM.YY HH:MM";
-        String INFINITE_HOURS_MINUTES = "[H]:MM";
-    }
-
     // -----------
     // Report book
     // -----------
@@ -41,7 +34,7 @@ public final class JXLSHelper {
             default String[] getFormats() {
                 String[] formats = new String[getColumnNames().length];
 
-                Arrays.fill(formats, ExcelFormat.STANDARD);
+                Arrays.fill(formats, STANDARD);
 
                 return formats;
             }
@@ -155,12 +148,11 @@ public final class JXLSHelper {
     }
 
     private static void fillRow(Row row, Object[] values, SXSSFWorkbook workbook, String[] formats) {
-        int columnIndex = 0;
-        for (int i = 0; i < values.length; i++) {
-            Object value = values[i];
-            String format = formats[i];
+        for (int columnIndex = 0; columnIndex < values.length; columnIndex++) {
+            Object value = values[columnIndex];
+            String format = formats[columnIndex];
 
-            Cell cell = row.createCell(columnIndex++);
+            Cell cell = row.createCell(columnIndex);
 
             CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
             cellStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
@@ -170,20 +162,12 @@ public final class JXLSHelper {
             if (value instanceof Number) {
                 cell.setCellValue(((Number) value).doubleValue());
             } else if (value instanceof Date) {
-                setDateFormattedCellValue(cell, format, workbook, (Date) value);
+                cell.setCellValue((Date) value);
             } else if (value instanceof Boolean) {
                 cell.setCellValue((Boolean) value);
             } else {
                 cell.setCellValue(value.toString());
             }
         }
-    }
-
-    private static void setDateFormattedCellValue(Cell cell, String format, SXSSFWorkbook workbook, Date date) {
-        CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
-        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
-
-        cell.setCellStyle(cellStyle);
-        cell.setCellValue(date);
     }
 }
