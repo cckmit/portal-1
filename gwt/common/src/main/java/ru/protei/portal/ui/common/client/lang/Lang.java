@@ -2951,4 +2951,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueRemoveFromFavorites();
 
     String issueFavorites();
+
+    String issueSyncedWith();
 }

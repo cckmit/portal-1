@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
 public abstract class IssueEditActivity implements
@@ -410,6 +411,7 @@ public abstract class IssueEditActivity implements
         view.setCreatedBy(lang.createBy(transliteration(issue.getCreator().getDisplayShortName()), DateFormatter.formatDateTime(issue.getCreated())));
         view.nameVisibility().setVisible(true);
         view.setName(makeName(issue.getName(), issue.getJiraUrl(), issue.getExtAppType()));
+        view.setIntegration(makeIntegrationName(issue));
 
         issueInfoWidget.setCaseNumber( issue.getCaseNumber() );
         issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
@@ -483,6 +485,18 @@ public abstract class IssueEditActivity implements
         } else {
             fireErrorCopyNotify();
         }
+    }
+
+    private String makeIntegrationName(CaseObject issue) {
+        En_ExtAppType extAppType = En_ExtAppType.forCode(issue.getExtAppType());
+        if (extAppType == null) {
+            return null;
+        }
+        String name = extAppType.getCode();
+        if (isBlank(name)) {
+            return null;
+        }
+        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
     @Inject

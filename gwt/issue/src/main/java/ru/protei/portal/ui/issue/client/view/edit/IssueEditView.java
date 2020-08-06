@@ -11,11 +11,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORITE_ACTIVE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Icons.FAVORITE_NOT_ACTIVE;
@@ -60,6 +61,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setName( String issueName ) {
         nameWidget.setName( issueName );
+    }
+
+    @Override
+    public void setIntegration(String name) {
+        integrationLabelName.setInnerText(emptyIfNull(name));
+        integrationLabel.setVisible(!isBlank(name));
     }
 
     @Override
@@ -110,10 +117,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setPrivateIssue( boolean isPrivate ) {
         if (isPrivate) {
-            privacyIcon.setClassName( "fas fa-lock text-danger m-l-10" );
+            privacyIcon.setClassName( "fa-fw fas fa-lock text-danger" );
             privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PRIVATE );
         } else {
-            privacyIcon.setClassName( "fas fa-unlock text-success m-l-10" );
+            privacyIcon.setClassName( "fa-fw fas fa-unlock text-success" );
             privacyIcon.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.ISSUE.PRIVACY_ICON_PUBLIC );
         }
     }
@@ -245,6 +252,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     IssueNameWidget nameWidget;
     @UiField
     HTMLPanel linksContainer;
+    @UiField
+    HTMLPanel integrationLabel;
+    @UiField
+    Element integrationLabelName;
 
     private AbstractIssueEditActivity activity;
 

@@ -21,6 +21,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setName(String issueName);
 
+    void setIntegration(String name);
+
     HasWidgets getTagsContainer();
 
     HasWidgets getInfoContainer();
