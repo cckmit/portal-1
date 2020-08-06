@@ -2,7 +2,10 @@ package ru.protei.portal.core.report.casetimeelapsed;
 
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
+import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.JXLSHelper.TimeFormatWrapper;
@@ -12,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 import static ru.protei.portal.core.utils.JXLSHelper.ExcelFormat.INFINITE_HOURS_MINUTES;
@@ -64,7 +68,7 @@ public class ExcelReportWriter implements
         return new int[] {
                 3650, 3430, 8570,
                 4590, 4200, 4200, 4200,
-                3350, 4600, 4200,
+                3350, 4600, 5800, 4200,
                 5800, 5800, 5800, 5800
         };
     }
@@ -74,7 +78,7 @@ public class ExcelReportWriter implements
         return new String[] {
                 "ir_caseno", "ir_private", "ir_name",
                 "ir_company", "ir_product", "ir_performer", "ir_manager",
-                "ir_importance", "ir_state", "ir_date_created",
+                "ir_importance", "ir_state", "ir_tags", "ir_date_created",
                 "ir_work_time_none", "ir_work_time_watch", "ir_work_time_night_work",
                 "ir_work_time_SoftInstall", "ir_work_time_SoftUpdate", "ir_work_time_SoftConfig",
                 "ir_work_time_Testing", "ir_work_time_Consultation", "ir_work_time_Meeting",
@@ -89,7 +93,7 @@ public class ExcelReportWriter implements
             return new Object[] {
                     "", "", "",
                     "", "", "", "",
-                    "", "", "",
+                    "", "", "", "",
                     "", "", "",
                     "", "", "",
                     "", "", "",
@@ -106,6 +110,7 @@ public class ExcelReportWriter implements
                 HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "",
                 object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "",
                 HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
+                StringUtils.emptyIfNull(object.getTags()),
                 object.getCaseCreated() != null ? object.getCaseCreated() : "",
                 new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedNone()),
                 new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedWatch()),

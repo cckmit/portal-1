@@ -2,23 +2,21 @@ package ru.protei.portal.core.utils;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.WorkbookUtil;
-import org.apache.poi.xssf.streaming.SXSSFFormulaEvaluator;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static ru.protei.portal.core.utils.JXLSHelper.TimeFormatWrapper.getTimeFormula;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class JXLSHelper {
     public interface ExcelFormat {
         String DATE_TIME = "DD.MM.YY HH:MM";
-        String INFINITE_HOURS_MINUTES = "[HH]:MM";
+        String INFINITE_HOURS_MINUTES = "[H]:MM";
     }
 
     // -----------
@@ -159,7 +157,7 @@ public final class JXLSHelper {
             } else if (value instanceof Boolean) {
                 cell.setCellValue((Boolean) value);
             } else if (value instanceof TimeFormatWrapper) {
-                setFormattedCellValue(cell, workbook, (TimeFormatWrapper) value);
+                setTimeFormattedCellValue(cell, workbook, (TimeFormatWrapper) value);
             } else {
                 cell.setCellValue(value.toString());
             }
@@ -171,20 +169,15 @@ public final class JXLSHelper {
         cellStyle.setDataFormat(workbook.createDataFormat().getFormat(ExcelFormat.DATE_TIME));
 
         cell.setCellStyle(cellStyle);
-        cell.setCellType(CellType.NUMERIC);
-
         cell.setCellValue(date);
     }
 
-    private static void setFormattedCellValue(Cell cell, SXSSFWorkbook workbook, TimeFormatWrapper value) {
+    private static void setTimeFormattedCellValue(Cell cell, SXSSFWorkbook workbook, TimeFormatWrapper value) {
         CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
         cellStyle.setDataFormat(workbook.createDataFormat().getFormat(value.format));
 
         cell.setCellStyle(cellStyle);
-        cell.setCellType(CellType.FORMULA);
-        cell.setCellFormula(getTimeFormula(value));
-
-        new SXSSFFormulaEvaluator(workbook).evaluateFormulaCellEnum(cell);
+        cell.setCellValue(TimeFormatWrapper.convertTime(value.hours, value.minutes, value.seconds));
     }
 
     public static class TimeFormatWrapper {
@@ -195,6 +188,8 @@ public final class JXLSHelper {
 
         private static final long MINUTES_IN_HOUR = 60;
         private static final long SECONDS_IN_MINUTE = 60;
+        private static final long HOURS_IN_DAY = 24;
+        private static final long SECONDS_IN_DAY = (HOURS_IN_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTE);
 
         public TimeFormatWrapper(String format) {
             this.format = format;
@@ -222,14 +217,9 @@ public final class JXLSHelper {
             return this;
         }
 
-        static String getTimeFormula(TimeFormatWrapper timeFormatWrapper) {
-            return "TIME(" +
-                    timeFormatWrapper.hours +
-                    "," +
-                    timeFormatWrapper.minutes +
-                    "," +
-                    timeFormatWrapper.seconds +
-                    ")";
+        static double convertTime(long hours, long minutes, long seconds) {
+            double totalSeconds = seconds + (minutes + (hours) * 60) * 60;
+            return totalSeconds / SECONDS_IN_DAY;
         }
     }
 }
