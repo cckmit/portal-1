@@ -3,6 +3,7 @@ package ru.protei.portal.core.report.casetimeelapsed;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -12,7 +13,11 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.List;
 
+import static java.time.Duration.ofMinutes;
+import static java.util.Optional.ofNullable;
+import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.core.report.casetimeelapsed.ExcelReportWriter.ExcelFormat.*;
 
 public class ExcelReportWriter implements
         ReportWriter<CaseCommentTimeElapsedSum>,
@@ -23,6 +28,12 @@ public class ExcelReportWriter implements
     private final DateFormat dateFormat;
     private final TimeFormatter timeFormatter;
     private final String locale;
+
+    public interface ExcelFormat {
+        String STANDARD = "@";
+        String DATE_TIME = "DD.MM.YY HH:MM";
+        String INFINITE_HOURS_MINUTES = "[H]:MM";
+    }
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
@@ -62,7 +73,7 @@ public class ExcelReportWriter implements
         return new int[] {
                 3650, 3430, 8570,
                 4590, 4200, 4200, 4200,
-                3350, 4600, 4200,
+                3350, 4600, 5800, 4200,
                 5800, 5800, 5800, 5800
         };
     }
@@ -72,7 +83,7 @@ public class ExcelReportWriter implements
         return new String[] {
                 "ir_caseno", "ir_private", "ir_name",
                 "ir_company", "ir_product", "ir_performer", "ir_manager",
-                "ir_importance", "ir_state", "ir_date_created",
+                "ir_importance", "ir_state", "ir_tags", "ir_date_created",
                 "ir_work_time_none", "ir_work_time_watch", "ir_work_time_night_work",
                 "ir_work_time_SoftInstall", "ir_work_time_SoftUpdate", "ir_work_time_SoftConfig",
                 "ir_work_time_Testing", "ir_work_time_Consultation", "ir_work_time_Meeting",
@@ -87,11 +98,11 @@ public class ExcelReportWriter implements
             return new Object[] {
                     "", "", "",
                     "", "", "", "",
+                    "", "", "", "",
                     "", "", "",
                     "", "", "",
                     "", "", "",
-                    "", "", "",
-                    "", "", lang.get("summary") + ":", timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+                    "", "", lang.get("summary") + ":", (double) ofMinutes( ofNullable(object.getTimeElapsedSum()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY
             };
         }
         return new Object[] {
@@ -104,20 +115,34 @@ public class ExcelReportWriter implements
                 HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? transliterate(object.getCaseManagerDisplayName(), locale) : "",
                 object.getImportanceLevel() != null ? object.getImportanceLevel().getCode() : "",
                 HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
-                object.getCaseCreated() != null ? dateFormat.format(object.getCaseCreated()) : "",
-                timeFormatter.formatHourMinutes(object.getTimeElapsedNone()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedWatch()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedNightWork()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftInstall()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftUpdate()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftConfig()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeTesting()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeConsultation()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeMeeting()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeDiscussionOfImprovements()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeLogAnalysis()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSolveProblems()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+                StringUtils.emptyIfNull(object.getTags()),
+                object.getCaseCreated() != null ? object.getCaseCreated() : "",
+                (double) ofMinutes( ofNullable(object.getTimeElapsedNone()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedWatch()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedNightWork()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeSoftInstall()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeSoftUpdate()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeSoftConfig()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeTesting()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeConsultation()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeMeeting()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeDiscussionOfImprovements()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeLogAnalysis()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedTypeSolveProblems()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+                (double) ofMinutes( ofNullable(object.getTimeElapsedSum()).orElse(0L) ).getSeconds() / SECONDS_PER_DAY,
+        };
+    }
+
+    @Override
+    public String[] getFormats() {
+        return new String[]{
+                STANDARD, STANDARD, STANDARD,
+                STANDARD, STANDARD, STANDARD, STANDARD,
+                STANDARD, STANDARD, STANDARD, DATE_TIME,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES,
+                INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES, INFINITE_HOURS_MINUTES
         };
     }
 }
