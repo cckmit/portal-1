@@ -5,6 +5,7 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LinkData;
 
@@ -86,11 +87,14 @@ public interface TemplateService {
 
     PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence);
 
-
     PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients);
 
     PreparedTemplate getAbsenceReportSubject(String title);
 
     String getProjectPauseTimeNotificationSubject( Long projectNumber, String projectName ) throws IOException, TemplateException;
     String getProjectPauseTimeNotificationBody( String subscriberName, Long aLong, String displayNam, String projectUrl, Date pauseTimeDate ) throws IOException, TemplateException;
+
+    PreparedTemplate getBirthdaysNotificationSubject(Date from, Date to);
+    PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees);
+
 }

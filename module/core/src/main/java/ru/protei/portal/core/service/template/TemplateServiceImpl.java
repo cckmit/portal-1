@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -820,6 +821,29 @@ public class TemplateServiceImpl implements TemplateService {
                     return mailComment;
                 })
                 .collect(toList());
+    }
+
+    @Override
+    public PreparedTemplate getBirthdaysNotificationSubject( Date from, Date to ) {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "fromDate", dateFormat.format(from));
+        model.put( "toDate", dateFormat.format(to));
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees) {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employees", employees );
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
     }
 
     String escapeTextAndRenderHTML(String text, En_TextMarkup textMarkup) {

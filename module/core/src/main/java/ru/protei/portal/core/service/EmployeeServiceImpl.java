@@ -6,36 +6,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.BirthdaysNotificationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.AbsenceQuery;
-import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.not;
 
 
 /**
@@ -92,6 +94,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     AuditObjectDAO auditObjectDAO;
+
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
@@ -414,6 +419,59 @@ public class EmployeeServiceImpl implements EmployeeService {
        return ok(true);
     }
 
+    /**
+     * Уведомление о грядущих датах рождения
+     * @return
+     */
+    @Override
+    public Result<Boolean> notifyAboutBirthdays() {
+
+        Date from = makeDateWithOffset(-2);
+        Date to = makeDateWithOffset(9);
+
+        log.info("notifyAboutBirthdays(): start");
+
+        EmployeeQuery query = new EmployeeQuery();
+        query.setFired(false);
+        query.setDeleted(false);
+        query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+        List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
+
+        if (CollectionUtils.isEmpty(employees)) {
+            log.info("notifyAboutBirthdays(): employees birthdays list is empty for period {} - {}", from, to);
+            return ok(false);
+        }
+
+        List<NotificationEntry> notifiers = makeNotificationListFromConfiguration();
+
+        if (CollectionUtils.isEmpty(notifiers)) {
+            log.info("notifyAboutBirthdays(): no entries to be notified");
+            return ok(false);
+        }
+
+        log.info("notifyAboutBirthdays(): birthdays notification: entries to be notified: {}", notifiers);
+
+        publisherService.publishEvent(new BirthdaysNotificationEvent(this, employees, from, to, notifiers));
+
+        log.info("notifyAboutBirthdays(): done");
+        return ok(true);
+    }
+
+    private Date makeDateWithOffset(int dayOffset) {
+        LocalDate localDate = LocalDate.now().plusDays(dayOffset);
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    private List<NotificationEntry> makeNotificationListFromConfiguration() {
+        return Stream.of(
+                portalConfig.data().getMailNotificationConfig().getCrmBirthdaysNotificationsRecipients()
+        )
+                .filter(Objects::nonNull)
+                .filter(not(String::isEmpty))
+                .map(address -> NotificationEntry.email(address, CrmConstants.DEFAULT_LOCALE))
+                .collect(Collectors.toList());
+    }
+
     private void updateAccount(UserLogin userLogin, AuthToken token) {
         if (userLoginDAO.saveOrUpdate(userLogin)) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
@@ -598,7 +656,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeQuery.setFirstName(person.getFirstName());
         employeeQuery.setLastName(person.getLastName());
         employeeQuery.setSecondName(person.getSecondName());
-        employeeQuery.setBirthday(person.getBirthday());
+        employeeQuery.setBirthdayRange(person.getBirthday() == null ? null :
+                new DateRange(En_DateIntervalType.FIXED, person.getBirthday(), person.getBirthday()));
 
         List<EmployeeShortView> employee = employeeShortViewDAO.getEmployees(employeeQuery);
 
