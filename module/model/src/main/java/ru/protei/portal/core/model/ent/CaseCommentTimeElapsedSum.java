@@ -26,17 +26,14 @@ import java.util.List;
         "case_object.caseno case_no, case_object.private_flag private_flag, case_object.case_name case_name, " +
         "company.cname case_company_name, manager.displayshortname manager_display_name, " +
         "case_object.importance importance, case_state.state state_name, case_object.created created, " +
-        "product.UNIT_NAME product_name, " +
-        "GROUP_CONCAT(DISTINCT case_tag.name SEPARATOR ',') tag_names " +
+        "product.UNIT_NAME product_name " +
         "from case_comment " +
         "left outer join person author on case_comment.author_id = author.id " +
         "left outer join case_object case_object on case_comment.case_id = case_object.id " +
         "join case_state on case_object.STATE = case_state.id " +
         "left outer join company company on case_object.initiator_company = company.id " +
         "left outer join person manager on case_object.manager = manager.id " +
-        "left outer join dev_unit product on case_object.product_id = product.id " +
-        "left outer join case_object_tag on case_object.ID = case_object_tag.case_id " +
-        "left outer join case_tag on case_object_tag.tag_id = case_tag.id "
+        "left outer join dev_unit product on case_object.product_id = product.id "
 )
 public class CaseCommentTimeElapsedSum implements Serializable {
 
@@ -106,9 +103,6 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     @JdbcColumn(name = "created", permType = PermType.READ_ONLY)
     private Date caseCreated;
-
-    @JdbcColumn(name = "tag_names", permType = PermType.READ_ONLY)
-    private String tags;
 
     public Long getCaseId() {
         return caseId;
@@ -218,10 +212,6 @@ public class CaseCommentTimeElapsedSum implements Serializable {
         this.timeElapsedSum = timeElapsedSum;
     }
 
-    public String getTags() {
-        return tags;
-    }
-
     @Override
     public String toString() {
         return "CaseCommentTimeElapsedSum{" +
@@ -250,7 +240,6 @@ public class CaseCommentTimeElapsedSum implements Serializable {
                 ", caseImpLevel=" + caseImpLevel +
                 ", caseStateName='" + caseStateName + '\'' +
                 ", caseCreated=" + caseCreated +
-                ", tags=" + tags +
                 '}';
     }
 }
