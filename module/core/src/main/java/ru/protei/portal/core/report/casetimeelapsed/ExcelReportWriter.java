@@ -2,23 +2,20 @@ package ru.protei.portal.core.report.casetimeelapsed;
 
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
-import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
-import ru.protei.portal.core.utils.JXLSHelper.TimeFormatWrapper;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
+import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
-import static ru.protei.portal.core.utils.JXLSHelper.ExcelFormat.INFINITE_HOURS_MINUTES;
 
 public class ExcelReportWriter implements
         ReportWriter<CaseCommentTimeElapsedSum>,
@@ -97,7 +94,7 @@ public class ExcelReportWriter implements
                     "", "", "",
                     "", "", "",
                     "", "", "",
-                    "", "", lang.get("summary") + ":", new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedSum())
+                    "", "", lang.get("summary") + ":", Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedSum()).orElse(0L))
             };
         }
         return new Object[] {
@@ -112,19 +109,19 @@ public class ExcelReportWriter implements
                 HelperFunc.isNotEmpty(object.getCaseStateName()) ? object.getCaseStateName() : "",
                 StringUtils.emptyIfNull(object.getTags()),
                 object.getCaseCreated() != null ? object.getCaseCreated() : "",
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedNone()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedWatch()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedNightWork()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSoftInstall()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSoftUpdate()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSoftConfig()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeTesting()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeConsultation()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeMeeting()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeDiscussionOfImprovements()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeLogAnalysis()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedTypeSolveProblems()),
-                new TimeFormatWrapper(INFINITE_HOURS_MINUTES).addMinutes(object.getTimeElapsedSum()),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedNone()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedWatch()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedNightWork()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSoftInstall()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSoftUpdate()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSoftConfig()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeTesting()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeConsultation()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeMeeting()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeDiscussionOfImprovements()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeLogAnalysis()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedTypeSolveProblems()).orElse(0L)),
+                Duration.ofMinutes(Optional.ofNullable(object.getTimeElapsedSum()).orElse(0L)),
         };
     }
 }

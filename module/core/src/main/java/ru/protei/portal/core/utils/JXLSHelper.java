@@ -8,10 +8,16 @@ import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.poi.ss.usermodel.DateUtil.SECONDS_PER_DAY;
 
 public final class JXLSHelper {
     public interface ExcelFormat {
@@ -156,8 +162,8 @@ public final class JXLSHelper {
                 setDateFormattedCellValue(cell, workbook, (Date) value);
             } else if (value instanceof Boolean) {
                 cell.setCellValue((Boolean) value);
-            } else if (value instanceof TimeFormatWrapper) {
-                setTimeFormattedCellValue(cell, workbook, (TimeFormatWrapper) value);
+            } else if (value instanceof Duration) {
+                setTimeFormattedCellValue(cell, workbook, (Duration) value);
             } else {
                 cell.setCellValue(value.toString());
             }
@@ -172,54 +178,11 @@ public final class JXLSHelper {
         cell.setCellValue(date);
     }
 
-    private static void setTimeFormattedCellValue(Cell cell, SXSSFWorkbook workbook, TimeFormatWrapper value) {
+    private static void setTimeFormattedCellValue(Cell cell, SXSSFWorkbook workbook, Duration value) {
         CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
-        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(value.format));
+        cellStyle.setDataFormat(workbook.createDataFormat().getFormat(ExcelFormat.INFINITE_HOURS_MINUTES));
 
         cell.setCellStyle(cellStyle);
-        cell.setCellValue(TimeFormatWrapper.convertTime(value.hours, value.minutes, value.seconds));
-    }
-
-    public static class TimeFormatWrapper {
-        private long hours;
-        private long minutes;
-        private long seconds;
-        private String format;
-
-        private static final long MINUTES_IN_HOUR = 60;
-        private static final long SECONDS_IN_MINUTE = 60;
-        private static final long HOURS_IN_DAY = 24;
-        private static final long SECONDS_IN_DAY = (HOURS_IN_DAY * MINUTES_IN_HOUR * SECONDS_IN_MINUTE);
-
-        public TimeFormatWrapper(String format) {
-            this.format = format;
-        }
-
-        public TimeFormatWrapper addHours(long hoursToAdd) {
-            this.hours += hoursToAdd;
-
-            return this;
-        }
-
-        public TimeFormatWrapper addMinutes(long minutesToAdd) {
-            long resultMinutes = this.minutes + minutesToAdd;
-            addHours(resultMinutes / MINUTES_IN_HOUR);
-            this.minutes = resultMinutes % MINUTES_IN_HOUR;
-
-            return this;
-        }
-
-        public TimeFormatWrapper addSeconds(long secondsToAdd) {
-            long resultSeconds = this.seconds + secondsToAdd;
-            addMinutes(resultSeconds / SECONDS_IN_MINUTE);
-            this.seconds = resultSeconds % SECONDS_IN_MINUTE;
-
-            return this;
-        }
-
-        static double convertTime(long hours, long minutes, long seconds) {
-            double totalSeconds = seconds + (minutes + (hours) * MINUTES_IN_HOUR) * SECONDS_IN_MINUTE;
-            return totalSeconds / SECONDS_IN_DAY;
-        }
+        cell.setCellValue((double) value.getSeconds() / SECONDS_PER_DAY);
     }
 }
