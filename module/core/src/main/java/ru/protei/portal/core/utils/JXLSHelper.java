@@ -18,7 +18,6 @@ public final class JXLSHelper {
     // -----------
 
     public static class ReportBook<T> {
-
         private final SXSSFWorkbook workbook;
         private final Writer<T> writer;
         private final Lang.LocalizedLang lang;
@@ -87,86 +86,86 @@ public final class JXLSHelper {
             sheetRowIndexMap.clear();
             sheetIndex = 0;
         }
-    }
 
-    // --------------
-    // Core mechanism
-    // --------------
+        // --------------
+        // Core mechanism
+        // --------------
 
-    private static Font getDefaultFont(Workbook workbook) {
-        Font font = workbook.createFont();
-        font.setFontName("Calibri");
-        font.setFontHeightInPoints((short) 11);
-        return font;
-    }
-
-    private static CellStyle getTableHeaderStyle(Workbook workbook, Font font) {
-        CellStyle style = workbook.createCellStyle();
-        {
-            style.setFont(font);
-            style.setAlignment(HorizontalAlignment.CENTER);
-            style.setVerticalAlignment(VerticalAlignment.CENTER);
-            style.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.index);
-            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        private static Font getDefaultFont(Workbook workbook) {
+            Font font = workbook.createFont();
+            font.setFontName("Calibri");
+            font.setFontHeightInPoints((short) 11);
+            return font;
         }
-        return style;
-    }
 
-    private static CellStyle getDefaultStyle(Workbook workbook, Font font) {
-        CellStyle style = workbook.createCellStyle();
-        {
-            style.setFont(font);
-            style.setVerticalAlignment(VerticalAlignment.CENTER);
+        private static CellStyle getTableHeaderStyle(Workbook workbook, Font font) {
+            CellStyle style = workbook.createCellStyle();
+            {
+                style.setFont(font);
+                style.setAlignment(HorizontalAlignment.CENTER);
+                style.setVerticalAlignment(VerticalAlignment.CENTER);
+                style.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.index);
+                style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            }
+            return style;
         }
-        return style;
-    }
 
-    private static CellStyle getSumStyle(Workbook workbook, Font font) {
-        CellStyle style = workbook.createCellStyle();
-        {
-            style.setFont(font);
-            style.setVerticalAlignment(VerticalAlignment.CENTER);
-            style.setBorderTop(BorderStyle.MEDIUM);
+        private static CellStyle getDefaultStyle(Workbook workbook, Font font) {
+            CellStyle style = workbook.createCellStyle();
+            {
+                style.setFont(font);
+                style.setVerticalAlignment(VerticalAlignment.CENTER);
+            }
+            return style;
         }
-        return style;
-    }
 
-    private static void setColumnsWidth(Sheet sheet, int[] columnsWidth) {
-        int columnIndex = 0;
-        for (int width : columnsWidth) {
-            sheet.setColumnWidth(columnIndex++, width);
+        private static CellStyle getSumStyle(Workbook workbook, Font font) {
+            CellStyle style = workbook.createCellStyle();
+            {
+                style.setFont(font);
+                style.setVerticalAlignment(VerticalAlignment.CENTER);
+                style.setBorderTop(BorderStyle.MEDIUM);
+            }
+            return style;
         }
-    }
 
-    private static void makeHeader(Row row, CellStyle style, Lang.LocalizedLang lang, String[] columnNames) {
-        int columnIndex = 0;
-        for (String name : columnNames) {
-            Cell cell = row.createCell(columnIndex++);
-            cell.setCellValue(lang.get(name));
-            cell.setCellStyle(style);
+        private static void setColumnsWidth(Sheet sheet, int[] columnsWidth) {
+            int columnIndex = 0;
+            for (int width : columnsWidth) {
+                sheet.setColumnWidth(columnIndex++, width);
+            }
         }
-    }
 
-    private static void fillRow(Row row, Object[] values, SXSSFWorkbook workbook, String[] formats) {
-        for (int columnIndex = 0; columnIndex < values.length; columnIndex++) {
-            Object value = values[columnIndex];
-            String format = formats[columnIndex];
+        private static void makeHeader(Row row, CellStyle style, Lang.LocalizedLang lang, String[] columnNames) {
+            int columnIndex = 0;
+            for (String name : columnNames) {
+                Cell cell = row.createCell(columnIndex++);
+                cell.setCellValue(lang.get(name));
+                cell.setCellStyle(style);
+            }
+        }
 
-            Cell cell = row.createCell(columnIndex);
+        private static void fillRow(Row row, Object[] values, Workbook workbook, String[] formats) {
+            for (int columnIndex = 0; columnIndex < values.length; columnIndex++) {
+                Object value = values[columnIndex];
+                String format = formats[columnIndex];
 
-            CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
-            cellStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
+                Cell cell = row.createCell(columnIndex);
 
-            cell.setCellStyle(cellStyle);
+                CellStyle cellStyle = getDefaultStyle(workbook, getDefaultFont(workbook));
+                cellStyle.setDataFormat(workbook.createDataFormat().getFormat(format));
 
-            if (value instanceof Number) {
-                cell.setCellValue(((Number) value).doubleValue());
-            } else if (value instanceof Date) {
-                cell.setCellValue((Date) value);
-            } else if (value instanceof Boolean) {
-                cell.setCellValue((Boolean) value);
-            } else {
-                cell.setCellValue(value.toString());
+                cell.setCellStyle(cellStyle);
+
+                if (value instanceof Number) {
+                    cell.setCellValue(((Number) value).doubleValue());
+                } else if (value instanceof Date) {
+                    cell.setCellValue((Date) value);
+                } else if (value instanceof Boolean) {
+                    cell.setCellValue((Boolean) value);
+                } else {
+                    cell.setCellValue(value.toString());
+                }
             }
         }
     }
