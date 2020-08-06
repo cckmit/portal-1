@@ -28,11 +28,11 @@ public class ProjectLinkEvent extends ApplicationEvent implements AbstractProjec
         return projectId;
     }
 
-    public CaseLink getAddedLink() {
+    CaseLink getAddedLink() {
         return addedLink;
     }
 
-    public CaseLink getRemovedLink() {
+    CaseLink getRemovedLink() {
         return removedLink;
     }
 }

@@ -66,17 +66,17 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     @Transactional
     public Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long id) {
-        CaseAttachment ca = caseAttachmentDAO.getByAttachmentId(id);
-        if (ca != null) {
-            boolean isDeleted = caseAttachmentDAO.removeByKey(ca.getId());
+        CaseAttachment caseAttachment = caseAttachmentDAO.getByAttachmentId(id);
+        if (caseAttachment != null) {
+            boolean isDeleted = caseAttachmentDAO.removeByKey(caseAttachment.getId());
             if(!isDeleted)
                 return error( En_ResultStatus.NOT_REMOVED);
 
-            caseService.updateCaseModified( token, ca.getCaseId(), new Date() );
+            caseService.updateCaseModified( token, caseAttachment.getCaseId(), new Date() );
 
-            caseService.isExistsAttachments( ca.getCaseId() ).ifOk( isExists -> {
+            caseService.isExistsAttachments( caseAttachment.getCaseId() ).ifOk( isExists -> {
                 if (!isExists) {
-                    caseService.updateExistsAttachmentsFlag( ca.getCaseId(), false );
+                    caseService.updateExistsAttachmentsFlag( caseAttachment.getCaseId(), false );
                 }
             } );
 
@@ -84,10 +84,9 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
-            if(result.isOk()
-                    && token != null ) {
+            if(result.isOk() && token != null && En_CaseType.CRM_SUPPORT.equals(caseType)) {
                 publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
-                        token.getPersonId(), ca.getCaseId(), null, Collections.singletonList(attachment)));
+                        token.getPersonId(), caseAttachment.getCaseId(), null, Collections.singletonList(attachment)));
             }
 
             return result;
