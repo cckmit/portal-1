@@ -33,13 +33,13 @@ import ru.protei.portal.core.service.pushevent.ClientEventService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
@@ -305,7 +305,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (CollectionUtils.isNotEmpty(removedComment.getCaseAttachments())) {
             caseAttachmentDAO.removeByCommentId(caseId);
             removedComment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
-            isCaseChanged = caseService.isExistsAttachments( removedComment.getCaseId() ).flatMap( isExists -> {
+            isCaseChanged = caseService.isExistAnyAttachments( toList(removedComment.getCaseAttachments(), CaseAttachment::getAttachmentId) ).flatMap(isExists -> {
                 if (isExists) {
                     return ok( false );
                 }

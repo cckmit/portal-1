@@ -77,7 +77,9 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseInfo> getCaseInfo(AuthToken token, Long caseNumber);
 
-    Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
+    Result<Boolean> isExistAnyAttachments(List<Long> attachmentIds);
+
+    Result<List<CaseLink>> getCaseLinks(AuthToken token, Long caseId );
 
     Result<Long> getCaseId(AuthToken token, Long caseNumber, En_CaseType type );
     Result<Long> getCaseNumberById( AuthToken token, Long caseId );
