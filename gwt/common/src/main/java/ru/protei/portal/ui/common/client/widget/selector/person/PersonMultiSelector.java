@@ -35,6 +35,11 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
     }
 
     @Override
+    public boolean isValid() {
+        return CollectionUtils.isNotEmpty(getValue());
+    }
+
+    @Override
     public void onShowPopupClicked(ClickEvent event) {
         if (personModel == null) {
             super.onShowPopupClicked(event);

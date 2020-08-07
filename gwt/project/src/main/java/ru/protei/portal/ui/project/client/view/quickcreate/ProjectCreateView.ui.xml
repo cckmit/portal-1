@@ -5,7 +5,8 @@
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
-             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'>
+             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -53,7 +54,15 @@
                 <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}"
                                          validation="true" hasNullValue="false"/>
             </div>
-            <div class="form-group col-md-12">
+
+            <person:PersonMultiSelector ui:field="headManagers"
+                                        header="{lang.projectHeadManager}"
+                                        selectCompanyMessage="{lang.managerSelectACompany}"
+                                        addStyleNames="form-group col-md-6"
+                                        validation="true"
+                                        hasNullValue="false"/>
+
+            <div class="form-group col-md-6">
                 <label ui:field="productLabel">
                     <ui:text from="{lang.projectProducts}"/>
                 </label>

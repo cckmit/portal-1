@@ -61,9 +61,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
             ValueChangeEvent.fire(this, selectorValue);
         }
 
-        if (isValidable) {
-            setValid(isValid());
-        }
+        validateSelector(isValidable);
     }
 
     @Override
@@ -132,6 +130,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.clear();
         getSelector().getSelection().clear();
         clearButton.setVisible( false );
+        validateSelector(isValidable);
 
         ValueChangeEvent.fire( this, getValue() );
     }
@@ -141,6 +140,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         Set<T> value = getValue();
         showValue( value );
         getPopup().showNear( itemContainer );
+        validateSelector(isValidable);
+
         ValueChangeEvent.fire( this, value );
     }
 
@@ -181,6 +182,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.add( itemView );
         itemView.setActivity( itemViewToRemove -> removeItem( itemViewToRemove, item ) );
         itemContainer.add( itemView );
+
+        validateSelector(isValidable);
     }
 
     private void removeItem( SelectItemView itemView, T item ) {
@@ -188,6 +191,8 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         itemViews.remove( itemView );
         getSelector().getSelection().select( item );
         clearButton.setVisible( !isEmpty() );
+        validateSelector(isValidable);
+
         ValueChangeEvent.fire( this, getValue() );
     }
 
@@ -241,6 +246,12 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
             clearButton.removeStyleName("bg-white no-border");
             caretButton.addStyleName(style);
             clearButton.addStyleName(style);
+        }
+    }
+
+    private void validateSelector(boolean isValidable) {
+        if (isValidable) {
+            setValid(isValid());
         }
     }
 

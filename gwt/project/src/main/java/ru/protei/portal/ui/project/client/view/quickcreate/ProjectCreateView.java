@@ -14,11 +14,14 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
@@ -26,6 +29,9 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCreateActivity;
 import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCreateView;
+
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Представление создания проекта с минимальным набором параметров
@@ -106,6 +112,27 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         return company;
     }
 
+    @Override
+    public HasValidable headManagersValidator() {
+        return headManagers;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> headManagers() {
+        return headManagers;
+    }
+
+    @Override
+    public void setManagersModel(AsyncPersonModel model) {
+        headManagers.setAsyncSearchModel(model);
+    }
+
+    @Override
+    public void setCompaniesSupplier(Supplier<Set<EntityOption>> companiesSupplier) {
+        headManagers.setCompaniesSupplier(companiesSupplier);
+        headManagers.updateCompanies();
+    }
+
 //    @Override
 //    public void refreshProducts() {
 //        product.refreshOptions();
@@ -179,6 +206,10 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @Inject
     @UiField(provided = true)
     DevUnitButtonSelector product;
+
+    @Inject
+    @UiField(provided = true)
+    PersonMultiSelector headManagers;
 
     @UiField
     Button saveBtn;
