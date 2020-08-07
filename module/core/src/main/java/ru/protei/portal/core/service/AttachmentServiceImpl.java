@@ -6,6 +6,7 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -16,6 +17,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventProjectAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -52,6 +54,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     EventAssemblerService publisherService;
 
     @Autowired
+    EventProjectAssemblerService projectPublisherService;
+
+    @Autowired
     AuthService authService;
 
     @Autowired
@@ -84,9 +89,18 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             Result<Boolean> result = removeAttachment( token, caseType, id);
 
-            if(result.isOk() && token != null && En_CaseType.CRM_SUPPORT.equals(caseType)) {
-                publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
-                        token.getPersonId(), caseAttachment.getCaseId(), null, Collections.singletonList(attachment)));
+            if(result.isOk() && token != null) {
+
+                if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+                    publisherService.onCaseAttachmentEvent( new CaseAttachmentEvent(this, ServiceModule.GENERAL,
+                            token.getPersonId(), caseAttachment.getCaseId(), null, Collections.singletonList(attachment)));
+                }
+
+                if (En_CaseType.PROJECT.equals(caseType)) {
+                    projectPublisherService.onProjectAttachmentEvent(new ProjectAttachmentEvent(this, Collections.emptyList(),
+                            Collections.singletonList(attachment), caseAttachment.getCommentId(), token.getPersonId(), caseAttachment.getCaseId()));
+                }
+
             }
 
             return result;

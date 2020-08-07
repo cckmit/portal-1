@@ -3,9 +3,6 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.ent.CaseComment;
-
-import java.util.function.Consumer;
 
 public class CaseCommentEvents {
 

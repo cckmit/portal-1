@@ -6,10 +6,7 @@ import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
@@ -32,6 +29,10 @@ public class AssembledProjectEvent extends ApplicationEvent {
     private boolean isCreateEvent;
     private DiffCollectionResult<CaseComment> comments = new DiffCollectionResult<>();
     private DiffCollectionResult<CaseLink> links = new DiffCollectionResult<>();
+
+    private Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs = new HashMap<>();
+    private List<Attachment> existingAttachments;
+
     private long lastUpdated;
 
     public AssembledProjectEvent(AbstractProjectEvent event) {
@@ -60,6 +61,13 @@ public class AssembledProjectEvent extends ApplicationEvent {
         if (event.getRemovedComment() != null) {
             comments.putRemovedEntry(event.getRemovedComment());
         }
+    }
+
+    public void attachAttachmentEvent(ProjectAttachmentEvent event) {
+        DiffCollectionResult<Attachment> attachmentDiffCollectionResult = commentToAttachmentDiffs.computeIfAbsent(event.getCommentId(), value -> new DiffCollectionResult<>());
+
+        attachmentDiffCollectionResult.putAddedEntries(event.getAddedAttachments());
+        attachmentDiffCollectionResult.putRemovedEntries(event.getRemovedAttachments());
     }
 
     public void attachLinkEvent(ProjectLinkEvent event) {
@@ -158,6 +166,14 @@ public class AssembledProjectEvent extends ApplicationEvent {
         }
 
         if (CollectionUtils.isNotEmpty(comments.getRemovedEntries())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isAttachmentChanged() {
+        if (!commentToAttachmentDiffs.isEmpty()) {
             return true;
         }
 
@@ -351,6 +367,10 @@ public class AssembledProjectEvent extends ApplicationEvent {
         return comments.getSameEntries() != null;
     }
 
+    public boolean isAttachmentsFilled() {
+        return existingAttachments != null;
+    }
+
     public boolean isLinksFilled() {
         return links.hasSameEntries();
     }
@@ -392,6 +412,18 @@ public class AssembledProjectEvent extends ApplicationEvent {
 
     public void setExistingComments(List<CaseComment> existingComments) {
         comments.putSameEntries(existingComments);
+    }
+
+    public void setExistingAttachments(List<Attachment> existingAttachments) {
+        this.existingAttachments = existingAttachments;
+    }
+
+    public List<Attachment> getExistingAttachments() {
+        return existingAttachments;
+    }
+
+    public Map<Long, DiffCollectionResult<Attachment>> getCommentToAttachmentDiffs() {
+        return commentToAttachmentDiffs;
     }
 
     public DiffCollectionResult<CaseLink> getLinks() {

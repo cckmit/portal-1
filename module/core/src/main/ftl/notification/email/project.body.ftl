@@ -25,6 +25,7 @@
 <@set name="_projectSla" value="${projectSla}"/>
 <@set name="_updated" value="${updated_just_now}"/>
 <@set name="_linkedTasks" value="${linkedTasks}"/>
+<@set name="_attachments" value="${attachments}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -378,12 +379,41 @@
                             ${TransliterationUtils.transliterate(caseComment.author.displayName, lang)!''}
                         </#if>
                 </span>
-                <#if caseComment.oldText??>
+                <#if caseComment.isUpdated>
                     <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
+                </#if>
+                <#if caseComment.oldText??>
                     <div class="markdown"
                          style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                 <#else>
                     <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
+                </#if>
+                <#if caseComment.hasAttachments>
+                    <div class="markdown" style="margin-top:12px;line-height:1.5em;">
+                        <hr/>
+                        <i>${_attachments}: </i>
+                        <#if caseComment.sameAttachments??>
+                            <#list caseComment.sameAttachments as attach>
+                                <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none;color:#0062ff">
+                                    ${attach.fileName}
+                                </span>
+                            </#list>
+                        </#if>
+                        <#if caseComment.removedAttachments??>
+                            <#list caseComment.removedAttachments as attach>
+                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">
+                                    ${attach.fileName}
+                                </span>
+                            </#list>
+                        </#if>
+                        <#if caseComment.addedAttachments??>
+                            <#list caseComment.addedAttachments as attach>
+                                <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">
+                                    ${attach.fileName}
+                                </span>
+                            </#list>
+                        </#if>
+                    </div>
                 </#if>
             </div>
         </#list>

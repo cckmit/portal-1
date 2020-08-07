@@ -31,15 +31,15 @@ public class ProjectCommentEvent extends ApplicationEvent implements AbstractPro
         return projectId;
     }
 
-    CaseComment getOldComment() {
+    public CaseComment getOldComment() {
         return oldComment;
     }
 
-    CaseComment getNewComment() {
+    public CaseComment getNewComment() {
         return newComment;
     }
 
-    CaseComment getRemovedComment() {
+    public CaseComment getRemovedComment() {
         return removedComment;
     }
 }

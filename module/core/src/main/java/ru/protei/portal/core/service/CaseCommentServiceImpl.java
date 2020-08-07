@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.ProjectCommentEvent;
@@ -91,7 +92,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
 
         if (En_CaseType.PROJECT.equals(caseType)) {
-            okResult.publishEvent(new ProjectCommentEvent(this, null, resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId()));
+            okResult.publishEvent(new ProjectCommentEvent(
+                    this, null, resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new ProjectAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
+            );
         }
 
         if (resultData.getCaseComment() != null) {
@@ -189,7 +197,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (En_CaseType.PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
-                    resultData.getOldCaseComment(), resultData.getCaseComment(), null, token.getPersonId(), comment.getCaseId())
+                    resultData.getOldCaseComment(), resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new ProjectAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
             );
         }
 
@@ -328,6 +341,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (En_CaseType.PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
                     null, null, removedComment, token.getPersonId(), caseId)
+            );
+
+            okResult.publishEvent(new ProjectAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+                    token.getPersonId(), caseId)
             );
         }
 
