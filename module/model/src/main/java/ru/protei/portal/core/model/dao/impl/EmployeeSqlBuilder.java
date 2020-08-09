@@ -46,11 +46,12 @@ public class EmployeeSqlBuilder {
                 Interval interval = DateRangeUtils.makeInterval(query.getBirthdayRange());
 
                 if (interval.from.equals(interval.to)) {
-                    condition.append(" and DATE_FORMAT(person.birthday, '%d %M %Y') = DATE_FORMAT(?, '%d %M %Y')");
+                    condition.append(" and person.birthday = ?");
                     args.add(interval.from);
                 } else {
-                    condition.append(" and DATE_FORMAT(person.birthday, '%d %M') between")
-                            .append(" DATE_FORMAT(?, '%d %M 00:00:00') and DATE_FORMAT(?, '%d %M 23:59:59')");
+                    condition.append(" and person.birthday is not null")
+                            .append(" and date_format(person.birthday, '%m%d') between")
+                            .append(" date_format(?, '%m%d 00:00:00') and date_format(?, '%m%d 23:59:59')");
                     args.add(interval.from);
                     args.add(interval.to);
                 }

@@ -109,7 +109,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     }
 
     private void notifyAboutBirthdays() {
-        log.info( "scheduleNotificationsAboutBirthdays()" );
+        log.info( "notifyAboutBirthdays" );
         employeeService.notifyAboutBirthdays();
     }
 

@@ -905,8 +905,8 @@ public class MailNotificationProcessor {
     // -----------------------
 
     @EventListener
-    public void onBirthdaysRemainingEvent( BirthdaysNotificationEvent event) {
-        log.info( "onBirthdaysRemainingEvent(): {}", event );
+    public void onBirthdaysNotificationEvent( BirthdaysNotificationEvent event) {
+        log.info( "onBirthdaysNotificationEvent(): {}", event );
 
         if (CollectionUtils.isEmpty(event.getEmployees()) || CollectionUtils.isEmpty(event.getNotifiers())) {
             log.error("Failed to send birthdays notification: empty data or notifiers");
@@ -919,7 +919,9 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees() );
+        List<String> recipients = getNotifiersAddresses(event.getNotifiers());
+
+        PreparedTemplate bodyTemplate = templateService.getBirthdaysNotificationBody( event.getEmployees(), recipients );
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for release PersonCaseFilter notification");
             return;

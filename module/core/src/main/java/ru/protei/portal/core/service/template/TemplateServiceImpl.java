@@ -47,7 +47,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class TemplateServiceImpl implements TemplateService {
     public static final String BASE_TEMPLATE_PATH = "notification/email/";
     private static Logger log = getLogger(TemplateServiceImpl.class);
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     Configuration templateConfiguration;
 
@@ -598,12 +599,12 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("absentEmployee", newState.getPerson().getName());
 
         templateModel.put("fromTimeChanged", event.isFromTimeChanged());
-        templateModel.put("oldFromTime", oldState == null ? null : dateFormat.format(oldState.getFromTime()));
-        templateModel.put("fromTime", dateFormat.format(newState.getFromTime()));
+        templateModel.put("oldFromTime", oldState == null ? null : dateTimeFormat.format(oldState.getFromTime()));
+        templateModel.put("fromTime", dateTimeFormat.format(newState.getFromTime()));
 
         templateModel.put("tillTimeChanged", event.isTillTimeChanged());
-        templateModel.put("oldTillTime", oldState == null ? null : dateFormat.format(oldState.getTillTime()));
-        templateModel.put("tillTime", dateFormat.format(newState.getTillTime()));
+        templateModel.put("oldTillTime", oldState == null ? null : dateTimeFormat.format(oldState.getTillTime()));
+        templateModel.put("tillTime", dateTimeFormat.format(newState.getTillTime()));
 
         templateModel.put("reason", newState.getReason().getId());
 
@@ -767,6 +768,32 @@ public class TemplateServiceImpl implements TemplateService {
         return getText(model, "project.pausetime.body.%s.ftl");
     }
 
+    @Override
+    public PreparedTemplate getBirthdaysNotificationSubject( Date from, Date to ) {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "fromDate", dateFormat.format(from));
+        model.put( "toDate", dateFormat.format(to));
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients) {
+        Map<String, Object> model = new HashMap<>();
+
+        model.put( "employees", employees.stream().collect(Collectors.groupingBy(
+                EmployeeShortView::getBirthday,
+                LinkedHashMap::new, Collectors.toList())) );
+        model.put( "recipients", recipients );
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
 
     private <T, R> R getNullOrElse(T value, Function<T, R> orElseFunction) {
         return value == null ? null : orElseFunction.apply(value);
@@ -821,29 +848,6 @@ public class TemplateServiceImpl implements TemplateService {
                     return mailComment;
                 })
                 .collect(toList());
-    }
-
-    @Override
-    public PreparedTemplate getBirthdaysNotificationSubject( Date from, Date to ) {
-        Map<String, Object> model = new HashMap<>();
-        model.put( "fromDate", dateFormat.format(from));
-        model.put( "toDate", dateFormat.format(to));
-
-        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.subject.%s.ftl");
-        template.setModel(model);
-        template.setTemplateConfiguration(templateConfiguration);
-        return template;
-    }
-
-    @Override
-    public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees) {
-        Map<String, Object> model = new HashMap<>();
-        model.put( "employees", employees );
-
-        PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
-        template.setModel(model);
-        template.setTemplateConfiguration(templateConfiguration);
-        return template;
     }
 
     String escapeTextAndRenderHTML(String text, En_TextMarkup textMarkup) {

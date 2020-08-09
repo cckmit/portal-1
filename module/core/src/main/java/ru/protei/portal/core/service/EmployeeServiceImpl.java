@@ -28,8 +28,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +36,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.not;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
 
 
 /**
@@ -424,7 +423,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return
      */
     @Override
-    public Result<Boolean> notifyAboutBirthdays() {
+    public Result<Void> notifyAboutBirthdays() {
 
         Date from = makeDateWithOffset(-2);
         Date to = makeDateWithOffset(9);
@@ -435,18 +434,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setFired(false);
         query.setDeleted(false);
         query.setBirthdayRange(new DateRange(En_DateIntervalType.FIXED, from, to));
+        query.setSortField(En_SortField.birthday);
+        query.setSortDir(En_SortDir.ASC);
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
 
         if (CollectionUtils.isEmpty(employees)) {
             log.info("notifyAboutBirthdays(): employees birthdays list is empty for period {} - {}", from, to);
-            return ok(false);
+            return ok();
         }
 
         List<NotificationEntry> notifiers = makeNotificationListFromConfiguration();
 
         if (CollectionUtils.isEmpty(notifiers)) {
             log.info("notifyAboutBirthdays(): no entries to be notified");
-            return ok(false);
+            return ok();
         }
 
         log.info("notifyAboutBirthdays(): birthdays notification: entries to be notified: {}", notifiers);
@@ -454,12 +455,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         publisherService.publishEvent(new BirthdaysNotificationEvent(this, employees, from, to, notifiers));
 
         log.info("notifyAboutBirthdays(): done");
-        return ok(true);
-    }
-
-    private Date makeDateWithOffset(int dayOffset) {
-        LocalDate localDate = LocalDate.now().plusDays(dayOffset);
-        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return ok();
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {

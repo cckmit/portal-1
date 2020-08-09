@@ -83,7 +83,6 @@ public class BootstrapService {
         migratePersonAbsences();
         updateWithCrossLinkColumn();
         transferProjectCrosslinkToYoutrack();
-        notifyAboutBirthdays();
     }
 
     private void updateWithCrossLinkColumn() {
@@ -804,12 +803,6 @@ if(true) return; //TODO remove
         log.info("Migrate absences ended");
     }
 
-    private void notifyAboutBirthdays() {
-        log.info( "Notify about birthdays :  begin" );
-        employeeService.notifyAboutBirthdays();
-        log.info( "Notify about birthdays : end " );
-    }
-
     private Date joinDateTime(Date date, Date time) {
         Date date_part = new Date(date.getTime());
         Date time_part = new Date(time.getTime());
@@ -945,8 +938,6 @@ if(true) return; //TODO remove
     PlanDAO planDAO;
     @Autowired
     PersonAbsenceDAO personAbsenceDAO;
-    @Autowired
-    EmployeeService employeeService;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
 

@@ -95,6 +95,6 @@ public interface TemplateService {
     String getProjectPauseTimeNotificationBody( String subscriberName, Long aLong, String displayNam, String projectUrl, Date pauseTimeDate ) throws IOException, TemplateException;
 
     PreparedTemplate getBirthdaysNotificationSubject(Date from, Date to);
-    PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees);
+    PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients);
 
 }

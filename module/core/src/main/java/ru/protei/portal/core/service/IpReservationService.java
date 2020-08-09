@@ -116,7 +116,7 @@ public interface IpReservationService {
     @Auditable(En_AuditType.RESERVED_IP_REMOVE)
     Result<ReservedIp> removeReservedIp(AuthToken token, ReservedIp reservedIp);
 
-    Result<Boolean> notifyOwnersAboutReleaseIp();
+    Result<Void> notifyOwnersAboutReleaseIp();
 
-    Result<Boolean> notifyAdminsAboutExpiredReleaseDates();
+    Result<Void> notifyAdminsAboutExpiredReleaseDates();
 }

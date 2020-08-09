@@ -61,5 +61,5 @@ public interface EmployeeService {
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> workerEntryList);
 
-    Result<Boolean> notifyAboutBirthdays();
+    Result<Void> notifyAboutBirthdays();
 }

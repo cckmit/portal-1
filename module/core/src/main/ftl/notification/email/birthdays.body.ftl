@@ -12,39 +12,35 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <style>
-        .caption  {
-            padding:2px 10px 2px 0;
+        .date  {
+            padding:5px 20px;
             font-family:sans-serif;
             font-size:14px;
             text-align:left;
-            color:#666666;
-            border-bottom: 1px solid #D4D5D6;
+            color:blue;
+            color:#0062ff;
         }
-
-        .field  {
-            padding:2px 10px 2px 0;
+        .name  {
+            padding:2px 50px;
             font-family:sans-serif;
             font-size:14px;
             text-align:left;
+        }
+        .border  {
+            border-bottom: 1px solid #D4D5D6;
         }
     </style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
-<table style="width:100%">
-    <tbody>
-    <tr>
-        <td class="caption">${_fio}</td>
-        <td class="caption">${_birthday}</td>
-    </tr>
-    <#list employees as employee>
-    <tr>
-        <td class="field">${employee.displayName}</td>
-        <td class="field">${(employee.birthday?string["MMM dd"])!_empty}</td>
-    </tr>
+<div style="width:600px;">
+    <#list employees as date, names>
+        <div class="date border">${(date?string["dd MMMMM"])!_empty}</div>
+        <#list names as name>
+            <div class="name">${name.displayName}</div>
+        </#list>
     </#list>
-    </tbody>
-</table>
+</div>
     <div style="padding: 4px 0 8px;">
         <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
             ${_you} (<b>${userName}</b>) ${_notification_footer}

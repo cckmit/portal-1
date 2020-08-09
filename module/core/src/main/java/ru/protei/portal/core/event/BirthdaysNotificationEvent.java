@@ -9,11 +9,6 @@ import java.util.List;
 
 public class BirthdaysNotificationEvent extends ApplicationEvent {
 
-    private final List<EmployeeShortView> employees;
-    private final Date from;
-    private final Date to;
-    private final List<NotificationEntry> notifiers;
-
     public BirthdaysNotificationEvent(Object source, List<EmployeeShortView> employees,
                                       Date from, Date to,
                                       List<NotificationEntry> notifiers) {
@@ -31,4 +26,9 @@ public class BirthdaysNotificationEvent extends ApplicationEvent {
     public Date getToDate () { return to; }
 
     public List<NotificationEntry> getNotifiers() { return notifiers; }
+
+    private final List<EmployeeShortView> employees;
+    private final Date from;
+    private final Date to;
+    private final List<NotificationEntry> notifiers;
 }
