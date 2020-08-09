@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.io.Serializable;
 
@@ -47,7 +48,8 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = ReservedIp.class, name = ReservedIp.AUDIT_TYPE),
         @JsonSubTypes.Type(value = Subnet.class, name = Subnet.AUDIT_TYPE),
         @JsonSubTypes.Type(value = Plan.class, name = Plan.AUDIT_TYPE),
-        @JsonSubTypes.Type(value = PersonAbsence.class, name = PersonAbsence.AUDIT_TYPE)
+        @JsonSubTypes.Type(value = PersonAbsence.class, name = PersonAbsence.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = PersonSubscriptionChangeRequest.class, name = PersonSubscriptionChangeRequest.AUDIT_TYPE)
 })
 public abstract class AuditableObject implements Serializable {
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.app.portal.client.service.PersonSubscriptionController;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.struct.PersonSubscriptionChangeRequest;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.PersonSubscriptionService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -25,9 +26,9 @@ public class PersonSubscriptionControllerImpl implements PersonSubscriptionContr
     }
 
     @Override
-    public Set<PersonShortView> updatePersonSubscriptions(Set<PersonShortView> persons) throws RequestFailedException {
+    public Set<PersonShortView> updatePersonSubscriptions(PersonSubscriptionChangeRequest changeRequest) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData(personSubscriptionService.updatePersonSubscriptions(token, persons));
+        return checkResultAndGetData(personSubscriptionService.updatePersonSubscriptions(token, changeRequest));
     }
 
     @Autowired
