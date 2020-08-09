@@ -784,9 +784,10 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getBirthdaysNotificationBody(List<EmployeeShortView> employees, Collection<String> recipients) {
         Map<String, Object> model = new HashMap<>();
 
-        model.put( "employees", employees.stream().collect(Collectors.groupingBy(
+/*        model.put( "employees", employees.stream().collect(Collectors.groupingBy(
                 EmployeeShortView::getBirthday,
-                LinkedHashMap::new, Collectors.toList())) );
+                LinkedHashMap::new, Collectors.toList())) );*/
+        model.put( "employees", employees);
         model.put( "recipients", recipients );
 
         PreparedTemplate template = new PreparedTemplate("notification/email/birthdays.body.%s.ftl");
